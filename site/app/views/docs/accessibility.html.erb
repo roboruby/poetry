@@ -1,0 +1,351 @@
+<% content_for :title, "Accessibility" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: root_path) %>
+    <% crumb.with_item("Accessibility") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag; keep ERB delimiters out of them.
+  check_source = <<~CODE
+    bin/rails poetry:check                       # structural lint: wiring, options, raw colors
+    POETRY_CHECK_DESIGN=1 bin/rails poetry:check # add the design-slop warnings
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Accessibility</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      What poetry guarantees by construction, and a protocol you can run to
+      verify the app you build with it: automated checks first, then a
+      keyboard and screen-reader pass.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="guarantees">What poetry guarantees</h2>
+      <ul>
+        <li>
+          <strong>Accessible names, required by construction.</strong> A
+          dialog will not render without its title slot; the title is the
+          accessible name and <code>aria-labelledby</code> is always wired.
+          Icons are decorative by default (<code>aria-hidden</code>);
+          passing <code>label:</code> promotes one to
+          <code>role="img"</code> with an <code>aria-label</code>.
+        </li>
+        <li>
+          <strong>ARIA wiring from the field chain.</strong> Wrapping a
+          control in <code>field</code> and spreading
+          <code>field.control_attributes</code> associates the label and
+          hands the control <code>aria-describedby</code> (the error id
+          first, then the hint id) plus <code>aria-invalid</code>. You
+          never hand-write those attributes, so they cannot drift.
+        </li>
+        <li>
+          <strong>Native form participation.</strong> Checkbox, select,
+          combobox, and the rest of the form family keep a real native
+          form control in the DOM. The native element is the serialization
+          truth: what your test reads is what the server receives.
+        </li>
+        <li>
+          <strong>Focus management in overlays.</strong> Dialogs ride the
+          native dialog element, so focus trapping, Escape, and focus
+          return to the trigger come from the platform rather than from
+          scripting. Every focusable part styles a
+          <code>focus-visible</code> ring.
+        </li>
+        <li>
+          <strong>Announcements without spam.</strong> Toasts announce
+          through the toaster's single live region, once per toast, rather
+          than per DOM node.
+        </li>
+        <li>
+          <strong>AA-gated theme tokens.</strong> The token importer drops
+          any swatch that fails WCAG AA and reports the nearest passing
+          value, so imported palettes cannot ship failing contrast.
+        </li>
+      </ul>
+      <p>
+        The library verifies its own side of this contract with an
+        automated accessibility walk (WCAG 2.0 A and AA rules) over every
+        component state, per theme, as part of its release gates.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="limits">What automation cannot see</h2>
+      <p>
+        Automated scanners catch roughly a third of WCAG issues, the
+        structural ones. The rest live in focus management, screen-reader
+        announcements, and the keyboard operability of interactive
+        widgets, and only a person at a keyboard finds them. Scanners also
+        see initial render state only; open overlays, filtered lists, and
+        mid-stream updates are the manual pass's job.
+      </p>
+      <p>
+        Run the manual protocol before a release, and again whenever an
+        interactive flow changes shape: a new overlay, a custom override
+        on a component, a form that grew a dynamic section.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="setup">Set up a pass</h2>
+      <ul>
+        <li>
+          <strong>macOS, VoiceOver:</strong> toggle with Cmd+F5. Navigate
+          with Ctrl+Option (the VO keys) plus arrows; open the rotor with
+          VO+U (headings, landmarks, form controls); interact with a group
+          via VO+Shift+Down.
+        </li>
+        <li>
+          <strong>Windows, NVDA</strong> (free, and the realistic baseline
+          for real users): arrows in browse mode, Tab between controls,
+          NVDA+Space to toggle browse and focus mode, NVDA+F7 for the
+          elements list.
+        </li>
+        <li>
+          Walk your app's real pages. Test light and dark, at 200% browser
+          zoom (WCAG 1.4.4), and with reduced motion switched on.
+        </li>
+        <li>
+          Keyboard only for the keyboard passes; ignore the mouse
+          entirely.
+        </li>
+      </ul>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="universal">The universal checklist</h2>
+      <p>On every page, regardless of which components it uses:</p>
+      <ul>
+        <li>
+          Tab order matches visual order; nothing interactive is skipped
+          or trapped. Modal focus traps are intentional, and Escape must
+          release them.
+        </li>
+        <li>
+          Focus is always visible. Confirm the ring survives your theme
+          and any token overrides.
+        </li>
+        <li>
+          Every control has an accessible name: never "button", "blank",
+          or "edit text" in the screen reader.
+        </li>
+        <li>
+          State changes are announced as they happen: checked, expanded,
+          selected, disabled, invalid.
+        </li>
+        <li>
+          At 200% zoom and with reduced motion on, no content or function
+          is lost and nothing animates against the preference.
+        </li>
+      </ul>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="patterns">Pattern checklists</h2>
+      <p>
+        Group the components on a page by pattern and run the pattern's
+        checks against each.
+      </p>
+
+      <h3 id="forms">Form controls</h3>
+      <ul>
+        <li>
+          Every control is named, through a visible label the field chain
+          associates, or an explicit <code>aria-label</code> where the
+          pattern is icon-only.
+        </li>
+        <li>
+          Space toggles a checkbox, switch, or toggle, and the new state
+          is announced.
+        </li>
+        <li>
+          Radio and toggle groups are one tab stop; arrows move the
+          selection and the group itself is named.
+        </li>
+        <li>
+          Selects and comboboxes open with Enter, Space, or arrows;
+          typeahead works; selection is announced; Escape closes. A
+          filtering combobox announces its result counts through its live
+          region.
+        </li>
+        <li>
+          Sliders and number fields announce value, minimum, and maximum,
+          and step from the keyboard (arrows, Page Up and Page Down,
+          Home and End).
+        </li>
+        <li>
+          Date and time fields announce each segment's role and value. The
+          calendar is a grid: arrows move by day, Page Up and Page Down by
+          month, and the selected day and today are announced. A range
+          submits both ends and announces both.
+        </li>
+        <li>
+          A masked input's reveal toggle is named, announces its pressed
+          state, and never leaks the masked value to the accessibility
+          tree.
+        </li>
+        <li>
+          Invalid controls announce it, and the error text is associated
+          via <code>aria-describedby</code> (the field contract).
+        </li>
+      </ul>
+
+      <h3 id="overlays">Overlays</h3>
+      <ul>
+        <li>
+          Opening moves focus in; closing returns focus to the trigger,
+          also after a Turbo navigation and after a back/forward cache
+          restore.
+        </li>
+        <li>
+          Focus is trapped while modal, Escape closes, and backdrop
+          behavior matches the component contract. An alert dialog does
+          not dismiss on outside click, and initial focus lands on the
+          safe action.
+        </li>
+        <li>
+          The surface carries <code>role="dialog"</code> or
+          <code>"alertdialog"</code> with <code>aria-modal</code>,
+          labelled by its title and described by its body.
+        </li>
+        <li>
+          Background content is unreachable while modal, by Tab and by the
+          screen-reader cursor.
+        </li>
+        <li>
+          Tooltips and hover cards appear on keyboard focus, not just
+          hover; Escape dismisses them; their content is announced.
+        </li>
+      </ul>
+
+      <h3 id="menus">Menus and command palettes</h3>
+      <ul>
+        <li>
+          The trigger opens with Enter, Space, or ArrowDown; focus lands
+          on the first item; arrows move; typeahead jumps; left and right
+          traverse submenus; Escape closes and returns focus.
+        </li>
+        <li>
+          Items announce their menu-item role, including checkbox and
+          radio variants with checked state.
+        </li>
+        <li>
+          A context menu also opens from the keyboard, via Shift+F10 or
+          the context-menu key.
+        </li>
+        <li>
+          In a command palette, typing filters, arrows plus Enter select,
+          and the result count is announced. Inside a command dialog the
+          overlay checks above apply too.
+        </li>
+      </ul>
+
+      <h3 id="navigation">Disclosure and navigation</h3>
+      <ul>
+        <li>
+          Accordion and collapsible triggers are buttons with
+          <code>aria-expanded</code>, and state changes are announced.
+        </li>
+        <li>
+          Tabs are one tab stop; arrows move between them; the active tab
+          is announced and its panel is reachable.
+        </li>
+        <li>
+          Breadcrumbs and pagination are named <code>nav</code> landmarks,
+          and the current page carries <code>aria-current="page"</code>.
+        </li>
+        <li>
+          The sidebar toggle is named, the active item carries
+          <code>aria-current</code>, and the mobile sheet traps focus.
+        </li>
+      </ul>
+
+      <h3 id="composite">Data, feedback, and streaming</h3>
+      <ul>
+        <li>
+          Tables keep real table semantics. Sortable headers announce
+          <code>aria-sort</code>, per-row selection checkboxes are named,
+          the action bar that appears on selection is announced and
+          reachable, and sticky headers do not hide focused cells.
+        </li>
+        <li>
+          Trees expose tree and tree-item roles; arrows navigate and
+          expand; every node is named. Toolbars are one tab stop with
+          arrows inside.
+        </li>
+        <li>
+          Carousel slide changes are announced through the live region,
+          and the controls are named, keyboard-operable buttons.
+        </li>
+        <li>
+          Server-spawned toasts announce through the toaster's live
+          region, pause their timers on hover, and have a named dismiss
+          button.
+        </li>
+        <li>
+          Progress bars and meters announce a role, a name, and their
+          value range. Loading skeletons expose the busy state once, and
+          resolved content announces its arrival.
+        </li>
+        <li>
+          Streamed messages announce once per settled update, not once per
+          token, and the jump-to-bottom button stays reachable mid-stream.
+          Chart data points take keyboard focus and announce their values.
+        </li>
+      </ul>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="automated">Automated checks in your app</h2>
+      <p>
+        Two automated layers are worth wiring into CI before any manual
+        pass. First, <code>poetry:check</code> catches the structural
+        class of accessibility bug at lint time: a mistyped component
+        option, stranded Stimulus wiring, or a raw color off the token
+        surface.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: check_source, language: "shell", label: "Structural lint") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Second, run an axe scan (the WCAG 2.0 A and AA rulesets) against
+        your key pages from your system tests, through whichever axe
+        integration fits your browser driver. Run it against each theme
+        you ship, because contrast differs per theme, and treat a skip as
+        a documented decision rather than a silent one. poetry's
+        components pass this scan on their side; what you are checking is
+        your pages, your content, and your overrides.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="recording">Recording findings</h2>
+      <p>
+        Log each finding as component, check, assistive technology,
+        severity, note. A finding a scanner could have seen becomes a fix
+        or a documented, reviewed exception, never an undocumented skip. A
+        finding only the manual pass can see gets a regression test at the
+        cheapest tier that catches it, and a browser test only when it
+        genuinely needs a layout engine. The tier doctrine lives in the
+        <%= link_to "testing guide", testing_path %>.
+      </p>
+    <% end %>
+  </section>
+</div>

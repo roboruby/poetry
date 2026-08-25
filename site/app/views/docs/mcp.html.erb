@@ -1,0 +1,199 @@
+<% content_for :title, "MCP" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: root_path) %>
+    <% crumb.with_item("MCP") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag; keep ERB delimiters out of them.
+  serve_source = <<~CODE
+    bundle exec poetry-agent   # stdio MCP server; run it from your app directory
+  CODE
+  llms_source = <<~CODE
+    /poetry/llms.txt        # the index: every component, one line each, plus the blocks catalog
+    /poetry/llms-full.txt   # the full contracts
+  CODE
+  skill_source = <<~CODE
+    bin/rails g poetry:skill   # installs the same skill files under .claude/skills/
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">MCP</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      poetry's agent surface is an MCP server: <code class="font-mono text-base">poetry-agent</code>
+      gives any MCP-capable coding agent the live component contract, so the
+      agent queries what your app actually ships instead of guessing, and
+      verifies its own markup before you review it.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="server">The server</h2>
+      <p>
+        <code>poetry-agent</code> is a standard stdio MCP server with no SDK
+        dependency. It is boot-free: it reads the registry committed in the
+        gems rather than booting Rails, so it starts instantly. And it is
+        read-only by design: every tool describes or verifies, none can edit
+        your app.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: serve_source, language: "shell", label: "Run") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Run it from the app directory: the guided build's probe step reads
+        your <code>config/poetry_components.yml</code>, installed theme, and
+        JS setup from there, and degrades gracefully anywhere else. Per-editor
+        configuration (and the generator that writes it) lives on the
+        <%= link_to "Editors", editors_path %> page; this page covers what
+        the server does once connected.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="loop">The loop it closes</h2>
+      <ol>
+        <li><code>compose</code> routes the brief to a starting point.</li>
+        <li><code>describe_component</code> or <code>describe_block</code> loads the one contract the work needs.</li>
+        <li>The agent writes ERB.</li>
+        <li><code>check</code> returns a verdict, so the agent corrects itself before the code is rendered or reviewed.</li>
+      </ol>
+      <p>
+        The point is verification, not just reading: the same linter that runs
+        as <code>bin/rails poetry:check</code> in your test suite is one tool
+        call away inside the agent's own loop, so the agent's gate and your
+        CI gate agree.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="tools">The ten tools</h2>
+    <% end %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <table>
+        <thead>
+          <tr><th>Tool</th><th>Returns</th><th>When an agent reaches for it</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>compose</code></td><td>the starting point for a brief: a matching vetted block with full source, or the matching components</td><td>first call for every brief</td></tr>
+          <tr><td><code>build_page</code></td><td>a five-step guided workflow, one step per call</td><td>a whole screen, page, or dashboard</td></tr>
+          <tr><td><code>list_components</code></td><td>every component, its <code>poetry_*</code> helper, and whether it is interactive</td><td>browsing the catalog</td></tr>
+          <tr><td><code>describe_component</code></td><td>one component's contract at <code>brief</code>, <code>detailed</code>, or <code>full</code> depth</td><td>before using a component</td></tr>
+          <tr><td><code>check</code></td><td>a PASS or FAIL verdict with line-numbered findings</td><td>the last action after the final edit</td></tr>
+          <tr><td><code>list_blocks</code></td><td>the vetted composed-screen catalog</td><td>browsing screen starting points</td></tr>
+          <tr><td><code>describe_block</code></td><td>one block's contract and its full ERB source</td><td>starting a screen from a block</td></tr>
+          <tr><td><code>list_recipes</code></td><td>the installable multi-file payloads (skill bundles, scaffold templates, screen slices)</td><td>work beyond a single component</td></tr>
+          <tr><td><code>get_skill</code></td><td>an installed poetry skill, served at runtime</td><td>hosts that cannot write skill files</td></tr>
+          <tr><td><code>guidance</code></td><td>curated composition guidance by topic</td><td>deciding which component fits</td></tr>
+        </tbody>
+      </table>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="routing">Routing a brief</h2>
+      <p>
+        <code>compose</code> is the first move for any brief. Give it the task
+        text verbatim; the routing is deterministic. A strong match returns a
+        vetted block's full source to adapt in place, which is the reliable
+        path for pages, with runners-up listed. Anything smaller routes to
+        the matching components. Either way the answer ends with the same
+        instruction: run <code>check</code> as the last action.
+      </p>
+      <p>
+        For a whole screen, <code>build_page</code> runs a guided workflow
+        instead of a single route. Each call returns one step and the exact
+        next call:
+      </p>
+      <ol>
+        <li><strong>probe</strong>: reads the host app's poetry config, theme, CSS mode, and importmap-versus-bundler setup, and reports gaps.</li>
+        <li><strong>plan</strong>: matches the intent to a page architecture: section order, the states a real screen handles (loading, empty, error), the edge cases, and the components.</li>
+        <li><strong>direct</strong>: creative direction derived from the installed theme, since the theme's vocabulary is the direction.</li>
+        <li><strong>snippets</strong>: the block or components to start from, routed exactly as <code>compose</code>.</li>
+        <li><strong>verify</strong>: runs <code>check</code>; the workflow is done only on a PASS, an executable verdict rather than a claim.</li>
+      </ol>
+      <p>
+        The entry routes on your verb: a review or audit request stays
+        read-only (an audit never becomes an edit), a harden request likewise,
+        and a plan or shape verb returns the architecture without probing.
+        Out-of-order steps are answered, never refused, so calling one step
+        on its own keeps working.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="check">The check verdict</h2>
+      <p>
+        <code>check</code> lints ERB source against the contracts without
+        rendering it: unknown components, options, variants, and wiring; raw
+        colors; icon names validated by membership in the installed set; enum
+        values; slot and helper arity; required content blocks and required
+        slots; and any-of contracts such as a Button's visible content.
+        Findings carry line numbers and a did-you-mean suggestion where one
+        exists. Run it after the final edit; an edit made after the last
+        check is unverified.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="skills">Skills and guidance at runtime</h2>
+      <p>
+        <code>get_skill</code> serves the poetry skills over the wire for
+        hosts where installed skill files are absent (hosted agents, or a
+        session that never ran the generator): <code>poetry</code> (component
+        usage, generated from the registry), <code>poetry-design</code> (page
+        composition), and <code>poetry-component</code> (authoring app-owned
+        components). It returns SKILL.md plus a file index first; pass
+        <code>file:</code> to fetch one reference. The text is identical to
+        the installed files, so when the skills are installed the agent reads
+        them from disk instead:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: skill_source, language: "shell", label: "Install the skills") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        <code>guidance(topic: "deciding")</code> returns the which-component
+        decision tree from the usage skill, reachable when only the MCP is
+        connected. The installable skills catalog, including web install,
+        lives on the <%= link_to "Agent Skills", agent_skills_path %> page,
+        and the payloads <code>list_recipes</code> surfaces are documented on
+        the <%= link_to "Recipes", recipes_path %> page.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="one-source">One source, every surface</h2>
+      <p>
+        The committed registry is the single source: the MCP tools, the
+        <code>poetry:check</code> linter, the editor snippets, and the
+        machine-readable catalog are all projections of it, so none of them
+        can drift from what ships. In your app the mounted engine serves that
+        catalog directly:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: llms_source, language: "plaintext", label: "llms.txt routes") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        An agent without MCP reads those files; an agent with MCP gets the
+        same contract tool-shaped, with progressive disclosure
+        (<code>describe_component</code> loads one component at the depth
+        asked for, not the whole catalog) plus the <code>check</code> verdict
+        no static file can give.
+      </p>
+    <% end %>
+  </section>
+</div>

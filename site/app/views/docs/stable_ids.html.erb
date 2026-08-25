@@ -1,0 +1,259 @@
+<% content_for :title, "Stable IDs" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: root_path) %>
+    <% crumb.with_item("Stable IDs") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
+  # this scriptlet early, so the samples interpolate it as #{e}.
+  e = "%" + ">"
+  ladder_source = <<~CODE
+    <%# explicit: root id "settings", derived ids settings-trigger, settings-content #{e}
+    <%= poetry_dropdown_menu(id: "settings") do |menu| #{e} ... <% end #{e}
+
+    <%# semantic: dom_id derivation -> poetry-dropdown-menu-message_42 #{e}
+    <%= poetry_dropdown_menu(key: message) do |menu| #{e} ... <% end #{e}
+
+    <%# a literal key parameterizes -> poetry-accordion-faq #{e}
+    <%= poetry_accordion(key: "faq") do |accordion| #{e} ... <% end #{e}
+  CODE
+  collection_source = <<~CODE
+    <% @messages.each do |message| #{e}
+      <%= poetry_dropdown_menu(key: message) do |menu| #{e}
+        ...
+      <% end #{e}
+    <% end #{e}
+  CODE
+  integrity_source = <<~CODE
+    <%# in the development layout's <head> #{e}
+    <%= poetry_id_integrity_script #{e}
+  CODE
+  to_key_source = <<~CODE
+    class Message < ApplicationRecord
+      def to_key = [slug]
+      def to_param = slug
+    end
+  CODE
+  sequence_source = <<~CODE
+    # config/initializers/poetry.rb
+    Poetry::Core::Config.current.stable_id_mode = :sequence
+
+    # the seed defaults to the request path; override the lambda if needed
+    Poetry::Core::Config.current.stable_id_seed = ->(request) { request.path }
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Stable IDs</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      Every poetry component mints DOM ids to wire its internal
+      relationships: <code class="font-mono text-base">aria-controls</code>,
+      label targets, floating anchors, SVG defs. How those ids are chosen
+      decides whether Turbo morph can pair your components across renders,
+      and whether cached fragments stay composable.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="ladder">The identity ladder</h2>
+      <p>In precedence order:</p>
+      <ol>
+        <li>
+          <strong><code>id:</code>, explicit caller identity.</strong> The
+          root id; every internal id derives from it
+          (<code>settings-trigger</code>, <code>settings-content</code>,
+          item ids). Order-independent, cache-safe, morph-stable. It is your
+          namespace: pass <code>id: "settings"</code> and poetry derives the
+          rest, so don't hand-author those. An explicit id is reduced to
+          letters, digits, underscores, and hyphens before use; if nothing
+          safe remains, poetry falls back to a random token.
+        </li>
+        <li>
+          <strong><code>key:</code>, semantic identity.</strong> A record or
+          a literal: <code>poetry_dropdown_menu(key: message)</code> derives
+          <code>poetry-dropdown-menu-message_42</code> via Rails' own
+          <code>dom_id</code>, so identity follows the record, and a sorted
+          or filtered collection morphs with state staying on the right row.
+          Literals parameterize (<code>key: "faq"</code> becomes
+          <code>poetry-accordion-faq</code>).
+        </li>
+        <li>
+          <strong>Form components</strong> ride the form builder's
+          attribute-derived ids.
+        </li>
+        <li>
+          <strong>Random fallback.</strong> Without identity, ids are random
+          per render: under a Turbo morph the component is
+          <em>replaced</em> (open state, focus, and client state reset).
+          That is deliberate. An unkeyed component must over-replace rather
+          than ever falsely retain state on the wrong record.
+        </li>
+      </ol>
+    <% end %>
+    <%= poetry_code_block(code: ladder_source, language: "erb", label: "The ladder") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="must-pass">When you must pass identity</h2>
+      <ul>
+        <li>
+          <strong>Collections.</strong> Without keys, every morphing reorder
+          replaces every row's component:
+        </li>
+      </ul>
+    <% end %>
+    <%= poetry_code_block(code: collection_source, language: "erb", label: "Keyed collection") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <ul>
+        <li>
+          <strong>Fragment-cache blocks.</strong> An unkeyed component
+          freezes a random id into the cached HTML; replays can collide with
+          fresh ids and morphs cannot pair it. The invariant:
+          <em>cached HTML is safe only when every id frozen into it remains
+          unique under every composition and replay of that HTML.</em> The
+          <a href="<%= caching_path %>">Caching</a> guide has the full
+          fragment recipe.
+        </li>
+        <li>
+          <strong>Broadcast and stream partials destined for
+          <code>turbo_stream.morph</code>.</strong> The morph pairs against
+          the live DOM by id. Plain <code>append</code> and
+          <code>replace</code> streams are safe unkeyed: ids churn per
+          broadcast but stay unique and internally consistent.
+        </li>
+        <li>
+          <strong>Repeated new-record forms.</strong> <code>key:</code> on
+          an unsaved record derives <code>new_message</code> and the like;
+          two of those on one page collide. Pass literal keys.
+        </li>
+      </ul>
+      <p>
+        <code>poetry:check</code> warns on the first two
+        (<code>stable-identity/cache</code>,
+        <code>stable-identity/collection</code>); they are heuristics over
+        conventional ERB, not proofs. The runtime complement is
+        <code>poetry_id_integrity_script</code>: it scans the composed page
+        for duplicate ids after every load, frame load, morph, and stream
+        insertion, the only check that sees real cross-template
+        composition.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: integrity_source, language: "erb", label: "Runtime tripwire") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="obfuscating">Keeping primary keys out of the DOM</h2>
+      <p>
+        <code>key:</code> derives through <code>dom_id</code>, which reads
+        your model's <code>to_key</code>. To keep primary keys out of the
+        DOM app-wide, with poetry ids, your own <code>dom_id</code> calls,
+        <code>turbo_frame_tag</code>, and Turbo Stream broadcast targets all
+        staying consistent, override it at the model:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: to_key_source, language: "ruby", label: "Model override") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        Or pass a literal: <code>key: message.public_uid</code>. poetry
+        deliberately never reads slugs itself: slugs are mutable and
+        recyclable (a freed slug claimed by another record would transfer
+        identity), and poetry preferring them while your own
+        <code>dom_id</code> stayed pk-based would split the app into two id
+        vocabularies.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="morph">What morph identity does and does not preserve</h2>
+      <p>
+        With a paired (keyed) component, Turbo morph keeps the DOM node
+        itself: Stimulus controller instances, element properties, scroll
+        state, everything riding the element object. Two things never
+        survive regardless of ids, by design:
+      </p>
+      <ul>
+        <li>
+          <strong>Focus across a reorder.</strong> A moved node detaches and
+          reinserts, which blurs it. Not an id failure.
+        </li>
+        <li>
+          <strong>User-typed input values.</strong> The morph deliberately
+          syncs values back to server truth. User-held input state is
+          <code>data-turbo-permanent</code> territory.
+        </li>
+      </ul>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="sequence">The sequence mode (opt-in, experimental)</h2>
+      <p>
+        The sequence mode seeds a per-request deterministic id sequence
+        (seed: the request path, matching Turbo's definition of a page
+        refresh). Same page, identical ids, byte-stable responses: Turbo
+        morph pairs even unkeyed components, and body-hash ETags can match
+        on responses with no other request-varying output.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: sequence_source, language: "ruby", label: "Enable sequence mode") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p><strong>Read the hazards before enabling; they are why this is not the default:</strong></p>
+      <ul>
+        <li>
+          <strong>Same-path turbo-frames collide deterministically.</strong>
+          Two frames loading <code>/widgets?a</code> and
+          <code>/widgets?b</code> both seed from <code>/widgets</code> and
+          draw identical id sequences into one composed page. poetry's own
+          deferred regions are turbo-frames.
+        </li>
+        <li>
+          <strong>Positional false identity.</strong> A reordered same-type
+          collection pairs by <em>position</em>, so an open menu's state can
+          land on the wrong record after a morphing re-sort. Use
+          <code>key:</code> for collections, always; the sequence is for
+          byte-stable static and content pages.
+        </li>
+      </ul>
+      <p>
+        The allocator is pinned by a golden-vector test: a gem upgrade
+        cannot silently re-identify sequence-mode pages.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="etags">ETags and CSRF: what ids do and don't buy</h2>
+      <ul>
+        <li>
+          <strong>Body-hash ETags</strong> (<code>Rack::ETag</code>) match
+          only byte-identical responses. Stable ids remove one source of
+          churn, but <code>csrf_meta_tags</code> masks a fresh token per
+          render, so a page with zero forms still varies if the standard
+          layout emits it.
+        </li>
+        <li>
+          <strong><code>fresh_when</code> and <code>stale?</code> are
+          unrelated to ids.</strong> Record-derived validators never hash
+          the body, so stable ids do not change their hit rate. They remain
+          the right 304 mechanism for form pages.
+        </li>
+        <li>
+          <strong>Fragment caching.</strong> Keep the token-bearing
+          <code>form</code> tag outside the cached fragment; the
+          <a href="<%= caching_path %>">Caching</a> guide has the full
+          recipe and the replay invariant.
+        </li>
+      </ul>
+    <% end %>
+  </section>
+</div>

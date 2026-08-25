@@ -31,6 +31,11 @@ class DocsCatalog
               description: "Heading, paragraph, list, table, and inline-text recipes on poetry " \
                            "tokens — class strings transcribed from upstream at the pin. Fonts " \
                            "ride the theme: the same markup goes mono under lyra, serif under sera."),
+    Entry.new(slug: "testing", title: "Testing", section: "docs", icon: :"flask-conical",
+              description: "Test poetry UIs at the cheapest tier that can catch the bug: wiring " \
+                       "asserts on rendered contracts, behavior through the Testing helpers " \
+                       "(poetry_dialog, poetry_select, poetry_combobox, poetry_dropdown_menu), " \
+                       "and the browser only for what needs a layout engine."),
     Entry.new(slug: "forms", title: "Form Builder", section: "docs", icon: :pencil,
               description: "The model-bound FormBuilder: form_with(builder:) + f.input for one-call " \
                            "fields - label, value, errors, aria, and validation attributes all derived " \
@@ -74,7 +79,26 @@ class DocsCatalog
     Entry.new(slug: "api", title: "API Reference", section: "docs", icon: :braces,
               description: "The Ruby surface, generated from the gems' source documentation: " \
                            "component options, slots, and style axes on each gallery page, plus " \
-                           "per-gem pages for the base classes, DSLs, helpers, and supporting gems.")
+                           "per-gem pages for the base classes, DSLs, helpers, and supporting gems."),
+    Entry.new(slug: "data-table", title: "Data Table", section: "docs", icon: :"table-2",
+              description: "The server-driven table: DataTable::State.from_params with a " \
+                       "sortable: whitelist, URL-state sorting, filtering and pagination, " \
+                       "row selection, and sticky headers - a full controller-to-view recipe."),
+    Entry.new(slug: "caching", title: "Caching", section: "docs", icon: :database,
+              description: "Fragment-caching poetry safely: the version-keyed cache recipe, and " \
+                       "why unkeyed fragments go silently stale across component upgrades."),
+    Entry.new(slug: "stable-ids", title: "Stable IDs", section: "docs", icon: :hash,
+              description: "poetry ids are unique per render by default - what that means for " \
+                       "fragment caches, Turbo morph and ETags, and the id: token contract " \
+                       "that pins them when identity matters."),
+    Entry.new(slug: "accessibility", title: "Accessibility", section: "docs", icon: :accessibility,
+              description: "What poetry guarantees by construction - required accessible names, " \
+                       "Field-chain aria wiring, native form participation, overlay focus - " \
+                       "and the keyboard and screen-reader checklist for verifying your app."),
+    Entry.new(slug: "mcp", title: "MCP", section: "docs", icon: :plug,
+              description: "The boot-free MCP server behind agent workflows: what each of the " \
+                       "ten registry-backed tools does and when an agent reaches for it, " \
+                       "and how it fits with llms.txt and the installable skills.")
   ].freeze
 
   # The interaction demos are the one hand-curated section: full-page
@@ -135,9 +159,9 @@ class DocsCatalog
     # The sidebar's guide sections. Order within a section is the display
     # order; Agent stays last in AI Native while it is experimental.
     DOC_SECTIONS = {
-      "Get Started" => %w[installation theming typography editors api],
-      "Advanced" => %w[forms pagination deferred optimistic-forms],
-      "AI Native" => %w[recipes agent-skills agent]
+      "Get Started" => %w[installation theming typography testing editors api],
+      "Advanced" => %w[forms pagination data-table deferred optimistic-forms caching stable-ids accessibility],
+      "AI Native" => %w[recipes agent-skills mcp agent]
     }.freeze
 
     # DOC_SECTIONS resolved to entries. Raises when the section map and

@@ -21,6 +21,24 @@ class DocsController < ApplicationController
   def editors
   end
 
+  def testing
+  end
+
+  def accessibility
+  end
+
+  def caching
+  end
+
+  def stable_ids
+  end
+
+  def data_table
+  end
+
+  def mcp
+  end
+
   def recipes
     @recipes = Poetry::Ui.recipe_items.summaries
   end
@@ -120,6 +138,12 @@ class DocsController < ApplicationController
     when "installation" then Rails.public_path.join("installation.md").read
     when "theming" then DocsMarkdown.theming(guide_entry("theming"))
     when "editors" then DocsMarkdown.editors(guide_entry("editors"))
+    when "testing" then DocsMarkdown.testing(guide_entry("testing"))
+    when "accessibility" then DocsMarkdown.accessibility(guide_entry("accessibility"))
+    when "caching" then DocsMarkdown.caching(guide_entry("caching"))
+    when "stable_ids" then DocsMarkdown.stable_ids(guide_entry("stable-ids"))
+    when "data_table" then DocsMarkdown.data_table(guide_entry("data-table"))
+    when "mcp" then DocsMarkdown.mcp(guide_entry("mcp"))
     when "recipes" then DocsMarkdown.recipes(guide_entry("recipes"))
     when "agent" then DocsMarkdown.agent(guide_entry("agent"))
     when "agent_skills" then DocsMarkdown.agent_skills(guide_entry("agent-skills"), base_url: request.base_url)

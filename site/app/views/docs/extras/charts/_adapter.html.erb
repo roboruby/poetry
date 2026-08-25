@@ -1,0 +1,70 @@
+<%# The /charts/adapter gallery page's guide section: the bring-your-own
+    engine seam, rendered between installation and the live example. The
+    example below shows the server half (mount + embedded spec); this
+    section documents the client half you register. %>
+<%
+  # Heredocs live inside ONE scriptlet tag; keep ERB delimiters out of them.
+  register_source = <<~CODE
+    import Chart from "chart.js/auto"
+    import { registerChartAdapter, createChartJsAdapter } from "@poetry/charts"
+
+    registerChartAdapter("chartjs", createChartJsAdapter(Chart))
+  CODE
+  protocol_source = <<~CODE
+    registerChartAdapter("myengine", {
+      supports: ["line", "bar"],                     // optional type allowlist
+      degradations: ["..."],                         // declared, never discovered
+      render(el, spec, { resolveColor }) { ... },    // required -> instance
+      destroy(instance, el) { ... },                 // required
+      update(instance, spec) { ... },                // optional: live data updates
+      themeChanged(instance, spec, helpers) { ... }  // optional: dark-mode repaint
+    })
+  CODE
+%>
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="byo-engine">Bring your own engine</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    The default engine renders every chart as server-side SVG, themed live by
+    CSS variables. When you need a different engine (typically canvas for very
+    large datasets, or a library your team already owns), pass
+    <code class="text-foreground">engine:</code> and the same
+    <code class="text-foreground">poetry_chart</code> call routes to the adapter
+    path, as the example below shows. The server validates and embeds the frozen
+    chart-spec v1 (a closed vocabulary; unknown keys raise at render) next to a
+    mount element, and the adapter registered under that name draws into the
+    mount. The controller owns the lifecycle: render on connect, destroy on
+    disconnect, repaint on theme flips. One trade to know: the adapter path
+    takes <code class="text-foreground">series:</code> and
+    <code class="text-foreground">axes:</code> arguments, not the compositional
+    slots; the slot grammar belongs to the default engine.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    poetry ships the reference adapter as a factory and zero dependencies; you
+    import Chart.js yourself and hand the constructor in:
+  </p>
+  <%= poetry_code_block(code: register_source, language: "javascript", label: "Register the reference adapter") %>
+  <p class="max-w-2xl text-muted-foreground">
+    Its degradations are declared up front (the canvas tax): tooltips and
+    legends fall back to Chart.js built-ins, CSS variables resolve to frozen
+    pixels at paint so theme flips repaint the whole chart, per-part
+    <code class="text-foreground">data-slot</code> styling does not exist on a
+    bitmap, and radial charts are unsupported.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    Any engine fits the same seam. Register an object implementing the adapter
+    protocol over the spec:
+  </p>
+  <%= poetry_code_block(code: protocol_source, language: "javascript", label: "Write your own") %>
+  <p class="max-w-2xl text-muted-foreground">
+    <code class="text-foreground">resolveColor("var(--color-desktop)")</code>
+    returns the concrete value at the chart's scope, the helper that closes the
+    gap between canvas engines and CSS-variable theming. And for markup that
+    needs no adapter at all,
+    <code class="text-foreground">poetry_chart_container(config:)</code> is
+    engine-agnostic: it scopes the chart id, emits the per-series
+    <code class="text-foreground">--color-&lt;key&gt;</code> variables for both
+    color modes, and carries the aspect-ratio chrome, so anything you place
+    inside it (hand-rolled SVG, a third-party widget) keeps the theming
+    contract.
+  </p>
+</section>

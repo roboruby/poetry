@@ -64,7 +64,55 @@ class DocsMarkdown
       <<~MD
         #{header(entry)}
 
-        `bin/rails g poetry:editor` wires poetry's MCP server and registry-driven snippets into VS Code, Cursor, Claude Code, Zed, and RubyMine: safe MCP-config upserts (`.mcp.json`: command `bundle`, args `["exec", "poetry-agent"]`), per-editor snippet formats, and the Figma / Paper design-tool token bridges. The MCP server serves nine tools from the live registry with no app boot - `compose`, `build_page`, `list_components`, `describe_component`, `check`, `list_blocks`, `describe_block`, `get_skill`, and `guidance`.
+        `bin/rails g poetry:editor` wires poetry's MCP server and registry-driven snippets into VS Code, Cursor, Claude Code, Zed, and RubyMine: safe MCP-config upserts (`.mcp.json`: command `bundle`, args `["exec", "poetry-agent"]`), per-editor snippet formats, and the Figma / Paper design-tool token bridges. The MCP server serves ten tools from the live registry with no app boot - `compose`, `build_page`, `list_components`, `describe_component`, `check`, `list_blocks`, `describe_block`, `list_recipes`, `get_skill`, and `guidance`.
+      MD
+    end
+
+    def testing(entry)
+      <<~MD
+        #{header(entry)}
+
+        poetry apps test at the cheapest tier that can catch the bug, so a failing test names the fix. Lint first: `bin/rails poetry:check` validates ERB against the component registry and controllers manifest without rendering (`POETRY_CHECK_JSON=1` for CI, `POETRY_CHECK_DESIGN=1` adds design warnings). Wiring tests render a view and assert `data-slot` parts, ARIA, form participants, and Stimulus wiring, never Tailwind classes. For real interaction, `include Poetry::Ui::Testing` in a system test: `poetry_select`, `poetry_combobox`, `poetry_dropdown_menu`, and `poetry_dialog` drive components through real keyboard and pointer sequences (`via: :keyboard` or `:mouse`) and assert the public attribute contract. Refresh the safelist before any browser pass.
+      MD
+    end
+
+    def accessibility(entry)
+      <<~MD
+        #{header(entry)}
+
+        poetry guarantees a floor by construction: dialogs will not render without an accessible name, the field chain wires `aria-describedby` and `aria-invalid`, form components serialize through real native controls, overlays ride the native dialog element for focus trapping and return, and the token importer drops swatches failing WCAG AA. Automated scanners catch roughly a third of WCAG issues, so verify your app manually: VoiceOver or NVDA, keyboard only, light and dark, 200% zoom, reduced motion on - the page carries a universal checklist plus per-pattern checklists for forms, overlays, menus, navigation, data, and streaming surfaces. In CI, run `bin/rails poetry:check` and an axe scan (WCAG 2.0 A and AA) against key pages per shipped theme.
+      MD
+    end
+
+    def caching(entry)
+      <<~MD
+        #{header(entry)}
+
+        Rails template digests cannot see poetry - helpers are never discovered as dependencies and gem templates resolve outside the host's view paths - so an unkeyed cached fragment silently serves stale UI across component upgrades. The recipe: version-keyed cache keys (`cache [@post, Poetry::Ui::VERSION]`; `Poetry::Charts::VERSION` for charts) so each upgrade misses once. Components inside a cache block take `key:` or `id:` so replayed HTML never collides or defeats morph pairing; `poetry:check` warns (`stable-identity/cache`) and `poetry_id_integrity_script` audits the composed page. Copy-ins add `Template Dependency` comments; keep CSRF-bearing form tags outside cached fragments.
+      MD
+    end
+
+    def stable_ids(entry)
+      <<~MD
+        #{header(entry)}
+
+        poetry components mint DOM ids for ARIA and pairing wiring by a precedence ladder: explicit `id:` (internals derive as `<id>-trigger` and friends), semantic `key:` (records via `dom_id`), form-builder ids, then a random per-render fallback that deliberately over-replaces under a Turbo morph. Identity is mandatory in collections, fragment-cache blocks, morph-destined broadcast partials, and repeated new-record forms. `poetry:check` warns statically; `poetry_id_integrity_script` scans the composed page for duplicates after every load, morph, and stream insertion. Override `to_key`/`to_param` to keep primary keys out of the DOM; an opt-in sequence mode gives byte-stable pages with documented hazards.
+      MD
+    end
+
+    def data_table(entry)
+      <<~MD
+        #{header(entry)}
+
+        `Poetry::Ui::DataTable::State.from_params(params, sortable: %w[...])` sanitizes at the door - `sort` survives only the whitelist, `dir` only asc/desc - so `state.order_clause` is injection-safe by construction; the controller owns the scope and passes `total:` as a page count. In the view, `poetry_data_table(rows:, state:, total:, path:)` declares columns with `table.with_column("Title", key: :title, sortable: true) { |row| ... }`; a sortable key missing from the whitelist raises at render. `sticky_header: true` needs a `container_class:` height cap; `selectable:` adds a checkbox column posting `selected_ids[]`; `frame:` scopes Turbo round trips while the URL advances. Sort affordances are real links with `aria-sort`; the filter is a labelled GET form.
+      MD
+    end
+
+    def mcp(entry)
+      <<~MD
+        #{header(entry)}
+
+        poetry's agent surface is a standard stdio MCP server, `bundle exec poetry-agent`: boot-free (it reads the committed registry, never boots Rails) and read-only by design. Its ten tools close a verify loop: `compose` routes any brief to a vetted block or the matching components, `build_page` runs a five-step guided workflow for whole screens, `list_components`/`describe_component` disclose contracts at `brief|detailed|full` depth, and `check` returns a line-numbered PASS/FAIL verdict - the same linter as `bin/rails poetry:check`. `list_blocks`/`describe_block` serve the composed-screen catalog with full ERB source, `list_recipes` surfaces the multi-file payloads, and `get_skill`/`guidance` serve the installed skill text at runtime. The same registry projects `/poetry/llms.txt` and `/poetry/llms-full.txt`, so no surface can drift. Editor configuration lives on the Editors page.
       MD
     end
 

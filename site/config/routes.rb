@@ -22,6 +22,12 @@ Rails.application.routes.draw do
   post "optimistic-forms/favorite" => "docs#optimistic_favorite", as: :optimistic_favorite
   post "optimistic-forms/rejected" => "docs#optimistic_rejected", as: :optimistic_rejected
   get "editors" => "docs#editors", as: :editors
+  get "testing" => "docs#testing", as: :testing
+  get "accessibility" => "docs#accessibility", as: :accessibility
+  get "caching" => "docs#caching", as: :caching
+  get "stable-ids" => "docs#stable_ids", as: :stable_ids
+  get "data-table" => "docs#data_table", as: :data_table_guide
+  get "mcp" => "docs#mcp", as: :mcp
   get "recipes" => "docs#recipes", as: :recipes
   get "agent" => "docs#agent", as: :agent
   get "operator-register.json" => "machine#operator_register", format: false

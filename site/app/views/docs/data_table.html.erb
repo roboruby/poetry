@@ -1,0 +1,222 @@
+<% content_for :title, "Data Table" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: root_path) %>
+    <% crumb.with_item("Data Table") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
+  # this scriptlet early, so the samples interpolate it as #{e}.
+  e = "%" + ">"
+  controller_source = <<~CODE
+    class NotesController < ApplicationController
+      PER = 20
+
+      def index
+        @state = Poetry::Ui::DataTable::State.from_params(
+          params, sortable: %w[title created_at], default_sort: "created_at", default_dir: "desc"
+        )
+
+        scope = Note.all
+        scope = scope.where("title LIKE ?", "%\#{Note.sanitize_sql_like(@state.q)}%") if @state.q
+        @total = (scope.count / PER.to_f).ceil
+        @notes = scope.order(@state.order_clause).offset((@state.page - 1) * PER).limit(PER)
+      end
+    end
+  CODE
+  view_source = <<~CODE
+    <%= poetry_data_table(rows: @notes, state: @state, total: @total,
+                          caption: "Your notes, most recent first.",
+                          path: ->(p) { notes_path(**p) }) do |table| #{e}
+      <% table.with_column("Title", key: :title, sortable: true) { |note| note.title } #{e}
+      <% table.with_column("Created", key: :created_at, sortable: true) { |note| l(note.created_at.to_date) } #{e}
+    <% end #{e}
+  CODE
+  sticky_source = <<~CODE
+    <%= poetry_data_table(rows: @notes, state: @state, total: @total,
+                          caption: "Your notes, most recent first.",
+                          sticky_header: true, container_class: "max-h-96",
+                          path: ->(p) { notes_path(**p) }) do |table| #{e}
+      ...
+    <% end #{e}
+  CODE
+  selection_source = <<~CODE
+    <%= poetry_data_table(rows: @notes, state: @state, total: @total,
+                          caption: "Your notes, most recent first.",
+                          selectable: ->(note) { note.id },
+                          path: ->(p) { notes_path(**p) }) do |table| #{e}
+      ...
+    <% end #{e}
+  CODE
+  frame_source = <<~CODE
+    <%= poetry_data_table(rows: @notes, state: @state, total: @total,
+                          caption: "Your notes, most recent first.",
+                          frame: "notes",
+                          path: ->(p) { notes_path(**p) }) do |table| #{e}
+      ...
+    <% end #{e}
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Data Table</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      poetry's data table is server-driven: the composed table plus sortable
+      headers, a filter box, and pagination, with sorting, filtering, and
+      paging carried as URL state. Shareable, crawlable, and
+      back-button-correct, because GET is the only transport the back button
+      can replay. Your controller owns the data; the component owns the
+      markup, the URLs, and the accessibility.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="controller">The controller</h2>
+      <p>
+        <code>State.from_params</code> sanitizes at the door:
+        <code>sort</code> survives only if it appears in the
+        <code>sortable:</code> whitelist and <code>dir</code> only as
+        <code>asc</code> or <code>desc</code>, so
+        <code>state.order_clause</code> is injection-safe
+        <strong>by construction</strong>, never by caller discipline. The
+        filter query is stripped (nil when blank) and the page floors at 1.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: controller_source, language: "ruby", label: "Controller") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        <code>total:</code> is the number of <em>pages</em>, not rows; the
+        sample computes it with a ceiling division. Leave it nil (or pass 1)
+        and the pagination footer does not render.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="view">The view</h2>
+      <p>Columns are declared in the block and rendered per row:</p>
+    <% end %>
+    <%= poetry_code_block(code: view_source, language: "erb", label: "View") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <ul>
+        <li>
+          <code>path:</code> is a callable from a params hash to a URL (the
+          pagination convention). Called with an empty hash it must return
+          the bare collection URL, which becomes the filter form's action.
+        </li>
+        <li>
+          <strong>Cell blocks return the cell content</strong>
+          (<code>{ |note| note.title }</code>); they must not write to the
+          template buffer. Compose poetry helpers for rich cells; they
+          return safe strings.
+        </li>
+        <li>
+          A sortable column whose <code>key:</code> is missing from the
+          controller's <code>sortable:</code> whitelist
+          <strong>raises at render</strong>, so view and controller drift
+          surfaces immediately, not as a silently dead header.
+        </li>
+        <li>
+          Give the table a <code>caption:</code>; it is the table's
+          accessible purpose.
+        </li>
+      </ul>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="sticky">Sticky headers</h2>
+      <p>
+        <code>sticky_header: true</code> pins the header row while the
+        table's scroll container scrolls, and <code>container_class:</code>
+        caps that container's height. Without a cap nothing sticks: the
+        container just grows. The sticky scroll region needs an accessible
+        name; <code>scroll_label:</code> provides one and falls back to
+        <code>caption:</code>.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: sticky_source, language: "erb", label: "Sticky header") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="selection">Row selection</h2>
+      <p>
+        <code>selectable:</code> takes a lambda mapping each row to its id
+        and turns the feature on: a leading checkbox column with select-all
+        (a real indeterminate middle state), shift-click ranges, and count
+        announcements. The checkboxes are the form value: plain checkboxes
+        named <code>selected_ids[]</code> (rename via
+        <code>selection_name:</code>) whose values come from your lambda,
+        readable by any form they sit in. Pair with the
+        <a href="<%= block_path("action-bar") %>">action bar block</a> for
+        bulk actions.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: selection_source, language: "erb", label: "Row selection") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="frame">Scoped updates (optional)</h2>
+      <p>
+        Pass <code>frame: "notes"</code> to wrap the table in a
+        <code>turbo-frame</code> that advances the URL: hosts with Turbo
+        swap only the table while the address bar still updates. Your
+        response must render the same frame id. Without Turbo the frame
+        element is inert and every link still works as a full navigation.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: frame_source, language: "erb", label: "Turbo frame") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="live-filter">Filter as you type (optional)</h2>
+      <p>
+        The filter submits on Enter. For live filtering, add a small
+        debounced Stimulus controller in your app that submits the form as
+        the user types, keeping the same GET form; the URL contract is
+        unchanged.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="accessibility">Accessibility</h2>
+      <p>
+        The active column's header cell carries
+        <code>aria-sort="ascending|descending"</code>, one column at a time.
+        Sort affordances are real links, so keyboard, middle-click, and
+        copy-link all work. The filter is a labelled GET form with the
+        search role; Enter submits natively, zero JS.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="mutations">Row mutations belong to another tier</h2>
+      <p>
+        Sorting, filtering, and paging are <em>view</em> state and belong in
+        the URL. Row <em>mutations</em> (inline edit, toggles, row actions)
+        belong to poetry's reactive tier: render a reactive component inside
+        a cell and the two tiers compose. The table's GET round trip
+        re-renders the collection; the row's signed action mutates one
+        record and replaces one row by id. Each tier owns the state that
+        belongs to it: the URL for the view, the database for the data.
+      </p>
+      <p>
+        The per-option reference, with live examples of filtering,
+        selection, empty states, and cell formatting, lives on the
+        <a href="<%= component_path("data-table") %>">component page</a>.
+      </p>
+    <% end %>
+  </section>
+</div>

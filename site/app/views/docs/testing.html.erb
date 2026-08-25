@@ -1,0 +1,263 @@
+<% content_for :title, "Testing" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: root_path) %>
+    <% crumb.with_item("Testing") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag; keep ERB delimiters out of them.
+  check_source = <<~CODE
+    bin/rails poetry:check                                            # default sweep: app views + app Ruby
+    bundle exec rake "poetry:check[app/views/checkout/**/*.html.erb]" # scope with a glob
+    POETRY_CHECK_JSON=1 bin/rails poetry:check                        # JSON for editors / CI
+    POETRY_CHECK_DESIGN=1 bin/rails poetry:check                      # add the design-slop warnings
+  CODE
+  wiring_source = <<~CODE
+    class Settings::NotificationsViewTest < ActionView::TestCase
+      test "the terms checkbox is wired and participates in the form" do
+        render partial: "settings/notifications"
+
+        assert_select '[data-slot="checkbox"][role="checkbox"]'
+        assert_select 'input[type="checkbox"][name="terms"]',
+                      { count: 1 }, "a native input participates in the form"
+      end
+    end
+  CODE
+  system_source = <<~CODE
+    require "poetry/ui/testing"
+
+    class PlanSettingsTest < ApplicationSystemTestCase
+      include Poetry::Ui::Testing
+
+      test "picking a plan from the keyboard" do
+        visit settings_path
+
+        plan = poetry_select("#plan")
+        plan.select_option("Pro", via: :keyboard)
+        assert_equal "pro", plan.value
+
+        confirm = poetry_dialog("[data-component='dialog']")
+        confirm.open(via: :keyboard)
+        assert_equal "Change plan?", confirm.title
+        confirm.close
+      end
+
+      test "assigning from a filtered combobox" do
+        visit board_path
+
+        assignee = poetry_combobox("#assignee")
+        assignee.filter("Ada").select_option("Ada Lovelace")
+        assert_equal "ada", assignee.value
+
+        actions = poetry_dropdown_menu("#row-actions")
+        actions.choose("Archive", via: :keyboard)
+      end
+    end
+  CODE
+  refresh_source = <<~CODE
+    bin/rails generate poetry:install   # refresh the safelist
+    bin/rails tailwindcss:build         # rebuild before the browser pass
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Testing</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      Test at the cheapest tier that can catch the bug, and assert the
+      contract rather than the classes, so a failing test names the fix
+      instead of the symptom.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="doctrine">The doctrine</h2>
+      <p>
+        Most UI bugs are structural: a wrong attribute, a missing wiring
+        token, a control that never joined the form. Those belong in fast
+        tests that render markup and assert it. Reserve a real browser for
+        what genuinely needs a layout engine. poetry holds itself to the
+        same split, so every component you install arrives already covered
+        by wiring, headless behavior, browser, and automated accessibility
+        suites; your tests cover your app, not the library.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="check">Lint first: poetry check</h2>
+      <p>
+        Before anything renders, <code>poetry:check</code> parses your ERB
+        and validates every poetry surface against the component registry
+        and the controllers manifest: unknown component, option, or variant
+        (with a did-you-mean), unknown Stimulus controller, action, or
+        target, raw color classes, and icon declarations in app Ruby. A
+        rename in your wiring can never silently strand a controller. It
+        needs the <code>herb</code> gem to parse templates; adding it to
+        your Gemfile's development group is enough.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: check_source, language: "shell", label: "poetry check") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        It exits non-zero on any error, and every finding names the fix.
+        Run it in CI and wire it into your agent loop: it is the cheapest,
+        most self-correctable signal you have.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="wiring">Tier 1: wiring tests</h2>
+      <p>
+        Render the view and assert the contract: the <code>data-slot</code>
+        parts, the ARIA attributes, the form participants, and the Stimulus
+        wiring. These run in milliseconds and catch the bulk of UI bugs.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: wiring_source, language: "ruby", label: "Wiring test") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Assert against <code>data-slot</code>, never against Tailwind
+        classes. Classes are an implementation detail that a token retune or
+        a primitive-vocabulary change will move; the slot vocabulary is the
+        stable contract. When you must select by a poetry class that
+        contains a colon, use the token-safe attribute form
+        <code>[class~="data-open:..."]</code> rather than escaping the
+        class in a bare selector; it has identical specificity and no
+        escaping hazard.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="behavior">Tier 2: behavior</h2>
+      <p>
+        The middle tier answers interaction questions without a browser: a
+        click flips state, arrows move focus, a form serializes. poetry
+        runs this tier on every component itself, driving real markup, real
+        compiled CSS, and real controllers through a headless DOM, so a
+        component's internal behavior is already tested when you install
+        it. In your app, behavior questions are usually either wiring
+        questions (tier 1) or flow questions (tier 3). Write your
+        interaction coverage as system tests through the testers below,
+        and keep them few.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="browser">Tier 3: the browser pass</h2>
+      <p>
+        Reserve real-browser tests for what only a layout engine can
+        answer: pointer drag geometry, focus return across layers,
+        scroll-linked effects, and full user flows. Platform truths the
+        fast tiers hide:
+      </p>
+      <ul>
+        <li>
+          A programmatic click does not move focus. Behavior that depends
+          on focus needs the keyboard path.
+        </li>
+        <li>
+          Press-to-open surfaces respond to the pointer going down, not to
+          a completed click.
+        </li>
+        <li>
+          Assert the controllers' actual state vocabulary: open surfaces
+          wear <code>data-open</code>, triggers <code>data-popup-open</code>,
+          committed options <code>data-selected</code>, toggles
+          <code>data-pressed</code>.
+        </li>
+      </ul>
+      <p>
+        Before a browser pass, refresh the safelist and rebuild Tailwind; a
+        stale host safelist purges newly used dictionary classes.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: refresh_source, language: "shell", label: "Refresh before the pass") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="testers">The system-test helpers</h2>
+      <p>
+        <code>Poetry::Ui::Testing</code> ships consumer-facing interaction
+        testers that drive components through their real keyboard and
+        pointer sequences in a Capybara system test. Hand a tester the
+        component root (a CSS selector or a Capybara node); it locates
+        parts by <code>data-slot</code>, waits with Capybara's own retry
+        discipline (no sleeps), and asserts against the public attribute
+        contract. <code>via:</code> swaps the entire event sequence,
+        because the mouse and keyboard paths exercise different controller
+        seams.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: system_source, language: "ruby", label: "System test") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <table>
+        <thead>
+          <tr><th>Entry point</th><th>Drives</th><th>Key methods</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>poetry_select(root)</code></td>
+            <td>Select</td>
+            <td><code>select_option(text, via:)</code>, <code>value</code> (the submitted value, read from the native select), <code>text</code>, <code>options</code>, <code>open</code>, <code>close</code></td>
+          </tr>
+          <tr>
+            <td><code>poetry_combobox(root)</code></td>
+            <td>Combobox, single or multiple</td>
+            <td><code>filter(query)</code>, <code>select_option(text, via:)</code>, <code>value</code>, <code>chips</code>, <code>remove_chip(text)</code></td>
+          </tr>
+          <tr>
+            <td><code>poetry_dropdown_menu(root)</code></td>
+            <td>DropdownMenu</td>
+            <td><code>choose(text, via:)</code>, <code>items</code>, <code>open</code>, <code>close</code></td>
+          </tr>
+          <tr>
+            <td><code>poetry_dialog(root)</code></td>
+            <td>Dialog</td>
+            <td><code>open(via:)</code>, <code>close</code>, <code>open?</code>, <code>title</code></td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Each tester is an executable spec of its component's interaction
+        contract. Select commits sync the native select and close with
+        focus back on the trigger. A single-select combobox closes on
+        commit; multiple keeps the popover open and grows chips, so assert
+        on <code>value</code> and <code>chips</code> instead. The dialog
+        root is the element carrying
+        <code>data-component="dialog"</code> (trigger plus content).
+        Failures name the fix: a wrong root reads as "no
+        [data-slot=select-trigger] under this root", not as an opaque
+        timeout, and a mistyped option label raises with the list of
+        options actually present.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="what-to-assert">What to assert, in one line</h2>
+      <p>
+        Assert the contract (slots, ARIA, form participation, wiring),
+        never the classes. The contract is what poetry promises to keep
+        stable across token retunes and primitive-vocabulary shifts; the
+        classes are free to move under it.
+      </p>
+      <p>
+        Automated checks of any kind catch only part of accessibility.
+        The keyboard and screen-reader protocol for verifying your app
+        lives in the <%= link_to "accessibility guide", accessibility_path %>.
+      </p>
+    <% end %>
+  </section>
+</div>

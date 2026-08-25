@@ -28,6 +28,11 @@
     # read a brand's DESIGN.md into token overrides
     bin/rails 'poetry:design:import[path/to/DESIGN.md]'
   CODE
+  own_theme_source = <<~CODE
+    /* 1. copy app/assets/tailwind/poetry/style-default.css to style-acme.css
+       2. point the entry import at your copy (keep layer(base)) */
+    @import "./poetry/style-acme.css" layer(base);
+  CODE
 %>
 
 <div class="flex flex-col gap-8">
@@ -87,6 +92,37 @@
       <p>
         Fragments import into <code>layer(base)</code>, so utility classes
         you write in templates always win over the theme.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="owning-the-design">Owning the design outright</h2>
+      <p>
+        The vendored slot is refreshed on every install re-run, which keeps
+        upstream visual updates flowing but means edits to it are overwritten.
+        To own the design instead, copy the fragment out of the slot and point
+        the entry import at your copy:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: own_theme_source, language: "css", label: "Own the fragment") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Then restyle freely. The markup never changes, because components emit
+        stable <code>cn-*</code> names plus structural classes only: every
+        component's visual treatment is a named rule
+        (<code>.cn-button</code>, <code>.cn-card-header</code>), and each
+        variant and size has its own class
+        (<code>.cn-button-variant-destructive</code>,
+        <code>.cn-button-size-lg</code>). Two orders matter when editing a
+        copy. Inside the theme, order is meaning: per component, base rules
+        come before element, variant, and compound rules so the later ones
+        win, and rules that restyle <em>another</em> component's surface sit
+        in a closing section after everything they override. And in the
+        cascade, any unlayered rule you write beats <code>layer(base)</code>;
+        against the shipped theme that power is the declared-override channel
+        described under "Overriding the theme" below.
       </p>
     <% end %>
   </section>
@@ -200,6 +236,108 @@
         <code>app/assets/tailwind/poetry/design-overrides.css</code>, wired
         after the theme imports; <code>POETRY_DESIGN_JSON=1</code> emits the
         report as JSON for tooling.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="what-stays-out-of-the-theme">What stays out of the theme</h2>
+      <p>
+        Behavioral and structural classes stay in markup
+        (<code>inline-flex</code>, <code>open:grid</code>,
+        <code>disabled:pointer-events-none</code>, positioning vars, the
+        slider's geometry chain): a theme can restyle every surface but can
+        never break behavior. A few components are machinery with no
+        <code>cn-*</code> surface at all: AspectRatio, Separator, Spinner,
+        ScrollArea, and the chart Container, with Carousel and Resizable close
+        behind (only their navigation buttons and handle icon carry theme
+        rules). Restyle those via <code>data-slot</code> selectors or
+        <code>class:</code>. The chart palette also stays out: series colors
+        ride tokens (<code>--chart-1</code> through <code>--chart-5</code>),
+        marks take <code>var(--color-&lt;key&gt;)</code>, and chart chrome
+        (grid, ticks, cursor, tooltip, legend) ships as its own fragment,
+        <code>style-charts.css</code>, shared across chart families.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="consumer-utilities">Consumer utilities</h2>
+      <p>
+        Two standalone classes the theme defines for direct use in your own
+        markup. <code>.cn-font-heading</code> is the heading-font hook: a
+        no-op until you define <code>--font-heading</code> (it falls back to
+        <code>--font-sans</code>); Empty's title wears it, and you can put it
+        on any element that should follow the heading face.
+        <code>.cn-rtl-flip</code> mirrors an icon under RTL; Pagination and
+        Breadcrumb chevrons wear it.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="color-scheme">Color scheme (dark mode)</h2>
+      <p>
+        Every theme ships both modes: the tokens define <code>:root</code>
+        (light) and <code>.dark</code> overrides, and both blocks carry
+        <code>color-scheme</code>, so scrollbars, form-control chrome, and
+        canvas defaults follow the app's mode rather than the OS preference.
+        What the gem does not decide is <em>when</em> <code>.dark</code>
+        applies; that part is one line in the host layout, rendered inside
+        <code>&lt;head&gt;</code> before the stylesheets:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: theming_guide_snippets[:color_scheme_head], language: "erb", label: "Layout head") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Before first paint it reads the stored preference, falls back to the
+        OS setting, and toggles <code>.dark</code> on <code>&lt;html&gt;</code>,
+        so a refresh never flashes light mode, and an unset preference follows
+        the OS live, including mid-session switches. Because the class lives
+        on <code>&lt;html&gt;</code>, Turbo visits and back-button restores
+        keep the mode with no re-application. The script also installs a
+        switch API; wire any control to it:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: theming_guide_snippets[:color_scheme_toggle], language: "erb", label: "A toggle control") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        <code>Poetry.colorScheme.current()</code> reads the active mode,
+        <code>set("dark")</code> / <code>set("light")</code> pins one,
+        <code>toggle()</code> flips, and <code>clear()</code> returns to
+        following the OS. Every change dispatches a
+        <code>poetry:color-scheme</code> event (bubbling, with the mode in
+        <code>detail</code>) for anything that must redraw with the mode:
+        chart recoloring, embedded editors, maps.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="portals-and-scoped-themes">Portals and scoped themes</h2>
+      <p>
+        Floating overlays (tooltip, hover card, popover, select, combobox,
+        the menus) move to <code>&lt;body&gt;</code> while open and return
+        home on close, so no clipping or transformed ancestor can trap them.
+        With a normal install this is invisible to theming: one theme loads
+        globally, so a body-level popup matches the same rules it matched in
+        place. The one setup that needs a knob is a theme scoped to a
+        <em>subtree</em> (a themed section inside a differently themed page).
+        A popup moved to <code>&lt;body&gt;</code> would leave that scope, so
+        point it at a container inside the scope instead:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: theming_guide_snippets[:portal_container], language: "erb", label: "Scoped overlay container") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        <code>data-poetry-portal-container</code> names the target by id and
+        rides the component root. Pick a container that no
+        <code>overflow: hidden</code> ancestor clips and no transformed
+        ancestor captures; those two escapes are most of what the move buys.
       </p>
     <% end %>
   </section>

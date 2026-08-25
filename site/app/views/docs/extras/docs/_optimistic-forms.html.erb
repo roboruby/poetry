@@ -1,0 +1,134 @@
+<%# The /optimistic-forms guide: the mechanics, the morph prerequisite,
+    and the server contract the client cannot enforce. The live demos
+    below run against the real endpoints (204 favorite, always-422
+    rejection), so the contract stated here is the one on display. %>
+<%
+  # Heredocs live inside ONE scriptlet tag; ERB samples ride the
+  # optimistic_forms_guide_snippets helper (ERB tags can't be embedded here).
+  morph_meta = <<~CODE
+    <meta name="turbo-refresh-method" content="morph">
+    <meta name="turbo-refresh-scroll" content="preserve">
+  CODE
+%>
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="mechanics">How it works</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    You author the optimistic update as a Turbo Stream inside a
+    <code class="text-foreground">&lt;template&gt;</code>, the same language the
+    server answers in. Prediction and truth are the same kind of artifact, so
+    there is no bespoke client-side DOM patching to keep in sync. On submit,
+    every <code class="text-foreground">optimistic_template</code> is cloned into
+    the document and Turbo paints the predicted state immediately, with no round
+    trip. When the response arrives, one of two things happens: on success,
+    nothing (the optimistic paint already shows the new state, or the server's
+    own targeted stream corrected it); on failure, a
+    <code class="text-foreground">refresh</code> stream is appended, Turbo
+    re-fetches the page, and the morph restores authoritative truth.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    The happy path costs zero extra requests. A full refresh only ever runs when
+    the server rejects the change, which is exactly when you want authority.
+  </p>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="setup">Setup</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    Reconciliation rides Turbo morph page refreshes. Add these to your layout
+    <code class="text-foreground">&lt;head&gt;</code> (the install generator
+    reminds you):
+  </p>
+  <%= poetry_code_block(code: morph_meta, language: "html", label: "Layout head") %>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="usage">Usage</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    A toggle predicts the <em>toggled</em> state while the control shows the
+    <em>current</em> one, and a prediction can target any region on the page.
+    Declare several <code class="text-foreground">optimistic_template</code>s to
+    paint several regions from one submit; all of them apply.
+  </p>
+  <%= poetry_code_block(code: optimistic_forms_guide_snippets[:usage], language: "erb", label: "Two forms") %>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="server-contract">The server contract</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    This is the part the client cannot enforce, so here it is once and
+    precisely. On success, respond <code class="text-foreground">204 No Content</code>
+    (or a targeted Turbo Stream, covered below). Never redirect: a redirect
+    combined with morph refreshes is itself a full page load, which defeats the
+    optimism you just painted. On failure, respond
+    <code class="text-foreground">4xx</code> (typically
+    <code class="text-foreground">422</code>) so the client reconciles. Set a
+    flash first if you want it surfaced after the refresh.
+  </p>
+  <%= poetry_code_block(code: optimistic_forms_guide_snippets[:server], language: "ruby", label: "Controller") %>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="submitted-value">The submitted value</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    Two ways to carry the toggled value; pick one per form. Automatic: pass
+    <code class="text-foreground">attribute_name:</code> and
+    <code class="text-foreground">value:</code> to the helper and a hidden field
+    is injected for you. <code class="text-foreground">value: false</code> is
+    preserved (a favorite toggle legitimately submits false); only
+    <code class="text-foreground">nil</code> or omitted suppresses the field.
+    Explicit: call
+    <code class="text-foreground">form.optimistic_hidden_field :favorite, value: !photo.favorite</code>
+    where you want it. That suppresses the automatic injection; the block is
+    captured first, so your call wins.
+  </p>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="correction">When the prediction can be wrong</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    Under contention the true result can differ from the prediction (a shared
+    counter, a vote total). Return a targeted Turbo Stream on success instead of
+    a 204: Turbo applies it over the optimistic guess with no client change
+    needed. To keep prediction and truth from drifting, render the fragment from
+    a single partial used in both places:
+  </p>
+  <%= poetry_code_block(code: optimistic_forms_guide_snippets[:correction_partial], language: "erb", label: "One partial, both states") %>
+  <%= poetry_code_block(code: optimistic_forms_guide_snippets[:correction_server], language: "ruby", label: "Authoritative success") %>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="streams">Authoring streams directly</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    The positional form (<code class="text-foreground">target, content</code>)
+    wraps a <code class="text-foreground">turbo_stream.update</code> for you.
+    Pass a block to author any stream or several yourself:
+  </p>
+  <%= poetry_code_block(code: optimistic_forms_guide_snippets[:streams], language: "erb", label: "Block form") %>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="when">When to reach for it</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    Use an optimistic form where the prediction is knowable and the action is
+    small and reversible: favorite and like toggles, add-to-cart, counters,
+    subscribe buttons, reorderings the user just performed. Do not use it where
+    the server decides the outcome (payments, permission-dependent transitions,
+    anything whose failure is common); a plain Turbo form with
+    <code class="text-foreground">poetry_button(loading: true)</code> states is
+    the honest UI there.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    Three notes. Template content is trusted developer markup, exactly like any
+    <code class="text-foreground">turbo_stream.update</code> body: never
+    interpolate unsanitized user input into a prediction. Rapid resubmits are
+    burst-safe (the paint is throttled per form at 200ms, and the first paint is
+    always immediate). And the helper wires the controller and both
+    <code class="text-foreground">turbo:submit-*</code> actions for you,
+    composing with any <code class="text-foreground">data:</code> you pass.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    The demos below run this contract live: the favorite toggle's endpoint
+    answers 204 and is never waited on, and the rejection demo always answers
+    422 so you can watch the morph put truth back.
+  </p>
+</section>

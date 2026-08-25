@@ -1,0 +1,254 @@
+<% content_for :title, "Caching" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: root_path) %>
+    <% crumb.with_item("Caching") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
+  # this scriptlet early, so the samples interpolate it as #{e}.
+  e = "%" + ">"
+  version_keyed_source = <<~CODE
+    <% cache [@post, Poetry::Ui::VERSION] do #{e}
+      <%= poetry_card(key: @post) do |card| #{e}
+        <% card.with_title { @post.title } #{e}
+        ...
+      <% end #{e}
+    <% end #{e}
+  CODE
+  helper_source = <<~CODE
+    # app/helpers/application_helper.rb
+    def cache_with_poetry(*keys, &block)
+      cache([*keys, Poetry::Ui::VERSION], &block)
+    end
+  CODE
+  copyin_source = <<~CODE
+    <%# Template Dependency: components/button/component #{e}
+    <% cache @post do #{e}
+      ...
+    <% end #{e}
+  CODE
+  form_source = <<~CODE
+    <%= form_with model: @post do |form| #{e}
+      <% cache [@post, Poetry::Ui::VERSION] do #{e}
+        ...the expensive field markup...
+      <% end #{e}
+    <% end #{e}
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Caching</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      Fragment caching works on poetry markup the way it works on any
+      server-rendered HTML: cache the fragment, nest caches inside caches,
+      let <code class="font-mono text-base">touch</code> cascades invalidate
+      what changed. One blind spot needs a recipe of its own, and a few
+      rules keep fragments cacheable at all.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="digest-blind-spot">The digest blind spot</h2>
+      <p>
+        Rails invalidates fragment caches through template digests: each
+        template's cache keys include a hash of its own source and of every
+        template it renders. That mechanism cannot see poetry, twice over:
+      </p>
+      <ol>
+        <li>
+          <strong>Discovery.</strong> The dependency tracker scans templates
+          for <code>render</code> calls. <code>poetry_card</code> is a helper
+          call, so the component is never registered as a dependency.
+        </li>
+        <li>
+          <strong>Resolution.</strong> poetry's templates live in the gem,
+          outside your app's view paths. Even a discovered dependency could
+          not be resolved into the digest tree.
+        </li>
+      </ol>
+      <p>
+        The consequence is silent: <strong>a cached fragment containing
+        poetry markup is not invalidated when you upgrade poetry.</strong>
+        After an upgrade that changed a component's template or class, any
+        fragment cached before it keeps serving the old markup. No error,
+        no warning, stale UI.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="version-keys">The recipe: version-keyed cache keys</h2>
+      <p>
+        Put the poetry version in the cache key of any fragment whose markup
+        includes poetry helpers:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: version_keyed_source, language: "erb", label: "Version-keyed fragment") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <ul>
+        <li>
+          Every poetry upgrade changes
+          <code>Poetry::Ui::VERSION</code>, so every version-keyed fragment
+          misses once and re-renders fresh.
+        </li>
+        <li>
+          With nested (russian-doll) caches, the version key belongs on
+          <strong>every fragment that directly contains poetry markup</strong>.
+          An inner fragment's key does not protect an outer one that also
+          renders helpers.
+        </li>
+        <li>
+          Charts too: fragments containing <code>poetry_chart</code> add
+          <code>Poetry::Charts::VERSION</code>.
+        </li>
+      </ul>
+      <p>A small app-side helper keeps call sites short:</p>
+    <% end %>
+    <%= poetry_code_block(code: helper_source, language: "ruby", label: "Helper") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        <strong>Development note:</strong> with a path-pinned poetry checkout
+        the version constant does not change per edit. Leave
+        <code>rails dev:cache</code> off while iterating on components (the
+        default), or clear the cache after gem edits.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="cacheable-markup">Rules for markup that can be cached at all</h2>
+      <p>
+        These rules are what make russian-doll caching work in practice,
+        stated for poetry:
+      </p>
+      <ul>
+        <li>
+          <strong>No viewer conditionals inside the fragment.</strong> A
+          cached fragment is the same bytes for every viewer.
+          <code>if current_user.admin?</code> inside a cached fragment
+          poisons the cache for everyone else: split the fragment, or move
+          the decision out of the cacheable markup.
+        </li>
+        <li>
+          <strong>Personalization is decoration.</strong> Render the shared
+          markup once, cache it, and let a thin client layer decorate per
+          viewer: <code>data-*</code> attributes plus a Stimulus controller
+          reading client state. poetry's own color scheme works exactly this
+          way; the cached markup is theme-neutral, and
+          <code>poetry_color_scheme_script</code> applies the viewer's mode
+          at paint time.
+        </li>
+        <li>
+          <strong>Timestamps and counters stay out, or get their own
+          fragment.</strong> Anything per-request (relative times, unread
+          counts) renders outside the cache, in its own smaller fragment,
+          or as decoration.
+        </li>
+        <li>
+          <strong><code>touch: true</code> up the ownership chain</strong>
+          is what makes record-keyed invalidation cascade. The poetry
+          version key composes with it; it never replaces it.
+        </li>
+      </ul>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="copy-ins">Components you copied in</h2>
+      <p>
+        Components copied into the app with <code>poetry:add</code> live
+        under <code>app/components</code> and are inside your digest tree,
+        but discovery still fails because they render through helpers. The
+        standard Rails escape hatch works: a template dependency magic
+        comment in each template that renders the copy-in, which the
+        digestor resolves like any other dependency.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: copyin_source, language: "erb", label: "Copy-in dependency") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        The version-key recipe also covers copy-ins during poetry upgrades
+        that re-copy; <code>poetry:diff</code> tells you when the shipped
+        source moved.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="ids">Ids inside cached fragments</h2>
+      <p>
+        Fragment caching replays HTML that was rendered once, including
+        every DOM id frozen into it at render time. The invariant that
+        makes that safe:
+      </p>
+      <blockquote>
+        Cached HTML is safe only when every id frozen into it remains
+        unique under every composition and replay of that cached HTML.
+      </blockquote>
+      <p>
+        Random ids satisfy uniqueness on the first render but cannot be
+        paired by Turbo morph afterwards, and the same cached fragment
+        rendered twice on one page duplicates even its random ids. So the
+        rule is: <strong>poetry components inside a <code>cache</code> block
+        take <code>key:</code> (a record, or a literal) or an explicit
+        <code>id:</code>.</strong> A keyed component's HTML is a pure
+        function of its inputs, so cached copies and fresh renders can
+        never disagree.
+      </p>
+      <p>
+        <code>poetry:check</code> warns on unkeyed components in cache
+        blocks (<code>stable-identity/cache</code>), and
+        <code>poetry_id_integrity_script</code> in your development layout
+        catches what static analysis cannot: the composed page. The same
+        rule covers every other render that escapes the request cycle,
+        such as broadcast partials destined for
+        <code>turbo_stream.morph</code> and pre-rendered HTML persisted
+        anywhere. The full identity story is the
+        <a href="<%= stable_ids_path %>">Stable IDs</a> guide.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="http-caching">HTTP caching, ETags, and CSRF</h2>
+      <p>Three separate mechanisms, often conflated:</p>
+      <ul>
+        <li>
+          <strong>Body-hash 304s (<code>Rack::ETag</code>)</strong> need
+          byte-identical responses. poetry's keyed ids remove the
+          component-id churn, but <code>csrf_meta_tags</code> masks a fresh
+          token every render, so the standard layout makes even formless
+          pages vary. The realistic scope: responses with no
+          request-varying output at all.
+        </li>
+        <li>
+          <strong><code>fresh_when</code> / <code>stale?</code></strong>
+          compute validators from records before rendering; poetry ids are
+          irrelevant to their hit rate, and they are the right 304 mechanism
+          for form pages. Rails CSRF tokens are per-session, so an older
+          masked token inside a browser-reused page still submits. Two
+          cautions: a session reset invalidates tokens inside
+          browser-cached pages (represent such dependencies via the
+          <code>etag:</code> hook), and <code>per_form_csrf_tokens</code>,
+          when enabled, scopes tokens to a form's action and method.
+        </li>
+        <li>
+          <strong>Fragment caching and forms: never cache the token.</strong>
+          Keep the <code>form</code> tag outside the cached fragment and
+          cache the expensive content within. A cached hidden token field
+          serves one session's token to every visitor.
+        </li>
+      </ul>
+    <% end %>
+    <%= poetry_code_block(code: form_source, language: "erb", label: "Form outside the fragment") %>
+  </section>
+</div>

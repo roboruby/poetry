@@ -54,6 +54,12 @@
     "path": "/theming#installing-a-theme"
   },
   {
+    "title": "Owning the design outright",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#owning-the-design"
+  },
+  {
     "title": "How this site renders all nine",
     "page": "Theming",
     "section": "docs",
@@ -76,6 +82,30 @@
     "page": "Theming",
     "section": "docs",
     "path": "/theming#design-md-interop"
+  },
+  {
+    "title": "What stays out of the theme",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#what-stays-out-of-the-theme"
+  },
+  {
+    "title": "Consumer utilities",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#consumer-utilities"
+  },
+  {
+    "title": "Color scheme (dark mode)",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#color-scheme"
+  },
+  {
+    "title": "Portals and scoped themes",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#portals-and-scoped-themes"
   },
   {
     "title": "Typography",
@@ -124,6 +154,54 @@
     "page": "Typography",
     "section": "docs",
     "path": "/typography#small"
+  },
+  {
+    "title": "Testing",
+    "page": "Testing",
+    "section": "docs",
+    "path": "/testing"
+  },
+  {
+    "title": "The doctrine",
+    "page": "Testing",
+    "section": "docs",
+    "path": "/testing#doctrine"
+  },
+  {
+    "title": "Lint first: poetry check",
+    "page": "Testing",
+    "section": "docs",
+    "path": "/testing#check"
+  },
+  {
+    "title": "Tier 1: wiring tests",
+    "page": "Testing",
+    "section": "docs",
+    "path": "/testing#wiring"
+  },
+  {
+    "title": "Tier 2: behavior",
+    "page": "Testing",
+    "section": "docs",
+    "path": "/testing#behavior"
+  },
+  {
+    "title": "Tier 3: the browser pass",
+    "page": "Testing",
+    "section": "docs",
+    "path": "/testing#browser"
+  },
+  {
+    "title": "The system-test helpers",
+    "page": "Testing",
+    "section": "docs",
+    "path": "/testing#testers"
+  },
+  {
+    "title": "What to assert, in one line",
+    "page": "Testing",
+    "section": "docs",
+    "path": "/testing#what-to-assert"
   },
   {
     "title": "Form Builder",
@@ -244,6 +322,54 @@
     "page": "Optimistic Forms",
     "section": "docs",
     "path": "/optimistic-forms"
+  },
+  {
+    "title": "How it works",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#mechanics"
+  },
+  {
+    "title": "Setup",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#setup"
+  },
+  {
+    "title": "Usage",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#usage"
+  },
+  {
+    "title": "The server contract",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#server-contract"
+  },
+  {
+    "title": "The submitted value",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#submitted-value"
+  },
+  {
+    "title": "When the prediction can be wrong",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#correction"
+  },
+  {
+    "title": "Authoring streams directly",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#streams"
+  },
+  {
+    "title": "When to reach for it",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#when"
   },
   {
     "title": "Default",
@@ -406,6 +532,270 @@
     "page": "API Reference",
     "section": "docs",
     "path": "/api"
+  },
+  {
+    "title": "Data Table",
+    "page": "Data Table",
+    "section": "docs",
+    "path": "/data-table"
+  },
+  {
+    "title": "The controller",
+    "page": "Data Table",
+    "section": "docs",
+    "path": "/data-table#controller"
+  },
+  {
+    "title": "The view",
+    "page": "Data Table",
+    "section": "docs",
+    "path": "/data-table#view"
+  },
+  {
+    "title": "Sticky headers",
+    "page": "Data Table",
+    "section": "docs",
+    "path": "/data-table#sticky"
+  },
+  {
+    "title": "Row selection",
+    "page": "Data Table",
+    "section": "docs",
+    "path": "/data-table#selection"
+  },
+  {
+    "title": "Scoped updates (optional)",
+    "page": "Data Table",
+    "section": "docs",
+    "path": "/data-table#frame"
+  },
+  {
+    "title": "Filter as you type (optional)",
+    "page": "Data Table",
+    "section": "docs",
+    "path": "/data-table#live-filter"
+  },
+  {
+    "title": "Accessibility",
+    "page": "Data Table",
+    "section": "docs",
+    "path": "/data-table#accessibility"
+  },
+  {
+    "title": "Row mutations belong to another tier",
+    "page": "Data Table",
+    "section": "docs",
+    "path": "/data-table#mutations"
+  },
+  {
+    "title": "Caching",
+    "page": "Caching",
+    "section": "docs",
+    "path": "/caching"
+  },
+  {
+    "title": "The digest blind spot",
+    "page": "Caching",
+    "section": "docs",
+    "path": "/caching#digest-blind-spot"
+  },
+  {
+    "title": "The recipe: version-keyed cache keys",
+    "page": "Caching",
+    "section": "docs",
+    "path": "/caching#version-keys"
+  },
+  {
+    "title": "Rules for markup that can be cached at all",
+    "page": "Caching",
+    "section": "docs",
+    "path": "/caching#cacheable-markup"
+  },
+  {
+    "title": "Components you copied in",
+    "page": "Caching",
+    "section": "docs",
+    "path": "/caching#copy-ins"
+  },
+  {
+    "title": "Ids inside cached fragments",
+    "page": "Caching",
+    "section": "docs",
+    "path": "/caching#ids"
+  },
+  {
+    "title": "HTTP caching, ETags, and CSRF",
+    "page": "Caching",
+    "section": "docs",
+    "path": "/caching#http-caching"
+  },
+  {
+    "title": "Stable IDs",
+    "page": "Stable IDs",
+    "section": "docs",
+    "path": "/stable-ids"
+  },
+  {
+    "title": "The identity ladder",
+    "page": "Stable IDs",
+    "section": "docs",
+    "path": "/stable-ids#ladder"
+  },
+  {
+    "title": "When you must pass identity",
+    "page": "Stable IDs",
+    "section": "docs",
+    "path": "/stable-ids#must-pass"
+  },
+  {
+    "title": "Keeping primary keys out of the DOM",
+    "page": "Stable IDs",
+    "section": "docs",
+    "path": "/stable-ids#obfuscating"
+  },
+  {
+    "title": "What morph identity does and does not preserve",
+    "page": "Stable IDs",
+    "section": "docs",
+    "path": "/stable-ids#morph"
+  },
+  {
+    "title": "The sequence mode (opt-in, experimental)",
+    "page": "Stable IDs",
+    "section": "docs",
+    "path": "/stable-ids#sequence"
+  },
+  {
+    "title": "ETags and CSRF: what ids do and don't buy",
+    "page": "Stable IDs",
+    "section": "docs",
+    "path": "/stable-ids#etags"
+  },
+  {
+    "title": "Accessibility",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility"
+  },
+  {
+    "title": "What poetry guarantees",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#guarantees"
+  },
+  {
+    "title": "What automation cannot see",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#limits"
+  },
+  {
+    "title": "Set up a pass",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#setup"
+  },
+  {
+    "title": "The universal checklist",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#universal"
+  },
+  {
+    "title": "Pattern checklists",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#patterns"
+  },
+  {
+    "title": "Form controls",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#forms"
+  },
+  {
+    "title": "Overlays",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#overlays"
+  },
+  {
+    "title": "Menus and command palettes",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#menus"
+  },
+  {
+    "title": "Disclosure and navigation",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#navigation"
+  },
+  {
+    "title": "Data, feedback, and streaming",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#composite"
+  },
+  {
+    "title": "Automated checks in your app",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#automated"
+  },
+  {
+    "title": "Recording findings",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#recording"
+  },
+  {
+    "title": "MCP",
+    "page": "MCP",
+    "section": "docs",
+    "path": "/mcp"
+  },
+  {
+    "title": "The server",
+    "page": "MCP",
+    "section": "docs",
+    "path": "/mcp#server"
+  },
+  {
+    "title": "The loop it closes",
+    "page": "MCP",
+    "section": "docs",
+    "path": "/mcp#loop"
+  },
+  {
+    "title": "The ten tools",
+    "page": "MCP",
+    "section": "docs",
+    "path": "/mcp#tools"
+  },
+  {
+    "title": "Routing a brief",
+    "page": "MCP",
+    "section": "docs",
+    "path": "/mcp#routing"
+  },
+  {
+    "title": "The check verdict",
+    "page": "MCP",
+    "section": "docs",
+    "path": "/mcp#check"
+  },
+  {
+    "title": "Skills and guidance at runtime",
+    "page": "MCP",
+    "section": "docs",
+    "path": "/mcp#skills"
+  },
+  {
+    "title": "One source, every surface",
+    "page": "MCP",
+    "section": "docs",
+    "path": "/mcp#one-source"
   },
   {
     "title": "Accordion",
@@ -4672,6 +5062,12 @@
     "page": "Adapter Chart",
     "section": "charts",
     "path": "/charts/adapter#installation"
+  },
+  {
+    "title": "Bring your own engine",
+    "page": "Adapter Chart",
+    "section": "charts",
+    "path": "/charts/adapter#byo-engine"
   },
   {
     "title": "Default",

@@ -88,6 +88,90 @@ module DocsHelper
     }
   end
 
+  # The /optimistic-forms guide's snippets (same reason as above: ERB tags
+  # can't live in Ruby strings inside a template).
+  def optimistic_forms_guide_snippets
+    {
+      usage: <<~ERB.strip,
+        <%# A favorite toggle: the template predicts the TOGGLED state,
+            the button shows the current one. %>
+        <%= poetry_optimistic_form(model: photo, attribute_name: :favorite, value: !photo.favorite) do |form| %>
+          <%= form.optimistic_template dom_id(photo, "favorite-icon"), favorite_icon(!photo.favorite) %>
+          <%= poetry_button(type: :submit) { favorite_icon(photo.favorite) } %>
+        <% end %>
+
+        <%# A submit that updates a region elsewhere on the page. %>
+        <%= poetry_optimistic_form(url: cart_items_path, method: :post, attribute_name: :photo_id, value: photo.id) do |form| %>
+          <%= form.optimistic_template "cart-count", (@cart_count + 1) %>
+          <%= poetry_button(type: :submit) { "Add to cart" } %>
+        <% end %>
+      ERB
+      server: <<~RUBY.strip,
+        def update
+          @photo = Photo.find(params[:id])
+
+          if @photo.update(photo_params)
+            head :no_content
+          else
+            flash[:alert] = "Your change could not be saved."
+            head :unprocessable_entity
+          end
+        end
+      RUBY
+      correction_partial: <<~ERB.strip,
+        <%# app/views/photos/_favorite_icon.html.erb - the single source of truth %>
+        <span id="<%= dom_id(photo, "favorite-icon") %>"><%= favorite_icon(photo.favorite) %></span>
+
+        <%# the prediction: the same partial, opposite state %>
+        <%= form.optimistic_template do %>
+          <%= turbo_stream.update dom_id(photo, "favorite-icon") do %>
+            <%= favorite_icon(!photo.favorite) %>
+          <% end %>
+        <% end %>
+      ERB
+      correction_server: <<~RUBY.strip,
+        # the authoritative success response
+        render turbo_stream: turbo_stream.update(
+          ActionView::RecordIdentifier.dom_id(@photo, "favorite-icon"),
+          partial: "photos/favorite_icon", locals: { photo: @photo }
+        )
+      RUBY
+      streams: <<~ERB.strip
+        <%= form.optimistic_template do %>
+          <%= turbo_stream.update("cart-count") { @cart_count + 1 } %>
+          <%= turbo_stream.remove(dom_id(photo, "add-button")) %>
+        <% end %>
+      ERB
+    }
+  end
+
+  # The /theming guide's ERB snippets (same reason as above).
+  def theming_guide_snippets
+    {
+      color_scheme_head: <<~ERB.strip,
+        <head>
+          <%= poetry_color_scheme_script %>
+          <%# ...stylesheet and javascript tags... %>
+        </head>
+      ERB
+      color_scheme_toggle: <<~ERB.strip,
+        <%= poetry_button(variant: :ghost, size: :icon, label: "Toggle dark mode",
+                          onclick: "Poetry.colorScheme.toggle()") do %>
+          <%= poetry_icon(name: :"sun-moon") %>
+        <% end %>
+      ERB
+      portal_container: <<~ERB.strip
+        <div class="my-scoped-theme">
+          <div id="scoped-overlays"></div>
+          <%= poetry_popover("data-poetry-portal-container": "scoped-overlays") do |popover| %>
+            <% popover.with_trigger(variant: :outline) { "Open" } %>
+            <% popover.with_title { "Stays in the scope" } %>
+          <% end %>
+        </div>
+      ERB
+    }
+  end
+
   # Example/block source panels ride the CodeBlock component: the
   # theme-owned syntax palette replaces the vendored GitHub rouge.css, and
   # every code tab gains the copy affordance.
