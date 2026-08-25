@@ -165,9 +165,14 @@
 
   <%# ---- Tagline reveal (the page's own moment) ----------------------- %>
   <section class="mx-auto max-w-6xl px-6 py-32" data-controller="word-reveal">
-    <p class="mx-auto max-w-170 text-center text-4xl font-semibold sm:text-5xl" style="text-wrap: balance">
-      <% "Rails gave you the framework. Poetry gives you the interface. Write Ruby, ship design.".split.each do |word| %>
-        <span class="wr-word"><%= word %></span>
+    <p class="mx-auto text-center text-4xl font-semibold sm:text-5xl" style="text-wrap: balance">
+      <% ["Rails gave you the framework.",
+          "Poetry gives you the interface.",
+          "Write Ruby, ship design."].each_with_index do |sentence, index| %>
+        <% if index.positive? %><br><% end %>
+        <% sentence.split.each do |word| %>
+          <span class="wr-word"><%= word %></span>
+        <% end %>
       <% end %>
     </p>
   </section>
