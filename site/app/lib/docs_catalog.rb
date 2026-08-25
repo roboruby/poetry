@@ -264,11 +264,7 @@ class DocsCatalog
                 description: "Nine chart families computed in Ruby and shipped as finished SVG in " \
                            "the initial HTML - valid in print, PDF, email, and without " \
                            "JavaScript, with live streaming and a frozen chart-spec for BYO engines."),
-      Entry.new(slug: "reactive", title: "Reactive", section: "libraries", icon: :zap,
-                description: "Signed, default-deny server actions for any server-rendered " \
-                           "component - state never leaves the server; one generic Stimulus " \
-                           "controller, one endpoint, and a replace-by-id Turbo Stream round trip."),
-      Entry.new(slug: "simple-form", title: "Simple Form", section: "libraries", icon: :"clipboard-list",
+        Entry.new(slug: "simple-form", title: "Simple Form", section: "libraries", icon: :"clipboard-list",
                 description: "The migration bridge from Simple Form: one initializer re-maps " \
                            "f.input onto poetry fields, so existing forms restyle without a rewrite."),
       Entry.new(slug: "extract", title: "Extract", section: "libraries", icon: :pipette,

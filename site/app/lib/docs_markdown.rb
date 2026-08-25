@@ -142,13 +142,6 @@ class DocsMarkdown
       MD
     end
 
-    def library_reactive(entry)
-      <<~MD
-        #{header(entry)}
-
-        poetry-reactive adds signed, default-deny server actions to any server-rendered component (anything implementing `render_in` - ViewComponent classes and poetry-ui components alike): one generic Stimulus controller, one endpoint, and a Turbo-Stream replace targeted by the component's id. State never ships to the browser - the DOM carries a signed identity: `reactive_record :note` signs the record's GlobalID and the server re-finds it on every action, while `reactive_state :editing` signs listed instance variables for record-less components or transient mode alongside a record. Only methods declared `action :name` are invokable (anything else answers 403 before code runs); params pass a declared schema (`action :save, params: { title: :string }`) and are coerced server-side, and authorization belongs inside the action - raise, and `Poetry::Reactive.authorization_errors` renders it as 403. Templates spread `reactive_root_attributes`, `reactive_trigger` (`event:`, `debounce:`, `confirm:`, explicit params), and `reactive_field`; named fields inside the root are collected automatically, scoped so nested reactive components never leak into the outer action. Install with `gem "poetry-reactive"` and register `registerPoetryReactive(application)`; the engine mounts `/poetry/reactive/actions` and its importmap pins itself. The current release is the spine: full-component replace with token roll-forward.
-      MD
-    end
 
     # The recipes guide's mirror: the live projection, so the mirror lists
     # exactly what /r/ serves.
