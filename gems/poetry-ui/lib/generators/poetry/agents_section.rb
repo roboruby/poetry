@@ -63,14 +63,20 @@ module Poetry
             did-you-mean, `--json`; needs the `herb` gem in the Gemfile). An edit
             made after your last check is unverified markup - re-run it.
           - Faster: the `poetry` MCP server (`.mcp.json`: command `bundle`, args
-            `["exec", "poetry-agent"]`) serves nine tools from the live registry
+            `["exec", "poetry-agent"]`, the poetry-agent gem) serves ten tools from the live registry
             with no app boot - `compose`, `build_page`, `list_components`,
             `describe_component`, `check`, `list_blocks`, `describe_block`,
-            `get_skill`, and `guidance`. Prefer `compose` (or `build_page` for a
+            `list_recipes`, `get_skill`, and `guidance`. Prefer `compose` (or `build_page` for a
             whole screen) to start, and its `check` tool when iterating. Wire it
             into every editor at once with `bin/rails g poetry:editor` (MCP
             configs for VS Code / Cursor / Claude Code / Zed / RubyMine plus
             registry-driven snippets).
+          - Browser agents (WebMCP): opt a rendered component into the user's own
+            agent with `webmcp: "name"` on the helper call - Combobox, Dialog, Sheet,
+            Drawer, and Tabs declare tools (`describe_component` at `full` lists them);
+            declare a form as a tool with `poetry_webmcp_form(tool: { name:,
+            description: })` (autosubmit is GET-only). Needs the poetry-agent gem and
+            `registerPoetryAgent(application)`; `poetry:check` gates the opt-ins.
           - One visual theme per app (chosen at install with `--theme`); components
             read tokens, never restate them.
           - Component identity: pass `key:` (a record, or a literal string) on any

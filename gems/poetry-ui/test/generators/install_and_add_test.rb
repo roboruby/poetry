@@ -6,6 +6,9 @@ require "generators/poetry/install/install_generator"
 require "generators/poetry/add/add_generator"
 
 module Poetry
+  # The availability probe's namespace (the gem is not bundled here).
+  module Agent; end
+
   class InstallGeneratorTest < Rails::Generators::TestCase
     tests Poetry::InstallGenerator
     destination File.expand_path("../tmp/install-dest", __dir__)
@@ -124,6 +127,36 @@ module Poetry
       # trigger dead in a fresh host without this call.
       assert_equal 1, content.scan("registerPoetryControllers(application)").size
       assert_includes content, %(import { registerPoetryControllers } from "@poetry/controllers")
+    end
+
+    def test_agent_runtime_registers_beside_the_controllers_when_poetry_agent_is_bundled
+      index = File.join(destination_root, "app/javascript/controllers/index.js")
+      FileUtils.mkdir_p(File.dirname(index))
+      File.write(index, %(import { application } from "controllers/application"\n))
+
+      # The gem is not in this test bundle; its engine constant is the
+      # availability signal the generator reads.
+      Poetry::Agent.const_set(:Engine, Class.new) unless defined?(Poetry::Agent::Engine)
+      begin
+        run_generator
+        run_generator
+      ensure
+        Poetry::Agent.send(:remove_const, :Engine)
+      end
+      content = File.read(index)
+
+      assert_equal 1, content.scan("registerPoetryAgent(application)").size
+      assert_includes content, %(import { registerPoetryAgent } from "@poetry/agent")
+    end
+
+    def test_agent_runtime_is_not_registered_without_the_gem
+      index = File.join(destination_root, "app/javascript/controllers/index.js")
+      FileUtils.mkdir_p(File.dirname(index))
+      File.write(index, %(import { application } from "controllers/application"\n))
+
+      run_generator
+
+      refute_includes File.read(index), "registerPoetryAgent"
     end
 
     def test_engine_mount_is_added_to_routes_once

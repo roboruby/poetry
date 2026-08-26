@@ -208,7 +208,9 @@ module Poetry
       index = "app/javascript/controllers/index.js"
       unless File.exist?(File.join(destination_root, index))
         say_status :note, "no #{index} - register poetry's controllers yourself: " \
-                          "registerPoetryControllers(application) from \"@poetry/controllers\"", :yellow
+                          "registerPoetryControllers(application) from \"@poetry/controllers\" " \
+                          "(and registerPoetryAgent(application) from \"@poetry/agent\" " \
+                          "when poetry-agent is bundled)", :yellow
         return
       end
 
@@ -216,6 +218,7 @@ module Poetry
         import { registerPoetryControllers } from "@poetry/controllers"
         registerPoetryControllers(application)
       JS
+      register_agent_runtime(index)
     end
 
     # --charts: the two host-side wires the charts engine cannot do itself.
@@ -321,6 +324,23 @@ module Poetry
 
     def charts_available?
       defined?(Poetry::Charts::Engine) ? true : false
+    end
+
+    def agent_available?
+      defined?(Poetry::Agent::Engine) ? true : false
+    end
+
+    # poetry-agent's WebMCP runtime registers beside the controllers when
+    # the gem is bundled (the engine already pins @poetry/agent); without
+    # it, `webmcp:` opt-ins have nothing to register with. Private: Thor
+    # would otherwise expose an argument-taking method as a command.
+    def register_agent_runtime(index)
+      return unless agent_available?
+
+      inject_unless_present(index, <<~JS.strip)
+        import { registerPoetryAgent } from "@poetry/agent"
+        registerPoetryAgent(application)
+      JS
     end
 
     def ui_theme_path
