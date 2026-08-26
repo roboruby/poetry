@@ -90,6 +90,47 @@
     </div>
   <% end %>
 
+  <% if defined?(tools) && tools.present? %>
+    <div class="flex flex-col gap-3">
+      <h3 class="text-lg font-medium" id="agent-tools">Agent tools</h3>
+      <p class="max-w-2xl text-sm text-muted-foreground">
+        What an agent may do to a rendered instance once the call opts in
+        (<code class="font-mono">webmcp: "name"</code>) — declared beside the wiring, projected
+        to the registry, registered with the browser's <code class="font-mono">document.modelContext</code>
+        by <%= link_to "poetry-agent", webmcp_path, class: "underline underline-offset-4" %>.
+      </p>
+      <div class="overflow-x-auto">
+        <%= poetry_table do %>
+          <%= poetry_table_header do %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_head { "Tool" } %>
+              <%= poetry_table_head { "Parameters" } %>
+              <%= poetry_table_head { "Does" } %>
+              <%= poetry_table_head { "Dispatches" } %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_body do %>
+            <% tools.each do |tool| %>
+              <%= poetry_table_row do %>
+                <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") do %>
+                  <%= tool["name"] %>
+                  <span class="ml-1 font-sans text-muted-foreground"><%= tool.dig("annotations", "readOnlyHint") ? "read-only" : "mutating" %></span>
+                <% end %>
+                <%= poetry_table_cell(class: "font-mono text-xs text-muted-foreground") do %>
+                  <% properties = tool.dig("inputSchema", "properties") || {} %>
+                  <% required = tool.dig("inputSchema", "required") || [] %>
+                  <%= properties.map { |name, spec| "#{name} (#{spec["type"]}#{required.include?(name) ? ", required" : ""})" }.join(", ").presence || "—" %>
+                <% end %>
+                <%= poetry_table_cell(class: "text-muted-foreground") { tool["description"] } %>
+                <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { tool["executes"] } %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
   <% if defined?(wiring) && wiring.present? %>
     <div class="flex flex-col gap-3">
       <h3 class="text-lg font-medium" id="wiring">Wiring</h3>

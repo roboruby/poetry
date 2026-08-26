@@ -198,6 +198,18 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-poetry--charts--tooltip-sync-value=?]", "demo", count: 2
   end
 
+  test "the site's MCP server answers at /mcp" do
+    post "/mcp", params: { jsonrpc: "2.0", id: 1, method: "tools/list" }.to_json,
+                 headers: { "CONTENT_TYPE" => "application/json" }
+
+    assert_response :success
+    assert_includes JSON.parse(response.body).dig("result", "tools").map { |t| t["name"] }, "describe_component"
+
+    get "/mcp"
+
+    assert_response :method_not_allowed
+  end
+
   test "the agent docs ride the mounted engine" do
     get "/poetry/llms.txt"
 

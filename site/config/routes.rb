@@ -35,6 +35,10 @@ Rails.application.routes.draw do
   get "data-table" => "docs#data_table", as: :data_table_guide
   get "mcp-server" => "docs#mcp", as: :mcp
   get "webmcp" => "docs#webmcp", as: :webmcp
+  # The site's own MCP server over HTTP at the conventional same-origin
+  # path - what in-page WebMCP bridges (site MCP server packs)
+  # proxy, read-only by construction.
+  mount Poetry::Agent::MCP::HTTP.new(-> { Poetry::Agent::MCP::Bundled.server(app_root: Rails.root.to_s) }) => "/mcp"
   get "libraries/:slug" => "docs#library", as: :library, constraints: { slug: /[a-z-]+/ }
   get "icons/:slug" => "docs#icon_set", as: :icon_set, constraints: { slug: /[a-z-]+/ }
   get "recipes" => "docs#recipes", as: :recipes

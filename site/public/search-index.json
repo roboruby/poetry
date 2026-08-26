@@ -1932,6 +1932,12 @@
     "path": "/components/combobox#with-icon"
   },
   {
+    "title": "Agent tools",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#agent-tools"
+  },
+  {
     "title": "Wiring",
     "page": "Combobox",
     "section": "components",
@@ -2328,6 +2334,12 @@
     "path": "/components/dialog#sticky-footer"
   },
   {
+    "title": "Agent tools",
+    "page": "Dialog",
+    "section": "components",
+    "path": "/components/dialog#agent-tools"
+  },
+  {
     "title": "Wiring",
     "page": "Dialog",
     "section": "components",
@@ -2392,6 +2404,12 @@
     "page": "Drawer",
     "section": "components",
     "path": "/components/drawer#swipe-handle"
+  },
+  {
+    "title": "Agent tools",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#agent-tools"
   },
   {
     "title": "Wiring",
@@ -4206,6 +4224,12 @@
     "path": "/components/sheet#sides"
   },
   {
+    "title": "Agent tools",
+    "page": "Sheet",
+    "section": "components",
+    "path": "/components/sheet#agent-tools"
+  },
+  {
     "title": "Wiring",
     "page": "Sheet",
     "section": "components",
@@ -4612,6 +4636,12 @@
     "page": "Tabs",
     "section": "components",
     "path": "/components/tabs#with-icon"
+  },
+  {
+    "title": "Agent tools",
+    "page": "Tabs",
+    "section": "components",
+    "path": "/components/tabs#agent-tools"
   },
   {
     "title": "Wiring",

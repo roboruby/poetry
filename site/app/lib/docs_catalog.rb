@@ -327,6 +327,12 @@ class DocsCatalog
       end
     end
 
+    # The component's declared agent tools (the registry's tools section) -
+    # the operate surface a `webmcp:` instance registers.
+    def tools_for(section, slug)
+      component_tools[slug] if section == "components"
+    end
+
     private
 
     def component_parts
@@ -344,6 +350,12 @@ class DocsCatalog
     def chart_class_names
       @chart_class_names ||= registry_components(Poetry::Charts.root).to_h do |key, entry|
         [ key.split("/").last.delete_suffix("_chart").tr("_", "-"), entry["class_name"] ]
+      end
+    end
+
+    def component_tools
+      @component_tools ||= registry_components(Poetry::Ui.root).to_h do |key, entry|
+        [ key.split("/")[2..].join("-").tr("_", "-"), entry["tools"] ]
       end
     end
 
