@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { supported, registerTool, validToolName } from "./adapter.js"
+import { supported, registerTool, validToolName } from "@poetry/agent/adapter"
 
 // The registrar: one controller on an opted-in component root
 // (`webmcp: "country"` on the helper call renders it beside the
