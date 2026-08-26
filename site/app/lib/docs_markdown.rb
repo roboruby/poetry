@@ -64,7 +64,7 @@ class DocsMarkdown
       <<~MD
         #{header(entry)}
 
-        `bin/rails g poetry:editor` wires poetry's MCP server and registry-driven snippets into VS Code, Cursor, Claude Code, Zed, and RubyMine: safe MCP-config upserts (`.mcp.json`: command `bundle`, args `["exec", "poetry-agent"]`), per-editor snippet formats, and the Figma / Paper design-tool token bridges. The MCP server serves ten tools from the live registry with no app boot - `compose`, `build_page`, `list_components`, `describe_component`, `check`, `list_blocks`, `describe_block`, `list_recipes`, `get_skill`, and `guidance`.
+        `bin/rails g poetry:editor` wires Poetry's MCP server and registry-driven snippets into VS Code, Cursor, Claude Code, Zed, and RubyMine: safe MCP-config upserts (`.mcp.json`: command `bundle`, args `["exec", "poetry-agent"]`), per-editor snippet formats, and the Figma / Paper design-tool token bridges. The MCP server serves ten tools from the live registry with no app boot - `compose`, `build_page`, `list_components`, `describe_component`, `check`, `list_blocks`, `describe_block`, `list_recipes`, `get_skill`, and `guidance`.
       MD
     end
 
@@ -72,7 +72,7 @@ class DocsMarkdown
       <<~MD
         #{header(entry)}
 
-        poetry apps test at the cheapest tier that can catch the bug, so a failing test names the fix. Lint first: `bin/rails poetry:check` validates ERB against the component registry and controllers manifest without rendering (`POETRY_CHECK_JSON=1` for CI, `POETRY_CHECK_DESIGN=1` adds design warnings). Wiring tests render a view and assert `data-slot` parts, ARIA, form participants, and Stimulus wiring, never Tailwind classes. For real interaction, `include Poetry::Ui::Testing` in a system test: `poetry_select`, `poetry_combobox`, `poetry_dropdown_menu`, and `poetry_dialog` drive components through real keyboard and pointer sequences (`via: :keyboard` or `:mouse`) and assert the public attribute contract. Refresh the safelist before any browser pass.
+        Poetry apps test at the cheapest tier that can catch the bug, so a failing test names the fix. Lint first: `bin/rails poetry:check` validates ERB against the component registry and controllers manifest without rendering (`POETRY_CHECK_JSON=1` for CI, `POETRY_CHECK_DESIGN=1` adds design warnings). Wiring tests render a view and assert `data-slot` parts, ARIA, form participants, and Stimulus wiring, never Tailwind classes. For real interaction, `include Poetry::Ui::Testing` in a system test: `poetry_select`, `poetry_combobox`, `poetry_dropdown_menu`, and `poetry_dialog` drive components through real keyboard and pointer sequences (`via: :keyboard` or `:mouse`) and assert the public attribute contract. Refresh the safelist before any browser pass.
       MD
     end
 
@@ -80,7 +80,7 @@ class DocsMarkdown
       <<~MD
         #{header(entry)}
 
-        poetry guarantees a floor by construction: dialogs will not render without an accessible name, the field chain wires `aria-describedby` and `aria-invalid`, form components serialize through real native controls, overlays ride the native dialog element for focus trapping and return, and the token importer drops swatches failing WCAG AA. Automated scanners catch roughly a third of WCAG issues, so verify your app manually: VoiceOver or NVDA, keyboard only, light and dark, 200% zoom, reduced motion on - the page carries a universal checklist plus per-pattern checklists for forms, overlays, menus, navigation, data, and streaming surfaces. In CI, run `bin/rails poetry:check` and an axe scan (WCAG 2.0 A and AA) against key pages per shipped theme.
+        Poetry guarantees a floor by construction: dialogs will not render without an accessible name, the field chain wires `aria-describedby` and `aria-invalid`, form components serialize through real native controls, overlays ride the native dialog element for focus trapping and return, and the token importer drops swatches failing WCAG AA. Automated scanners catch roughly a third of WCAG issues, so verify your app manually: VoiceOver or NVDA, keyboard only, light and dark, 200% zoom, reduced motion on - the page carries a universal checklist plus per-pattern checklists for forms, overlays, menus, navigation, data, and streaming surfaces. In CI, run `bin/rails poetry:check` and an axe scan (WCAG 2.0 A and AA) against key pages per shipped theme.
       MD
     end
 
@@ -88,7 +88,7 @@ class DocsMarkdown
       <<~MD
         #{header(entry)}
 
-        Rails template digests cannot see poetry - helpers are never discovered as dependencies and gem templates resolve outside the host's view paths - so an unkeyed cached fragment silently serves stale UI across component upgrades. The recipe: version-keyed cache keys (`cache [@post, Poetry::Ui::VERSION]`; `Poetry::Charts::VERSION` for charts) so each upgrade misses once. Components inside a cache block take `key:` or `id:` so replayed HTML never collides or defeats morph pairing; `poetry:check` warns (`stable-identity/cache`) and `poetry_id_integrity_script` audits the composed page. Copy-ins add `Template Dependency` comments; keep CSRF-bearing form tags outside cached fragments.
+        Rails template digests cannot see Poetry - helpers are never discovered as dependencies and gem templates resolve outside the host's view paths - so an unkeyed cached fragment silently serves stale UI across component upgrades. The recipe: version-keyed cache keys (`cache [@post, Poetry::Ui::VERSION]`; `Poetry::Charts::VERSION` for charts) so each upgrade misses once. Components inside a cache block take `key:` or `id:` so replayed HTML never collides or defeats morph pairing; `poetry:check` warns (`stable-identity/cache`) and `poetry_id_integrity_script` audits the composed page. Copy-ins add `Template Dependency` comments; keep CSRF-bearing form tags outside cached fragments.
       MD
     end
 
@@ -104,7 +104,7 @@ class DocsMarkdown
       <<~MD
         #{header(entry)}
 
-        poetry components mint DOM ids for ARIA and pairing wiring by a precedence ladder: explicit `id:` (internals derive as `<id>-trigger` and friends), semantic `key:` (records via `dom_id`), form-builder ids, then a random per-render fallback that deliberately over-replaces under a Turbo morph. Identity is mandatory in collections, fragment-cache blocks, morph-destined broadcast partials, and repeated new-record forms. `poetry:check` warns statically; `poetry_id_integrity_script` scans the composed page for duplicates after every load, morph, and stream insertion. Override `to_key`/`to_param` to keep primary keys out of the DOM; an opt-in sequence mode gives byte-stable pages with documented hazards.
+        Poetry components mint DOM ids for ARIA and pairing wiring by a precedence ladder: explicit `id:` (internals derive as `<id>-trigger` and friends), semantic `key:` (records via `dom_id`), form-builder ids, then a random per-render fallback that deliberately over-replaces under a Turbo morph. Identity is mandatory in collections, fragment-cache blocks, morph-destined broadcast partials, and repeated new-record forms. `poetry:check` warns statically; `poetry_id_integrity_script` scans the composed page for duplicates after every load, morph, and stream insertion. Override `to_key`/`to_param` to keep primary keys out of the DOM; an opt-in sequence mode gives byte-stable pages with documented hazards.
       MD
     end
 
@@ -120,7 +120,7 @@ class DocsMarkdown
       <<~MD
         #{header(entry)}
 
-        poetry's agent surface is a standard stdio MCP server, `bundle exec poetry-agent`: boot-free (it reads the committed registry, never boots Rails) and read-only by design. Its ten tools close a verify loop: `compose` routes any brief to a vetted block or the matching components, `build_page` runs a five-step guided workflow for whole screens, `list_components`/`describe_component` disclose contracts at `brief|detailed|full` depth, and `check` returns a line-numbered PASS/FAIL verdict - the same linter as `bin/rails poetry:check`. `list_blocks`/`describe_block` serve the composed-screen catalog with full ERB source, `list_recipes` surfaces the multi-file payloads, and `get_skill`/`guidance` serve the installed skill text at runtime. The same registry projects `/poetry/llms.txt` and `/poetry/llms-full.txt`, so no surface can drift. Editor configuration lives on the Editors page.
+        Poetry's agent surface is a standard stdio MCP server, `bundle exec poetry-agent`: boot-free (it reads the committed registry, never boots Rails) and read-only by design. Its ten tools close a verify loop: `compose` routes any brief to a vetted block or the matching components, `build_page` runs a five-step guided workflow for whole screens, `list_components`/`describe_component` disclose contracts at `brief|detailed|full` depth, and `check` returns a line-numbered PASS/FAIL verdict - the same linter as `bin/rails poetry:check`. `list_blocks`/`describe_block` serve the composed-screen catalog with full ERB source, `list_recipes` surfaces the multi-file payloads, and `get_skill`/`guidance` serve the installed skill text at runtime. The same registry projects `/poetry/llms.txt` and `/poetry/llms-full.txt`, so no surface can drift. Editor configuration lives on the Editors page.
       MD
     end
 
@@ -186,7 +186,7 @@ class DocsMarkdown
       intro = <<~MD.strip
         #{header(entry)}
 
-        The discovery index at [/.well-known/agent-skills/index.json](/.well-known/agent-skills/index.json) (agentskills.io discovery schema 0.2.0) lists every skill with a payload url and a `sha256:` digest a conformant installer verifies before writing anything. In a Rails app with poetry, `bin/rails g poetry:skill` installs the poetry, poetry-design, and poetry-component skills without touching the network.
+        The discovery index at [/.well-known/agent-skills/index.json](/.well-known/agent-skills/index.json) (agentskills.io discovery schema 0.2.0) lists every skill with a payload url and a `sha256:` digest a conformant installer verifies before writing anything. In a Rails app with Poetry, `bin/rails g poetry:skill` installs the poetry, poetry-design, and poetry-component skills without touching the network.
       MD
       ([ intro ] + sections).join("\n\n") + "\n"
     end
@@ -206,7 +206,7 @@ class DocsMarkdown
       <<~MD
         #{header(entry)}
 
-        This page embeds page-agent v1.12.2 (MIT, vendored) configured with poetry's OPERATOR REGISTER - the component contract in GUI-operator vocabulary: `includeAttributes: ["data-component", "data-slot"]` plus per-page instructions served at [/operator-register.json](/operator-register.json). Nothing loads until a visitor activates it (bring-your-own OpenAI-compatible key, session-only). The task list on the page carries pre-registered, measured expectations: each task is pre-classified as ARIA-alone / register-helps / expected-failure-on-the-agent's-input-layer (keyboard-first components cannot be driven by synthetic clicks).
+        This page embeds page-agent v1.12.2 (MIT, vendored) configured with Poetry's OPERATOR REGISTER - the component contract in GUI-operator vocabulary: `includeAttributes: ["data-component", "data-slot"]` plus per-page instructions served at [/operator-register.json](/operator-register.json). Nothing loads until a visitor activates it (bring-your-own OpenAI-compatible key, session-only). The task list on the page carries pre-registered, measured expectations: each task is pre-classified as ARIA-alone / register-helps / expected-failure-on-the-agent's-input-layer (keyboard-first components cannot be driven by synthetic clicks).
       MD
     end
 
@@ -215,7 +215,7 @@ class DocsMarkdown
       <<~MD
         #{header(entry)}
 
-        The migration bridge from Simple Form: `bin/rails g poetry:simple_form:install` writes one initializer (`Poetry::SimpleForm.activate!`) that re-maps the input types onto classes rendering whole poetry fields through `Poetry::Ui::FormBuilder`, so existing `f.input` calls keep working with label, hint, error, and aria derived from the model on the same path the native builder uses. `f.association` works unchanged, `:datetime` falls back to stock Simple Form rendering, and `simple_form.*` i18n keys keep resolving as a fallback chain. Simple Form contributes only type resolution; its wrapper tree is bypassed by design. Delete the initializer to restore stock rendering instantly; the end state is `form_with(model:, builder: Poetry::Ui::FormBuilder)` per the [form builder guide](/forms).
+        The migration bridge from Simple Form: `bin/rails g poetry:simple_form:install` writes one initializer (`Poetry::SimpleForm.activate!`) that re-maps the input types onto classes rendering whole Poetry fields through `Poetry::Ui::FormBuilder`, so existing `f.input` calls keep working with label, hint, error, and aria derived from the model on the same path the native builder uses. `f.association` works unchanged, `:datetime` falls back to stock Simple Form rendering, and `simple_form.*` i18n keys keep resolving as a fallback chain. Simple Form contributes only type resolution; its wrapper tree is bypassed by design. Delete the initializer to restore stock rendering instantly; the end state is `form_with(model:, builder: Poetry::Ui::FormBuilder)` per the [form builder guide](/forms).
       MD
     end
 
@@ -224,7 +224,7 @@ class DocsMarkdown
       <<~MD
         #{header(entry)}
 
-        Domain in, theme out: `bin/rails "poetry:design:extract[stripe.com]"` writes `DESIGN.md` (YAML frontmatter tokens over a Markdown body), `theme.tailwind.css` (a complete Tailwind v4 stylesheet), and `tokens.css` (plain `:root`/`.dark` custom properties) under `tmp/poetry/design_extract/<domain>/`, all in poetry's token vocabulary. Fetch rides context.dev (`CONTEXT_DEV_API_KEY`; without a key it degrades to a homepage-only fetch), one Claude call composes the DESIGN.md (`ANTHROPIC_API_KEY`; `POETRY_EXTRACT_MODEL` overrides the model), and the token stylesheets are derived deterministically from the fetched styleguide and brand - same inputs, same bytes, no model output in them. Nothing touches your theme: the printed `bin/rails "poetry:design:import[...]"` runs poetry's existing importer, which drops any swatch failing WCAG AA.
+        Domain in, theme out: `bin/rails "poetry:design:extract[stripe.com]"` writes `DESIGN.md` (YAML frontmatter tokens over a Markdown body), `theme.tailwind.css` (a complete Tailwind v4 stylesheet), and `tokens.css` (plain `:root`/`.dark` custom properties) under `tmp/poetry/design_extract/<domain>/`, all in Poetry's token vocabulary. Fetch rides context.dev (`CONTEXT_DEV_API_KEY`; without a key it degrades to a homepage-only fetch), one Claude call composes the DESIGN.md (`ANTHROPIC_API_KEY`; `POETRY_EXTRACT_MODEL` overrides the model), and the token stylesheets are derived deterministically from the fetched styleguide and brand - same inputs, same bytes, no model output in them. Nothing touches your theme: the printed `bin/rails "poetry:design:import[...]"` runs Poetry's existing importer, which drops any swatch failing WCAG AA.
       MD
     end
 
@@ -243,7 +243,7 @@ class DocsMarkdown
       out = [ <<~MD ]
         # poetry docs
 
-        > The documentation site for poetry, an AI-native, Rails-first component library: accessible, themeable ViewComponents on semantic design tokens. Every page below also serves a markdown mirror - append `.md` to its URL or send `Accept: text/markdown`.
+        > The documentation site for Poetry, an AI-native, Rails-first component library: accessible, themeable ViewComponents on semantic design tokens. Every page below also serves a markdown mirror - append `.md` to its URL or send `Accept: text/markdown`.
       MD
       { "Guides" => DocsCatalog.docs, "Libraries" => DocsCatalog.libraries,
         "Icons" => DocsCatalog.icons, "Components" => DocsCatalog.components,

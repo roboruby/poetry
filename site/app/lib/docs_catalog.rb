@@ -28,29 +28,29 @@ class DocsCatalog
               description: "All nine upstream themes: install-time selection with --theme, the " \
                            "docs style switcher mechanism, and the lyra/sera font-pairing story."),
     Entry.new(slug: "typography", title: "Typography", section: "docs", icon: :type,
-              description: "Heading, paragraph, list, table, and inline-text recipes on poetry " \
+              description: "Heading, paragraph, list, table, and inline-text recipes on Poetry " \
                            "tokens — class strings transcribed from upstream at the pin. Fonts " \
                            "ride the theme: the same markup goes mono under lyra, serif under sera."),
     Entry.new(slug: "testing", title: "Testing", section: "docs", icon: :"flask-conical",
-              description: "Test poetry UIs at the cheapest tier that can catch the bug: wiring " \
+              description: "Test Poetry UIs at the cheapest tier that can catch the bug: wiring " \
                        "asserts on rendered contracts, behavior through the Testing helpers " \
                        "(poetry_dialog, poetry_select, poetry_combobox, poetry_dropdown_menu), " \
                        "and the browser only for what needs a layout engine."),
     Entry.new(slug: "forms", title: "Form Builder", section: "docs", icon: :pencil,
               description: "The model-bound FormBuilder: form_with(builder:) + f.input for one-call " \
                            "fields - label, value, errors, aria, and validation attributes all derived " \
-                           "from the object; type inference into poetry's vocabulary, f.association, " \
+                           "from the object; type inference into Poetry's vocabulary, f.association, " \
                            "and the poetry_form -> simple_form i18n chain."),
     Entry.new(slug: "pagination", title: "Pagination", section: "docs", icon: :"chevrons-left-right",
               description: "Pagination through the gem you already use: bin/rails g " \
                            "poetry:pagination installs a host-owned adapter for kaminari, pagy " \
                            "(v43+), or will_paginate - existing paginate / poetry_pagy_nav / " \
-                           "will_paginate calls render poetry's nav. This page's examples run " \
+                           "will_paginate calls render Poetry's nav. This page's examples run " \
                            "live on all three gems."),
     Entry.new(slug: "deferred", title: "Deferred Regions", section: "docs", icon: :timer,
               description: "poetry_deferred(src:) — Turbo owns the loading physics (lazy fetches " \
                            "on visibility, so hidden Tabs panels and HoverCards defer for free); " \
-                           "poetry owns the states: a Skeleton placeholder and a retryable error card."),
+                           "Poetry owns the states: a Skeleton placeholder and a retryable error card."),
     Entry.new(slug: "optimistic-forms", title: "Optimistic Forms", section: "docs", icon: :zap,
               description: "poetry_optimistic_form — the predicted result paints on submit as a " \
                            "server-authored Turbo Stream; the server corrects only on rejection " \
@@ -63,7 +63,7 @@ class DocsCatalog
                            "poetry:add <name> or any shadcn-compatible registry client."),
     Entry.new(slug: "page-agent", title: "Page Agent", section: "docs", icon: :bot,
               description: "The operator-register demo: this site embeds page-agent (pinned, " \
-                           "opt-in, bring-your-own key) configured with poetry's operator " \
+                           "opt-in, bring-your-own key) configured with Poetry's operator " \
                            "register - watch a GUI agent operate the components, and see which " \
                            "tasks succeed through ARIA alone."),
     Entry.new(slug: "agent-skills", title: "Agent Skills", section: "docs", icon: :"graduation-cap",
@@ -72,7 +72,7 @@ class DocsCatalog
                            "npx skills, a curl one-liner, or bin/rails g poetry:skill drops the " \
                            "same SKILL.md set into any agent's skills directory."),
     Entry.new(slug: "editors", title: "Editors", section: "docs", icon: :code,
-              description: "bin/rails g poetry:editor wires poetry's MCP server and registry-driven " \
+              description: "bin/rails g poetry:editor wires Poetry's MCP server and registry-driven " \
                            "snippets into the editors a Rails team uses (VS Code, Cursor, Claude Code, " \
                            "Zed, RubyMine): safe MCP-config upserts, a per-editor matrix, and the " \
                            "Figma / Paper design-tool token bridges."),
@@ -85,20 +85,20 @@ class DocsCatalog
                        "sortable: whitelist, URL-state sorting, filtering and pagination, " \
                        "row selection, and sticky headers - a full controller-to-view recipe."),
     Entry.new(slug: "caching", title: "Caching", section: "docs", icon: :database,
-              description: "Fragment-caching poetry safely: the version-keyed cache recipe, and " \
+              description: "Fragment-caching Poetry safely: the version-keyed cache recipe, and " \
                        "why unkeyed fragments go silently stale across component upgrades."),
     Entry.new(slug: "stable-ids", title: "Stable IDs", section: "docs", icon: :hash,
-              description: "poetry ids are unique per render by default - what that means for " \
+              description: "Poetry ids are unique per render by default - what that means for " \
                        "fragment caches, Turbo morph and ETags, and the id: token contract " \
                        "that pins them when identity matters."),
     Entry.new(slug: "engines", title: "Rails Engines", section: "docs", icon: :blocks,
-              description: "Reusable engines built on poetry ship views as Ruby and ERB with zero " \
+              description: "Reusable engines built on Poetry ship views as Ruby and ERB with zero " \
                        "CSS - the host's theme styles every mounted engine, so one retheme " \
                        "command restyles the whole application, engines included. The recipe: " \
                        "gemspec dependency, host layout, the tailwindcss-rails engines wiring, " \
                        "and the subclass pair for engine-owned component styling."),
     Entry.new(slug: "accessibility", title: "Accessibility", section: "docs", icon: :accessibility,
-              description: "What poetry guarantees by construction - required accessible names, " \
+              description: "What Poetry guarantees by construction - required accessible names, " \
                        "Field-chain aria wiring, native form participation, overlay focus - " \
                        "and the keyboard and screen-reader checklist for verifying your app."),
     Entry.new(slug: "mcp-server", title: "MCP Server", section: "docs", icon: :plug,
@@ -272,10 +272,10 @@ class DocsCatalog
                            "JavaScript, with live streaming and a frozen chart-spec for BYO engines."),
         Entry.new(slug: "simple-form", title: "Simple Form", section: "libraries", icon: :"clipboard-list",
                 description: "The migration bridge from Simple Form: one initializer re-maps " \
-                           "f.input onto poetry fields, so existing forms restyle without a rewrite."),
+                           "f.input onto Poetry fields, so existing forms restyle without a rewrite."),
       Entry.new(slug: "extract", title: "Extract", section: "libraries", icon: :pipette,
                 description: "Domain-to-theme extraction: point it at a public site and it writes " \
-                           "a DESIGN.md plus deterministic poetry tokens, ready for the " \
+                           "a DESIGN.md plus deterministic Poetry tokens, ready for the " \
                            "AA-gated importer.")
     ].freeze
 

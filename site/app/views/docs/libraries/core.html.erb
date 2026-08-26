@@ -152,7 +152,7 @@
     <h1 class="text-4xl font-semibold tracking-tight">Core</h1>
     <p class="max-w-2xl text-lg text-muted-foreground">
       poetry-core is the engine gem: the component DSL, design tokens, and
-      Stimulus primitives every poetry gem is built on. The same public
+      Stimulus primitives every Poetry gem is built on. The same public
       surface is yours to build your own component library, styled with
       Tailwind utilities or your own CSS.
     </p>
@@ -306,10 +306,10 @@
         components wire declaratively. <code>use_stimulus</code> is an
         element-major declaration: for each named element, which
         controllers attach, which values they read, and which actions and
-        targets they carry. Symbols name poetry controllers and are
+        targets they carry. Symbols name Poetry controllers and are
         validated against the controllers manifest when the class loads,
         so a typo raises at boot rather than at first render; pass a
-        String to wire a controller of your own, which poetry does not
+        String to wire a controller of your own, which Poetry does not
         validate.
       </p>
     <% end %>
@@ -326,7 +326,7 @@
         Every declaration above is introspectable, and the registry is the
         committed YAML index built from that introspection: styles with
         their variants, options with their types, slots, parts, wiring,
-        and each dictionary's classes. poetry's own gems commit theirs at
+        and each dictionary's classes. Poetry's own gems commit theirs at
         <code>config/component_registry.yml</code> and verify it in CI so
         it can never drift from source. Generate one for your library the
         same way:
@@ -422,7 +422,7 @@
       <p>
         <code>Poetry::Core::Check</code> is the static linter for the ERB
         you (or your agent) write against any registry built by this gem.
-        It parses templates without rendering and validates every poetry
+        It parses templates without rendering and validates every Poetry
         surface: unknown components, options, and variants with
         did-you-mean suggestions, Stimulus wiring against the controllers
         manifest, icon names against the active set, and raw color

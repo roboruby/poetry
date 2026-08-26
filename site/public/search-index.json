@@ -168,7 +168,7 @@
     "path": "/testing#doctrine"
   },
   {
-    "title": "Lint first: poetry check",
+    "title": "Lint first: Poetry check",
     "page": "Testing",
     "section": "docs",
     "path": "/testing#check"
@@ -492,7 +492,7 @@
     "path": "/agent-skills#poetry"
   },
   {
-    "title": "In a Rails app with poetry",
+    "title": "In a Rails app with Poetry",
     "page": "Agent Skills",
     "section": "docs",
     "path": "/agent-skills#in-app"
@@ -720,7 +720,7 @@
     "path": "/accessibility"
   },
   {
-    "title": "What poetry guarantees",
+    "title": "What Poetry guarantees",
     "page": "Accessibility",
     "section": "docs",
     "path": "/accessibility#guarantees"

@@ -17,7 +17,7 @@
     <h2 class="text-lg font-medium" id="what">What this is</h2>
     <p class="max-w-2xl text-muted-foreground">
       This page embeds <a class="underline underline-offset-4" href="https://github.com/alibaba/page-agent">page-agent</a>
-      (pinned v1.12.2, MIT, vendored with its license) configured with poetry's
+      (pinned v1.12.2, MIT, vendored with its license) configured with Poetry's
       <strong>operator register</strong>: the component contract projected in GUI-operator vocabulary
       (<code class="text-foreground">data-component</code>/<code class="text-foreground">data-slot</code>
       whitelisted into the model, plus per-page instructions served at
@@ -94,7 +94,7 @@
       The loader below is this page's <em>actual</em> implementation. The Turbo rules it encodes
       (remount on <code class="text-foreground">turbo:load</code>, rebuild only when the agent is
       idle, catch up once at module init) came out of live runs of the task list above. For your own app, install
-      the host variant as a recipe (pinned CDN script, register optional, poetry ground rules
+      the host variant as a recipe (pinned CDN script, register optional, Poetry ground rules
       embedded):
     </p>
     <%= poetry_code_block(code: "bin/rails g poetry:add agent-embed", language: "plaintext", label: "Install") %>

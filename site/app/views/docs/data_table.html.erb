@@ -63,7 +63,7 @@
   <header class="flex flex-col gap-3">
     <h1 class="text-4xl font-semibold tracking-tight">Data Table</h1>
     <p class="max-w-2xl text-lg text-muted-foreground">
-      poetry's data table is server-driven: the composed table plus sortable
+      Poetry's data table is server-driven: the composed table plus sortable
       headers, a filter box, and pagination, with sorting, filtering, and
       paging carried as URL state. Shareable, crawlable, and
       back-button-correct, because GET is the only transport the back button
@@ -111,7 +111,7 @@
         <li>
           <strong>Cell blocks return the cell content</strong>
           (<code>{ |note| note.title }</code>); they must not write to the
-          template buffer. Compose poetry helpers for rich cells; they
+          template buffer. Compose Poetry helpers for rich cells; they
           return safe strings.
         </li>
         <li>
@@ -206,7 +206,7 @@
       <p>
         Sorting, filtering, and paging are <em>view</em> state and belong in
         the URL. Row <em>mutations</em> (inline edit, toggles, row actions)
-        belong to poetry's reactive tier: render a reactive component inside
+        belong to Poetry's reactive tier: render a reactive component inside
         a cell and the two tiers compose. The table's GET round trip
         re-renders the collection; the row's signed action mutates one
         record and replaces one row by id. Each tier owns the state that

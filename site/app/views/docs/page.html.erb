@@ -15,8 +15,8 @@
     <% end %>
   </header>
 
-  <%# Per-page install (the shadcn docs pattern, reframed for poetry): a
-      component ships in poetry-ui and is available the moment poetry is
+  <%# Per-page install (the shadcn docs pattern, reframed for Poetry): a
+      component ships in poetry-ui and is available the moment Poetry is
       installed - poetry:add is the OWNERSHIP tier, not a requirement. Charts
       ship in the separate, optional poetry-charts gem. Blocks are
       generate-to-own on their own page template (block_page). %>
@@ -26,7 +26,7 @@
       <p class="max-w-2xl text-muted-foreground">
         Included in <code class="text-foreground">poetry-ui</code> — available as
         <code class="text-foreground">poetry_<%= @entry.slug.tr("-", "_") %></code>
-        the moment you've <%= poetry_link(href: "/installation") { "installed poetry" } %>,
+        the moment you've <%= poetry_link(href: "/installation") { "installed Poetry" } %>,
         with no per-component step. To own the source and edit it, copy it into your app:
       </p>
       <%= poetry_code_block(code: "bin/rails g poetry:add #{@entry.slug}", language: "plaintext", label: "Copy-in") %>

@@ -112,8 +112,8 @@
           <strong>The safelist ships every component class.</strong> The
           host's <code>poetry:install</code> writes a safelist of every
           dictionary and template class, so the host's Tailwind build emits
-          poetry's own classes without ever scanning gem paths. An engine's
-          poetry markup needs no build integration to render styled.
+          Poetry's own classes without ever scanning gem paths. An engine's
+          Poetry markup needs no build integration to render styled.
         </li>
       </ul>
     <% end %>
@@ -144,7 +144,7 @@
       <h2 id="page-level-utilities">Page-level utilities: the one wiring step</h2>
       <p>
         The host's Tailwind build scans the host's own files, not gem paths.
-        poetry's component classes are covered by the safelist, but the
+        Poetry's component classes are covered by the safelist, but the
         engine's <em>page-level</em> layout classes - the
         <code>md:grid-cols-3</code> on a stat row - are not, and get purged
         from the host build unless the host happens to use them too. The
@@ -178,7 +178,7 @@
     <%= poetry_code_block(code: retheme_source, language: "shell", label: "Host retheme") %>
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
       <p>
-        Every poetry surface follows: the host's screens and every mounted
+        Every Poetry surface follows: the host's screens and every mounted
         engine's screens, radii, palettes, and density together. The same
         applies to brand themes imported from a
         <a href="<%= theming_path %>#design-md-interop">DESIGN.md</a> via
@@ -218,11 +218,11 @@
       <h2 id="one-theme-contract">Keep one theme contract</h2>
       <p>
         The temptation for an engine author is to ship default styles "just
-        in case". Resist it. The value of poetry-built engines compounds
+        in case". Resist it. The value of Poetry-built engines compounds
         only while every engine speaks the host's theme: three engines that
         each carry their own styling are three design systems in one
         application, and the one-command retheme story dies with them. If an
-        engine must carry a visual identity, ship it as a poetry theme
+        engine must carry a visual identity, ship it as a Poetry theme
         fragment the host can choose to install - never as engine-loaded
         CSS.
       </p>

@@ -78,7 +78,7 @@
         Most UI bugs are structural: a wrong attribute, a missing wiring
         token, a control that never joined the form. Those belong in fast
         tests that render markup and assert it. Reserve a real browser for
-        what genuinely needs a layout engine. poetry holds itself to the
+        what genuinely needs a layout engine. Poetry holds itself to the
         same split, so every component you install arrives already covered
         by wiring, headless behavior, browser, and automated accessibility
         suites; your tests cover your app, not the library.
@@ -88,10 +88,10 @@
 
   <section class="flex flex-col gap-4">
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
-      <h2 id="check">Lint first: poetry check</h2>
+      <h2 id="check">Lint first: Poetry check</h2>
       <p>
         Before anything renders, <code>poetry:check</code> parses your ERB
-        and validates every poetry surface against the component registry
+        and validates every Poetry surface against the component registry
         and the controllers manifest: unknown component, option, or variant
         (with a did-you-mean), unknown Stimulus controller, action, or
         target, raw color classes, and icon declarations in app Ruby. A
@@ -125,7 +125,7 @@
         Assert against <code>data-slot</code>, never against Tailwind
         classes. Classes are an implementation detail that a token retune or
         a primitive-vocabulary change will move; the slot vocabulary is the
-        stable contract. When you must select by a poetry class that
+        stable contract. When you must select by a Poetry class that
         contains a colon, use the token-safe attribute form
         <code>[class~="data-open:..."]</code> rather than escaping the
         class in a bare selector; it has identical specificity and no
@@ -139,7 +139,7 @@
       <h2 id="behavior">Tier 2: behavior</h2>
       <p>
         The middle tier answers interaction questions without a browser: a
-        click flips state, arrows move focus, a form serializes. poetry
+        click flips state, arrows move focus, a form serializes. Poetry
         runs this tier on every component itself, driving real markup, real
         compiled CSS, and real controllers through a headless DOM, so a
         component's internal behavior is already tested when you install
@@ -249,7 +249,7 @@
       <h2 id="what-to-assert">What to assert, in one line</h2>
       <p>
         Assert the contract (slots, ARIA, form participation, wiring),
-        never the classes. The contract is what poetry promises to keep
+        never the classes. The contract is what Poetry promises to keep
         stable across token retunes and primitive-vocabulary shifts; the
         classes are free to move under it.
       </p>

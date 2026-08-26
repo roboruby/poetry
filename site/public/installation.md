@@ -1,6 +1,6 @@
-# Installing poetry in a Rails app - agent instructions
+# Installing Poetry in a Rails app - agent instructions
 
-Concise, imperative setup for a coding agent adding poetry to a Rails 8 app
+Concise, imperative setup for a coding agent adding Poetry to a Rails 8 app
 (importmap + tailwindcss-rails). The human guide is at `/installation`; this
 file is the copy-and-follow version.
 

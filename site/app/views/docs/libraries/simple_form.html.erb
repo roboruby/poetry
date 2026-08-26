@@ -41,7 +41,7 @@
     <h1 class="text-4xl font-semibold tracking-tight">Simple Form</h1>
     <p class="max-w-2xl text-lg text-muted-foreground">
       poetry-simple_form is the migration bridge for existing Simple Form
-      apps: one initializer re-maps the input types onto poetry fields, and
+      apps: one initializer re-maps the input types onto Poetry fields, and
       every <code>f.input</code> call in your views keeps working.
     </p>
   </header>
@@ -51,7 +51,7 @@
       <h2 id="how-it-works">How it works</h2>
       <p>
         The bridge re-maps Simple Form's input types onto classes that render
-        whole poetry fields through <code>Poetry::Ui::FormBuilder</code>,
+        whole Poetry fields through <code>Poetry::Ui::FormBuilder</code>,
         bound to the same object and template. Label, hint, error, and aria
         wiring derive from your model on the same code path the
         <%= link_to "native builder", forms_path %> uses, so a bridged form
@@ -62,7 +62,7 @@
       </p>
       <p>
         Your existing <code>simple_form.*</code> i18n keys (labels, hints,
-        placeholders) keep working: poetry's builder reads them as a
+        placeholders) keep working: Poetry's builder reads them as a
         fallback chain.
       </p>
     <% end %>
@@ -91,7 +91,7 @@
       <h2 id="what-restyles">What restyles</h2>
       <p>
         Existing views need no edits. Each resolved input type renders the
-        matching poetry control, wrapped in a field with
+        matching Poetry control, wrapped in a field with
         <code>aria-required</code> (never the native attribute), maxlength,
         min, max, and step derived from your validations, and errors wired
         via <code>aria-describedby</code>.
@@ -116,13 +116,13 @@
       </table>
       <p>
         <code>f.association</code> works unchanged: Simple Form fetches the
-        records, the bridge renders them as poetry pickers.
+        records, the bridge renders them as Poetry pickers.
         <code>:datetime</code> falls back to stock Simple Form rendering,
-        because poetry has no composite date-and-time control yet and a raise
+        because Poetry has no composite date-and-time control yet and a raise
         mid-migration would be hostile. String <code>label:</code>,
         <code>hint:</code>, and <code>placeholder:</code> options pass
         through; the rest of <code>input_html:</code> lands on the control
-        minus its class and id, since poetry components own their classes.
+        minus its class and id, since Poetry components own their classes.
       </p>
     <% end %>
   </section>
@@ -132,7 +132,7 @@
       <h2 id="end-state">The end state</h2>
       <p>
         The bridge exists so views can migrate at their own pace. New forms,
-        and old ones as you touch them, move to poetry's own builder, where
+        and old ones as you touch them, move to Poetry's own builder, where
         <code>f.input</code> works the same and the rest of the
         <%= link_to "form builder guide", forms_path %> applies.
       </p>

@@ -49,7 +49,7 @@
   <header class="flex flex-col gap-3">
     <h1 class="text-4xl font-semibold tracking-tight">Stable IDs</h1>
     <p class="max-w-2xl text-lg text-muted-foreground">
-      Every poetry component mints DOM ids to wire its internal
+      Every Poetry component mints DOM ids to wire its internal
       relationships: <code class="font-mono text-base">aria-controls</code>,
       label targets, floating anchors, SVG defs. How those ids are chosen
       decides whether Turbo morph can pair your components across renders,
@@ -67,10 +67,10 @@
           root id; every internal id derives from it
           (<code>settings-trigger</code>, <code>settings-content</code>,
           item ids). Order-independent, cache-safe, morph-stable. It is your
-          namespace: pass <code>id: "settings"</code> and poetry derives the
+          namespace: pass <code>id: "settings"</code> and Poetry derives the
           rest, so don't hand-author those. An explicit id is reduced to
           letters, digits, underscores, and hyphens before use; if nothing
-          safe remains, poetry falls back to a random token.
+          safe remains, Poetry falls back to a random token.
         </li>
         <li>
           <strong><code>key:</code>, semantic identity.</strong> A record or
@@ -152,7 +152,7 @@
       <p>
         <code>key:</code> derives through <code>dom_id</code>, which reads
         your model's <code>to_key</code>. To keep primary keys out of the
-        DOM app-wide, with poetry ids, your own <code>dom_id</code> calls,
+        DOM app-wide, with Poetry ids, your own <code>dom_id</code> calls,
         <code>turbo_frame_tag</code>, and Turbo Stream broadcast targets all
         staying consistent, override it at the model:
       </p>
@@ -160,10 +160,10 @@
     <%= poetry_code_block(code: to_key_source, language: "ruby", label: "Model override") %>
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
       <p>
-        Or pass a literal: <code>key: message.public_uid</code>. poetry
+        Or pass a literal: <code>key: message.public_uid</code>. Poetry
         deliberately never reads slugs itself: slugs are mutable and
         recyclable (a freed slug claimed by another record would transfer
-        identity), and poetry preferring them while your own
+        identity), and Poetry preferring them while your own
         <code>dom_id</code> stayed pk-based would split the app into two id
         vocabularies.
       </p>
@@ -212,7 +212,7 @@
           <strong>Same-path turbo-frames collide deterministically.</strong>
           Two frames loading <code>/widgets?a</code> and
           <code>/widgets?b</code> both seed from <code>/widgets</code> and
-          draw identical id sequences into one composed page. poetry's own
+          draw identical id sequences into one composed page. Poetry's own
           deferred regions are turbo-frames.
         </li>
         <li>
