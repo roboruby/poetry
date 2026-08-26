@@ -43,7 +43,7 @@ Naming/FileName:
 Style/Documentation:
   Enabled: false
 
-# The Agent::Server constructor aggregates its projected surfaces (entries,
+# Constructors that aggregate projected surfaces (registry entries,
 # catalog, blocks, skills) plus the two roots (registry + host app); six named
 # keyword args read clearer than any grouping object.
 Metrics/ParameterLists:
