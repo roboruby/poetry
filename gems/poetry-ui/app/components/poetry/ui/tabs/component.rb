@@ -86,6 +86,20 @@ module Poetry
              executes: %i[tabs set_value],
              mutating: true
 
+        # The rendered instance knows its tab values: the payload's schema
+        # carries them as the enum, so an agent can only ask for a tab that
+        # exists (the class-level projection stays a plain string).
+        def webmcp_tool_definition(definition)
+          return definition unless definition["name"] == "set_value"
+
+          values = tab_defs.map(&:value)
+          return definition if values.empty?
+
+          schema = definition.fetch("inputSchema")
+          value = schema.fetch("properties").fetch("value").merge("enum" => values)
+          definition.merge("inputSchema" => schema.merge("properties" => schema["properties"].merge("value" => value)))
+        end
+
         option :default, :string,
                doc: "The value of the server-rendered active tab; defaults to the first enabled tab. Raises when it " \
                     "matches no tab."
