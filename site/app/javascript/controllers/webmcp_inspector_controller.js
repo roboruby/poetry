@@ -52,19 +52,22 @@ export default class extends Controller {
     description.className = "text-sm text-muted-foreground"
     description.textContent = tool.description
 
-    const form = document.createElement("form")
+    // Not a <form>: these controls drive a tool, they are not one - a
+    // form here would read as an unannotated tool to an agentic audit.
+    const form = document.createElement("div")
     form.className = "flex flex-wrap items-center gap-2"
+    form.setAttribute("role", "group")
+    form.setAttribute("aria-label", `Execute ${tool.name}`)
     const input = document.createElement("input")
     input.className = "cn-input min-w-64 flex-1 rounded-md border bg-background px-2 py-1 font-mono text-xs"
     input.setAttribute("aria-label", `Arguments for ${tool.name} as JSON`)
     input.value = JSON.stringify(this.#exampleArgs(tool))
     const button = document.createElement("button")
-    button.type = "submit"
+    button.type = "button"
     button.className = "rounded-md border px-3 py-1 text-sm hover:bg-accent"
     button.textContent = "Execute"
     form.append(input, button)
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault()
+    const execute = async () => {
       let args = {}
       try { args = input.value.trim() ? JSON.parse(input.value) : {} } catch { this.#log(`${tool.name}: arguments must be JSON`); return }
       try {
@@ -73,7 +76,9 @@ export default class extends Controller {
       } catch (error) {
         this.#log(`${tool.name} rejected: ${error?.message ?? error}`)
       }
-    })
+    }
+    button.addEventListener("click", execute)
+    input.addEventListener("keydown", (event) => { if (event.key === "Enter") execute() })
 
     row.append(head, description, form)
     return row
