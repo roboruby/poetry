@@ -1,0 +1,108 @@
+<% content_for :title, "Agent" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Libraries") %>
+    <% crumb.with_item("Agent") %>
+  <% end %>
+<% end %>
+<%
+  gemfile_source = <<~CODE
+    gem "poetry-agent"
+  CODE
+  mcp_source = <<~CODE
+    bundle exec poetry-agent   # the stdio MCP server; run it from your app directory
+  CODE
+  js_source = <<~CODE
+    import { registerPoetryAgent } from "@poetry/agent"
+    registerPoetryAgent(application)
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">poetry-agent</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      The agent-interop gem: every surface through which an agent reaches
+      the component contract, projected from the one registry the other
+      gems build.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="what-it-is">What it is</h2>
+      <p>
+        Two surfaces ship today. The <strong>MCP server</strong> is for
+        coding agents in your editor: boot-free, read-only, ten tools that
+        query and verify against what your app actually ships. The
+        <strong>WebMCP runtime</strong> is for the person's own browser
+        agent: rendered components' declared tools, registered with
+        <code>document.modelContext</code> when an instance opts in. Both
+        read the committed registries; neither is a second source.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="install">Install</h2>
+    <% end %>
+    <%= poetry_code_block(code: gemfile_source, language: "ruby", label: "Gemfile") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Loading the gem is the integration: the engine registers its
+        controllers manifest with poetry-core (so <code>webmcp:</code>
+        roots validate at render), pins <code>@poetry/agent</code> in the
+        importmap, and mounts the origin-trial middleware.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="mcp">The MCP server</h2>
+      <p>
+        <code>poetry-agent</code> speaks newline-delimited JSON-RPC over
+        stdio with no SDK dependency. Wire it into Claude Code, Cursor, VS
+        Code, Zed, or RubyMine with <code>bin/rails g poetry:editor</code>;
+        the <%= link_to "MCP guide", mcp_path %> covers the ten tools and
+        the verify loop they close.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: mcp_source, language: "shell", label: "Run") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="webmcp">The WebMCP runtime</h2>
+      <p>
+        Register the runtime beside Poetry's controllers and any component
+        that declares tools can opt in per instance. The
+        <%= link_to "WebMCP guide", webmcp_path %> shows the two paths -
+        components and declarative forms - live.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: js_source, language: "javascript", label: "Register") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="whats-in-the-gem">What's in the gem</h2>
+    <% end %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <table>
+        <thead><tr><th>Piece</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>Poetry::Agent::MCP::Server</code></td><td>the MCP server; <code>#handle</code> is a pure request-to-response function, <code>#serve</code> the stdio loop</td></tr>
+          <tr><td><code>exe/poetry-agent</code></td><td>the one executable (<code>bundle exec poetry-agent</code>); skills, helpers, and recipes ride along when poetry-ui is bundled</td></tr>
+          <tr><td><code>poetry--agent--webmcp</code></td><td>the registrar controller: registers an opted-in instance's tools on connect, aborts them on disconnect, dispatches calls to the component's own action</td></tr>
+          <tr><td><code>poetry--agent--webmcp-form</code></td><td>the declarative-form controller: an agent-invoked submit answers through <code>SubmitEvent.respondWith</code> instead of navigating</td></tr>
+          <tr><td><code>@poetry/agent</code> adapter</td><td>the one file that knows the <code>document.modelContext</code> surface, so spec churn stays a one-file fix</td></tr>
+          <tr><td><code>Poetry::Agent::WebMCP::OriginTrial</code></td><td>Rack middleware serving origin-trial tokens on HTML responses; a pass-through with none configured</td></tr>
+          <tr><td><code>Poetry::Agent.configure</code></td><td><code>origin_trial_tokens</code> and the per-document <code>registration_budget</code></td></tr>
+        </tbody>
+      </table>
+    <% end %>
+  </section>
+</div>

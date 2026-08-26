@@ -1,0 +1,265 @@
+<% content_for :title, "WebMCP" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("WebMCP") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
+  # this scriptlet early, so ERB samples interpolate it as #{e}.
+  e = "%" + ">"
+  gemfile_source = <<~CODE
+    gem "poetry-agent"
+  CODE
+  js_source = <<~CODE
+    // app/javascript/controllers/index.js
+    import { registerPoetryControllers } from "@poetry/controllers"
+    import { registerPoetryAgent } from "@poetry/agent"
+    registerPoetryControllers(application)
+    registerPoetryAgent(application)
+  CODE
+  optin_source = <<~CODE
+    <%= poetry_tabs(label: "Sections", webmcp: "sections") do |tabs| #{e}
+      <% tabs.with_tab("Overview", value: "overview") { "..." } #{e}
+      <% tabs.with_tab("Pricing", value: "pricing") { "..." } #{e}
+    <% end #{e}
+
+    <%= poetry_dialog(webmcp: "settings") do |dialog| #{e}
+      <% dialog.with_trigger { "Settings" } #{e}
+      <% dialog.with_title { "Settings" } #{e}
+    <% end #{e}
+
+    <%= poetry_combobox(name: "country", webmcp: "country") do |combobox| #{e}
+      <% combobox.with_item(value: "de") { "Germany" } #{e}
+    <% end #{e}
+  CODE
+  form_source = <<~CODE
+    <%= poetry_webmcp_form(url: search_path, method: :get,
+                           tool: { name: "search_docs",
+                                   description: "Search the docs by title or description.",
+                                   autosubmit: true }) do |form| #{e}
+      <%= form.field(:q, tool_description: "Words to search for.") #{e}
+    <% end #{e}
+  CODE
+  tool_source = <<~CODE
+    class Tabs::Component < Poetry::Core::Component
+      use_stimulus do
+        on(:root) { controller(:tabs) { register } }
+      end
+
+      tool :set_value,
+           description: "Activate the tab whose value matches and show its panel.",
+           params: { value: { type: "string", required: true, description: "The tab's value." } },
+           executes: :set_value,   # validated against the controller at class load
+           mutating: true
+
+      # Optional: refine the projected schema with what the rendered
+      # instance knows - here the rendered tab values become the enum.
+      def webmcp_tool_definition(definition)
+        return definition unless definition["name"] == "set_value"
+
+        values = tab_defs.map(&:value)
+        schema = definition.fetch("inputSchema")
+        value = schema.fetch("properties").fetch("value").merge("enum" => values)
+        definition.merge("inputSchema" => schema.merge("properties" => schema["properties"].merge("value" => value)))
+      end
+    end
+  CODE
+  config_source = <<~CODE
+    # config/initializers/poetry_agent.rb
+    Poetry::Agent.configure do |config|
+      config.origin_trial_tokens = ENV.fetch("WEBMCP_ORIGIN_TRIAL_TOKENS", "").split(",")
+      config.registration_budget = 20   # tools per document; extras are dropped with a warning
+    end
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">WebMCP</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      Your components' tools, registered with the user's own browser agent.
+      Poetry components declare what an agent may do to them; a rendered
+      instance opts in with one keyword; the browser does the rest.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="what-it-is">What it is</h2>
+      <p>
+        <a href="https://webmachinelearning.github.io/webmcp/">WebMCP</a> is the
+        browser standard behind <code>document.modelContext</code>: a page
+        registers typed tools - a name, a description, a JSON Schema, and a
+        function - and the agent built into the browser calls them instead of
+        scraping the DOM and guessing at clicks. It is in origin trial in
+        Chrome 149 and Edge 150, and ChatGPT Desktop's browser supports it.
+      </p>
+      <p>
+        Poetry treats it as one more projection of the component contract.
+        Each interactive component declares its tools in Ruby beside its
+        Stimulus wiring; the registry carries them, so the
+        <%= link_to "MCP server", mcp_path %> and llms.txt describe them to
+        coding agents too; and at render time a single keyword,
+        <code>webmcp:</code>, turns a rendered instance into a registered
+        tool set for the person's agent. Nothing registers until you say so.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="live">Live: the tools on this page</h2>
+      <p>
+        These three components opted in. In a browser with WebMCP enabled
+        the panel below lists what they registered and lets you call a tool
+        by hand - the same <code>getTools()</code> and
+        <code>executeTool()</code> calls an agent makes.
+      </p>
+    <% end %>
+    <div class="flex flex-col gap-6 rounded-lg border p-6">
+      <%= poetry_tabs(label: "Demo sections", variant: :line, webmcp: "sections") do |tabs| %>
+        <% tabs.with_tab("Overview", value: "overview") do %>
+          <p class="py-3 text-sm text-muted-foreground">Ask the agent for the pricing tab - or call <code class="font-mono">poetry.sections.set_value</code> with <code class="font-mono">{"value":"pricing"}</code> below.</p>
+        <% end %>
+        <% tabs.with_tab("Pricing", value: "pricing") do %>
+          <p class="py-3 text-sm text-muted-foreground">The tabs component declared <code class="font-mono">set_value</code>; the rendered tab values became the parameter's enum.</p>
+        <% end %>
+        <% tabs.with_tab("FAQ", value: "faq") do %>
+          <p class="py-3 text-sm text-muted-foreground">Every tool dispatches to the component's own Stimulus action - the same code a click runs.</p>
+        <% end %>
+      <% end %>
+      <div class="flex flex-wrap items-center gap-4">
+        <%= poetry_dialog(webmcp: "settings") do |dialog| %>
+          <% dialog.with_trigger(variant: :outline) { "Settings" } %>
+          <% dialog.with_title { "Settings" } %>
+          <% dialog.with_description { "Opened by a click, or by the settings tool's open call." } %>
+          <p class="text-sm text-muted-foreground">Close me with <code class="font-mono">poetry.settings.close</code>.</p>
+        <% end %>
+        <%= poetry_combobox(name: "country", placeholder: "Select a country...", "aria-label": "Country",
+                            webmcp: "country") do |combobox| %>
+          <% combobox.with_item(value: "de") { "Germany" } %>
+          <% combobox.with_item(value: "fr") { "France" } %>
+          <% combobox.with_item(value: "jp") { "Japan" } %>
+          <% combobox.with_item(value: "us") { "United States" } %>
+        <% end %>
+      </div>
+    </div>
+    <div class="flex flex-col gap-3 rounded-lg border bg-muted/30 p-4" data-controller="webmcp-inspector">
+      <p class="text-sm" data-webmcp-inspector-target="status">Checking this browser for document.modelContext…</p>
+      <ul class="flex flex-col gap-3" data-webmcp-inspector-target="list" aria-label="Registered tools"></ul>
+      <ul class="flex flex-col gap-1" data-webmcp-inspector-target="log" aria-label="Execution log"></ul>
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="declarative">Search the docs: a declarative tool</h2>
+      <p>
+        Forms need no JavaScript at all. This one carries
+        <code>toolname</code> and <code>tooldescription</code>; the browser
+        synthesizes the parameter schema from the control and its label, and
+        because it is a GET form it may <code>autosubmit</code> - an agent
+        asked to "find the combobox docs" fills the field and submits.
+      </p>
+    <% end %>
+    <div class="flex flex-col gap-4 rounded-lg border p-6">
+      <%= poetry_webmcp_form(url: webmcp_path, method: :get, id: "search-docs",
+                             tool: { name: "search_docs",
+                                     description: "Search the Poetry docs by title or description and list the matching pages.",
+                                     autosubmit: true }) do |form| %>
+        <div class="flex flex-wrap items-end gap-3">
+          <div class="flex flex-col gap-1">
+            <%= label_tag :q, "Search term", class: "text-sm font-medium" %>
+            <%= poetry_input(name: "q", id: "q", value: @query, placeholder: "combobox",
+                             **Poetry::Ui::Webmcp.param_attributes("Words to search the docs for.")) %>
+          </div>
+          <%= poetry_button(type: "submit") { "Search" } %>
+        </div>
+      <% end %>
+      <% if @query.present? %>
+        <% if @results.any? %>
+          <ul class="flex flex-col gap-1 text-sm" aria-label="Search results">
+            <% @results.each do |entry| %>
+              <li><%= link_to entry.title, entry.path, class: "underline underline-offset-4" %> <span class="text-muted-foreground">- <%= entry.section %></span></li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-sm text-muted-foreground">No pages match "<%= @query %>".</p>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="two-paths">Two paths</h2>
+      <p>
+        Interactive components take the imperative path: opt an instance in
+        and its declared tools register as
+        <code>poetry.{name}.{tool}</code>. Give instances explicit names
+        when a page renders several of one component - the browser rejects
+        duplicate tool names.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: optin_source, language: "erb", label: "Components") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Forms take the declarative path. <code>poetry_webmcp_form</code>
+        defaults to the Poetry FormBuilder, so model-derived labels describe
+        the parameters for free; <code>tool_description:</code> overrides
+        one. <code>autosubmit</code> is allowed only on GET forms - a
+        mutating form always keeps the person's Submit.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: form_source, language: "erb", label: "Forms") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="declaring">Declaring tools in your own components</h2>
+      <p>
+        <code>tool</code> sits beside <code>use_stimulus</code>. The
+        <code>executes:</code> action is validated against the controllers
+        manifest at class load, so a tool can never name an action the
+        JavaScript does not define; parameters map positionally onto the
+        action's arguments in declared order. A subclass that re-controllers
+        its root (Sheet over Dialog) projects its own controller's action.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: tool_source, language: "ruby", label: "A component's tools") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="setup">Setup</h2>
+    <% end %>
+    <%= poetry_code_block(code: gemfile_source, language: "ruby", label: "Gemfile") %>
+    <%= poetry_code_block(code: js_source, language: "javascript", label: "Register the runtime") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Locally, enable the API in Chrome at
+        <code>chrome://flags/#enable-webmcp-testing</code>; Chrome's Model
+        Context Tool Inspector extension shows registrations and calls them.
+        For real visitors during the origin trials, register your origin and
+        hand the tokens to the middleware the engine mounts:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: config_source, language: "ruby", label: "Origin trial") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="safety">Safety by construction</h2>
+      <ul>
+        <li>Off by default: declaring a tool exposes nothing; a rendered instance opts in.</li>
+        <li>Read-only by default: a tool is <code>mutating: true</code> only when declared so, and the annotation says which.</li>
+        <li><code>autosubmit</code> is GET-only; a mutating form keeps the person in the loop.</li>
+        <li>A per-document registration budget; duplicate names are refused by the browser and skipped.</li>
+        <li>Re-registration only when the payload changed, never under Turbo's cache preview - the two morph-time hazards the standard documents.</li>
+        <li>Errors return as descriptive strings, so an agent corrects its call instead of guessing.</li>
+      </ul>
+    <% end %>
+  </section>
+</div>

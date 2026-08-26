@@ -42,7 +42,7 @@
     bin/rails g poetry:diff                   # read-only drift report for your copies
   CODE
   agent_source = <<~CODE
-    bundle exec poetry-agent   # the MCP server - reads the registry, no app boot
+    bundle exec poetry-agent   # the MCP server (poetry-agent gem) - reads the registry, no app boot
     bin/rails poetry:check     # template verification - run it last
   CODE
   testing_source = <<~CODE

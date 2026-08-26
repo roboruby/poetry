@@ -104,7 +104,11 @@ class DocsCatalog
     Entry.new(slug: "mcp-server", title: "MCP Server", section: "docs", icon: :plug,
               description: "The boot-free MCP server behind agent workflows: what each of the " \
                        "ten registry-backed tools does and when an agent reaches for it, " \
-                       "and how it fits with llms.txt and the installable skills.")
+                       "and how it fits with llms.txt and the installable skills."),
+    Entry.new(slug: "webmcp", title: "WebMCP", section: "docs", icon: :"mouse-pointer-click",
+              description: "Your components' tools, registered with the user's own browser agent: " \
+                       "opt a rendered Combobox, Dialog, or Tabs into WebMCP with one keyword, " \
+                       "declare a form as a tool with no JavaScript, and try both live on this page.")
   ].freeze
 
   # The interaction demos are the one hand-curated section: full-page
@@ -167,7 +171,7 @@ class DocsCatalog
     DOC_SECTIONS = {
       "Get Started" => %w[installation theming typography testing editors api],
       "Advanced" => %w[accessibility forms pagination data-table deferred optimistic-forms caching stable-ids engines],
-      "AI Native" => %w[mcp-server agent-skills recipes page-agent]
+      "AI Native" => %w[mcp-server webmcp agent-skills recipes page-agent]
     }.freeze
 
     # DOC_SECTIONS resolved to entries. Raises when the section map and
@@ -273,6 +277,10 @@ class DocsCatalog
         Entry.new(slug: "simple-form", title: "Simple Form", section: "libraries", icon: :"clipboard-list",
                 description: "The migration bridge from Simple Form: one initializer re-maps " \
                            "f.input onto Poetry fields, so existing forms restyle without a rewrite."),
+      Entry.new(slug: "agent", title: "Agent", section: "libraries", icon: :"radio-tower",
+                description: "The agent-interop gem: the boot-free poetry-agent MCP server for " \
+                           "coding agents, and the WebMCP runtime that registers rendered " \
+                           "components' declared tools with the user's browser agent."),
       Entry.new(slug: "extract", title: "Extract", section: "libraries", icon: :pipette,
                 description: "Domain-to-theme extraction: point it at a public site and it writes " \
                            "a DESIGN.md plus deterministic Poetry tokens, ready for the " \

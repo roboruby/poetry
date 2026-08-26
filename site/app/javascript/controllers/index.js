@@ -6,3 +6,5 @@ import { registerPoetryControllers } from "@poetry/controllers"
 registerPoetryControllers(application)
 import { registerPoetryChartsControllers } from "@poetry/charts"
 registerPoetryChartsControllers(application)
+import { registerPoetryAgent } from "@poetry/agent"
+registerPoetryAgent(application)

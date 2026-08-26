@@ -42,6 +42,16 @@ class DocsController < ApplicationController
   def mcp
   end
 
+  # The WebMCP guide carries a live GET tool: search_docs (a declarative
+  # form an agent may autosubmit) answers with catalog matches.
+  def webmcp
+    query = params[:q].to_s.strip.downcase
+    @query = query
+    @results = query.empty? ? [] : DocsCatalog.all.select { |entry|
+      entry.title.downcase.include?(query) || entry.description.to_s.downcase.include?(query)
+    }.first(8)
+  end
+
   # The per-gem library pages (/libraries/:slug) - templates live under
   # docs/libraries/, named by the underscored slug.
   def library
@@ -162,6 +172,7 @@ class DocsController < ApplicationController
     when "stable_ids" then DocsMarkdown.stable_ids(guide_entry("stable-ids"))
     when "data_table" then DocsMarkdown.data_table(guide_entry("data-table"))
     when "mcp" then DocsMarkdown.mcp(guide_entry("mcp-server"))
+    when "webmcp" then DocsMarkdown.webmcp(guide_entry("webmcp"))
     when "library" then DocsMarkdown.public_send("library_#{library_entry.slug.tr('-', '_')}", library_entry)
     when "icon_set" then DocsMarkdown.public_send("icons_#{icon_entry.slug}", icon_entry)
     when "recipes" then DocsMarkdown.recipes(guide_entry("recipes"))

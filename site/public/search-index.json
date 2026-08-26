@@ -840,6 +840,54 @@
     "path": "/mcp-server#one-source"
   },
   {
+    "title": "WebMCP",
+    "page": "WebMCP",
+    "section": "docs",
+    "path": "/webmcp"
+  },
+  {
+    "title": "What it is",
+    "page": "WebMCP",
+    "section": "docs",
+    "path": "/webmcp#what-it-is"
+  },
+  {
+    "title": "Live: the tools on this page",
+    "page": "WebMCP",
+    "section": "docs",
+    "path": "/webmcp#live"
+  },
+  {
+    "title": "Search the docs: a declarative tool",
+    "page": "WebMCP",
+    "section": "docs",
+    "path": "/webmcp#declarative"
+  },
+  {
+    "title": "Two paths",
+    "page": "WebMCP",
+    "section": "docs",
+    "path": "/webmcp#two-paths"
+  },
+  {
+    "title": "Declaring tools in your own components",
+    "page": "WebMCP",
+    "section": "docs",
+    "path": "/webmcp#declaring"
+  },
+  {
+    "title": "Setup",
+    "page": "WebMCP",
+    "section": "docs",
+    "path": "/webmcp#setup"
+  },
+  {
+    "title": "Safety by construction",
+    "page": "WebMCP",
+    "section": "docs",
+    "path": "/webmcp#safety"
+  },
+  {
     "title": "Accordion",
     "page": "Accordion",
     "section": "components",
@@ -6076,6 +6124,42 @@
     "page": "Simple Form",
     "section": "libraries",
     "path": "/libraries/simple-form#end-state"
+  },
+  {
+    "title": "Agent",
+    "page": "Agent",
+    "section": "libraries",
+    "path": "/libraries/agent"
+  },
+  {
+    "title": "What it is",
+    "page": "Agent",
+    "section": "libraries",
+    "path": "/libraries/agent#what-it-is"
+  },
+  {
+    "title": "Install",
+    "page": "Agent",
+    "section": "libraries",
+    "path": "/libraries/agent#install"
+  },
+  {
+    "title": "The MCP server",
+    "page": "Agent",
+    "section": "libraries",
+    "path": "/libraries/agent#mcp"
+  },
+  {
+    "title": "The WebMCP runtime",
+    "page": "Agent",
+    "section": "libraries",
+    "path": "/libraries/agent#webmcp"
+  },
+  {
+    "title": "What's in the gem",
+    "page": "Agent",
+    "section": "libraries",
+    "path": "/libraries/agent#whats-in-the-gem"
   },
   {
     "title": "Extract",

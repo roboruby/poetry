@@ -34,6 +34,7 @@ Rails.application.routes.draw do
   get "stable-ids" => "docs#stable_ids", as: :stable_ids
   get "data-table" => "docs#data_table", as: :data_table_guide
   get "mcp-server" => "docs#mcp", as: :mcp
+  get "webmcp" => "docs#webmcp", as: :webmcp
   get "libraries/:slug" => "docs#library", as: :library, constraints: { slug: /[a-z-]+/ }
   get "icons/:slug" => "docs#icon_set", as: :icon_set, constraints: { slug: /[a-z-]+/ }
   get "recipes" => "docs#recipes", as: :recipes

@@ -124,6 +124,23 @@ class DocsMarkdown
       MD
     end
 
+    def webmcp(entry)
+      <<~MD
+        #{header(entry)}
+
+        WebMCP is the browser standard (`document.modelContext`, origin trials in Chrome 149 and Edge 150, supported by ChatGPT Desktop) that lets a page register typed tools for the user's own agent instead of leaving it to scrape the DOM. Poetry components DECLARE their tools in Ruby beside their Stimulus wiring (`tool :set_value, params: { value: { type: "string", required: true } }, executes: :set_value, mutating: true`), the registry projects them (the MCP server's `describe_component` lists them), and a rendered instance opts in with one keyword: `poetry_tabs(webmcp: "sections")`, `poetry_dialog(webmcp: "settings")`, `poetry_combobox(webmcp: "country")`. poetry-agent's registrar controller registers `poetry.{name}.{tool}` on connect and unregisters on disconnect, dispatching each call to the component's own controller action; results and errors come back as descriptive strings. Forms take the declarative path with no JavaScript: `poetry_webmcp_form(tool: { name:, description:, autosubmit: true })` puts `toolname`/`tooldescription` on the `<form>`, the browser synthesizes the parameter schema from the controls and their labels, and `autosubmit` is GET-only by construction - a mutating form keeps the user's Submit. Everything is off until an instance opts in; tools are read-only unless declared `mutating: true`; a per-document budget caps registrations. Setup: `gem "poetry-agent"`, `registerPoetryAgent(application)` beside `registerPoetryControllers`, and `Poetry::Agent.configure { |c| c.origin_trial_tokens = [...] }` for production browsers during the trial (local development uses `chrome://flags/#enable-webmcp-testing`).
+      MD
+    end
+
+    # The Agent library page's mirror.
+    def library_agent(entry)
+      <<~MD
+        #{header(entry)}
+
+        poetry-agent is the agent-interop gem - the surfaces through which agents reach the component contract built once in the registry. Two surfaces ship: `Poetry::Agent::MCP::Server`, the boot-free `bundle exec poetry-agent` stdio MCP server (ten read-only tools: compose, build_page, list_components, describe_component, check, list_blocks, describe_block, list_recipes, get_skill, guidance) that coding agents in Claude Code, Cursor, VS Code, Zed, and RubyMine use to query and verify against what your app actually ships; and the WebMCP runtime, `registerPoetryAgent(application)`, whose registrar controller registers an opted-in component instance's declared tools with the browser's `document.modelContext` for the user's own agent, plus the declarative-form controller (agent-invoked submits answer through `SubmitEvent.respondWith`) and the `Poetry::Agent::WebMCP::OriginTrial` middleware that serves origin-trial tokens. Install: `gem "poetry-agent"`; the engine registers its controllers manifest with poetry-core and pins `@poetry/agent` in the importmap.
+      MD
+    end
+
     # The Core library page's mirror.
     def library_core(entry)
       <<~MD
