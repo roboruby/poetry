@@ -179,14 +179,15 @@
         </div>
       <% end %>
       <% if @query.present? %>
+        <%# data-webmcp-result: the region an agent-invoked submit answers with. %>
         <% if @results.any? %>
-          <ul class="flex flex-col gap-1 text-sm" aria-label="Search results">
+          <ul class="flex flex-col gap-1 text-sm" aria-label="Search results" data-webmcp-result>
             <% @results.each do |entry| %>
               <li><%= link_to entry.title, entry.path, class: "underline underline-offset-4" %> <span class="text-muted-foreground">- <%= entry.section %></span></li>
             <% end %>
           </ul>
         <% else %>
-          <p class="text-sm text-muted-foreground">No pages match "<%= @query %>".</p>
+          <p class="text-sm text-muted-foreground" data-webmcp-result>No pages match "<%= @query %>".</p>
         <% end %>
       <% end %>
     </div>
