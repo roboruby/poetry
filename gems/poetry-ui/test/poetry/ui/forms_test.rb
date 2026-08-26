@@ -44,6 +44,7 @@ module Poetry
         assert_includes form_tag, 'toolname="find_contact"'
         assert_includes form_tag, 'tooldescription="Find a contact by email."'
         assert_includes form_tag, 'toolautosubmit=""'
+        assert_includes form_tag, 'data-controller="poetry--agent--webmcp-form"'
         assert_includes email_input, %(toolparamdescription="The contact&#39;s email address."),
                         "attribute-escaped"
         refute_includes nickname_input, "toolparamdescription", "the label describes the parameter by default"

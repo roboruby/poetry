@@ -290,6 +290,11 @@ module Poetry
       def poetry_webmcp_form(tool:, **options, &)
         options[:builder] ||= FormBuilder
         options[:html] = (options[:html] || {}).merge(Webmcp.form_attributes(tool, method: options[:method]))
+        # The poetry-agent form controller answers an agent-invoked submit
+        # with the outcome (SubmitEvent.respondWith); without the runtime
+        # gem the token is inert and the browser's own submission runs.
+        options[:data] = (options[:data] || {}).dup
+        options[:data][:controller] = [options[:data][:controller], Webmcp::FORM_CONTROLLER].compact.join(" ")
         form_with(**options, &)
       end
 

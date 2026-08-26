@@ -26,6 +26,9 @@ module Poetry
       DESCRIPTION_LIMIT = 500
       # The keys a `tool:` declaration may carry.
       TOOL_KEYS = %i[name description autosubmit].freeze
+      # poetry-agent's declarative-form controller (the respondWith path);
+      # emitted as a plain token so the markup stays inert without the gem.
+      FORM_CONTROLLER = "poetry--agent--webmcp-form"
 
       module_function
 
