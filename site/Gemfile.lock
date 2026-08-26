@@ -1,4 +1,10 @@
 PATH
+  remote: ../poetry-agent
+  specs:
+    poetry-agent (0.0.1)
+      poetry-core
+
+PATH
   remote: ../poetry-charts
   specs:
     poetry-charts (0.0.1)
@@ -387,6 +393,7 @@ DEPENDENCIES
   importmap-rails
   kaminari
   pagy (~> 43.0)
+  poetry-agent!
   poetry-charts!
   poetry-core!
   poetry-lucide!
@@ -473,6 +480,7 @@ CHECKSUMS
   pagy (43.6.1) sha256=59fb6a58ea956480094a167b43a86796638ceb3a3917a25ae67973b584ace2eb
   parallel (2.1.0) sha256=b35258865c2e31134c5ecb708beaaf6772adf9d5efae28e93e99260877b09356
   parser (3.3.11.1) sha256=d17ace7aabe3e72c3cc94043714be27cc6f852f104d81aa284c2281aecc65d54
+  poetry-agent (0.0.1)
   poetry-charts (0.0.1)
   poetry-core (0.0.1)
   poetry-lucide (0.0.1)

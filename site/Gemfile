@@ -29,6 +29,7 @@ gem "poetry-core", path: "../poetry-core"
 gem "poetry-lucide", path: "../poetry-lucide" # icons; poetry-ui requires it at runtime
 gem "poetry-ui", path: "../poetry-ui"
 gem "poetry-charts", path: "../poetry-charts"
+gem "poetry-agent", path: "../poetry-agent" # the MCP server exe + the WebMCP runtime
 
 # The three paginator gems the /pagination guide demos live - and the
 # standing install proof for `poetry:pagination` (detection mode ran here
