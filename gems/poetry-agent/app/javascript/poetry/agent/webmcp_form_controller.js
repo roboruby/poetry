@@ -70,5 +70,7 @@ const htmlText = (html) => {
   const doc = new DOMParser().parseFromString(html, "text/html")
   for (const node of doc.querySelectorAll("script, style, noscript, template, nav, header, footer, aside")) node.remove()
   const region = doc.querySelector("[data-webmcp-result]") || doc.querySelector("main") || doc.body
-  return (region?.textContent || "").replace(/\s+/g, " ").trim()
+  // Element boundaries become spaces (textContent runs adjacent items together).
+  const spaced = new DOMParser().parseFromString((region?.innerHTML || "").replace(/<[^>]+>/g, " "), "text/html")
+  return (spaced.body.textContent || "").replace(/\s+/g, " ").trim()
 }
