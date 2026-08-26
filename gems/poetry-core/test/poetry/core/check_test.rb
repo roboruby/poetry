@@ -156,7 +156,7 @@ module Poetry
 
       def test_webmcp_form_autosubmit_is_get_only
         tool = %(tool: { name: "a", description: "b", autosubmit: true })
-        mutating = %(<%= poetry_webmcp_form(url: "/x", ) + '#{tool}' + %q() do |f| %><% end %>)
+        mutating = "<%= poetry_webmcp_form(url: \"/x\", #{tool}) do |f| %><% end %>"
 
         assert_includes rules(mutating), "webmcp-autosubmit"
         assert_empty rules(mutating.sub("url:", "method: :get, url:"))
