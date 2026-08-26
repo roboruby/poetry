@@ -78,6 +78,14 @@ module Poetry
           end
         end
 
+        # The operate surface: activate a tab by its value (registered per
+        # instance, opt-in - see poetry-agent).
+        tool :set_value,
+             description: "Activate the tab whose value matches and show its panel.",
+             params: { value: { type: "string", required: true, description: "The tab's value." } },
+             executes: %i[tabs set_value],
+             mutating: true
+
         option :default, :string,
                doc: "The value of the server-rendered active tab; defaults to the first enabled tab. Raises when it " \
                     "matches no tab."

@@ -270,6 +270,29 @@ module Poetry
         end
       end
 
+      # Declares a form as a WebMCP tool - the declarative registration
+      # path: the <form> carries toolname/tooldescription, so a WebMCP
+      # browser registers it as an agent-callable tool with NO JavaScript
+      # (the parameter schema is synthesized from the controls; each
+      # parameter's description comes from its <label>, so the poetry
+      # FormBuilder's model-derived labels describe the tool for free;
+      # tool_description: on a field overrides one). Defaults the builder
+      # to Poetry::Ui::FormBuilder. autosubmit: true is GET-only by
+      # construction - a mutating form always keeps the user's Submit.
+      #
+      # @example A read-only lookup the agent may submit itself
+      #   <%= poetry_webmcp_form(url: orders_path, method: :get,
+      #                          tool: { name: "find_orders", description: "Search orders by timeframe.",
+      #                                  autosubmit: true }) do |form| %>
+      #     <%= form.field(:timeframe, tool_description: "A relative range such as last_7_days.") %>
+      #   <% end %>
+      # @see Poetry::Ui::Webmcp
+      def poetry_webmcp_form(tool:, **options, &)
+        options[:builder] ||= FormBuilder
+        options[:html] = (options[:html] || {}).merge(Webmcp.form_attributes(tool, method: options[:method]))
+        form_with(**options, &)
+      end
+
       # The key text is the content block: poetry_kbd { "⌘" }.
       #
       # @example

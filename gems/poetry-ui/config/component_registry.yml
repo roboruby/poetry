@@ -2517,6 +2517,28 @@ components:
         actions:
         - method: removeChip
           'on': click
+    tools:
+    - name: set_value
+      description: Select the option whose value matches; pass an empty string to
+        select nothing.
+      inputSchema:
+        type: object
+        properties:
+          value:
+            type: string
+            description: The option value to select.
+        required:
+        - value
+      annotations:
+        readOnlyHint: false
+        untrustedContentHint: false
+      executes: poetry--core--combobox#setValue
+    - name: clear
+      description: Clear the current selection.
+      annotations:
+        readOnlyHint: false
+        untrustedContentHint: false
+      executes: poetry--core--combobox#clear
   poetry/ui/command:
     class_name: Poetry::Ui::Command::Component
     identifier: poetry--ui--command
@@ -4049,6 +4071,19 @@ components:
       - identifier: poetry--core--dialog
         actions:
         - method: close
+    tools:
+    - name: open
+      description: Open the dialog.
+      annotations:
+        readOnlyHint: false
+        untrustedContentHint: false
+      executes: poetry--core--dialog#open
+    - name: close
+      description: Close the dialog.
+      annotations:
+        readOnlyHint: false
+        untrustedContentHint: false
+      executes: poetry--core--dialog#close
   poetry/ui/drawer:
     class_name: Poetry::Ui::Drawer::Component
     identifier: poetry--ui--drawer
@@ -4255,6 +4290,19 @@ components:
         - method: open
     - element: close
       controllers: []
+    tools:
+    - name: open
+      description: Open the dialog.
+      annotations:
+        readOnlyHint: false
+        untrustedContentHint: false
+      executes: poetry--core--drawer#open
+    - name: close
+      description: Close the dialog.
+      annotations:
+        readOnlyHint: false
+        untrustedContentHint: false
+      executes: poetry--core--drawer#close
   poetry/ui/dropdown_menu:
     class_name: Poetry::Ui::DropdownMenu::Component
     identifier: poetry--ui--dropdown_menu
@@ -9311,6 +9359,19 @@ components:
       - identifier: poetry--core--sheet
         actions:
         - method: close
+    tools:
+    - name: open
+      description: Open the dialog.
+      annotations:
+        readOnlyHint: false
+        untrustedContentHint: false
+      executes: poetry--core--sheet#open
+    - name: close
+      description: Close the dialog.
+      annotations:
+        readOnlyHint: false
+        untrustedContentHint: false
+      executes: poetry--core--sheet#close
   poetry/ui/sidebar:
     class_name: Poetry::Ui::Sidebar::Component
     identifier: poetry--ui--sidebar
@@ -10240,6 +10301,21 @@ components:
         actions:
         - method: activate
           'on': click
+    tools:
+    - name: set_value
+      description: Activate the tab whose value matches and show its panel.
+      inputSchema:
+        type: object
+        properties:
+          value:
+            type: string
+            description: The tab's value.
+        required:
+        - value
+      annotations:
+        readOnlyHint: false
+        untrustedContentHint: false
+      executes: poetry--core--tabs#setValue
   poetry/ui/tag_group:
     class_name: Poetry::Ui::TagGroup::Component
     identifier: poetry--ui--tag_group
@@ -11702,6 +11778,7 @@ helpers:
   poetry_table_header: {}
   poetry_table_row: {}
   poetry_tooltip_provider: {}
+  poetry_webmcp_form: {}
 blocks:
   action-bar:
     title: Action bar
@@ -12001,6 +12078,7 @@ helper_args:
   poetry_tooltip_provider: 0
   poetry_tree: 0
   poetry_typeset: 0
+  poetry_webmcp_form: 0
 form_builder:
   rules:
   - 'Model-bound forms use form_with(model:, builder: Poetry::Ui::FormBuilder) - inside

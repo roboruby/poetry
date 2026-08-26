@@ -25,6 +25,53 @@ module Poetry
         ApplicationController.renderer.render(inline: FORM_ERB, locals: { model: model }, layout: false)
       end
 
+      WEBMCP_FORM_ERB = <<~ERB
+        <%= poetry_webmcp_form(model: model, url: "/contacts", method: :get,
+                               tool: { name: "find_contact", description: "Find a contact by email.",
+                                       autosubmit: true }) do |form| %>
+          <%= form.field(:email, tool_description: "The contact's email address.") %>
+          <%= form.field(:nickname) %>
+        <% end %>
+      ERB
+
+      def test_webmcp_form_declares_the_tool_and_parameter_overrides
+        html = ApplicationController.renderer.render(inline: WEBMCP_FORM_ERB,
+                                                     locals: { model: Contact.new }, layout: false)
+        form_tag = html[/<form[^>]*>/]
+        email_input = html[/<input[^>]*name="[^"]*\[email\]"[^>]*>/]
+        nickname_input = html[/<input[^>]*name="[^"]*\[nickname\]"[^>]*>/]
+
+        assert_includes form_tag, 'toolname="find_contact"'
+        assert_includes form_tag, 'tooldescription="Find a contact by email."'
+        assert_includes form_tag, 'toolautosubmit=""'
+        assert_includes email_input, %(toolparamdescription="The contact&#39;s email address."),
+                        "attribute-escaped"
+        refute_includes nickname_input, "toolparamdescription", "the label describes the parameter by default"
+        refute_includes html, "tool_description", "the Ruby option never leaks into markup"
+      end
+
+      def test_webmcp_autosubmit_is_get_only
+        erb = <<~ERB
+          <%= poetry_webmcp_form(model: model, url: "/contacts",
+                                 tool: { name: "create_contact", description: "Create a contact.",
+                                         autosubmit: true }) do |form| %>
+          <% end %>
+        ERB
+        error = assert_raises(ActionView::Template::Error) do
+          ApplicationController.renderer.render(inline: erb, locals: { model: Contact.new }, layout: false)
+        end
+
+        assert_match(/autosubmit is only allowed on GET forms/, error.message)
+      end
+
+      def test_webmcp_tool_name_follows_the_spec_grammar
+        assert_raises(ArgumentError) { Poetry::Ui::Webmcp.form_attributes({ name: "no spaces", description: "x" }) }
+        assert_raises(ArgumentError) { Poetry::Ui::Webmcp.form_attributes({ name: "ok", description: " " }) }
+        assert_raises(ArgumentError) { Poetry::Ui::Webmcp.form_attributes({ name: "ok", description: "x", nope: 1 }) }
+        assert_equal({ toolname: "ok.tool-1", tooldescription: "x" },
+                     Poetry::Ui::Webmcp.form_attributes({ "name" => "ok.tool-1", "description" => " x " }))
+      end
+
       def test_a_clean_model_renders_label_input_hint_wired_together
         html = render_form(Contact.new(email: "a@b.c"))
 

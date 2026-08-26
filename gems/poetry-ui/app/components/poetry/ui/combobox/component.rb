@@ -403,6 +403,18 @@ module Poetry
           end
         end
 
+        # The operate surface: what an in-page agent may do to a rendered
+        # combobox (registered per instance, opt-in - see poetry-agent).
+        tool :set_value,
+             description: "Select the option whose value matches; pass an empty string to select nothing.",
+             params: { value: { type: "string", required: true, description: "The option value to select." } },
+             executes: %i[combobox set_value],
+             mutating: true
+        tool :clear,
+             description: "Clear the current selection.",
+             executes: %i[combobox clear],
+             mutating: true
+
         option :value, :string, doc: "The committed value; with multiple:, an array of values."
         option :name, :string, doc: "The form field name on the native <select>; multiple: appends [] for you."
         option :placeholder, :string,

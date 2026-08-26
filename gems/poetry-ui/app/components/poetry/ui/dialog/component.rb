@@ -83,6 +83,19 @@ module Poetry
           end
         end
 
+        # The operate surface: open/close a rendered dialog (registered per
+        # instance, opt-in - see poetry-agent). Bare actions on purpose:
+        # Sheet and Drawer re-controller the root, and a bare `executes:`
+        # re-resolves to THEIR controller at projection time.
+        tool :open,
+             description: "Open the dialog.",
+             executes: :open,
+             mutating: true
+        tool :close,
+             description: "Close the dialog.",
+             executes: :close,
+             mutating: true
+
         option :dismissible, :boolean, default: true,
                                        doc: "Backdrop clicks close the dialog; false keeps confirmations from being " \
                                             "dismissed accidentally (Esc still closes)."

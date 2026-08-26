@@ -73,6 +73,11 @@ module Poetry
       # Own-line controls slot in as as: values; group-shaped
       # controls get dedicated methods (radio_group, slider, otp_field).
       def field(method, as: :input, hint: nil, **input_options)
+        # tool_description: - the declarative WebMCP parameter override
+        # (the label describes the parameter otherwise).
+        if input_options.key?(:tool_description)
+          input_options.merge!(Webmcp.param_attributes(input_options.delete(:tool_description)))
+        end
         field_component = field_for(method, hint: hint,
                                             label: input_options.delete(:label),
                                             orientation: input_options.delete(:orientation),
