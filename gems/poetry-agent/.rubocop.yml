@@ -1,0 +1,59 @@
+plugins:
+  - rubocop-performance
+  - rubocop-minitest
+  - rubocop-rake
+
+AllCops:
+  TargetRubyVersion: 3.3
+  NewCops: enable
+  SuggestExtensions: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+Layout/LineLength:
+  Max: 120
+
+Metrics/BlockLength:
+  Exclude:
+    - "test/**/*"
+    - "*.gemspec"
+    - "rakelib/**/*.rake"
+
+Naming/FileName:
+  # lib/poetry-agent.rb is the hyphenated Bundler auto-require entrypoint for the
+  # Poetry::Agent namespace; its name must match the gem, not snake_case.
+  Exclude:
+    - "lib/poetry-agent.rb"
+
+# The inner modules carry the YARD docs, not the namespace wrappers.
+Style/Documentation:
+  Enabled: false
+
+# The MCP::Server constructor aggregates its projected surfaces (entries,
+# catalog, blocks, skills) plus the two roots (registry + host app); named
+# keyword args read clearer than any grouping object.
+Metrics/ParameterLists:
+  Max: 6
+
+# The server's request routing and the registrar payload builders are
+# deliberately long, flat dispatch tables.
+Metrics/AbcSize:
+  Enabled: false
+Metrics/CyclomaticComplexity:
+  Enabled: false
+Metrics/PerceivedComplexity:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Metrics/ClassLength:
+  Enabled: false
+Metrics/ModuleLength:
+  Enabled: false
+
+# Comprehensive, multi-assertion unit tests are intentional.
+Minitest/MultipleAssertions:
+  Enabled: false

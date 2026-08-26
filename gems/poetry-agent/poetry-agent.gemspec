@@ -1,0 +1,37 @@
+# frozen_string_literal: true
+
+require_relative "lib/poetry/agent/version"
+
+Gem::Specification.new do |spec|
+  spec.name = "poetry-agent"
+  spec.version = Poetry::Agent::VERSION
+  spec.authors = ["Matt Solt"]
+  spec.email = ["mattsolt@gmail.com"]
+
+  spec.summary = "Poetry's agent surfaces: the MCP server and the WebMCP runtime."
+  spec.description = "The agent-interop gem of the poetry component library: the boot-free " \
+                     "poetry-agent MCP server (the component contract over Model Context Protocol) " \
+                     "and the WebMCP runtime that registers rendered components' declared tools with " \
+                     "in-browser agents (document.modelContext), with declarative forms, an " \
+                     "origin-trial middleware, and safe-by-default, opt-in registration."
+  spec.homepage = "https://github.com/roboruby/poetry-agent"
+  spec.license = "MIT"
+  spec.required_ruby_version = ">= 3.3.0"
+  spec.metadata["homepage_uri"] = spec.homepage
+  spec.metadata["source_code_uri"] = spec.homepage
+  spec.metadata["rubygems_mfa_required"] = "true"
+
+  gemspec = File.basename(__FILE__)
+  spec.files = IO.popen(%w[git ls-files -z], chdir: __dir__, err: IO::NULL) do |ls|
+    ls.readlines("\x0", chomp: true).reject do |f|
+      (f == gemspec) ||
+        f.start_with?(*%w[bin/ test/ Gemfile .gitignore .rubocop.yml .yardopts .yard_coverage
+                          package.json package-lock.json vitest.config.js])
+    end
+  end
+  spec.bindir = "exe"
+  spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
+  spec.require_paths = ["lib"]
+
+  spec.add_dependency "poetry-core"
+end

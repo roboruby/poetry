@@ -1,0 +1,41 @@
+{
+  "poetry--agent--webmcp": {
+    "targets": [],
+    "values": {
+      "name": {
+        "type": "String"
+      },
+      "tools": {
+        "type": "Array"
+      },
+      "budget": {
+        "type": "Number",
+        "default": 20
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "register",
+      "unregister"
+    ],
+    "events": [
+      "poetry:webmcp:executed",
+      "poetry:webmcp:registered",
+      "poetry:webmcp:unregistered"
+    ]
+  },
+  "poetry--agent--webmcp-form": {
+    "targets": [],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [
+      "poetry:webmcp:form-submitted"
+    ]
+  }
+}

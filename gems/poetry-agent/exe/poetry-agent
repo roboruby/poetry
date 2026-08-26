@@ -1,0 +1,57 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# poetry-agent: the poetry MCP server - newline-delimited JSON-RPC 2.0
+# over stdio, serving list_components / describe_component / check /
+# compose / build_page / get_skill from the committed registry. Boot-free:
+# the gems load once per agent session (~0.4s); the Rails app never boots,
+# so every call after that is milliseconds.
+#
+# Usage: poetry-agent [registry-root]
+#   registry-root defaults to the bundled poetry-ui gem. In .mcp.json:
+#     {"mcpServers": {"poetry": {"command": "bundle", "args": ["exec", "poetry-agent"]}}}
+#
+# One gem ships this exe (poetry-agent), so the surface is the same
+# wherever the binstub resolves - the old core/ui exe-parity doctrine is
+# retired by construction.
+
+require "poetry/agent"
+
+# Skills, live helper names, and recipes ride along whenever poetry-ui is
+# bundled; the registry root defaults to the bundled poetry-ui gem.
+ui_loaded = begin
+  require "poetry/ui"
+  true
+rescue LoadError
+  false
+end
+
+root = ARGV[0] || (ui_loaded ? Poetry::Ui.root.to_s : Gem::Specification.find_all_by_name("poetry-ui").first&.gem_dir)
+registry = root && File.join(root, Poetry::Core::Registry::RELATIVE_PATH)
+unless registry && File.exist?(registry)
+  abort "poetry-agent: no component registry at #{registry || "(no poetry-ui found)"} - " \
+        "pass the poetry-ui root as the first argument"
+end
+
+# The icon set powers check's icon-name membership tier; a host without
+# poetry-lucide still checks icon-name shape.
+icon_names = begin
+  require "poetry/lucide"
+  Poetry::Core::Icons.set(:lucide).names
+rescue LoadError, Poetry::Core::Error
+  nil
+end
+
+skills, helpers, recipes =
+  if ui_loaded
+    [Poetry::Ui.agent_skills, Poetry::Ui.helper_names, Poetry::Ui.recipe_items.summaries]
+  else
+    [{}, nil, []]
+  end
+
+# app_root (Dir.pwd) is the app the agent runs in: build_page's probe/direct
+# steps read its config/theme, degrading gracefully when they cannot.
+Poetry::Agent::MCP::Server.from_registry(
+  root, icon_names: icon_names, helpers: helpers, skills: skills, app_root: Dir.pwd,
+        recipes: recipes
+).serve
