@@ -158,7 +158,7 @@ class DocsController < ApplicationController
     when "testing" then DocsMarkdown.testing(guide_entry("testing"))
     when "accessibility" then DocsMarkdown.accessibility(guide_entry("accessibility"))
     when "caching" then DocsMarkdown.caching(guide_entry("caching"))
-    when "engines" then DocsMarkdown.engines(engines_entry)
+    when "engines" then DocsMarkdown.engines(guide_entry("engines"))
     when "stable_ids" then DocsMarkdown.stable_ids(guide_entry("stable-ids"))
     when "data_table" then DocsMarkdown.data_table(guide_entry("data-table"))
     when "mcp" then DocsMarkdown.mcp(guide_entry("mcp-server"))
@@ -186,20 +186,5 @@ class DocsController < ApplicationController
 
   def guide_entry(slug)
     DocsCatalog.docs.find { |entry| entry.slug == slug }
-  end
-
-  # Staged for review: the /engines guide's entry lives here, NOT in
-  # DocsCatalog::DOCS, so the page stays out of the sidebar, palette,
-  # llms.txt, and sitemap until approved - approval means moving this
-  # Entry into the catalog verbatim and deleting this method.
-  def engines_entry
-    DocsCatalog::Entry.new(
-      slug: "engines", title: "Rails Engines", section: "docs", icon: :blocks,
-      description: "Reusable engines built on poetry ship views as Ruby and ERB with zero " \
-                   "CSS - the host's theme styles every mounted engine, so one retheme " \
-                   "command restyles the whole application, engines included. The recipe: " \
-                   "gemspec dependency, host layout, the tailwindcss-rails engines wiring, " \
-                   "and the subclass pair for engine-owned component styling."
-    )
   end
 end

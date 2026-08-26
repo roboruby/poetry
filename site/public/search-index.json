@@ -672,6 +672,48 @@
     "path": "/stable-ids#etags"
   },
   {
+    "title": "Rails Engines",
+    "page": "Rails Engines",
+    "section": "docs",
+    "path": "/engines"
+  },
+  {
+    "title": "Why this works",
+    "page": "Rails Engines",
+    "section": "docs",
+    "path": "/engines#why-it-works"
+  },
+  {
+    "title": "The engine recipe",
+    "page": "Rails Engines",
+    "section": "docs",
+    "path": "/engines#the-engine-recipe"
+  },
+  {
+    "title": "Page-level utilities: the one wiring step",
+    "page": "Rails Engines",
+    "section": "docs",
+    "path": "/engines#page-level-utilities"
+  },
+  {
+    "title": "Retheming the whole application",
+    "page": "Rails Engines",
+    "section": "docs",
+    "path": "/engines#retheming"
+  },
+  {
+    "title": "Customizing a component from an engine",
+    "page": "Rails Engines",
+    "section": "docs",
+    "path": "/engines#customizing-components"
+  },
+  {
+    "title": "Keep one theme contract",
+    "page": "Rails Engines",
+    "section": "docs",
+    "path": "/engines#one-theme-contract"
+  },
+  {
     "title": "Accessibility",
     "page": "Accessibility",
     "section": "docs",

@@ -30,9 +30,6 @@ Rails.application.routes.draw do
   get "testing" => "docs#testing", as: :testing
   get "accessibility" => "docs#accessibility", as: :accessibility
   get "caching" => "docs#caching", as: :caching
-  # Staged for review: routable but deliberately absent from DocsCatalog,
-  # so it appears in no sidebar, palette, llms.txt, or sitemap until
-  # approved (then its Entry moves into DocsCatalog::DOCS).
   get "engines" => "docs#engines", as: :engines_guide
   get "stable-ids" => "docs#stable_ids", as: :stable_ids
   get "data-table" => "docs#data_table", as: :data_table_guide

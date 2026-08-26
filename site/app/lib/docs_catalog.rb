@@ -91,6 +91,12 @@ class DocsCatalog
               description: "poetry ids are unique per render by default - what that means for " \
                        "fragment caches, Turbo morph and ETags, and the id: token contract " \
                        "that pins them when identity matters."),
+    Entry.new(slug: "engines", title: "Rails Engines", section: "docs", icon: :blocks,
+              description: "Reusable engines built on poetry ship views as Ruby and ERB with zero " \
+                       "CSS - the host's theme styles every mounted engine, so one retheme " \
+                       "command restyles the whole application, engines included. The recipe: " \
+                       "gemspec dependency, host layout, the tailwindcss-rails engines wiring, " \
+                       "and the subclass pair for engine-owned component styling."),
     Entry.new(slug: "accessibility", title: "Accessibility", section: "docs", icon: :accessibility,
               description: "What poetry guarantees by construction - required accessible names, " \
                        "Field-chain aria wiring, native form participation, overlay focus - " \
@@ -160,7 +166,7 @@ class DocsCatalog
     # order; Agent stays last in AI Native while it is experimental.
     DOC_SECTIONS = {
       "Get Started" => %w[installation theming typography testing editors api],
-      "Advanced" => %w[accessibility forms pagination data-table deferred optimistic-forms caching stable-ids],
+      "Advanced" => %w[accessibility forms pagination data-table deferred optimistic-forms caching stable-ids engines],
       "AI Native" => %w[mcp-server agent-skills recipes page-agent]
     }.freeze
 
