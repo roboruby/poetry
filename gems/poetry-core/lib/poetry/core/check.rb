@@ -43,7 +43,7 @@ module Poetry
       #
       # @api private
       class Catalog
-        PASSTHROUGH = %w[class id key data aria role style if unless].freeze
+        PASSTHROUGH = %w[class id key webmcp data aria role style if unless].freeze
         COLOR_FAMILIES = %w[
           slate gray zinc neutral stone red orange amber yellow lime green emerald
           teal cyan sky blue indigo violet purple fuchsia pink rose
@@ -126,6 +126,12 @@ module Poetry
         # the controllers section's whole-API view.
         def stimulus_wiring(path)
           @components.dig(path, "stimulus") || []
+        end
+
+        # The component's declared agent tools (the operate surface a
+        # webmcp: instance registers).
+        def tools_of(path)
+          @components.dig(path, "tools") || []
         end
 
         def option_names(path)
@@ -241,6 +247,8 @@ module Poetry
       # @api private
       class Linter
         ACTION_TOKEN = /(?:[\w.:@-]+->)?(?<identifier>poetry--[\w-]+)#(?<method>\w+)/
+        # A webmcp: instance name (snake_case, at most 64 characters).
+        WEBMCP_NAME = /\A[a-z][a-z0-9_-]{0,63}\z/
         POETRY_PREFIX = Stimulus::Manifest::POETRY_PREFIX
         # A literal `nil` argument, distinct from "no literal to check"
         # (dynamic values return plain nil and are left alone).
@@ -260,6 +268,7 @@ module Poetry
           # requirement opened in the first). Reset per lint: the Runner
           # reuses one Linter across files.
           @instances = []
+          @webmcp_names = {}
           document = Herb.parse(source)
           findings = document.errors.map do |error|
             Finding.new(rule: "parse-error", severity: :error, message: error.message,
@@ -273,6 +282,7 @@ module Poetry
           walk(document.value) do |node|
             findings.concat(ruby_findings(node, bindings)) if erb?(node)
             findings.concat(attribute_findings(node)) if node.is_a?(Herb::AST::HTMLAttributeNode)
+            findings.concat(form_autosubmit_findings(node)) if open_tag?(node, "form")
           end
           findings.concat(missing_slot_findings)
           findings.sort_by { |finding| [finding.line || 0, finding.rule] }
@@ -346,7 +356,7 @@ module Poetry
           path = @catalog.path_for(helper)
           unless path
             return helper_findings(helper, call, base_line) + yieldless_findings(helper, call, line) +
-                   helper_arity_findings(helper, call, line)
+                   helper_arity_findings(helper, call, line) + webmcp_form_findings(helper, call, line)
           end
 
           record_binding(call, path, bindings, line)
@@ -354,7 +364,8 @@ module Poetry
           findings = pairs.flat_map do |key, value, kw_line|
             option_findings(path, key, value, base_line + kw_line - 1)
           end
-          findings + missing_option_findings(path, helper_of(path), call, pairs, line) +
+          findings + webmcp_findings(path, pairs, line) +
+            missing_option_findings(path, helper_of(path), call, pairs, line) +
             helper_arity_findings(helper, call, line) +
             content_findings(path, helper, call, line, content_fed) +
             blockless_slot_findings(path, helper, call, pairs, line) +
@@ -914,6 +925,97 @@ module Poetry
                         message: "raw color class #{match.inspect} - use a semantic token " \
                                  "(bg-primary, text-destructive, ...)",
                         line: line_of(node))
+          end
+        end
+
+        # --- WebMCP rules (the operate surface) ---
+
+        # webmcp: on a component that declares no tools registers nothing;
+        # a name outside the tool-name grammar cannot register; a name the
+        # template already used collides (the browser rejects duplicates).
+        def webmcp_findings(path, pairs, line)
+          pair = pairs.find { |key, _value, _line| key == "webmcp" }
+          return [] unless pair
+
+          _key, value, kw_line = pair
+          at = line + kw_line - 1
+          findings = []
+          if @catalog.tools_of(path).empty?
+            findings << Finding.new(rule: "webmcp-without-tools", severity: :error,
+                                    message: "#{helper_of(path)} declares no agent tools - webmcp: has nothing " \
+                                             "to register", line: at)
+          end
+          return findings unless value.is_a?(String)
+
+          unless WEBMCP_NAME.match?(value)
+            findings << Finding.new(rule: "webmcp-name", severity: :error,
+                                    message: "webmcp: #{value.inspect} is not a valid instance name " \
+                                             "(snake_case, at most 64 characters)", line: at)
+          end
+          if (first = @webmcp_names[value])
+            findings << Finding.new(rule: "webmcp-duplicate-name", severity: :warning,
+                                    message: "webmcp: #{value.inspect} already names the instance on line " \
+                                             "#{first} - the browser rejects duplicate tool names", line: at)
+          else
+            @webmcp_names[value] = at
+          end
+          findings
+        end
+
+        # poetry_webmcp_form(tool: { autosubmit: true }) must be a GET form:
+        # an agent may submit a read-only lookup by itself, never a
+        # mutation (the helper raises at render; this catches it first).
+        def webmcp_form_findings(helper, call, line)
+          return [] unless helper == "poetry_webmcp_form"
+
+          pairs = keyword_pairs(call)
+          tool = hash_argument(call, "tool")
+          unless tool && hash_pairs(tool).any? { |key, value| key == "autosubmit" && value.is_a?(Prism::TrueNode) }
+            return []
+          end
+
+          method = pairs.find { |key, _value, _line| key == "method" }&.then { |(_key, value, _line)| value }
+          return [] if method.is_a?(String) && method.casecmp?("get")
+
+          [Finding.new(rule: "webmcp-autosubmit", severity: :error,
+                       message: "autosubmit: true needs method: :get - an agent may submit a read-only " \
+                                "lookup by itself, never a mutating form", line: line)]
+        end
+
+        # <form toolautosubmit> whose method is not GET (absent = GET).
+        def form_autosubmit_findings(node)
+          attributes = node.child_nodes.compact.grep(Herb::AST::HTMLAttributeNode)
+          names = attributes.to_h { |attribute| [attribute_name(attribute)&.downcase, attribute_value(attribute)] }
+          return [] unless names.key?("toolautosubmit")
+
+          method = names["method"]
+          return [] if method.nil? || method.casecmp?("get")
+
+          [Finding.new(rule: "webmcp-autosubmit", severity: :error,
+                       message: "toolautosubmit on a #{method.upcase} form - an agent may submit a read-only " \
+                                "lookup by itself, never a mutating form", line: line_of(node))]
+        end
+
+        def open_tag?(node, name)
+          node.class.name.to_s.end_with?("HTMLOpenTagNode") && node.respond_to?(:tag_name) &&
+            node.tag_name.respond_to?(:value) && node.tag_name.value.to_s.casecmp?(name)
+        end
+
+        # The Prism::HashNode passed as a keyword argument, or nil.
+        def hash_argument(call, key)
+          hash = call.arguments&.arguments&.find { |argument| argument.is_a?(Prism::KeywordHashNode) }
+          pair = hash&.elements&.find do |element|
+            element.is_a?(Prism::AssocNode) && element.key.respond_to?(:unescaped) && element.key.unescaped == key
+          end
+          pair&.value if pair&.value.is_a?(Prism::HashNode)
+        end
+
+        # [key, value node] pairs of a literal hash.
+        def hash_pairs(hash)
+          hash.elements.filter_map do |element|
+            next unless element.is_a?(Prism::AssocNode) && element.key.respond_to?(:unescaped)
+
+            [element.key.unescaped, element.value]
           end
         end
 

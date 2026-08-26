@@ -38,6 +38,11 @@ module Poetry
           },
           "poetry/ui/select" => { "options" => [{ "name" => "name" },
                                                 { "name" => "placeholder" }] },
+          "poetry/ui/tabs" => {
+            "options" => [{ "name" => "label" }],
+            "tools" => [{ "name" => "set_value", "description" => "Activate the tab whose value matches.",
+                          "executes" => "poetry--core--tabs#setValue" }]
+          },
           "poetry/ui/icon" => ICON_ENTRY,
           "poetry/ui/alert" => {
             "styles" => [{ "name" => "variant", "variants" => %w[default destructive],
@@ -95,10 +100,12 @@ module Poetry
                             "variants" => %w[inline-start inline-end block-start block-end] }]
           },
           "poetry_sidebar_group" => {},
+          "poetry_webmcp_form" => { "yields" => "the form builder" },
           "poetry_chart" => { "yields" => "the dispatched chart component" }
         },
         icon_names: %w[circle-alert folder-plus triangle-alert],
-        helper_args: { "poetry_button" => 0, "poetry_sidebar_group" => 0, "poetry_chart" => 1 }
+        helper_args: { "poetry_button" => 0, "poetry_sidebar_group" => 0, "poetry_chart" => 1,
+                       "poetry_webmcp_form" => 0 }
       ).freeze
 
       def lint(source) = Check.lint(source, catalog: CATALOG)
@@ -119,6 +126,48 @@ module Poetry
           }
         }
       ).freeze
+
+      # --- WebMCP rules ---
+
+      def test_webmcp_on_a_component_with_tools_is_clean
+        assert_empty rules(%(<%= poetry_tabs(label: "Sections", webmcp: "sections") do |tabs| %><% end %>))
+      end
+
+      def test_webmcp_on_a_component_without_tools_is_an_error
+        finding = first(%(<%= poetry_select(name: "plan", webmcp: "plan") %>), "webmcp-without-tools")
+
+        assert_equal :error, finding.severity
+        assert_match(/poetry_select declares no agent tools/, finding.message)
+      end
+
+      def test_webmcp_names_follow_the_grammar_and_never_repeat
+        assert_includes rules(%(<%= poetry_tabs(webmcp: "Bad Name") do |t| %><% end %>)), "webmcp-name"
+
+        source = <<~ERB
+          <%= poetry_tabs(webmcp: "sections") do |t| %><% end %>
+          <%= poetry_tabs(webmcp: "sections") do |t| %><% end %>
+        ERB
+        duplicate = first(source, "webmcp-duplicate-name")
+
+        assert_equal :warning, duplicate.severity
+        assert_equal 2, duplicate.line
+        assert_match(/already names the instance on line 1/, duplicate.message)
+      end
+
+      def test_webmcp_form_autosubmit_is_get_only
+        mutating = %(<%= poetry_webmcp_form(url: "/x", tool: { name: "a", description: "b", autosubmit: true }) do |f| %><% end %>)
+
+        assert_includes rules(mutating), "webmcp-autosubmit"
+        assert_empty rules(mutating.sub("url:", "method: :get, url:"))
+        assert_empty rules(%(<%= poetry_webmcp_form(url: "/x", tool: { name: "a", description: "b" }) do |f| %><% end %>))
+      end
+
+      def test_toolautosubmit_markup_is_get_only
+        assert_includes rules(%(<form toolname="x" tooldescription="y" toolautosubmit method="post"></form>)),
+                        "webmcp-autosubmit"
+        assert_empty rules(%(<form toolname="x" tooldescription="y" toolautosubmit method="get"></form>))
+        assert_empty rules(%(<form toolname="x" tooldescription="y" toolautosubmit></form>))
+      end
 
       def test_the_catalog_exposes_the_element_level_stimulus_wiring
         catalog = Poetry::Core::Check::Catalog.from_registry(Poetry::Core.root)
