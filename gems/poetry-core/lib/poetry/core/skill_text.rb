@@ -175,6 +175,12 @@ module Poetry
             when composing into an already-padded frame.
           - One visual theme per app (chosen at install); components read
             tokens, never restate them.
+          - Browser agents (WebMCP): opt a rendered component into the user's
+            own agent with `webmcp: "name"` on the call - only components that
+            declare tools (Combobox, Dialog, Sheet, Drawer, Tabs; `describe_component`
+            at `full` lists them); a form becomes a tool with
+            `poetry_webmcp_form(tool: { name:, description: })` (autosubmit is
+            GET-only). Needs the poetry-agent gem; check gates the opt-ins.
           - Check comes LAST: run `bin/rails poetry:check` (or the poetry MCP
             `check` tool - instant, no app boot) as the FINAL action, after
             your last edit. An edit made after your last check is unverified

@@ -118,8 +118,29 @@ module Poetry
                    "(MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch."
         end
         lines.concat(wiring_lines(entry))
+        lines.concat(tool_lines(entry))
         (entry["agent_rules"] || []).each { |rule| lines << "- RULE: #{rule}" }
         "#{lines.join("\n")}\n"
+      end
+
+      # The operate surface: the tools an in-page agent may invoke on a
+      # rendered instance once the call opts in (`webmcp: "name"`) - the
+      # same line describe_component prints, so no surface can lag.
+      def tool_lines(entry)
+        (entry["tools"] || []).map do |tool|
+          schema = tool["inputSchema"] || {}
+          required = schema["required"] || []
+          params = (schema["properties"] || {}).map do |name, spec|
+            facets = [spec["type"]]
+            facets << "required" if required.include?(name)
+            facets << "one of #{spec["enum"].join("|")}" if spec["enum"]
+            "#{name} (#{facets.join(", ")})"
+          end
+          facets = [tool.dig("annotations", "readOnlyHint") ? "read-only" : "mutating"]
+          facets << "params: #{params.join(", ")}" if params.any?
+          "- tool #{tool["name"]} (#{facets.join("; ")}) - #{tool["description"]} " \
+            "[opt in with webmcp: \"name\" on the call; dispatches #{tool["executes"]}]"
+        end
       end
 
       # The styling contract: every data-slot part with its state

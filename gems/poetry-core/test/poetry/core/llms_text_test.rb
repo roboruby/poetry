@@ -34,6 +34,24 @@ module Poetry
         end
       end
 
+      def test_full_lists_the_declared_tools
+        with_registry do |registry|
+          entry = { "class_name" => "Poetry::Ui::Tabs::Component", "styles" => [], "options" => [], "slots" => [],
+                    "tools" => [{ "name" => "set_value", "description" => "Activate the tab whose value matches.",
+                                  "inputSchema" => { "type" => "object",
+                                                     "properties" => { "value" => { "type" => "string" } },
+                                                     "required" => ["value"] },
+                                  "annotations" => { "readOnlyHint" => false, "untrustedContentHint" => false },
+                                  "executes" => "poetry--core--tabs#setValue" }] }
+          full = LlmsText.new(registry: FakeRegistry.new(entries: { "poetry/ui/tabs" => entry },
+                                                         blocks: registry.blocks,
+                                                         source_root: registry.source_root)).full
+
+          assert_includes full, "- tool set_value (mutating; params: value (string, required))"
+          assert_includes full, "dispatches poetry--core--tabs#setValue"
+        end
+      end
+
       def test_index_lists_blocks_with_the_decision_hierarchy
         with_registry do |registry|
           index = LlmsText.new(registry: registry).index
