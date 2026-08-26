@@ -19,3 +19,11 @@ begin
 rescue LoadError
   # poetry-core is not installed yet — the umbrella still loads on its own.
 end
+
+# poetry-agent supplies the MCP server and the WebMCP runtime; same dev-path
+# arrangement until published.
+begin
+  require "poetry/agent"
+rescue LoadError
+  # poetry-agent is not installed yet — the umbrella still loads without it.
+end
