@@ -242,6 +242,14 @@ module Poetry
           wiring = component.stimulus_definitions
           entry["stimulus"] = plain(wiring) if wiring.any?
         end
+        # The agent-tool projection (tool declarations, MCP Tool-shaped):
+        # the component's operate surface - what an in-page agent may
+        # invoke on a rendered instance, and which Stimulus action each
+        # tool dispatches.
+        if component.respond_to?(:tool_definitions)
+          tools = component.tool_definitions
+          entry["tools"] = plain(tools) if tools.any?
+        end
         entry
       end
 

@@ -35,6 +35,26 @@ module Poetry
         end
       end
 
+      # tool declarations feed the registry's tools section (the operate
+      # surface), MCP Tool-shaped with the resolved dispatch descriptor.
+      module ToolProbe
+        class Component < Poetry::Core::Component
+          use_stimulus do
+            on :root do
+              controller(:accordion) { register }
+            end
+          end
+
+          tool :toggle_section, description: "Expand or collapse the section.",
+                                params: { value: { type: "string", required: true } },
+                                executes: :toggle, mutating: true
+
+          def call
+            content_tag(:div, content, **stimulus_attributes_for(:root))
+          end
+        end
+      end
+
       def registry
         # Explicit component list: descendant discovery inside the test suite
         # would pick up test-defined probe components.
@@ -52,6 +72,18 @@ module Poetry
 
         assert_equal(["poetry--core--accordion"], controllers.map { |c| c["identifier"] })
         assert_includes controllers.first["actions"], "toggle"
+      end
+
+      def test_tools_come_from_tool_declarations
+        entry = Registry.new(components: [ToolProbe::Component])
+                        .entries.fetch("poetry/core/registry_test/tool_probe")
+        tool = entry.fetch("tools").fetch(0)
+
+        assert_equal "toggle_section", tool["name"]
+        assert_equal "poetry--core--accordion#toggle", tool["executes"]
+        assert_equal ["value"], tool.dig("inputSchema", "required")
+        assert_equal({ "readOnlyHint" => false, "untrustedContentHint" => false }, tool["annotations"])
+        refute registry.entries.fetch("poetry/core/x").key?("tools")
       end
 
       def test_entry_carries_the_introspected_surface
