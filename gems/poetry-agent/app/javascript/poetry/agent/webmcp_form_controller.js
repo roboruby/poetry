@@ -48,7 +48,7 @@ export default class extends Controller {
       const response = await fetch(url, init)
       const text = await response.text()
       const outcome = response.ok ? "succeeded" : "failed"
-      const summary = `${form.getAttribute("toolname")} ${outcome} (${response.status})${excerpt(text)}`
+      const summary = `${form.getAttribute("toolname")} ${outcome} (${response.status})${excerpt(text, response.headers.get("content-type") || "")}`
       this.dispatch("form-submitted", { prefix: "poetry:webmcp", detail: { status: response.status, ok: response.ok } })
       return summary
     } catch (error) {
@@ -57,8 +57,18 @@ export default class extends Controller {
   }
 }
 
-// A short, tag-stripped excerpt of the response body for the agent.
-const excerpt = (text) => {
-  const plain = text.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
+// A short excerpt of the response for the agent. HTML answers are parsed:
+// scripts, styles, and chrome are dropped, and a region the app marks
+// `data-webmcp-result` wins over <main>, which wins over the body - so a
+// search page answers with its results, not its navigation.
+const excerpt = (text, contentType = "") => {
+  const plain = contentType.includes("html") || /^\s*</.test(text) ? htmlText(text) : text.replace(/\s+/g, " ").trim()
   return plain ? `: ${plain.slice(0, 500)}` : ""
+}
+
+const htmlText = (html) => {
+  const doc = new DOMParser().parseFromString(html, "text/html")
+  for (const node of doc.querySelectorAll("script, style, noscript, template, nav, header, footer, aside")) node.remove()
+  const region = doc.querySelector("[data-webmcp-result]") || doc.querySelector("main") || doc.body
+  return (region?.textContent || "").replace(/\s+/g, " ").trim()
 }

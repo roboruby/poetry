@@ -44,6 +44,17 @@ describe("poetry--agent--webmcp-form", () => {
     expect(fetchMock.mock.calls[0][1].method).toBe("GET")
   })
 
+  it("answers with the marked result region of an HTML page, scripts and chrome dropped", async () => {
+    const page = `<html><head><script>localStorage.getItem("x")</script><title>Docs</title></head>
+      <body><nav>Home Docs</nav><main><h1>WebMCP</h1><p>intro</p>
+      <div data-webmcp-result><ul><li>Combobox - components</li><li>Combobox testing - docs</li></ul></div></main>
+      <footer>poetry 0.0.1</footer></body></html>`
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(page, { status: 200, headers: { "content-type": "text/html" } }))
+    const { promise } = agentSubmit()
+
+    expect(await promise).toBe("find_contact succeeded (200): Combobox - components Combobox testing - docs")
+  })
+
   it("reports failures with the status and server text", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("Email can't be blank", { status: 422 }))
     const { promise } = agentSubmit()
