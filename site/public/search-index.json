@@ -450,6 +450,12 @@
     "path": "/page-agent#what"
   },
   {
+    "title": "Or hand the agent tools",
+    "page": "Page Agent",
+    "section": "docs",
+    "path": "/page-agent#or-tools"
+  },
+  {
     "title": "Activate",
     "page": "Page Agent",
     "section": "docs",
@@ -814,6 +820,12 @@
     "page": "MCP Server",
     "section": "docs",
     "path": "/mcp-server#tools"
+  },
+  {
+    "title": "Over HTTP",
+    "page": "MCP Server",
+    "section": "docs",
+    "path": "/mcp-server#http"
   },
   {
     "title": "Routing a brief",
@@ -6126,36 +6138,6 @@
     "path": "/libraries/charts#palette"
   },
   {
-    "title": "Simple Form",
-    "page": "Simple Form",
-    "section": "libraries",
-    "path": "/libraries/simple-form"
-  },
-  {
-    "title": "How it works",
-    "page": "Simple Form",
-    "section": "libraries",
-    "path": "/libraries/simple-form#how-it-works"
-  },
-  {
-    "title": "Install",
-    "page": "Simple Form",
-    "section": "libraries",
-    "path": "/libraries/simple-form#install"
-  },
-  {
-    "title": "What restyles",
-    "page": "Simple Form",
-    "section": "libraries",
-    "path": "/libraries/simple-form#what-restyles"
-  },
-  {
-    "title": "The end state",
-    "page": "Simple Form",
-    "section": "libraries",
-    "path": "/libraries/simple-form#end-state"
-  },
-  {
     "title": "Agent",
     "page": "Agent",
     "section": "libraries",
@@ -6190,6 +6172,36 @@
     "page": "Agent",
     "section": "libraries",
     "path": "/libraries/agent#whats-in-the-gem"
+  },
+  {
+    "title": "Simple Form",
+    "page": "Simple Form",
+    "section": "libraries",
+    "path": "/libraries/simple-form"
+  },
+  {
+    "title": "How it works",
+    "page": "Simple Form",
+    "section": "libraries",
+    "path": "/libraries/simple-form#how-it-works"
+  },
+  {
+    "title": "Install",
+    "page": "Simple Form",
+    "section": "libraries",
+    "path": "/libraries/simple-form#install"
+  },
+  {
+    "title": "What restyles",
+    "page": "Simple Form",
+    "section": "libraries",
+    "path": "/libraries/simple-form#what-restyles"
+  },
+  {
+    "title": "The end state",
+    "page": "Simple Form",
+    "section": "libraries",
+    "path": "/libraries/simple-form#end-state"
   },
   {
     "title": "Extract",

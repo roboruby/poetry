@@ -10,6 +10,10 @@
   serve_source = <<~CODE
     bundle exec poetry-agent   # stdio MCP server; run it from your app directory
   CODE
+  http_source = <<~CODE
+    # config/routes.rb - the same server over HTTP (POST JSON-RPC), read-only
+    mount Poetry::Agent::MCP::HTTP.new => "/mcp"
+  CODE
   llms_source = <<~CODE
     /poetry/llms.txt        # the index: every component, one line each, plus the blocks catalog
     /poetry/llms-full.txt   # the full contracts
@@ -96,6 +100,21 @@
         </tbody>
       </table>
     <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="http">Over HTTP</h2>
+      <p>
+        The same server answers POST JSON-RPC at a same-origin path, which is
+        where in-page bridges look for a site's own MCP server - this site
+        serves it at <code>/mcp</code>. It is the stdio server's exact
+        surface (one assembly, two transports), read-only by construction,
+        and refuses foreign origins. Pair it with the
+        <%= link_to "WebMCP runtime", webmcp_path %> for the browser side.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: http_source, language: "ruby", label: "Mount") %>
   </section>
 
   <section class="flex flex-col gap-4">

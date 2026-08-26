@@ -27,6 +27,16 @@
     </p>
   </section>
 
+  <section class="flex flex-col gap-3">
+    <h2 class="text-lg font-medium" id="or-tools">Or hand the agent tools</h2>
+    <p class="max-w-2xl text-muted-foreground">
+      This demo operates the human UI through the accessibility tree. The other path is
+      <%= link_to "WebMCP", webmcp_path, class: "underline underline-offset-4" %>: the same components
+      register typed tools with the user's own browser agent, so it calls <code class="text-foreground">poetry.sections.set_value</code>
+      instead of finding the tab and clicking it - and the two paths compose.
+    </p>
+  </section>
+
   <section class="flex max-w-md flex-col gap-3">
     <h2 class="text-lg font-medium" id="activate">Activate</h2>
     <%= poetry_field_group do %>

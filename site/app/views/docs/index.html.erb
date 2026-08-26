@@ -36,7 +36,9 @@
       <p class="text-sm text-muted-foreground">
         The component registry, agent rules,
         <%= link_to "llms.txt", "/poetry/llms.txt", class: "underline underline-offset-4" %>,
-        an MCP server, a generated
+        an MCP server, the
+        <%= link_to "WebMCP runtime", webmcp_path, class: "underline underline-offset-4" %>
+        (rendered components register their tools with the user's browser agent), a generated
         <%= link_to "API reference", "/api", class: "underline underline-offset-4" %>,
         and three installable Claude Code skills (component
         usage, the poetry-design taste layer, and the poetry-component

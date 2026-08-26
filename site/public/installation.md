@@ -17,6 +17,7 @@ file is the copy-and-follow version.
 gem "poetry-core"
 gem "poetry-ui"
 gem "poetry-lucide"        # default icon set; most components render an icon
+gem "poetry-agent"         # the poetry-agent MCP server exe + the WebMCP runtime
 # gem "poetry-charts"      # optional: server-rendered SVG charts
 ```
 
@@ -41,7 +42,9 @@ yourself:
 
 ```js
 import { registerPoetryControllers } from "@poetry/controllers"
+import { registerPoetryAgent } from "@poetry/agent"
 registerPoetryControllers(application)
+registerPoetryAgent(application)   // WebMCP: rendered components' tools for the user's browser agent
 ```
 
 For pre-paint dark mode, put `poetry_color_scheme_script` in your layout

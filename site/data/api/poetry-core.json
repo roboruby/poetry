@@ -281,7 +281,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 105
+          "line": 106
         },
         {
           "name": "component_module",
@@ -303,7 +303,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 94
+          "line": 95
         },
         {
           "name": "component_path",
@@ -325,7 +325,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 85
+          "line": 86
         },
         {
           "name": "component_title",
@@ -347,7 +347,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 115
+          "line": 116
         },
         {
           "name": "config",
@@ -364,7 +364,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 74
+          "line": 75
         },
         {
           "name": "internal_component!",
@@ -381,7 +381,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 65
+          "line": 66
         },
         {
           "name": "required_content",
@@ -399,7 +399,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 139
+          "line": 140
         },
         {
           "name": "requires_content",
@@ -429,7 +429,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 132
+          "line": 133
         },
         {
           "name": "attributes",
@@ -446,7 +446,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 256
+          "line": 263
         },
         {
           "name": "classnames",
@@ -476,7 +476,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 322
+          "line": 329
         },
         {
           "name": "component_data_attributes",
@@ -493,7 +493,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 152
+          "line": 153
         },
         {
           "name": "dom_id_token",
@@ -519,7 +519,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 356
+          "line": 363
         },
         {
           "name": "ensure_content!",
@@ -536,7 +536,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 172
+          "line": 173
         },
         {
           "name": "html_attributes",
@@ -558,7 +558,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 282
+          "line": 289
         },
         {
           "name": "initialize",
@@ -596,7 +596,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 211
+          "line": 212
         },
         {
           "name": "persisted?",
@@ -613,7 +613,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 183
+          "line": 184
         },
         {
           "name": "poetry_instance_id",
@@ -638,7 +638,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 300
+          "line": 307
         },
         {
           "name": "script_json",
@@ -664,7 +664,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 342
+          "line": 349
         },
         {
           "name": "slot_data_attributes",
@@ -690,7 +690,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 161
+          "line": 162
         },
         {
           "name": "stable_key",
@@ -708,7 +708,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 289
+          "line": 296
         },
         {
           "name": "to_html",
@@ -730,7 +730,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 369
+          "line": 376
         }
       ],
       "constants": [
@@ -745,6 +745,11 @@
           "docstring": "The top-level locale key component translations live under when a\nclass sets no i18n_namespace of its own."
         },
         {
+          "name": "DESCRIPTION_LIMIT",
+          "value": "500",
+          "docstring": "The agent-legibility budget for a tool description."
+        },
+        {
           "name": "DYNAMIC_DEFAULT",
           "value": ":dynamic",
           "docstring": "The registry's marker for a proc default (its value depends on\nother attributes and is unknowable statically)."
@@ -753,6 +758,16 @@
           "name": "KEYWORD_PARAMETER_KINDS",
           "value": "%i[key keyreq].freeze",
           "docstring": "The parameter kinds that ARE the keyword surface."
+        },
+        {
+          "name": "NAME_LIMIT",
+          "value": "64",
+          "docstring": "The house character budgets: names stay far under the spec's\n128-char full-name cap (instance prefixes join later);\ndescriptions stay inside the agent-legibility budget."
+        },
+        {
+          "name": "NAME_PATTERN",
+          "value": "/\\A[a-z][a-z0-9_]*\\z/",
+          "docstring": "Tool and param names stay inside the WebMCP tool-name grammar\n(ASCII alphanumerics, `_`, `-`, `.`) with poetry's stricter\nsnake_case convention, so a composed full name (instance prefix +\ntool name) can never need escaping."
         },
         {
           "name": "OPEN_PARAMETER_KINDS",
@@ -783,6 +798,11 @@
           "name": "VAR_NAME",
           "value": "/\\A--[a-z][a-z0-9-]*\\*?\\z/",
           "docstring": "A trailing * declares a dynamic family (charts' per-series\n--color-*), matched by prefix at verify time."
+        },
+        {
+          "name": "WEBMCP_CONTROLLER",
+          "value": "\"poetry--agent--webmcp\"",
+          "docstring": "The registrar controller (poetry-agent's) that a `webmcp:` root\nregisters; its manifest entry joins core's catalog when the gem\nloads, so the wiring validates like any other controller."
         }
       ]
     },
@@ -793,6 +813,589 @@
       "docstring": "The concerns composed into {Poetry::Core::Component}: styles, options,\nslots, Stimulus wiring, introspection, and part declarations.",
       "examples": [],
       "file": "app/components/poetry/core/concerns/styles.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Core::Concerns::AgentTools",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The agent-tool contract: class-level declarations of the\ncomponent's agent-callable tools - the \"operate\" projection of the\ncomponent's Stimulus surface. A tool names one action an in-page\nagent may invoke on a rendered instance (WebMCP's\n`document.modelContext`, or any client that reads the registry),\ndescribed in MCP `Tool` shape: name, description, JSON-Schema\ninput, and safety annotations.\n\n  tool :set_value,\n       description: \"Select the option whose value matches.\",\n       params: { value: { type: \"string\", required: true,\n                          description: \"The option value to select.\" } },\n       executes: :set_value,\n       mutating: true\n\nDeclarations are validated at CLASS LOAD, like use_stimulus:\n`executes:` resolves through {Concerns::Stimulus#stimulus_action}\nagainst the component's declared controllers and the controllers\nmanifest, so a tool can never name an action the JS does not\ndefine - declare `use_stimulus` before `tool`. The resolved\ndescriptor (\"poetry--core--combobox#setValue\") is the tool's wire\nform: registration runtimes dispatch it verbatim.\n\nSafety doctrine (non-negotiable): tools are read-only unless\ndeclared `mutating: true` (`annotations.readOnlyHint` inverts it),\n`untrusted_content: true` marks tools whose output carries\nuser-authored content, and declaring a tool exposes NOTHING by\nitself - emission is opt-in per rendered instance, owned by the\nregistration runtime, never default-on.\n\nProjection: {ClassMethods#tool_definitions} feeds the registry's\nper-component `tools` section (plain strings, YAML-safe), which\nthe agent surfaces (llms.txt, MCP server, skills, docs) and the\nWebMCP registration payload all read - one contract, every\nsurface.",
+      "examples": [],
+      "file": "app/components/poetry/core/concerns/agent_tools.rb",
+      "methods": [
+        {
+          "name": "own_tools",
+          "scope": "class",
+          "group": null,
+          "signature": "own_tools",
+          "docstring": "This class's own tool declarations, name => {Tool}.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{Symbol => Tool}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 132
+        },
+        {
+          "name": "resolve_tool_action",
+          "scope": "class",
+          "group": null,
+          "signature": "resolve_tool_action(tool)",
+          "docstring": "The bare Stimulus descriptor a tool dispatches on THIS class.",
+          "params": [
+            {
+              "name": "tool",
+              "types": [
+                "Tool"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "e.g. \"poetry--core--combobox#setValue\""
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 190
+        },
+        {
+          "name": "tool",
+          "scope": "class",
+          "group": null,
+          "signature": "tool(name, description:, executes:, params: nil, input_schema: nil, title: nil, mutating: false, untrusted_content: false)",
+          "docstring": "Declares one agent-callable tool of this component.\n\nrubocop:disable Metrics/ParameterLists -- one keyword per MCP Tool field",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol"
+              ],
+              "text": "the tool's name (snake_case; composes into\nthe registered full name, so it must satisfy the WebMCP name\ngrammar)"
+            },
+            {
+              "name": "description",
+              "types": [
+                "String"
+              ],
+              "text": "what the tool does and when to use\nit - positive, single-function, non-empty (agents pick tools\nby this text)"
+            },
+            {
+              "name": "executes",
+              "types": [
+                "Symbol",
+                "Array(Symbol, Symbol)"
+              ],
+              "text": "the Stimulus\naction the tool dispatches: a bare method resolves across the\ncomponent's declared controllers; `[:controller, :method]`\npins one. Validated against the controllers manifest at\nclass load."
+            },
+            {
+              "name": "params",
+              "types": [
+                "Hash{Symbol => Hash}",
+                "nil"
+              ],
+              "text": "the tool's parameters\nas `name => spec`; each spec requires `type:` and may carry\n`required: true` (folded into the schema's `required` list)\nplus any JSON-Schema keywords (`description:`, `enum:`, ...)"
+            },
+            {
+              "name": "input_schema",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "a complete JSON-Schema object\nfor advanced shapes - mutually exclusive with `params:`"
+            },
+            {
+              "name": "title",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "optional human-readable label for\nagent UIs"
+            },
+            {
+              "name": "mutating",
+              "types": [
+                "Boolean"
+              ],
+              "text": "declare true when invoking the tool\nchanges state; tools are read-only by default\n(`annotations.readOnlyHint` is the inverse of this flag)"
+            },
+            {
+              "name": "untrusted_content",
+              "types": [
+                "Boolean"
+              ],
+              "text": "declare true when the\ntool's output can carry user-authored content"
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [
+            {
+              "title": "A parameterless UI-state tool",
+              "text": "tool :open, description: \"Open the dialog.\",\n     executes: :open, mutating: true"
+            }
+          ],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 111
+        },
+        {
+          "name": "tool_definitions",
+          "scope": "class",
+          "group": null,
+          "signature": "tool_definitions",
+          "docstring": "The registry-shaped projection of the resolved tools: MCP\n`Tool` fields (name / title / description / inputSchema /\nannotations) plus the `executes` dispatch descriptor - plain\nstring keys, YAML round-trippable.\n\n`executes` resolves HERE, against the projecting class: a\nsubclass that re-controllers its root (Sheet over Dialog)\nprojects its own controller's descriptor for an inherited\nbare `executes: :open`, and a pinned controller the subclass\nno longer wires raises instead of projecting a descriptor the\nrendered DOM cannot dispatch.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 168
+        },
+        {
+          "name": "tools",
+          "scope": "class",
+          "group": null,
+          "signature": "tools",
+          "docstring": "The effective tools after inheritance: superclass chain\nroot-first, a subclass redeclaring a name replaces it.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{Symbol => Tool}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 140
+        },
+        {
+          "name": "webmcp_enabled?",
+          "scope": "instance",
+          "group": null,
+          "signature": "webmcp_enabled?",
+          "docstring": "Whether this rendered instance opted into WebMCP registration\n(`webmcp: true` or `webmcp: \"name\"` on the call).",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 308
+        },
+        {
+          "name": "webmcp_name",
+          "scope": "instance",
+          "group": null,
+          "signature": "webmcp_name",
+          "docstring": "The instance name the registrar composes tool names from\n(`poetry.{name}.{tool}`): the explicit `webmcp:` string, else the\ncomponent title (give instances explicit names when a page\nrenders several of one component - the browser rejects\nduplicate tool names).",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": "nil when not enabled"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 319
+        },
+        {
+          "name": "webmcp_tool_definition",
+          "scope": "instance",
+          "group": null,
+          "signature": "webmcp_tool_definition(definition)",
+          "docstring": "The per-instance enrichment hook - override to refine a tool's\nprojected definition with what only the rendered instance knows.\nMust return a JSON-serializable Hash with the same keys.",
+          "params": [
+            {
+              "name": "definition",
+              "types": [
+                "Hash"
+              ],
+              "text": "the class-level projection"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 347
+        },
+        {
+          "name": "webmcp_tools",
+          "scope": "instance",
+          "group": null,
+          "signature": "webmcp_tools",
+          "docstring": "The instance's registration payload: its resolved tool\ndefinitions, each passed through {#webmcp_tool_definition} so a\ncomponent can enrich a schema with rendered facts (Tabs adds the\nrendered tab values as an enum).",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 337
+        }
+      ],
+      "constants": [
+        {
+          "name": "DESCRIPTION_LIMIT",
+          "value": "500",
+          "docstring": "The agent-legibility budget for a tool description."
+        },
+        {
+          "name": "NAME_LIMIT",
+          "value": "64",
+          "docstring": "The house character budgets: names stay far under the spec's\n128-char full-name cap (instance prefixes join later);\ndescriptions stay inside the agent-legibility budget."
+        },
+        {
+          "name": "NAME_PATTERN",
+          "value": "/\\A[a-z][a-z0-9_]*\\z/",
+          "docstring": "Tool and param names stay inside the WebMCP tool-name grammar\n(ASCII alphanumerics, `_`, `-`, `.`) with poetry's stricter\nsnake_case convention, so a composed full name (instance prefix +\ntool name) can never need escaping."
+        },
+        {
+          "name": "WEBMCP_CONTROLLER",
+          "value": "\"poetry--agent--webmcp\"",
+          "docstring": "The registrar controller (poetry-agent's) that a `webmcp:` root\nregisters; its manifest entry joins core's catalog when the gem\nloads, so the wiring validates like any other controller."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Core::Concerns::AgentTools::Tool",
+      "type": "class",
+      "superclass": "Struct",
+      "docstring": "One declared tool. `executes` is the declared action spec\n(`[method]` or `[controller, method]`) - resolved to a bare\nStimulus descriptor per PROJECTING class (see\n{ClassMethods#tool_definitions}); `input_schema` is the\nnormalized JSON-Schema object (string keys) or nil for a\nparameterless tool.",
+      "examples": [],
+      "file": "app/components/poetry/core/concerns/agent_tools.rb",
+      "methods": [
+        {
+          "name": "description",
+          "scope": "instance",
+          "group": null,
+          "signature": "description",
+          "docstring": "Returns the value of attribute description",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of description"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 55
+        },
+        {
+          "name": "description=",
+          "scope": "instance",
+          "group": null,
+          "signature": "description=(value)",
+          "docstring": "Sets the attribute description",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute description to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 55
+        },
+        {
+          "name": "executes",
+          "scope": "instance",
+          "group": null,
+          "signature": "executes",
+          "docstring": "Returns the value of attribute executes",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of executes"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 55
+        },
+        {
+          "name": "executes=",
+          "scope": "instance",
+          "group": null,
+          "signature": "executes=(value)",
+          "docstring": "Sets the attribute executes",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute executes to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 55
+        },
+        {
+          "name": "input_schema",
+          "scope": "instance",
+          "group": null,
+          "signature": "input_schema",
+          "docstring": "Returns the value of attribute input_schema",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of input_schema"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 55
+        },
+        {
+          "name": "input_schema=",
+          "scope": "instance",
+          "group": null,
+          "signature": "input_schema=(value)",
+          "docstring": "Sets the attribute input_schema",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute input_schema to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 55
+        },
+        {
+          "name": "mutating",
+          "scope": "instance",
+          "group": null,
+          "signature": "mutating",
+          "docstring": "Returns the value of attribute mutating",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of mutating"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 55
+        },
+        {
+          "name": "mutating=",
+          "scope": "instance",
+          "group": null,
+          "signature": "mutating=(value)",
+          "docstring": "Sets the attribute mutating",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute mutating to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 55
+        },
+        {
+          "name": "name",
+          "scope": "instance",
+          "group": null,
+          "signature": "name",
+          "docstring": "Returns the value of attribute name",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of name"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 55
+        },
+        {
+          "name": "name=",
+          "scope": "instance",
+          "group": null,
+          "signature": "name=(value)",
+          "docstring": "Sets the attribute name",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute name to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 55
+        },
+        {
+          "name": "title",
+          "scope": "instance",
+          "group": null,
+          "signature": "title",
+          "docstring": "Returns the value of attribute title",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of title"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 55
+        },
+        {
+          "name": "title=",
+          "scope": "instance",
+          "group": null,
+          "signature": "title=(value)",
+          "docstring": "Sets the attribute title",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute title to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 55
+        },
+        {
+          "name": "untrusted_content",
+          "scope": "instance",
+          "group": null,
+          "signature": "untrusted_content",
+          "docstring": "Returns the value of attribute untrusted_content",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of untrusted_content"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 55
+        },
+        {
+          "name": "untrusted_content=",
+          "scope": "instance",
+          "group": null,
+          "signature": "untrusted_content=(value)",
+          "docstring": "Sets the attribute untrusted_content",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute untrusted_content to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/agent_tools.rb",
+          "line": 55
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Core::Concerns::AgentTools::ToolError",
+      "type": "class",
+      "superclass": "Poetry::Core::Error",
+      "docstring": "Raised at class load for an invalid tool declaration.",
+      "examples": [],
+      "file": "app/components/poetry/core/concerns/agent_tools.rb",
       "methods": [],
       "constants": []
     },
@@ -1557,7 +2160,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/core/concerns/stimulus.rb",
-          "line": 251
+          "line": 254
         },
         {
           "name": "stimulus_attributes",
@@ -1569,7 +2172,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/core/concerns/stimulus.rb",
-          "line": 235
+          "line": 238
         },
         {
           "name": "stimulus_attributes_for",
@@ -1598,7 +2201,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/stimulus.rb",
-          "line": 284
+          "line": 287
         },
         {
           "name": "stimulus_event",
@@ -1610,7 +2213,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/core/concerns/stimulus.rb",
-          "line": 256
+          "line": 259
         }
       ],
       "constants": []

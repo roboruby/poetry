@@ -274,13 +274,13 @@ class DocsCatalog
                 description: "Nine chart families computed in Ruby and shipped as finished SVG in " \
                            "the initial HTML - valid in print, PDF, email, and without " \
                            "JavaScript, with live streaming and a frozen chart-spec for BYO engines."),
-        Entry.new(slug: "simple-form", title: "Simple Form", section: "libraries", icon: :"clipboard-list",
-                description: "The migration bridge from Simple Form: one initializer re-maps " \
-                           "f.input onto Poetry fields, so existing forms restyle without a rewrite."),
       Entry.new(slug: "agent", title: "Agent", section: "libraries", icon: :"radio-tower",
                 description: "The agent-interop gem: the boot-free poetry-agent MCP server for " \
                            "coding agents, and the WebMCP runtime that registers rendered " \
                            "components' declared tools with the user's browser agent."),
+        Entry.new(slug: "simple-form", title: "Simple Form", section: "libraries", icon: :"clipboard-list",
+                description: "The migration bridge from Simple Form: one initializer re-maps " \
+                           "f.input onto Poetry fields, so existing forms restyle without a rewrite."),
       Entry.new(slug: "extract", title: "Extract", section: "libraries", icon: :pipette,
                 description: "Domain-to-theme extraction: point it at a public site and it writes " \
                            "a DESIGN.md plus deterministic Poetry tokens, ready for the " \

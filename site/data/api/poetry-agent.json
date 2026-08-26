@@ -1,0 +1,326 @@
+{
+  "gem": "poetry-agent",
+  "objects": [
+    {
+      "path": "Poetry",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The poetry namespace.",
+      "examples": [],
+      "file": "lib/poetry/agent.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent",
+      "type": "module",
+      "superclass": null,
+      "docstring": "poetry-agent: the agent-interop gem of the poetry family - the\nsurfaces through which agents reach the component contract, built\nonce (the registry) and projected many ways:\n\n- {MCP::Server} - the boot-free `poetry-agent` MCP server (discover:\n  list_components / describe_component / check / compose / build_page\n  / get_skill) for coding agents in editors.\n- {WebMCP} - the in-page runtime: rendered components' declared tools\n  (`tool` declarations in poetry-core) registered with the browser's\n  `document.modelContext` for the user's own agent (operate), plus the\n  declarative-form path and the origin-trial delivery.\n\nBoth read the same committed registries; neither is a second source.",
+      "examples": [],
+      "file": "lib/poetry/agent.rb",
+      "methods": [
+        {
+          "name": "config",
+          "scope": "class",
+          "group": null,
+          "signature": "config",
+          "docstring": "The gem's configuration (origin-trial tokens, registration budget).",
+          "params": [],
+          "return": {
+            "types": [
+              "Poetry::Agent::Config"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent.rb",
+          "line": 40
+        },
+        {
+          "name": "configure",
+          "scope": "class",
+          "group": null,
+          "signature": "configure",
+          "docstring": "Yields the configuration for block-style setup.",
+          "params": [],
+          "return": {
+            "types": [
+              "Poetry::Agent::Config"
+            ],
+            "text": ""
+          },
+          "examples": [
+            {
+              "title": "config/initializers/poetry_agent.rb",
+              "text": "Poetry::Agent.configure do |config|\n  config.origin_trial_tokens = [ENV[\"WEBMCP_ORIGIN_TRIAL_TOKEN\"]].compact\nend"
+            }
+          ],
+          "file": "lib/poetry/agent.rb",
+          "line": 52
+        },
+        {
+          "name": "root",
+          "scope": "class",
+          "group": null,
+          "signature": "root",
+          "docstring": "Gem root (the directory containing lib/, exe/, app/).",
+          "params": [],
+          "return": {
+            "types": [
+              "Pathname"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent.rb",
+          "line": 33
+        }
+      ],
+      "constants": [
+        {
+          "name": "VERSION",
+          "value": "\"0.0.1\"",
+          "docstring": "The gem version (lockstep with the poetry family)."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::Config",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The gem's configuration. Every WebMCP surface is OFF until a rendered\ninstance opts in; the settings here shape delivery and budgets, never\nexposure.",
+      "examples": [],
+      "file": "lib/poetry/agent/config.rb",
+      "methods": [
+        {
+          "name": "current",
+          "scope": "class",
+          "group": null,
+          "signature": "current",
+          "docstring": "The process-wide configuration instance.",
+          "params": [],
+          "return": {
+            "types": [
+              "Config"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/config.rb",
+          "line": 33
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Config"
+            ],
+            "text": "a new instance of Config"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/config.rb",
+          "line": 25
+        },
+        {
+          "name": "origin_trial_tokens",
+          "scope": "instance",
+          "group": null,
+          "signature": "origin_trial_tokens",
+          "docstring": "Origin-trial tokens the {OriginTrial} middleware serves in the\n`Origin-Trial` response header (one per browser trial - Chrome and\nEdge run separate trials). Empty by default: local development\nenables the API through the browser flag instead.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/config.rb",
+          "line": 15
+        },
+        {
+          "name": "origin_trial_tokens=",
+          "scope": "instance",
+          "group": null,
+          "signature": "origin_trial_tokens=(value)",
+          "docstring": "Origin-trial tokens the {OriginTrial} middleware serves in the\n`Origin-Trial` response header (one per browser trial - Chrome and\nEdge run separate trials). Empty by default: local development\nenables the API through the browser flag instead.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/config.rb",
+          "line": 15
+        },
+        {
+          "name": "registration_budget",
+          "scope": "instance",
+          "group": null,
+          "signature": "registration_budget",
+          "docstring": "The per-page registration budget the registrar enforces: past\nthis many registered tools on one document, further registrations\nare dropped with a console warning (each tool costs the agent\ncontext; overlap confuses tool choice).",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/config.rb",
+          "line": 23
+        },
+        {
+          "name": "registration_budget=",
+          "scope": "instance",
+          "group": null,
+          "signature": "registration_budget=(value)",
+          "docstring": "The per-page registration budget the registrar enforces: past\nthis many registered tools on one document, further registrations\nare dropped with a console warning (each tool costs the agent\ncontext; overlap confuses tool choice).",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/config.rb",
+          "line": 23
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::Engine",
+      "type": "class",
+      "superclass": "Rails::Engine",
+      "docstring": "The Rails engine: merges the WebMCP controllers manifest into\npoetry-core's catalog (so `webmcp:` roots validate at render), serves\nthe runtime JavaScript through the importmap-first channel, and\nmounts the origin-trial middleware. Loading the gem is the only\nintegration step; the host imports `@poetry/agent` beside\n`@poetry/controllers`.",
+      "examples": [],
+      "file": "lib/poetry/agent/engine.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::MCP::HTTP",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The MCP server over HTTP: a Rack app answering JSON-RPC 2.0 POSTs\n(the Streamable HTTP transport's request/response half) with the\nsame pure {Server#handle} the stdio exe uses - one surface, two\ntransports. Mount it at the conventional same-origin `/mcp`, which\nis where in-page bridges (WebMCP site MCP server packs\namong them) look for a site's own MCP server.\n\nRead-only by construction (every tool describes or verifies), so\nexposing it is a discovery surface, not a mutation surface. The\nOrigin header is validated against the request's own host, so a\ncross-site page cannot drive it through a visitor's browser.",
+      "examples": [
+        {
+          "title": "config/routes.rb",
+          "text": "mount Poetry::Agent::MCP::HTTP.new => \"/mcp\""
+        }
+      ],
+      "file": "lib/poetry/agent/mcp/http.rb",
+      "methods": [
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(server = nil)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "server",
+              "types": [
+                "Server",
+                "Proc",
+                "nil"
+              ],
+              "text": "the server, a lambda building it\non first request, or nil for the bundled assembly"
+            }
+          ],
+          "return": {
+            "types": [
+              "HTTP"
+            ],
+            "text": "a new instance of HTTP"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/http.rb",
+          "line": 27
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::WebMCP",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The WebMCP runtime's Ruby side. The contract itself lives in\npoetry-core (the `tool` declarations, their registry projection, and\nthe per-instance `webmcp:` payload a component root carries); this\nmodule owns what only the runtime gem knows: the Stimulus controller\nidentifiers the JS registers, the controllers manifest that lets\ncore's attribute builder validate them, and origin-trial delivery.\n\nNothing here exposes a tool by itself - a rendered instance opts in\n(`webmcp: \"country\"` on the helper call), and the registrar\ncontroller registers that instance's declared tools with\n`document.modelContext` on connect, aborting them on disconnect.",
+      "examples": [],
+      "file": "lib/poetry/agent/webmcp.rb",
+      "methods": [
+        {
+          "name": "manifest_path",
+          "scope": "class",
+          "group": null,
+          "signature": "manifest_path",
+          "docstring": "The committed controllers manifest (the JS surface of the two\ncontrollers), merged into poetry-core's catalog by the engine so\nuse_stimulus / the Builder validate poetry--agent--* names exactly\nlike core's own.",
+          "params": [],
+          "return": {
+            "types": [
+              "Pathname"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/webmcp.rb",
+          "line": 32
+        }
+      ],
+      "constants": [
+        {
+          "name": "CONTROLLER",
+          "value": "\"poetry--agent--webmcp\"",
+          "docstring": "The registrar controller: reads a root's payload and registers\nits tools, dispatching each to the component's own controller."
+        },
+        {
+          "name": "FORM_CONTROLLER",
+          "value": "\"poetry--agent--webmcp-form\"",
+          "docstring": "The declarative-form controller: answers an agent-invoked submit\nwith the form's outcome through `SubmitEvent.respondWith`."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::WebMCP::OriginTrial",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "Rack middleware serving the `Origin-Trial` response header on HTML\nresponses, one token per browser trial (Chrome and Edge run\nseparate trials and issue separate tokens). Tokens come from\n{Poetry::Agent::Config#origin_trial_tokens}; with none configured\nthe middleware is a pass-through, so it is always safe to mount.\n\nLocal development needs no token: enable the API through the\nbrowser flag instead.",
+      "examples": [
+        {
+          "title": "config/application.rb",
+          "text": "config.middleware.use Poetry::Agent::WebMCP::OriginTrial"
+        }
+      ],
+      "file": "lib/poetry/agent/webmcp/origin_trial.rb",
+      "methods": [
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(app, tokens: nil)",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "OriginTrial"
+            ],
+            "text": "a new instance of OriginTrial"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/webmcp/origin_trial.rb",
+          "line": 20
+        }
+      ],
+      "constants": []
+    }
+  ]
+}

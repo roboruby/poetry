@@ -224,11 +224,16 @@ class AgentSurfaceTest < ActionDispatch::IntegrationTest
 
     substitutions = { "{name}" => "registry.json", "{skill}/{file}" => "poetry/SKILL.md",
                       "{archive}" => "poetry.tar.gz" }
-    doc["paths"].each_key do |path|
+    doc["paths"].each do |path, item|
       concrete = substitutions.reduce(path) { |p, (from, to)| p.sub(from, to) }
       next if concrete.include?("{")
 
-      get concrete
+      if item.key?("post")
+        post concrete, params: { jsonrpc: "2.0", id: 1, method: "initialize", params: {} }.to_json,
+                       headers: { "CONTENT_TYPE" => "application/json" }
+      else
+        get concrete
+      end
 
       assert_response :success, "documented endpoint #{path} does not answer at #{concrete}"
     end

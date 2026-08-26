@@ -143,7 +143,7 @@
           { icon: :"chart-line", title: "Charts with no client engine",
             body: "All 9 chart families compute their geometry in Ruby and ship as SVG in the initial HTML. They hold up in print, PDF, email, and with JavaScript turned off." },
           { icon: :bot, title: "Legible to your coding agent",
-            body: "A committed registry, llms.txt, an MCP server, and generated skills mean your agent composes the same vetted components you do, with the same guardrails." }
+            body: "A committed registry, llms.txt, an MCP server, and generated skills mean your coding agent composes the same vetted components you do. And with WebMCP, the components you render register their tools with the user's own browser agent." }
         ].each_with_index do |benefit, i| %>
           <div data-controller="reveal" data-reveal style="--reveal-delay: <%= (i % 2) * 0.15 %>s">
             <%= poetry_card do |card| %>
@@ -246,7 +246,8 @@
           <% end %>
           <% accordion.with_item(value: "agents", title: "What does my coding agent get?") do %>
             A committed component registry, llms.txt, an MCP server with
-            compose and check tools, and generated skills. Agents build
+            compose and check tools, and generated skills. In the browser, WebMCP
+            registers rendered components' tools with the user's own agent. Agents build
             from the same contracts you read in the docs.
           <% end %>
           <% accordion.with_item(value: "viewcomponent", title: "Does it replace ViewComponent?") do %>

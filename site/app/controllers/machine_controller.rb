@@ -11,7 +11,8 @@ class MachineController < ApplicationController
   ENDPOINTS = {
     "/llms.txt" => { summary: "Site index for agents: every docs page with a one-line description", type: "text/markdown" },
     "/poetry/llms.txt" => { summary: "Component catalog for agents", type: "text/markdown" },
-    "/poetry/llms-full.txt" => { summary: "Full component contracts + Stimulus wiring", type: "text/markdown" },
+    "/poetry/llms-full.txt" => { summary: "Full component contracts + Stimulus wiring + agent tools", type: "text/markdown" },
+    "/mcp" => { summary: "The poetry MCP server over HTTP: POST JSON-RPC 2.0 (initialize, tools/list, tools/call) - the same read-only tools as `bundle exec poetry-agent`, for in-page bridges", type: "application/json", method: :post },
     "/r/registry.json" => { summary: "Registry index (shadcn registry schema)", type: "application/json" },
     "/r/registries.json" => { summary: "Directory of registries", type: "application/json" },
     "/r/{name}" => { summary: "One registry item as <name>.json (shadcn registry-item schema: https://ui.shadcn.com/schema/registry-item.json)", type: "application/json" },
@@ -85,12 +86,14 @@ class MachineController < ApplicationController
     params = path.scan(/\{(\w+)\}/).flatten.map do |name|
       { name: name, in: "path", required: true, schema: { type: "string" } }
     end
-    {
-      get: {
-        summary: meta[:summary],
-        parameters: params.presence,
-        responses: { "200" => { description: "OK", content: { meta[:type] => {} } } }
-      }.compact
+    operation = {
+      summary: meta[:summary],
+      parameters: params.presence,
+      responses: { "200" => { description: "OK", content: { meta[:type] => {} } } }
     }
+    if meta[:method] == :post
+      operation[:requestBody] = { required: true, content: { "application/json" => { schema: { type: "object" } } } }
+    end
+    { (meta[:method] || :get) => operation.compact }
   end
 end
