@@ -10,6 +10,17 @@ module Poetry
     # real controllers manifest via the shared catalog.
     class MCPServerTest < Minitest::Test
       ENTRIES = {
+        "poetry/ui/tabs" => {
+          "class_name" => "Poetry::Ui::Tabs::Component", "bem_block" => "poetry-ui-tabs",
+          "styles" => [], "options" => [], "slots" => [],
+          "controllers" => [{ "identifier" => "poetry--core--tabs", "targets" => [], "values" => [],
+                              "actions" => %w[activate setValue] }],
+          "tools" => [{ "name" => "set_value", "description" => "Activate the tab whose value matches.",
+                        "inputSchema" => { "type" => "object", "properties" => { "value" => { "type" => "string" } },
+                                           "required" => ["value"] },
+                        "annotations" => { "readOnlyHint" => false, "untrustedContentHint" => false },
+                        "executes" => "poetry--core--tabs#setValue" }]
+        },
         "poetry/ui/button" => {
           "class_name" => "Poetry::Ui::Button::Component", "bem_block" => "poetry-ui-button",
           "styles" => [{ "name" => "variant", "type" => "symbol", "variants" => %w[default destructive ghost] }],
@@ -87,6 +98,15 @@ module Poetry
       end
 
       # --- protocol ---
+
+      def test_describe_component_full_surfaces_the_declared_tools
+        reply = call("describe_component", "name" => "tabs", "detail" => "full")
+        text = reply.is_a?(String) ? reply : reply.dig("result", "content", 0, "text")
+
+        assert_includes text, "- tool set_value (mutating; params: value (string, required))"
+        assert_includes text, "dispatches poetry--core--tabs#setValue"
+        assert_includes text, "opt in with webmcp:"
+      end
 
       def test_initialize_advertises_protocol_and_server_info
         result = server.handle("id" => 1, "method" => "initialize")["result"]

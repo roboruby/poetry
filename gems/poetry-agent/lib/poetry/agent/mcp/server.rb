@@ -884,8 +884,27 @@ module Poetry
           # part-contract tier - restyle via [data-slot=...], never by
           # guessing at internal markup.
           (entry["parts"] || []).each { |part| lines << part_line(part) }
+          # The operate surface: the tools an in-page agent may invoke on a
+          # rendered instance once the call opts in (webmcp: "name").
+          (entry["tools"] || []).each { |tool| lines << tool_line(tool) }
           (entry["agent_rules"] || []).each { |rule| lines << "- RULE: #{rule}" }
           lines
+        end
+
+        def tool_line(tool)
+          schema = tool["inputSchema"] || {}
+          required = schema["required"] || []
+          params = (schema["properties"] || {}).map do |name, spec|
+            facets = [spec["type"]]
+            facets << "required" if required.include?(name)
+            facets << "one of #{spec["enum"].join("|")}" if spec["enum"]
+            "#{name} (#{facets.join(", ")})"
+          end
+          hint = tool.dig("annotations", "readOnlyHint") ? "read-only" : "mutating"
+          facets = [hint]
+          facets << "params: #{params.join(", ")}" if params.any?
+          "- tool #{tool["name"]} (#{facets.join("; ")}) - #{tool["description"]} " \
+            "[opt in with webmcp: \"name\" on the call; dispatches #{tool["executes"]}]"
         end
 
         def part_line(part)
