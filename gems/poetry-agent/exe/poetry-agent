@@ -17,41 +17,12 @@
 
 require "poetry/agent"
 
-# Skills, live helper names, and recipes ride along whenever poetry-ui is
-# bundled; the registry root defaults to the bundled poetry-ui gem.
-ui_loaded = begin
-  require "poetry/ui"
-  true
-rescue LoadError
-  false
+# One assembly for the exe and the HTTP mount (Poetry::Agent::MCP::Bundled):
+# the registry root defaults to the bundled poetry-ui gem; skills, live
+# helper names, recipes, and icon names ride along when their gems are
+# bundled; app_root (Dir.pwd) is the app the agent runs in.
+begin
+  Poetry::Agent::MCP::Bundled.server(root: ARGV[0], app_root: Dir.pwd).serve
+rescue ArgumentError => e
+  abort "poetry-agent: #{e.message}"
 end
-
-root = ARGV[0] || (ui_loaded ? Poetry::Ui.root.to_s : Gem::Specification.find_all_by_name("poetry-ui").first&.gem_dir)
-registry = root && File.join(root, Poetry::Core::Registry::RELATIVE_PATH)
-unless registry && File.exist?(registry)
-  abort "poetry-agent: no component registry at #{registry || "(no poetry-ui found)"} - " \
-        "pass the poetry-ui root as the first argument"
-end
-
-# The icon set powers check's icon-name membership tier; a host without
-# poetry-lucide still checks icon-name shape.
-icon_names = begin
-  require "poetry/lucide"
-  Poetry::Core::Icons.set(:lucide).names
-rescue LoadError, Poetry::Core::Error
-  nil
-end
-
-skills, helpers, recipes =
-  if ui_loaded
-    [Poetry::Ui.agent_skills, Poetry::Ui.helper_names, Poetry::Ui.recipe_items.summaries]
-  else
-    [{}, nil, []]
-  end
-
-# app_root (Dir.pwd) is the app the agent runs in: build_page's probe/direct
-# steps read its config/theme, degrading gracefully when they cannot.
-Poetry::Agent::MCP::Server.from_registry(
-  root, icon_names: icon_names, helpers: helpers, skills: skills, app_root: Dir.pwd,
-        recipes: recipes
-).serve

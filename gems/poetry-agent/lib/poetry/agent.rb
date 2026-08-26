@@ -5,6 +5,8 @@ require "poetry/core"
 require_relative "agent/version"
 require_relative "agent/config"
 require_relative "agent/mcp/server"
+require_relative "agent/mcp/bundled"
+require_relative "agent/mcp/http"
 require_relative "agent/webmcp"
 require_relative "agent/engine" if defined?(Rails::Engine)
 
