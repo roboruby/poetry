@@ -15,6 +15,7 @@ module Poetry
       # @example config/application.rb
       #   config.middleware.use Poetry::Agent::WebMCP::OriginTrial
       class OriginTrial
+        # The response header the browsers read (Rack 3 lowercases names).
         HEADER = "origin-trial"
 
         def initialize(app, tokens: nil)
@@ -22,6 +23,10 @@ module Poetry
           @tokens = tokens
         end
 
+        # The Rack entry point: appends the tokens to HTML responses.
+        #
+        # @param env [Hash] the Rack environment
+        # @return [Array(Integer, Hash, Object)] the downstream response
         def call(env)
           status, headers, body = @app.call(env)
           tokens = (@tokens || Poetry::Agent.config.origin_trial_tokens).compact.reject(&:empty?)

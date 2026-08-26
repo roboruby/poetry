@@ -20,6 +20,7 @@ module Poetry
       # @example config/routes.rb
       #   mount Poetry::Agent::MCP::HTTP.new => "/mcp"
       class HTTP
+        # The response media type.
         JSON_TYPE = "application/json"
 
         # @param server [Server, Proc, nil] the server, a lambda building it
@@ -28,6 +29,10 @@ module Poetry
           @server = server
         end
 
+        # The Rack entry point.
+        #
+        # @param env [Hash] the Rack environment
+        # @return [Array(Integer, Hash, Array<String>)] status, headers, body
         def call(env)
           request = Rack::Request.new(env)
           return not_allowed unless request.post?
