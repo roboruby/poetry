@@ -35,7 +35,8 @@ module Poetry
       end
 
       def test_tools_call_reaches_the_registry
-        text = rpc("tools/call", { "name" => "describe_component", "arguments" => { "name" => "tabs", "detail" => "full" } })
+        arguments = { "name" => "tabs", "detail" => "full" }
+        text = rpc("tools/call", { "name" => "describe_component", "arguments" => arguments })
                .dig("result", "content", 0, "text")
 
         assert_includes text, "poetry_tabs"
