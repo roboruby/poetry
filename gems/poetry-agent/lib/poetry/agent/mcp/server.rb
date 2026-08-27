@@ -11,15 +11,16 @@ module Poetry
     # source. Read-only, progressive-disclosure (brief|detailed|full), and
     # verdict-returning (check returns per-finding pass/fail).
     #
-    # Transport is newline-delimited JSON-RPC 2.0 over stdio (own the supply
-    # chain - no MCP SDK dependency). #handle is a pure request->
-    # response function (testable without stdio); #serve is the thin loop.
+    # Two transports, one server: newline-delimited JSON-RPC 2.0 over stdio
+    # (the `poetry-agent` exe; own the supply chain - no MCP SDK dependency)
+    # and POST JSON-RPC over HTTP ({HTTP}, for the same-origin `/mcp` mount
+    # in-page bridges read). {Server#handle} is a pure request->response
+    # function (testable without either transport); {Server#serve} is the
+    # stdio loop; {Bundled} is the one assembly both transports share.
     #
     # v1 is the read/verify surface. The heavier roadmap - verify_screen
     # running the eval gate array, component:// artifact resources, tag
-    # browsing, StreamableHTTP - is maturity-gated and NOT in this cut.
-    #
-    # @api private
+    # browsing, SSE streaming - is maturity-gated and NOT in this cut.
     module MCP
       # The MCP protocol revision this server negotiates.
       PROTOCOL_VERSION = "2025-06-18"
