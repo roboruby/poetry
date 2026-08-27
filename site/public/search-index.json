@@ -5946,6 +5946,18 @@
     "path": "/api/poetry-charts#poetry"
   },
   {
+    "title": "poetry-agent",
+    "page": "poetry-agent",
+    "section": "api",
+    "path": "/api/poetry-agent"
+  },
+  {
+    "title": "Poetry",
+    "page": "poetry-agent",
+    "section": "api",
+    "path": "/api/poetry-agent#poetry"
+  },
+  {
     "title": "poetry-simple_form",
     "page": "poetry-simple_form",
     "section": "api",

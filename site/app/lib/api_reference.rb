@@ -34,6 +34,15 @@ class ApiReference
       "pins" => %w[Poetry::Charts::ComponentsHelper Poetry::Charts::Config Poetry::Charts::Spec],
       "skip" => /\A(Poetry::Charts::[A-Z]\w*Chart::|Poetry::Charts::Container::|Poetry::Charts::LegendContent::|Poetry::Charts::TooltipContent::|Poetry::Charts::TooltipLayer::)/
     },
+    "poetry-agent" => {
+      "title" => "poetry-agent",
+      "description" => "The agent-interop gem: the MCP server (stdio exe and the Rack HTTP " \
+                       "transport), its bundled assembly, the WebMCP runtime's Ruby side, and " \
+                       "the origin-trial middleware.",
+      "pins" => %w[Poetry::Agent Poetry::Agent::MCP::Server Poetry::Agent::MCP::HTTP
+                   Poetry::Agent::MCP::Bundled Poetry::Agent::WebMCP
+                   Poetry::Agent::WebMCP::OriginTrial Poetry::Agent::Config]
+    },
     "poetry-simple_form" => {
       "title" => "poetry-simple_form",
       "description" => "The simple_form adapter: activate! plus the input classes that map " \
