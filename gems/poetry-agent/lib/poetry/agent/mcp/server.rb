@@ -27,6 +27,8 @@ module Poetry
       # The serverInfo payload returned by the initialize handshake.
       SERVER_INFO = { "name" => "poetry-agent", "version" => Poetry::Agent::VERSION }.freeze
 
+      # The tool roster the server advertises (tools/list): MCP Tool-shaped
+      # definitions, read-only by construction.
       TOOLS = [
         {
           "name" => "compose",
@@ -228,8 +230,11 @@ module Poetry
         # its probe/direct steps sniff for, and the plan step's match floor
         # (one curated archetype keyword = 2, so 2 is the weakest real hit).
         STEPS = %w[probe plan direct snippets verify].freeze
+        # The theme roster build_page's direct step reads.
         THEMES = %w[default vega nova mira rhea maia luma lyra sera].freeze
+        # The brief-word -> page-architecture routing table.
         ARCHETYPE_MATCH = 2
+        # Tokens compose ignores when scoring a brief.
         STOPWORDS = %w[
           the a an and or with for of to in on at from into by over under this that it its as is are
           be has have should must can will each per when where build create make add show include
