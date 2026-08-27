@@ -225,6 +225,9 @@ module Poetry
               apply_stimulus_entry(builder, entry) if stimulus_conditions_met?(entry.conditions)
             end
           end
+          # The agent-tool registrar rides the root's shared Attributes
+          # instance (Concerns::AgentTools) - a per-instance opt-in.
+          apply_webmcp_wiring(attrs) if element_name.to_sym == :root && respond_to?(:apply_webmcp_wiring)
           attrs.to_attributes
         end
 

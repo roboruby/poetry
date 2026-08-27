@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "json"
+
 module Poetry
   module Core
     module Concerns
@@ -64,6 +66,10 @@ module Poetry
         # 128-char full-name cap (instance prefixes join later);
         # descriptions stay inside the agent-legibility budget.
         NAME_LIMIT = 64
+        # The registrar controller (poetry-agent's) that a `webmcp:` root
+        # registers; its manifest entry joins core's catalog when the gem
+        # loads, so the wiring validates like any other controller.
+        WEBMCP_CONTROLLER = "poetry--agent--webmcp"
         # The agent-legibility budget for a tool description.
         DESCRIPTION_LIMIT = 500
 
@@ -294,6 +300,81 @@ module Poetry
             else value
             end
           end
+        end
+        # Whether this rendered instance opted into WebMCP registration
+        # (`webmcp: true` or `webmcp: "name"` on the call).
+        #
+        # @return [Boolean]
+        def webmcp_enabled?
+          !!@webmcp
+        end
+
+        # The instance name the registrar composes tool names from
+        # (`poetry.{name}.{tool}`): the explicit `webmcp:` string, else the
+        # component title (give instances explicit names when a page
+        # renders several of one component - the browser rejects
+        # duplicate tool names).
+        #
+        # @return [String, nil] nil when not enabled
+        def webmcp_name
+          return nil unless webmcp_enabled?
+
+          name = (@webmcp == true ? self.class.component_title : @webmcp.to_s).tr("-", "_")
+          unless NAME_PATTERN.match?(name) && name.length <= NAME_LIMIT
+            raise ToolError,
+                  "#{self.class}: webmcp: #{@webmcp.inspect} is not a valid instance name " \
+                  "(snake_case, at most #{NAME_LIMIT} characters)"
+          end
+          name
+        end
+
+        # The instance's registration payload: its resolved tool
+        # definitions, each passed through {#webmcp_tool_definition} so a
+        # component can enrich a schema with rendered facts (Tabs adds the
+        # rendered tab values as an enum).
+        #
+        # @return [Array<Hash>]
+        def webmcp_tools
+          self.class.tool_definitions.map { |definition| webmcp_tool_definition(definition) }
+        end
+
+        # The per-instance enrichment hook - override to refine a tool's
+        # projected definition with what only the rendered instance knows.
+        # Must return a JSON-serializable Hash with the same keys.
+        #
+        # @param definition [Hash] the class-level projection
+        # @return [Hash]
+        def webmcp_tool_definition(definition)
+          definition
+        end
+
+        # The registrar wiring for the root: applied by
+        # {Concerns::Stimulus#stimulus_attributes_for} on the ONE shared
+        # Attributes instance, so data-controller merges correctly with
+        # the component's own controllers. Raises when the runtime gem is
+        # absent - opting in without poetry-agent is a configuration error,
+        # not a silent no-op.
+        #
+        # @param attrs [Poetry::Core::HTML::Attributes]
+        # @return [void]
+        # @api private
+        def apply_webmcp_wiring(attrs)
+          return unless webmcp_enabled?
+
+          unless Poetry::Core::Stimulus::Manifest.catalog.key?(WEBMCP_CONTROLLER)
+            raise ToolError,
+                  "#{self.class}: webmcp: requires the poetry-agent gem (its #{WEBMCP_CONTROLLER} " \
+                  "controller is not registered) - add `gem \"poetry-agent\"` to the Gemfile"
+          end
+          if self.class.tools.empty?
+            raise ToolError,
+                  "#{self.class}: webmcp: opted in, but the component declares no tools"
+          end
+
+          builder = Poetry::Core::Stimulus::Builder.new(WEBMCP_CONTROLLER, attrs)
+          builder.register_controller
+          builder.with_value(:name, webmcp_name)
+          builder.with_value(:tools, JSON.generate(webmcp_tools))
         end
       end
     end

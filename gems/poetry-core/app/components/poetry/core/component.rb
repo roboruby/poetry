@@ -217,6 +217,12 @@ module Poetry
         @stable_key = attributes[:key] || attributes["key"]
         attributes = attributes.except(:key, "key") if @stable_key
 
+        # webmcp: is the per-instance opt-in of the agent-tool contract
+        # (Concerns::AgentTools) - universal like key:, never an HTML
+        # attribute; the root's Stimulus wiring carries the registration.
+        @webmcp = attributes[:webmcp] || attributes["webmcp"]
+        attributes = attributes.except(:webmcp, "webmcp") unless @webmcp.nil?
+
         # Initialize a fresh Set for this instance
         self.registered_styles = Set.new
         self.registered_options = Set.new

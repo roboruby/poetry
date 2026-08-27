@@ -225,7 +225,94 @@ module Poetry
           assert_empty Poetry::Core::Component.tool_definitions
         end
 
+        def test_webmcp_opt_in_wires_the_registrar_on_the_root
+          with_registrar_manifest do
+            attrs = ToolComponent.new(webmcp: "sections").stimulus_attributes_for(:root)
+
+            assert_includes attrs["data-controller"], "poetry--core--accordion"
+            assert_includes attrs["data-controller"], "poetry--agent--webmcp"
+            assert_equal "sections", attrs["data-poetry--agent--webmcp-name-value"]
+            tools = JSON.parse(attrs["data-poetry--agent--webmcp-tools-value"])
+
+            assert_equal(%w[toggle_section clear_selection], tools.map { |t| t["name"] })
+            assert_equal "poetry--core--accordion#toggle", tools.first["executes"]
+          end
+        end
+
+        def test_webmcp_true_names_the_instance_after_the_component
+          with_registrar_manifest do
+            component = ToolComponent.new(webmcp: true)
+
+            assert_predicate component, :webmcp_enabled?
+            assert_equal ToolComponent.component_title.tr("-", "_"), component.webmcp_name
+          end
+        end
+
+        def test_webmcp_is_inert_without_opt_in
+          component = ToolComponent.new
+          attrs = component.stimulus_attributes_for(:root)
+
+          refute_predicate component, :webmcp_enabled?
+          refute_includes attrs["data-controller"], "poetry--agent--webmcp"
+          refute attrs.key?("data-poetry--agent--webmcp-tools-value")
+        end
+
+        def test_webmcp_without_the_runtime_gem_raises_a_configuration_error
+          catalog = Poetry::Core::Stimulus::Manifest.catalog
+          removed = catalog.delete("poetry--agent--webmcp")
+          error = assert_raises(AgentTools::ToolError) do
+            ToolComponent.new(webmcp: "x").stimulus_attributes_for(:root)
+          end
+
+          assert_match(/requires the poetry-agent gem/, error.message)
+        ensure
+          catalog["poetry--agent--webmcp"] = removed if removed
+        end
+
+        def test_webmcp_on_a_component_without_tools_raises
+          with_registrar_manifest do
+            toolless = Class.new(Poetry::Core::Component) do
+              use_stimulus { on(:root) { controller(:accordion) { register } } }
+            end
+            error = assert_raises(AgentTools::ToolError) { toolless.new(webmcp: true).stimulus_attributes_for(:root) }
+
+            assert_match(/declares no tools/, error.message)
+          end
+        end
+
+        def test_webmcp_tool_definition_hook_enriches_the_payload
+          with_registrar_manifest do
+            enriched = Class.new(ToolComponent) do
+              def webmcp_tool_definition(definition)
+                return definition unless definition["name"] == "toggle_section"
+
+                definition.merge("inputSchema" => definition["inputSchema"].merge("x-rendered" => true))
+              end
+            end
+            attrs = enriched.new(webmcp: "s").stimulus_attributes_for(:root)
+            tools = JSON.parse(attrs["data-poetry--agent--webmcp-tools-value"])
+
+            assert tools.first.dig("inputSchema", "x-rendered")
+            assert_equal "poetry--core--accordion#toggle", tools.first["executes"]
+          end
+        end
+
         private
+
+        # The registrar's manifest entry joins the catalog when poetry-agent
+        # loads; core's tests stand it up inline (the cross-gem seam is the
+        # WEBMCP_CONTROLLER constant, which poetry-agent's manifest test pins).
+        def with_registrar_manifest
+          catalog = Poetry::Core::Stimulus::Manifest.catalog
+          had = catalog.key?(AgentTools::WEBMCP_CONTROLLER)
+          catalog[AgentTools::WEBMCP_CONTROLLER] ||= {
+            "targets" => [], "values" => { "name" => { "type" => "String" }, "tools" => { "type" => "Array" } },
+            "classes" => [], "methods" => %w[connect disconnect register unregister], "events" => []
+          }
+          yield
+        ensure
+          catalog.delete(AgentTools::WEBMCP_CONTROLLER) unless had
+        end
 
         def deep_plain?(value)
           case value
