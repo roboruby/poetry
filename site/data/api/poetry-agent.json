@@ -208,6 +208,83 @@
       "constants": []
     },
     {
+      "path": "Poetry::Agent::MCP",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The MCP server projecting the component contract\nover Model Context Protocol so an agent in Claude Code / Cursor queries\nthe LIVE registry and runs the linter as a tool. Thin - it projects the\nsurfaces already built (Registry + LlmsText + Check), never a second\nsource. Read-only, progressive-disclosure (brief|detailed|full), and\nverdict-returning (check returns per-finding pass/fail).\n\nTwo transports, one server: newline-delimited JSON-RPC 2.0 over stdio\n(the `poetry-agent` exe; own the supply chain - no MCP SDK dependency)\nand POST JSON-RPC over HTTP ({HTTP}, for the same-origin `/mcp` mount\nin-page bridges read). {Server#handle} is a pure request->response\nfunction (testable without either transport); {Server#serve} is the\nstdio loop; {Bundled} is the one assembly both transports share.\n\nv1 is the read/verify surface. The heavier roadmap - verify_screen\nrunning the eval gate array, component:// artifact resources, tag\nbrowsing, SSE streaming - is maturity-gated and NOT in this cut.",
+      "examples": [],
+      "file": "lib/poetry/agent/mcp/server.rb",
+      "methods": [],
+      "constants": [
+        {
+          "name": "PROTOCOL_VERSION",
+          "value": "\"2025-06-18\"",
+          "docstring": "The MCP protocol revision this server negotiates."
+        },
+        {
+          "name": "SERVER_INFO",
+          "value": "{ \"name\" => \"poetry-agent\", \"version\" => Poetry::Agent::VERSION }.freeze",
+          "docstring": "The serverInfo payload returned by the initialize handshake."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::MCP::Bundled",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The server as the exe assembles it: the registry root defaults to\nthe bundled poetry-ui gem, poetry-lucide's icon names power check's\nicon-membership tier, and poetry-ui's skills, helper names, and\nrecipes ride along when the gem is bundled - each a soft require,\nso the same assembly serves a core-only host. ONE assembly for the\nexe and the HTTP mount, so no surface can lag another.",
+      "examples": [],
+      "file": "lib/poetry/agent/mcp/bundled.rb",
+      "methods": [
+        {
+          "name": "icon_names",
+          "scope": "class",
+          "group": null,
+          "signature": "icon_names",
+          "docstring": "The lucide names, or nil for a host without poetry-lucide (check\nthen validates icon-name shape only).",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/bundled.rb",
+          "line": 36
+        },
+        {
+          "name": "server",
+          "scope": "class",
+          "group": null,
+          "signature": "server(root: nil, app_root: Dir.pwd)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "a registry root; defaults to poetry-ui"
+            },
+            {
+              "name": "app_root",
+              "types": [
+                "String"
+              ],
+              "text": "the host app (build_page's probe/direct\nsteps read its config/theme)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Server"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/bundled.rb",
+          "line": 20
+        }
+      ],
+      "constants": []
+    },
+    {
       "path": "Poetry::Agent::MCP::HTTP",
       "type": "class",
       "superclass": "Object",
@@ -220,6 +297,31 @@
       ],
       "file": "lib/poetry/agent/mcp/http.rb",
       "methods": [
+        {
+          "name": "call",
+          "scope": "instance",
+          "group": null,
+          "signature": "call(env)",
+          "docstring": "The Rack entry point.",
+          "params": [
+            {
+              "name": "env",
+              "types": [
+                "Hash"
+              ],
+              "text": "the Rack environment"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array(Integer, Hash, Array<String>)"
+            ],
+            "text": "status, headers, body"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/http.rb",
+          "line": 36
+        },
         {
           "name": "initialize",
           "scope": "instance",
@@ -245,10 +347,110 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/http.rb",
-          "line": 27
+          "line": 28
         }
       ],
-      "constants": []
+      "constants": [
+        {
+          "name": "JSON_TYPE",
+          "value": "\"application/json\"",
+          "docstring": "The response media type."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::MCP::Server",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The server: constructed with the registry root (and the host's helper\nnames, so check knows the group/provider helpers - though the\nregistry's own \"helpers\" section now carries those boot-free).\nicon_names: the active icon set's names, so the check tool validates\nicon values by membership, not just shape. Everything read is the\nlive committed registry.",
+      "examples": [
+        {
+          "title": "Serve the committed registry over stdio",
+          "text": "Poetry::Agent::MCP::Server.from_registry(\"registry\").serve"
+        }
+      ],
+      "file": "lib/poetry/agent/mcp/server.rb",
+      "methods": [
+        {
+          "name": "from_registry",
+          "scope": "class",
+          "group": null,
+          "signature": "from_registry(root, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [])",
+          "docstring": "skills: skill name => a zero-arg callable returning the skill's\n{relative path => content} file map (the get_skill tool).\nLazy because the usage skill is generated from the registry on\nfirst fetch - server boot stays instant.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/server.rb",
+          "line": 194
+        },
+        {
+          "name": "handle",
+          "scope": "instance",
+          "group": null,
+          "signature": "handle(request)",
+          "docstring": "A JSON-RPC 2.0 request hash -> a response hash (or nil for a\nnotification, which gets no reply).",
+          "params": [
+            {
+              "name": "request",
+              "types": [
+                "Hash"
+              ],
+              "text": "one parsed JSON-RPC 2.0 request"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash",
+              "nil"
+            ],
+            "text": "the response hash, or nil for a notification"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/server.rb",
+          "line": 245
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(entries:, catalog:, blocks: {}, root: nil, skills: {}, app_root: nil, recipes: [])",
+          "docstring": "app_root: the HOST app directory (where `bundle exec poetry-agent`\nruns, i.e. Dir.pwd), so build_page's probe/direct steps can read\nthe app's config/theme. nil => the host is not inspected and those\nsteps degrade gracefully; the registry read (root) is unaffected.\nrecipes: registry-item SUMMARIES (content-free) from the owning\ngem's RecipeItems projection - the exe passes them so this class\nstays poetry-ui-free.",
+          "params": [],
+          "return": {
+            "types": [
+              "Server"
+            ],
+            "text": "a new instance of Server"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/server.rb",
+          "line": 211
+        },
+        {
+          "name": "serve",
+          "scope": "instance",
+          "group": null,
+          "signature": "serve(input: $stdin, output: $stdout)",
+          "docstring": "The thin stdio loop: newline-delimited JSON-RPC in, replies out.\nA malformed line yields a parse error, never a crashed server.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/server.rb",
+          "line": 260
+        }
+      ],
+      "constants": [
+        {
+          "name": "STEPS",
+          "value": "%w[probe plan direct snippets verify].freeze",
+          "docstring": "build_page: the guided workflow's five steps, the themes\nits probe/direct steps sniff for, and the plan step's match floor\n(one curated archetype keyword = 2, so 2 is the weakest real hit)."
+        },
+        {
+          "name": "STRONG_MATCH",
+          "value": "4",
+          "docstring": "compose routing: the strong-match threshold, and the words\ntoo generic to signal a block - connectives, task verbs, and\ncomponent-anatomy words (title/description/action) every brief\nuses regardless of scale."
+        }
+      ]
     },
     {
       "path": "Poetry::Agent::WebMCP",
@@ -303,6 +505,31 @@
       "file": "lib/poetry/agent/webmcp/origin_trial.rb",
       "methods": [
         {
+          "name": "call",
+          "scope": "instance",
+          "group": null,
+          "signature": "call(env)",
+          "docstring": "The Rack entry point: appends the tokens to HTML responses.",
+          "params": [
+            {
+              "name": "env",
+              "types": [
+                "Hash"
+              ],
+              "text": "the Rack environment"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array(Integer, Hash, Object)"
+            ],
+            "text": "the downstream response"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/webmcp/origin_trial.rb",
+          "line": 30
+        },
+        {
           "name": "initialize",
           "scope": "instance",
           "group": null,
@@ -317,10 +544,16 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/webmcp/origin_trial.rb",
-          "line": 20
+          "line": 21
         }
       ],
-      "constants": []
+      "constants": [
+        {
+          "name": "HEADER",
+          "value": "\"origin-trial\"",
+          "docstring": "The response header the browsers read (Rack 3 lowercases names)."
+        }
+      ]
     }
   ]
 }
