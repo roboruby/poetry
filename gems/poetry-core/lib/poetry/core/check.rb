@@ -8,8 +8,9 @@ module Poetry
     # It herb-parses the template and validates every poetry surface against
     # the committed registry + controllers manifest WITHOUT rendering -
     # unknown components/options/variants (did-you-mean), and unknown
-    # Stimulus controllers/actions/targets (the Ruby<->JS seam, now at
-    # consumer-markup level), plus raw-color classes (the off-system color
+    # Stimulus controllers/actions/targets/values (the Ruby<->JS seam, now at
+    # consumer-markup level - hand-written attributes and `data:` keywords
+    # alike, values checked against their declared type), plus raw-color classes (the off-system color
     # path, extended from CSS to markup). The mechanical gate an agent
     # self-corrects against before any deeper review runs.
     #
@@ -890,7 +891,7 @@ module Poetry
           when "data-controller" then controller_findings(value, line)
           when "data-action" then action_findings(value, line)
           when /\Adata-(poetry--[\w-]+)-target\z/ then target_findings(Regexp.last_match(1), value, line)
-          else []
+          else value_attribute_findings(name, value, line)
           end
         end
 
@@ -947,6 +948,65 @@ module Poetry
           [Finding.new(rule: "unknown-target", severity: :error,
                        message: "#{identifier} has no target #{value.inspect}", line: line,
                        suggestion: suggest(value, definition["targets"]))]
+        end
+
+        # --- Stimulus values (the manifest's typed value contract) ---
+
+        # `data-<identifier>-<name>-value`: the name must be one the
+        # controller declares (Stimulus dasherizes the JS name:
+        # weekStart -> week-start), and a literal must parse as the
+        # declared type - Stimulus reads a Number through Number() (NaN
+        # for anything else), Array/Object through JSON.parse, and a
+        # Boolean as anything but "false"/"0" (so a misspelt "flase" is
+        # silently TRUE). The identifier is the longest manifest identifier
+        # the attribute starts with; an unknown one is data-controller's
+        # finding, not this rule's. Classes and outlets: no poetry
+        # controller declares any, so there is nothing to check yet.
+        def value_attribute_findings(name, value, line)
+          return [] unless name.start_with?("data-#{POETRY_PREFIX}") && name.end_with?("-value")
+
+          identifier = Stimulus::Manifest.catalog.keys.select { |id| name.start_with?("data-#{id}-") }.max_by(&:length)
+          definition = identifier && definition(identifier)
+          return [] unless definition
+
+          value_name = name.delete_prefix("data-#{identifier}-").delete_suffix("-value")
+          declared = (definition["values"] || {}).to_h { |key, spec| [dasherize_value(key), spec] }
+          spec = declared[value_name]
+          unless spec
+            return [Finding.new(rule: "unknown-value", severity: :error,
+                                message: "#{identifier} has no value #{value_name.inspect}", line: line,
+                                suggestion: suggest(value_name, declared.keys))]
+          end
+
+          value_type_findings(identifier, value_name, spec["type"], value, line)
+        end
+
+        def value_type_findings(identifier, value_name, type, value, line)
+          problem = case type
+                    when "Boolean"
+                      %w[true false 1 0].include?(value) ? nil : "write \"true\" or \"false\""
+                    when "Number"
+                      Float(value, exception: false) ? nil : "#{value.inspect} is not a number"
+                    when "Array"
+                      json_literal(value).is_a?(Array) ? nil : "#{value.inspect} is not a JSON array"
+                    when "Object"
+                      json_literal(value).is_a?(Hash) ? nil : "#{value.inspect} is not a JSON object"
+                    end
+          return [] unless problem
+
+          [Finding.new(rule: "value-type", severity: :error,
+                       message: "#{identifier} value #{value_name} is #{type} - #{problem}", line: line)]
+        end
+
+        # Stimulus's own attribute spelling of a JS value name.
+        def dasherize_value(key)
+          key.to_s.gsub(/([A-Z])/) { "-#{Regexp.last_match(1).downcase}" }
+        end
+
+        def json_literal(value)
+          JSON.parse(value)
+        rescue JSON::ParserError
+          nil
         end
 
         def color_findings(value, node)

@@ -943,6 +943,50 @@ module Poetry
         assert_empty rules(dynamic)
       end
 
+      # --- Stimulus values (typed, from the manifest) ---
+
+      def test_unknown_value_errors_with_did_you_mean
+        typo = %(<div data-controller="poetry--core--dialog" data-poetry--core--dialog-hotkeyy-value="k"></div>)
+        finding = first(typo, "unknown-value")
+
+        assert_equal "hotkey", finding.suggestion
+      end
+
+      def test_value_names_are_stimulus_dasherized_js_names
+        assert_empty rules(%(<div data-poetry--core--calendar-week-start-value="1"></div>))
+        assert_equal "week-start",
+                     first(%(<div data-poetry--core--calendar-weekstart-value="1"></div>), "unknown-value").suggestion
+      end
+
+      def test_value_literals_must_parse_as_their_declared_type
+        boolean = first(%(<div data-poetry--core--dialog-dismissible-value="yes"></div>), "value-type")
+
+        assert_includes boolean.message, "Boolean"
+        assert_includes first(%(<div data-poetry--core--calendar-week-start-value="soon"></div>), "value-type").message,
+                        "not a number"
+        array = first(%(<div data-poetry--core--calendar-month-names-value="Jan,Feb"></div>), "value-type")
+
+        assert_includes array.message, "JSON array"
+        assert_includes first(%(<div data-poetry--core--date-field-labels-value="x"></div>), "value-type").message,
+                        "JSON object"
+        valid = <<~ERB
+          <div data-poetry--core--dialog-dismissible-value="false" data-poetry--core--dialog-hotkey-value="k"
+               data-poetry--core--calendar-month-names-value='["J","F"]'></div>
+        ERB
+
+        assert_empty rules(valid)
+      end
+
+      def test_value_rules_run_on_data_kwargs_and_leave_dynamic_values_alone
+        kwarg = %(<%= poetry_button(data: { poetry__core__dialog_dismissible_value: "maybe" }) do %>x<% end %>)
+        finding = first(kwarg, "value-type")
+
+        assert_equal 1, finding.line
+        dynamic = %(<div data-poetry--core--calendar-week-start-value="<%= start %>"></div>)
+
+        assert_empty rules(dynamic)
+      end
+
       def test_host_controllers_are_not_poetrys_to_validate
         assert_empty rules(%(<div data-controller="my-app--widget" data-action="my-app--widget#go"></div>))
       end

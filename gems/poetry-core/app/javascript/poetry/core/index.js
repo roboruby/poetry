@@ -4,6 +4,7 @@
 // esbuild / Vite / jsbundling hosts. Never requires a bundler.
 
 import { registerBridgeEvents } from "@poetry/controllers/helpers/portal"
+import { guardPoetryRegistration } from "@poetry/controllers/helpers/registration_guard"
 import StateController from "@poetry/controllers/state_controller"
 import DialogController from "@poetry/controllers/dialog_controller"
 import MessageScrollerController from "@poetry/controllers/message_scroller_controller"
@@ -195,5 +196,8 @@ export function registerPoetryControllers(application) {
   for (const [identifier, controller] of Object.entries(controllers)) {
     application.register(identifier, controller)
   }
+  // Warn (once per identifier) about poetry controllers on the page that
+  // nothing registered - the silent-inert failure nothing else surfaces.
+  guardPoetryRegistration(application)
   return application
 }
