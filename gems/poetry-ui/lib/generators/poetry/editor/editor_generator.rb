@@ -3,6 +3,7 @@
 require "rails/generators"
 require "json"
 require "yaml"
+require "time"
 
 module Poetry
   # `rails g poetry:editor` - wire the poetry agent surface into the editors a
@@ -17,6 +18,8 @@ module Poetry
   #                                   real variant/size enums as tab-stop choices
   #   .herb.yml            Herb (linter / formatter / language server), unless
   #                        the app already has one
+  #   .stimulus-lsp/config.json   poetry's controller identifiers for Stimulus LSP
+  #                               (upsert: an existing ignore list keeps its entries)
   #
   # The MCP writes are upserts: an existing config keeps its other servers and
   # gains a `poetry` entry; a config that already has one is left untouched; a
@@ -75,10 +78,22 @@ module Poetry
       Zed        ships inside the official Ruby extension - nothing to add
       Neovim     npm install -g @herb-tools/language-server, then lspconfig's herb_ls
       CI         npx --yes @herb-tools/linter app   (or bundle exec herb lint)
+      Stimulus   .stimulus-lsp/config.json lists poetry's controllers for Stimulus LSP - it checks YOUR
+                 controllers; bin/rails poetry:check validates poetry's (data: keywords included)
     TEXT
 
-    desc "Wire poetry's MCP server + component snippets + Herb config into your editors " \
-         "(.mcp.json / .cursor/mcp.json / .vscode/mcp.json + .vscode/poetry.code-snippets + .herb.yml)"
+    # Stimulus LSP resolves identifiers from the app's controller directories
+    # and node_modules; controllers a gem serves through importmap are
+    # invisible to it, so every hand-written `poetry--...` descriptor reads
+    # as an invalid controller with a quick-fix that scaffolds a bogus file.
+    # The LSP's one lever is an ignore list of exact identifiers, so poetry
+    # lists every controller its installed gems ship. Those descriptors are
+    # poetry:check's to validate (kwargs included); the LSP keeps yours.
+    STIMULUS_LSP_VERSION = "1.1.2" # the schema's writer version; the LSP rewrites it on its own saves
+
+    desc "Wire poetry's MCP server + component snippets + Herb and Stimulus LSP config into your editors " \
+         "(.mcp.json / .cursor/mcp.json / .vscode/mcp.json + .vscode/poetry.code-snippets + .herb.yml + " \
+         ".stimulus-lsp/config.json)"
 
     # Step: upserts the poetry server into .mcp.json.
     # @api private
@@ -113,6 +128,12 @@ module Poetry
       else
         create_file ".herb.yml", HERB_CONFIG
       end
+    end
+
+    # Step: lists poetry's controller identifiers for Stimulus LSP (upsert).
+    # @api private
+    def write_stimulus_lsp_config
+      upsert_stimulus_lsp ".stimulus-lsp/config.json"
     end
 
     # Step: prints the paste-blocks for IDE-managed MCP configs.
@@ -152,6 +173,41 @@ module Poetry
       servers["poetry"] = server_entry(stdio: stdio)
       File.write(path, "#{JSON.pretty_generate(data)}\n")
       say_status :update, "#{relative} (added the poetry server)", :green
+    end
+
+    # Every poetry-owned identifier the installed gems ship (core + any
+    # registered manifest), sorted for a stable file.
+    def poetry_identifiers
+      Poetry::Core::Stimulus::Manifest.catalog.keys.sort
+    end
+
+    def upsert_stimulus_lsp(relative)
+      path = File.join(destination_root, relative)
+      identifiers = poetry_identifiers
+      unless File.exist?(path)
+        create_file relative, "#{JSON.pretty_generate(stimulus_lsp_config(identifiers))}\n"
+        return
+      end
+
+      data = parse_json(File.read(path))
+      return say_status(:skip, "#{relative} isn't plain JSON - add poetry's identifiers by hand", :yellow) if data.nil?
+
+      options = (data["options"] ||= {})
+      ignored = Array(options["ignoredControllerIdentifiers"])
+      missing = identifiers - ignored
+      return say_status(:identical, relative, :blue) if missing.empty?
+
+      options["ignoredControllerIdentifiers"] = (ignored + missing).uniq.sort
+      options["ignoredAttributes"] = Array(options["ignoredAttributes"])
+      data["updatedAt"] = Time.now.utc.iso8601
+      File.write(path, "#{JSON.pretty_generate(data)}\n")
+      say_status :update, "#{relative} (+#{missing.size} poetry controller identifiers)", :green
+    end
+
+    def stimulus_lsp_config(identifiers)
+      now = Time.now.utc.iso8601
+      { "version" => STIMULUS_LSP_VERSION, "createdAt" => now, "updatedAt" => now,
+        "options" => { "ignoredControllerIdentifiers" => identifiers, "ignoredAttributes" => [] } }
     end
 
     # nil for anything we can't safely round-trip. JSONC comments are detected

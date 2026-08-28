@@ -49,6 +49,32 @@ module Poetry
       assert_match(/skip\s+\.herb\.yml exists/, output)
     end
 
+    def test_lists_poetrys_controllers_for_stimulus_lsp_and_keeps_an_existing_ignore_list
+      run_generator
+      config = read_json(".stimulus-lsp/config.json")
+      identifiers = config.dig("options", "ignoredControllerIdentifiers")
+
+      assert_equal Poetry::Core::Stimulus::Manifest.catalog.keys.sort, identifiers
+      assert_includes identifiers, "poetry--core--dialog"
+      assert_equal [], config.dig("options", "ignoredAttributes")
+      assert_match(/\A\d+\.\d+\.\d+\z/, config["version"])
+
+      existing = { "version" => "1.0.0", "createdAt" => "2026-01-01T00:00:00.000Z",
+                   "updatedAt" => "2026-01-01T00:00:00.000Z",
+                   "options" => { "ignoredControllerIdentifiers" => ["legacy"],
+                                  "ignoredAttributes" => ["data-turbo"] } }
+      File.write(File.join(destination_root, ".stimulus-lsp/config.json"), JSON.pretty_generate(existing))
+      output = run_generator
+      merged = read_json(".stimulus-lsp/config.json")
+
+      assert_includes merged.dig("options", "ignoredControllerIdentifiers"), "legacy"
+      assert_includes merged.dig("options", "ignoredControllerIdentifiers"), "poetry--core--dialog"
+      assert_equal ["data-turbo"], merged.dig("options", "ignoredAttributes")
+      assert_equal "1.0.0", merged["version"], "the LSP owns the version field"
+      assert_match(%r{update\s+\.stimulus-lsp/config\.json}, output)
+      assert_match(%r{identical\s+\.stimulus-lsp/config\.json}, run_generator, "a complete list is left alone")
+    end
+
     def test_generates_snippets_from_the_committed_registry
       run_generator
       snippets = read_json(".vscode/poetry.code-snippets")
