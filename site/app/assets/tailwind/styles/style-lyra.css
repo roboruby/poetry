@@ -1711,7 +1711,7 @@
 }
 
 .cn-questionnaire-choice {
-  @apply border-input hover:bg-muted/50 data-checked:bg-muted data-checked:border-foreground/30 data-invalid:border-destructive has-[>input:focus-visible]:border-ring has-[>input:focus-visible]:ring-ring/50 gap-2.5 rounded-none border bg-transparent px-3 py-2.5 text-xs has-[>input:focus-visible]:ring-1;
+  @apply border-input hover:bg-muted/50 data-checked:bg-muted data-checked:border-foreground/30 in-data-invalid:border-destructive has-[>input:focus-visible]:border-ring has-[>input:focus-visible]:ring-ring/50 gap-2.5 rounded-none border bg-transparent px-3 py-2.5 text-xs has-[>input:focus-visible]:ring-1;
 }
 
 .cn-questionnaire-choice-indicator {
