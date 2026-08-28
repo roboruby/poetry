@@ -129,9 +129,12 @@ CODE
       extension, <code>@herb-tools/language-server</code> for Neovim), the
       linter, and the render-graph check. Stimulus LSP runs on the same
       language service and reads <code>data-controller</code> in ERB and
-      <code>tag.div data: { controller: }</code> alike; Poetry's own
-      controllers arrive through the <code>use_stimulus</code> contract, so
-      the only identifiers it has to check are yours.
+      <code>tag.div data: { controller: }</code> alike. It resolves
+      controllers from your app, not from a gem, so <code>poetry:editor</code>
+      lists Poetry's identifiers in <code>.stimulus-lsp/config.json</code>
+      and a hand-written <code>poetry--core--sheet#close</code> is never an
+      "invalid controller"; <code>bin/rails poetry:check</code> is what
+      validates those, <code>data:</code> keywords on Poetry helpers included.
     </p>
     <p>
       <code>poetry:editor</code> writes the one config all of it reads,
