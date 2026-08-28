@@ -2028,6 +2028,12 @@
     "path": "/components/command#default"
   },
   {
+    "title": "Close button",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command#close-button"
+  },
+  {
     "title": "Dialog",
     "page": "Command",
     "section": "components",
