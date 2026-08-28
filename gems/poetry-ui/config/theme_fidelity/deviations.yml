@@ -501,6 +501,16 @@ vega:
       - data-highlighted:bg-muted
       - data-highlighted:text-foreground
       - in-data-[slot=dialog-content]:rounded-lg
+    ".cn-command-list":
+      reason: 'Loose items: the source''s palette never renders items outside a
+        group (cmdk convention - the list is unpadded, the group carries p-1), but
+        poetry''s list takes direct items, which then sat flush under the search
+        well and 4px outside the grouped rows. When the list holds direct items it
+        carries the inset itself and its groups drop their horizontal padding, so
+        every row aligns; group-only lists keep the source geometry.'
+      added:
+      - has-[>[data-slot=command-item]]:p-1
+      - has-[>[data-slot=command-item]]:*:data-[slot=command-group]:px-0
     ".cn-command-shortcut":
       reason: 'The highlight translation: the shortcut re-colors on the
         highlighted row (group-data-highlighted), not on the source''s
@@ -1392,6 +1402,16 @@ nova:
       - data-highlighted:bg-muted
       - data-highlighted:text-foreground
       - in-data-[slot=dialog-content]:rounded-lg
+    ".cn-command-list":
+      reason: 'Loose items: the source''s palette never renders items outside a
+        group (cmdk convention - the list is unpadded, the group carries p-1), but
+        poetry''s list takes direct items, which then sat flush under the search
+        well and 4px outside the grouped rows. When the list holds direct items it
+        carries the inset itself and its groups drop their horizontal padding, so
+        every row aligns; group-only lists keep the source geometry.'
+      added:
+      - has-[>[data-slot=command-item]]:p-1
+      - has-[>[data-slot=command-item]]:*:data-[slot=command-group]:px-0
     ".cn-command-shortcut":
       reason: 'The highlight translation: the shortcut re-colors on the
         highlighted row (group-data-highlighted), not on the source''s
@@ -2272,6 +2292,16 @@ mira:
       - data-highlighted:*:[svg]:text-foreground
       - data-highlighted:bg-muted
       - data-highlighted:text-foreground
+    ".cn-command-list":
+      reason: 'Loose items: the source''s palette never renders items outside a
+        group (cmdk convention - the list is unpadded, the group carries p-1), but
+        poetry''s list takes direct items, which then sat flush under the search
+        well and 4px outside the grouped rows. When the list holds direct items it
+        carries the inset itself and its groups drop their horizontal padding, so
+        every row aligns; group-only lists keep the source geometry.'
+      added:
+      - has-[>[data-slot=command-item]]:p-1
+      - has-[>[data-slot=command-item]]:*:data-[slot=command-group]:px-0
     ".cn-command-shortcut":
       reason: 'The highlight translation: the shortcut re-colors on the
         highlighted row (group-data-highlighted), not on the source''s
@@ -3173,6 +3203,16 @@ rhea:
       - data-highlighted:*:[svg]:text-foreground
       - data-highlighted:bg-muted
       - data-highlighted:text-foreground
+    ".cn-command-list":
+      reason: 'Loose items: the source''s palette never renders items outside a
+        group (cmdk convention - the list is unpadded, the group carries p-1), but
+        poetry''s list takes direct items, which then sat flush under the search
+        well and 4px outside the grouped rows. When the list holds direct items it
+        carries the inset itself and its groups drop their horizontal padding, so
+        every row aligns; group-only lists keep the source geometry.'
+      added:
+      - has-[>[data-slot=command-item]]:p-1
+      - has-[>[data-slot=command-item]]:*:data-[slot=command-group]:px-0
     ".cn-command-shortcut":
       reason: 'The highlight translation: the shortcut re-colors on the
         highlighted row (group-data-highlighted), not on the source''s
@@ -4106,6 +4146,16 @@ maia:
       - data-highlighted:*:[svg]:text-foreground
       - data-highlighted:bg-muted
       - data-highlighted:text-foreground
+    ".cn-command-list":
+      reason: 'Loose items: the source''s palette never renders items outside a
+        group (cmdk convention - the list is unpadded, the group carries p-1), but
+        poetry''s list takes direct items, which then sat flush under the search
+        well and 4px outside the grouped rows. When the list holds direct items it
+        carries the inset itself and its groups drop their horizontal padding, so
+        every row aligns; group-only lists keep the source geometry.'
+      added:
+      - has-[>[data-slot=command-item]]:p-1
+      - has-[>[data-slot=command-item]]:*:data-[slot=command-group]:px-0
     ".cn-command-shortcut":
       reason: 'The highlight translation: the shortcut re-colors on the
         highlighted row (group-data-highlighted), not on the source''s
@@ -4987,6 +5037,16 @@ luma:
       - data-highlighted:*:[svg]:text-foreground
       - data-highlighted:bg-muted
       - data-highlighted:text-foreground
+    ".cn-command-list":
+      reason: 'Loose items: the source''s palette never renders items outside a
+        group (cmdk convention - the list is unpadded, the group carries p-1), but
+        poetry''s list takes direct items, which then sat flush under the search
+        well and 4px outside the grouped rows. When the list holds direct items it
+        carries the inset itself and its groups drop their horizontal padding, so
+        every row aligns; group-only lists keep the source geometry.'
+      added:
+      - has-[>[data-slot=command-item]]:p-1.5
+      - has-[>[data-slot=command-item]]:*:data-[slot=command-group]:px-0
     ".cn-command-shortcut":
       reason: 'The highlight translation: the shortcut re-colors on the
         highlighted row (group-data-highlighted), not on the source''s
@@ -6729,6 +6789,16 @@ sera:
       - data-highlighted:*:[svg]:text-foreground
       - data-highlighted:bg-muted
       - data-highlighted:text-foreground
+    ".cn-command-list":
+      reason: 'Loose items: the source''s palette never renders items outside a
+        group (cmdk convention - the list is unpadded, the group carries p-1), but
+        poetry''s list takes direct items, which then sat flush under the search
+        well and 4px outside the grouped rows. When the list holds direct items it
+        carries the inset itself and its groups drop their horizontal padding, so
+        every row aligns; group-only lists keep the source geometry.'
+      added:
+      - has-[>[data-slot=command-item]]:p-1.5
+      - has-[>[data-slot=command-item]]:*:data-[slot=command-group]:px-0
     ".cn-command-shortcut":
       reason: 'The highlight translation: the shortcut re-colors on the
         highlighted row (group-data-highlighted), not on the source''s
