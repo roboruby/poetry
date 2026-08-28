@@ -508,11 +508,11 @@
 }
 
 .cn-command-item {
-  @apply data-selected:bg-muted data-selected:text-foreground data-selected:*:[svg]:text-foreground items-center gap-2 rounded-none px-2 py-2 text-xs outline-hidden select-none in-data-[slot=dialog-content]:rounded-none [&_svg:not([class*='size-'])]:size-4;
+  @apply data-highlighted:bg-muted data-highlighted:text-foreground data-highlighted:*:[svg]:text-foreground items-center gap-2 rounded-none px-2 py-2 text-xs outline-hidden select-none in-data-[slot=dialog-content]:rounded-none [&_svg:not([class*='size-'])]:size-4;
 }
 
 .cn-command-shortcut {
-  @apply text-muted-foreground group-data-selected/command-item:text-foreground ml-auto text-xs tracking-widest;
+  @apply text-muted-foreground group-data-highlighted/command-item:text-foreground ml-auto text-xs tracking-widest;
 }
 
 .cn-command-separator {
@@ -526,6 +526,16 @@
 
 .cn-combobox-content {
   @apply bg-popover text-popover-foreground ring-foreground/10 *:data-[slot=input-group]:bg-input/30 *:data-[slot=input-group]:border-input/30 *:data-[slot=input-group]:m-1 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-8 *:data-[slot=input-group]:shadow-none max-h-72 min-w-36 overflow-hidden rounded-none p-0 shadow-md ring-1 duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2;
+}
+
+/* The popup's list and group label: the source's combobox rules (the
+ * inset rides the LIST, the group stays unpadded). */
+.cn-combobox-label {
+  @apply text-muted-foreground px-2 py-2 text-xs;
+}
+
+.cn-combobox-list {
+  @apply no-scrollbar max-h-[min(calc(--spacing(72)---spacing(9)),calc(var(--available-height)---spacing(9)))] scroll-py-1 overflow-y-auto data-empty:p-0;
 }
 
 .cn-combobox-item-indicator {
@@ -1742,6 +1752,17 @@
 
 .cn-questionnaire-actions {
   @apply gap-1.5 sm:min-h-8;
+}
+
+/* MARK: WebMCP agent focus (declarative tools) - the browser marks the
+   form an agent is filling and its submit; :where() keeps the rule
+   forgiving in browsers that lack the pseudo-classes. */
+:where(form:tool-form-active) {
+  @apply rounded-lg outline-2 outline-dashed outline-offset-4 outline-ring/60;
+}
+
+:where(:tool-submit-active) {
+  @apply border-ring ring-3 ring-ring/50;
 }
 
 /* MARK: Menu translucent (shared, LAST - wins the content bg cascade).

@@ -523,6 +523,19 @@
   @apply rounded-md border bg-popover p-0 text-popover-foreground shadow-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95;
 }
 
+/* The popup's list and group label per the source's combobox
+ * (combobox.tsx): the inset rides the LIST (p-1, none when empty) and
+ * the group stays unpadded, so ungrouped options sit where grouped ones
+ * do. The label's pointer-coarse retunes are dropped like the rest of
+ * this port. */
+.cn-combobox-label {
+  @apply px-2 py-1.5 text-xs text-muted-foreground;
+}
+
+.cn-combobox-list {
+  @apply max-h-[min(calc(--spacing(96)---spacing(9)),calc(var(--available-height)---spacing(9)))] scroll-py-1 overflow-y-auto p-1 data-empty:p-0;
+}
+
 .cn-combobox-item-indicator {
   @apply size-4;
 }
@@ -1759,6 +1772,17 @@
 
 .cn-questionnaire-actions {
   @apply gap-2 sm:min-h-8;
+}
+
+/* MARK: WebMCP agent focus (declarative tools) - the browser marks the
+   form an agent is filling and its submit; :where() keeps the rule
+   forgiving in browsers that lack the pseudo-classes. */
+:where(form:tool-form-active) {
+  @apply rounded-lg outline-2 outline-dashed outline-offset-4 outline-ring/60;
+}
+
+:where(:tool-submit-active) {
+  @apply border-ring ring-3 ring-ring/50;
 }
 
 /* MARK: Menu translucent (shared, LAST - wins the content bg cascade) */
