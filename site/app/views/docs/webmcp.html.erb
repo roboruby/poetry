@@ -7,8 +7,9 @@
 <% end %>
 <%
   # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
-  # this scriptlet early, so ERB samples interpolate it as #{e}.
+  # this scriptlet early, so ERB samples interpolate it as #{e}; a literal opener would nest an ERB tag under Herb, so they interpolate it as #{o}.
   e = "%" + ">"
+  o = "<" + "%"
   gemfile_source = <<~CODE
     gem "poetry-agent"
   CODE
@@ -20,27 +21,27 @@
     registerPoetryAgent(application)
   CODE
   optin_source = <<~CODE
-    <%= poetry_tabs(label: "Sections", webmcp: "sections") do |tabs| #{e}
-      <% tabs.with_tab("Overview", value: "overview") { "..." } #{e}
-      <% tabs.with_tab("Pricing", value: "pricing") { "..." } #{e}
-    <% end #{e}
+    #{o}= poetry_tabs(label: "Sections", webmcp: "sections") do |tabs| #{e}
+      #{o} tabs.with_tab("Overview", value: "overview") { "..." } #{e}
+      #{o} tabs.with_tab("Pricing", value: "pricing") { "..." } #{e}
+    #{o} end #{e}
 
-    <%= poetry_dialog(webmcp: "settings") do |dialog| #{e}
-      <% dialog.with_trigger { "Settings" } #{e}
-      <% dialog.with_title { "Settings" } #{e}
-    <% end #{e}
+    #{o}= poetry_dialog(webmcp: "settings") do |dialog| #{e}
+      #{o} dialog.with_trigger { "Settings" } #{e}
+      #{o} dialog.with_title { "Settings" } #{e}
+    #{o} end #{e}
 
-    <%= poetry_combobox(name: "country", webmcp: "country") do |combobox| #{e}
-      <% combobox.with_item(value: "de") { "Germany" } #{e}
-    <% end #{e}
+    #{o}= poetry_combobox(name: "country", webmcp: "country") do |combobox| #{e}
+      #{o} combobox.with_item(value: "de") { "Germany" } #{e}
+    #{o} end #{e}
   CODE
   form_source = <<~CODE
-    <%= poetry_webmcp_form(url: search_path, method: :get,
+    #{o}= poetry_webmcp_form(url: search_path, method: :get,
                            tool: { name: "search_docs",
                                    description: "Search the docs by title or description.",
                                    autosubmit: true }) do |form| #{e}
-      <%= form.field(:q, tool_description: "Words to search for.") #{e}
-    <% end #{e}
+      #{o}= form.field(:q, tool_description: "Words to search for.") #{e}
+    #{o} end #{e}
   CODE
   tool_source = <<~CODE
     class Tabs::Component < Poetry::Core::Component

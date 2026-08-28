@@ -59,7 +59,7 @@ group :development, :test do
 
   # ERB parser behind `bin/rails poetry:check` (optional for poetry hosts;
   # this app is the standing install proof, so it lints for real)
-  gem "herb", require: false
+  gem "herb", ">= 0.10.3", require: false
 end
 
 group :development do

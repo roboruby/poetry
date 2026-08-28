@@ -7,28 +7,29 @@
 <% end %>
 <%
   # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
-  # this scriptlet early, so the samples interpolate it as #{e}.
+  # this scriptlet early, so the samples interpolate it as #{e}; a literal opener would nest an ERB tag under Herb, so they interpolate it as #{o}.
   e = "%" + ">"
+  o = "<" + "%"
   ladder_source = <<~CODE
-    <%# explicit: root id "settings", derived ids settings-trigger, settings-content #{e}
-    <%= poetry_dropdown_menu(id: "settings") do |menu| #{e} ... <% end #{e}
+    #{o}# explicit: root id "settings", derived ids settings-trigger, settings-content #{e}
+    #{o}= poetry_dropdown_menu(id: "settings") do |menu| #{e} ... #{o} end #{e}
 
-    <%# semantic: dom_id derivation -> poetry-dropdown-menu-message_42 #{e}
-    <%= poetry_dropdown_menu(key: message) do |menu| #{e} ... <% end #{e}
+    #{o}# semantic: dom_id derivation -> poetry-dropdown-menu-message_42 #{e}
+    #{o}= poetry_dropdown_menu(key: message) do |menu| #{e} ... #{o} end #{e}
 
-    <%# a literal key parameterizes -> poetry-accordion-faq #{e}
-    <%= poetry_accordion(key: "faq") do |accordion| #{e} ... <% end #{e}
+    #{o}# a literal key parameterizes -> poetry-accordion-faq #{e}
+    #{o}= poetry_accordion(key: "faq") do |accordion| #{e} ... #{o} end #{e}
   CODE
   collection_source = <<~CODE
-    <% @messages.each do |message| #{e}
-      <%= poetry_dropdown_menu(key: message) do |menu| #{e}
+    #{o} @messages.each do |message| #{e}
+      #{o}= poetry_dropdown_menu(key: message) do |menu| #{e}
         ...
-      <% end #{e}
-    <% end #{e}
+      #{o} end #{e}
+    #{o} end #{e}
   CODE
   integrity_source = <<~CODE
-    <%# in the development layout's <head> #{e}
-    <%= poetry_id_integrity_script #{e}
+    #{o}# in the development layout's <head> #{e}
+    #{o}= poetry_id_integrity_script #{e}
   CODE
   to_key_source = <<~CODE
     class Message < ApplicationRecord

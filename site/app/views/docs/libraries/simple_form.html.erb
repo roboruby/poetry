@@ -7,8 +7,9 @@
 <% end %>
 <%
   # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
-  # this scriptlet early, so the samples interpolate it as #{e}.
+  # this scriptlet early, so the samples interpolate it as #{e}; a literal opener would nest an ERB tag under Herb, so they interpolate it as #{o}.
   e = "%" + ">"
+  o = "<" + "%"
   gemfile_source = <<~CODE
     gem "poetry-simple_form"
   CODE
@@ -20,19 +21,19 @@
     Poetry::SimpleForm.activate!
   CODE
   bridge_source = <<~CODE
-    <%= simple_form_for @user do |f| #{e}
-      <%= f.input :email #{e}
-      <%= f.input :bio #{e}
-      <%= f.input :admin, input_html: { switch: true } #{e}
-      <%= f.input :role, collection: %w[admin member] #{e}
-      <%= f.association :company #{e}
-    <% end #{e}
+    #{o}= simple_form_for @user do |f| #{e}
+      #{o}= f.input :email #{e}
+      #{o}= f.input :bio #{e}
+      #{o}= f.input :admin, input_html: { switch: true } #{e}
+      #{o}= f.input :role, collection: %w[admin member] #{e}
+      #{o}= f.association :company #{e}
+    #{o} end #{e}
   CODE
   native_source = <<~CODE
-    <%= form_with(model: @user, builder: Poetry::Ui::FormBuilder) do |f| #{e}
-      <%= f.input :email #{e}
-      <%= f.submit #{e}
-    <% end #{e}
+    #{o}= form_with(model: @user, builder: Poetry::Ui::FormBuilder) do |f| #{e}
+      #{o}= f.input :email #{e}
+      #{o}= f.submit #{e}
+    #{o} end #{e}
   CODE
 %>
 

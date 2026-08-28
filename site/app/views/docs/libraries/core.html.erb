@@ -7,8 +7,9 @@
 <% end %>
 <%
   # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
-  # this scriptlet early, so ERB samples interpolate it as #{e}.
+  # this scriptlet early, so ERB samples interpolate it as #{e}; a literal opener would nest an ERB tag under Herb, so they interpolate it as #{o}.
   e = "%" + ">"
+  o = "<" + "%"
   gemfile_source = <<~CODE
     gem "poetry-core"
   CODE
@@ -78,9 +79,9 @@
     end
   CODE
   render_source = <<~CODE
-    <%= render MyKit::Pill::Component.new(variant: :success, count: 3, class: "ml-2") do #{e}
+    #{o}= render MyKit::Pill::Component.new(variant: :success, count: 3, class: "ml-2") do #{e}
       Deployed
-    <% end #{e}
+    #{o} end #{e}
   CODE
   stimulus_source = <<~CODE
     use_stimulus do

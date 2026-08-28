@@ -7,8 +7,9 @@
 <% end %>
 <%
   # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
-  # this scriptlet early, so the samples interpolate it as #{e}.
+  # this scriptlet early, so the samples interpolate it as #{e}; a literal opener would nest an ERB tag under Herb, so they interpolate it as #{o}.
   e = "%" + ">"
+  o = "<" + "%"
   gemspec_source = <<~CODE
     # billing.gemspec
     spec.add_dependency "poetry-ui"
@@ -26,17 +27,17 @@
     end
   CODE
   view_source = <<~CODE
-    <%# app/views/billing/invoices/index.html.erb - ships zero CSS #{e}
+    #{o}# app/views/billing/invoices/index.html.erb - ships zero CSS #{e}
     <div class="mx-auto flex max-w-4xl flex-col gap-6 p-8">
       <div class="grid gap-4 md:grid-cols-3">
-        <%= poetry_stat(label: "Outstanding", delta: "+2", trend: :up) { "$3,640.00" } #{e}
-        <%= poetry_stat(label: "Collected", delta: "+12%", trend: :up) { "$3,965.00" } #{e}
-        <%= poetry_stat(label: "Overdue", delta: "1", trend: :down) { "$460.00" } #{e}
+        #{o}= poetry_stat(label: "Outstanding", delta: "+2", trend: :up) { "$3,640.00" } #{e}
+        #{o}= poetry_stat(label: "Collected", delta: "+12%", trend: :up) { "$3,965.00" } #{e}
+        #{o}= poetry_stat(label: "Overdue", delta: "1", trend: :down) { "$460.00" } #{e}
       </div>
-      <%= poetry_alert(variant: :destructive) do |alert| #{e}
-        <% alert.with_title { "One invoice is overdue" } #{e}
+      #{o}= poetry_alert(variant: :destructive) do |alert| #{e}
+        #{o} alert.with_title { "One invoice is overdue" } #{e}
         INV-2043 passed its due date 6 days ago.
-      <% end #{e}
+      #{o} end #{e}
     </div>
   CODE
   engine_css_source = <<~CODE

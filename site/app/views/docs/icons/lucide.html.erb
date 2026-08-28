@@ -7,15 +7,16 @@
 <% end %>
 <%
   # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
-  # this scriptlet early, so the samples interpolate it as #{e}.
+  # this scriptlet early, so the samples interpolate it as #{e}; a literal opener would nest an ERB tag under Herb, so they interpolate it as #{o}.
   e = "%" + ">"
+  o = "<" + "%"
   gemfile_source = <<~CODE
     gem "poetry-lucide"
   CODE
   usage_source = <<~CODE
-    <%= poetry_icon(name: :"circle-check") #{e}
-    <%= poetry_icon(name: :search, label: "Search") #{e}
-    <%= poetry_icon(name: :plus, class: "size-4 text-muted-foreground") #{e}
+    #{o}= poetry_icon(name: :"circle-check") #{e}
+    #{o}= poetry_icon(name: :search, label: "Search") #{e}
+    #{o}= poetry_icon(name: :plus, class: "size-4 text-muted-foreground") #{e}
   CODE
   config_source = <<~CODE
     # config/initializers/poetry.rb (defaults shown)

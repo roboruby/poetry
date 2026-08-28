@@ -7,31 +7,32 @@
 <% end %>
 <%
   # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
-  # this scriptlet early, so ERB samples interpolate it as #{e}.
+  # this scriptlet early, so ERB samples interpolate it as #{e}; a literal opener would nest an ERB tag under Herb, so they interpolate it as #{o}.
   e = "%" + ">"
+  o = "<" + "%"
   install_source = <<~CODE
     bundle add poetry-core poetry-ui poetry-lucide
     bin/rails g poetry:install --theme default
   CODE
   first_source = <<~CODE
-    <%= poetry_button { "Save" } #{e}
-    <%= poetry_button(variant: :outline) { "Cancel" } #{e}
+    #{o}= poetry_button { "Save" } #{e}
+    #{o}= poetry_button(variant: :outline) { "Cancel" } #{e}
 
-    <%= poetry_dropdown_menu do |menu| #{e}
-      <% menu.with_trigger(variant: :outline) { "Open" } #{e}
-      <% menu.with_item(shortcut: "⌘S") { "Settings" } #{e}
-      <% menu.with_separator #{e}
-      <% menu.with_item(variant: :destructive) { "Log out" } #{e}
-    <% end #{e}
+    #{o}= poetry_dropdown_menu do |menu| #{e}
+      #{o} menu.with_trigger(variant: :outline) { "Open" } #{e}
+      #{o} menu.with_item(shortcut: "⌘S") { "Settings" } #{e}
+      #{o} menu.with_separator #{e}
+      #{o} menu.with_item(variant: :destructive) { "Log out" } #{e}
+    #{o} end #{e}
   CODE
   form_source = <<~CODE
-    <%= form_with(model: @post, builder: Poetry::Ui::FormBuilder) do |f| #{e}
-      <%= f.input(:title) #{e}
-      <%= f.input(:body) #{e}
-      <%= f.input(:published, hint: "Visible to everyone.") #{e}
-      <%= f.association(:category) #{e}
-      <%= f.submit #{e}
-    <% end #{e}
+    #{o}= form_with(model: @post, builder: Poetry::Ui::FormBuilder) do |f| #{e}
+      #{o}= f.input(:title) #{e}
+      #{o}= f.input(:body) #{e}
+      #{o}= f.input(:published, hint: "Visible to everyone.") #{e}
+      #{o}= f.association(:category) #{e}
+      #{o}= f.submit #{e}
+    #{o} end #{e}
   CODE
   theme_source = <<~CODE
     bin/rails g poetry:install --theme sera   # switch; everything else sticks

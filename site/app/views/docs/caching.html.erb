@@ -7,15 +7,16 @@
 <% end %>
 <%
   # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
-  # this scriptlet early, so the samples interpolate it as #{e}.
+  # this scriptlet early, so the samples interpolate it as #{e}; a literal opener would nest an ERB tag under Herb, so they interpolate it as #{o}.
   e = "%" + ">"
+  o = "<" + "%"
   version_keyed_source = <<~CODE
-    <% cache [@post, Poetry::Ui::VERSION] do #{e}
-      <%= poetry_card(key: @post) do |card| #{e}
-        <% card.with_title { @post.title } #{e}
+    #{o} cache [@post, Poetry::Ui::VERSION] do #{e}
+      #{o}= poetry_card(key: @post) do |card| #{e}
+        #{o} card.with_title { @post.title } #{e}
         ...
-      <% end #{e}
-    <% end #{e}
+      #{o} end #{e}
+    #{o} end #{e}
   CODE
   helper_source = <<~CODE
     # app/helpers/application_helper.rb
@@ -24,17 +25,17 @@
     end
   CODE
   copyin_source = <<~CODE
-    <%# Template Dependency: components/button/component #{e}
-    <% cache @post do #{e}
+    #{o}# Template Dependency: components/button/component #{e}
+    #{o} cache @post do #{e}
       ...
-    <% end #{e}
+    #{o} end #{e}
   CODE
   form_source = <<~CODE
-    <%= form_with model: @post do |form| #{e}
-      <% cache [@post, Poetry::Ui::VERSION] do #{e}
+    #{o}= form_with model: @post do |form| #{e}
+      #{o} cache [@post, Poetry::Ui::VERSION] do #{e}
         ...the expensive field markup...
-      <% end #{e}
-    <% end #{e}
+      #{o} end #{e}
+    #{o} end #{e}
   CODE
 %>
 

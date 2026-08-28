@@ -7,8 +7,9 @@
 <% end %>
 <%
   # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
-  # this scriptlet early, so the samples interpolate it as #{e}.
+  # this scriptlet early, so the samples interpolate it as #{e}; a literal opener would nest an ERB tag under Herb, so they interpolate it as #{o}.
   e = "%" + ">"
+  o = "<" + "%"
   controller_source = <<~CODE
     class NotesController < ApplicationController
       PER = 20
@@ -26,36 +27,36 @@
     end
   CODE
   view_source = <<~CODE
-    <%= poetry_data_table(rows: @notes, state: @state, total: @total,
+    #{o}= poetry_data_table(rows: @notes, state: @state, total: @total,
                           caption: "Your notes, most recent first.",
                           path: ->(p) { notes_path(**p) }) do |table| #{e}
-      <% table.with_column("Title", key: :title, sortable: true) { |note| note.title } #{e}
-      <% table.with_column("Created", key: :created_at, sortable: true) { |note| l(note.created_at.to_date) } #{e}
-    <% end #{e}
+      #{o} table.with_column("Title", key: :title, sortable: true) { |note| note.title } #{e}
+      #{o} table.with_column("Created", key: :created_at, sortable: true) { |note| l(note.created_at.to_date) } #{e}
+    #{o} end #{e}
   CODE
   sticky_source = <<~CODE
-    <%= poetry_data_table(rows: @notes, state: @state, total: @total,
+    #{o}= poetry_data_table(rows: @notes, state: @state, total: @total,
                           caption: "Your notes, most recent first.",
                           sticky_header: true, container_class: "max-h-96",
                           path: ->(p) { notes_path(**p) }) do |table| #{e}
       ...
-    <% end #{e}
+    #{o} end #{e}
   CODE
   selection_source = <<~CODE
-    <%= poetry_data_table(rows: @notes, state: @state, total: @total,
+    #{o}= poetry_data_table(rows: @notes, state: @state, total: @total,
                           caption: "Your notes, most recent first.",
                           selectable: ->(note) { note.id },
                           path: ->(p) { notes_path(**p) }) do |table| #{e}
       ...
-    <% end #{e}
+    #{o} end #{e}
   CODE
   frame_source = <<~CODE
-    <%= poetry_data_table(rows: @notes, state: @state, total: @total,
+    #{o}= poetry_data_table(rows: @notes, state: @state, total: @total,
                           caption: "Your notes, most recent first.",
                           frame: "notes",
                           path: ->(p) { notes_path(**p) }) do |table| #{e}
       ...
-    <% end #{e}
+    #{o} end #{e}
   CODE
 %>
 
