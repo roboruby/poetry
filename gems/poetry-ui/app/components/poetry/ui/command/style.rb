@@ -6,10 +6,10 @@ module Poetry
       # Re-expressed through the cn-* theme layer. The two deliberate
       # source deltas (data-[highlighted] over data-[selected=true]; the
       # ms-auto RTL shortcut) now live in the theme rules. The
-      # CommandDialog p-0/h-12 retunes stay INLINE deliberately: they are
-      # cross-component overrides whose utilities-layer position is what
-      # lets them beat the themed Dialog/Command rules (dialog_content's
-      # panel retune rides the cross-component theme section instead).
+      # CommandDialog p-0/overflow-hidden and h-12 retunes stay INLINE
+      # deliberately (the source carries them on the component too): they
+      # are cross-component overrides whose utilities-layer position is
+      # what lets them beat the themed Dialog/Command rules.
       class Style < Poetry::Core::Style
         base "cn-command flex h-full w-full flex-col overflow-hidden"
 
@@ -57,9 +57,12 @@ module Poetry
         # The source's inline SearchIcon classes, named per part.
         element :search_icon, "cn-command-input-icon"
 
-        # CommandDialog: the DialogContent override (cross-component theme
-        # section - p-0 must beat cn-dialog-content's p-6 in-layer).
-        element :dialog_content, "cn-command-dialog"
+        # CommandDialog: the DialogContent override - the themes' radius
+        # retune hook plus the source's structural pair (overflow-hidden
+        # p-0), inline so it beats every theme's cn-dialog-content padding
+        # (the ports that repeat p-0 in their rule are the source's own
+        # duplicates; three ports do not, and relied on this pair).
+        element :dialog_content, "cn-command-dialog overflow-hidden p-0"
 
         # CommandDialog: the source's h-12 inner-part retuning chain,
         # rewritten onto poetry's data-slots per the contract. Stays inline:
@@ -72,11 +75,13 @@ module Poetry
                                    "[&_[data-slot=command-item]]:px-2 [&_[data-slot=command-item]]:py-3 " \
                                    "[&_[data-slot=command-item]_svg]:h-5 [&_[data-slot=command-item]_svg]:w-5"
 
-        # CommandDialog: the close recenter. Dialog's themed offset (top-4)
-        # suits p-6 content; the palette centers the 32px button in its
-        # h-12 input row instead. Stays inline (dictionary-held so the
-        # safelist harvests it): utilities beat the themed cn-dialog-close.
-        element :dialog_close, "top-2 right-2"
+        # CommandDialog: the close X seats in the input row as its trailing
+        # flex item - never laid over the input, centered by the row in
+        # every theme. static beats the themed cn-dialog-close absolute
+        # offset (utilities win), shrink-0 keeps the icon button whole
+        # beside the w-full input; size and hover stay the theme's ghost
+        # icon-sm. Dictionary-held so the safelist harvests it.
+        element :dialog_close, "static shrink-0"
       end
     end
   end

@@ -355,10 +355,12 @@ module Poetry
           assert_equal "Search for a command to run…", description.text
           assert_equal title["id"], dialog["aria-labelledby"]
           assert_equal description["id"], dialog["aria-describedby"]
-          # The source content override rides .cn-command-dialog in the
-          # cross-component theme section (p-0 beats cn-dialog-content's
-          # themed p-6 in-layer; neither padding appears inline).
+          # The source's structural pair rides inline (utilities beat every
+          # theme's cn-dialog-content padding); the hook carries the
+          # themes' radius retunes.
           assert_includes dialog["class"], "cn-command-dialog"
+          assert_includes dialog["class"], "overflow-hidden"
+          assert_includes dialog["class"], "p-0"
           refute_includes dialog["class"], "p-6"
         end
 
@@ -389,28 +391,36 @@ module Poetry
           assert_equal "meta+k", wired["data-poetry--core--dialog-hotkey-value"]
         end
 
-        def test_dialog_variant_trigger_and_close_button
-          fragment = doc(render_dialog)
-          trigger = fragment.css('[data-component="button"]').first
+        CLOSE_X = 'dialog [data-component="button"][aria-label="Close"]'
+
+        def test_dialog_variant_trigger_wires_open
+          trigger = doc(render_dialog).css('[data-component="button"]').first
 
           assert_includes trigger["data-action"], "poetry--core--dialog#open"
-          close = fragment.css("dialog [data-component=\"button\"][aria-label=\"Close\"]")
-
-          assert_predicate close, :any?, "showCloseButton default true"
-
-          without = doc(render_dialog(show_close_button: false))
-
-          assert_empty without.css("dialog [data-component=\"button\"][aria-label=\"Close\"]")
         end
 
-        def test_dialog_variant_close_button_recenters_in_the_input_row
-          close = doc(render_dialog).css("dialog [data-component=\"button\"][aria-label=\"Close\"]").first
+        def test_dialog_variant_close_button_defaults_to_the_inverse_of_dismissible
+          assert_empty doc(render_dialog).css(CLOSE_X),
+                       "keyboard-first: no X while the backdrop closes the palette (the styled source's default)"
+          assert_predicate doc(render_dialog(dismissible: false)).css(CLOSE_X), :any?, "a pointer needs a way out"
+          assert_predicate doc(render_dialog(show_close_button: true)).css(CLOSE_X), :any?
+          assert_empty doc(render_dialog(dismissible: false, show_close_button: false)).css(CLOSE_X),
+                       "an explicit false wins over the derived default"
+        end
 
-          # Dialog's themed close offset (top-4) suits p-6 content; the
-          # palette recenters the 32px button in its h-12 input row.
+        def test_dialog_variant_close_button_seats_in_the_input_row
+          fragment = doc(render_dialog(show_close_button: true))
+          wrapper = fragment.css('[data-slot="command-input-wrapper"]').first
+          close = wrapper.css('[data-component="button"][aria-label="Close"]').first
+
+          refute_nil close, "the X is the input row's trailing item, never laid over the input"
+          assert_equal "command-input", close.previous_element["data-slot"]
           assert_includes close["class"], "cn-dialog-close"
-          assert_includes close["class"], "top-2"
-          assert_includes close["class"], "right-2"
+          assert_includes close["class"], "static", "beats the themed absolute offset"
+          assert_includes close["class"], "shrink-0"
+          refute_includes close["class"], "top-2"
+          assert_includes close["data-action"], "poetry--core--dialog#close"
+          assert_equal 1, fragment.css(CLOSE_X).size, "one X, in the row - none over the panel"
         end
       end
     end

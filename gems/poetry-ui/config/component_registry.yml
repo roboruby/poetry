@@ -2613,7 +2613,7 @@ components:
     - dialog_content
     - dialog_overrides
     - dialog_close
-    capsule: 4cb32d7e0dcc
+    capsule: 940c50d5966a
     controllers:
     - identifier: poetry--core--command
       targets: []
@@ -2785,8 +2785,11 @@ components:
       description: 'Passed through: the filter input''s placeholder text.'
     - name: show_close_button
       type: boolean
-      default: true
-      description: Renders the corner X (Esc always closes regardless).
+      default: dynamic
+      description: 'The close X, seated in the input row. Off by default while backdrop
+        clicks close the palette (Esc, the backdrop, or picking an item all close
+        it); on when dismissible: false so a pointer has a way out. Pass true to always
+        show it.'
     - name: title
       type: string
       default: dynamic
@@ -2835,6 +2838,9 @@ components:
       rather than removing them (they are the dialog''s accessible name).'
     - 'Item wiring is Command''s: act on poetry:command:select; close the dialog in
       the listener if the action should dismiss the palette.'
+    - 'The close X is off by default (keyboard-first: Esc, the backdrop, or picking
+      an item closes it) and appears with dismissible: false; show_close_button: true
+      forces it - it seats in the input row, never over it.'
     parts:
     - name: command-dialog
       description: Root wrapper around the trigger and the <dialog> - the palette's

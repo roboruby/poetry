@@ -9,6 +9,7 @@
   <div data-slot="command-input-wrapper" class="<%= css(:input_wrapper) %>">
     <span data-slot="command-search-icon"><%= render(Poetry::Ui::Icon::Component.new(name: :search, class: css(:search_icon))) %></span>
     <%= tag.input(**Poetry::Core::HTML::Attributes.new(input_attributes).to_attributes) %>
+    <%= input_trailing_html %>
   </div>
   <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(list_attributes).to_attributes) do %>
     <%= empty_part %>

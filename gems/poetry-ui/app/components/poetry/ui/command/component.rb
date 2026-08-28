@@ -368,6 +368,20 @@ module Poetry
           @input_aria = extract_input_aria!
         end
 
+        # The input row's trailing content - the seam the CommandDialog
+        # seats its close button in (IN the row, never laid over the input).
+        # A lambda the owner supplies, called at render time in the OWNER's
+        # view context so it can render components. Never a helper kwarg:
+        # this is composition between two components of the gem.
+        # @api private
+        attr_writer :input_trailing
+
+        # The rendered trailing content of the input row, or nil.
+        # @api private
+        def input_trailing_html
+          @input_trailing&.call
+        end
+
         # Enforces the accessible-name requirement.
         # @api private
         def before_render

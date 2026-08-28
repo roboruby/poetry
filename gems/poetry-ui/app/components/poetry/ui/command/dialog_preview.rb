@@ -19,6 +19,14 @@ module Poetry
           end
         end
 
+        def close_button
+          render_component(show_close_button: true) do |palette|
+            palette.with_trigger(variant: :outline) { "Open with a close button" }
+            palette.with_item(value: "calendar") { "Calendar" }
+            palette.with_item(value: "emoji") { "Search Emoji" }
+          end
+        end
+
         def with_hotkey
           render_component(hotkey: "meta+k") do |palette|
             palette.with_trigger(variant: :outline) { "⌘K" }

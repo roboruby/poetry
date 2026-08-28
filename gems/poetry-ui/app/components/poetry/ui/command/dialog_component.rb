@@ -31,7 +31,10 @@ module Poetry
           "The sr-only title/description default to the source strings - override title:/description: " \
           "rather than removing them (they are the dialog's accessible name).",
           "Item wiring is Command's: act on poetry:command:select; close the dialog in the listener if " \
-          "the action should dismiss the palette."
+          "the action should dismiss the palette.",
+          "The close X is off by default (keyboard-first: Esc, the backdrop, or picking an item closes it) " \
+          "and appears with dismissible: false; show_close_button: true forces it - it seats in the input " \
+          "row, never over it."
         ].freeze
 
         slot_doc :trigger, "The trigger is a poetry Button wired to open - the Dialog pattern: with_trigger(variant: " \
@@ -73,8 +76,12 @@ module Poetry
         option :hotkey, :string,
                doc: "A global shortcut (\"meta+k\") that toggles the palette from anywhere; an accelerator, not the " \
                     "only way in."
-        option :show_close_button, :boolean, default: true, doc: "Renders the corner X (Esc always closes regardless)."
         option :dismissible, :boolean, default: true, doc: "Backdrop clicks close the palette; false keeps it open."
+        option :show_close_button, :boolean,
+               default: -> { !dismissible },
+               doc: "The close X, seated in the input row. Off by default while backdrop clicks close the " \
+                    "palette (Esc, the backdrop, or picking an item all close it); on when dismissible: " \
+                    "false so a pointer has a way out. Pass true to always show it."
         option :filter, :boolean, default: true, doc: "Passed through to the embedded Command: client-side filtering."
         option :loop, :boolean, default: false, doc: "Passed through: wraps arrow-key highlight movement at the ends."
         option :placeholder, :string, doc: "Passed through: the filter input's placeholder text."
@@ -120,7 +127,22 @@ module Poetry
             options[:placeholder] = placeholder if placeholder.present?
             options[:list_label] = list_label if list_label.present?
             options[:id] = id if id.present?
-            Component.new(**options)
+            Component.new(**options).tap do |palette|
+              palette.input_trailing = -> { close_button } if show_close_button
+            end
+          end
+        end
+
+        # The close X: Dialog's ghost icon-sm button, seated in the input row
+        # by the embedded Command (static beats the themed absolute offset).
+        # Rendered in THIS component's view context when the row renders.
+        # @api private
+        def close_button
+          classes = Poetry::Ui::Dialog::Style.css(:close, class: Style.css(:dialog_close))
+          render(Poetry::Ui::Button::Component.new(variant: :ghost, size: :"icon-sm",
+                                                   label: t("poetry.dialog.close"),
+                                                   class: classes, data: { action: close_action })) do
+            render(Poetry::Ui::Icon::Component.new(name: :x))
           end
         end
 
@@ -176,7 +198,7 @@ module Poetry
           @instance_id ||= poetry_instance_id("poetry-command-dialog")
         end
 
-        private :command, :title_id, :description_id, :root_attributes, :dialog_attributes, :close_action
+        private :command, :close_button, :title_id, :description_id, :root_attributes, :dialog_attributes, :close_action
       end
     end
   end
