@@ -41,6 +41,7 @@
         confirm.open(via: :keyboard)
         assert_equal "Change plan?", confirm.title
         confirm.close
+        assert_poetry_controllers_registered
       end
 
       test "assigning from a filtered combobox" do
@@ -93,9 +94,12 @@
         Before anything renders, <code>poetry:check</code> parses your ERB
         and validates every Poetry surface against the component registry
         and the controllers manifest: unknown component, option, or variant
-        (with a did-you-mean), unknown Stimulus controller, action, or
-        target, raw color classes, and icon declarations in app Ruby. A
-        rename in your wiring can never silently strand a controller. It
+        (with a did-you-mean), unknown Stimulus controller, action, target,
+        or value (and a value literal that cannot be its declared type),
+        whether hand-written or passed through a Poetry helper's
+        <code>data:</code> keywords, raw color classes, and icon
+        declarations in app Ruby. A rename in your wiring can never silently
+        strand a controller. It
         needs the <code>herb</code> gem to parse templates; adding it to
         your Gemfile's development group is enough.
       </p>
@@ -228,6 +232,16 @@
           </tr>
         </tbody>
       </table>
+      <p>
+        <code>assert_poetry_controllers_registered</code> is the page-wide
+        guard: every Poetry controller on the page must be registered on
+        the Stimulus application (<code>window.Stimulus</code> by default).
+        Stimulus never errors on an identifier nothing registered, and one
+        failed import in your controllers graph silently takes every Poetry
+        controller down with it, so nothing else surfaces that class of bug.
+        The failure names the identifiers; the registrar also warns once per
+        identifier in the browser console.
+      </p>
       <p>
         Each tester is an executable spec of its component's interaction
         contract. Select commits sync the native select and close with

@@ -34,7 +34,8 @@ class DocsCatalog
     Entry.new(slug: "testing", title: "Testing", section: "docs", icon: :"flask-conical",
               description: "Test Poetry UIs at the cheapest tier that can catch the bug: wiring " \
                        "asserts on rendered contracts, behavior through the Testing helpers " \
-                       "(poetry_dialog, poetry_select, poetry_combobox, poetry_dropdown_menu), " \
+                       "(poetry_dialog, poetry_select, poetry_combobox, poetry_dropdown_menu, " \
+                       "assert_poetry_controllers_registered), " \
                        "and the browser only for what needs a layout engine."),
     Entry.new(slug: "forms", title: "Form Builder", section: "docs", icon: :pencil,
               description: "The model-bound FormBuilder: form_with(builder:) + f.input for one-call " \
