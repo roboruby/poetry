@@ -3355,6 +3355,9 @@ components:
       description: role=group semantic grouping between separators
     - name: context-menu-label
       description: Non-interactive heading for a run of items
+      states:
+      - attr: data-inset
+        condition: 'indented to align with checkbox/radio item text (inset: true)'
     - name: context-menu-item
       description: One role=menuitem action row
       states:
@@ -3391,6 +3394,8 @@ components:
         condition: not selected
       - attr: data-value
         condition: the radio's value
+      - attr: data-disabled
+        condition: item is disabled (always written together with aria-disabled)
     - name: context-menu-item-indicator
       description: The check/circle glyph slot inside checkbox and radio items - state
         rides the parent item; the glyph stays decorative
@@ -4811,6 +4816,8 @@ components:
         condition: not selected
       - attr: data-value
         condition: the radio's value
+      - attr: data-disabled
+        condition: item is disabled (always written together with aria-disabled)
     - name: dropdown-menu-item-indicator
       description: The check/circle glyph slot inside checkbox and radio items - state
         rides the parent item; the glyph stays decorative
@@ -6586,6 +6593,9 @@ components:
       description: role=group semantic grouping between separators
     - name: menubar-label
       description: Non-interactive heading for a run of items
+      states:
+      - attr: data-inset
+        condition: 'indented to align with checkbox/radio item text (inset: true)'
     - name: menubar-item
       description: One role=menuitem action row
       states:
@@ -6622,6 +6632,8 @@ components:
         condition: not selected
       - attr: data-value
         condition: the radio's value
+      - attr: data-disabled
+        condition: item is disabled (always written together with aria-disabled)
     - name: menubar-item-indicator
       description: The check/circle glyph slot inside checkbox and radio items - state
         rides the parent item; the glyph stays decorative
@@ -7314,6 +7326,11 @@ components:
         condition: the popup is closed (the server-rendered state)
       - attr: data-instant
         condition: suppresses the morph transitions for one painted frame (cold opens)
+      - attr: data-starting-style
+        condition: the enter transition's first frame (the presence module's two-frame
+          trick)
+      - attr: data-ending-style
+        condition: held through the exit transition before the popup hides
       vars:
       - name: "--popup-width"
         description: the pinned morph width (reset to auto once the transition settles)
@@ -9588,6 +9605,9 @@ components:
       states:
       - attr: data-active
         condition: 'the current route (active: - links also get aria-current=page)'
+      - attr: data-open
+        condition: when the button is a collapsible's trigger - the disclosure state
+          the collapsible controller flips
       - attr: data-size
         condition: the row size variant (default, sm, or lg) - the action/badge tops
           key on it

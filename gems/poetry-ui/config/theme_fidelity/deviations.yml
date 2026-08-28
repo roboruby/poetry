@@ -883,6 +883,12 @@ vega:
       reason: The source's data-[state=on] is re-keyed to poetry's data-pressed pair.
       added:
       - data-[spacing=default]:data-[variant=outline]:shadow-xs
+    ".cn-toggle-group-item":
+      reason: 'State-pair translation: the source''s data-[state=on] is poetry''s bare data-pressed (the toggle writes the pair with aria-pressed); the port had kept the source marker, which poetry never emits, so the pressed treatment was dead.'
+      dropped:
+      - data-[state=on]:bg-muted
+      added:
+      - data-pressed:bg-muted
     ".cn-toggle-size-default":
       reason: The source's data-[state=on] is re-keyed to poetry's data-pressed pair.
       added:
@@ -1777,6 +1783,12 @@ nova:
       - p-4
       - shadow-lg
       - text-popover-foreground
+    ".cn-toggle":
+      reason: 'State-pair translation: the source''s data-[state=on] is poetry''s bare data-pressed; the port had kept the source marker, which poetry never emits.'
+      dropped:
+      - data-[state=on]:bg-muted
+      added:
+      - data-pressed:bg-muted
     ".cn-toggle-size-default":
       reason: The source's data-[state=on] is re-keyed to poetry's data-pressed pair.
       added:
@@ -2687,6 +2699,12 @@ mira:
       - p-4
       - shadow-lg
       - text-popover-foreground
+    ".cn-toggle":
+      reason: 'State-pair translation: the source''s data-[state=on] is poetry''s bare data-pressed; the port had kept the source marker, which poetry never emits.'
+      dropped:
+      - data-[state=on]:bg-muted
+      added:
+      - data-pressed:bg-muted
     ".cn-toggle-size-default":
       reason: The source's data-[state=on] is re-keyed to poetry's data-pressed pair.
       added:
@@ -3640,6 +3658,12 @@ rhea:
       - rounded-2xl
       - shadow-lg
       - text-popover-foreground
+    ".cn-toggle-group-item":
+      reason: 'State-pair translation: the source''s data-[state=on] is poetry''s bare data-pressed (the toggle writes the pair with aria-pressed); the port had kept the source marker, which poetry never emits, so the pressed treatment was dead.'
+      dropped:
+      - data-[state=on]:bg-muted
+      added:
+      - data-pressed:bg-muted
     ".cn-toggle-size-default":
       reason: The source's data-[state=on] is re-keyed to poetry's data-pressed pair.
       added:
@@ -3656,11 +3680,15 @@ rhea:
       - has-[>svg:first-child]:pl-1.5
       - has-[>svg:last-child]:pr-1.5
     ".cn-tooltip-arrow":
-      reason: The arrow translate rides the dictionary inline; per-side nudges stay
-        theme-side; content carries the pair doctrine.
+      reason: 'The arrow''s side lives on its positioning wrapper (the popper stamps data-side on the slot element); the glyph inside reads it as an ancestor state (in-data-[side=...]) instead of its own.'
       dropped:
+      - data-[side=left]:translate-x-[-1.5px]
+      - data-[side=right]:translate-x-[1.5px]
       - rotate-45
       - translate-y-[calc(-50%-2px)]
+      added:
+      - in-data-[side=left]:translate-x-[-1.5px]
+      - in-data-[side=right]:translate-x-[1.5px]
 
 maia:
   missing_selectors:
@@ -4531,6 +4559,12 @@ maia:
       - p-4
       - shadow-lg
       - text-popover-foreground
+    ".cn-toggle-group-item":
+      reason: 'State-pair translation: the source''s data-[state=on] is poetry''s bare data-pressed (the toggle writes the pair with aria-pressed); the port had kept the source marker, which poetry never emits, so the pressed treatment was dead.'
+      dropped:
+      - data-[state=on]:bg-muted
+      added:
+      - data-pressed:bg-muted
     ".cn-toggle-size-default":
       reason: The source's data-[state=on] is re-keyed to poetry's data-pressed pair.
       added:
@@ -4547,11 +4581,15 @@ maia:
       - has-[>svg:first-child]:pl-2
       - has-[>svg:last-child]:pr-2
     ".cn-tooltip-arrow":
-      reason: The arrow translate rides the dictionary inline; per-side nudges stay
-        theme-side; content carries the pair doctrine.
+      reason: 'The arrow''s side lives on its positioning wrapper (the popper stamps data-side on the slot element); the glyph inside reads it as an ancestor state (in-data-[side=...]) instead of its own.'
       dropped:
+      - data-[side=left]:translate-x-[-1.5px]
+      - data-[side=right]:translate-x-[1.5px]
       - rotate-45
       - translate-y-[calc(-50%-2px)]
+      added:
+      - in-data-[side=left]:translate-x-[-1.5px]
+      - in-data-[side=right]:translate-x-[1.5px]
 
 luma:
   missing_selectors:
@@ -5464,6 +5502,12 @@ luma:
       - p-4
       - shadow-lg
       - text-popover-foreground
+    ".cn-toggle-group-item":
+      reason: 'State-pair translation: the source''s data-[state=on] is poetry''s bare data-pressed (the toggle writes the pair with aria-pressed); the port had kept the source marker, which poetry never emits, so the pressed treatment was dead.'
+      dropped:
+      - data-[state=on]:bg-muted
+      added:
+      - data-pressed:bg-muted
     ".cn-toggle-size-default":
       reason: The source's data-[state=on] is re-keyed to poetry's data-pressed pair.
       added:
@@ -5480,11 +5524,15 @@ luma:
       - has-[>svg:first-child]:pl-2
       - has-[>svg:last-child]:pr-2
     ".cn-tooltip-arrow":
-      reason: The arrow translate rides the dictionary inline; per-side nudges stay
-        theme-side; content carries the pair doctrine.
+      reason: 'The arrow''s side lives on its positioning wrapper (the popper stamps data-side on the slot element); the glyph inside reads it as an ancestor state (in-data-[side=...]) instead of its own.'
       dropped:
+      - data-[side=left]:translate-x-[-1.5px]
+      - data-[side=right]:translate-x-[1.5px]
       - rotate-45
       - translate-y-[calc(-50%-2px)]
+      added:
+      - in-data-[side=left]:translate-x-[-1.5px]
+      - in-data-[side=right]:translate-x-[1.5px]
 
 lyra:
   missing_selectors:
@@ -7157,6 +7205,14 @@ sera:
       - rounded-none
       - shadow-lg
       - text-popover-foreground
+    ".cn-toggle-group-item":
+      reason: 'State-pair translation: the source''s data-[state=on] is poetry''s bare data-pressed (the toggle writes the pair with aria-pressed); the port had kept the source marker, which poetry never emits, so the pressed treatment was dead.'
+      dropped:
+      - data-[state=on]:bg-muted
+      - data-[state=on]:text-foreground
+      added:
+      - data-pressed:bg-muted
+      - data-pressed:text-foreground
     ".cn-toggle-size-default":
       reason: The source's data-[state=on] is re-keyed to poetry's data-pressed pair.
       added:

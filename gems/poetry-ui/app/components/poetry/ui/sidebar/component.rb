@@ -155,6 +155,8 @@ module Poetry
         part "sidebar-menu-button", "The row's link (href:) or button - the navigation entry itself",
              states: {
                "data-active" => "the current route (active: - links also get aria-current=page)",
+               "data-open" => "when the button is a collapsible's trigger - the disclosure state the " \
+                              "collapsible controller flips",
                "data-size" => "the row size variant (default, sm, or lg) - the action/badge tops key on it",
                "data-variant" => { condition: "always - the treatment", values: %w[default outline] }
              }

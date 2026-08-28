@@ -139,7 +139,10 @@ module Poetry
              states: {
                "data-open" => "a panel is showing (the controller flips the pair)",
                "data-closed" => "the popup is closed (the server-rendered state)",
-               "data-instant" => "suppresses the morph transitions for one painted frame (cold opens)"
+               "data-instant" => "suppresses the morph transitions for one painted frame (cold opens)",
+               "data-starting-style" => "the enter transition's first frame (the presence module's " \
+                                        "two-frame trick)",
+               "data-ending-style" => "held through the exit transition before the popup hides"
              },
              vars: {
                "--popup-width" => "the pinned morph width (reset to auto once the transition settles)",

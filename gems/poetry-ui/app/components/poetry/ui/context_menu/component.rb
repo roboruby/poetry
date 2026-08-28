@@ -172,7 +172,10 @@ module Poetry
                "--anchor-height" => "popper: the anchor rect's measured height"
              }
         part "context-menu-group", "role=group semantic grouping between separators"
-        part "context-menu-label", "Non-interactive heading for a run of items"
+        part "context-menu-label", "Non-interactive heading for a run of items",
+             states: {
+               "data-inset" => "indented to align with checkbox/radio item text (inset: true)"
+             }
         part "context-menu-item", "One role=menuitem action row",
              states: {
                "data-variant" => "default or destructive (the danger treatment)",
@@ -196,7 +199,8 @@ module Poetry
              states: {
                "data-checked" => "the selected radio (the controller re-writes the pair with aria-checked)",
                "data-unchecked" => "not selected",
-               "data-value" => "the radio's value"
+               "data-value" => "the radio's value",
+               "data-disabled" => "item is disabled (always written together with aria-disabled)"
              }
         part "context-menu-item-indicator", "The check/circle glyph slot inside checkbox and radio " \
                                             "items - state rides the parent item; the glyph stays " \

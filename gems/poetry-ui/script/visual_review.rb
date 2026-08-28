@@ -124,6 +124,7 @@ abort "no candidates for #{theme} in tmp/visual_diffs (run the walk first)" if c
 # broad: look at it.
 def visual_verdict(stats)
   return stats[:note] if stats[:note]
+  return "identical" unless stats[:bbox]
   return "shift #{stats[:shift].join(",")}px" if stats[:shift]
 
   pct = stats[:pixels] * 100.0 / stats[:total]

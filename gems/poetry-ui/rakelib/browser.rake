@@ -259,6 +259,9 @@ namespace :test do
     diffs_dir = Poetry::Ui.root.join("tmp/visual_diffs")
     rebaseline = ENV["VISUAL_REBASELINE"] == "1"
     FileUtils.mkdir_p(baseline_dir)
+    # Candidates mean something only for the run that produced them - a
+    # stale one from another theme would pair with the wrong baseline.
+    FileUtils.rm_rf(diffs_dir)
 
     created = []
     failures = []

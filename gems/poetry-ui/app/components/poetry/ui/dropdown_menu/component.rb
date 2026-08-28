@@ -196,7 +196,8 @@ module Poetry
              states: {
                "data-checked" => "the selected radio (the controller re-writes the pair with aria-checked)",
                "data-unchecked" => "not selected",
-               "data-value" => "the radio's value"
+               "data-value" => "the radio's value",
+               "data-disabled" => "item is disabled (always written together with aria-disabled)"
              }
         part "dropdown-menu-item-indicator", "The check/circle glyph slot inside checkbox and radio " \
                                              "items - state rides the parent item; the glyph stays " \
