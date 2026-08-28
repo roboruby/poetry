@@ -106,6 +106,29 @@ namespace :test do
       raise "native value #{combobox.value.inspect}" unless combobox.value.to_s == "remix"
     end
 
+    prove.call("registration guard finds every poetry controller registered") do
+      visit.call("/previews/poetry/ui/dialog/default")
+      testing = Object.new.extend(Poetry::Ui::Testing)
+      missing = testing.poetry_unregistered_controllers(session: session)
+      raise "unregistered on a healthy page: #{missing.inspect}" unless missing.empty?
+      raise "assertion did not pass" unless testing.assert_poetry_controllers_registered(session: session)
+    end
+    prove.call("registration guard names an unregistered poetry controller") do
+      visit.call("/previews/poetry/ui/dialog/default")
+      session.execute_script(<<~JS)
+        document.body.insertAdjacentHTML("beforeend", '<div data-controller="poetry--core--nope host--fine"></div>')
+      JS
+      testing = Object.new.extend(Poetry::Ui::Testing)
+      missing = testing.poetry_unregistered_controllers(session: session)
+      raise "expected the injected identifier, got #{missing.inspect}" unless missing == ["poetry--core--nope"]
+
+      begin
+        testing.assert_poetry_controllers_registered(session: session)
+        raise "assertion passed with an unregistered controller on the page"
+      rescue Poetry::Ui::Testing::RegistrationError => e
+        raise "message lacks the identifier: #{e.message}" unless e.message.include?("poetry--core--nope")
+      end
+    end
     session.quit
 
     abort "testers: #{failures.size}/#{proofs.size} proofs FAILED\n  " + failures.join("\n  ") if failures.any?

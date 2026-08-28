@@ -14,6 +14,7 @@
       import { registerPoetryControllers } from "@poetry/controllers"
 
       const application = new Application()
+      window.Stimulus = application // the Rails convention hosts follow (controllers/application.js); the testers read it
       registerPoetryControllers(application)
       await application.start()
       await import("/vendor/turbo.es2017-esm.js")

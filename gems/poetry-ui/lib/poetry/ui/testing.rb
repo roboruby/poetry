@@ -5,6 +5,7 @@ require_relative "testing/select"
 require_relative "testing/combobox"
 require_relative "testing/menu"
 require_relative "testing/dialog"
+require_relative "testing/registration"
 
 module Poetry
   module Ui
@@ -79,6 +80,44 @@ module Poetry
       # @return [Dialog]
       def poetry_dialog(root, session: nil)
         Dialog.new(root, session: session || testing_session)
+      end
+
+      # Every poetry controller identifier on the current page that the
+      # host's Stimulus application has NOT registered - empty when the
+      # wiring is healthy. Stimulus never errors on an unknown identifier
+      # (the element just stays inert), and one failed import in the
+      # controllers graph silently takes every poetry controller with it,
+      # so nothing else surfaces this.
+      #
+      # @param session [Capybara::Session, nil] defaults to the test's
+      #   `page` (or Capybara.current_session)
+      # @param application [String] JS expression naming the Stimulus
+      #   application (Rails' default controllers/application.js exposes
+      #   window.Stimulus)
+      # @return [Array<String>] the unregistered identifiers, sorted
+      # @raise [RegistrationError] when no application is reachable at all
+      def poetry_unregistered_controllers(session: nil, application: "window.Stimulus")
+        result = (session || testing_session).evaluate_script(Registration.script(application))
+        raise RegistrationError, result["error"] if result["error"]
+
+        result["missing"]
+      end
+
+      # Asserts that every poetry controller on the page is registered.
+      # Flunks under Minitest, raises {RegistrationError} elsewhere, with
+      # the identifiers and the two causes to check first.
+      #
+      # @param session [Capybara::Session, nil] defaults to the test's
+      #   `page` (or Capybara.current_session)
+      # @param application [String] JS expression naming the Stimulus
+      #   application (default window.Stimulus)
+      # @return [true]
+      def assert_poetry_controllers_registered(session: nil, application: "window.Stimulus")
+        result = (session || testing_session).evaluate_script(Registration.script(application))
+        return true if !result["error"] && result["missing"].empty?
+
+        message = Registration.message(result)
+        respond_to?(:flunk, true) ? flunk(message) : raise(RegistrationError, message)
       end
 
       private
