@@ -185,7 +185,8 @@ module Poetry
           assert_equal "off", input["autocomplete"]
           assert_equal "Filter options", input["aria-label"],
                        "the input's OWN name (t('poetry.combobox.filter_label')), distinct from the field label"
-          assert_includes input["class"].split, "h-9", "the demo's CommandInput className=h-9 retune"
+          assert_includes input["class"].split, "h-full", "the input fills its well; the well's height is the theme's"
+          refute_includes input["class"].split, "h-9", "no classic retune inline - it would size every theme's well"
           refute_includes input["class"].split, "h-10", "the merger resolves Command's h-10"
           assert_includes input["data-action"], "input->poetry--core--command#filterInput"
           assert_includes input["data-action"], "keydown->poetry--core--command#keydown"

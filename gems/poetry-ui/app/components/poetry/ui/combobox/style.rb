@@ -4,11 +4,11 @@ module Poetry
   module Ui
     module Combobox
       # Re-expressed through the cn-* theme layer. The embedded
-      # Command parts still reuse Command::Style verbatim. The demo's
-      # h-9 input retune stays INLINE (a utilities-layer override that
-      # beats the themed cn-command-input h-10 - the cn() behavior). The
-      # themed demo width still loses to the width: knob (caller
-      # utilities beat the base layer).
+      # Command parts still reuse Command::Style verbatim; the popup's
+      # list and label are the combobox's own hooks. The input fills its
+      # well (h-full, mechanics) rather than carrying the classic demo's
+      # h-9 - every theme's well sizes it. The themed demo width still
+      # loses to the width: knob (caller utilities beat the base layer).
       class Style < Poetry::Core::Style
         # The demo trigger IS Button's reference shape with the demo deltas
         # (justify-between, font-normal, the w-50 demo width) - all riding
@@ -62,10 +62,13 @@ module Poetry
         # label rule, themed per style.
         element :label, "cn-combobox-label"
 
-        # The demo's CommandInput className="h-9" retune, merged over
-        # Command's own :input (beats the themed h-10 from the utilities
-        # layer, exactly as the class merger used to).
-        element :input_scale, "h-9"
+        # The filter input fills its well: h-full is mechanics (the well's
+        # height is the theme's - h-9 in default, the h-7/h-8 pill in the
+        # ports), so the input keeps covering the whole field for pointer
+        # focus without carrying a theme value. In default this lands where
+        # the classic demo's h-9 retune did; the ports' source sizes the
+        # input by its group the same way.
+        element :input_fill, "h-full"
 
         # POETRY ADDITION (Command's precedent): the label wrapper is
         # layout-transparent - it mirrors the item's own row (preflight

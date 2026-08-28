@@ -2150,7 +2150,7 @@ components:
     - list
     - group
     - label
-    - input_scale
+    - input_fill
     - item_text
     - item_indicator
     - item_indicator_state
@@ -2166,7 +2166,7 @@ components:
     - trigger_icon
     - indicator_check
     - chip_remove_icon
-    capsule: 3a20df737635
+    capsule: 1ab356dff1fc
     controllers:
     - identifier: poetry--core--combobox
       targets: []

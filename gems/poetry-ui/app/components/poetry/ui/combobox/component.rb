@@ -805,7 +805,7 @@ module Poetry
             "role" => "combobox", "aria-expanded" => "true", "aria-controls" => list_id,
             "aria-autocomplete" => "list", "autocomplete" => "off", "autocorrect" => "off",
             "spellcheck" => "false", "aria-label" => t("poetry.combobox.filter_label"),
-            "class" => Command::Style.css(:input, class: css(:input_scale))
+            "class" => Command::Style.css(:input, class: css(:input_fill))
           }
           attrs["placeholder"] = search_placeholder if search_placeholder.present?
           attrs["disabled"] = true if disabled

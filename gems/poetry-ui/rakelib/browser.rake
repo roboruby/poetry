@@ -264,13 +264,9 @@ namespace :test do
     failures = []
     compared = 0
 
-    poetry_ui_preview_pages.each do |component, example, url|
-      next if only && !only.include?("#{component}--#{example}")
-
-      name = "#{component}--#{example}.png"
+    # One shot: record (rebaseline / first run) or compare against the baseline.
+    shoot = lambda do |name|
       baseline = baseline_dir.join(name)
-      poetry_ui_visit_preview(session, url)
-
       candidate = Poetry::Ui.root.join("tmp", "visual_candidate.png")
       session.driver.save_screenshot(candidate.to_s, full: true)
 
@@ -289,6 +285,19 @@ namespace :test do
       end
     end
 
+    poetry_ui_preview_pages.each do |component, example, url|
+      next if only && !only.include?("#{component}--#{example}")
+
+      poetry_ui_visit_preview(session, url)
+      shoot.call("#{component}--#{example}.png")
+
+      # The dialog family renders closed (a native <dialog> opens through
+      # showModal, not a server attribute), so its geometry - panel padding,
+      # the seated close button, the palette's rows - never reached a golden.
+      # Open it through its own trigger and shoot a second, "--opened" golden.
+      shoot.call("#{component}--#{example}--opened.png") if poetry_ui_dialog_opened?(session)
+    end
+
     puts "visual: #{created.size} baselines #{rebaseline ? "re-recorded" : "created"}" unless created.empty?
 
     unless failures.empty?
@@ -304,6 +313,47 @@ namespace :test do
       puts "goldens: input manifest stamped (#{poetry_ui_golden_manifest_path.relative_path_from(Poetry::Ui.root)})"
     end
   end
+
+  desc "Run the visual walk under every theme (default + the eight ports) - Chrome, ~1 hour; " \
+       "the pre-release step. Each theme runs in its own process (the theme is chosen at load); " \
+       "review a theme's diffs with script/visual_review.rb <theme>"
+  task "visual:all" do
+    themes = %w[default vega nova mira rhea maia luma lyra sera]
+    results = themes.to_h do |theme|
+      puts "== visual walk: #{theme}"
+      ok = system({ "POETRY_THEME" => theme }, "bundle", "exec", "rake", "test:visual")
+      [theme, ok]
+    end
+    summary = results.map { |theme, ok| "#{theme}=#{ok ? "ok" : "DIFFS"}" }.join(" ")
+    puts "visual walk summary: #{summary}"
+    failed = results.reject { |_, ok| ok }.keys
+    return if failed.empty?
+
+    abort "visual walk: diffs in #{failed.join(", ")} - review with script/visual_review.rb <theme>"
+  end
+end
+
+# Open the first closed native dialog on a preview page through its own
+# trigger (the element wired to the shared dialog controller's open action)
+# and wait for it to settle. Returns true when a dialog opened. The walk
+# emulates prefers-reduced-motion, so the open is instant and deterministic.
+def poetry_ui_dialog_opened?(session)
+  # A closed <dialog> is not "visible" to Capybara - ask for all nodes.
+  return false unless session.has_css?("dialog:not([open])", visible: :all, wait: 0)
+
+  trigger = session.first('[data-action*="poetry--core--dialog#open"]', minimum: 0, wait: 0)
+  return false unless trigger
+
+  trigger.click
+  return false unless session.has_css?("dialog[open][data-open]", wait: 5)
+
+  # Let the open settle: no running animations, the input focused if any.
+  10.times do
+    break if session.evaluate_script("document.getAnimations().length").zero?
+
+    sleep 0.05
+  end
+  true
 end
 
 # ---------------------------------------------------------------------------
