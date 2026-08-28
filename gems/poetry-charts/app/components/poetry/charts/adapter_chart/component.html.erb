@@ -1,6 +1,6 @@
 <%= render Poetry::Charts::Container::Component.new(config: chart_config, id: chart_id.delete_prefix("chart-")) do %>
   <div class="<%= css(:frame) %>" data-component="<%= self.class.component_title %>" <%= tag.attributes(stimulus_attributes_for(:frame)) %>>
-    <div class="<%= css(:mount) %>" data-slot="chart-adapter-mount" <%= tag.attributes(stimulus_attributes_for(:mount)) %> role="img" aria-label="<%= mount_label %>"></div>
+    <div class="<%= css(:mount) %>" data-slot="chart-adapter-mount" role="img" aria-label="<%= mount_label %>" <%= tag.attributes(stimulus_attributes_for(:mount)) %>></div>
     <script type="application/json" data-slot="chart-spec" <%= tag.attributes(stimulus_attributes_for(:spec)) %>><%= script_json(spec) %></script>
   </div>
 <% end %>

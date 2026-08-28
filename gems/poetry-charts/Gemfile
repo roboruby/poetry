@@ -18,6 +18,7 @@ gem "rubocop-performance", require: false
 gem "rubocop-rake", require: false
 
 gem "bundler-audit", require: false
+gem "herb", ">= 0.10.3" # herb:compile gate - every template must compile under the Rails Herb engine
 gem "simplecov", require: false
 gem "tailwindcss-ruby" # compiled-CSS verify gate (rake css:verify_compiled), lands with the chart dictionaries
 
