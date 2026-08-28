@@ -48,8 +48,6 @@ not_applicable:
     # by documented design (composition, not nesting)
     - cn-combobox-empty
     - cn-combobox-item
-    - cn-combobox-label
-    - cn-combobox-list
     - cn-combobox-separator
     - cn-combobox-trigger-icon
   divergence-bubble-axes: # side/align exist as slot options positioned via

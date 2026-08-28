@@ -296,6 +296,12 @@ module Poetry
           assert_equal "group", group["role"]
           assert_equal heading["id"], group["aria-labelledby"]
           assert_equal "Frameworks", heading.text
+          # The popup's geometry is the combobox's own (the list carries
+          # the inset, the group is unpadded and hookless, the label is
+          # themed) - Command's slot names stay for the engine.
+          assert_nil group["class"], "the combobox group wears no classes (the list carries the inset)"
+          assert_includes heading["class"], "cn-combobox-label"
+          refute_includes heading["class"], "cn-command-group-heading"
           # Decorative, never role=separator: inside role=listbox that role
           # is flagged (the select/command axe rule).
           assert_equal "true", separator["aria-hidden"]

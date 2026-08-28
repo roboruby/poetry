@@ -37,8 +37,6 @@ vega:
     - ".cn-combobox-empty"
     - ".cn-combobox-item"
     - ".cn-combobox-item-text"
-    - ".cn-combobox-label"
-    - ".cn-combobox-list"
     - ".cn-combobox-separator"
     - ".cn-combobox-trigger-icon"
     - ".cn-command-input-group"
@@ -479,18 +477,38 @@ vega:
       - rounded-lg
       - shadow-none
     ".cn-command-item":
-      reason: Poetry mounts one command input wrapper (no inner input-group element)
-        - the source's inner-box treatment is absorbed onto the wrapper and its descendant
-        cluster has no target; heading/item chains land on poetry's named parts.
+      reason: 'Relocation plus the highlight translation. The row mechanics ride
+        the Style dictionary (the dialog-context radius, where dropped, the
+        CommandDialog override chain). The source''s palette marks its ACTIVE row
+        data-selected=true; poetry''s engine marks it data-highlighted
+        (data-selected is the committed VALUE on select/combobox options, the
+        bare Base UI attribute), so the highlight trio is carried on
+        data-highlighted - the default theme''s translation, applied to the port.
+        Transcribed literally it styled the wrong state: the highlight went
+        invisible while the committed row lit up.'
       dropped:
       - cursor-default
+      - data-selected:**:[svg]:text-foreground
+      - data-selected:bg-muted
+      - data-selected:text-foreground
       - flex
       - in-data-[slot=dialog-content]:rounded-lg!
       - items-center
       - outline-hidden
       - relative
       added:
+      - data-highlighted:**:[svg]:text-foreground
+      - data-highlighted:bg-muted
+      - data-highlighted:text-foreground
       - in-data-[slot=dialog-content]:rounded-lg
+    ".cn-command-shortcut":
+      reason: 'The highlight translation: the shortcut re-colors on the
+        highlighted row (group-data-highlighted), not on the source''s
+        data-selected active marker, which is poetry''s committed-value attribute.'
+      dropped:
+      - group-data-selected/command-item:text-foreground
+      added:
+      - group-data-highlighted/command-item:text-foreground
     ".cn-context-menu-item-indicator":
       reason: 'Reviewed against the source at the pin: doctrine translation (state
         pairs, selector shapes, mechanism renames) or relocation into the component
@@ -896,8 +914,6 @@ nova:
     - ".cn-combobox-empty"
     - ".cn-combobox-item"
     - ".cn-combobox-item-text"
-    - ".cn-combobox-label"
-    - ".cn-combobox-list"
     - ".cn-combobox-separator"
     - ".cn-combobox-trigger-icon"
     - ".cn-command-input-group"
@@ -1354,16 +1370,36 @@ nova:
       - rounded-lg
       - shadow-none
     ".cn-command-item":
-      reason: Poetry mounts one command input wrapper (no inner input-group element)
-        - the source's inner-box treatment is absorbed onto the wrapper and its descendant
-        cluster has no target; heading/item chains land on poetry's named parts.
+      reason: 'Relocation plus the highlight translation. The row mechanics ride
+        the Style dictionary (the dialog-context radius, where dropped, the
+        CommandDialog override chain). The source''s palette marks its ACTIVE row
+        data-selected=true; poetry''s engine marks it data-highlighted
+        (data-selected is the committed VALUE on select/combobox options, the
+        bare Base UI attribute), so the highlight trio is carried on
+        data-highlighted - the default theme''s translation, applied to the port.
+        Transcribed literally it styled the wrong state: the highlight went
+        invisible while the committed row lit up.'
       dropped:
       - cursor-default
+      - data-selected:*:[svg]:text-foreground
+      - data-selected:bg-muted
+      - data-selected:text-foreground
       - flex
       - in-data-[slot=dialog-content]:rounded-lg!
       - relative
       added:
+      - data-highlighted:*:[svg]:text-foreground
+      - data-highlighted:bg-muted
+      - data-highlighted:text-foreground
       - in-data-[slot=dialog-content]:rounded-lg
+    ".cn-command-shortcut":
+      reason: 'The highlight translation: the shortcut re-colors on the
+        highlighted row (group-data-highlighted), not on the source''s
+        data-selected active marker, which is poetry''s committed-value attribute.'
+      dropped:
+      - group-data-selected/command-item:text-foreground
+      added:
+      - group-data-highlighted/command-item:text-foreground
     ".cn-context-menu-item-indicator":
       reason: 'Reviewed against the source at the pin: doctrine translation (state
         pairs, selector shapes, mechanism renames) or relocation into the component
@@ -1762,8 +1798,6 @@ mira:
     - ".cn-combobox-empty"
     - ".cn-combobox-item"
     - ".cn-combobox-item-text"
-    - ".cn-combobox-label"
-    - ".cn-combobox-list"
     - ".cn-combobox-separator"
     - ".cn-combobox-trigger-icon"
     - ".cn-command-input-group"
@@ -2218,13 +2252,34 @@ mira:
       - rounded-md
       - shadow-none
     ".cn-command-item":
-      reason: Poetry mounts one command input wrapper (no inner input-group element)
-        - the source's inner-box treatment is absorbed onto the wrapper and its descendant
-        cluster has no target; heading/item chains land on poetry's named parts.
+      reason: 'Relocation plus the highlight translation. The row mechanics ride
+        the Style dictionary (the dialog-context radius, where dropped, the
+        CommandDialog override chain). The source''s palette marks its ACTIVE row
+        data-selected=true; poetry''s engine marks it data-highlighted
+        (data-selected is the committed VALUE on select/combobox options, the
+        bare Base UI attribute), so the highlight trio is carried on
+        data-highlighted - the default theme''s translation, applied to the port.
+        Transcribed literally it styled the wrong state: the highlight went
+        invisible while the committed row lit up.'
       dropped:
       - cursor-default
+      - data-selected:*:[svg]:text-foreground
+      - data-selected:bg-muted
+      - data-selected:text-foreground
       - flex
       - relative
+      added:
+      - data-highlighted:*:[svg]:text-foreground
+      - data-highlighted:bg-muted
+      - data-highlighted:text-foreground
+    ".cn-command-shortcut":
+      reason: 'The highlight translation: the shortcut re-colors on the
+        highlighted row (group-data-highlighted), not on the source''s
+        data-selected active marker, which is poetry''s committed-value attribute.'
+      dropped:
+      - group-data-selected/command-item:text-foreground
+      added:
+      - group-data-highlighted/command-item:text-foreground
     ".cn-context-menu-item-indicator":
       reason: 'Reviewed against the source at the pin: doctrine translation (state
         pairs, selector shapes, mechanism renames) or relocation into the component
@@ -2643,8 +2698,6 @@ rhea:
     - ".cn-combobox-empty"
     - ".cn-combobox-item"
     - ".cn-combobox-item-text"
-    - ".cn-combobox-label"
-    - ".cn-combobox-list"
     - ".cn-combobox-separator"
     - ".cn-combobox-trigger-icon"
     - ".cn-command-input-group"
@@ -3100,13 +3153,34 @@ rhea:
       - rounded-2xl
       - shadow-none
     ".cn-command-item":
-      reason: Poetry mounts one command input wrapper (no inner input-group element)
-        - the source's inner-box treatment is absorbed onto the wrapper and its descendant
-        cluster has no target; heading/item chains land on poetry's named parts.
+      reason: 'Relocation plus the highlight translation. The row mechanics ride
+        the Style dictionary (the dialog-context radius, where dropped, the
+        CommandDialog override chain). The source''s palette marks its ACTIVE row
+        data-selected=true; poetry''s engine marks it data-highlighted
+        (data-selected is the committed VALUE on select/combobox options, the
+        bare Base UI attribute), so the highlight trio is carried on
+        data-highlighted - the default theme''s translation, applied to the port.
+        Transcribed literally it styled the wrong state: the highlight went
+        invisible while the committed row lit up.'
       dropped:
       - cursor-default
+      - data-selected:*:[svg]:text-foreground
+      - data-selected:bg-muted
+      - data-selected:text-foreground
       - flex
       - relative
+      added:
+      - data-highlighted:*:[svg]:text-foreground
+      - data-highlighted:bg-muted
+      - data-highlighted:text-foreground
+    ".cn-command-shortcut":
+      reason: 'The highlight translation: the shortcut re-colors on the
+        highlighted row (group-data-highlighted), not on the source''s
+        data-selected active marker, which is poetry''s committed-value attribute.'
+      dropped:
+      - group-data-selected/command-item:text-foreground
+      added:
+      - group-data-highlighted/command-item:text-foreground
     ".cn-context-menu-item-indicator":
       reason: 'Reviewed against the source at the pin: doctrine translation (state
         pairs, selector shapes, mechanism renames) or relocation into the component
@@ -3567,8 +3641,6 @@ maia:
     - ".cn-combobox-empty"
     - ".cn-combobox-item"
     - ".cn-combobox-item-text"
-    - ".cn-combobox-label"
-    - ".cn-combobox-list"
     - ".cn-combobox-separator"
     - ".cn-combobox-trigger-icon"
     - ".cn-command-input-group"
@@ -4014,13 +4086,34 @@ maia:
       - rounded-4xl
       - shadow-none
     ".cn-command-item":
-      reason: Poetry mounts one command input wrapper (no inner input-group element)
-        - the source's inner-box treatment is absorbed onto the wrapper and its descendant
-        cluster has no target; heading/item chains land on poetry's named parts.
+      reason: 'Relocation plus the highlight translation. The row mechanics ride
+        the Style dictionary (the dialog-context radius, where dropped, the
+        CommandDialog override chain). The source''s palette marks its ACTIVE row
+        data-selected=true; poetry''s engine marks it data-highlighted
+        (data-selected is the committed VALUE on select/combobox options, the
+        bare Base UI attribute), so the highlight trio is carried on
+        data-highlighted - the default theme''s translation, applied to the port.
+        Transcribed literally it styled the wrong state: the highlight went
+        invisible while the committed row lit up.'
       dropped:
       - cursor-default
+      - data-selected:*:[svg]:text-foreground
+      - data-selected:bg-muted
+      - data-selected:text-foreground
       - flex
       - relative
+      added:
+      - data-highlighted:*:[svg]:text-foreground
+      - data-highlighted:bg-muted
+      - data-highlighted:text-foreground
+    ".cn-command-shortcut":
+      reason: 'The highlight translation: the shortcut re-colors on the
+        highlighted row (group-data-highlighted), not on the source''s
+        data-selected active marker, which is poetry''s committed-value attribute.'
+      dropped:
+      - group-data-selected/command-item:text-foreground
+      added:
+      - group-data-highlighted/command-item:text-foreground
     ".cn-context-menu-item-indicator":
       reason: 'Reviewed against the source at the pin: doctrine translation (state
         pairs, selector shapes, mechanism renames) or relocation into the component
@@ -4429,8 +4522,6 @@ luma:
     - ".cn-combobox-empty"
     - ".cn-combobox-item"
     - ".cn-combobox-item-text"
-    - ".cn-combobox-label"
-    - ".cn-combobox-list"
     - ".cn-combobox-separator"
     - ".cn-combobox-trigger-icon"
     - ".cn-command-input-group"
@@ -4876,13 +4967,34 @@ luma:
       - rounded-4xl
       - shadow-none
     ".cn-command-item":
-      reason: Poetry mounts one command input wrapper (no inner input-group element)
-        - the source's inner-box treatment is absorbed onto the wrapper and its descendant
-        cluster has no target; heading/item chains land on poetry's named parts.
+      reason: 'Relocation plus the highlight translation. The row mechanics ride
+        the Style dictionary (the dialog-context radius, where dropped, the
+        CommandDialog override chain). The source''s palette marks its ACTIVE row
+        data-selected=true; poetry''s engine marks it data-highlighted
+        (data-selected is the committed VALUE on select/combobox options, the
+        bare Base UI attribute), so the highlight trio is carried on
+        data-highlighted - the default theme''s translation, applied to the port.
+        Transcribed literally it styled the wrong state: the highlight went
+        invisible while the committed row lit up.'
       dropped:
       - cursor-default
+      - data-selected:*:[svg]:text-foreground
+      - data-selected:bg-muted
+      - data-selected:text-foreground
       - flex
       - relative
+      added:
+      - data-highlighted:*:[svg]:text-foreground
+      - data-highlighted:bg-muted
+      - data-highlighted:text-foreground
+    ".cn-command-shortcut":
+      reason: 'The highlight translation: the shortcut re-colors on the
+        highlighted row (group-data-highlighted), not on the source''s
+        data-selected active marker, which is poetry''s committed-value attribute.'
+      dropped:
+      - group-data-selected/command-item:text-foreground
+      added:
+      - group-data-highlighted/command-item:text-foreground
     ".cn-context-menu-item-indicator":
       reason: 'Reviewed against the source at the pin: doctrine translation (state
         pairs, selector shapes, mechanism renames) or relocation into the component
@@ -5333,8 +5445,6 @@ lyra:
     - ".cn-combobox-empty"
     - ".cn-combobox-item"
     - ".cn-combobox-item-text"
-    - ".cn-combobox-label"
-    - ".cn-combobox-list"
     - ".cn-combobox-separator"
     - ".cn-combobox-trigger-icon"
     - ".cn-command-input-group"
@@ -5750,16 +5860,36 @@ lyra:
       - rounded-none
       - shadow-none
     ".cn-command-item":
-      reason: Poetry mounts one command input wrapper (no inner input-group element)
-        - the source's inner-box treatment is absorbed onto the wrapper and its descendant
-        cluster has no target; heading/item chains land on poetry's named parts.
+      reason: 'Relocation plus the highlight translation. The row mechanics ride
+        the Style dictionary (the dialog-context radius, where dropped, the
+        CommandDialog override chain). The source''s palette marks its ACTIVE row
+        data-selected=true; poetry''s engine marks it data-highlighted
+        (data-selected is the committed VALUE on select/combobox options, the
+        bare Base UI attribute), so the highlight trio is carried on
+        data-highlighted - the default theme''s translation, applied to the port.
+        Transcribed literally it styled the wrong state: the highlight went
+        invisible while the committed row lit up.'
       dropped:
       - cursor-default
+      - data-selected:*:[svg]:text-foreground
+      - data-selected:bg-muted
+      - data-selected:text-foreground
       - flex
       - in-data-[slot=dialog-content]:rounded-none!
       - relative
       added:
+      - data-highlighted:*:[svg]:text-foreground
+      - data-highlighted:bg-muted
+      - data-highlighted:text-foreground
       - in-data-[slot=dialog-content]:rounded-none
+    ".cn-command-shortcut":
+      reason: 'The highlight translation: the shortcut re-colors on the
+        highlighted row (group-data-highlighted), not on the source''s
+        data-selected active marker, which is poetry''s committed-value attribute.'
+      dropped:
+      - group-data-selected/command-item:text-foreground
+      added:
+      - group-data-highlighted/command-item:text-foreground
     ".cn-context-menu-item-indicator":
       reason: 'Reviewed against the source at the pin: doctrine translation (state
         pairs, selector shapes, mechanism renames) or relocation into the component
@@ -6149,8 +6279,6 @@ sera:
     - ".cn-combobox-empty"
     - ".cn-combobox-item"
     - ".cn-combobox-item-text"
-    - ".cn-combobox-label"
-    - ".cn-combobox-list"
     - ".cn-combobox-separator"
     - ".cn-combobox-trigger-icon"
     - ".cn-command-input-group"
@@ -6581,13 +6709,34 @@ sera:
       - px-3
       - py-1
     ".cn-command-item":
-      reason: Poetry mounts one command input wrapper (no inner input-group element)
-        - the source's inner-box treatment is absorbed onto the wrapper and its descendant
-        cluster has no target; heading/item chains land on poetry's named parts.
+      reason: 'Relocation plus the highlight translation. The row mechanics ride
+        the Style dictionary (the dialog-context radius, where dropped, the
+        CommandDialog override chain). The source''s palette marks its ACTIVE row
+        data-selected=true; poetry''s engine marks it data-highlighted
+        (data-selected is the committed VALUE on select/combobox options, the
+        bare Base UI attribute), so the highlight trio is carried on
+        data-highlighted - the default theme''s translation, applied to the port.
+        Transcribed literally it styled the wrong state: the highlight went
+        invisible while the committed row lit up.'
       dropped:
       - cursor-default
+      - data-selected:*:[svg]:text-foreground
+      - data-selected:bg-muted
+      - data-selected:text-foreground
       - flex
       - relative
+      added:
+      - data-highlighted:*:[svg]:text-foreground
+      - data-highlighted:bg-muted
+      - data-highlighted:text-foreground
+    ".cn-command-shortcut":
+      reason: 'The highlight translation: the shortcut re-colors on the
+        highlighted row (group-data-highlighted), not on the source''s
+        data-selected active marker, which is poetry''s committed-value attribute.'
+      dropped:
+      - group-data-selected/command-item:text-foreground
+      added:
+      - group-data-highlighted/command-item:text-foreground
     ".cn-context-menu-item-indicator":
       reason: 'Reviewed against the source at the pin: doctrine translation (state
         pairs, selector shapes, mechanism renames) or relocation into the component

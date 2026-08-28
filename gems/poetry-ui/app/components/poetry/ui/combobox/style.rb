@@ -34,9 +34,33 @@ module Poetry
         # The popup: Popover's chrome retuned per the demo (p-0 - the
         # Command brings its own padding); the anchor-width binding stays
         # inline (popper measures the anchor and sets the generic var).
-        element :content, "cn-combobox-content cn-menu-translucent z-50 w-(--anchor-width) " \
-                          "origin-(--transform-origin) " \
+        # The column chain (flex-col + the popper's available-height cap,
+        # the source's structural pair) lets the LIST shrink under
+        # whatever cap the popup ends up with - the theme's design cap or
+        # the viewport - instead of every theme subtracting the embedded
+        # command's own padding; the list's themed max-height holds the
+        # design height.
+        element :content, "cn-combobox-content cn-menu-translucent z-50 flex w-(--anchor-width) " \
+                          "max-h-(--available-height) origin-(--transform-origin) flex-col " \
                           "outline-hidden"
+
+        # THE listbox, the popup's scroll owner: the source's combobox
+        # list, where the option inset rides the LIST and groups stay
+        # unpadded - an ungrouped option sits exactly where a grouped one
+        # does, and the first row clears the search field in every theme.
+        # (Command's list leaves the inset to its groups, the palette
+        # convention; a combobox's options are usually ungrouped.)
+        element :list, "cn-combobox-list overflow-x-hidden overflow-y-auto overscroll-contain"
+
+        # A group: role=group around a label and its options. No hook and
+        # no utilities ON PURPOSE - neither source styles the combobox
+        # group (the label and the list carry the geometry); themes reach
+        # it as [data-slot=command-group] inside the popup.
+        element :group, ""
+
+        # The group's label (the heading part): the source's combobox
+        # label rule, themed per style.
+        element :label, "cn-combobox-label"
 
         # The demo's CommandInput className="h-9" retune, merged over
         # Command's own :input (beats the themed h-10 from the utilities

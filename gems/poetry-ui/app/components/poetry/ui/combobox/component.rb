@@ -177,7 +177,8 @@ module Poetry
         end
       end
 
-      # role=group labelled by its heading part (Command's group shape) -
+      # role=group labelled by its heading part (Command's group shape,
+      # the source's combobox geometry: unpadded, the label themed) -
       # the same item union one level down, registering its options into
       # the PARENT's option set so ids, the native <select>, and the
       # value display see every option in DOM order. Kept internal ON
@@ -212,10 +213,11 @@ module Poetry
         end
 
         def call
-          attrs = {
-            "data-slot" => "command-group", "role" => "group", "aria-labelledby" => heading_id,
-            "class" => Command::Style.css(:group, class: html_attributes.delete(:class))
-          }
+          attrs = { "data-slot" => "command-group", "role" => "group", "aria-labelledby" => heading_id }
+          # The group is unpadded and hookless (the list carries the
+          # inset) - a class attribute only when the caller passes one.
+          classes = Style.css(:group, class: html_attributes.delete(:class))
+          attrs["class"] = classes if classes.present?
           attrs["data-always-render"] = "" if @always_render
           content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, html_attributes)) do
             safe_join([heading_part, *items])
@@ -234,7 +236,7 @@ module Poetry
 
         def heading_part
           content_tag(:div, @heading_text, "data-slot" => "command-group-heading", "id" => heading_id,
-                                           "class" => Command::Style.css(:heading))
+                                           "class" => Style.css(:label))
         end
       end
 
@@ -814,13 +816,15 @@ module Poetry
 
         # THE listbox - the aria-controls target of both combobox roles
         # (the trigger resolves the popup through it). multiple declares
-        # aria-multiselectable.
+        # aria-multiselectable. Wears the combobox's own list rule (the
+        # inset rides the list; Command's slot names stay - the engine
+        # resolves parts by data-slot).
         # @api private
         def list_attributes
           attrs = {
             "id" => list_id, "data-slot" => "command-list", "role" => "listbox",
             "tabindex" => "-1", "aria-label" => t("poetry.command.list_label"),
-            "class" => Command::Style.css(:list)
+            "class" => css(:list)
           }
           attrs["aria-multiselectable"] = "true" if multiple
           attrs
