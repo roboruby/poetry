@@ -341,7 +341,10 @@ def poetry_ui_dialog_opened?(session)
   # A closed <dialog> is not "visible" to Capybara - ask for all nodes.
   return false unless session.has_css?("dialog:not([open])", visible: :all, wait: 0)
 
-  trigger = session.first('[data-action*="poetry--core--dialog#open"]', minimum: 0, wait: 0)
+  # Dialog, Sheet and Drawer each open through their own controller.
+  trigger = %w[dialog sheet drawer].lazy.filter_map do |kind|
+    session.first("[data-action*=\"poetry--core--#{kind}#open\"]", minimum: 0, wait: 0)
+  end.first
   return false unless trigger
 
   trigger.click
