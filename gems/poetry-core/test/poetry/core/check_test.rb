@@ -896,6 +896,53 @@ module Poetry
         assert_equal "dialog", finding.suggestion
       end
 
+      # --- Stimulus wiring through helper kwargs (the same rules) ---
+
+      def test_a_data_action_kwarg_on_a_helper_checks_like_the_attribute
+        finding = first(%(<%= poetry_button(data: { action: "click->poetry--core--dialog#opn" }) do %>x<% end %>),
+                        "unknown-action")
+
+        assert_equal "open", finding.suggestion
+        assert_equal 1, finding.line
+      end
+
+      def test_a_data_controller_kwarg_on_a_helper_checks_like_the_attribute
+        finding = first(%(<%= poetry_button(data: { controller: "poetry--core--dialogg" }) do %>x<% end %>),
+                        "unknown-controller")
+
+        assert_equal :error, finding.severity
+      end
+
+      def test_a_namespaced_target_kwarg_checks_in_both_spellings
+        finding = first(%(<%= poetry_button(data: { "poetry--core--dialog-target": "dialg" }) do %>x<% end %>),
+                        "unknown-target")
+
+        assert_equal "dialog", finding.suggestion
+        # Rails dasherizes every underscore, so the symbol form renders the same attribute
+        symbol_form = %(<%= poetry_button(data: { poetry__core__dialog_target: "dialg" }) do %>x<% end %>)
+
+        assert_equal "dialog", first(symbol_form, "unknown-target").suggestion
+      end
+
+      def test_data_kwargs_on_a_slot_setter_check_too
+        finding = first(<<~ERB, "unknown-action")
+          <%= poetry_alert(variant: :default) do |alert| %>
+            <% alert.with_confirm(data: { action: "click->poetry--core--dialog#clos" }) { "ok" } %>
+          <% end %>
+        ERB
+
+        assert_equal "close", finding.suggestion
+        assert_equal 2, finding.line
+      end
+
+      def test_data_kwargs_naming_host_controllers_or_dynamic_values_are_left_alone
+        host = %(<%= poetry_button(data: { action: "click->cart#add", controller: "cart" }) do %>x<% end %>)
+        dynamic = %(<%= poetry_button(data: { action: "click->poetry--core--dialog#\#{verb}" }) do %>x<% end %>)
+
+        assert_empty rules(host)
+        assert_empty rules(dynamic)
+      end
+
       def test_host_controllers_are_not_poetrys_to_validate
         assert_empty rules(%(<div data-controller="my-app--widget" data-action="my-app--widget#go"></div>))
       end

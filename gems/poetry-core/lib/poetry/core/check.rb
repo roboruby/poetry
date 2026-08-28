@@ -356,7 +356,8 @@ module Poetry
           path = @catalog.path_for(helper)
           unless path
             return helper_findings(helper, call, base_line) + yieldless_findings(helper, call, line) +
-                   helper_arity_findings(helper, call, line) + webmcp_form_findings(helper, call, line)
+                   helper_arity_findings(helper, call, line) + webmcp_form_findings(helper, call, line) +
+                   data_findings(call, base_line)
           end
 
           record_binding(call, path, bindings, line)
@@ -369,7 +370,8 @@ module Poetry
             helper_arity_findings(helper, call, line) +
             content_findings(path, helper, call, line, content_fed) +
             blockless_slot_findings(path, helper, call, pairs, line) +
-            requires_any_findings(path, call, pairs, line, content_fed)
+            requires_any_findings(path, call, pairs, line, content_fed) +
+            data_findings(call, base_line)
         end
 
         # The requires_content tier: a component that raises without a
@@ -593,7 +595,8 @@ module Poetry
 
           findings = arity_findings(entry, slot_name, call, line) +
                      setter_block_findings(entry, slot_name, call, line) +
-                     setter_keyword_findings(entry, slot_name, call, base_line)
+                     setter_keyword_findings(entry, slot_name, call, base_line) +
+                     data_findings(call, base_line)
           component = entry["component"]
           return findings unless component
 
@@ -875,27 +878,54 @@ module Poetry
           value = attribute_value(node)
           return [] unless name && value
 
+          return color_findings(value, node) if name == "class"
+
+          stimulus_findings(name, value, line_of(node))
+        end
+
+        # The Stimulus wiring rules on one rendered attribute, whether it
+        # was hand-written in the markup or arrives through a `data:` hash.
+        def stimulus_findings(name, value, line)
           case name
-          when "data-controller" then controller_findings(value, node)
-          when "data-action" then action_findings(value, node)
-          when "class" then color_findings(value, node)
-          when /\Adata-(poetry--[\w-]+)-target\z/ then target_findings(Regexp.last_match(1), value, node)
+          when "data-controller" then controller_findings(value, line)
+          when "data-action" then action_findings(value, line)
+          when /\Adata-(poetry--[\w-]+)-target\z/ then target_findings(Regexp.last_match(1), value, line)
           else []
           end
         end
 
-        def controller_findings(value, node)
+        # `poetry_button(data: { action: "click->poetry--core--sheet#close" })`
+        # and `card.with_footer(data: { ... })` render the same data-*
+        # attributes a template could hand-write, and were the one place a
+        # typo reached the browser unchecked (an editor cannot see inside a
+        # helper's keywords either). Rails dasherizes every underscore in a
+        # data key (`poetry__core__x_target:` and `"poetry--core--x-target":`
+        # both render data-poetry--core--x-target), so the rendered name is
+        # what gets checked. Dynamic values are left alone.
+        def data_findings(call, base_line)
+          hash = hash_argument(call, "data")
+          return [] unless hash
+
+          hash_pairs(hash).flat_map do |key, node|
+            value = literal_value(node)
+            next [] unless value.is_a?(String)
+
+            stimulus_findings("data-#{key.tr("_", "-")}", value, base_line + node.location.start_line - 1)
+          end
+        end
+
+        def controller_findings(value, line)
           value.split.filter_map do |identifier|
             next unless identifier.start_with?(POETRY_PREFIX)
             next if definition(identifier)
 
             Finding.new(rule: "unknown-controller", severity: :error,
-                        message: "no poetry controller #{identifier}", line: line_of(node),
+                        message: "no poetry controller #{identifier}", line: line,
                         suggestion: suggest(identifier, Stimulus::Manifest.catalog.keys))
           end
         end
 
-        def action_findings(value, node)
+        def action_findings(value, line)
           value.scan(ACTION_TOKEN).filter_map do
             identifier = Regexp.last_match(:identifier)
             method = Regexp.last_match(:method)
@@ -904,18 +934,18 @@ module Poetry
             next if definition["methods"].include?(method)
 
             Finding.new(rule: "unknown-action", severity: :error,
-                        message: "#{identifier} has no action ##{method}", line: line_of(node),
+                        message: "#{identifier} has no action ##{method}", line: line,
                         suggestion: suggest(method, definition["methods"] - %w[connect disconnect]))
           end
         end
 
-        def target_findings(identifier, value, node)
+        def target_findings(identifier, value, line)
           definition = definition(identifier)
           return [] unless definition
           return [] if definition["targets"].include?(value)
 
           [Finding.new(rule: "unknown-target", severity: :error,
-                       message: "#{identifier} has no target #{value.inspect}", line: line_of(node),
+                       message: "#{identifier} has no target #{value.inspect}", line: line,
                        suggestion: suggest(value, definition["targets"]))]
         end
 
