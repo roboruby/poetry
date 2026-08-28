@@ -21,6 +21,20 @@
     // Zed settings.json
     "context_servers": { "poetry": { "command": { "path": "bundle", "args": ["exec", "poetry-agent"] } } }
   CODE
+herb_source = <<~CODE
+  # .herb.yml - written by poetry:editor (kept if you already have one)
+  version: 0.10.3
+  framework: actionview
+  linter:
+    enabled: true
+    rules:
+      erb-no-unused-expressions:    { enabled: false }   # marcoroth/herb#2426
+      actionview-no-silent-helper:  { enabled: false }   # marcoroth/herb#2340
+CODE
+herb_ci_source = <<~CODE
+  npx --yes @herb-tools/linter app          # lint (Node); bundle exec herb lint delegates to it
+  bundle exec herb actionview check .       # every render resolves, every partial is reachable
+CODE
   import_source = <<~CODE
     bin/rails poetry:figma:import[variables.json]   # a Figma variables export
     bin/rails poetry:paper:import[paper-theme.css]  # a Paper "Copy theme"
@@ -60,6 +74,7 @@
           <tr><td>VS Code</td><td><code>.vscode/mcp.json</code> + <code>.vscode/poetry.code-snippets</code></td><td>MCP + snippets</td></tr>
           <tr><td>Windsurf</td><td>reads the <code>.vscode</code> snippets</td><td>MCP (paste) + snippets</td></tr>
           <tr><td>Zed / RubyMine / Neovim</td><td>a printed paste-block</td><td>MCP</td></tr>
+          <tr><td>Any Herb-aware editor</td><td><code>.herb.yml</code></td><td>linter + language server config</td></tr>
         </tbody>
       </table>
     <% end %>
@@ -102,6 +117,41 @@
       </p>
     <% end %>
   </section>
+
+<section class="flex flex-col gap-4">
+  <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+    <h2 id="herb">HTML+ERB tooling</h2>
+    <p>
+      Rails 8.2 made <a href="https://herb-tools.dev/">Herb</a> its ERB
+      engine, and Poetry's templates are gated to parse and compile under
+      it, so the whole Herb toolchain works on a Poetry app: the language
+      server (VS Code's <em>Herb LSP</em> extension, built into Zed's Ruby
+      extension, <code>@herb-tools/language-server</code> for Neovim), the
+      linter, and the render-graph check. Stimulus LSP runs on the same
+      language service and reads <code>data-controller</code> in ERB and
+      <code>tag.div data: { controller: }</code> alike; Poetry's own
+      controllers arrive through the <code>use_stimulus</code> contract, so
+      the only identifiers it has to check are yours.
+    </p>
+    <p>
+      <code>poetry:editor</code> writes the one config all of it reads,
+      and keeps yours if you have one. Two rules start off: the linter
+      still misreads slot setters on a builder a Poetry helper yields
+      (<code>card.with_title</code> inside <code>poetry_card do |card|</code>)
+      and brace-form setters; both are tracked upstream and the pinned
+      <code>version</code> means an upgrade never switches rules on behind you.
+    </p>
+  <% end %>
+  <%= poetry_code_block(code: herb_source, language: "yaml", label: ".herb.yml") %>
+  <%= poetry_code_block(code: herb_ci_source, language: "shell", label: "CI") %>
+  <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+    <p>
+      The formatter is still an upstream preview; Poetry's own templates are
+      not run through it, because it rewraps the inline one-liners the
+      components depend on. Run it on your views if you like the output.
+    </p>
+  <% end %>
+</section>
 
   <section class="flex flex-col gap-4">
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>

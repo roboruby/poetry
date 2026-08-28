@@ -528,6 +528,12 @@
     "path": "/editors#snippets"
   },
   {
+    "title": "HTML+ERB tooling",
+    "page": "Editors",
+    "section": "docs",
+    "path": "/editors#herb"
+  },
+  {
     "title": "Design tools",
     "page": "Editors",
     "section": "docs",

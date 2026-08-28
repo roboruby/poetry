@@ -74,8 +74,8 @@ class DocsCatalog
     Entry.new(slug: "editors", title: "Editors", section: "docs", icon: :code,
               description: "bin/rails g poetry:editor wires Poetry's MCP server and registry-driven " \
                            "snippets into the editors a Rails team uses (VS Code, Cursor, Claude Code, " \
-                           "Zed, RubyMine): safe MCP-config upserts, a per-editor matrix, and the " \
-                           "Figma / Paper design-tool token bridges."),
+                           "Zed, RubyMine): safe MCP-config upserts, a per-editor matrix, a .herb.yml " \
+                           "for the Herb toolchain, and the Figma / Paper design-tool token bridges."),
     Entry.new(slug: "api", title: "API Reference", section: "docs", icon: :braces,
               description: "The Ruby surface, generated from the gems' source documentation: " \
                            "component options, slots, and style axes on each gallery page, plus " \
