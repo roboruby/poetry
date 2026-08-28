@@ -1,0 +1,47 @@
+# Herb toolchain configuration (linter / formatter / language server).
+# https://herb-tools.dev/configuration
+#
+# Rules are version-gated: a newer linter never enables new rules here
+# until `version` is bumped deliberately (bump + re-lint in one change).
+version: 0.10.3
+
+framework: actionview
+# Every template is gated to compile under Herb::Engine (HerbCompileTest),
+# the stricter of the two engines Rails can run.
+template_engine: herb
+
+linter:
+  enabled: true
+  rules:
+    # Slot setters on a builder yielded by a poetry helper
+    # (`<%= poetry_card do |card| %><% card.with_title(...) %>`) are flagged
+    # as discarded values: the upstream exemption only covers builders
+    # yielded by `render ... do |c|` (marcoroth/herb#1580, #1822); the
+    # helper-yielded form is marcoroth/herb#2426. Re-enable when it lands.
+    erb-no-unused-expressions:
+      enabled: false
+    # Brace-form slot setters (`<% item.with_icon { ... } %>`) are flagged
+    # and the suggested autofix renders the wrong thing - marcoroth/herb#2340.
+    actionview-no-silent-helper:
+      enabled: false
+    # The demo compositions and the pagination examples are controller-fed
+    # (ExampleData prepares their state); the ivars ARE the demo's state,
+    # not a partial contract to tighten.
+    erb-no-instance-variables-in-partials:
+      exclude:
+        - "app/views/examples/demos/**/*"
+        - "app/views/examples/docs/pagination/**/*"
+    # The typography recipe is byte-transcribed from upstream shadcn
+    # (same carve-out as the DesignLint skip ledger) - its `href="#"` is
+    # upstream's own.
+    html-anchor-require-href:
+      exclude:
+        - "app/views/examples/docs/typography/_default.html.erb"
+    # No Content-Security-Policy is configured on the docs host, so a nonce
+    # has nothing to bind to; the pre-paint theme boot stays inline by
+    # design. Re-enable with the CSP.
+    html-require-script-nonce:
+      enabled: false
+
+formatter:
+  enabled: false

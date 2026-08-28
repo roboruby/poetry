@@ -32,7 +32,7 @@
         <% end %>
       </div>
     <div data-demo-chat-target="chat" hidden class="min-h-0 flex-1">
-      <%= poetry_message_scroller(id: "chat-stream", class: "h-full [&_[data-slot=message-scroller-content]]:justify-end [&_[data-slot=message-scroller-content]]:p-4 [&_[data-slot=message-scroller-content]]:pb-8") do %><% end %>
+      <%= poetry_message_scroller(id: "chat-stream", class: "h-full [&_[data-slot=message-scroller-content]]:justify-end [&_[data-slot=message-scroller-content]]:p-4 [&_[data-slot=message-scroller-content]]:pb-8") %>
     </div>
 
     <% card.with_footer do %>
@@ -44,7 +44,7 @@
               <%= poetry_icon(name: :plus) %>
             <% end %>
             <% menu.with_group do |group| %>
-              <% group.with_item do %><%= poetry_icon(name: :paperclip) %>Add Photos & Files<% end %>
+              <% group.with_item do %><%= poetry_icon(name: :paperclip) %>Add Photos &amp; Files<% end %>
               <% group.with_separator %>
               <% group.with_item do %><%= poetry_icon(name: :image) %>Create Image<% end %>
               <% group.with_item do %><%= poetry_icon(name: :telescope) %>Deep Research<% end %>

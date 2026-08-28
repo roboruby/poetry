@@ -11,10 +11,10 @@
                             value: "normal",
                             data: { action: "poetry:toggle-group:change->demo-font-weight#update" },
                             **field.control_attributes.transform_keys(&:to_sym)) do |group| %>
-      <% [%w[light Light], %w[normal Normal], %w[medium Medium], %w[bold Bold]].each do |value, title| %>
+      <% [%w[light Light font-light], %w[normal Normal font-normal], %w[medium Medium font-medium], %w[bold Bold font-bold]].each do |value, title, weight| %>
         <% group.with_item(value: value, label: title,
                            class: "flex size-16 flex-col items-center justify-center rounded-xl") do %>
-          <span class="text-2xl leading-none font-<%= value %>">Aa</span>
+          <span class="text-2xl leading-none <%= weight %>">Aa</span>
           <span class="text-xs text-muted-foreground"><%= title %></span>
         <% end %>
       <% end %>

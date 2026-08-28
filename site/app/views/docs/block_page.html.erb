@@ -87,7 +87,7 @@
       <% @components.each do |name| %>
         <li>
           <%= poetry_link(href: "/components/#{name.tr("_", "-")}") do %>
-            <code><%= "poetry_#{name}" %></code>
+            <code>poetry_<%= name %></code>
           <% end %>
         </li>
       <% end %>

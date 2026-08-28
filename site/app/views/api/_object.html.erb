@@ -32,7 +32,7 @@
           <% object["constants"].each do |const| %>
             <%= poetry_table_row do %>
               <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { const["name"] } %>
-              <%= poetry_table_cell(class: "text-muted-foreground") { ApiMarkdown.inline(const["docstring"]).html_safe } %>
+              <%= poetry_table_cell(class: "text-muted-foreground") { api_inline(const["docstring"]) } %>
             <% end %>
           <% end %>
         <% end %>
@@ -61,7 +61,7 @@
                 <li>
                   <code class="font-mono text-xs text-foreground"><%= param["name"] %></code>
                   <span class="font-mono text-xs">(<%= param["types"].join(", ") %>)</span>
-                  — <%= ApiMarkdown.inline(param["text"]).html_safe %>
+                  — <%= api_inline(param["text"]) %>
                 </li>
               <% end %>
             </ul>
@@ -69,7 +69,7 @@
           <% if m["return"].present? && m["return"]["text"].present? %>
             <p class="text-sm text-muted-foreground">
               Returns <span class="font-mono text-xs">(<%= m["return"]["types"].join(", ") %>)</span>
-              — <%= ApiMarkdown.inline(m["return"]["text"]).html_safe %>
+              — <%= api_inline(m["return"]["text"]) %>
             </p>
           <% end %>
           <% m["examples"].each do |example| %>

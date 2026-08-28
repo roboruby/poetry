@@ -7,6 +7,6 @@ class DevSamplesController < ApplicationController
   layout false
 
   def card
-    @sample = render_to_string(inline: Rails.root.join("app/views/landing/compose_example.erb.sample").read)
+    @sample = render_to_string(inline: Rails.root.join("app/views/landing/compose_example.erb.sample").read).html_safe # rubocop:disable Rails/OutputSafety
   end
 end

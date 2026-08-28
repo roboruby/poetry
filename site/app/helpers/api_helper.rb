@@ -18,6 +18,13 @@ module ApiHelper
   # @api private sweep - never consumer API.
   NOISE = %w[initialize before_render call].freeze
 
+  # The one place API prose is marked safe: ApiMarkdown escapes every
+  # docstring before formatting (app/lib/api_markdown.rb), so its output
+  # is our own markup. Templates call this instead of `.html_safe`.
+  def api_inline(text)
+    ApiMarkdown.inline(text).html_safe # rubocop:disable Rails/OutputSafety
+  end
+
   def api_component_object(section, slug)
     gem = SECTION_GEMS[section]
     return nil unless gem && ApiReference.slugs.include?(gem)

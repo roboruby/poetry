@@ -31,8 +31,8 @@
               <%= poetry_table_row do %>
                 <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { "#{row["name"]}:" } %>
                 <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs text-muted-foreground") { api_types(row) } %>
-                <%= poetry_table_cell(class: "text-muted-foreground") { ApiMarkdown.inline(api_details(row)).html_safe } %>
-                <%= poetry_table_cell(class: "text-muted-foreground") { ApiMarkdown.inline(api_description(row)).html_safe } %>
+                <%= poetry_table_cell(class: "text-muted-foreground") { api_inline(api_details(row)) } %>
+                <%= poetry_table_cell(class: "text-muted-foreground") { api_inline(api_description(row)) } %>
               <% end %>
             <% end %>
           <% end %>
@@ -55,7 +55,7 @@
               <% slot_rows.each do |row| %>
                 <%= poetry_table_row do %>
                   <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { row["name"] } %>
-                  <%= poetry_table_cell(class: "text-muted-foreground") { ApiMarkdown.inline(api_description(row)).html_safe } %>
+                  <%= poetry_table_cell(class: "text-muted-foreground") { api_inline(api_description(row)) } %>
                 <% end %>
               <% end %>
             <% end %>
@@ -79,7 +79,7 @@
               <% method_rows.each do |row| %>
                 <%= poetry_table_row do %>
                   <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { "##{row["signature"]}" } %>
-                  <%= poetry_table_cell(class: "text-muted-foreground") { ApiMarkdown.inline(api_description(row)).html_safe } %>
+                  <%= poetry_table_cell(class: "text-muted-foreground") { api_inline(api_description(row)) } %>
                 <% end %>
               <% end %>
             <% end %>
