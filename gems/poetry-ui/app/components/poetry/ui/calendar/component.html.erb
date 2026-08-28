@@ -20,7 +20,7 @@
             </span>
             <select aria-label="<%= label %>" class="<%= css(:dropdown_select) %>">
               <% options.each do |(option_label, value)| %>
-                <option value="<%= value %>" <%= "selected" if value == current %>><%= option_label %></option>
+                <option value="<%= value %>" <% if value == current %>selected<% end %>><%= option_label %></option>
               <% end %>
             </select>
           </span>

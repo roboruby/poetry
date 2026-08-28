@@ -28,7 +28,7 @@
             <input type="<%= input_type(item) %>" name="<%= field_name(item) %>"
                    value="<%= choice.value %>" data-slot="questionnaire-choice-input"
                    class="<%= css(:choice_input) %>"
-                   <%= "checked" if choice.checked %> <%= "disabled" if choice.disabled || item.disabled %>
+                   <% if choice.checked %>checked<% end %> <% if choice.disabled || item.disabled %>disabled<% end %>
                    <%= tag.attributes({ (choice.checked ? "data-checked" : "data-unchecked") => "" }) %>>
             <span aria-hidden="true" data-slot="questionnaire-choice-indicator" class="<%= css(:choice_indicator) %>">
               <span data-slot="questionnaire-choice-indicator-dot" class="<%= css(:choice_indicator_dot) %>"></span>

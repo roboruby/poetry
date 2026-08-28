@@ -16,7 +16,7 @@ require "rubocop/rake_task"
 
 RuboCop::RakeTask.new
 
-task default: %i[test test:dommy rubocop registry:verify css:template_classes:verify css:verify_compiled
+task default: %i[test test:dommy rubocop registry:verify css:template_classes:verify herb:compile css:verify_compiled
                  css:verify_selected_bridge css:verify_reduced_motion css:verify_theme css:verify_fidelity
                  css:verify_rendered
                  css:verify_hooks css:verify_vars design:verify

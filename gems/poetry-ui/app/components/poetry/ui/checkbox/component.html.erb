@@ -2,7 +2,7 @@
     `peer` class contract (labels style via peer-*) breaks if poetry wraps.
     The controller lives on the button; the input resolves by stable id. %>
 <%= content_tag(:button, **root_attributes.to_attributes) do %>
-  <span data-slot="checkbox-indicator" data-<%= state %>="" aria-hidden="true" class="<%= css(:indicator) %>">
+  <span data-slot="checkbox-indicator" <% if indeterminate? %>data-indeterminate=""<% elsif checked? %>data-checked=""<% else %>data-unchecked=""<% end %> aria-hidden="true" class="<%= css(:indicator) %>">
     <%# MinusIcon on indeterminate is a POETRY ADDITION (shadcn renders a
         check for mixed state - a real gap). %>
     <%= render Poetry::Ui::Icon::Component.new(name: indeterminate? ? :minus : :check, class: css(:icon)) %>
