@@ -8,15 +8,15 @@
             grid strokes, leaving them near-invisible. %>
         <% grid_radii.each do |radius| %>
           <% if grid_config.type == :circle %>
-            <circle class="<%= css(:grid_line) %>" cx="<%= fnum(cx) %>" cy="<%= fnum(cy) %>" r="<%= fnum(radius) %>"/>
+            <circle class="<%= css(:grid_line) %>" cx="<%= fnum(cx) %>" cy="<%= fnum(cy) %>" r="<%= fnum(radius) %>" />
           <% else %>
-            <path class="<%= css(:grid_line) %>" d="<%= grid_polygon(radius) %>"/>
+            <path class="<%= css(:grid_line) %>" d="<%= grid_polygon(radius) %>" />
           <% end %>
         <% end %>
         <% if grid_config.radial_lines %>
           <% rows.each_index do |i| %>
             <% x, y = spoke_end(i) %>
-            <line class="<%= css(:grid_line) %>" x1="<%= fnum(cx) %>" y1="<%= fnum(cy) %>" x2="<%= fnum(x) %>" y2="<%= fnum(y) %>"/>
+            <line class="<%= css(:grid_line) %>" x1="<%= fnum(cx) %>" y1="<%= fnum(cy) %>" x2="<%= fnum(x) %>" y2="<%= fnum(y) %>" />
           <% end %>
         <% end %>
         <%# The tinted fills: EVERY ring fills at the low opacity,
@@ -27,9 +27,9 @@
         <% if grid_fill_attribute %>
           <% grid_radii.each do |radius| %>
             <% if grid_config.type == :circle %>
-              <circle class="<%= css(:grid_fill) %>" cx="<%= fnum(cx) %>" cy="<%= fnum(cy) %>" r="<%= fnum(radius) %>" style="fill: <%= grid_fill_attribute %>" fill-opacity="<%= grid_config.opacity %>"/>
+              <circle class="<%= css(:grid_fill) %>" cx="<%= fnum(cx) %>" cy="<%= fnum(cy) %>" r="<%= fnum(radius) %>" style="fill: <%= grid_fill_attribute %>" fill-opacity="<%= grid_config.opacity %>" />
             <% else %>
-              <path class="<%= css(:grid_fill) %>" d="<%= grid_polygon(radius) %>" style="fill: <%= grid_fill_attribute %>" fill-opacity="<%= grid_config.opacity %>"/>
+              <path class="<%= css(:grid_fill) %>" d="<%= grid_polygon(radius) %>" style="fill: <%= grid_fill_attribute %>" fill-opacity="<%= grid_config.opacity %>" />
             <% end %>
           <% end %>
         <% end %>
@@ -37,12 +37,12 @@
     <% end %>
     <g data-slot="chart-radars">
       <% series_entries.each do |entry| %>
-        <path data-slot="chart-radar" data-key="<%= entry.data_key %>" d="<%= series_path(entry) %>" fill="var(--color-<%= entry.data_key %>)" fill-opacity="<%= entry.fill_opacity %>"<% if entry.stroke_width.positive? %> stroke="var(--color-<%= entry.data_key %>)" stroke-width="<%= entry.stroke_width %>"<% end %>/>
+        <path data-slot="chart-radar" data-key="<%= entry.data_key %>" d="<%= series_path(entry) %>" fill="var(--color-<%= entry.data_key %>)" fill-opacity="<%= entry.fill_opacity %>"<% if entry.stroke_width.positive? %> stroke="var(--color-<%= entry.data_key %>)" stroke-width="<%= entry.stroke_width %>"<% end %> />
         <% if entry.dots %>
           <g data-slot="chart-dots" data-key="<%= entry.data_key %>">
             <% rows.each_index do |i| %>
               <% x, y = vertex(entry, i) %>
-              <circle data-slot="chart-dot" cx="<%= fnum(x) %>" cy="<%= fnum(y) %>" r="<%= entry.dot_radius %>" fill="var(--color-<%= entry.data_key %>)"/>
+              <circle data-slot="chart-dot" cx="<%= fnum(x) %>" cy="<%= fnum(y) %>" r="<%= entry.dot_radius %>" fill="var(--color-<%= entry.data_key %>)" />
             <% end %>
           </g>
         <% end %>
@@ -59,7 +59,7 @@
     <% if tooltip? %>
       <g data-slot="chart-hit-wedges">
         <% rows.each_index do |i| %>
-          <path data-slot="chart-hit-wedge" data-index="<%= i %>" d="<%= hit_wedge(i) %>" fill="transparent"/>
+          <path data-slot="chart-hit-wedge" data-index="<%= i %>" d="<%= hit_wedge(i) %>" fill="transparent" />
         <% end %>
       </g>
     <% end %>

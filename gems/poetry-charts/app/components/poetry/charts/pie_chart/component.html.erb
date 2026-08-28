@@ -4,7 +4,7 @@
     <% series_entries.each_with_index do |entry, pie_index| %>
       <g data-slot="chart-pie" data-key="<%= entry.data_key %>">
         <% slices(entry).each do |slice| %>
-          <path data-slot="chart-pie-sector" data-key="<%= entry.data_key %>"<% if pie_index.zero? %> data-index="<%= slice.index %>"<% end %><% if entry.active_index == slice.index %> data-active=""<% end %><% if animate? %> data-motion-sector="<%= motion_sector_value(cx, cy, slice.inner, slice.outer, slice.start_angle, slice.end_angle) %>" data-motion-group="pie-<%= pie_index %>"<% end %> d="<%= slice.path %>" fill="<%= slice.fill %>"<% if entry.stroke_width.positive? %> stroke="var(--background)" stroke-width="<%= entry.stroke_width %>"<% end %>/>
+          <path data-slot="chart-pie-sector" data-key="<%= entry.data_key %>"<% if pie_index.zero? %> data-index="<%= slice.index %>"<% end %><% if entry.active_index == slice.index %> data-active=""<% end %><% if animate? %> data-motion-sector="<%= motion_sector_value(cx, cy, slice.inner, slice.outer, slice.start_angle, slice.end_angle) %>" data-motion-group="pie-<%= pie_index %>"<% end %> d="<%= slice.path %>" fill="<%= slice.fill %>"<% if entry.stroke_width.positive? %> stroke="var(--background)" stroke-width="<%= entry.stroke_width %>"<% end %> />
         <% end %>
       </g>
       <% if entry.labels == :list %>

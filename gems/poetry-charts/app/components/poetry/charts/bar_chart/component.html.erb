@@ -7,23 +7,23 @@
           <%# Value ticks run along X in the horizontal layout. %>
           <% if grid_config.vertical %>
             <% cartesian.y_ticks.each do |tick| %>
-              <line class="<%= css(:grid_line) %>" x1="<%= fnum(cartesian.y_scale.call(tick)) %>" x2="<%= fnum(cartesian.y_scale.call(tick)) %>" y1="<%= fnum(cartesian.plot_top) %>" y2="<%= fnum(cartesian.plot_bottom) %>"/>
+              <line class="<%= css(:grid_line) %>" x1="<%= fnum(cartesian.y_scale.call(tick)) %>" x2="<%= fnum(cartesian.y_scale.call(tick)) %>" y1="<%= fnum(cartesian.plot_top) %>" y2="<%= fnum(cartesian.plot_bottom) %>" />
             <% end %>
           <% end %>
           <% if grid_config.horizontal %>
             <% cartesian.x_centers.each do |y| %>
-              <line class="<%= css(:grid_line) %>" x1="<%= fnum(cartesian.plot_left) %>" x2="<%= fnum(cartesian.plot_right) %>" y1="<%= fnum(y) %>" y2="<%= fnum(y) %>"/>
+              <line class="<%= css(:grid_line) %>" x1="<%= fnum(cartesian.plot_left) %>" x2="<%= fnum(cartesian.plot_right) %>" y1="<%= fnum(y) %>" y2="<%= fnum(y) %>" />
             <% end %>
           <% end %>
         <% else %>
           <% if grid_config.horizontal %>
             <% cartesian.y_ticks.each do |tick| %>
-              <line class="<%= css(:grid_line) %>" x1="<%= fnum(cartesian.plot_left) %>" x2="<%= fnum(cartesian.plot_right) %>" y1="<%= fnum(cartesian.y_scale.call(tick)) %>" y2="<%= fnum(cartesian.y_scale.call(tick)) %>"/>
+              <line class="<%= css(:grid_line) %>" x1="<%= fnum(cartesian.plot_left) %>" x2="<%= fnum(cartesian.plot_right) %>" y1="<%= fnum(cartesian.y_scale.call(tick)) %>" y2="<%= fnum(cartesian.y_scale.call(tick)) %>" />
             <% end %>
           <% end %>
           <% if grid_config.vertical %>
             <% cartesian.x_centers.each do |x| %>
-              <line class="<%= css(:grid_line) %>" x1="<%= fnum(x) %>" x2="<%= fnum(x) %>" y1="<%= fnum(cartesian.plot_top) %>" y2="<%= fnum(cartesian.plot_bottom) %>"/>
+              <line class="<%= css(:grid_line) %>" x1="<%= fnum(x) %>" x2="<%= fnum(x) %>" y1="<%= fnum(cartesian.plot_top) %>" y2="<%= fnum(cartesian.plot_bottom) %>" />
             <% end %>
           <% end %>
         <% end %>
@@ -34,7 +34,7 @@
       <% series_entries.each do |entry| %>
         <g data-slot="chart-bar-series" data-key="<%= entry.key %>">
           <% cells(entry).each do |cell| %>
-            <path data-slot="chart-bar" data-key="<%= entry.key %>" data-index="<%= cell[:index] %>" d="<%= bar_path(entry, cell) %>" fill="<%= cell_fill(entry, cell) %>"<% if animate? %> data-motion-origin="<%= motion_origin(cell) %>"<% end %><% if active?(entry, cell) %> fill-opacity="0.8" stroke="<%= cell_fill(entry, cell) %>" stroke-width="<%= entry.stroke_width %>" stroke-dasharray="4" stroke-dashoffset="4" data-active=""<% end %>/>
+            <path data-slot="chart-bar" data-key="<%= entry.key %>" data-index="<%= cell[:index] %>" d="<%= bar_path(entry, cell) %>" fill="<%= cell_fill(entry, cell) %>"<% if animate? %> data-motion-origin="<%= motion_origin(cell) %>"<% end %><% if active?(entry, cell) %> fill-opacity="0.8" stroke="<%= cell_fill(entry, cell) %>" stroke-width="<%= entry.stroke_width %>" stroke-dasharray="4" stroke-dashoffset="4" data-active=""<% end %> />
           <% end %>
         </g>
         <% if entry.error_key && !horizontal? %>
@@ -42,7 +42,7 @@
             <% cells(entry).each do |cell| %>
               <% range = error_range(cell[:row], entry.error_key, cell[:value]) %>
               <% if range %>
-                <path class="<%= css(:error_bar) %>" d="<%= error_bar_path(cell[:x] + (cell[:width] / 2.0), cartesian.y_scale.call(range[0]), cartesian.y_scale.call(range[1]), entry.error_width) %>" fill="none"/>
+                <path class="<%= css(:error_bar) %>" d="<%= error_bar_path(cell[:x] + (cell[:width] / 2.0), cartesian.y_scale.call(range[0]), cartesian.y_scale.call(range[1]), entry.error_width) %>" fill="none" />
               <% end %>
             <% end %>
           </g>

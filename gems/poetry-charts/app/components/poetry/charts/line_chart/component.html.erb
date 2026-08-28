@@ -5,12 +5,12 @@
       <g data-slot="chart-grid" aria-hidden="true">
         <% if grid_config.horizontal %>
           <% cartesian.y_ticks.each do |tick| %>
-            <line class="<%= css(:grid_line) %>" x1="<%= fnum(cartesian.plot_left) %>" x2="<%= fnum(cartesian.plot_right) %>" y1="<%= fnum(cartesian.y_scale.call(tick)) %>" y2="<%= fnum(cartesian.y_scale.call(tick)) %>"/>
+            <line class="<%= css(:grid_line) %>" x1="<%= fnum(cartesian.plot_left) %>" x2="<%= fnum(cartesian.plot_right) %>" y1="<%= fnum(cartesian.y_scale.call(tick)) %>" y2="<%= fnum(cartesian.y_scale.call(tick)) %>" />
           <% end %>
         <% end %>
         <% if grid_config.vertical %>
           <% cartesian.x_centers.each do |x| %>
-            <line class="<%= css(:grid_line) %>" x1="<%= fnum(x) %>" x2="<%= fnum(x) %>" y1="<%= fnum(cartesian.plot_top) %>" y2="<%= fnum(cartesian.plot_bottom) %>"/>
+            <line class="<%= css(:grid_line) %>" x1="<%= fnum(x) %>" x2="<%= fnum(x) %>" y1="<%= fnum(cartesian.plot_top) %>" y2="<%= fnum(cartesian.plot_bottom) %>" />
           <% end %>
         <% end %>
       </g>
@@ -20,12 +20,12 @@
       <% series_entries.each do |entry| %>
         <% if (d = series_path(entry)) %>
           <%# pathLength="1" normalizes the path to unit length - the motion stylesheet's dash draw-in needs no measurement. %>
-          <path data-slot="chart-line" data-key="<%= entry.key %>" d="<%= d %>" fill="none" stroke="var(--color-<%= entry.key %>)" stroke-width="<%= entry.stroke_width %>"<% if animate? %> pathLength="1"<% end %>/>
+          <path data-slot="chart-line" data-key="<%= entry.key %>" d="<%= d %>" fill="none" stroke="var(--color-<%= entry.key %>)" stroke-width="<%= entry.stroke_width %>"<% if animate? %> pathLength="1"<% end %> />
         <% end %>
         <% if entry.dots %>
           <g data-slot="chart-dots" data-key="<%= entry.key %>">
             <% markers(entry).each do |marker| %>
-              <circle data-slot="chart-dot" cx="<%= fnum(marker[:x]) %>" cy="<%= fnum(marker[:y]) %>" r="<%= entry.dot_radius %>" fill="<%= dot_fill(entry, marker) %>"/>
+              <circle data-slot="chart-dot" cx="<%= fnum(marker[:x]) %>" cy="<%= fnum(marker[:y]) %>" r="<%= entry.dot_radius %>" fill="<%= dot_fill(entry, marker) %>" />
             <% end %>
           </g>
         <% end %>
@@ -34,7 +34,7 @@
             <% markers(entry).each do |marker| %>
               <% range = error_range(marker[:row], entry.error_key, marker[:value]) %>
               <% if range %>
-                <path class="<%= css(:error_bar) %>" d="<%= error_bar_path(marker[:x], cartesian.y_scale.call(range[0]), cartesian.y_scale.call(range[1]), entry.error_width) %>" fill="none"/>
+                <path class="<%= css(:error_bar) %>" d="<%= error_bar_path(marker[:x], cartesian.y_scale.call(range[0]), cartesian.y_scale.call(range[1]), entry.error_width) %>" fill="none" />
               <% end %>
             <% end %>
           </g>
@@ -53,7 +53,7 @@
   <g data-slot="chart-active-dots" aria-hidden="true">
     <% series_entries.each do |entry| %>
       <% active_dot_markers(entry).each do |marker| %>
-        <circle data-slot="chart-active-dot" data-key="<%= entry.key %>" data-index="<%= marker[:index] %>" cx="<%= fnum(marker[:x]) %>" cy="<%= fnum(marker[:y]) %>" r="4" fill="var(--color-<%= entry.key %>)" display="none"/>
+        <circle data-slot="chart-active-dot" data-key="<%= entry.key %>" data-index="<%= marker[:index] %>" cx="<%= fnum(marker[:x]) %>" cy="<%= fnum(marker[:y]) %>" r="4" fill="var(--color-<%= entry.key %>)" display="none" />
       <% end %>
     <% end %>
   </g>

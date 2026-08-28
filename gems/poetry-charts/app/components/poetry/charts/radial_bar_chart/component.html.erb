@@ -6,11 +6,11 @@
         <% if polar_grid_config[:radial_lines] %>
           <% angle_tick_values.each do |tick| %>
             <% x1, y1, x2, y2 = spoke_points(tick) %>
-            <line class="<%= css(:grid_circle) %>" x1="<%= fnum(x1) %>" y1="<%= fnum(y1) %>" x2="<%= fnum(x2) %>" y2="<%= fnum(y2) %>"/>
+            <line class="<%= css(:grid_circle) %>" x1="<%= fnum(x1) %>" y1="<%= fnum(y1) %>" x2="<%= fnum(x2) %>" y2="<%= fnum(y2) %>" />
           <% end %>
         <% end %>
         <% grid_radii.each_with_index do |radius, i| %>
-          <circle class="<%= grid_fill_class(i) %>" cx="<%= fnum(cx) %>" cy="<%= fnum(cy) %>" r="<%= fnum(radius) %>"/>
+          <circle class="<%= grid_fill_class(i) %>" cx="<%= fnum(cx) %>" cy="<%= fnum(cy) %>" r="<%= fnum(radius) %>" />
         <% end %>
       </g>
     <% end %>
@@ -18,11 +18,11 @@
       <g data-slot="chart-radial-series" data-key="<%= entry.data_key %>">
         <% segments(entry).each do |segment| %>
           <% if entry.background %>
-            <path data-slot="chart-radial-background" class="<%= css(:background_ring) %>" d="<%= background_path(segment) %>"/>
+            <path data-slot="chart-radial-background" class="<%= css(:background_ring) %>" d="<%= background_path(segment) %>" />
           <% end %>
         <% end %>
         <% segments(entry).each do |segment| %>
-          <path data-slot="chart-radial-bar" data-key="<%= entry.data_key %>"<% if series_index.zero? %> data-index="<%= segment.index %>"<% end %><% if animate? %> data-motion-sector="<%= motion_sector_value(cx, cy, segment.ring_inner, segment.ring_outer, segment.seg_start, segment.seg_end) %>" data-motion-group="ring-<%= segment.index %>"<% end %> d="<%= segment.path %>" fill="<%= segment.fill %>"/>
+          <path data-slot="chart-radial-bar" data-key="<%= entry.data_key %>"<% if series_index.zero? %> data-index="<%= segment.index %>"<% end %><% if animate? %> data-motion-sector="<%= motion_sector_value(cx, cy, segment.ring_inner, segment.ring_outer, segment.seg_start, segment.seg_end) %>" data-motion-group="ring-<%= segment.index %>"<% end %> d="<%= segment.path %>" fill="<%= segment.fill %>" />
         <% end %>
         <% if entry.labels == :inside_start %>
           <g data-slot="chart-labels" data-key="<%= entry.data_key %>" aria-hidden="true">

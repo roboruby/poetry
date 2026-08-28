@@ -1,0 +1,29 @@
+# Herb toolchain configuration (linter / formatter / language server).
+# https://herb-tools.dev/configuration
+#
+# Rules are version-gated: a newer linter never enables new rules here
+# until `version` is bumped deliberately (bump + re-lint in one change).
+version: 0.10.3
+
+framework: actionview
+# Every chart template is gated to compile under Herb::Engine (rake
+# herb:compile), the stricter of the two engines a host may run.
+template_engine: herb
+
+linter:
+  enabled: true
+  rules:
+    # Chart data rides in `<script type="application/json">` islands the
+    # Stimulus controllers read - the standard JSON-island shape. The rule
+    # has no allow-list for additional types.
+    html-allowed-script-type:
+      enabled: false
+    # The islands are serialized through Poetry's `script_json`, which
+    # JSON-encodes and \u-escapes `<`, `>`, `&` and the U+2028/2029
+    # separators - the exact guard this rule asks `.to_json` for. The rule
+    # cannot see through the helper.
+    erb-no-unsafe-script-interpolation:
+      enabled: false
+
+formatter:
+  enabled: false

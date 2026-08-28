@@ -5,13 +5,13 @@
       <defs>
         <% series_entries.select(&:gradient).each do |entry| %>
           <linearGradient id="<%= gradient_id(entry) %>" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stop-color="var(--color-<%= entry.key %>)" stop-opacity="0.8"/>
-            <stop offset="95%" stop-color="var(--color-<%= entry.key %>)" stop-opacity="0.1"/>
+            <stop offset="5%" stop-color="var(--color-<%= entry.key %>)" stop-opacity="0.8" />
+            <stop offset="95%" stop-color="var(--color-<%= entry.key %>)" stop-opacity="0.1" />
           </linearGradient>
         <% end %>
         <% if animate? %>
           <%# The entrance reveal: the motion stylesheet scales this rect 0->1. %>
-          <clipPath id="<%= chart_id %>-reveal"><rect data-slot="chart-motion-reveal" x="0" y="0" width="<%= width %>" height="<%= height %>"/></clipPath>
+          <clipPath id="<%= chart_id %>-reveal"><rect data-slot="chart-motion-reveal" x="0" y="0" width="<%= width %>" height="<%= height %>" /></clipPath>
         <% end %>
       </defs>
     <% end %>
@@ -19,12 +19,12 @@
       <g data-slot="chart-grid" aria-hidden="true">
         <% if grid_config.horizontal %>
           <% cartesian.y_ticks.each do |tick| %>
-            <line class="<%= css(:grid_line) %>" x1="<%= fnum(cartesian.plot_left) %>" x2="<%= fnum(cartesian.plot_right) %>" y1="<%= fnum(cartesian.y_scale.call(tick)) %>" y2="<%= fnum(cartesian.y_scale.call(tick)) %>"/>
+            <line class="<%= css(:grid_line) %>" x1="<%= fnum(cartesian.plot_left) %>" x2="<%= fnum(cartesian.plot_right) %>" y1="<%= fnum(cartesian.y_scale.call(tick)) %>" y2="<%= fnum(cartesian.y_scale.call(tick)) %>" />
           <% end %>
         <% end %>
         <% if grid_config.vertical %>
           <% cartesian.x_centers.each do |x| %>
-            <line class="<%= css(:grid_line) %>" x1="<%= fnum(x) %>" x2="<%= fnum(x) %>" y1="<%= fnum(cartesian.plot_top) %>" y2="<%= fnum(cartesian.plot_bottom) %>"/>
+            <line class="<%= css(:grid_line) %>" x1="<%= fnum(x) %>" x2="<%= fnum(x) %>" y1="<%= fnum(cartesian.plot_top) %>" y2="<%= fnum(cartesian.plot_bottom) %>" />
           <% end %>
         <% end %>
       </g>
@@ -33,8 +33,8 @@
     <g data-slot="chart-areas"<% if animate? %> clip-path="url(#<%= chart_id %>-reveal)"<% end %>>
       <% series_entries.each do |entry| %>
         <% if (d = series_path(entry)) %>
-          <path data-slot="chart-area" data-key="<%= entry.key %>" d="<%= d %>" fill="<%= fill_for(entry) %>" fill-opacity="<%= entry.fill_opacity %>" stroke="none"/>
-          <path data-slot="chart-area-stroke" data-key="<%= entry.key %>" d="<%= series_stroke_path(entry) %>" fill="none" stroke="var(--color-<%= entry.key %>)" stroke-width="<%= entry.stroke_width %>"/>
+          <path data-slot="chart-area" data-key="<%= entry.key %>" d="<%= d %>" fill="<%= fill_for(entry) %>" fill-opacity="<%= entry.fill_opacity %>" stroke="none" />
+          <path data-slot="chart-area-stroke" data-key="<%= entry.key %>" d="<%= series_stroke_path(entry) %>" fill="none" stroke="var(--color-<%= entry.key %>)" stroke-width="<%= entry.stroke_width %>" />
         <% end %>
       <% end %>
     </g>
@@ -43,7 +43,7 @@
   <g data-slot="chart-active-dots" aria-hidden="true">
     <% series_entries.each do |entry| %>
       <% active_dot_markers(entry).each do |marker| %>
-        <circle data-slot="chart-active-dot" data-key="<%= entry.key %>" data-index="<%= marker[:index] %>" cx="<%= fnum(marker[:x]) %>" cy="<%= fnum(marker[:y]) %>" r="4" fill="var(--color-<%= entry.key %>)" display="none"/>
+        <circle data-slot="chart-active-dot" data-key="<%= entry.key %>" data-index="<%= marker[:index] %>" cx="<%= fnum(marker[:x]) %>" cy="<%= fnum(marker[:y]) %>" r="4" fill="var(--color-<%= entry.key %>)" display="none" />
       <% end %>
     <% end %>
   </g>

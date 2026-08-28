@@ -5,19 +5,19 @@
       <g data-slot="chart-grid" aria-hidden="true">
         <% if grid_config.horizontal %>
           <% y_ticks.each do |tick| %>
-            <line class="<%= css(:grid_line) %>" x1="<%= fnum(plot_left) %>" x2="<%= fnum(plot_right) %>" y1="<%= fnum(y_scale.call(tick)) %>" y2="<%= fnum(y_scale.call(tick)) %>"/>
+            <line class="<%= css(:grid_line) %>" x1="<%= fnum(plot_left) %>" x2="<%= fnum(plot_right) %>" y1="<%= fnum(y_scale.call(tick)) %>" y2="<%= fnum(y_scale.call(tick)) %>" />
           <% end %>
         <% end %>
         <% if grid_config.vertical %>
           <% x_ticks.each do |tick| %>
-            <line class="<%= css(:grid_line) %>" x1="<%= fnum(x_scale.call(tick)) %>" x2="<%= fnum(x_scale.call(tick)) %>" y1="<%= fnum(plot_top) %>" y2="<%= fnum(plot_bottom) %>"/>
+            <line class="<%= css(:grid_line) %>" x1="<%= fnum(x_scale.call(tick)) %>" x2="<%= fnum(x_scale.call(tick)) %>" y1="<%= fnum(plot_top) %>" y2="<%= fnum(plot_bottom) %>" />
           <% end %>
         <% end %>
       </g>
     <% end %>
     <g data-slot="chart-scatters">
       <% points.each do |point| %>
-        <circle data-slot="chart-scatter-point" data-key="<%= point.key %>" data-index="<%= point.index %>" cx="<%= fnum(point.cx) %>" cy="<%= fnum(point.cy) %>" r="<%= fnum(point.r) %>" fill="var(--color-<%= point.key %>)"/>
+        <circle data-slot="chart-scatter-point" data-key="<%= point.key %>" data-index="<%= point.index %>" cx="<%= fnum(point.cx) %>" cy="<%= fnum(point.cy) %>" r="<%= fnum(point.r) %>" fill="var(--color-<%= point.key %>)" />
       <% end %>
     </g>
     <% series_entries.select(&:error_key).each do |entry| %>
@@ -25,7 +25,7 @@
         <% points.select { |p| p.key == entry.key }.each do |point| %>
           <% range = error_range(point.row, entry.error_key, point.row[y_axis_config.data_key].to_f) %>
           <% if range %>
-            <path class="<%= css(:error_bar) %>" d="<%= error_bar_path(point.cx, y_scale.call(range[0]), y_scale.call(range[1]), entry.error_width) %>" fill="none"/>
+            <path class="<%= css(:error_bar) %>" d="<%= error_bar_path(point.cx, y_scale.call(range[0]), y_scale.call(range[1]), entry.error_width) %>" fill="none" />
           <% end %>
         <% end %>
       </g>
