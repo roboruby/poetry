@@ -472,8 +472,12 @@
   @apply w-full bg-transparent text-xs/relaxed placeholder:text-muted-foreground;
 }
 
+/* Loose items (direct children, no group): the source's palette never
+ * renders them, so the list carries the inset itself and its groups drop
+ * their horizontal padding - every row aligns; group-only lists keep the
+ * cmdk geometry. */
 .cn-command-list {
-  @apply no-scrollbar max-h-72 scroll-py-1 outline-none;
+  @apply no-scrollbar max-h-72 scroll-py-1 outline-none has-[>[data-slot=command-item]]:p-1 has-[>[data-slot=command-item]]:*:data-[slot=command-group]:px-0;
 }
 
 .cn-command-empty {
