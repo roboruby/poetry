@@ -54,14 +54,27 @@ jobs:
       - name: Audit dependencies for known CVEs
         run: bundle exec bundle-audit check --update
 
-  javascript:
-    name: JavaScript (Vitest)
+  herb:
     runs-on: ubuntu-latest
+    name: Herb lint
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: npm
-      - run: npm ci
-      - run: npm test
+      - name: Lint HTML+ERB templates (.herb.yml pins the linter version and rules)
+        run: npx --yes @herb-tools/linter@0.10.3 app
+
+    javascript:
+      name: JavaScript (Vitest)
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v5
+        - uses: actions/setup-node@v4
+          with:
+            node-version: "22"
+            cache: npm
+        - run: npm ci
+        - run: npm test
