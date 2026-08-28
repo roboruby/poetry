@@ -204,6 +204,54 @@
     "path": "/testing#what-to-assert"
   },
   {
+    "title": "Stimulus",
+    "page": "Stimulus",
+    "section": "docs",
+    "path": "/stimulus"
+  },
+  {
+    "title": "The model",
+    "page": "Stimulus",
+    "section": "docs",
+    "path": "/stimulus#model"
+  },
+  {
+    "title": "1. Attach your controller to a component",
+    "page": "Stimulus",
+    "section": "docs",
+    "path": "/stimulus#compose"
+  },
+  {
+    "title": "2. React to what a component does",
+    "page": "Stimulus",
+    "section": "docs",
+    "path": "/stimulus#listen"
+  },
+  {
+    "title": "3. Drive a component from your markup",
+    "page": "Stimulus",
+    "section": "docs",
+    "path": "/stimulus#drive"
+  },
+  {
+    "title": "4. Declare it in Ruby",
+    "page": "Stimulus",
+    "section": "docs",
+    "path": "/stimulus#declare"
+  },
+  {
+    "title": "5. Change what a Poetry controller does",
+    "page": "Stimulus",
+    "section": "docs",
+    "path": "/stimulus#extend"
+  },
+  {
+    "title": "Checked at every rung",
+    "page": "Stimulus",
+    "section": "docs",
+    "path": "/stimulus#tooling"
+  },
+  {
     "title": "Form Builder",
     "page": "Form Builder",
     "section": "docs",

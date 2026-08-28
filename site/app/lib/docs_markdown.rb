@@ -78,6 +78,15 @@ class DocsMarkdown
       MD
     end
 
+    # The Stimulus guide's mirror.
+    def stimulus(entry)
+      <<~MD
+        #{header(entry)}
+
+        Poetry's behavior is Stimulus, declared per component through `use_stimulus`, so yours composes with it. 1. Attach: every helper and slot setter takes `data:` (`class:`, `id:`, `aria:` too) and the root merges it - Stimulus keys concatenate, never replace - so `poetry_dialog(data: { controller: "cart", action: "keydown.esc->cart#log", cart_sku_value: "A1" })` renders `data-controller="cart poetry--core--dialog"` with your action and value beside Poetry's; a wrapper `<div data-controller="cart">` works as plain Stimulus scope. 2. Listen: 42 of 52 controllers dispatch namespaced events (`poetry:tabs:change`, `poetry:combobox:select`, `poetry:calendar:change`, ...) on the root or any ancestor; portaled overlay content still reaches the original position through the portal bridge; Dialog dispatches nothing of its own (state is `data-open`, plus the native `cancel`/`close`). 3. Drive: any element inside a component's scope may call its actions (`data: { action: "click->poetry--core--dialog#close" }` on a Cancel button); from outside use the trigger slot or WebMCP. 4. Declare: subclass the component and `use_stimulus { on :root, extend: true { controller("cart") { register; action :log, on: "keydown.esc"; value :sku } } }` - Symbols resolve against the manifest (validated at class load), Strings are yours verbatim, `extend: true` appends, redeclaring replaces; `stimulus_attributes("cart") { |cart| ... }` is the escape hatch for dynamic wiring. 5. Extend: `import DialogController from "@poetry/controllers/dialog_controller"`, subclass it, and `application.register("poetry--core--dialog", Subclass)` after `registerPoetryControllers` - the later registration wins; the manifest still describes the base (a new action name on the same identifier reads as unknown to `poetry:check`) and you own the upgrade drift. Every rung is checked: `bin/rails poetry:check` validates identifiers, actions, targets, and typed values in attributes and `data:` keywords; the registrar warns once per unregistered Poetry identifier; `assert_poetry_controllers_registered` (Poetry::Ui::Testing) asserts it; `poetry:editor` lists Poetry's identifiers for the Stimulus language server so it keeps checking yours.
+      MD
+    end
+
     def accessibility(entry)
       <<~MD
         #{header(entry)}

@@ -146,6 +146,107 @@ module DocsHelper
   end
 
   # The /theming guide's ERB snippets (same reason as above).
+  # The /stimulus guide's samples (same reason: ERB tags can't live in Ruby
+  # strings inside a template). Every one of them was rendered against the
+  # real components before it was written down.
+  def stimulus_guide_snippets
+    {
+      compose: <<~ERB.strip,
+        <%= poetry_dialog(data: { controller: "cart", action: "keydown.esc->cart#log", cart_sku_value: "A1" }) do |dialog| %>
+          <% dialog.with_trigger(variant: :outline, data: { action: "click->cart#track" }) { "Edit profile" } %>
+          <% dialog.with_title { "Edit profile" } %>
+          Profile form goes here.
+        <% end %>
+      ERB
+      compose_output: <<~HTML.strip,
+        <div data-component="dialog" data-controller="cart poetry--core--dialog"
+             data-action="keydown.esc->cart#log" data-cart-sku-value="A1" ...>
+          <button data-action="poetry--core--dialog#open click->cart#track" ...>Edit profile</button>
+          ...
+      HTML
+      listen: <<~ERB.strip,
+        <%# on the component root %>
+        <%= poetry_tabs(..., data: { controller: "analytics", action: "poetry:tabs:change->analytics#track" }) do |tabs| %>
+          ...
+        <% end %>
+
+        <%# or on any ancestor: events bubble, and overlay content that portals
+            to <body> still reaches this element through the portal bridge %>
+        <div data-controller="analytics" data-action="poetry:combobox:select->analytics#pick">
+          <%= poetry_combobox(name: "sku", ...) %>
+        </div>
+      ERB
+      drive: <<~ERB.strip,
+        <%= poetry_dialog do |dialog| %>
+          <% dialog.with_trigger(variant: :destructive) { "Delete" } %>
+          <% dialog.with_title { "Delete this project?" } %>
+          <%= form_with url: project_path(@project), method: :delete do |form| %>
+            <%= poetry_button(variant: :ghost, type: :button,
+                              data: { action: "click->poetry--core--dialog#close" }) { "Cancel" } %>
+            <%= poetry_button(variant: :destructive) { "Delete" } %>
+          <% end %>
+        <% end %>
+      ERB
+      declare: <<~RUBY3.strip,
+        # app/components/cart_dialog.rb
+        class CartDialog < Poetry::Ui::Dialog::Component
+          option :sku, :string
+
+          use_stimulus do
+            on :root, extend: true do      # extend: append to Dialog's own root wiring
+              controller "cart" do          # a String is your identifier, verbatim
+                register                    # data-controller="poetry--core--dialog cart"
+                action :log, on: "keydown.esc"
+                value :sku                  # data-cart-sku-value from the option
+              end
+            end
+          end
+        end
+      RUBY3
+      escape_hatch: <<~RUBY3.strip,
+        # inside a component: one Attributes instance shared by every builder
+        stimulus_attributes("cart") do |cart|
+          cart.register_controller
+          cart.with_action(:log, on: "keydown.esc")
+          cart.with_target(:row)
+          cart.with_value(:sku, sku)
+        end
+        # => { "data-controller" => "cart", "data-action" => "keydown.esc->cart#log",
+        #      "data-cart-target" => "row", "data-cart-sku-value" => "A1" }
+      RUBY3
+      extend_js: <<~JS.strip,
+        // app/javascript/controllers/index.js
+        import { application } from "controllers/application"
+        import { registerPoetryControllers } from "@poetry/controllers"
+        import DialogController from "@poetry/controllers/dialog_controller"
+
+        class CartDialogController extends DialogController {
+          open() {
+            super.open()
+            this.dispatch("opened", { prefix: "cart" })   // cart:opened
+          }
+        }
+
+        registerPoetryControllers(application)
+        application.register("poetry--core--dialog", CartDialogController)  // the later registration wins
+      JS
+      tooling: <<~SHELL.strip,
+        bin/rails poetry:check       # identifiers, actions, targets, typed values - attributes and data: keywords alike
+        bin/rails g poetry:editor    # .stimulus-lsp/config.json: the editor keeps checking YOUR controllers
+      SHELL
+      guard: <<~RUBY3.strip
+        class CheckoutTest < ApplicationSystemTestCase
+          include Poetry::Ui::Testing
+
+          test "every Poetry controller on the page is registered" do
+            visit checkout_path
+            assert_poetry_controllers_registered
+          end
+        end
+      RUBY3
+    }
+  end
+
   def theming_guide_snippets
     {
       color_scheme_head: <<~ERB.strip,

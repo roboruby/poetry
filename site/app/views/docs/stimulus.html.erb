@@ -1,0 +1,179 @@
+<% content_for :title, "Stimulus" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Stimulus") %>
+  <% end %>
+<% end %>
+<% snippets = stimulus_guide_snippets %>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Stimulus</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      Poetry's behavior is Stimulus, so yours composes with it: attach a
+      controller to any component, react to what a component does, drive
+      it from your markup, declare the wiring in Ruby, or extend a
+      controller in JavaScript. Every rung is checked.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="model">The model</h2>
+      <p>
+        Each component declares its Stimulus wiring in Ruby through
+        <code>use_stimulus</code>, per element: which controllers register
+        on the root, which targets, values, and actions each part carries.
+        The rendered attributes are that declaration, validated against
+        the controllers manifest before the first render. You never write
+        a Poetry identifier to make a component work; you write your own
+        controllers next to Poetry's, and the two never clobber each other.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="compose">1. Attach your controller to a component</h2>
+      <p>
+        Every helper and every slot setter accepts <code>data:</code> (with
+        <code>class:</code>, <code>id:</code>, and <code>aria:</code>), and the
+        root merges it through Poetry's attribute plumbing: Stimulus keys
+        concatenate instead of replacing, classes merge, nested hashes
+        flatten. Your controller lands on the same element as Poetry's,
+        your values ride along, your action sits next to theirs.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: snippets[:compose], language: "erb", label: "Compose") %>
+    <%= poetry_code_block(code: snippets[:compose_output], language: "html", label: "Renders") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        A wrapper works too: a <code>&lt;div data-controller="cart"&gt;</code>
+        around the component puts everything inside it in your controller's
+        scope, which is plain Stimulus.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="listen">2. React to what a component does</h2>
+      <p>
+        Forty-two of the fifty-two controllers dispatch namespaced events
+        (<code>poetry:tabs:change</code>, <code>poetry:combobox:select</code>,
+        <code>poetry:calendar:change</code>, <code>poetry:clipboard-text:copied</code>,
+        and so on; each component page lists its own). Listen on the root
+        or on any ancestor. Overlay content that portals to
+        <code>&lt;body&gt;</code> while open still reaches listeners at the
+        original position, because the portal bridge re-dispatches every
+        declared event there.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: snippets[:listen], language: "erb", label: "Listen") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Dialog is one of the few that dispatch nothing of their own: its
+        state is the <code>data-open</code> attribute, and the native
+        <code>&lt;dialog&gt;</code> <code>cancel</code> and <code>close</code>
+        events fire as usual.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="drive">3. Drive a component from your markup</h2>
+      <p>
+        Any element inside a component's scope can call the component's
+        actions, the same way the component's own parts do. A Cancel
+        button inside a dialog closes it with one descriptor; there is no
+        JavaScript to write. From outside the scope, use the trigger slot,
+        or the <%= link_to "WebMCP", webmcp_path %> tool surface for agents.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: snippets[:drive], language: "erb", label: "Drive") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        The identifier, the action, the targets, and the typed values you
+        write are all validated by <code>poetry:check</code>, whether they
+        sit in an attribute or in a helper's <code>data:</code> keywords,
+        with a did-you-mean when a name is off by a letter.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="declare">4. Declare it in Ruby</h2>
+      <p>
+        When the wiring is part of a component's contract rather than
+        something to repeat at every call site, subclass the component and
+        declare it with the same DSL Poetry uses. Symbols resolve against
+        Poetry's manifest and are validated at class load; a String is your
+        own identifier and passes through verbatim. <code>extend: true</code>
+        appends to the inherited element; redeclaring an element without it
+        replaces the element wholesale, which is how Sheet and Drawer put
+        their own controllers on Dialog's root.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: snippets[:declare], language: "ruby", label: "Subclass") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        For wiring too dynamic to declare, <code>stimulus_attributes</code>
+        hands you one builder per controller, all sharing a single
+        attributes instance, so multi-controller merges are correct by
+        construction.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: snippets[:escape_hatch], language: "ruby", label: "Escape hatch") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="extend">5. Change what a Poetry controller does</h2>
+      <p>
+        Every Poetry controller is importable by its specifier, so a
+        subclass can override or wrap its methods. Register the subclass
+        under the same identifier after Poetry's registration and Stimulus
+        unloads the earlier definition: your class takes over everywhere
+        that identifier appears, and the registration guard still sees a
+        registered controller.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: snippets[:extend_js], language: "javascript", label: "Extend a controller") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Two things to know before you reach for this rung. The manifest
+        still describes the base controller, so a new action name on the
+        same identifier reads as unknown to <code>poetry:check</code>; put
+        new behavior in a controller of your own and compose it instead.
+        And you own the drift: an upgrade that changes the base's
+        internals changes your subclass's ground. Rungs one to four express
+        nearly everything; this one is for the rest.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="tooling">Checked at every rung</h2>
+      <p>
+        <code>poetry:check</code> validates every reference to a Poetry
+        controller statically. Stimulus itself never errors on an
+        identifier nothing registered (the element just stays inert), and
+        one failed import in your controllers graph silently takes every
+        Poetry controller down with it, so the registrar warns once per
+        unregistered identifier in the browser console, and the
+        <%= link_to "system-test helpers", testing_path(anchor: "testers") %>
+        ship the same guard as an assertion. Your editor checks your
+        controllers; <code>poetry:editor</code> lists Poetry's for the
+        <%= link_to "Stimulus language server", editors_path(anchor: "herb") %>
+        so a hand-written <code>poetry--core--dialog#open</code> is never
+        flagged as unknown.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: snippets[:tooling], language: "shell", label: "Tooling") %>
+    <%= poetry_code_block(code: snippets[:guard], language: "ruby", label: "System test") %>
+  </section>
+</div>
