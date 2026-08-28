@@ -2611,9 +2611,8 @@ components:
     - sr_only
     - search_icon
     - dialog_content
-    - dialog_overrides
     - dialog_close
-    capsule: 940c50d5966a
+    capsule: e5a56dd8d201
     controllers:
     - identifier: poetry--core--command
       targets: []

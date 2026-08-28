@@ -62,6 +62,17 @@ module Poetry
           end
         end
 
+        test "#{theme}: the classic h-12 palette chain rides .cn-command-dialog only in default" do
+          body = rule(File.read(path), ".cn-command-dialog")
+
+          if theme == "default"
+            assert_includes body, "**:data-[slot=command-input-wrapper]:h-12"
+            assert_includes body, "[&_[data-slot=command-item]]:py-3"
+          else
+            refute_match(/h-12|py-3/, body, "#{theme}: the styled source sizes the dialog palette like the theme")
+          end
+        end
+
         test "#{theme}: the combobox list carries its own inset rule" do
           css = File.read(path)
 

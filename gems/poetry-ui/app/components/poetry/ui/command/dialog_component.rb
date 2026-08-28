@@ -114,14 +114,14 @@ module Poetry
           "command-dialog"
         end
 
-        # The embedded Command, carrying the h-12 dialog override chain
-        # (rewritten onto data-slots).
+        # The embedded Command. Its sizing inside the dialog is the theme's
+        # own (the default theme's .cn-command-dialog rule carries the
+        # classic h-12 chain; the styled ports keep their well and rows).
         # @api private
         def command
           @command ||= begin
             options = {
               filter: filter, loop: loop, value: value,
-              class: Style.css(:dialog_overrides),
               "aria-label" => I18n.t("poetry.command.input_label")
             }
             options[:placeholder] = placeholder if placeholder.present?

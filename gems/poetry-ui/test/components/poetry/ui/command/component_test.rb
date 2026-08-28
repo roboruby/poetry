@@ -364,15 +364,14 @@ module Poetry
           refute_includes dialog["class"], "p-6"
         end
 
-        def test_dialog_variant_applies_the_h12_override_chain_to_the_command
+        def test_dialog_variant_leaves_the_palette_sizing_to_the_theme
           command_root = doc(render_dialog).css('[data-slot="command"]').first
 
-          %w[**:data-[slot=command-input-wrapper]:h-12 [&_[data-slot=command-input]]:h-12
-             [&_[data-slot=command-group-heading]]:px-2 [&_[data-slot=command-group]]:px-2
-             [&_[data-slot=command-item]]:px-2 [&_[data-slot=command-item]]:py-3
-             [&_[data-slot=command-item]_svg]:h-5 [&_[data-slot=command-item]_svg]:w-5].each do |token|
-            assert_includes command_root["class"], token
-          end
+          # The classic h-12 chain rides the default theme's .cn-command-dialog
+          # rule (see the theme rules test); the styled sources carry none,
+          # so nothing inline may impose it on the ported themes.
+          refute_match(/h-12|py-3/, command_root["class"])
+          assert_includes command_root["class"], "cn-command"
         end
 
         def test_dialog_variant_labels_the_input_with_the_i18n_fallback
