@@ -1699,9 +1699,13 @@
   @apply size-8 p-0 has-[>svg]:p-0;
 }
 
-/* CommandDialog re-tunes the Dialog panel (p-0 must beat cn-dialog-content's p-6). */
+/* CommandDialog re-tunes the Dialog panel and the palette inside it: the
+ * classic source's h-12 input row, px-2/py-3 rows and 20px icons, rewritten
+ * onto poetry's data-slots (p-0 must beat cn-dialog-content's p-6). THIS
+ * theme's source carries that chain; the styled ports do not, so it lives
+ * here and not in the dictionary. */
 .cn-command-dialog {
-  @apply overflow-hidden p-0;
+  @apply overflow-hidden p-0 **:data-[slot=command-input-wrapper]:h-12 [&_[data-slot=command-input]]:h-12 [&_[data-slot=command-group-heading]]:px-2 [&_[data-slot=command-group]]:px-2 [&_[data-slot=command-item]]:px-2 [&_[data-slot=command-item]]:py-3 [&_[data-slot=command-item]_svg]:h-5 [&_[data-slot=command-item]_svg]:w-5;
 }
 
 /* MARK: Stat */
