@@ -19,6 +19,6 @@ gem "rubocop-rake", require: false
 gem "lookbook", "~> 2.3"
 
 gem "bundler-audit", require: false
-gem "herb", "~> 0.10"
+gem "herb", "~> 0.10", ">= 0.10.3" # parse + compile gates (css:herb, herb:compile); the Rails core floor
 gem "simplecov", require: false
 gem "yard", require: false

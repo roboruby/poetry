@@ -106,14 +106,14 @@ GEM
     erubi (1.13.1)
     globalid (1.4.0)
       activesupport (>= 6.1)
-    herb (0.10.1-aarch64-linux-gnu)
-    herb (0.10.1-aarch64-linux-musl)
-    herb (0.10.1-arm-linux-gnu)
-    herb (0.10.1-arm-linux-musl)
-    herb (0.10.1-arm64-darwin)
-    herb (0.10.1-x86_64-darwin)
-    herb (0.10.1-x86_64-linux-gnu)
-    herb (0.10.1-x86_64-linux-musl)
+    herb (0.10.3-aarch64-linux-gnu)
+    herb (0.10.3-aarch64-linux-musl)
+    herb (0.10.3-arm-linux-gnu)
+    herb (0.10.3-arm-linux-musl)
+    herb (0.10.3-arm64-darwin)
+    herb (0.10.3-x86_64-darwin)
+    herb (0.10.3-x86_64-linux-gnu)
+    herb (0.10.3-x86_64-linux-musl)
     htmlbeautifier (1.4.3)
     htmlentities (4.3.4)
     i18n (1.15.2)
@@ -314,7 +314,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler-audit
-  herb (~> 0.10)
+  herb (~> 0.10, >= 0.10.3)
   irb
   lookbook (~> 2.3)
   minitest (~> 6.0.6)
@@ -356,14 +356,14 @@ CHECKSUMS
   erb (6.0.4) sha256=38e3803694be357fe2bfe312487c74beaf9fb4e5beb3e22498952fe1645b95d9
   erubi (1.13.1) sha256=a082103b0885dbc5ecf1172fede897f9ebdb745a4b97a5e8dc63953db1ee4ad9
   globalid (1.4.0) sha256=037f12fbf1d9d7a014d501c2d5c77356fd4ddd96d7a7991d6700bba96706f427
-  herb (0.10.1-aarch64-linux-gnu) sha256=fd9f4f8e0bcd9a421de55ff8810066550e9bcba8c8bf53737b32a04eb2fcbc49
-  herb (0.10.1-aarch64-linux-musl) sha256=bc6dac577c25bb7b35fe812987a9da7056aabd3a9394941c2aadf68bcca7c58e
-  herb (0.10.1-arm-linux-gnu) sha256=965fcb7bb59c7307c2dfdb8fa03ae06724184886bcb015088585e5163036a425
-  herb (0.10.1-arm-linux-musl) sha256=d1c18bf017bccaf32e27439e74e53b3f24bc8056d0ef70e79568ac7f7b2e2728
-  herb (0.10.1-arm64-darwin) sha256=08d0434ae94d23a7353d767085dc974cc5e63943a07cd48bc99afd7fea919c1b
-  herb (0.10.1-x86_64-darwin) sha256=dc266814a63215eefb82cf4f55ce723bc20218395b13c1631c11ca7cfc782d07
-  herb (0.10.1-x86_64-linux-gnu) sha256=c7762d411a6d2e1a032cf403b0429155c01ab48b3b5be2a0aab1e921da6b8948
-  herb (0.10.1-x86_64-linux-musl) sha256=a5bb7c82bbc30a9eb80cb833fea749f543a0709d9f858f7db366a3c2616d969b
+  herb (0.10.3-aarch64-linux-gnu) sha256=1eaea87e6577557492a1b0ddaae989fba8a8ddd382e888ee5f939ce6ded06eb8
+  herb (0.10.3-aarch64-linux-musl) sha256=4ac7ccd194f8f284ffc7bf093676f5194cf0f44ea4a7d3888eac095e81c43e1f
+  herb (0.10.3-arm-linux-gnu) sha256=d5f007b665a705b5566f1068b54e1600d5ffe6cb0b7d274e27dd7ed5918ca54e
+  herb (0.10.3-arm-linux-musl) sha256=09a0979f64ee3aff0b25a345c2cecd15992a0532295fd00249d73f13a3e313b1
+  herb (0.10.3-arm64-darwin) sha256=1a5bef57d925d775496328e7a01a9c1260e1d83bed8038b60a4f8c81b12c15a3
+  herb (0.10.3-x86_64-darwin) sha256=e02e43b3bb1977f4fd08f3330b5f2aa3292ca2d572a8bd59688eca8b79725f46
+  herb (0.10.3-x86_64-linux-gnu) sha256=cbb49b66f2bdc92d17109d1ea9452e88ba6a8ae52e9ddd5279deff83dcc4c66d
+  herb (0.10.3-x86_64-linux-musl) sha256=c84482d6b57f13c2e1a0fa029649efb0e5fdc876a3fd564bae09cf42bd4d5ae1
   htmlbeautifier (1.4.3) sha256=b43d08f7e2aa6ae1b5a6f0607b4ed8954c8d4a8e85fd2336f975dda1e4db385b
   htmlentities (4.3.4) sha256=125a73c6c9f2d1b62100b7c3c401e3624441b663762afa7fe428476435a673da
   i18n (1.15.2) sha256=00f9eb62412fe593b2a65a97daa75300d37abb8f7202ec748e94b6d46a9dd1b5
