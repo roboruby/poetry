@@ -23,7 +23,7 @@
   <% else %>
     <%# An empty treegrid with bare content is invalid ARIA - the empty
         state wraps in a placeholder row > gridcell (the contract). %>
-    <div role="row" aria-level="1" data-slot="tree-item" data-value="" tabindex="-1" class="<%= css(:item) %>" style="--poetry-tree-level: 1">
+    <div role="row" aria-level="1" data-slot="tree-item" data-value tabindex="-1" class="<%= css(:item) %>" style="--poetry-tree-level: 1">
       <span role="gridcell" class="<%= css(:cell) %>">
         <span data-slot="tree-item-label" class="text-muted-foreground"><%= t("poetry.tree.empty") %></span>
       </span>

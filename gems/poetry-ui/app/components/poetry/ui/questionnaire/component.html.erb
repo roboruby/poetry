@@ -47,7 +47,7 @@
         <% end %>
         <% if item.input %>
           <div data-slot="questionnaire-input-wrapper" class="<%= css(:input_wrapper) %>">
-            <input type="text" name="<%= field_name(item) %>" data-slot="questionnaire-input"
+            <input type="text" name="<%= field_name(item) %>" data-slot="questionnaire-input" autocomplete="off"
                    class="<%= css(:input) %>" aria-label="<%= item.input.label %>"
                    placeholder="<%= item.input.placeholder %>" value="<%= item.input.value %>"
                    <%= tag.attributes({ (item.input.value.present? ? "data-filled" : "data-empty") => "" }) %>>
