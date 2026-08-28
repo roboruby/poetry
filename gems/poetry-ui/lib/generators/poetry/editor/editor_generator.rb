@@ -15,6 +15,8 @@ module Poetry
   #   .vscode/mcp.json     VS Code       (servers + type: stdio)
   #   .vscode/poetry.code-snippets   one snippet per poetry_* helper, with the
   #                                   real variant/size enums as tab-stop choices
+  #   .herb.yml            Herb (linter / formatter / language server), unless
+  #                        the app already has one
   #
   # The MCP writes are upserts: an existing config keeps its other servers and
   # gains a `poetry` entry; a config that already has one is left untouched; a
@@ -36,8 +38,47 @@ module Poetry
                  add a stdio server: command `bundle exec poetry-agent` (or import .mcp.json). RubyMine 2025.2+.
     TEXT
 
-    desc "Wire poetry's MCP server + component snippets into your editors " \
-         "(.mcp.json / .cursor/mcp.json / .vscode/mcp.json + .vscode/poetry.code-snippets)"
+    # The Herb toolchain (HTML+ERB parser, linter, formatter, language server)
+    # reads one file. Poetry templates are gated to parse AND compile under
+    # Herb (Rails core's ERB engine since 8.2), so a Poetry app can run the
+    # whole toolchain; two linter rules misread ViewComponent slot setters on
+    # helper-yielded builders today, so they start off with the upstream
+    # issues to watch. The version pin keeps a linter upgrade from enabling
+    # rules silently.
+    HERB_CONFIG = <<~YML
+      # Herb toolchain configuration (linter / formatter / language server).
+      # https://herb-tools.dev/configuration - written by `rails g poetry:editor`.
+      version: 0.10.3
+
+      framework: actionview
+
+      linter:
+        enabled: true
+        rules:
+          # `<%= poetry_card do |card| %><% card.with_title(...) %>` is flagged as
+          # a discarded value until marcoroth/herb#2426 lands.
+          erb-no-unused-expressions:
+            enabled: false
+          # `<% item.with_icon { ... } %>` (brace-form slot setters) is flagged and
+          # the autofix renders the wrong thing - marcoroth/herb#2340.
+          actionview-no-silent-helper:
+            enabled: false
+
+      formatter:
+        enabled: false
+    YML
+
+    # Where the Herb language server comes from, per editor.
+    HERB_EDITORS = <<~TEXT
+      VS Code    install the "Herb LSP" extension (marcoroth.herb-lsp); Stimulus LSP (marcoroth.stimulus-lsp)
+                 understands the same HTML+ERB
+      Zed        ships inside the official Ruby extension - nothing to add
+      Neovim     npm install -g @herb-tools/language-server, then lspconfig's herb_ls
+      CI         npx --yes @herb-tools/linter app   (or bundle exec herb lint)
+    TEXT
+
+    desc "Wire poetry's MCP server + component snippets + Herb config into your editors " \
+         "(.mcp.json / .cursor/mcp.json / .vscode/mcp.json + .vscode/poetry.code-snippets + .herb.yml)"
 
     # Step: upserts the poetry server into .mcp.json.
     # @api private
@@ -63,11 +104,24 @@ module Poetry
       create_file ".vscode/poetry.code-snippets", "#{JSON.pretty_generate(snippets)}\n", force: true
     end
 
+    # Step: writes .herb.yml for the Herb toolchain, unless the app has one.
+    # @api private
+    def write_herb_config
+      if File.exist?(File.join(destination_root, ".herb.yml"))
+        say_status :skip, ".herb.yml exists - keeping yours (poetry's rule notes: /editors on the docs site)",
+                   :yellow
+      else
+        create_file ".herb.yml", HERB_CONFIG
+      end
+    end
+
     # Step: prints the paste-blocks for IDE-managed MCP configs.
     # @api private
     def announce_manual_editors
       say "\npoetry:editor - editors with global / IDE-managed MCP config (paste-blocks):", :green
       say MANUAL_EDITORS
+      say "\npoetry:editor - Herb (HTML+ERB linter + language server), configured by .herb.yml:", :green
+      say HERB_EDITORS
       say "Full setup + a per-editor matrix: /editors on the docs site.\n"
     end
 

@@ -2,6 +2,7 @@
 
 require "test_helper"
 require "rails/generators"
+require "yaml"
 require "generators/poetry/editor/editor_generator"
 
 module Poetry
@@ -29,6 +30,23 @@ module Poetry
 
       assert_equal "stdio", vscode["type"]
       assert_equal "bundle", vscode["command"]
+    end
+
+    def test_writes_a_herb_config_unless_the_app_has_one
+      run_generator
+      config = YAML.safe_load_file(File.join(destination_root, ".herb.yml"))
+
+      assert_equal "actionview", config["framework"]
+      assert_match(/\A\d+\.\d+\.\d+\z/, config["version"].to_s, "the linter version is pinned")
+      assert_equal({ "enabled" => false }, config.dig("linter", "rules", "erb-no-unused-expressions"))
+      assert_equal({ "enabled" => false }, config.dig("linter", "rules", "actionview-no-silent-helper"))
+
+      File.write(File.join(destination_root, ".herb.yml"), "version: 0.9.0\n")
+      output = run_generator
+
+      assert_equal "version: 0.9.0\n", File.read(File.join(destination_root, ".herb.yml")),
+                   "an existing config is never clobbered"
+      assert_match(/skip\s+\.herb\.yml exists/, output)
     end
 
     def test_generates_snippets_from_the_committed_registry
