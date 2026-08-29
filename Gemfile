@@ -9,6 +9,8 @@ gemspec
 # depend on it by local path for development; it becomes a gemspec dependency
 # once released.
 gem "poetry-core", path: "../poetry-core"
+gem "poetry-ui", path: "../poetry-ui"
+gem "poetry-lucide", path: "../poetry-lucide"
 
 gem "irb"
 gem "rake", "~> 13.0"

@@ -7,8 +7,10 @@ require "test_helper"
 # by poetry-core's own test/dummy suite (app/components autoloads only once the
 # engine is mounted in a host); here we verify the integration cold.
 class PoetryCoreIntegrationTest < Minitest::Test
-  def test_requiring_poetry_loads_poetry_core
+  def test_requiring_poetry_loads_the_library_proper
     assert defined?(Poetry::Core), "require poetry should load Poetry::Core"
+    assert defined?(Poetry::Ui), "require poetry should load Poetry::Ui"
+    assert defined?(Poetry::Lucide), "require poetry should load Poetry::Lucide"
   end
 
   def test_engine_resolves_as_a_rails_engine
