@@ -28,8 +28,9 @@ Engines are swappable (three doors — full recipes in the Charts adapter guide 
 3. **Islands**: React chart libraries (Recharts included) run inside the frame
    via poetry's bounded island escape-hatch.
 
-Scope: the measured shadcn parity surface — 6 chart families, 70 blocks
-(area / bar / line / pie / radar / radial + tooltip variants).
+Scope: shadcn's chart surface — nine families (area, bar, line, pie, radar,
+radial bar, scatter and composed, plus the adapter frame) with their tooltip
+and legend variants.
 
 ## Install
 
@@ -85,7 +86,7 @@ carries pre-formatted category strings (lambdas can't ride JSON — the
 server raises a teaching error on `tick_formatter`/`labels`).
 
 Part of the [poetry](../poetry) gem family. Status:
-six families, 52 gallery examples, the frozen spec-v1 adapter seam.
+nine families, 46 gallery examples, the frozen spec-v1 adapter seam.
 
 ## License
 
