@@ -37,6 +37,23 @@ module Poetry
         ], klass.part_definitions
       end
 
+      # An embedded component's root wearing a part the outer declares (an
+      # icon rendered as the indicator glyph) belongs to the outer contract.
+      def test_embedded_component_root_wearing_a_declared_part_is_owned
+        parts = [{ "name" => "outer", "description" => "root" },
+                 { "name" => "outer-check", "description" => "the glyph" }]
+        wearing = %(<div data-component="outer" data-slot="outer">) +
+                  %(<svg data-component="icon" data-slot="outer-check"></svg></div>)
+
+        assert_empty PartContract.verify(title: "outer", parts: parts, docs: [wearing])
+
+        own_slot = %(<div data-component="outer" data-slot="outer">) +
+                   %(<svg data-component="icon" data-slot="icon"></svg></div>)
+        findings = PartContract.verify(title: "outer", parts: parts, docs: [own_slot])
+
+        assert_equal ["phantom-part"], findings.map(&:rule)
+      end
+
       def test_parts_are_not_inherited
         parent = component_class { part "widget", "The root" }
         child = Class.new(parent) do

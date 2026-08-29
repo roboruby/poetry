@@ -73,7 +73,7 @@ module Poetry
       #   JS corpus - the second source for JS-applied states and vars
       # @return [Array<Check::Finding>]
       def verify(title:, parts:, docs:, sources: "")
-        observed = observe(title, docs)
+        observed = observe(title, docs, parts.map { |part| part["name"] })
         findings = []
         root_findings(findings, title, observed, parts)
         dom_to_contract(findings, title, observed, parts)
@@ -85,7 +85,7 @@ module Poetry
       # The rendered truth: every owned part with its state attributes
       # (attr => Set of rendered values) and inline vars, plus the owned
       # elements that carry state without a part name.
-      def observe(title, docs)
+      def observe(title, docs, part_names = [])
         parts = Hash.new do |hash, key|
           hash[key] = { states: Hash.new { |states, attr| states[attr] = Set.new }, vars: Set.new }
         end
@@ -95,13 +95,13 @@ module Poetry
           doc.css("[data-component]").each do |node|
             observed[:root_seen] ||= node["data-component"] == title
           end
-          doc.css("*").each { |node| observe_node(observed, title, node) }
+          doc.css("*").each { |node| observe_node(observed, title, node, part_names) }
         end
         observed
       end
 
-      def observe_node(observed, title, node)
-        return unless owned?(node, title)
+      def observe_node(observed, title, node, part_names)
+        return unless owned?(node, title, part_names)
 
         states = state_attributes(node)
         vars = inline_vars(node)
@@ -114,14 +114,24 @@ module Poetry
         end
       end
 
-      def owned?(node, title)
+      # Ownership climbs to the nearest data-component root. One exception:
+      # an embedded component's root that wears a part the outer component
+      # declares (an icon rendered AS the indicator glyph, the source's own
+      # shape) is the outer component's part - the climb starts above it.
+      def owned?(node, title, part_names = [])
         current = node
+        current = node.parent if embedded_root_wearing_part?(node, title, part_names)
         while current.respond_to?(:key?)
           return current["data-component"] == title if current.key?("data-component")
 
           current = current.parent
         end
         false
+      end
+
+      def embedded_root_wearing_part?(node, title, part_names)
+        node.key?("data-component") && node["data-component"] != title &&
+          part_names.include?(node["data-slot"])
       end
 
       def state_attributes(node)
