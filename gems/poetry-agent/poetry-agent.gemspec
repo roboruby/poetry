@@ -17,16 +17,24 @@ Gem::Specification.new do |spec|
   spec.homepage = "https://github.com/roboruby/poetry-agent"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.3.0"
-  spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = spec.homepage
+  spec.metadata["homepage_uri"] = "https://github.com/roboruby/poetry-agent"
+  spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry-agent"
+  spec.metadata["changelog_uri"] = "https://github.com/roboruby/poetry-agent/blob/main/CHANGELOG.md"
+  spec.metadata["bug_tracker_uri"] = "https://github.com/roboruby/poetry-agent/issues"
   spec.metadata["rubygems_mfa_required"] = "true"
 
   gemspec = File.basename(__FILE__)
+  # Dev-only surfaces never ship: the test/dummy host, scripts, rake tasks,
+  # internal docs and design exports, the fidelity ledgers' snapshots,
+  # editor/tooling files, and OS litter.
+  dev_only_dirs = %w[bin/ test/ docs/ script/ rakelib/ eval/ yard/ tmp/ .github/ .ruby-lsp/ .yardoc/
+                     config/theme_fidelity/ config/dictionary_fidelity/ config/upstream_
+                     config/hook_coverage config/theme_states]
+  dev_only_files = %w[Gemfile Gemfile.lock Rakefile AGENTS.md .gitignore .rubocop.yml .yardopts .yard_coverage
+                      .herb.yml .DS_Store package.json package-lock.json vitest.config.js]
   spec.files = IO.popen(%w[git ls-files -z], chdir: __dir__, err: IO::NULL) do |ls|
     ls.readlines("\x0", chomp: true).reject do |f|
-      (f == gemspec) ||
-        f.start_with?(*%w[bin/ test/ Gemfile .gitignore .rubocop.yml .yardopts .yard_coverage
-                          package.json package-lock.json vitest.config.js])
+      (f == gemspec) || f.start_with?(*dev_only_dirs) || dev_only_files.include?(File.basename(f))
     end
   end
   spec.bindir = "exe"
