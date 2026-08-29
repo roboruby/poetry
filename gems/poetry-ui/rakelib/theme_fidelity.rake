@@ -13,6 +13,14 @@ namespace :css do
     puts "theme fidelity: all ported themes match the recorded deviation contract"
   end
 
+  desc "Report what changed upstream between two pins (the pin-bump ceremony's first step; " \
+       "OLD=<ref> NEW=<ref>, tags welcome; read-only)"
+  task :upstream_delta do
+    old_ref = ENV.fetch("OLD", nil) or abort "OLD=<ref> required"
+    new_ref = ENV.fetch("NEW", nil) or abort "NEW=<ref> required"
+    sh "bundle", "exec", "ruby", File.expand_path("../script/upstream_delta.rb", __dir__), old_ref, new_ref
+  end
+
   desc "Regenerate the frozen source snapshot (pin-bump ceremony; needs UPSTREAM=<checkout> PIN=<sha>)"
   task :fidelity_snapshot do
     checkout = ENV.fetch("UPSTREAM", nil) or abort "UPSTREAM=<path to the pinned checkout> required"
