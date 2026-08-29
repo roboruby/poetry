@@ -1,5 +1,5 @@
 /* poetry-charts nova theme - chart chrome under upstream
- * style-nova.css (pinned clone d0fae528). Upstream ships ONE chart rule (cn-chart-tooltip) and nova's is byte-identical to default - the whole file carries the default treatment.
+ * style-nova.css (pinned clone 1773ecfe, the shadcn@4.19.0 release). Upstream ships ONE chart rule (cn-chart-tooltip) and nova's is byte-identical to default - the whole file carries the default treatment.
  * Same contract as default.css: imported layer(base) by the host entry;
  * POETRY_THEME=nova drives the gates and golden set. */
 /* MARK: Tooltip */

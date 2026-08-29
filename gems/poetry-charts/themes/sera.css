@@ -1,5 +1,5 @@
 /* poetry-charts sera theme - chart chrome under upstream
- * style-sera.css (pinned clone d0fae528). Upstream ships ONE chart rule (cn-chart-tooltip) and sera reskins it (bg-popover ring-1 ring-foreground/10 shadow-sm, radius absent = square); everything else carries the default treatment.
+ * style-sera.css (pinned clone 1773ecfe, the shadcn@4.19.0 release). Upstream ships ONE chart rule (cn-chart-tooltip) and sera reskins it (bg-popover ring-1 ring-foreground/10 shadow-sm, radius absent = square); everything else carries the default treatment.
  * Same contract as default.css: imported layer(base) by the host entry;
  * POETRY_THEME=sera drives the gates and golden set. */
 

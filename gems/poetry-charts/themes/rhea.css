@@ -1,5 +1,5 @@
 /* poetry-charts rhea theme - chart chrome under upstream
- * style-rhea.css (pinned clone d0fae528). Upstream ships ONE chart rule (cn-chart-tooltip); rhea reskins it (popover surface, ring-for-border, rounded-xl) - everything else carries the default treatment.
+ * style-rhea.css (pinned clone 1773ecfe, the shadcn@4.19.0 release). Upstream ships ONE chart rule (cn-chart-tooltip); rhea reskins it (popover surface, ring-for-border, rounded-xl) - everything else carries the default treatment.
  * Same contract as default.css: imported layer(base) by the host entry;
  * POETRY_THEME=rhea drives the gates and golden set. */
 /* MARK: Tooltip */
