@@ -22,7 +22,7 @@ module Poetry
 
       # The provenance line template for ported treatments,
       # format-interpolated with the upstream style name.
-      PORTED = "ported from the source style-%s.css at pin d0fae528"
+      PORTED = "ported from the source style-%s.css at pin shadcn@4.19.0 (1773ecfe)"
 
       # Per-theme DESIGN.md metadata: the typography pairing and the
       # treatment provenance line.

@@ -101,7 +101,7 @@ poetry:
     4xl: calc(var(--radius) * 2.6)
   typography_pairing: 'system serif (upstream: Noto Serif / Instrument Serif)'
   treatment: the sera treatment (serif-paired), ported from the source style-sera.css
-    at pin d0fae528
+    at pin shadcn@4.19.0 (1773ecfe)
   components_count: 87
   components_pointer: "/poetry/llms.txt"
   contrast_policy:
@@ -125,7 +125,7 @@ poetry sera - semantic role tokens (shared across every poetry theme) under the 
 ## Overview
 
 - design system: poetry - server-rendered Rails components (ViewComponent + Stimulus + Tailwind v4)
-- theme: sera - the sera treatment (serif-paired), ported from the source style-sera.css at pin d0fae528
+- theme: sera - the sera treatment (serif-paired), ported from the source style-sera.css at pin shadcn@4.19.0 (1773ecfe)
 - token source: one DTCG file shared by every poetry theme (`tokens/tokens.dtcg.json`);
   themes are component-treatment layers, not palettes
 - dark mode: the `.dark` class - both modes ship in this file

@@ -8,9 +8,11 @@
 #   ruby script/hook_coverage/refresh_snapshot.rb [path-to-clone]
 
 clone = ARGV[0] || File.expand_path("~/Desktop/save/shadcn-ui")
+# The pin (a tagged release from shadcn@4.19.0 on) - the snapshot must match the fidelity pin.
+ref = ARGV[1] || ENV.fetch("PIN", "origin/main")
 themes = %w[luma lyra maia mira nova rhea sera vega]
 raw = themes.flat_map do |t|
-  `cd #{clone} && git show origin/main:apps/v4/registry/styles/style-#{t}.css`
+  `cd #{clone} && git show #{ref}:apps/v4/registry/styles/style-#{t}.css`
     .scan(/^\s*\.(cn-[a-z0-9-]+)/).flatten
 end
 hooks = raw.uniq.sort.reject { |h| h.end_with?("-aria") }

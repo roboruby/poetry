@@ -1,5 +1,5 @@
 {
-  "pin": "d0fae528",
+  "pin": "1773ecfe",
   "themes": {
     "vega": {
       ".cn-accordion-item": {
@@ -623,6 +623,14 @@
         ],
         "raw": []
       },
+      ".cn-card-content:has(> [data-slot=questionnaire-choices])": {
+        "apply": [
+          "flex",
+          "flex-col",
+          "gap-3"
+        ],
+        "raw": []
+      },
       ".cn-card-footer": {
         "apply": [
           "[.border-t]:pt-(--card-spacing)",
@@ -676,6 +684,9 @@
           "focus-visible:border-ring",
           "focus-visible:ring-3",
           "focus-visible:ring-ring/50",
+          "group-has-[:focus-visible]/field-label:data-checked:border-primary",
+          "group-has-[:focus-visible]/field-label:not-data-checked:border-input",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "group-has-disabled/field:opacity-50",
           "items-center",
           "justify-center",
@@ -683,6 +694,24 @@
           "shadow-xs",
           "size-4",
           "transition-shadow"
+        ],
+        "raw": []
+      },
+      ".cn-checkbox-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:data-selected:bg-primary",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-3",
+          "data-focus-visible:ring-ring/50",
+          "data-invalid:border-destructive",
+          "data-invalid:data-selected:border-primary",
+          "data-invalid:ring-3",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "data-selected:border-primary",
+          "data-selected:text-primary-foreground"
         ],
         "raw": []
       },
@@ -751,6 +780,14 @@
           "py-1.5",
           "rounded-sm",
           "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-combobox-item-aria": {
+        "apply": [
+          "data-focused:bg-accent",
+          "data-focused:text-accent-foreground",
+          "not-data-[variant=destructive]:data-focused:**:text-accent-foreground"
         ],
         "raw": []
       },
@@ -985,6 +1022,14 @@
         ],
         "raw": []
       },
+      ".cn-command-item-aria": {
+        "apply": [
+          "data-focused:**:[svg]:text-foreground",
+          "data-focused:bg-muted",
+          "data-focused:text-foreground"
+        ],
+        "raw": []
+      },
       ".cn-command-shortcut": {
         "apply": [
           "group-data-selected/command-item:text-foreground",
@@ -992,6 +1037,12 @@
           "text-muted-foreground",
           "text-xs",
           "tracking-widest"
+        ],
+        "raw": []
+      },
+      ".cn-command-shortcut-aria": {
+        "apply": [
+          "group-data-focused/command-item:text-foreground"
         ],
         "raw": []
       },
@@ -1633,10 +1684,23 @@
           "gap-2",
           "group-data-[disabled=true]/field:opacity-50",
           "has-[>[data-slot=field]]:border",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:border-ring",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:ring-3",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:ring-ring/50",
+          "has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-muted/50",
           "has-[>[data-slot=field]]:rounded-md",
           "has-data-checked:bg-primary/5",
           "has-data-checked:border-primary/30",
           "leading-snug"
+        ],
+        "raw": []
+      },
+      ".cn-field-label-aria": {
+        "apply": [
+          "dark:has-data-selected:bg-primary/10",
+          "dark:has-data-selected:border-primary/20",
+          "has-data-selected:bg-primary/5",
+          "has-data-selected:border-primary/30"
         ],
         "raw": []
       },
@@ -1976,6 +2040,12 @@
           "leading-none",
           "peer-disabled:opacity-50",
           "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-label-aria": {
+        "apply": [
+          "peer-data-disabled:opacity-50"
         ],
         "raw": []
       },
@@ -2515,8 +2585,29 @@
           "focus-visible:border-ring",
           "focus-visible:ring-3",
           "focus-visible:ring-ring/50",
+          "group-has-[:focus-visible]/field-label:data-checked:border-primary",
+          "group-has-[:focus-visible]/field-label:not-data-checked:border-input",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "rounded-full",
           "size-4"
+        ],
+        "raw": []
+      },
+      ".cn-radio-group-item-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:data-selected:bg-primary",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-3",
+          "data-focus-visible:ring-ring/50",
+          "data-invalid:border-destructive",
+          "data-invalid:data-selected:border-primary",
+          "data-invalid:ring-3",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "data-selected:border-primary",
+          "data-selected:text-primary-foreground"
         ],
         "raw": []
       },
@@ -2610,6 +2701,12 @@
         ],
         "raw": []
       },
+      ".cn-select-value-aria": {
+        "apply": [
+          "data-placeholder:text-muted-foreground"
+        ],
+        "raw": []
+      },
       ".cn-select-trigger-icon": {
         "apply": [
           "size-4",
@@ -2674,6 +2771,13 @@
         ],
         "raw": []
       },
+      ".cn-select-item-aria": {
+        "apply": [
+          "data-focused:bg-accent",
+          "data-focused:text-accent-foreground"
+        ],
+        "raw": []
+      },
       ".cn-select-item-indicator": {
         "apply": [
           "absolute",
@@ -2733,6 +2837,19 @@
           "justify-center",
           "py-1",
           "z-10"
+        ],
+        "raw": []
+      },
+      ".cn-select-empty-aria": {
+        "apply": [
+          "group-data-empty/select-list:flex",
+          "hidden",
+          "justify-center",
+          "py-2",
+          "text-center",
+          "text-muted-foreground",
+          "text-sm",
+          "w-full"
         ],
         "raw": []
       },
@@ -2989,6 +3106,13 @@
         ],
         "raw": []
       },
+      ".cn-sidebar-menu-button-aria": {
+        "apply": [
+          "aria-expanded:hover:bg-sidebar-accent",
+          "aria-expanded:hover:text-sidebar-accent-foreground"
+        ],
+        "raw": []
+      },
       ".cn-sidebar-menu-button-variant-default": {
         "apply": [
           "hover:bg-sidebar-accent",
@@ -3199,9 +3323,27 @@
           "focus-visible:border-ring",
           "focus-visible:ring-3",
           "focus-visible:ring-ring/50",
+          "group-has-[:focus-visible]/field-label:border-transparent",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "rounded-full",
           "shadow-xs",
           "shrink-0"
+        ],
+        "raw": []
+      },
+      ".cn-switch-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:not-data-selected:bg-input/80",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-3",
+          "data-focus-visible:ring-ring/50",
+          "data-invalid:border-destructive",
+          "data-invalid:ring-3",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "not-data-selected:bg-input"
         ],
         "raw": []
       },
@@ -3217,6 +3359,17 @@
           "group-data-[size=sm]/switch:data-unchecked:translate-x-0",
           "group-data-[size=sm]/switch:size-3",
           "rounded-full"
+        ],
+        "raw": []
+      },
+      ".cn-switch-thumb-aria": {
+        "apply": [
+          "dark:data-selected:bg-primary-foreground",
+          "dark:not-data-selected:bg-foreground",
+          "group-data-[size=default]/switch:data-selected:translate-x-[calc(100%-2px)]",
+          "group-data-[size=default]/switch:not-data-selected:translate-x-0",
+          "group-data-[size=sm]/switch:data-selected:translate-x-[calc(100%-2px)]",
+          "group-data-[size=sm]/switch:not-data-selected:translate-x-0"
         ],
         "raw": []
       },
@@ -3266,6 +3419,12 @@
         ],
         "raw": []
       },
+      ".cn-table-row-aria": {
+        "apply": [
+          "data-selected:bg-muted"
+        ],
+        "raw": []
+      },
       ".cn-table-head": {
         "apply": [
           "[&:has([role=checkbox])]:pr-0",
@@ -3279,12 +3438,24 @@
         ],
         "raw": []
       },
+      ".cn-table-head-aria": {
+        "apply": [
+          "[&:has([data-slot=checkbox])]:pr-0"
+        ],
+        "raw": []
+      },
       ".cn-table-cell": {
         "apply": [
           "[&:has([role=checkbox])]:pr-0",
           "align-middle",
           "p-2",
           "whitespace-nowrap"
+        ],
+        "raw": []
+      },
+      ".cn-table-cell-aria": {
+        "apply": [
+          "[&:has([data-slot=checkbox])]:pr-0"
         ],
         "raw": []
       },
@@ -3326,6 +3497,13 @@
           "py-1",
           "rounded-md",
           "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-tabs-trigger-aria": {
+        "apply": [
+          "group-data-[variant=default]/tabs-list:data-selected:shadow-sm",
+          "group-data-[variant=line]/tabs-list:data-selected:shadow-none"
         ],
         "raw": []
       },
@@ -3374,6 +3552,12 @@
           "rounded-md",
           "text-sm",
           "transition-[color,box-shadow]"
+        ],
+        "raw": []
+      },
+      ".cn-toggle-aria": {
+        "apply": [
+          "data-selected:bg-muted"
         ],
         "raw": []
       },
@@ -3669,6 +3853,12 @@
           "before:rounded-[inherit]",
           "bg-popover/70",
           "relative"
+        ],
+        "raw": []
+      },
+      ".cn-menu-translucent-aria": {
+        "apply": [
+          "**:data-[slot$=-item]:data-focused:bg-foreground/10"
         ],
         "raw": []
       },
@@ -3991,6 +4181,172 @@
         ],
         "raw": []
       },
+      ".cn-questionnaire": {
+        "apply": [
+          "gap-6"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-progress": {
+        "apply": [
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-item": {
+        "apply": [
+          "flex",
+          "flex-col",
+          "gap-5"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-title": {
+        "apply": [
+          "[&:not(:has(~[data-slot=questionnaire-description]))]:mb-5",
+          "font-semibold",
+          "text-base"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-description": {
+        "apply": [
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choices": {
+        "apply": [
+          "gap-3"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice": {
+        "apply": [
+          "bg-transparent",
+          "border",
+          "border-input",
+          "dark:bg-input/20",
+          "dark:data-checked:bg-muted",
+          "data-checked:bg-muted",
+          "data-checked:border-primary/40",
+          "data-invalid:border-destructive",
+          "gap-3",
+          "has-[>input:focus-visible]:border-ring",
+          "has-[>input:focus-visible]:ring-3",
+          "has-[>input:focus-visible]:ring-ring/50",
+          "hover:bg-muted/50",
+          "px-4",
+          "py-3.5",
+          "rounded-md",
+          "shadow-xs",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator": {
+        "apply": [
+          "border-input",
+          "dark:bg-input/30",
+          "dark:group-data-checked/questionnaire-choice:bg-primary",
+          "group-data-checked/questionnaire-choice:bg-primary",
+          "group-data-checked/questionnaire-choice:border-primary",
+          "group-data-checked/questionnaire-choice:text-primary-foreground",
+          "group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5",
+          "rounded-[4px]",
+          "size-4",
+          "translate-y-[--spacing(0.45)]"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator-dot": {
+        "apply": [
+          "bg-primary-foreground",
+          "size-2"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator-check": {
+        "apply": [
+          "size-3.5"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-content": {
+        "apply": [
+          "gap-1"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-description": {
+        "apply": [
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-shortcut": {
+        "apply": [
+          "bg-background",
+          "border",
+          "border-input",
+          "font-medium",
+          "font-mono",
+          "group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5",
+          "items-center",
+          "justify-center",
+          "leading-none",
+          "rounded-md",
+          "shadow-xs",
+          "size-5",
+          "text-[0.625rem]",
+          "text-muted-foreground",
+          "translate-y-[--spacing(0.45)]"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-input-wrapper": {
+        "apply": [
+          "w-full"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-input": {
+        "apply": [
+          "aria-invalid:border-destructive",
+          "aria-invalid:ring-3",
+          "aria-invalid:ring-destructive/20",
+          "bg-transparent",
+          "border",
+          "border-input",
+          "dark:aria-invalid:border-destructive/50",
+          "dark:aria-invalid:ring-destructive/40",
+          "dark:bg-input/30",
+          "focus-visible:border-ring",
+          "focus-visible:ring-3",
+          "focus-visible:ring-ring/50",
+          "h-9",
+          "md:text-sm",
+          "px-2.5",
+          "py-1",
+          "rounded-md",
+          "shadow-xs",
+          "text-base"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-error": {
+        "apply": [
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-actions": {
+        "apply": [
+          "gap-2",
+          "sm:min-h-9"
+        ],
+        "raw": []
+      },
       ".cn-message-scroller-content": {
         "apply": [
           "gap-8"
@@ -4041,6 +4397,283 @@
       ".cn-message-group": {
         "apply": [
           "gap-2"
+        ],
+        "raw": []
+      },
+      ".cn-alert-dialog-overlay-aria": {
+        "apply": [
+          "bg-black/10",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "duration-100",
+          "supports-backdrop-filter:backdrop-blur-xs"
+        ],
+        "raw": []
+      },
+      ".cn-alert-dialog-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[size=default]:max-w-xs",
+          "data-[size=default]:sm:max-w-lg",
+          "data-[size=sm]:max-w-xs",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "gap-6",
+          "p-6",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-xl",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-combobox-content-aria": {
+        "apply": [
+          "*:data-[slot=input-group]:bg-input/30",
+          "*:data-[slot=input-group]:border-input/30",
+          "*:data-[slot=input-group]:h-8",
+          "*:data-[slot=input-group]:m-1",
+          "*:data-[slot=input-group]:mb-0",
+          "*:data-[slot=input-group]:shadow-none",
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "max-h-72",
+          "min-w-36",
+          "overflow-hidden",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-md",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-context-menu-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-36",
+          "p-1",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-md",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-dialog-overlay-aria": {
+        "apply": [
+          "bg-black/10",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "duration-100",
+          "supports-backdrop-filter:backdrop-blur-xs"
+        ],
+        "raw": []
+      },
+      ".cn-dialog-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "gap-6",
+          "grid",
+          "max-w-[calc(100%-2rem)]",
+          "p-6",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-xl",
+          "sm:max-w-md",
+          "text-popover-foreground",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-dropdown-menu-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-32",
+          "p-1",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-md",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-popover-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "flex",
+          "flex-col",
+          "gap-4",
+          "p-4",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-md",
+          "shadow-md",
+          "text-popover-foreground",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-hover-card-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "p-4",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-lg",
+          "shadow-md",
+          "text-popover-foreground",
+          "text-sm",
+          "w-64"
+        ],
+        "raw": []
+      },
+      ".cn-select-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-36",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-md",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-tooltip-content-aria": {
+        "apply": [
+          "**:data-[slot=kbd]:isolate",
+          "**:data-[slot=kbd]:relative",
+          "**:data-[slot=kbd]:rounded-sm",
+          "**:data-[slot=kbd]:z-50",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "gap-1.5",
+          "has-data-[slot=kbd]:pr-1.5",
+          "inline-flex",
+          "items-center",
+          "px-3",
+          "py-1.5",
+          "rounded-md",
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-context-menu-sub-content-aria": {
+        "apply": [
+          "bg-popover",
+          "border",
+          "duration-100",
+          "min-w-32",
+          "p-1",
+          "rounded-md",
+          "shadow-lg",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-dropdown-menu-sub-content-aria": {
+        "apply": [
+          "bg-popover",
+          "duration-100",
+          "min-w-[96px]",
+          "p-1",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-md",
+          "shadow-lg",
+          "text-popover-foreground"
         ],
         "raw": []
       }
@@ -4730,12 +5363,33 @@
           "focus-visible:border-ring",
           "focus-visible:ring-3",
           "focus-visible:ring-ring/50",
+          "group-has-[:focus-visible]/field-label:data-checked:border-primary",
+          "group-has-[:focus-visible]/field-label:not-data-checked:border-input",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "group-has-disabled/field:opacity-50",
           "items-center",
           "justify-center",
           "rounded-[4px]",
           "size-4",
           "transition-colors"
+        ],
+        "raw": []
+      },
+      ".cn-checkbox-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:data-selected:bg-primary",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-3",
+          "data-focus-visible:ring-ring/50",
+          "data-invalid:border-destructive",
+          "data-invalid:data-selected:border-primary",
+          "data-invalid:ring-3",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "data-selected:border-primary",
+          "data-selected:text-primary-foreground"
         ],
         "raw": []
       },
@@ -4804,6 +5458,14 @@
           "py-1",
           "rounded-md",
           "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-combobox-item-aria": {
+        "apply": [
+          "data-focused:bg-accent",
+          "data-focused:text-accent-foreground",
+          "not-data-[variant=destructive]:data-focused:**:text-accent-foreground"
         ],
         "raw": []
       },
@@ -5036,6 +5698,14 @@
         ],
         "raw": []
       },
+      ".cn-command-item-aria": {
+        "apply": [
+          "data-focused:*:[svg]:text-foreground",
+          "data-focused:bg-muted",
+          "data-focused:text-foreground"
+        ],
+        "raw": []
+      },
       ".cn-command-shortcut": {
         "apply": [
           "group-data-selected/command-item:text-foreground",
@@ -5043,6 +5713,12 @@
           "text-muted-foreground",
           "text-xs",
           "tracking-widest"
+        ],
+        "raw": []
+      },
+      ".cn-command-shortcut-aria": {
+        "apply": [
+          "group-data-focused/command-item:text-foreground"
         ],
         "raw": []
       },
@@ -5692,10 +6368,23 @@
           "gap-2",
           "group-data-[disabled=true]/field:opacity-50",
           "has-[>[data-slot=field]]:border",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:border-ring",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:ring-3",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:ring-ring/50",
+          "has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-muted/50",
           "has-[>[data-slot=field]]:rounded-lg",
           "has-data-checked:bg-primary/5",
           "has-data-checked:border-primary/30",
           "leading-snug"
+        ],
+        "raw": []
+      },
+      ".cn-field-label-aria": {
+        "apply": [
+          "dark:has-data-selected:bg-primary/10",
+          "dark:has-data-selected:border-primary/20",
+          "has-data-selected:bg-primary/5",
+          "has-data-selected:border-primary/30"
         ],
         "raw": []
       },
@@ -6035,6 +6724,12 @@
           "leading-none",
           "peer-disabled:opacity-50",
           "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-label-aria": {
+        "apply": [
+          "peer-data-disabled:opacity-50"
         ],
         "raw": []
       },
@@ -6573,8 +7268,29 @@
           "focus-visible:border-ring",
           "focus-visible:ring-3",
           "focus-visible:ring-ring/50",
+          "group-has-[:focus-visible]/field-label:data-checked:border-primary",
+          "group-has-[:focus-visible]/field-label:not-data-checked:border-input",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "rounded-full",
           "size-4"
+        ],
+        "raw": []
+      },
+      ".cn-radio-group-item-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:data-selected:bg-primary",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-3",
+          "data-focus-visible:ring-ring/50",
+          "data-invalid:border-destructive",
+          "data-invalid:data-selected:border-primary",
+          "data-invalid:ring-3",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "data-selected:border-primary",
+          "data-selected:text-primary-foreground"
         ],
         "raw": []
       },
@@ -6669,6 +7385,12 @@
         ],
         "raw": []
       },
+      ".cn-select-value-aria": {
+        "apply": [
+          "data-placeholder:text-muted-foreground"
+        ],
+        "raw": []
+      },
       ".cn-select-trigger-icon": {
         "apply": [
           "size-4",
@@ -6733,6 +7455,13 @@
         ],
         "raw": []
       },
+      ".cn-select-item-aria": {
+        "apply": [
+          "data-focused:bg-accent",
+          "data-focused:text-accent-foreground"
+        ],
+        "raw": []
+      },
       ".cn-select-item-indicator": {
         "apply": [
           "absolute",
@@ -6792,6 +7521,19 @@
           "justify-center",
           "py-1",
           "z-10"
+        ],
+        "raw": []
+      },
+      ".cn-select-empty-aria": {
+        "apply": [
+          "group-data-empty/select-list:flex",
+          "hidden",
+          "justify-center",
+          "py-2",
+          "text-center",
+          "text-muted-foreground",
+          "text-sm",
+          "w-full"
         ],
         "raw": []
       },
@@ -7049,6 +7791,13 @@
         ],
         "raw": []
       },
+      ".cn-sidebar-menu-button-aria": {
+        "apply": [
+          "aria-expanded:hover:bg-sidebar-accent",
+          "aria-expanded:hover:text-sidebar-accent-foreground"
+        ],
+        "raw": []
+      },
       ".cn-sidebar-menu-button-variant-default": {
         "apply": [
           "hover:bg-sidebar-accent",
@@ -7262,8 +8011,26 @@
           "focus-visible:border-ring",
           "focus-visible:ring-3",
           "focus-visible:ring-ring/50",
+          "group-has-[:focus-visible]/field-label:border-transparent",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "rounded-full",
           "shrink-0"
+        ],
+        "raw": []
+      },
+      ".cn-switch-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:not-data-selected:bg-input/80",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-3",
+          "data-focus-visible:ring-ring/50",
+          "data-invalid:border-destructive",
+          "data-invalid:ring-3",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "not-data-selected:bg-input"
         ],
         "raw": []
       },
@@ -7279,6 +8046,17 @@
           "group-data-[size=sm]/switch:data-unchecked:translate-x-0",
           "group-data-[size=sm]/switch:size-3",
           "rounded-full"
+        ],
+        "raw": []
+      },
+      ".cn-switch-thumb-aria": {
+        "apply": [
+          "dark:data-selected:bg-primary-foreground",
+          "dark:not-data-selected:bg-foreground",
+          "group-data-[size=default]/switch:data-selected:translate-x-[calc(100%-2px)]",
+          "group-data-[size=default]/switch:not-data-selected:translate-x-0",
+          "group-data-[size=sm]/switch:data-selected:translate-x-[calc(100%-2px)]",
+          "group-data-[size=sm]/switch:not-data-selected:translate-x-0"
         ],
         "raw": []
       },
@@ -7328,6 +8106,12 @@
         ],
         "raw": []
       },
+      ".cn-table-row-aria": {
+        "apply": [
+          "data-selected:bg-muted"
+        ],
+        "raw": []
+      },
       ".cn-table-head": {
         "apply": [
           "[&:has([role=checkbox])]:pr-0",
@@ -7341,12 +8125,24 @@
         ],
         "raw": []
       },
+      ".cn-table-head-aria": {
+        "apply": [
+          "[&:has([data-slot=checkbox])]:pr-0"
+        ],
+        "raw": []
+      },
       ".cn-table-cell": {
         "apply": [
           "[&:has([role=checkbox])]:pr-0",
           "align-middle",
           "p-2",
           "whitespace-nowrap"
+        ],
+        "raw": []
+      },
+      ".cn-table-cell-aria": {
+        "apply": [
+          "[&:has([data-slot=checkbox])]:pr-0"
         ],
         "raw": []
       },
@@ -7388,6 +8184,13 @@
           "py-0.5",
           "rounded-md",
           "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-tabs-trigger-aria": {
+        "apply": [
+          "group-data-[variant=default]/tabs-list:data-selected:shadow-sm",
+          "group-data-[variant=line]/tabs-list:data-selected:shadow-none"
         ],
         "raw": []
       },
@@ -7438,6 +8241,12 @@
           "rounded-lg",
           "text-sm",
           "transition-all"
+        ],
+        "raw": []
+      },
+      ".cn-toggle-aria": {
+        "apply": [
+          "data-selected:bg-muted"
         ],
         "raw": []
       },
@@ -7739,6 +8548,12 @@
           "before:rounded-[inherit]",
           "bg-popover/70",
           "relative"
+        ],
+        "raw": []
+      },
+      ".cn-menu-translucent-aria": {
+        "apply": [
+          "**:data-[slot$=-item]:data-focused:bg-foreground/10"
         ],
         "raw": []
       },
@@ -8061,6 +8876,174 @@
         ],
         "raw": []
       },
+      ".cn-questionnaire": {
+        "apply": [
+          "gap-4"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-progress": {
+        "apply": [
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-item": {
+        "apply": [
+          "flex",
+          "flex-col",
+          "gap-4"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-title": {
+        "apply": [
+          "[&:not(:has(~[data-slot=questionnaire-description]))]:mb-4",
+          "font-medium",
+          "leading-snug",
+          "text-base"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-description": {
+        "apply": [
+          "text-muted-foreground",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choices": {
+        "apply": [
+          "gap-2"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice": {
+        "apply": [
+          "bg-transparent",
+          "border",
+          "border-input",
+          "dark:bg-input/20",
+          "dark:data-checked:bg-muted",
+          "data-checked:bg-muted",
+          "data-checked:border-primary/40",
+          "data-invalid:border-destructive",
+          "gap-2.5",
+          "has-[>input:focus-visible]:border-ring",
+          "has-[>input:focus-visible]:ring-3",
+          "has-[>input:focus-visible]:ring-ring/50",
+          "hover:bg-muted/50",
+          "px-3",
+          "py-2.5",
+          "rounded-lg",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator": {
+        "apply": [
+          "border-input",
+          "dark:bg-input/30",
+          "dark:group-data-checked/questionnaire-choice:bg-primary",
+          "group-data-checked/questionnaire-choice:bg-primary",
+          "group-data-checked/questionnaire-choice:border-primary",
+          "group-data-checked/questionnaire-choice:text-primary-foreground",
+          "group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5",
+          "rounded-[4px]",
+          "size-4",
+          "translate-y-[--spacing(0.45)]"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator-dot": {
+        "apply": [
+          "bg-primary-foreground",
+          "size-2"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator-check": {
+        "apply": [
+          "size-3.5"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-content": {
+        "apply": [
+          "gap-0.5"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-description": {
+        "apply": [
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-shortcut": {
+        "apply": [
+          "bg-background",
+          "border",
+          "border-input",
+          "font-medium",
+          "font-mono",
+          "group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5",
+          "items-center",
+          "justify-center",
+          "leading-none",
+          "rounded-md",
+          "size-5",
+          "text-[0.625rem]",
+          "text-muted-foreground",
+          "translate-y-[--spacing(0.45)]"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-input-wrapper": {
+        "apply": [
+          "w-full"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-input": {
+        "apply": [
+          "aria-invalid:border-destructive",
+          "aria-invalid:ring-3",
+          "aria-invalid:ring-destructive/20",
+          "bg-transparent",
+          "border",
+          "border-input",
+          "dark:aria-invalid:border-destructive/50",
+          "dark:aria-invalid:ring-destructive/40",
+          "dark:bg-input/30",
+          "dark:disabled:bg-input/80",
+          "disabled:bg-input/50",
+          "focus-visible:border-ring",
+          "focus-visible:ring-3",
+          "focus-visible:ring-ring/50",
+          "h-8",
+          "md:text-sm",
+          "px-2.5",
+          "py-1",
+          "rounded-lg",
+          "text-base"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-error": {
+        "apply": [
+          "mt-2",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-actions": {
+        "apply": [
+          "gap-2",
+          "sm:min-h-8"
+        ],
+        "raw": []
+      },
       ".cn-message-scroller-content": {
         "apply": [
           "gap-6"
@@ -8111,6 +9094,283 @@
       ".cn-message-group": {
         "apply": [
           "gap-2"
+        ],
+        "raw": []
+      },
+      ".cn-alert-dialog-overlay-aria": {
+        "apply": [
+          "bg-black/10",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "duration-100",
+          "supports-backdrop-filter:backdrop-blur-xs"
+        ],
+        "raw": []
+      },
+      ".cn-alert-dialog-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[size=default]:max-w-xs",
+          "data-[size=default]:sm:max-w-sm",
+          "data-[size=sm]:max-w-xs",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "gap-4",
+          "p-4",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-xl",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-combobox-content-aria": {
+        "apply": [
+          "*:data-[slot=input-group]:bg-input/30",
+          "*:data-[slot=input-group]:border-input/30",
+          "*:data-[slot=input-group]:h-8",
+          "*:data-[slot=input-group]:m-1",
+          "*:data-[slot=input-group]:mb-0",
+          "*:data-[slot=input-group]:shadow-none",
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "max-h-72",
+          "min-w-36",
+          "overflow-hidden",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-lg",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-context-menu-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-36",
+          "p-1",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-lg",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-dialog-overlay-aria": {
+        "apply": [
+          "bg-black/10",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "duration-100",
+          "supports-backdrop-filter:backdrop-blur-xs"
+        ],
+        "raw": []
+      },
+      ".cn-dialog-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "gap-4",
+          "grid",
+          "max-w-[calc(100%-2rem)]",
+          "p-4",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-xl",
+          "sm:max-w-sm",
+          "text-popover-foreground",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-dropdown-menu-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-32",
+          "p-1",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-lg",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-popover-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "flex",
+          "flex-col",
+          "gap-2.5",
+          "p-2.5",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-lg",
+          "shadow-md",
+          "text-popover-foreground",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-hover-card-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "p-2.5",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-lg",
+          "shadow-md",
+          "text-popover-foreground",
+          "text-sm",
+          "w-64"
+        ],
+        "raw": []
+      },
+      ".cn-select-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-36",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-lg",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-tooltip-content-aria": {
+        "apply": [
+          "**:data-[slot=kbd]:isolate",
+          "**:data-[slot=kbd]:relative",
+          "**:data-[slot=kbd]:rounded-sm",
+          "**:data-[slot=kbd]:z-50",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "gap-1.5",
+          "has-data-[slot=kbd]:pr-1.5",
+          "inline-flex",
+          "items-center",
+          "px-3",
+          "py-1.5",
+          "rounded-md",
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-context-menu-sub-content-aria": {
+        "apply": [
+          "bg-popover",
+          "border",
+          "duration-100",
+          "min-w-32",
+          "p-1",
+          "rounded-lg",
+          "shadow-lg",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-dropdown-menu-sub-content-aria": {
+        "apply": [
+          "bg-popover",
+          "duration-100",
+          "min-w-[96px]",
+          "p-1",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-lg",
+          "shadow-lg",
+          "text-popover-foreground"
         ],
         "raw": []
       }
@@ -8792,12 +10052,33 @@
           "focus-visible:border-ring",
           "focus-visible:ring-2",
           "focus-visible:ring-ring/30",
+          "group-has-[:focus-visible]/field-label:data-checked:border-primary",
+          "group-has-[:focus-visible]/field-label:not-data-checked:border-input",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "group-has-disabled/field:opacity-50",
           "items-center",
           "justify-center",
           "rounded-[4px]",
           "size-4",
           "transition-shadow"
+        ],
+        "raw": []
+      },
+      ".cn-checkbox-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:data-selected:bg-primary",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-2",
+          "data-focus-visible:ring-ring/30",
+          "data-invalid:border-destructive",
+          "data-invalid:data-selected:border-primary",
+          "data-invalid:ring-2",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "data-selected:border-primary",
+          "data-selected:text-primary-foreground"
         ],
         "raw": []
       },
@@ -8867,6 +10148,14 @@
           "py-1",
           "rounded-md",
           "text-xs/relaxed"
+        ],
+        "raw": []
+      },
+      ".cn-combobox-item-aria": {
+        "apply": [
+          "data-focused:bg-accent",
+          "data-focused:text-accent-foreground",
+          "not-data-[variant=destructive]:data-focused:**:text-accent-foreground"
         ],
         "raw": []
       },
@@ -9098,6 +10387,14 @@
         ],
         "raw": []
       },
+      ".cn-command-item-aria": {
+        "apply": [
+          "data-focused:*:[svg]:text-foreground",
+          "data-focused:bg-muted",
+          "data-focused:text-foreground"
+        ],
+        "raw": []
+      },
       ".cn-command-shortcut": {
         "apply": [
           "group-data-selected/command-item:text-foreground",
@@ -9105,6 +10402,12 @@
           "text-[0.625rem]",
           "text-muted-foreground",
           "tracking-widest"
+        ],
+        "raw": []
+      },
+      ".cn-command-shortcut-aria": {
+        "apply": [
+          "group-data-focused/command-item:text-foreground"
         ],
         "raw": []
       },
@@ -9758,9 +11061,20 @@
           "gap-2",
           "group-data-[disabled=true]/field:opacity-50",
           "has-[>[data-slot=field]]:border",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:border-ring",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:ring-2",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:ring-ring/30",
+          "has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-input/40",
           "has-[>[data-slot=field]]:rounded-md",
           "has-data-checked:bg-primary/5",
           "leading-snug"
+        ],
+        "raw": []
+      },
+      ".cn-field-label-aria": {
+        "apply": [
+          "dark:has-data-selected:bg-primary/10",
+          "has-data-selected:bg-primary/5"
         ],
         "raw": []
       },
@@ -10096,6 +11410,12 @@
           "leading-none",
           "peer-disabled:opacity-50",
           "text-xs/relaxed"
+        ],
+        "raw": []
+      },
+      ".cn-label-aria": {
+        "apply": [
+          "peer-data-disabled:opacity-50"
         ],
         "raw": []
       },
@@ -10643,8 +11963,29 @@
           "focus-visible:border-ring",
           "focus-visible:ring-3",
           "focus-visible:ring-ring/50",
+          "group-has-[:focus-visible]/field-label:data-checked:border-primary",
+          "group-has-[:focus-visible]/field-label:not-data-checked:border-input",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "rounded-full",
           "size-4"
+        ],
+        "raw": []
+      },
+      ".cn-radio-group-item-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:data-selected:bg-primary",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-3",
+          "data-focus-visible:ring-ring/50",
+          "data-invalid:border-destructive",
+          "data-invalid:data-selected:border-primary",
+          "data-invalid:ring-3",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "data-selected:border-primary",
+          "data-selected:text-primary-foreground"
         ],
         "raw": []
       },
@@ -10736,6 +12077,12 @@
         ],
         "raw": []
       },
+      ".cn-select-value-aria": {
+        "apply": [
+          "data-placeholder:text-muted-foreground"
+        ],
+        "raw": []
+      },
       ".cn-select-trigger-icon": {
         "apply": [
           "size-3.5",
@@ -10800,6 +12147,13 @@
         ],
         "raw": []
       },
+      ".cn-select-item-aria": {
+        "apply": [
+          "data-focused:bg-accent",
+          "data-focused:text-accent-foreground"
+        ],
+        "raw": []
+      },
       ".cn-select-item-indicator": {
         "apply": [
           "absolute",
@@ -10858,6 +12212,19 @@
           "justify-center",
           "py-1",
           "z-10"
+        ],
+        "raw": []
+      },
+      ".cn-select-empty-aria": {
+        "apply": [
+          "group-data-empty/select-list:flex",
+          "hidden",
+          "justify-center",
+          "py-2",
+          "text-center",
+          "text-muted-foreground",
+          "text-xs/relaxed",
+          "w-full"
         ],
         "raw": []
       },
@@ -11115,6 +12482,13 @@
         ],
         "raw": []
       },
+      ".cn-sidebar-menu-button-aria": {
+        "apply": [
+          "aria-expanded:hover:bg-sidebar-accent",
+          "aria-expanded:hover:text-sidebar-accent-foreground"
+        ],
+        "raw": []
+      },
       ".cn-sidebar-menu-button-variant-default": {
         "apply": [
           "hover:bg-sidebar-accent",
@@ -11328,8 +12702,26 @@
           "focus-visible:border-ring",
           "focus-visible:ring-2",
           "focus-visible:ring-ring/30",
+          "group-has-[:focus-visible]/field-label:border-transparent",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "rounded-full",
           "shrink-0"
+        ],
+        "raw": []
+      },
+      ".cn-switch-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:not-data-selected:bg-input/80",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-2",
+          "data-focus-visible:ring-ring/30",
+          "data-invalid:border-destructive",
+          "data-invalid:ring-2",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "not-data-selected:bg-input"
         ],
         "raw": []
       },
@@ -11345,6 +12737,17 @@
           "group-data-[size=sm]/switch:data-unchecked:translate-x-0",
           "group-data-[size=sm]/switch:size-3",
           "rounded-full"
+        ],
+        "raw": []
+      },
+      ".cn-switch-thumb-aria": {
+        "apply": [
+          "dark:data-selected:bg-primary-foreground",
+          "dark:not-data-selected:bg-foreground",
+          "group-data-[size=default]/switch:data-selected:translate-x-[calc(100%-2px)]",
+          "group-data-[size=default]/switch:not-data-selected:translate-x-0",
+          "group-data-[size=sm]/switch:data-selected:translate-x-[calc(100%-2px)]",
+          "group-data-[size=sm]/switch:not-data-selected:translate-x-0"
         ],
         "raw": []
       },
@@ -11394,6 +12797,12 @@
         ],
         "raw": []
       },
+      ".cn-table-row-aria": {
+        "apply": [
+          "data-selected:bg-muted"
+        ],
+        "raw": []
+      },
       ".cn-table-head": {
         "apply": [
           "[&:has([role=checkbox])]:pr-0",
@@ -11407,12 +12816,24 @@
         ],
         "raw": []
       },
+      ".cn-table-head-aria": {
+        "apply": [
+          "[&:has([data-slot=checkbox])]:pr-0"
+        ],
+        "raw": []
+      },
       ".cn-table-cell": {
         "apply": [
           "[&:has([role=checkbox])]:pr-0",
           "align-middle",
           "p-2",
           "whitespace-nowrap"
+        ],
+        "raw": []
+      },
+      ".cn-table-cell-aria": {
+        "apply": [
+          "[&:has([data-slot=checkbox])]:pr-0"
         ],
         "raw": []
       },
@@ -11502,6 +12923,12 @@
           "rounded-md",
           "text-xs",
           "transition-all"
+        ],
+        "raw": []
+      },
+      ".cn-toggle-aria": {
+        "apply": [
+          "data-selected:bg-muted"
         ],
         "raw": []
       },
@@ -11809,6 +13236,12 @@
           "before:rounded-[inherit]",
           "bg-popover/70",
           "relative"
+        ],
+        "raw": []
+      },
+      ".cn-menu-translucent-aria": {
+        "apply": [
+          "**:data-[slot$=-item]:data-focused:bg-foreground/10"
         ],
         "raw": []
       },
@@ -12130,6 +13563,167 @@
         ],
         "raw": []
       },
+      ".cn-questionnaire": {
+        "apply": [
+          "gap-4"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-progress": {
+        "apply": [
+          "text-[0.625rem]"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-item": {
+        "apply": [
+          "flex",
+          "flex-col",
+          "gap-3"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-title": {
+        "apply": [
+          "[&:not(:has(~[data-slot=questionnaire-description]))]:mb-3",
+          "font-semibold",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-description": {
+        "apply": [
+          "text-xs/relaxed"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choices": {
+        "apply": [
+          "gap-1.5"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice": {
+        "apply": [
+          "border",
+          "border-input",
+          "data-checked:bg-primary/10",
+          "data-checked:border-primary/40",
+          "data-invalid:border-destructive",
+          "gap-2.5",
+          "has-[>input:focus-visible]:border-ring",
+          "has-[>input:focus-visible]:ring-2",
+          "has-[>input:focus-visible]:ring-ring/30",
+          "hover:bg-input/40",
+          "px-3",
+          "py-2.5",
+          "rounded-xl",
+          "text-xs/relaxed"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator": {
+        "apply": [
+          "border-input",
+          "dark:bg-input/30",
+          "dark:group-data-checked/questionnaire-choice:bg-primary",
+          "group-data-checked/questionnaire-choice:bg-primary",
+          "group-data-checked/questionnaire-choice:border-primary",
+          "group-data-checked/questionnaire-choice:text-primary-foreground",
+          "group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5",
+          "rounded-[4px]",
+          "size-4",
+          "translate-y-[--spacing(0.45)]"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator-dot": {
+        "apply": [
+          "bg-primary-foreground",
+          "size-2"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator-check": {
+        "apply": [
+          "size-3.5"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-content": {
+        "apply": [
+          "gap-0.5"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-description": {
+        "apply": [
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-shortcut": {
+        "apply": [
+          "bg-background/80",
+          "border",
+          "border-input",
+          "font-medium",
+          "font-mono",
+          "group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5",
+          "items-center",
+          "justify-center",
+          "leading-none",
+          "rounded-sm",
+          "size-4",
+          "text-[0.5625rem]",
+          "text-muted-foreground",
+          "translate-y-[--spacing(0.45)]"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-input-wrapper": {
+        "apply": [
+          "w-full"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-input": {
+        "apply": [
+          "aria-invalid:border-destructive",
+          "aria-invalid:ring-2",
+          "aria-invalid:ring-destructive/20",
+          "bg-input/20",
+          "border",
+          "border-input",
+          "dark:aria-invalid:border-destructive/50",
+          "dark:aria-invalid:ring-destructive/40",
+          "dark:bg-input/30",
+          "focus-visible:border-ring",
+          "focus-visible:ring-2",
+          "focus-visible:ring-ring/30",
+          "h-7",
+          "md:text-xs/relaxed",
+          "px-2",
+          "py-0.5",
+          "rounded-md",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-error": {
+        "apply": [
+          "mt-2",
+          "text-xs/relaxed"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-actions": {
+        "apply": [
+          "gap-1.5",
+          "sm:min-h-7"
+        ],
+        "raw": []
+      },
       ".cn-message-scroller-content": {
         "apply": [
           "gap-6"
@@ -12180,6 +13774,285 @@
       ".cn-message-group": {
         "apply": [
           "gap-1.5"
+        ],
+        "raw": []
+      },
+      ".cn-alert-dialog-overlay-aria": {
+        "apply": [
+          "bg-black/80",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "duration-100",
+          "supports-backdrop-filter:backdrop-blur-xs"
+        ],
+        "raw": []
+      },
+      ".cn-alert-dialog-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[size=default]:max-w-xs",
+          "data-[size=default]:sm:max-w-sm",
+          "data-[size=sm]:max-w-64",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "gap-3",
+          "p-4",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-xl",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-combobox-content-aria": {
+        "apply": [
+          "*:data-[slot=input-group]:bg-input/20",
+          "*:data-[slot=input-group]:border-none",
+          "*:data-[slot=input-group]:h-7",
+          "*:data-[slot=input-group]:m-1",
+          "*:data-[slot=input-group]:mb-0",
+          "*:data-[slot=input-group]:shadow-none",
+          "bg-popover",
+          "dark:bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "max-h-72",
+          "min-w-32",
+          "overflow-hidden",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-lg",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-context-menu-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-32",
+          "p-1",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-lg",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-dialog-overlay-aria": {
+        "apply": [
+          "bg-black/80",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "duration-100",
+          "supports-backdrop-filter:backdrop-blur-xs"
+        ],
+        "raw": []
+      },
+      ".cn-dialog-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "gap-4",
+          "grid",
+          "max-w-[calc(100%-2rem)]",
+          "p-4",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-xl",
+          "sm:max-w-sm",
+          "text-popover-foreground",
+          "text-xs/relaxed"
+        ],
+        "raw": []
+      },
+      ".cn-dropdown-menu-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-32",
+          "p-1",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-lg",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-popover-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "flex",
+          "flex-col",
+          "gap-4",
+          "p-2.5",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-lg",
+          "shadow-md",
+          "text-popover-foreground",
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-hover-card-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "p-2.5",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-lg",
+          "shadow-md",
+          "text-popover-foreground",
+          "text-xs/relaxed",
+          "w-72"
+        ],
+        "raw": []
+      },
+      ".cn-select-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-32",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-lg",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-tooltip-content-aria": {
+        "apply": [
+          "**:data-[slot=kbd]:isolate",
+          "**:data-[slot=kbd]:relative",
+          "**:data-[slot=kbd]:rounded-sm",
+          "**:data-[slot=kbd]:z-50",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "gap-1.5",
+          "has-data-[slot=kbd]:pr-1.5",
+          "inline-flex",
+          "items-center",
+          "px-3",
+          "py-1.5",
+          "rounded-md",
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-context-menu-sub-content-aria": {
+        "apply": [
+          "bg-popover",
+          "duration-100",
+          "min-w-32",
+          "p-1",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-lg",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-dropdown-menu-sub-content-aria": {
+        "apply": [
+          "bg-popover",
+          "duration-100",
+          "min-w-32",
+          "p-1",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-lg",
+          "shadow-md",
+          "text-popover-foreground"
         ],
         "raw": []
       }
@@ -12246,8 +14119,28 @@
           "focus-visible:border-ring",
           "focus-visible:ring-3",
           "focus-visible:ring-ring/30",
+          "group-has-[:focus-visible]/field-label:data-checked:border-primary",
+          "group-has-[:focus-visible]/field-label:data-unchecked:border-transparent",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "rounded-2xl",
           "shrink-0"
+        ],
+        "raw": []
+      },
+      ".cn-switch-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-3",
+          "data-focus-visible:ring-ring/30",
+          "data-invalid:border-destructive",
+          "data-invalid:ring-3",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "data-selected:border-primary",
+          "not-data-selected:bg-input/90",
+          "not-data-selected:border-transparent"
         ],
         "raw": []
       },
@@ -12263,6 +14156,15 @@
           "not-dark:bg-clip-padding",
           "rounded-2xl",
           "shadow-sm"
+        ],
+        "raw": []
+      },
+      ".cn-switch-thumb-aria": {
+        "apply": [
+          "dark:data-selected:bg-primary-foreground",
+          "dark:not-data-selected:bg-foreground",
+          "data-selected:translate-x-[calc(100%-4px)]",
+          "not-data-selected:translate-x-0"
         ],
         "raw": []
       },
@@ -12290,8 +14192,26 @@
           "focus-visible:border-ring",
           "focus-visible:ring-3",
           "focus-visible:ring-ring/30",
+          "group-has-[:focus-visible]/field-label:border-transparent",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "rounded-2xl",
           "size-4"
+        ],
+        "raw": []
+      },
+      ".cn-radio-group-item-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:data-selected:bg-primary",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-3",
+          "data-focus-visible:ring-ring/30",
+          "data-invalid:border-destructive",
+          "data-invalid:ring-3",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "data-selected:text-primary-foreground"
         ],
         "raw": []
       },
@@ -12337,12 +14257,33 @@
           "focus-visible:border-ring",
           "focus-visible:ring-3",
           "focus-visible:ring-ring/30",
+          "group-has-[:focus-visible]/field-label:data-checked:border-primary",
+          "group-has-[:focus-visible]/field-label:not-data-checked:border-transparent",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "group-has-disabled/field:opacity-50",
           "items-center",
           "justify-center",
           "rounded-[5px]",
           "size-4",
           "transition-shadow"
+        ],
+        "raw": []
+      },
+      ".cn-checkbox-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:data-selected:bg-primary",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-3",
+          "data-focus-visible:ring-ring/30",
+          "data-invalid:border-destructive",
+          "data-invalid:data-selected:border-primary",
+          "data-invalid:ring-3",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "data-selected:border-primary",
+          "data-selected:text-primary-foreground"
         ],
         "raw": []
       },
@@ -12634,6 +14575,12 @@
         ],
         "raw": []
       },
+      ".cn-select-value-aria": {
+        "apply": [
+          "data-placeholder:text-muted-foreground"
+        ],
+        "raw": []
+      },
       ".cn-select-trigger-icon": {
         "apply": [
           "size-4",
@@ -12700,6 +14647,13 @@
         ],
         "raw": []
       },
+      ".cn-select-item-aria": {
+        "apply": [
+          "data-focused:bg-accent",
+          "data-focused:text-accent-foreground"
+        ],
+        "raw": []
+      },
       ".cn-select-item-indicator": {
         "apply": [
           "absolute",
@@ -12759,6 +14713,19 @@
           "justify-center",
           "py-1",
           "z-10"
+        ],
+        "raw": []
+      },
+      ".cn-select-empty-aria": {
+        "apply": [
+          "group-data-empty/select-list:flex",
+          "hidden",
+          "justify-center",
+          "py-2",
+          "text-center",
+          "text-muted-foreground",
+          "text-sm",
+          "w-full"
         ],
         "raw": []
       },
@@ -12865,6 +14832,14 @@
           "py-1.5",
           "rounded-xl",
           "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-combobox-item-aria": {
+        "apply": [
+          "data-focused:bg-accent",
+          "data-focused:text-accent-foreground",
+          "not-data-[variant=destructive]:data-focused:**:text-accent-foreground"
         ],
         "raw": []
       },
@@ -13242,9 +15217,19 @@
           "gap-2",
           "group-data-[disabled=true]/field:opacity-50",
           "has-[>[data-slot=field]]:border",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:border-ring",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:ring-3",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:ring-ring/50",
+          "has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-input/40",
           "has-[>[data-slot=field]]:rounded-2xl",
           "has-data-checked:bg-input/30",
           "leading-snug"
+        ],
+        "raw": []
+      },
+      ".cn-field-label-aria": {
+        "apply": [
+          "has-data-selected:bg-input/30"
         ],
         "raw": []
       },
@@ -13842,6 +15827,14 @@
         ],
         "raw": []
       },
+      ".cn-command-item-aria": {
+        "apply": [
+          "data-focused:*:[svg]:text-foreground",
+          "data-focused:bg-muted",
+          "data-focused:text-foreground"
+        ],
+        "raw": []
+      },
       ".cn-command-shortcut": {
         "apply": [
           "group-data-selected/command-item:text-foreground",
@@ -13849,6 +15842,12 @@
           "text-muted-foreground",
           "text-xs",
           "tracking-widest"
+        ],
+        "raw": []
+      },
+      ".cn-command-shortcut-aria": {
+        "apply": [
+          "group-data-focused/command-item:text-foreground"
         ],
         "raw": []
       },
@@ -14581,6 +16580,12 @@
         ],
         "raw": []
       },
+      ".cn-label-aria": {
+        "apply": [
+          "peer-data-disabled:opacity-50"
+        ],
+        "raw": []
+      },
       ".cn-menubar": {
         "apply": [
           "border",
@@ -15124,6 +17129,13 @@
         ],
         "raw": []
       },
+      ".cn-sidebar-menu-button-aria": {
+        "apply": [
+          "aria-expanded:hover:bg-sidebar-accent",
+          "aria-expanded:hover:text-sidebar-accent-foreground"
+        ],
+        "raw": []
+      },
       ".cn-sidebar-menu-button-variant-default": {
         "apply": [
           "hover:bg-sidebar-accent",
@@ -15549,6 +17561,12 @@
         ],
         "raw": []
       },
+      ".cn-table-row-aria": {
+        "apply": [
+          "data-selected:bg-muted"
+        ],
+        "raw": []
+      },
       ".cn-table-head": {
         "apply": [
           "[&:has([role=checkbox])]:pr-0",
@@ -15562,12 +17580,24 @@
         ],
         "raw": []
       },
+      ".cn-table-head-aria": {
+        "apply": [
+          "[&:has([data-slot=checkbox])]:pr-0"
+        ],
+        "raw": []
+      },
       ".cn-table-cell": {
         "apply": [
           "[&:has([role=checkbox])]:pr-0",
           "align-middle",
           "p-2",
           "whitespace-nowrap"
+        ],
+        "raw": []
+      },
+      ".cn-table-cell-aria": {
+        "apply": [
+          "[&:has([data-slot=checkbox])]:pr-0"
         ],
         "raw": []
       },
@@ -15594,6 +17624,12 @@
           "rounded-2xl",
           "text-sm",
           "transition-colors"
+        ],
+        "raw": []
+      },
+      ".cn-toggle-aria": {
+        "apply": [
+          "data-selected:bg-muted"
         ],
         "raw": []
       },
@@ -15893,6 +17929,12 @@
           "before:rounded-[inherit]",
           "bg-popover/70",
           "relative"
+        ],
+        "raw": []
+      },
+      ".cn-menu-translucent-aria": {
+        "apply": [
+          "**:data-[slot$=-item]:data-focused:bg-foreground/10"
         ],
         "raw": []
       },
@@ -16215,6 +18257,168 @@
         ],
         "raw": []
       },
+      ".cn-questionnaire": {
+        "apply": [
+          "gap-6"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-progress": {
+        "apply": [
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-item": {
+        "apply": [
+          "flex",
+          "flex-col",
+          "gap-5"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-title": {
+        "apply": [
+          "[&:not(:has(~[data-slot=questionnaire-description]))]:mb-5",
+          "font-semibold",
+          "text-base"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-description": {
+        "apply": [
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choices": {
+        "apply": [
+          "gap-3"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice": {
+        "apply": [
+          "border",
+          "border-input",
+          "data-checked:bg-primary/10",
+          "data-checked:border-primary/40",
+          "data-invalid:border-destructive",
+          "gap-3",
+          "has-[>input:focus-visible]:border-ring",
+          "has-[>input:focus-visible]:ring-3",
+          "has-[>input:focus-visible]:ring-ring/50",
+          "hover:bg-input/40",
+          "px-4",
+          "py-3",
+          "rounded-2xl",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator": {
+        "apply": [
+          "bg-input/90",
+          "border-transparent",
+          "dark:group-data-checked/questionnaire-choice:bg-primary",
+          "group-data-checked/questionnaire-choice:bg-primary",
+          "group-data-checked/questionnaire-choice:border-primary",
+          "group-data-checked/questionnaire-choice:text-primary-foreground",
+          "group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5",
+          "rounded-[5px]",
+          "size-4",
+          "translate-y-[--spacing(0.45)]"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator-dot": {
+        "apply": [
+          "bg-primary-foreground",
+          "dark:size-2.5",
+          "size-2"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator-check": {
+        "apply": [
+          "size-3.5"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-content": {
+        "apply": [
+          "gap-1"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-description": {
+        "apply": [
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-shortcut": {
+        "apply": [
+          "bg-background/80",
+          "border",
+          "border-primary/10",
+          "font-medium",
+          "font-mono",
+          "group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5",
+          "items-center",
+          "justify-center",
+          "leading-none",
+          "rounded-full",
+          "size-5",
+          "text-[0.625rem]",
+          "text-muted-foreground",
+          "translate-y-[--spacing(0.45)]"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-input-wrapper": {
+        "apply": [
+          "w-full"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-input": {
+        "apply": [
+          "aria-invalid:border-destructive",
+          "aria-invalid:ring-3",
+          "aria-invalid:ring-destructive/20",
+          "bg-input/50",
+          "border",
+          "border-transparent",
+          "dark:aria-invalid:border-destructive/50",
+          "dark:aria-invalid:ring-destructive/40",
+          "duration-200",
+          "focus-visible:border-ring",
+          "focus-visible:ring-3",
+          "focus-visible:ring-ring/30",
+          "h-8",
+          "md:text-sm",
+          "px-2.5",
+          "py-1",
+          "rounded-2xl",
+          "text-base"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-error": {
+        "apply": [
+          "mt-2",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-actions": {
+        "apply": [
+          "gap-2",
+          "sm:min-h-8"
+        ],
+        "raw": []
+      },
       ".cn-message-scroller-content": {
         "apply": [
           "gap-8"
@@ -16265,6 +18469,296 @@
       ".cn-message-group": {
         "apply": [
           "gap-2"
+        ],
+        "raw": []
+      },
+      ".cn-alert-dialog-overlay-aria": {
+        "apply": [
+          "bg-black/30",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "duration-100",
+          "supports-backdrop-filter:backdrop-blur-sm"
+        ],
+        "raw": []
+      },
+      ".cn-alert-dialog-content-aria": {
+        "apply": [
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "data-[size=default]:max-w-xs",
+          "data-[size=default]:sm:max-w-md",
+          "data-[size=sm]:max-w-xs",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "gap-6",
+          "p-6",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-[min(var(--radius-4xl),24px)]",
+          "shadow-xl",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-combobox-content-aria": {
+        "apply": [
+          "*:data-[slot=input-group]:bg-input/50",
+          "*:data-[slot=input-group]:border-input/30",
+          "*:data-[slot=input-group]:h-8",
+          "*:data-[slot=input-group]:m-1",
+          "*:data-[slot=input-group]:mb-0",
+          "*:data-[slot=input-group]:shadow-none",
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "max-h-72",
+          "min-w-36",
+          "overflow-hidden",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-2xl",
+          "shadow-lg",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-context-menu-content-aria": {
+        "apply": [
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-36",
+          "p-1",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-2xl",
+          "shadow-lg",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-dialog-overlay-aria": {
+        "apply": [
+          "bg-black/30",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "duration-100",
+          "supports-backdrop-filter:backdrop-blur-sm"
+        ],
+        "raw": []
+      },
+      ".cn-dialog-content-aria": {
+        "apply": [
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "gap-6",
+          "grid",
+          "max-w-[calc(100%-2rem)]",
+          "p-6",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-[min(var(--radius-4xl),24px)]",
+          "shadow-xl",
+          "sm:max-w-md",
+          "text-popover-foreground",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-dropdown-menu-content-aria": {
+        "apply": [
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-32",
+          "p-1",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-2xl",
+          "shadow-lg",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-popover-content-aria": {
+        "apply": [
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "flex",
+          "flex-col",
+          "gap-4",
+          "p-4",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-3xl",
+          "shadow-lg",
+          "text-popover-foreground",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-hover-card-content-aria": {
+        "apply": [
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "p-4",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-3xl",
+          "shadow-lg",
+          "text-popover-foreground",
+          "text-sm",
+          "w-72"
+        ],
+        "raw": []
+      },
+      ".cn-select-content-aria": {
+        "apply": [
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-36",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-2xl",
+          "shadow-lg",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-tooltip-content-aria": {
+        "apply": [
+          "**:data-[slot=kbd]:isolate",
+          "**:data-[slot=kbd]:relative",
+          "**:data-[slot=kbd]:rounded-lg",
+          "**:data-[slot=kbd]:z-50",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "gap-1.5",
+          "has-data-[slot=kbd]:pr-1.5",
+          "inline-flex",
+          "items-center",
+          "px-3",
+          "py-1.5",
+          "rounded-xl",
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-context-menu-sub-content-aria": {
+        "apply": [
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "duration-100",
+          "min-w-32",
+          "p-1",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-2xl",
+          "shadow-lg",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-dropdown-menu-sub-content-aria": {
+        "apply": [
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "duration-100",
+          "min-w-[96px]",
+          "p-1",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-2xl",
+          "shadow-lg",
+          "text-popover-foreground"
         ],
         "raw": []
       }
@@ -16933,12 +19427,33 @@
           "focus-visible:border-ring",
           "focus-visible:ring-[3px]",
           "focus-visible:ring-ring/50",
+          "group-has-[:focus-visible]/field-label:data-checked:border-primary",
+          "group-has-[:focus-visible]/field-label:not-data-checked:border-input",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "group-has-disabled/field:opacity-50",
           "items-center",
           "justify-center",
           "rounded-[6px]",
           "size-4",
           "transition-shadow"
+        ],
+        "raw": []
+      },
+      ".cn-checkbox-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:data-selected:bg-primary",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-[3px]",
+          "data-focus-visible:ring-ring/50",
+          "data-invalid:border-destructive",
+          "data-invalid:data-selected:border-primary",
+          "data-invalid:ring-[3px]",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "data-selected:border-primary",
+          "data-selected:text-primary-foreground"
         ],
         "raw": []
       },
@@ -17007,6 +19522,14 @@
           "py-2",
           "rounded-xl",
           "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-combobox-item-aria": {
+        "apply": [
+          "data-focused:bg-accent",
+          "data-focused:text-accent-foreground",
+          "not-data-[variant=destructive]:data-focused:**:text-accent-foreground"
         ],
         "raw": []
       },
@@ -17235,6 +19758,14 @@
         ],
         "raw": []
       },
+      ".cn-command-item-aria": {
+        "apply": [
+          "data-focused:*:[svg]:text-foreground",
+          "data-focused:bg-muted",
+          "data-focused:text-foreground"
+        ],
+        "raw": []
+      },
       ".cn-command-shortcut": {
         "apply": [
           "group-data-selected/command-item:text-foreground",
@@ -17242,6 +19773,12 @@
           "text-muted-foreground",
           "text-xs",
           "tracking-widest"
+        ],
+        "raw": []
+      },
+      ".cn-command-shortcut-aria": {
+        "apply": [
+          "group-data-focused/command-item:text-foreground"
         ],
         "raw": []
       },
@@ -17883,10 +20420,23 @@
           "gap-2",
           "group-data-[disabled=true]/field:opacity-50",
           "has-[>[data-slot=field]]:border",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:border-ring",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:ring-[3px]",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:ring-ring/50",
+          "has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-input/40",
           "has-[>[data-slot=field]]:rounded-xl",
           "has-data-checked:bg-primary/5",
           "has-data-checked:border-primary/30",
           "leading-snug"
+        ],
+        "raw": []
+      },
+      ".cn-field-label-aria": {
+        "apply": [
+          "dark:has-data-selected:bg-primary/10",
+          "dark:has-data-selected:border-primary/20",
+          "has-data-selected:bg-primary/5",
+          "has-data-selected:border-primary/30"
         ],
         "raw": []
       },
@@ -18222,6 +20772,12 @@
           "leading-none",
           "peer-disabled:opacity-50",
           "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-label-aria": {
+        "apply": [
+          "peer-data-disabled:opacity-50"
         ],
         "raw": []
       },
@@ -18761,8 +21317,29 @@
           "focus-visible:border-ring",
           "focus-visible:ring-3",
           "focus-visible:ring-ring/50",
+          "group-has-[:focus-visible]/field-label:data-checked:border-primary",
+          "group-has-[:focus-visible]/field-label:not-data-checked:border-input",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "rounded-full",
           "size-4"
+        ],
+        "raw": []
+      },
+      ".cn-radio-group-item-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:data-selected:bg-primary",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-3",
+          "data-focus-visible:ring-ring/50",
+          "data-invalid:border-destructive",
+          "data-invalid:data-selected:border-primary",
+          "data-invalid:ring-3",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "data-selected:border-primary",
+          "data-selected:text-primary-foreground"
         ],
         "raw": []
       },
@@ -18853,6 +21430,12 @@
         ],
         "raw": []
       },
+      ".cn-select-value-aria": {
+        "apply": [
+          "data-placeholder:text-muted-foreground"
+        ],
+        "raw": []
+      },
       ".cn-select-trigger-icon": {
         "apply": [
           "size-4",
@@ -18917,6 +21500,13 @@
         ],
         "raw": []
       },
+      ".cn-select-item-aria": {
+        "apply": [
+          "data-focused:bg-accent",
+          "data-focused:text-accent-foreground"
+        ],
+        "raw": []
+      },
       ".cn-select-item-indicator": {
         "apply": [
           "absolute",
@@ -18976,6 +21566,19 @@
           "justify-center",
           "py-1",
           "z-10"
+        ],
+        "raw": []
+      },
+      ".cn-select-empty-aria": {
+        "apply": [
+          "group-data-empty/select-list:flex",
+          "hidden",
+          "justify-center",
+          "py-2",
+          "text-center",
+          "text-muted-foreground",
+          "text-sm",
+          "w-full"
         ],
         "raw": []
       },
@@ -19235,6 +21838,13 @@
         ],
         "raw": []
       },
+      ".cn-sidebar-menu-button-aria": {
+        "apply": [
+          "aria-expanded:hover:bg-sidebar-accent",
+          "aria-expanded:hover:text-sidebar-accent-foreground"
+        ],
+        "raw": []
+      },
       ".cn-sidebar-menu-button-variant-default": {
         "apply": [
           "hover:bg-sidebar-accent",
@@ -19446,8 +22056,26 @@
           "focus-visible:border-ring",
           "focus-visible:ring-[3px]",
           "focus-visible:ring-ring/50",
+          "group-has-[:focus-visible]/field-label:border-transparent",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "rounded-full",
           "shrink-0"
+        ],
+        "raw": []
+      },
+      ".cn-switch-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:not-data-selected:bg-input/80",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-[3px]",
+          "data-focus-visible:ring-ring/50",
+          "data-invalid:border-destructive",
+          "data-invalid:ring-[3px]",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "not-data-selected:bg-input"
         ],
         "raw": []
       },
@@ -19463,6 +22091,17 @@
           "group-data-[size=sm]/switch:data-unchecked:translate-x-0",
           "group-data-[size=sm]/switch:size-3",
           "rounded-full"
+        ],
+        "raw": []
+      },
+      ".cn-switch-thumb-aria": {
+        "apply": [
+          "dark:data-selected:bg-primary-foreground",
+          "dark:not-data-selected:bg-foreground",
+          "group-data-[size=default]/switch:data-selected:translate-x-[calc(100%-2px)]",
+          "group-data-[size=default]/switch:not-data-selected:translate-x-0",
+          "group-data-[size=sm]/switch:data-selected:translate-x-[calc(100%-2px)]",
+          "group-data-[size=sm]/switch:not-data-selected:translate-x-0"
         ],
         "raw": []
       },
@@ -19512,6 +22151,12 @@
         ],
         "raw": []
       },
+      ".cn-table-row-aria": {
+        "apply": [
+          "data-selected:bg-muted"
+        ],
+        "raw": []
+      },
       ".cn-table-head": {
         "apply": [
           "[&:has([role=checkbox])]:pr-0",
@@ -19525,12 +22170,24 @@
         ],
         "raw": []
       },
+      ".cn-table-head-aria": {
+        "apply": [
+          "[&:has([data-slot=checkbox])]:pr-0"
+        ],
+        "raw": []
+      },
       ".cn-table-cell": {
         "apply": [
           "[&:has([role=checkbox])]:pr-0",
           "align-middle",
           "p-3",
           "whitespace-nowrap"
+        ],
+        "raw": []
+      },
+      ".cn-table-cell-aria": {
+        "apply": [
+          "[&:has([data-slot=checkbox])]:pr-0"
         ],
         "raw": []
       },
@@ -19620,6 +22277,12 @@
           "rounded-4xl",
           "text-sm",
           "transition-colors"
+        ],
+        "raw": []
+      },
+      ".cn-toggle-aria": {
+        "apply": [
+          "data-selected:bg-muted"
         ],
         "raw": []
       },
@@ -19920,6 +22583,12 @@
           "before:rounded-[inherit]",
           "bg-popover/70",
           "relative"
+        ],
+        "raw": []
+      },
+      ".cn-menu-translucent-aria": {
+        "apply": [
+          "**:data-[slot$=-item]:data-focused:bg-foreground/10"
         ],
         "raw": []
       },
@@ -20242,6 +22911,166 @@
         ],
         "raw": []
       },
+      ".cn-questionnaire": {
+        "apply": [
+          "gap-6"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-progress": {
+        "apply": [
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-item": {
+        "apply": [
+          "flex",
+          "flex-col",
+          "gap-5"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-title": {
+        "apply": [
+          "[&:not(:has(~[data-slot=questionnaire-description]))]:mb-5",
+          "font-semibold",
+          "text-base"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-description": {
+        "apply": [
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choices": {
+        "apply": [
+          "gap-3"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice": {
+        "apply": [
+          "border",
+          "border-input",
+          "data-checked:bg-primary/10",
+          "data-checked:border-primary/40",
+          "data-invalid:border-destructive",
+          "gap-3",
+          "has-[>input:focus-visible]:border-ring",
+          "has-[>input:focus-visible]:ring-[3px]",
+          "has-[>input:focus-visible]:ring-ring/50",
+          "hover:bg-input/40",
+          "px-4",
+          "py-3.5",
+          "rounded-4xl",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator": {
+        "apply": [
+          "border-input",
+          "dark:bg-input/30",
+          "dark:group-data-checked/questionnaire-choice:bg-primary",
+          "group-data-checked/questionnaire-choice:bg-primary",
+          "group-data-checked/questionnaire-choice:border-primary",
+          "group-data-checked/questionnaire-choice:text-primary-foreground",
+          "group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5",
+          "rounded-[6px]",
+          "size-4",
+          "translate-y-[--spacing(0.45)]"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator-dot": {
+        "apply": [
+          "bg-primary-foreground",
+          "size-2"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator-check": {
+        "apply": [
+          "size-3.5"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-content": {
+        "apply": [
+          "gap-1"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-description": {
+        "apply": [
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-shortcut": {
+        "apply": [
+          "bg-background/80",
+          "border",
+          "border-input",
+          "font-medium",
+          "font-mono",
+          "group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5",
+          "items-center",
+          "justify-center",
+          "leading-none",
+          "rounded-full",
+          "size-5",
+          "text-[0.625rem]",
+          "text-muted-foreground",
+          "translate-y-[--spacing(0.45)]"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-input-wrapper": {
+        "apply": [
+          "w-full"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-input": {
+        "apply": [
+          "aria-invalid:border-destructive",
+          "aria-invalid:ring-[3px]",
+          "aria-invalid:ring-destructive/20",
+          "bg-input/30",
+          "border",
+          "border-input",
+          "dark:aria-invalid:border-destructive/50",
+          "dark:aria-invalid:ring-destructive/40",
+          "focus-visible:border-ring",
+          "focus-visible:ring-[3px]",
+          "focus-visible:ring-ring/50",
+          "h-9",
+          "md:text-sm",
+          "px-3",
+          "py-1",
+          "rounded-4xl",
+          "text-base"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-error": {
+        "apply": [
+          "mt-2",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-actions": {
+        "apply": [
+          "gap-2",
+          "sm:min-h-9"
+        ],
+        "raw": []
+      },
       ".cn-message-scroller-content": {
         "apply": [
           "gap-8"
@@ -20292,6 +23121,284 @@
       ".cn-message-group": {
         "apply": [
           "gap-2"
+        ],
+        "raw": []
+      },
+      ".cn-alert-dialog-overlay-aria": {
+        "apply": [
+          "bg-black/80",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "duration-100",
+          "supports-backdrop-filter:backdrop-blur-xs"
+        ],
+        "raw": []
+      },
+      ".cn-alert-dialog-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[size=default]:max-w-xs",
+          "data-[size=default]:sm:max-w-md",
+          "data-[size=sm]:max-w-xs",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "gap-6",
+          "p-6",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-4xl",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-combobox-content-aria": {
+        "apply": [
+          "*:data-[slot=input-group]:bg-input/30",
+          "*:data-[slot=input-group]:border-none",
+          "*:data-[slot=input-group]:h-9",
+          "*:data-[slot=input-group]:m-1",
+          "*:data-[slot=input-group]:mb-0",
+          "*:data-[slot=input-group]:shadow-none",
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "max-h-72",
+          "min-w-36",
+          "overflow-hidden",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-2xl",
+          "shadow-2xl",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-context-menu-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-48",
+          "p-1",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-2xl",
+          "shadow-2xl",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-dialog-overlay-aria": {
+        "apply": [
+          "bg-black/80",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "duration-100",
+          "supports-backdrop-filter:backdrop-blur-xs"
+        ],
+        "raw": []
+      },
+      ".cn-dialog-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "gap-6",
+          "grid",
+          "max-w-[calc(100%-2rem)]",
+          "p-6",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-4xl",
+          "sm:max-w-md",
+          "text-popover-foreground",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-dropdown-menu-content-aria": {
+        "apply": [
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-48",
+          "p-1",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-2xl",
+          "shadow-2xl",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-popover-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "flex",
+          "flex-col",
+          "gap-4",
+          "p-4",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-2xl",
+          "shadow-2xl",
+          "text-popover-foreground",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-hover-card-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "p-4",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-2xl",
+          "shadow-2xl",
+          "text-popover-foreground",
+          "text-sm",
+          "w-72"
+        ],
+        "raw": []
+      },
+      ".cn-select-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-36",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-2xl",
+          "shadow-2xl",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-tooltip-content-aria": {
+        "apply": [
+          "**:data-[slot=kbd]:isolate",
+          "**:data-[slot=kbd]:relative",
+          "**:data-[slot=kbd]:rounded-4xl",
+          "**:data-[slot=kbd]:z-50",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "gap-1.5",
+          "has-data-[slot=kbd]:pr-1.5",
+          "inline-flex",
+          "items-center",
+          "px-3",
+          "py-1.5",
+          "rounded-2xl",
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-context-menu-sub-content-aria": {
+        "apply": [
+          "bg-popover",
+          "border",
+          "duration-100",
+          "min-w-32",
+          "p-1",
+          "rounded-2xl",
+          "shadow-lg",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-dropdown-menu-sub-content-aria": {
+        "apply": [
+          "bg-popover",
+          "duration-100",
+          "min-w-36",
+          "p-1",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-2xl",
+          "shadow-2xl",
+          "text-popover-foreground"
         ],
         "raw": []
       }
@@ -20360,8 +23467,28 @@
           "focus-visible:border-ring",
           "focus-visible:ring-3",
           "focus-visible:ring-ring/30",
+          "group-has-[:focus-visible]/field-label:data-checked:border-primary",
+          "group-has-[:focus-visible]/field-label:data-unchecked:border-transparent",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "rounded-full",
           "shrink-0"
+        ],
+        "raw": []
+      },
+      ".cn-switch-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-3",
+          "data-focus-visible:ring-ring/30",
+          "data-invalid:border-destructive",
+          "data-invalid:ring-3",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "data-selected:border-primary",
+          "not-data-selected:bg-input/90",
+          "not-data-selected:border-transparent"
         ],
         "raw": []
       },
@@ -20379,6 +23506,15 @@
           "not-dark:bg-clip-padding",
           "rounded-full",
           "shadow-sm"
+        ],
+        "raw": []
+      },
+      ".cn-switch-thumb-aria": {
+        "apply": [
+          "dark:data-selected:bg-primary-foreground",
+          "dark:not-data-selected:bg-foreground",
+          "data-selected:translate-x-[calc(100%-8px)]",
+          "not-data-selected:translate-x-0"
         ],
         "raw": []
       },
@@ -20406,8 +23542,26 @@
           "focus-visible:border-ring",
           "focus-visible:ring-3",
           "focus-visible:ring-ring/30",
+          "group-has-[:focus-visible]/field-label:border-transparent",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "rounded-full",
           "size-4"
+        ],
+        "raw": []
+      },
+      ".cn-radio-group-item-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:data-selected:bg-primary",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-3",
+          "data-focus-visible:ring-ring/30",
+          "data-invalid:border-destructive",
+          "data-invalid:ring-3",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "data-selected:text-primary-foreground"
         ],
         "raw": []
       },
@@ -20453,12 +23607,33 @@
           "focus-visible:border-ring",
           "focus-visible:ring-3",
           "focus-visible:ring-ring/30",
+          "group-has-[:focus-visible]/field-label:data-checked:border-primary",
+          "group-has-[:focus-visible]/field-label:not-data-checked:border-transparent",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "group-has-disabled/field:opacity-50",
           "items-center",
           "justify-center",
           "rounded-[5px]",
           "size-4",
           "transition-shadow"
+        ],
+        "raw": []
+      },
+      ".cn-checkbox-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:data-selected:bg-primary",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-3",
+          "data-focus-visible:ring-ring/30",
+          "data-invalid:border-destructive",
+          "data-invalid:data-selected:border-primary",
+          "data-invalid:ring-3",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "data-selected:border-primary",
+          "data-selected:text-primary-foreground"
         ],
         "raw": []
       },
@@ -20747,6 +23922,12 @@
         ],
         "raw": []
       },
+      ".cn-select-value-aria": {
+        "apply": [
+          "data-placeholder:text-muted-foreground"
+        ],
+        "raw": []
+      },
       ".cn-select-trigger-icon": {
         "apply": [
           "size-4",
@@ -20813,6 +23994,13 @@
         ],
         "raw": []
       },
+      ".cn-select-item-aria": {
+        "apply": [
+          "data-focused:bg-accent",
+          "data-focused:text-accent-foreground"
+        ],
+        "raw": []
+      },
       ".cn-select-item-indicator": {
         "apply": [
           "absolute",
@@ -20872,6 +24060,19 @@
           "justify-center",
           "py-1",
           "z-10"
+        ],
+        "raw": []
+      },
+      ".cn-select-empty-aria": {
+        "apply": [
+          "group-data-empty/select-list:flex",
+          "hidden",
+          "justify-center",
+          "py-2",
+          "text-center",
+          "text-muted-foreground",
+          "text-sm",
+          "w-full"
         ],
         "raw": []
       },
@@ -20977,6 +24178,14 @@
           "py-2",
           "rounded-2xl",
           "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-combobox-item-aria": {
+        "apply": [
+          "data-focused:bg-accent",
+          "data-focused:text-accent-foreground",
+          "not-data-[variant=destructive]:data-focused:**:text-accent-foreground"
         ],
         "raw": []
       },
@@ -21352,9 +24561,19 @@
           "gap-2",
           "group-data-[disabled=true]/field:opacity-50",
           "has-[>[data-slot=field]]:border",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:border-ring",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:ring-3",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:ring-ring/50",
+          "has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-input/40",
           "has-[>[data-slot=field]]:rounded-2xl",
           "has-data-checked:bg-input/30",
           "leading-snug"
+        ],
+        "raw": []
+      },
+      ".cn-field-label-aria": {
+        "apply": [
+          "has-data-selected:bg-input/30"
         ],
         "raw": []
       },
@@ -21955,6 +25174,14 @@
         ],
         "raw": []
       },
+      ".cn-command-item-aria": {
+        "apply": [
+          "data-focused:*:[svg]:text-foreground",
+          "data-focused:bg-muted",
+          "data-focused:text-foreground"
+        ],
+        "raw": []
+      },
       ".cn-command-shortcut": {
         "apply": [
           "group-data-selected/command-item:text-foreground",
@@ -21962,6 +25189,12 @@
           "text-muted-foreground",
           "text-xs",
           "tracking-widest"
+        ],
+        "raw": []
+      },
+      ".cn-command-shortcut-aria": {
+        "apply": [
+          "group-data-focused/command-item:text-foreground"
         ],
         "raw": []
       },
@@ -22694,6 +25927,12 @@
         ],
         "raw": []
       },
+      ".cn-label-aria": {
+        "apply": [
+          "peer-data-disabled:opacity-50"
+        ],
+        "raw": []
+      },
       ".cn-menubar": {
         "apply": [
           "border",
@@ -23229,6 +26468,13 @@
         ],
         "raw": []
       },
+      ".cn-sidebar-menu-button-aria": {
+        "apply": [
+          "aria-expanded:hover:bg-sidebar-accent",
+          "aria-expanded:hover:text-sidebar-accent-foreground"
+        ],
+        "raw": []
+      },
       ".cn-sidebar-menu-button-variant-default": {
         "apply": [
           "hover:bg-sidebar-accent",
@@ -23654,6 +26900,12 @@
         ],
         "raw": []
       },
+      ".cn-table-row-aria": {
+        "apply": [
+          "data-selected:bg-muted"
+        ],
+        "raw": []
+      },
       ".cn-table-head": {
         "apply": [
           "[&:has([role=checkbox])]:pr-0",
@@ -23667,12 +26919,24 @@
         ],
         "raw": []
       },
+      ".cn-table-head-aria": {
+        "apply": [
+          "[&:has([data-slot=checkbox])]:pr-0"
+        ],
+        "raw": []
+      },
       ".cn-table-cell": {
         "apply": [
           "[&:has([role=checkbox])]:pr-0",
           "align-middle",
           "p-3",
           "whitespace-nowrap"
+        ],
+        "raw": []
+      },
+      ".cn-table-cell-aria": {
+        "apply": [
+          "[&:has([data-slot=checkbox])]:pr-0"
         ],
         "raw": []
       },
@@ -23699,6 +26963,12 @@
           "rounded-3xl",
           "text-sm",
           "transition-colors"
+        ],
+        "raw": []
+      },
+      ".cn-toggle-aria": {
+        "apply": [
+          "data-selected:bg-muted"
         ],
         "raw": []
       },
@@ -23998,6 +27268,12 @@
           "before:rounded-[inherit]",
           "bg-popover/70",
           "relative"
+        ],
+        "raw": []
+      },
+      ".cn-menu-translucent-aria": {
+        "apply": [
+          "**:data-[slot$=-item]:data-focused:bg-foreground/10"
         ],
         "raw": []
       },
@@ -24320,6 +27596,167 @@
         ],
         "raw": []
       },
+      ".cn-questionnaire": {
+        "apply": [
+          "gap-6"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-progress": {
+        "apply": [
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-item": {
+        "apply": [
+          "flex",
+          "flex-col",
+          "gap-5"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-title": {
+        "apply": [
+          "[&:not(:has(~[data-slot=questionnaire-description]))]:mb-5",
+          "font-semibold",
+          "text-base"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-description": {
+        "apply": [
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choices": {
+        "apply": [
+          "gap-3"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice": {
+        "apply": [
+          "border",
+          "border-input",
+          "data-checked:bg-primary/10",
+          "data-checked:border-primary/40",
+          "data-invalid:border-destructive",
+          "gap-2.5",
+          "has-[>input:focus-visible]:border-ring",
+          "has-[>input:focus-visible]:ring-3",
+          "has-[>input:focus-visible]:ring-ring/50",
+          "hover:bg-input/40",
+          "px-4",
+          "py-3",
+          "rounded-3xl",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator": {
+        "apply": [
+          "bg-input/90",
+          "border-transparent",
+          "dark:group-data-checked/questionnaire-choice:bg-primary",
+          "group-data-checked/questionnaire-choice:bg-primary",
+          "group-data-checked/questionnaire-choice:border-primary",
+          "group-data-checked/questionnaire-choice:text-primary-foreground",
+          "group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5",
+          "rounded-[5px]",
+          "size-4",
+          "translate-y-[--spacing(0.45)]"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator-dot": {
+        "apply": [
+          "bg-primary-foreground",
+          "dark:size-2.5",
+          "size-2"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator-check": {
+        "apply": [
+          "size-3.5"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-content": {
+        "apply": [
+          "gap-1"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-description": {
+        "apply": [
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-shortcut": {
+        "apply": [
+          "bg-background/80",
+          "border",
+          "border-primary/10",
+          "font-medium",
+          "font-mono",
+          "group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5",
+          "items-center",
+          "justify-center",
+          "leading-none",
+          "rounded-full",
+          "size-5",
+          "text-[0.625rem]",
+          "text-muted-foreground",
+          "translate-y-[--spacing(0.45)]"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-input-wrapper": {
+        "apply": [
+          "w-full"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-input": {
+        "apply": [
+          "aria-invalid:border-destructive",
+          "aria-invalid:ring-3",
+          "aria-invalid:ring-destructive/20",
+          "bg-input/50",
+          "border",
+          "border-transparent",
+          "dark:aria-invalid:border-destructive/50",
+          "dark:aria-invalid:ring-destructive/40",
+          "focus-visible:border-ring",
+          "focus-visible:ring-3",
+          "focus-visible:ring-ring/30",
+          "h-9",
+          "md:text-sm",
+          "px-3",
+          "py-1",
+          "rounded-3xl",
+          "text-base"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-error": {
+        "apply": [
+          "mt-2",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-actions": {
+        "apply": [
+          "gap-2",
+          "sm:min-h-9"
+        ],
+        "raw": []
+      },
       ".cn-message-scroller-content": {
         "apply": [
           "gap-8"
@@ -24370,6 +27807,296 @@
       ".cn-message-group": {
         "apply": [
           "gap-2"
+        ],
+        "raw": []
+      },
+      ".cn-alert-dialog-overlay-aria": {
+        "apply": [
+          "bg-black/30",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "duration-100",
+          "supports-backdrop-filter:backdrop-blur-sm"
+        ],
+        "raw": []
+      },
+      ".cn-alert-dialog-content-aria": {
+        "apply": [
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "data-[size=default]:max-w-xs",
+          "data-[size=default]:sm:max-w-md",
+          "data-[size=sm]:max-w-xs",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "gap-6",
+          "p-6",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-4xl",
+          "shadow-xl",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-combobox-content-aria": {
+        "apply": [
+          "*:data-[slot=input-group]:bg-input/50",
+          "*:data-[slot=input-group]:border-input/30",
+          "*:data-[slot=input-group]:h-8",
+          "*:data-[slot=input-group]:m-1.5",
+          "*:data-[slot=input-group]:mb-0",
+          "*:data-[slot=input-group]:shadow-none",
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "max-h-72",
+          "min-w-36",
+          "overflow-hidden",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-3xl",
+          "shadow-lg",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-context-menu-content-aria": {
+        "apply": [
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-48",
+          "p-1.5",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-3xl",
+          "shadow-lg",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-dialog-overlay-aria": {
+        "apply": [
+          "bg-black/30",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "duration-100",
+          "supports-backdrop-filter:backdrop-blur-sm"
+        ],
+        "raw": []
+      },
+      ".cn-dialog-content-aria": {
+        "apply": [
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "gap-6",
+          "grid",
+          "max-w-[calc(100%-2rem)]",
+          "p-6",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-4xl",
+          "shadow-xl",
+          "sm:max-w-md",
+          "text-popover-foreground",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-dropdown-menu-content-aria": {
+        "apply": [
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-48",
+          "p-1.5",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-3xl",
+          "shadow-lg",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-popover-content-aria": {
+        "apply": [
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "flex",
+          "flex-col",
+          "gap-4",
+          "p-4",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-3xl",
+          "shadow-lg",
+          "text-popover-foreground",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-hover-card-content-aria": {
+        "apply": [
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "p-4",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-3xl",
+          "shadow-lg",
+          "text-popover-foreground",
+          "text-sm",
+          "w-72"
+        ],
+        "raw": []
+      },
+      ".cn-select-content-aria": {
+        "apply": [
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-36",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-3xl",
+          "shadow-lg",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-tooltip-content-aria": {
+        "apply": [
+          "**:data-[slot=kbd]:isolate",
+          "**:data-[slot=kbd]:relative",
+          "**:data-[slot=kbd]:rounded-lg",
+          "**:data-[slot=kbd]:z-50",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "gap-1.5",
+          "has-data-[slot=kbd]:pr-1.5",
+          "inline-flex",
+          "items-center",
+          "px-3",
+          "py-1.5",
+          "rounded-xl",
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-context-menu-sub-content-aria": {
+        "apply": [
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "duration-100",
+          "min-w-32",
+          "p-1.5",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-3xl",
+          "shadow-lg",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-dropdown-menu-sub-content-aria": {
+        "apply": [
+          "bg-popover",
+          "dark:ring-foreground/10",
+          "duration-100",
+          "min-w-36",
+          "p-1.5",
+          "ring-1",
+          "ring-foreground/5",
+          "rounded-3xl",
+          "shadow-lg",
+          "text-popover-foreground"
         ],
         "raw": []
       }
@@ -25019,12 +28746,33 @@
           "focus-visible:border-ring",
           "focus-visible:ring-1",
           "focus-visible:ring-ring/50",
+          "group-has-[:focus-visible]/field-label:data-checked:border-primary",
+          "group-has-[:focus-visible]/field-label:not-data-checked:border-input",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "group-has-disabled/field:opacity-50",
           "items-center",
           "justify-center",
           "rounded-none",
           "size-4",
           "transition-colors"
+        ],
+        "raw": []
+      },
+      ".cn-checkbox-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:data-selected:bg-primary",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-1",
+          "data-focus-visible:ring-ring/50",
+          "data-invalid:border-destructive",
+          "data-invalid:data-selected:border-primary",
+          "data-invalid:ring-1",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "data-selected:border-primary",
+          "data-selected:text-primary-foreground"
         ],
         "raw": []
       },
@@ -25093,6 +28841,14 @@
           "py-2",
           "rounded-none",
           "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-combobox-item-aria": {
+        "apply": [
+          "data-focused:bg-accent",
+          "data-focused:text-accent-foreground",
+          "not-data-[variant=destructive]:data-focused:**:text-accent-foreground"
         ],
         "raw": []
       },
@@ -25320,6 +29076,14 @@
         ],
         "raw": []
       },
+      ".cn-command-item-aria": {
+        "apply": [
+          "data-focused:*:[svg]:text-foreground",
+          "data-focused:bg-muted",
+          "data-focused:text-foreground"
+        ],
+        "raw": []
+      },
       ".cn-command-shortcut": {
         "apply": [
           "group-data-selected/command-item:text-foreground",
@@ -25327,6 +29091,12 @@
           "text-muted-foreground",
           "text-xs",
           "tracking-widest"
+        ],
+        "raw": []
+      },
+      ".cn-command-shortcut-aria": {
+        "apply": [
+          "group-data-focused/command-item:text-foreground"
         ],
         "raw": []
       },
@@ -25956,10 +29726,23 @@
           "gap-2",
           "group-data-[disabled=true]/field:opacity-50",
           "has-[>[data-slot=field]]:border",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:border-ring",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:ring-1",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:ring-ring/50",
+          "has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-muted/50",
           "has-[>[data-slot=field]]:rounded-none",
           "has-data-checked:bg-primary/5",
           "has-data-checked:border-primary/30",
           "leading-snug"
+        ],
+        "raw": []
+      },
+      ".cn-field-label-aria": {
+        "apply": [
+          "dark:has-data-selected:bg-primary/10",
+          "dark:has-data-selected:border-primary/20",
+          "has-data-selected:bg-primary/5",
+          "has-data-selected:border-primary/30"
         ],
         "raw": []
       },
@@ -26294,6 +30077,12 @@
           "leading-none",
           "peer-disabled:opacity-50",
           "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-label-aria": {
+        "apply": [
+          "peer-data-disabled:opacity-50"
         ],
         "raw": []
       },
@@ -26830,8 +30619,29 @@
           "focus-visible:border-ring",
           "focus-visible:ring-3",
           "focus-visible:ring-ring/50",
+          "group-has-[:focus-visible]/field-label:data-checked:border-primary",
+          "group-has-[:focus-visible]/field-label:not-data-checked:border-input",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "rounded-full",
           "size-4"
+        ],
+        "raw": []
+      },
+      ".cn-radio-group-item-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:data-selected:bg-primary",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-3",
+          "data-focus-visible:ring-ring/50",
+          "data-invalid:border-destructive",
+          "data-invalid:data-selected:border-primary",
+          "data-invalid:ring-3",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "data-selected:border-primary",
+          "data-selected:text-primary-foreground"
         ],
         "raw": []
       },
@@ -26926,6 +30736,12 @@
         ],
         "raw": []
       },
+      ".cn-select-value-aria": {
+        "apply": [
+          "data-placeholder:text-muted-foreground"
+        ],
+        "raw": []
+      },
       ".cn-select-trigger-icon": {
         "apply": [
           "size-4",
@@ -26990,6 +30806,13 @@
         ],
         "raw": []
       },
+      ".cn-select-item-aria": {
+        "apply": [
+          "data-focused:bg-accent",
+          "data-focused:text-accent-foreground"
+        ],
+        "raw": []
+      },
       ".cn-select-item-indicator": {
         "apply": [
           "absolute",
@@ -27047,6 +30870,19 @@
           "justify-center",
           "py-1",
           "z-10"
+        ],
+        "raw": []
+      },
+      ".cn-select-empty-aria": {
+        "apply": [
+          "group-data-empty/select-list:flex",
+          "hidden",
+          "justify-center",
+          "py-2",
+          "text-center",
+          "text-muted-foreground",
+          "text-xs",
+          "w-full"
         ],
         "raw": []
       },
@@ -27303,6 +31139,13 @@
         ],
         "raw": []
       },
+      ".cn-sidebar-menu-button-aria": {
+        "apply": [
+          "aria-expanded:hover:bg-sidebar-accent",
+          "aria-expanded:hover:text-sidebar-accent-foreground"
+        ],
+        "raw": []
+      },
       ".cn-sidebar-menu-button-variant-default": {
         "apply": [
           "hover:bg-sidebar-accent",
@@ -27516,8 +31359,26 @@
           "focus-visible:border-ring",
           "focus-visible:ring-1",
           "focus-visible:ring-ring/50",
+          "group-has-[:focus-visible]/field-label:border-transparent",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "rounded-full",
           "shrink-0"
+        ],
+        "raw": []
+      },
+      ".cn-switch-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:not-data-selected:bg-input/80",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-1",
+          "data-focus-visible:ring-ring/50",
+          "data-invalid:border-destructive",
+          "data-invalid:ring-1",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "not-data-selected:bg-input"
         ],
         "raw": []
       },
@@ -27533,6 +31394,17 @@
           "group-data-[size=sm]/switch:data-unchecked:translate-x-0",
           "group-data-[size=sm]/switch:size-3",
           "rounded-full"
+        ],
+        "raw": []
+      },
+      ".cn-switch-thumb-aria": {
+        "apply": [
+          "dark:data-selected:bg-primary-foreground",
+          "dark:not-data-selected:bg-foreground",
+          "group-data-[size=default]/switch:data-selected:translate-x-[calc(100%-2px)]",
+          "group-data-[size=default]/switch:not-data-selected:translate-x-0",
+          "group-data-[size=sm]/switch:data-selected:translate-x-[calc(100%-2px)]",
+          "group-data-[size=sm]/switch:not-data-selected:translate-x-0"
         ],
         "raw": []
       },
@@ -27582,6 +31454,12 @@
         ],
         "raw": []
       },
+      ".cn-table-row-aria": {
+        "apply": [
+          "data-selected:bg-muted"
+        ],
+        "raw": []
+      },
       ".cn-table-head": {
         "apply": [
           "[&:has([role=checkbox])]:pr-0",
@@ -27595,12 +31473,24 @@
         ],
         "raw": []
       },
+      ".cn-table-head-aria": {
+        "apply": [
+          "[&:has([data-slot=checkbox])]:pr-0"
+        ],
+        "raw": []
+      },
       ".cn-table-cell": {
         "apply": [
           "[&:has([role=checkbox])]:pr-0",
           "align-middle",
           "p-2",
           "whitespace-nowrap"
+        ],
+        "raw": []
+      },
+      ".cn-table-cell-aria": {
+        "apply": [
+          "[&:has([data-slot=checkbox])]:pr-0"
         ],
         "raw": []
       },
@@ -27691,6 +31581,12 @@
           "rounded-none",
           "text-xs",
           "transition-all"
+        ],
+        "raw": []
+      },
+      ".cn-toggle-aria": {
+        "apply": [
+          "data-selected:bg-muted"
         ],
         "raw": []
       },
@@ -27973,6 +31869,12 @@
           "ring-0",
           "rounded-none",
           "shadow-none"
+        ],
+        "raw": []
+      },
+      ".cn-menu-translucent-aria": {
+        "apply": [
+          "**:data-[slot$=-item]:data-focused:bg-foreground/10"
         ],
         "raw": []
       },
@@ -28295,6 +32197,168 @@
         ],
         "raw": []
       },
+      ".cn-questionnaire": {
+        "apply": [
+          "gap-4"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-progress": {
+        "apply": [
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-item": {
+        "apply": [
+          "flex",
+          "flex-col",
+          "gap-4"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-title": {
+        "apply": [
+          "[&:not(:has(~[data-slot=questionnaire-description]))]:mb-4",
+          "font-medium",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-description": {
+        "apply": [
+          "text-xs/relaxed"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choices": {
+        "apply": [
+          "gap-2"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice": {
+        "apply": [
+          "bg-transparent",
+          "border",
+          "border-input",
+          "data-checked:bg-muted",
+          "data-checked:border-foreground/30",
+          "data-invalid:border-destructive",
+          "gap-2.5",
+          "has-[>input:focus-visible]:border-ring",
+          "has-[>input:focus-visible]:ring-1",
+          "has-[>input:focus-visible]:ring-ring/50",
+          "hover:bg-muted/50",
+          "px-3",
+          "py-2.5",
+          "rounded-none",
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator": {
+        "apply": [
+          "border-input",
+          "group-data-checked/questionnaire-choice:bg-primary",
+          "group-data-checked/questionnaire-choice:border-primary",
+          "group-data-checked/questionnaire-choice:text-primary-foreground",
+          "group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5",
+          "rounded-none",
+          "size-4",
+          "translate-y-[--spacing(0.45)]"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator-dot": {
+        "apply": [
+          "bg-primary-foreground",
+          "size-2"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator-check": {
+        "apply": [
+          "size-3.5"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-content": {
+        "apply": [
+          "gap-0.5"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-description": {
+        "apply": [
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-shortcut": {
+        "apply": [
+          "bg-background",
+          "border",
+          "border-input",
+          "font-medium",
+          "font-mono",
+          "group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5",
+          "items-center",
+          "justify-center",
+          "leading-none",
+          "rounded-none",
+          "size-4",
+          "text-[0.625rem]",
+          "text-muted-foreground",
+          "translate-y-[--spacing(0.45)]"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-input-wrapper": {
+        "apply": [
+          "w-full"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-input": {
+        "apply": [
+          "aria-invalid:border-destructive",
+          "aria-invalid:ring-1",
+          "aria-invalid:ring-destructive/20",
+          "bg-transparent",
+          "border",
+          "border-input",
+          "dark:aria-invalid:border-destructive/50",
+          "dark:aria-invalid:ring-destructive/40",
+          "dark:bg-input/30",
+          "dark:disabled:bg-input/80",
+          "disabled:bg-input/50",
+          "focus-visible:border-ring",
+          "focus-visible:ring-1",
+          "focus-visible:ring-ring/50",
+          "h-8",
+          "md:text-xs",
+          "px-2.5",
+          "py-1",
+          "rounded-none",
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-error": {
+        "apply": [
+          "mt-2",
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-actions": {
+        "apply": [
+          "gap-1.5",
+          "sm:min-h-8"
+        ],
+        "raw": []
+      },
       ".cn-message-scroller-content": {
         "apply": [
           "gap-6"
@@ -28345,6 +32409,279 @@
       ".cn-message-group": {
         "apply": [
           "gap-1.5"
+        ],
+        "raw": []
+      },
+      ".cn-alert-dialog-overlay-aria": {
+        "apply": [
+          "bg-black/10",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "duration-100",
+          "supports-backdrop-filter:backdrop-blur-xs"
+        ],
+        "raw": []
+      },
+      ".cn-alert-dialog-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[size=default]:max-w-xs",
+          "data-[size=default]:sm:max-w-sm",
+          "data-[size=sm]:max-w-xs",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "gap-4",
+          "p-4",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-none",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-combobox-content-aria": {
+        "apply": [
+          "*:data-[slot=input-group]:bg-input/30",
+          "*:data-[slot=input-group]:border-input/30",
+          "*:data-[slot=input-group]:h-8",
+          "*:data-[slot=input-group]:m-1",
+          "*:data-[slot=input-group]:mb-0",
+          "*:data-[slot=input-group]:shadow-none",
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "max-h-72",
+          "min-w-36",
+          "overflow-hidden",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-none",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-context-menu-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-36",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-none",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-dialog-overlay-aria": {
+        "apply": [
+          "bg-black/10",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "duration-100",
+          "supports-backdrop-filter:backdrop-blur-xs"
+        ],
+        "raw": []
+      },
+      ".cn-dialog-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "gap-4",
+          "grid",
+          "max-w-[calc(100%-2rem)]",
+          "p-4",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-none",
+          "sm:max-w-sm",
+          "text-popover-foreground",
+          "text-xs/relaxed"
+        ],
+        "raw": []
+      },
+      ".cn-dropdown-menu-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-32",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-none",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-popover-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "flex",
+          "flex-col",
+          "gap-2.5",
+          "p-2.5",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-none",
+          "shadow-md",
+          "text-popover-foreground",
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-hover-card-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "p-2.5",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-none",
+          "shadow-md",
+          "text-popover-foreground",
+          "text-xs/relaxed",
+          "w-64"
+        ],
+        "raw": []
+      },
+      ".cn-select-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-36",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-none",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-tooltip-content-aria": {
+        "apply": [
+          "**:data-[slot=kbd]:isolate",
+          "**:data-[slot=kbd]:relative",
+          "**:data-[slot=kbd]:rounded-none",
+          "**:data-[slot=kbd]:z-50",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "gap-1.5",
+          "has-data-[slot=kbd]:pr-1.5",
+          "inline-flex",
+          "items-center",
+          "px-3",
+          "py-1.5",
+          "rounded-none",
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-context-menu-sub-content-aria": {
+        "apply": [
+          "bg-popover",
+          "border",
+          "duration-100",
+          "min-w-32",
+          "rounded-none",
+          "shadow-lg",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-dropdown-menu-sub-content-aria": {
+        "apply": [
+          "bg-popover",
+          "duration-100",
+          "min-w-[96px]",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-none",
+          "shadow-lg",
+          "text-popover-foreground"
         ],
         "raw": []
       }
@@ -29034,12 +33371,33 @@
           "focus-visible:border-ring",
           "focus-visible:ring-2",
           "focus-visible:ring-ring/30",
+          "group-has-[:focus-visible]/field-label:data-checked:border-primary",
+          "group-has-[:focus-visible]/field-label:not-data-checked:border-input",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "group-has-disabled/field:opacity-50",
           "items-center",
           "justify-center",
           "rounded-none",
           "size-4.5",
           "transition-shadow"
+        ],
+        "raw": []
+      },
+      ".cn-checkbox-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "dark:data-selected:bg-primary",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-2",
+          "data-focus-visible:ring-ring/30",
+          "data-invalid:border-destructive",
+          "data-invalid:data-selected:border-primary",
+          "data-invalid:ring-2",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "data-selected:border-primary",
+          "data-selected:text-primary-foreground"
         ],
         "raw": []
       },
@@ -29113,6 +33471,14 @@
           "py-2",
           "rounded-none",
           "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-combobox-item-aria": {
+        "apply": [
+          "data-focused:bg-accent",
+          "data-focused:text-accent-foreground",
+          "not-data-[variant=destructive]:data-focused:**:text-accent-foreground"
         ],
         "raw": []
       },
@@ -29339,6 +33705,14 @@
         ],
         "raw": []
       },
+      ".cn-command-item-aria": {
+        "apply": [
+          "data-focused:*:[svg]:text-foreground",
+          "data-focused:bg-muted",
+          "data-focused:text-foreground"
+        ],
+        "raw": []
+      },
       ".cn-command-shortcut": {
         "apply": [
           "group-data-selected/command-item:text-foreground",
@@ -29346,6 +33720,12 @@
           "text-muted-foreground",
           "text-xs",
           "tracking-widest"
+        ],
+        "raw": []
+      },
+      ".cn-command-shortcut-aria": {
+        "apply": [
+          "group-data-focused/command-item:text-foreground"
         ],
         "raw": []
       },
@@ -30030,10 +34410,22 @@
           "gap-2",
           "group-data-[disabled=true]/field:opacity-50",
           "has-[>[data-slot=field]]:border",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:ring-2",
+          "has-[>[data-slot=field]]:has-[:focus-visible]:ring-ring/30",
+          "has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-muted/50",
           "has-[>[data-slot=field]]:rounded-none",
           "has-data-checked:bg-primary/5",
           "has-data-checked:border-primary/30",
           "leading-relaxed"
+        ],
+        "raw": []
+      },
+      ".cn-field-label-aria": {
+        "apply": [
+          "dark:has-data-selected:bg-primary/10",
+          "dark:has-data-selected:border-primary/20",
+          "has-data-selected:bg-primary/5",
+          "has-data-selected:border-primary/30"
         ],
         "raw": []
       },
@@ -30378,6 +34770,12 @@
           "text-xs",
           "tracking-wide",
           "uppercase"
+        ],
+        "raw": []
+      },
+      ".cn-label-aria": {
+        "apply": [
+          "peer-data-disabled:opacity-50"
         ],
         "raw": []
       },
@@ -30928,8 +35326,26 @@
           "focus-visible:border-ring",
           "focus-visible:ring-2",
           "focus-visible:ring-ring/30",
+          "group-has-[:focus-visible]/field-label:data-checked:border-foreground",
+          "group-has-[:focus-visible]/field-label:not-data-checked:border-input",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "rounded-full",
           "size-4.5"
+        ],
+        "raw": []
+      },
+      ".cn-radio-group-item-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-2",
+          "data-focus-visible:ring-ring/30",
+          "data-invalid:border-destructive",
+          "data-invalid:data-selected:border-foreground",
+          "data-invalid:ring-2",
+          "data-invalid:ring-destructive/20",
+          "data-selected:border-foreground"
         ],
         "raw": []
       },
@@ -31015,6 +35431,12 @@
         ],
         "raw": []
       },
+      ".cn-select-value-aria": {
+        "apply": [
+          "data-placeholder:text-muted-foreground"
+        ],
+        "raw": []
+      },
       ".cn-select-trigger-icon": {
         "apply": [
           "size-3.5",
@@ -31082,6 +35504,13 @@
         ],
         "raw": []
       },
+      ".cn-select-item-aria": {
+        "apply": [
+          "data-focused:bg-accent",
+          "data-focused:text-accent-foreground"
+        ],
+        "raw": []
+      },
       ".cn-select-item-indicator": {
         "apply": [
           "absolute",
@@ -31141,6 +35570,19 @@
           "justify-center",
           "py-1",
           "z-10"
+        ],
+        "raw": []
+      },
+      ".cn-select-empty-aria": {
+        "apply": [
+          "group-data-empty/select-list:flex",
+          "hidden",
+          "justify-center",
+          "py-2",
+          "text-center",
+          "text-muted-foreground",
+          "text-sm",
+          "w-full"
         ],
         "raw": []
       },
@@ -31408,6 +35850,13 @@
         ],
         "raw": []
       },
+      ".cn-sidebar-menu-button-aria": {
+        "apply": [
+          "aria-expanded:hover:bg-sidebar-accent",
+          "aria-expanded:hover:text-sidebar-accent-foreground"
+        ],
+        "raw": []
+      },
       ".cn-sidebar-menu-button-variant-default": {
         "apply": [
           "hover:bg-sidebar-accent",
@@ -31615,8 +36064,28 @@
           "focus-visible:border-ring",
           "focus-visible:ring-2",
           "focus-visible:ring-ring/30",
+          "group-has-[:focus-visible]/field-label:data-checked:border-primary",
+          "group-has-[:focus-visible]/field-label:data-unchecked:border-input/50",
+          "group-has-[:focus-visible]/field-label:ring-0",
           "rounded-none",
           "shrink-0"
+        ],
+        "raw": []
+      },
+      ".cn-switch-aria": {
+        "apply": [
+          "dark:data-invalid:border-destructive/50",
+          "dark:data-invalid:ring-destructive/40",
+          "data-focus-visible:border-ring",
+          "data-focus-visible:ring-2",
+          "data-focus-visible:ring-ring/30",
+          "data-invalid:border-destructive",
+          "data-invalid:ring-2",
+          "data-invalid:ring-destructive/20",
+          "data-selected:bg-primary",
+          "data-selected:border-primary",
+          "not-data-selected:bg-input",
+          "not-data-selected:border-input/50"
         ],
         "raw": []
       },
@@ -31629,6 +36098,15 @@
           "data-unchecked:translate-x-0.25",
           "group-data-[size=default]/switch:size-3.5",
           "group-data-[size=sm]/switch:size-2.5"
+        ],
+        "raw": []
+      },
+      ".cn-switch-thumb-aria": {
+        "apply": [
+          "dark:data-selected:bg-primary-foreground",
+          "dark:not-data-selected:bg-foreground",
+          "data-selected:translate-x-[calc(100%+2px)]",
+          "not-data-selected:translate-x-0.25"
         ],
         "raw": []
       },
@@ -31678,6 +36156,12 @@
         ],
         "raw": []
       },
+      ".cn-table-row-aria": {
+        "apply": [
+          "data-selected:bg-muted"
+        ],
+        "raw": []
+      },
       ".cn-table-head": {
         "apply": [
           "[&:has([role=checkbox])]:pr-0",
@@ -31694,12 +36178,24 @@
         ],
         "raw": []
       },
+      ".cn-table-head-aria": {
+        "apply": [
+          "[&:has([data-slot=checkbox])]:pr-0"
+        ],
+        "raw": []
+      },
       ".cn-table-cell": {
         "apply": [
           "[&:has([role=checkbox])]:pr-0",
           "align-middle",
           "p-3",
           "whitespace-nowrap"
+        ],
+        "raw": []
+      },
+      ".cn-table-cell-aria": {
+        "apply": [
+          "[&:has([data-slot=checkbox])]:pr-0"
         ],
         "raw": []
       },
@@ -31785,6 +36281,12 @@
           "tracking-widest",
           "transition-colors",
           "uppercase"
+        ],
+        "raw": []
+      },
+      ".cn-toggle-aria": {
+        "apply": [
+          "data-selected:bg-muted"
         ],
         "raw": []
       },
@@ -32062,6 +36564,12 @@
           "before:rounded-[inherit]",
           "bg-popover/70",
           "relative"
+        ],
+        "raw": []
+      },
+      ".cn-menu-translucent-aria": {
+        "apply": [
+          "**:data-[slot$=-item]:data-focused:bg-foreground/10"
         ],
         "raw": []
       },
@@ -32386,6 +36894,167 @@
         ],
         "raw": []
       },
+      ".cn-questionnaire": {
+        "apply": [
+          "gap-6"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-progress": {
+        "apply": [
+          "text-xs",
+          "tracking-wide",
+          "uppercase"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-item": {
+        "apply": [
+          "flex",
+          "flex-col",
+          "gap-5"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-title": {
+        "apply": [
+          "[&:not(:has(~[data-slot=questionnaire-description]))]:mb-5",
+          "font-semibold",
+          "text-xs",
+          "tracking-wide",
+          "uppercase"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-description": {
+        "apply": [
+          "normal-case",
+          "text-sm",
+          "tracking-normal"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choices": {
+        "apply": [
+          "gap-3"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice": {
+        "apply": [
+          "bg-transparent",
+          "border",
+          "border-input",
+          "dark:data-checked:bg-primary/10",
+          "dark:data-checked:border-primary/20",
+          "data-checked:bg-primary/5",
+          "data-checked:border-primary/30",
+          "data-invalid:border-destructive",
+          "gap-3",
+          "has-[>input:focus-visible]:ring-2",
+          "has-[>input:focus-visible]:ring-ring/30",
+          "hover:bg-muted/50",
+          "px-4",
+          "py-4",
+          "rounded-none",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator": {
+        "apply": [
+          "border-input",
+          "group-data-[type=checkbox]/questionnaire-choice:group-data-checked/questionnaire-choice:bg-primary",
+          "group-data-[type=checkbox]/questionnaire-choice:group-data-checked/questionnaire-choice:border-primary",
+          "group-data-[type=checkbox]/questionnaire-choice:group-data-checked/questionnaire-choice:text-primary-foreground",
+          "group-data-checked/questionnaire-choice:border-foreground",
+          "group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5",
+          "size-4.5",
+          "translate-y-[--spacing(0.45)]"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator-dot": {
+        "apply": [
+          "bg-foreground",
+          "size-2"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-indicator-check": {
+        "apply": [
+          "size-3.5"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-content": {
+        "apply": [
+          "gap-1"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-choice-description": {
+        "apply": [
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-shortcut": {
+        "apply": [
+          "bg-background",
+          "border",
+          "border-input",
+          "font-medium",
+          "font-mono",
+          "group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5",
+          "items-center",
+          "justify-center",
+          "leading-none",
+          "rounded-none",
+          "size-5",
+          "text-[0.625rem]",
+          "text-muted-foreground",
+          "translate-y-[--spacing(0.45)]"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-input-wrapper": {
+        "apply": [
+          "w-full"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-input": {
+        "apply": [
+          "aria-invalid:border-b-destructive",
+          "bg-transparent",
+          "border",
+          "border-b-input",
+          "border-transparent",
+          "dark:aria-invalid:border-b-destructive/50",
+          "focus-visible:border-b-ring",
+          "h-10",
+          "md:text-sm",
+          "px-0",
+          "py-1",
+          "text-base"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-error": {
+        "apply": [
+          "mt-2",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-questionnaire-actions": {
+        "apply": [
+          "gap-2",
+          "sm:min-h-10"
+        ],
+        "raw": []
+      },
       ".cn-message-scroller-content": {
         "apply": [
           "gap-8"
@@ -32440,6 +37109,287 @@
       ".cn-message-group": {
         "apply": [
           "gap-2"
+        ],
+        "raw": []
+      },
+      ".cn-alert-dialog-overlay-aria": {
+        "apply": [
+          "bg-black/20",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "duration-100",
+          "supports-backdrop-filter:backdrop-blur-sm"
+        ],
+        "raw": []
+      },
+      ".cn-alert-dialog-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[size=default]:max-w-xs",
+          "data-[size=default]:sm:max-w-md",
+          "data-[size=sm]:max-w-xs",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "gap-6",
+          "p-6",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-none",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-combobox-content-aria": {
+        "apply": [
+          "*:data-[slot=input-group]:bg-transparent",
+          "*:data-[slot=input-group]:border-b-input",
+          "*:data-[slot=input-group]:border-transparent",
+          "*:data-[slot=input-group]:focus-within:border-transparent",
+          "*:data-[slot=input-group]:h-8",
+          "*:data-[slot=input-group]:m-1.5",
+          "*:data-[slot=input-group]:mb-0",
+          "*:data-[slot=input-group]:px-2.5",
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "max-h-72",
+          "min-w-36",
+          "overflow-hidden",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-none",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-context-menu-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-48",
+          "p-1.5",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-none",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-dialog-overlay-aria": {
+        "apply": [
+          "bg-black/20",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "duration-100",
+          "supports-backdrop-filter:backdrop-blur-sm"
+        ],
+        "raw": []
+      },
+      ".cn-dialog-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "gap-6",
+          "grid",
+          "max-w-[calc(100%-2rem)]",
+          "p-6",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-none",
+          "shadow-md",
+          "sm:max-w-md",
+          "text-popover-foreground",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-dropdown-menu-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-48",
+          "p-1.5",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-none",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-popover-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "flex",
+          "flex-col",
+          "gap-4",
+          "p-4",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-none",
+          "shadow-md",
+          "text-popover-foreground",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-hover-card-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "p-4",
+          "ring-1",
+          "ring-foreground/10",
+          "shadow-md",
+          "text-popover-foreground",
+          "text-sm",
+          "w-72"
+        ],
+        "raw": []
+      },
+      ".cn-select-content-aria": {
+        "apply": [
+          "bg-popover",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "duration-100",
+          "min-w-36",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-none",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-tooltip-content-aria": {
+        "apply": [
+          "**:data-[slot=kbd]:isolate",
+          "**:data-[slot=kbd]:relative",
+          "**:data-[slot=kbd]:rounded-none",
+          "**:data-[slot=kbd]:z-50",
+          "data-[placement=bottom]:slide-in-from-top-2",
+          "data-[placement=left]:slide-in-from-right-2",
+          "data-[placement=right]:slide-in-from-left-2",
+          "data-[placement=top]:slide-in-from-bottom-2",
+          "data-entering:animate-in",
+          "data-entering:fade-in-0",
+          "data-entering:zoom-in-95",
+          "data-exiting:animate-out",
+          "data-exiting:fade-out-0",
+          "data-exiting:zoom-out-95",
+          "gap-1.5",
+          "has-data-[slot=kbd]:pr-1.5",
+          "inline-flex",
+          "items-center",
+          "px-3",
+          "py-1.5",
+          "rounded-none",
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-context-menu-sub-content-aria": {
+        "apply": [
+          "bg-popover",
+          "duration-100",
+          "min-w-32",
+          "p-1.5",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-none",
+          "shadow-md",
+          "text-popover-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-dropdown-menu-sub-content-aria": {
+        "apply": [
+          "bg-popover",
+          "duration-100",
+          "min-w-36",
+          "p-1.5",
+          "ring-1",
+          "ring-foreground/10",
+          "rounded-none",
+          "shadow-md",
+          "text-popover-foreground"
         ],
         "raw": []
       }

@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Upstream pin moved to the `shadcn@4.19.0` release (`1773ecfe`); pins are tagged releases from here on. Adopted: the choice-card focus treatment on checkbox, radio, switch and field labels in every ported theme; the questionnaire rules re-transcribed at the new pin (its invalid state reads from the item). Recorded: the React Aria base's selectors as not ported. Deferred: toast alignment, until upstream ships per-style toast rules.
 - CommandDialog: the classic h-12 input row / `py-3` rows / 20px icons sizing now lives in the default theme's `.cn-command-dialog` rule; the eight ported themes render the dialog palette with their own well and row sizes, as their source does.
 - CommandDialog: the close X now seats inside the input row as its trailing item (centred in every theme, never over the input) and is off by default — the palette is keyboard-first (Esc, the backdrop, or picking an item closes it) — appearing automatically with `dismissible: false`; `show_close_button: true` forces it.
 

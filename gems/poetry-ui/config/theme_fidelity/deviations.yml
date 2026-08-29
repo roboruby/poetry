@@ -22,7 +22,7 @@ vega:
   missing_selectors:
     reason: 'Source hooks poetry does not emit as theme rules: logical-property twins,
       overlay/scrollbar/viewport parts, and renamed hooks - carried by dictionaries,
-      the aliases layer, or poetry''s own hook names (the hook-coverage manifest records
+      the aliases layer, or poetry The -aria selectors are the source''s React Aria base (new at 4.19.0); poetry ports the Base UI base.''s own hook names (the hook-coverage manifest records
       the unworn set).'
     list:
     - ".cn-alert-dialog-overlay"
@@ -67,6 +67,38 @@ vega:
     - ".cn-sheet-overlay"
     - ".cn-tooltip-arrow-logical"
     - ".cn-tooltip-content-logical"
+    - ".cn-alert-dialog-content-aria"
+    - ".cn-alert-dialog-overlay-aria"
+    - ".cn-checkbox-aria"
+    - ".cn-combobox-content-aria"
+    - ".cn-combobox-item-aria"
+    - ".cn-command-item-aria"
+    - ".cn-command-shortcut-aria"
+    - ".cn-context-menu-content-aria"
+    - ".cn-context-menu-sub-content-aria"
+    - ".cn-dialog-content-aria"
+    - ".cn-dialog-overlay-aria"
+    - ".cn-dropdown-menu-content-aria"
+    - ".cn-dropdown-menu-sub-content-aria"
+    - ".cn-field-label-aria"
+    - ".cn-hover-card-content-aria"
+    - ".cn-label-aria"
+    - ".cn-menu-translucent-aria"
+    - ".cn-popover-content-aria"
+    - ".cn-radio-group-item-aria"
+    - ".cn-select-content-aria"
+    - ".cn-select-empty-aria"
+    - ".cn-select-item-aria"
+    - ".cn-select-value-aria"
+    - ".cn-sidebar-menu-button-aria"
+    - ".cn-switch-aria"
+    - ".cn-switch-thumb-aria"
+    - ".cn-table-cell-aria"
+    - ".cn-table-head-aria"
+    - ".cn-table-row-aria"
+    - ".cn-tabs-trigger-aria"
+    - ".cn-toggle-aria"
+    - ".cn-tooltip-content-aria"
   poetry_selectors:
     reason: 'Poetry-authored surfaces and hooks the source keeps anonymous or inline:
       the chips and toast families, focus clusters, self-identification wrappers,
@@ -105,23 +137,6 @@ vega:
     - ".cn-link-underline-always"
     - ".cn-link-underline-hover"
     - ".cn-link-underline-none"
-    - ".cn-questionnaire"
-    - ".cn-questionnaire-actions"
-    - ".cn-questionnaire-choice"
-    - ".cn-questionnaire-choice-content"
-    - ".cn-questionnaire-choice-description"
-    - ".cn-questionnaire-choice-indicator"
-    - ".cn-questionnaire-choice-indicator-check"
-    - ".cn-questionnaire-choice-indicator-dot"
-    - ".cn-questionnaire-choices"
-    - ".cn-questionnaire-description"
-    - ".cn-questionnaire-error"
-    - ".cn-questionnaire-input"
-    - ".cn-questionnaire-input-wrapper"
-    - ".cn-questionnaire-item"
-    - ".cn-questionnaire-progress"
-    - ".cn-questionnaire-shortcut"
-    - ".cn-questionnaire-title"
     - ".cn-rtl-flip"
     - ".cn-select-viewport"
     - ".cn-sensitive-input-group:has([data-slot=sensitive-input-mask]:focus-visible)"
@@ -347,11 +362,6 @@ vega:
       dropped:
       - "[--cell-radius:var(--radius-md)]"
       - "[--cell-size:--spacing(8)]"
-    ".cn-checkbox":
-      reason: Disabled dimming rides the dictionary and the choice-card rule; poetry
-        has no group/field marker for the source's selector to key on.
-      dropped:
-      - group-has-disabled/field:opacity-50
     ".cn-combobox-chip":
       reason: 'The chips family is poetry-authored (postdates the port): its own metrics,
         symmetric padding around a focus-ringed remove button, background-pill treatment;
@@ -616,15 +626,6 @@ vega:
         choice variants mirror as classes, and disabled dimming rides the dictionary.'
       dropped:
       - data-[slot=checkbox-group]:gap-3
-    ".cn-field-label":
-      reason: 'The field family flattens the source''s nested label > field > content
-        onto the label card: cn-field-label-card carries the per-theme border/radius/padding,
-        choice variants mirror as classes, and disabled dimming rides the dictionary.'
-      dropped:
-      - "*:data-[slot=field]:p-3"
-      - group-data-[disabled=true]/field:opacity-50
-      - has-[>[data-slot=field]]:border
-      - has-[>[data-slot=field]]:rounded-md
     ".cn-field-separator":
       reason: 'The field family flattens the source''s nested label > field > content
         onto the label card: cn-field-label-card carries the per-theme border/radius/padding,
@@ -722,6 +723,12 @@ vega:
       dropped:
       - flex
       - flex-col
+    ".cn-questionnaire-choice":
+      reason: 'Poetry''s questionnaire controller marks the invalid ITEM (data-invalid on the fieldset, one attribute for the whole answer); the choice reads it as an ancestor state (in-data-invalid) instead of the source''s per-choice data-invalid.'
+      dropped:
+      - data-invalid:border-destructive
+      added:
+      - in-data-invalid:border-destructive
     ".cn-sheet-content":
       reason: Side branches ride the cn-sheet-side-* rules; native-dialog positioning
         is re-expressed through top-layer margins.
@@ -915,7 +922,7 @@ nova:
   missing_selectors:
     reason: 'Source hooks poetry does not emit as theme rules: logical-property twins,
       overlay/scrollbar/viewport parts, and renamed hooks - carried by dictionaries,
-      the aliases layer, or poetry''s own hook names (the hook-coverage manifest records
+      the aliases layer, or poetry The -aria selectors are the source''s React Aria base (new at 4.19.0); poetry ports the Base UI base.''s own hook names (the hook-coverage manifest records
       the unworn set).'
     list:
     - ".cn-alert-dialog-overlay"
@@ -960,6 +967,38 @@ nova:
     - ".cn-sheet-overlay"
     - ".cn-tooltip-arrow-logical"
     - ".cn-tooltip-content-logical"
+    - ".cn-alert-dialog-content-aria"
+    - ".cn-alert-dialog-overlay-aria"
+    - ".cn-checkbox-aria"
+    - ".cn-combobox-content-aria"
+    - ".cn-combobox-item-aria"
+    - ".cn-command-item-aria"
+    - ".cn-command-shortcut-aria"
+    - ".cn-context-menu-content-aria"
+    - ".cn-context-menu-sub-content-aria"
+    - ".cn-dialog-content-aria"
+    - ".cn-dialog-overlay-aria"
+    - ".cn-dropdown-menu-content-aria"
+    - ".cn-dropdown-menu-sub-content-aria"
+    - ".cn-field-label-aria"
+    - ".cn-hover-card-content-aria"
+    - ".cn-label-aria"
+    - ".cn-menu-translucent-aria"
+    - ".cn-popover-content-aria"
+    - ".cn-radio-group-item-aria"
+    - ".cn-select-content-aria"
+    - ".cn-select-empty-aria"
+    - ".cn-select-item-aria"
+    - ".cn-select-value-aria"
+    - ".cn-sidebar-menu-button-aria"
+    - ".cn-switch-aria"
+    - ".cn-switch-thumb-aria"
+    - ".cn-table-cell-aria"
+    - ".cn-table-head-aria"
+    - ".cn-table-row-aria"
+    - ".cn-tabs-trigger-aria"
+    - ".cn-toggle-aria"
+    - ".cn-tooltip-content-aria"
   poetry_selectors:
     reason: 'Poetry-authored surfaces and hooks the source keeps anonymous or inline:
       the chips and toast families, focus clusters, self-identification wrappers,
@@ -997,23 +1036,6 @@ nova:
     - ".cn-link-underline-always"
     - ".cn-link-underline-hover"
     - ".cn-link-underline-none"
-    - ".cn-questionnaire"
-    - ".cn-questionnaire-actions"
-    - ".cn-questionnaire-choice"
-    - ".cn-questionnaire-choice-content"
-    - ".cn-questionnaire-choice-description"
-    - ".cn-questionnaire-choice-indicator"
-    - ".cn-questionnaire-choice-indicator-check"
-    - ".cn-questionnaire-choice-indicator-dot"
-    - ".cn-questionnaire-choices"
-    - ".cn-questionnaire-description"
-    - ".cn-questionnaire-error"
-    - ".cn-questionnaire-input"
-    - ".cn-questionnaire-input-wrapper"
-    - ".cn-questionnaire-item"
-    - ".cn-questionnaire-progress"
-    - ".cn-questionnaire-shortcut"
-    - ".cn-questionnaire-title"
     - ".cn-rtl-flip"
     - ".cn-select-viewport"
     - ".cn-sensitive-input-group:has([data-slot=sensitive-input-mask]:focus-visible)"
@@ -1253,11 +1275,6 @@ nova:
       - p-2
       added:
       - p-3
-    ".cn-checkbox":
-      reason: Disabled dimming rides the dictionary and the choice-card rule; poetry
-        has no group/field marker for the source's selector to key on.
-      dropped:
-      - group-has-disabled/field:opacity-50
     ".cn-combobox-chip":
       reason: 'The chips family is poetry-authored (postdates the port): its own metrics,
         symmetric padding around a focus-ringed remove button, background-pill treatment;
@@ -1517,15 +1534,6 @@ nova:
         choice variants mirror as classes, and disabled dimming rides the dictionary.'
       dropped:
       - data-[slot=checkbox-group]:gap-3
-    ".cn-field-label":
-      reason: 'The field family flattens the source''s nested label > field > content
-        onto the label card: cn-field-label-card carries the per-theme border/radius/padding,
-        choice variants mirror as classes, and disabled dimming rides the dictionary.'
-      dropped:
-      - "*:data-[slot=field]:p-2.5"
-      - group-data-[disabled=true]/field:opacity-50
-      - has-[>[data-slot=field]]:border
-      - has-[>[data-slot=field]]:rounded-lg
     ".cn-field-separator":
       reason: 'The field family flattens the source''s nested label > field > content
         onto the label card: cn-field-label-card carries the per-theme border/radius/padding,
@@ -1617,6 +1625,12 @@ nova:
       dropped:
       - flex
       - flex-col
+    ".cn-questionnaire-choice":
+      reason: 'Poetry''s questionnaire controller marks the invalid ITEM (data-invalid on the fieldset, one attribute for the whole answer); the choice reads it as an ancestor state (in-data-invalid) instead of the source''s per-choice data-invalid.'
+      dropped:
+      - data-invalid:border-destructive
+      added:
+      - in-data-invalid:border-destructive
     ".cn-sheet-content":
       reason: Side branches ride the cn-sheet-side-* rules; native-dialog positioning
         is re-expressed through top-layer margins.
@@ -1815,7 +1829,7 @@ mira:
   missing_selectors:
     reason: 'Source hooks poetry does not emit as theme rules: logical-property twins,
       overlay/scrollbar/viewport parts, and renamed hooks - carried by dictionaries,
-      the aliases layer, or poetry''s own hook names (the hook-coverage manifest records
+      the aliases layer, or poetry The -aria selectors are the source''s React Aria base (new at 4.19.0); poetry ports the Base UI base.''s own hook names (the hook-coverage manifest records
       the unworn set).'
     list:
     - ".cn-alert-dialog-overlay"
@@ -1860,6 +1874,37 @@ mira:
     - ".cn-sheet-overlay"
     - ".cn-tooltip-arrow-logical"
     - ".cn-tooltip-content-logical"
+    - ".cn-alert-dialog-content-aria"
+    - ".cn-alert-dialog-overlay-aria"
+    - ".cn-checkbox-aria"
+    - ".cn-combobox-content-aria"
+    - ".cn-combobox-item-aria"
+    - ".cn-command-item-aria"
+    - ".cn-command-shortcut-aria"
+    - ".cn-context-menu-content-aria"
+    - ".cn-context-menu-sub-content-aria"
+    - ".cn-dialog-content-aria"
+    - ".cn-dialog-overlay-aria"
+    - ".cn-dropdown-menu-content-aria"
+    - ".cn-dropdown-menu-sub-content-aria"
+    - ".cn-field-label-aria"
+    - ".cn-hover-card-content-aria"
+    - ".cn-label-aria"
+    - ".cn-menu-translucent-aria"
+    - ".cn-popover-content-aria"
+    - ".cn-radio-group-item-aria"
+    - ".cn-select-content-aria"
+    - ".cn-select-empty-aria"
+    - ".cn-select-item-aria"
+    - ".cn-select-value-aria"
+    - ".cn-sidebar-menu-button-aria"
+    - ".cn-switch-aria"
+    - ".cn-switch-thumb-aria"
+    - ".cn-table-cell-aria"
+    - ".cn-table-head-aria"
+    - ".cn-table-row-aria"
+    - ".cn-toggle-aria"
+    - ".cn-tooltip-content-aria"
   poetry_selectors:
     reason: 'Poetry-authored surfaces and hooks the source keeps anonymous or inline:
       the chips and toast families, focus clusters, self-identification wrappers,
@@ -1896,23 +1941,6 @@ mira:
     - ".cn-link-underline-always"
     - ".cn-link-underline-hover"
     - ".cn-link-underline-none"
-    - ".cn-questionnaire"
-    - ".cn-questionnaire-actions"
-    - ".cn-questionnaire-choice"
-    - ".cn-questionnaire-choice-content"
-    - ".cn-questionnaire-choice-description"
-    - ".cn-questionnaire-choice-indicator"
-    - ".cn-questionnaire-choice-indicator-check"
-    - ".cn-questionnaire-choice-indicator-dot"
-    - ".cn-questionnaire-choices"
-    - ".cn-questionnaire-description"
-    - ".cn-questionnaire-error"
-    - ".cn-questionnaire-input"
-    - ".cn-questionnaire-input-wrapper"
-    - ".cn-questionnaire-item"
-    - ".cn-questionnaire-progress"
-    - ".cn-questionnaire-shortcut"
-    - ".cn-questionnaire-title"
     - ".cn-rtl-flip"
     - ".cn-select-viewport"
     - ".cn-sensitive-input-group:has([data-slot=sensitive-input-mask]:focus-visible)"
@@ -2153,11 +2181,6 @@ mira:
       dropped:
       - "[--cell-radius:var(--radius-md)]"
       - "[--cell-size:--spacing(6)]"
-    ".cn-checkbox":
-      reason: Disabled dimming rides the dictionary and the choice-card rule; poetry
-        has no group/field marker for the source's selector to key on.
-      dropped:
-      - group-has-disabled/field:opacity-50
     ".cn-combobox-chip":
       reason: 'The chips family is poetry-authored (postdates the port): its own metrics,
         symmetric padding around a focus-ringed remove button, background-pill treatment;
@@ -2427,15 +2450,6 @@ mira:
         choice variants mirror as classes, and disabled dimming rides the dictionary.'
       dropped:
       - data-[slot=checkbox-group]:gap-3
-    ".cn-field-label":
-      reason: 'The field family flattens the source''s nested label > field > content
-        onto the label card: cn-field-label-card carries the per-theme border/radius/padding,
-        choice variants mirror as classes, and disabled dimming rides the dictionary.'
-      dropped:
-      - "*:data-[slot=field]:p-2"
-      - group-data-[disabled=true]/field:opacity-50
-      - has-[>[data-slot=field]]:border
-      - has-[>[data-slot=field]]:rounded-md
     ".cn-field-separator":
       reason: 'The field family flattens the source''s nested label > field > content
         onto the label card: cn-field-label-card carries the per-theme border/radius/padding,
@@ -2527,6 +2541,12 @@ mira:
       dropped:
       - flex
       - flex-col
+    ".cn-questionnaire-choice":
+      reason: 'Poetry''s questionnaire controller marks the invalid ITEM (data-invalid on the fieldset, one attribute for the whole answer); the choice reads it as an ancestor state (in-data-invalid) instead of the source''s per-choice data-invalid.'
+      dropped:
+      - data-invalid:border-destructive
+      added:
+      - in-data-invalid:border-destructive
     ".cn-sheet-content":
       reason: Side branches ride the cn-sheet-side-* rules; native-dialog positioning
         is re-expressed through top-layer margins.
@@ -2731,7 +2751,7 @@ rhea:
   missing_selectors:
     reason: 'Source hooks poetry does not emit as theme rules: logical-property twins,
       overlay/scrollbar/viewport parts, and renamed hooks - carried by dictionaries,
-      the aliases layer, or poetry''s own hook names (the hook-coverage manifest records
+      the aliases layer, or poetry The -aria selectors are the source''s React Aria base (new at 4.19.0); poetry ports the Base UI base.''s own hook names (the hook-coverage manifest records
       the unworn set).'
     list:
     - ".cn-alert-dialog-overlay"
@@ -2776,6 +2796,37 @@ rhea:
     - ".cn-sheet-overlay"
     - ".cn-tooltip-arrow-logical"
     - ".cn-tooltip-content-logical"
+    - ".cn-alert-dialog-content-aria"
+    - ".cn-alert-dialog-overlay-aria"
+    - ".cn-checkbox-aria"
+    - ".cn-combobox-content-aria"
+    - ".cn-combobox-item-aria"
+    - ".cn-command-item-aria"
+    - ".cn-command-shortcut-aria"
+    - ".cn-context-menu-content-aria"
+    - ".cn-context-menu-sub-content-aria"
+    - ".cn-dialog-content-aria"
+    - ".cn-dialog-overlay-aria"
+    - ".cn-dropdown-menu-content-aria"
+    - ".cn-dropdown-menu-sub-content-aria"
+    - ".cn-field-label-aria"
+    - ".cn-hover-card-content-aria"
+    - ".cn-label-aria"
+    - ".cn-menu-translucent-aria"
+    - ".cn-popover-content-aria"
+    - ".cn-radio-group-item-aria"
+    - ".cn-select-content-aria"
+    - ".cn-select-empty-aria"
+    - ".cn-select-item-aria"
+    - ".cn-select-value-aria"
+    - ".cn-sidebar-menu-button-aria"
+    - ".cn-switch-aria"
+    - ".cn-switch-thumb-aria"
+    - ".cn-table-cell-aria"
+    - ".cn-table-head-aria"
+    - ".cn-table-row-aria"
+    - ".cn-toggle-aria"
+    - ".cn-tooltip-content-aria"
   poetry_selectors:
     reason: 'Poetry-authored surfaces and hooks the source keeps anonymous or inline:
       the chips and toast families, focus clusters, self-identification wrappers,
@@ -2813,23 +2864,6 @@ rhea:
     - ".cn-link-underline-always"
     - ".cn-link-underline-hover"
     - ".cn-link-underline-none"
-    - ".cn-questionnaire"
-    - ".cn-questionnaire-actions"
-    - ".cn-questionnaire-choice"
-    - ".cn-questionnaire-choice-content"
-    - ".cn-questionnaire-choice-description"
-    - ".cn-questionnaire-choice-indicator"
-    - ".cn-questionnaire-choice-indicator-check"
-    - ".cn-questionnaire-choice-indicator-dot"
-    - ".cn-questionnaire-choices"
-    - ".cn-questionnaire-description"
-    - ".cn-questionnaire-error"
-    - ".cn-questionnaire-input"
-    - ".cn-questionnaire-input-wrapper"
-    - ".cn-questionnaire-item"
-    - ".cn-questionnaire-progress"
-    - ".cn-questionnaire-shortcut"
-    - ".cn-questionnaire-title"
     - ".cn-rtl-flip"
     - ".cn-select-viewport"
     - ".cn-sensitive-input-group:has([data-slot=sensitive-input-mask]:focus-visible)"
@@ -3068,11 +3102,6 @@ rhea:
       dropped:
       - "[--cell-radius:var(--radius-2xl)]"
       - "[--cell-size:--spacing(8)]"
-    ".cn-checkbox":
-      reason: Disabled dimming rides the dictionary and the choice-card rule; poetry
-        has no group/field marker for the source's selector to key on.
-      dropped:
-      - group-has-disabled/field:opacity-50
     ".cn-combobox-chip":
       reason: 'The chips family is poetry-authored (postdates the port): its own metrics,
         symmetric padding around a focus-ringed remove button, background-pill treatment;
@@ -3346,15 +3375,6 @@ rhea:
         choice variants mirror as classes, and disabled dimming rides the dictionary.'
       dropped:
       - data-[slot=checkbox-group]:gap-3
-    ".cn-field-label":
-      reason: 'The field family flattens the source''s nested label > field > content
-        onto the label card: cn-field-label-card carries the per-theme border/radius/padding,
-        choice variants mirror as classes, and disabled dimming rides the dictionary.'
-      dropped:
-      - "*:data-[slot=field]:p-4"
-      - group-data-[disabled=true]/field:opacity-50
-      - has-[>[data-slot=field]]:border
-      - has-[>[data-slot=field]]:rounded-2xl
     ".cn-field-separator":
       reason: 'The field family flattens the source''s nested label > field > content
         onto the label card: cn-field-label-card carries the per-theme border/radius/padding,
@@ -3471,11 +3491,12 @@ rhea:
       dropped:
       - flex
       - flex-col
-    ".cn-radio-group-item":
-      reason: Disabled dimming rides the dictionary and the choice-card rule; poetry
-        has no group/field marker for the source's selector to key on.
+    ".cn-questionnaire-choice":
+      reason: 'Poetry''s questionnaire controller marks the invalid ITEM (data-invalid on the fieldset, one attribute for the whole answer); the choice reads it as an ancestor state (in-data-invalid) instead of the source''s per-choice data-invalid.'
       dropped:
-      - border
+      - data-invalid:border-destructive
+      added:
+      - in-data-invalid:border-destructive
     ".cn-select-trigger":
       reason: Focus/invalid chains and sizing follow this theme's control idiom; structural
         members ride the dictionary.
@@ -3694,7 +3715,7 @@ maia:
   missing_selectors:
     reason: 'Source hooks poetry does not emit as theme rules: logical-property twins,
       overlay/scrollbar/viewport parts, and renamed hooks - carried by dictionaries,
-      the aliases layer, or poetry''s own hook names (the hook-coverage manifest records
+      the aliases layer, or poetry The -aria selectors are the source''s React Aria base (new at 4.19.0); poetry ports the Base UI base.''s own hook names (the hook-coverage manifest records
       the unworn set).'
     list:
     - ".cn-alert-dialog-overlay"
@@ -3739,6 +3760,37 @@ maia:
     - ".cn-sheet-overlay"
     - ".cn-tooltip-arrow-logical"
     - ".cn-tooltip-content-logical"
+    - ".cn-alert-dialog-content-aria"
+    - ".cn-alert-dialog-overlay-aria"
+    - ".cn-checkbox-aria"
+    - ".cn-combobox-content-aria"
+    - ".cn-combobox-item-aria"
+    - ".cn-command-item-aria"
+    - ".cn-command-shortcut-aria"
+    - ".cn-context-menu-content-aria"
+    - ".cn-context-menu-sub-content-aria"
+    - ".cn-dialog-content-aria"
+    - ".cn-dialog-overlay-aria"
+    - ".cn-dropdown-menu-content-aria"
+    - ".cn-dropdown-menu-sub-content-aria"
+    - ".cn-field-label-aria"
+    - ".cn-hover-card-content-aria"
+    - ".cn-label-aria"
+    - ".cn-menu-translucent-aria"
+    - ".cn-popover-content-aria"
+    - ".cn-radio-group-item-aria"
+    - ".cn-select-content-aria"
+    - ".cn-select-empty-aria"
+    - ".cn-select-item-aria"
+    - ".cn-select-value-aria"
+    - ".cn-sidebar-menu-button-aria"
+    - ".cn-switch-aria"
+    - ".cn-switch-thumb-aria"
+    - ".cn-table-cell-aria"
+    - ".cn-table-head-aria"
+    - ".cn-table-row-aria"
+    - ".cn-toggle-aria"
+    - ".cn-tooltip-content-aria"
   poetry_selectors:
     reason: 'Poetry-authored surfaces and hooks the source keeps anonymous or inline:
       the chips and toast families, focus clusters, self-identification wrappers,
@@ -3776,23 +3828,6 @@ maia:
     - ".cn-link-underline-always"
     - ".cn-link-underline-hover"
     - ".cn-link-underline-none"
-    - ".cn-questionnaire"
-    - ".cn-questionnaire-actions"
-    - ".cn-questionnaire-choice"
-    - ".cn-questionnaire-choice-content"
-    - ".cn-questionnaire-choice-description"
-    - ".cn-questionnaire-choice-indicator"
-    - ".cn-questionnaire-choice-indicator-check"
-    - ".cn-questionnaire-choice-indicator-dot"
-    - ".cn-questionnaire-choices"
-    - ".cn-questionnaire-description"
-    - ".cn-questionnaire-error"
-    - ".cn-questionnaire-input"
-    - ".cn-questionnaire-input-wrapper"
-    - ".cn-questionnaire-item"
-    - ".cn-questionnaire-progress"
-    - ".cn-questionnaire-shortcut"
-    - ".cn-questionnaire-title"
     - ".cn-rtl-flip"
     - ".cn-select-viewport"
     - ".cn-sensitive-input-group:has([data-slot=sensitive-input-mask]:focus-visible)"
@@ -4031,11 +4066,6 @@ maia:
       dropped:
       - "[--cell-radius:var(--radius-4xl)]"
       - "[--cell-size:--spacing(8)]"
-    ".cn-checkbox":
-      reason: Disabled dimming rides the dictionary and the choice-card rule; poetry
-        has no group/field marker for the source's selector to key on.
-      dropped:
-      - group-has-disabled/field:opacity-50
     ".cn-combobox-chip":
       reason: 'The chips family is poetry-authored (postdates the port): its own metrics,
         symmetric padding around a focus-ringed remove button, background-pill treatment;
@@ -4296,15 +4326,6 @@ maia:
         choice variants mirror as classes, and disabled dimming rides the dictionary.'
       dropped:
       - data-[slot=checkbox-group]:gap-3
-    ".cn-field-label":
-      reason: 'The field family flattens the source''s nested label > field > content
-        onto the label card: cn-field-label-card carries the per-theme border/radius/padding,
-        choice variants mirror as classes, and disabled dimming rides the dictionary.'
-      dropped:
-      - "*:data-[slot=field]:p-4"
-      - group-data-[disabled=true]/field:opacity-50
-      - has-[>[data-slot=field]]:border
-      - has-[>[data-slot=field]]:rounded-xl
     ".cn-field-separator":
       reason: 'The field family flattens the source''s nested label > field > content
         onto the label card: cn-field-label-card carries the per-theme border/radius/padding,
@@ -4402,6 +4423,12 @@ maia:
       dropped:
       - flex
       - flex-col
+    ".cn-questionnaire-choice":
+      reason: 'Poetry''s questionnaire controller marks the invalid ITEM (data-invalid on the fieldset, one attribute for the whole answer); the choice reads it as an ancestor state (in-data-invalid) instead of the source''s per-choice data-invalid.'
+      dropped:
+      - data-invalid:border-destructive
+      added:
+      - in-data-invalid:border-destructive
     ".cn-sheet-content":
       reason: Side branches ride the cn-sheet-side-* rules; native-dialog positioning
         is re-expressed through top-layer margins.
@@ -4595,7 +4622,7 @@ luma:
   missing_selectors:
     reason: 'Source hooks poetry does not emit as theme rules: logical-property twins,
       overlay/scrollbar/viewport parts, and renamed hooks - carried by dictionaries,
-      the aliases layer, or poetry''s own hook names (the hook-coverage manifest records
+      the aliases layer, or poetry The -aria selectors are the source''s React Aria base (new at 4.19.0); poetry ports the Base UI base.''s own hook names (the hook-coverage manifest records
       the unworn set).'
     list:
     - ".cn-alert-dialog-overlay"
@@ -4640,6 +4667,37 @@ luma:
     - ".cn-sheet-overlay"
     - ".cn-tooltip-arrow-logical"
     - ".cn-tooltip-content-logical"
+    - ".cn-alert-dialog-content-aria"
+    - ".cn-alert-dialog-overlay-aria"
+    - ".cn-checkbox-aria"
+    - ".cn-combobox-content-aria"
+    - ".cn-combobox-item-aria"
+    - ".cn-command-item-aria"
+    - ".cn-command-shortcut-aria"
+    - ".cn-context-menu-content-aria"
+    - ".cn-context-menu-sub-content-aria"
+    - ".cn-dialog-content-aria"
+    - ".cn-dialog-overlay-aria"
+    - ".cn-dropdown-menu-content-aria"
+    - ".cn-dropdown-menu-sub-content-aria"
+    - ".cn-field-label-aria"
+    - ".cn-hover-card-content-aria"
+    - ".cn-label-aria"
+    - ".cn-menu-translucent-aria"
+    - ".cn-popover-content-aria"
+    - ".cn-radio-group-item-aria"
+    - ".cn-select-content-aria"
+    - ".cn-select-empty-aria"
+    - ".cn-select-item-aria"
+    - ".cn-select-value-aria"
+    - ".cn-sidebar-menu-button-aria"
+    - ".cn-switch-aria"
+    - ".cn-switch-thumb-aria"
+    - ".cn-table-cell-aria"
+    - ".cn-table-head-aria"
+    - ".cn-table-row-aria"
+    - ".cn-toggle-aria"
+    - ".cn-tooltip-content-aria"
   poetry_selectors:
     reason: 'Poetry-authored surfaces and hooks the source keeps anonymous or inline:
       the chips and toast families, focus clusters, self-identification wrappers,
@@ -4677,23 +4735,6 @@ luma:
     - ".cn-link-underline-always"
     - ".cn-link-underline-hover"
     - ".cn-link-underline-none"
-    - ".cn-questionnaire"
-    - ".cn-questionnaire-actions"
-    - ".cn-questionnaire-choice"
-    - ".cn-questionnaire-choice-content"
-    - ".cn-questionnaire-choice-description"
-    - ".cn-questionnaire-choice-indicator"
-    - ".cn-questionnaire-choice-indicator-check"
-    - ".cn-questionnaire-choice-indicator-dot"
-    - ".cn-questionnaire-choices"
-    - ".cn-questionnaire-description"
-    - ".cn-questionnaire-error"
-    - ".cn-questionnaire-input"
-    - ".cn-questionnaire-input-wrapper"
-    - ".cn-questionnaire-item"
-    - ".cn-questionnaire-progress"
-    - ".cn-questionnaire-shortcut"
-    - ".cn-questionnaire-title"
     - ".cn-rtl-flip"
     - ".cn-select-viewport"
     - ".cn-sensitive-input-group:has([data-slot=sensitive-input-mask]:focus-visible)"
@@ -4932,11 +4973,6 @@ luma:
       dropped:
       - "[--cell-radius:var(--radius-4xl)]"
       - "[--cell-size:--spacing(8)]"
-    ".cn-checkbox":
-      reason: Disabled dimming rides the dictionary and the choice-card rule; poetry
-        has no group/field marker for the source's selector to key on.
-      dropped:
-      - group-has-disabled/field:opacity-50
     ".cn-combobox-chip":
       reason: 'The chips family is poetry-authored (postdates the port): its own metrics,
         symmetric padding around a focus-ringed remove button, background-pill treatment;
@@ -5200,15 +5236,6 @@ luma:
         choice variants mirror as classes, and disabled dimming rides the dictionary.'
       dropped:
       - data-[slot=checkbox-group]:gap-3
-    ".cn-field-label":
-      reason: 'The field family flattens the source''s nested label > field > content
-        onto the label card: cn-field-label-card carries the per-theme border/radius/padding,
-        choice variants mirror as classes, and disabled dimming rides the dictionary.'
-      dropped:
-      - "*:data-[slot=field]:p-4"
-      - group-data-[disabled=true]/field:opacity-50
-      - has-[>[data-slot=field]]:border
-      - has-[>[data-slot=field]]:rounded-2xl
     ".cn-field-separator":
       reason: 'The field family flattens the source''s nested label > field > content
         onto the label card: cn-field-label-card carries the per-theme border/radius/padding,
@@ -5325,11 +5352,12 @@ luma:
       dropped:
       - flex
       - flex-col
-    ".cn-radio-group-item":
-      reason: Disabled dimming rides the dictionary and the choice-card rule; poetry
-        has no group/field marker for the source's selector to key on.
+    ".cn-questionnaire-choice":
+      reason: 'Poetry''s questionnaire controller marks the invalid ITEM (data-invalid on the fieldset, one attribute for the whole answer); the choice reads it as an ancestor state (in-data-invalid) instead of the source''s per-choice data-invalid.'
       dropped:
-      - border
+      - data-invalid:border-destructive
+      added:
+      - in-data-invalid:border-destructive
     ".cn-select-trigger":
       reason: Focus/invalid chains and sizing follow this theme's control idiom; structural
         members ride the dictionary.
@@ -5538,7 +5566,7 @@ lyra:
   missing_selectors:
     reason: 'Source hooks poetry does not emit as theme rules: logical-property twins,
       overlay/scrollbar/viewport parts, and renamed hooks - carried by dictionaries,
-      the aliases layer, or poetry''s own hook names (the hook-coverage manifest records
+      the aliases layer, or poetry The -aria selectors are the source''s React Aria base (new at 4.19.0); poetry ports the Base UI base.''s own hook names (the hook-coverage manifest records
       the unworn set).'
     list:
     - ".cn-alert-dialog-overlay"
@@ -5583,6 +5611,37 @@ lyra:
     - ".cn-sheet-overlay"
     - ".cn-tooltip-arrow-logical"
     - ".cn-tooltip-content-logical"
+    - ".cn-alert-dialog-content-aria"
+    - ".cn-alert-dialog-overlay-aria"
+    - ".cn-checkbox-aria"
+    - ".cn-combobox-content-aria"
+    - ".cn-combobox-item-aria"
+    - ".cn-command-item-aria"
+    - ".cn-command-shortcut-aria"
+    - ".cn-context-menu-content-aria"
+    - ".cn-context-menu-sub-content-aria"
+    - ".cn-dialog-content-aria"
+    - ".cn-dialog-overlay-aria"
+    - ".cn-dropdown-menu-content-aria"
+    - ".cn-dropdown-menu-sub-content-aria"
+    - ".cn-field-label-aria"
+    - ".cn-hover-card-content-aria"
+    - ".cn-label-aria"
+    - ".cn-menu-translucent-aria"
+    - ".cn-popover-content-aria"
+    - ".cn-radio-group-item-aria"
+    - ".cn-select-content-aria"
+    - ".cn-select-empty-aria"
+    - ".cn-select-item-aria"
+    - ".cn-select-value-aria"
+    - ".cn-sidebar-menu-button-aria"
+    - ".cn-switch-aria"
+    - ".cn-switch-thumb-aria"
+    - ".cn-table-cell-aria"
+    - ".cn-table-head-aria"
+    - ".cn-table-row-aria"
+    - ".cn-toggle-aria"
+    - ".cn-tooltip-content-aria"
   poetry_selectors:
     reason: 'Poetry-authored surfaces and hooks the source keeps anonymous or inline:
       the chips and toast families, focus clusters, self-identification wrappers,
@@ -5624,23 +5683,6 @@ lyra:
     - ".cn-link-underline-hover"
     - ".cn-link-underline-none"
     - ".cn-menu-translucent"
-    - ".cn-questionnaire"
-    - ".cn-questionnaire-actions"
-    - ".cn-questionnaire-choice"
-    - ".cn-questionnaire-choice-content"
-    - ".cn-questionnaire-choice-description"
-    - ".cn-questionnaire-choice-indicator"
-    - ".cn-questionnaire-choice-indicator-check"
-    - ".cn-questionnaire-choice-indicator-dot"
-    - ".cn-questionnaire-choices"
-    - ".cn-questionnaire-description"
-    - ".cn-questionnaire-error"
-    - ".cn-questionnaire-input"
-    - ".cn-questionnaire-input-wrapper"
-    - ".cn-questionnaire-item"
-    - ".cn-questionnaire-progress"
-    - ".cn-questionnaire-shortcut"
-    - ".cn-questionnaire-title"
     - ".cn-rtl-flip"
     - ".cn-select-viewport"
     - ".cn-sensitive-input-group:has([data-slot=sensitive-input-mask]:focus-visible)"
@@ -5850,11 +5892,6 @@ lyra:
       - p-2
       added:
       - p-3
-    ".cn-checkbox":
-      reason: Disabled dimming rides the dictionary and the choice-card rule; poetry
-        has no group/field marker for the source's selector to key on.
-      dropped:
-      - group-has-disabled/field:opacity-50
     ".cn-combobox-chip":
       reason: 'The chips family is poetry-authored (postdates the port): its own metrics,
         symmetric padding around a focus-ringed remove button, background-pill treatment;
@@ -6083,15 +6120,6 @@ lyra:
         choice variants mirror as classes, and disabled dimming rides the dictionary.'
       dropped:
       - data-[slot=checkbox-group]:gap-3
-    ".cn-field-label":
-      reason: 'The field family flattens the source''s nested label > field > content
-        onto the label card: cn-field-label-card carries the per-theme border/radius/padding,
-        choice variants mirror as classes, and disabled dimming rides the dictionary.'
-      dropped:
-      - "*:data-[slot=field]:p-2"
-      - group-data-[disabled=true]/field:opacity-50
-      - has-[>[data-slot=field]]:border
-      - has-[>[data-slot=field]]:rounded-none
     ".cn-field-separator":
       reason: 'The field family flattens the source''s nested label > field > content
         onto the label card: cn-field-label-card carries the per-theme border/radius/padding,
@@ -6183,6 +6211,12 @@ lyra:
       dropped:
       - flex
       - flex-col
+    ".cn-questionnaire-choice":
+      reason: 'Poetry''s questionnaire controller marks the invalid ITEM (data-invalid on the fieldset, one attribute for the whole answer); the choice reads it as an ancestor state (in-data-invalid) instead of the source''s per-choice data-invalid.'
+      dropped:
+      - data-invalid:border-destructive
+      added:
+      - in-data-invalid:border-destructive
     ".cn-sheet-content":
       reason: Side branches ride the cn-sheet-side-* rules; native-dialog positioning
         is re-expressed through top-layer margins.
@@ -6372,7 +6406,7 @@ sera:
   missing_selectors:
     reason: 'Source hooks poetry does not emit as theme rules: logical-property twins,
       overlay/scrollbar/viewport parts, and renamed hooks - carried by dictionaries,
-      the aliases layer, or poetry''s own hook names (the hook-coverage manifest records
+      the aliases layer, or poetry The -aria selectors are the source''s React Aria base (new at 4.19.0); poetry ports the Base UI base.''s own hook names (the hook-coverage manifest records
       the unworn set).'
     list:
     - ".cn-alert-dialog-overlay"
@@ -6417,6 +6451,37 @@ sera:
     - ".cn-sheet-overlay"
     - ".cn-tooltip-arrow-logical"
     - ".cn-tooltip-content-logical"
+    - ".cn-alert-dialog-content-aria"
+    - ".cn-alert-dialog-overlay-aria"
+    - ".cn-checkbox-aria"
+    - ".cn-combobox-content-aria"
+    - ".cn-combobox-item-aria"
+    - ".cn-command-item-aria"
+    - ".cn-command-shortcut-aria"
+    - ".cn-context-menu-content-aria"
+    - ".cn-context-menu-sub-content-aria"
+    - ".cn-dialog-content-aria"
+    - ".cn-dialog-overlay-aria"
+    - ".cn-dropdown-menu-content-aria"
+    - ".cn-dropdown-menu-sub-content-aria"
+    - ".cn-field-label-aria"
+    - ".cn-hover-card-content-aria"
+    - ".cn-label-aria"
+    - ".cn-menu-translucent-aria"
+    - ".cn-popover-content-aria"
+    - ".cn-radio-group-item-aria"
+    - ".cn-select-content-aria"
+    - ".cn-select-empty-aria"
+    - ".cn-select-item-aria"
+    - ".cn-select-value-aria"
+    - ".cn-sidebar-menu-button-aria"
+    - ".cn-switch-aria"
+    - ".cn-switch-thumb-aria"
+    - ".cn-table-cell-aria"
+    - ".cn-table-head-aria"
+    - ".cn-table-row-aria"
+    - ".cn-toggle-aria"
+    - ".cn-tooltip-content-aria"
   poetry_selectors:
     reason: 'Poetry-authored surfaces and hooks the source keeps anonymous or inline:
       the chips and toast families, focus clusters, self-identification wrappers,
@@ -6456,23 +6521,6 @@ sera:
     - ".cn-link-underline-always"
     - ".cn-link-underline-hover"
     - ".cn-link-underline-none"
-    - ".cn-questionnaire"
-    - ".cn-questionnaire-actions"
-    - ".cn-questionnaire-choice"
-    - ".cn-questionnaire-choice-content"
-    - ".cn-questionnaire-choice-description"
-    - ".cn-questionnaire-choice-indicator"
-    - ".cn-questionnaire-choice-indicator-check"
-    - ".cn-questionnaire-choice-indicator-dot"
-    - ".cn-questionnaire-choices"
-    - ".cn-questionnaire-description"
-    - ".cn-questionnaire-error"
-    - ".cn-questionnaire-input"
-    - ".cn-questionnaire-input-wrapper"
-    - ".cn-questionnaire-item"
-    - ".cn-questionnaire-progress"
-    - ".cn-questionnaire-shortcut"
-    - ".cn-questionnaire-title"
     - ".cn-rtl-flip"
     - ".cn-select-viewport"
     - ".cn-sensitive-input-group:has([data-slot=sensitive-input-mask]:focus-visible)"
@@ -6687,11 +6735,6 @@ sera:
       dropped:
       - "[--cell-radius:0]"
       - "[--cell-size:--spacing(8)]"
-    ".cn-checkbox":
-      reason: Disabled dimming rides the dictionary and the choice-card rule; poetry
-        has no group/field marker for the source's selector to key on.
-      dropped:
-      - group-has-disabled/field:opacity-50
     ".cn-combobox-chip":
       reason: 'The chips family is poetry-authored (postdates the port): its own metrics,
         symmetric padding around a focus-ringed remove button, background-pill treatment;
@@ -6940,15 +6983,6 @@ sera:
         choice variants mirror as classes, and disabled dimming rides the dictionary.'
       dropped:
       - data-[slot=checkbox-group]:gap-3
-    ".cn-field-label":
-      reason: 'The field family flattens the source''s nested label > field > content
-        onto the label card: cn-field-label-card carries the per-theme border/radius/padding,
-        choice variants mirror as classes, and disabled dimming rides the dictionary.'
-      dropped:
-      - "*:data-[slot=field]:p-4"
-      - group-data-[disabled=true]/field:opacity-50
-      - has-[>[data-slot=field]]:border
-      - has-[>[data-slot=field]]:rounded-none
     ".cn-field-separator":
       reason: 'The field family flattens the source''s nested label > field > content
         onto the label card: cn-field-label-card carries the per-theme border/radius/padding,
@@ -7044,11 +7078,12 @@ sera:
       dropped:
       - flex
       - flex-col
-    ".cn-radio-group-item":
-      reason: Disabled dimming rides the dictionary and the choice-card rule; poetry
-        has no group/field marker for the source's selector to key on.
+    ".cn-questionnaire-choice":
+      reason: 'Poetry''s questionnaire controller marks the invalid ITEM (data-invalid on the fieldset, one attribute for the whole answer); the choice reads it as an ancestor state (in-data-invalid) instead of the source''s per-choice data-invalid.'
       dropped:
-      - border
+      - data-invalid:border-destructive
+      added:
+      - in-data-invalid:border-destructive
     ".cn-sheet-content":
       reason: Side branches ride the cn-sheet-side-* rules; native-dialog positioning
         is re-expressed through top-layer margins.
