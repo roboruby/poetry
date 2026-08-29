@@ -11,6 +11,15 @@ bin/rails "poetry:design:extract[stripe.com]"
 # next: bin/rails "poetry:design:import[tmp/poetry/design_extract/stripe.com/DESIGN.md]"
 ```
 
+## Install
+
+```ruby
+# Gemfile
+gem "poetry-extract"
+```
+
+The fetch step calls [context.dev](https://context.dev) (`CONTEXT_DEV_API_KEY`) and the compose step calls Anthropic (`ANTHROPIC_API_KEY`); set both in the environment before running the task.
+
 ## How it works
 
 1. **Fetch** — the site's styleguide, brand colors, a screenshot, and the

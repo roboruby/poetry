@@ -4,3 +4,4 @@
 *.gem
 /.yardoc
 /doc/
+.DS_Store
