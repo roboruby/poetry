@@ -33,14 +33,16 @@ import { scoreItem } from "@poetry/controllers/helpers/filter_rank"
 // as hidden + data-hidden, highlight as data-highlighted +
 // aria-activedescendant, group visibility derived - a Turbo Stream can
 // append items mid-session and the next keystroke ranks them.
-const INPUT_SELECTOR = '[data-slot="command-input"]'
-const LIST_SELECTOR = '[data-slot="command-list"]'
-const ITEM_SELECTOR = '[data-slot="command-item"]'
-const ITEM_TEXT_SELECTOR = '[data-slot="command-item-text"]'
-const GROUP_SELECTOR = '[data-slot="command-group"]'
-const SEPARATOR_SELECTOR = '[data-slot="command-separator"]'
-const EMPTY_SELECTOR = '[data-slot="command-empty"]'
-const STATUS_SELECTOR = '[data-slot="command-status"]'
+// Each part matches both families' vocabularies: Command's own names and the
+// combobox's (the source's names for the same parts; the engine rides both).
+const INPUT_SELECTOR = '[data-slot="command-input"], [data-slot="combobox-input"], [data-slot="combobox-chip-input"]'
+const LIST_SELECTOR = '[data-slot="command-list"], [data-slot="combobox-list"]'
+const ITEM_SELECTOR = '[data-slot="command-item"], [data-slot="combobox-item"]'
+const ITEM_TEXT_SELECTOR = '[data-slot="command-item-text"], [data-slot="combobox-item-text"]'
+const GROUP_SELECTOR = '[data-slot="command-group"], [data-slot="combobox-group"]'
+const SEPARATOR_SELECTOR = '[data-slot="command-separator"], [data-slot="combobox-separator"]'
+const EMPTY_SELECTOR = '[data-slot="command-empty"], [data-slot="combobox-empty"]'
+const STATUS_SELECTOR = '[data-slot="command-status"], [data-slot="combobox-status"]'
 
 const EVENT_PREFIX = "poetry:command"
 

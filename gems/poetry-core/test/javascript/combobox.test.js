@@ -59,25 +59,25 @@ const markup = ({ value = "", open = false, modal = false, showClear = false } =
       <button type="button" id="clear" data-slot="combobox-clear" aria-label="Clear selection"
               ${value ? "" : "hidden"} data-action="poetry--core--combobox#clear"></button>` : ""}
       <div id="content" data-slot="combobox-content" tabindex="-1" data-closed ${open ? "" : "hidden"}>
-        <div id="command" data-slot="command" data-controller="poetry--core--command">
-          <div data-slot="command-input-wrapper">
-            <input id="input" data-slot="command-input" type="text" role="combobox"
+        <div id="command" data-slot="combobox-command" data-controller="poetry--core--command">
+          <div data-slot="combobox-input-wrapper">
+            <input id="input" data-slot="combobox-input" type="text" role="combobox"
                    aria-expanded="true" aria-controls="list" aria-autocomplete="list"
                    aria-label="Filter options"
                    data-action="input->poetry--core--command#filterInput keydown->poetry--core--command#keydown">
           </div>
-          <div id="list" data-slot="command-list" role="listbox" tabindex="-1" aria-label="Frameworks">
-            <div id="empty" data-slot="command-empty" hidden>No results found.</div>
+          <div id="list" data-slot="combobox-list" role="listbox" tabindex="-1" aria-label="Frameworks">
+            <div id="empty" data-slot="combobox-empty" hidden>No results found.</div>
             ${FRAMEWORKS.map(([v, label]) => `
-              <div id="item-${v}" data-slot="command-item" role="option"
+              <div id="item-${v}" data-slot="combobox-item" role="option"
                    data-poetry-collection-item data-value="${v}"
                    aria-selected="${v === value}" ${v === value ? "data-selected" : ""}
                    data-action="click->poetry--core--command#activate pointermove->poetry--core--command#pointerHighlight">
-                <span data-slot="command-item-text">${label}</span>
+                <span data-slot="combobox-item-text">${label}</span>
                 <span data-slot="combobox-item-indicator" aria-hidden="true"></span>
               </div>`).join("")}
           </div>
-          <span id="status" data-slot="command-status" role="status" aria-live="polite"></span>
+          <span id="status" data-slot="combobox-status" role="status" aria-live="polite"></span>
         </div>
       </div>
     </div>
@@ -508,7 +508,7 @@ describe("poetry--core--combobox", () => {
 
 // The MULTIPLE mode (Base UI's multiple + input-inside layout): the chips
 // FIELD replaces the trigger - the filter input lives inline after the
-// chips (still data-slot=command-input; the engine rides the ROOT), the
+// chips (the inline input is data-slot=combobox-chip-input; the engine rides the ROOT), the
 // native is a <select multiple> posting name[], selection TOGGLES with the
 // popup STAYING OPEN, and chips take real DOM focus with their own
 // keyboard map. The markup mirrors the component's multiple render.
@@ -535,7 +535,7 @@ const multipleMarkup = ({ values = [], open = false } = {}) => `
          data-remove-label="Remove %{label}"
          data-action="mousedown->poetry--core--combobox#chipsPointerdown">
       ${values.map((value) => chipMarkup(value)).join("")}
-      <input id="input" data-slot="command-input" type="text" role="combobox"
+      <input id="input" data-slot="combobox-chip-input" type="text" role="combobox"
              aria-expanded="false" aria-controls="list" aria-autocomplete="list"
              aria-label="Frameworks" placeholder="Select frameworks…"
              data-action="input->poetry--core--command#filterInput keydown->poetry--core--command#keydown keydown->poetry--core--combobox#inputKeydown">
@@ -545,19 +545,19 @@ const multipleMarkup = ({ values = [], open = false } = {}) => `
           data-action="click->poetry--core--combobox#removeChip"></button></div></template>
     </div>
     <div id="content" data-slot="combobox-content" tabindex="-1" data-closed ${open ? "" : "hidden"}>
-      <div id="list" data-slot="command-list" role="listbox" tabindex="-1" aria-label="Frameworks"
+      <div id="list" data-slot="combobox-list" role="listbox" tabindex="-1" aria-label="Frameworks"
            aria-multiselectable="true">
-        <div id="empty" data-slot="command-empty" hidden>No results found.</div>
+        <div id="empty" data-slot="combobox-empty" hidden>No results found.</div>
         ${FRAMEWORKS.map(([v, label]) => `
-          <div id="item-${v}" data-slot="command-item" role="option"
+          <div id="item-${v}" data-slot="combobox-item" role="option"
                data-poetry-collection-item data-value="${v}"
                aria-selected="${values.includes(v)}" ${values.includes(v) ? "data-selected" : ""}
                data-action="click->poetry--core--command#activate pointermove->poetry--core--command#pointerHighlight">
-            <span data-slot="command-item-text">${label}</span>
+            <span data-slot="combobox-item-text">${label}</span>
             <span data-slot="combobox-item-indicator" aria-hidden="true"></span>
           </div>`).join("")}
       </div>
-      <span id="status" data-slot="command-status" role="status" aria-live="polite"></span>
+      <span id="status" data-slot="combobox-status" role="status" aria-live="polite"></span>
     </div>
   </div>`
 

@@ -45,8 +45,8 @@ import { tabbableWithin } from "@poetry/controllers/helpers/tabbable"
 // LIST (the value Value carries a JSON array over the same String seam),
 // the native is a <select multiple> posting name[], and the trigger is
 // replaced by the chips FIELD - one chip per committed value IN VALUE
-// ORDER with the filter input inline after them (data-slot=command-input,
-// so the engine contract holds; the engine itself rides the ROOT).
+// ORDER with the filter input inline after them (data-slot=combobox-chip-input,
+// which the engine resolves too; the engine itself rides the ROOT).
 // Selection TOGGLES and the popup STAYS OPEN; chips take REAL DOM focus
 // (:focus-visible styles it - never data-highlighted) and focusing a chip
 // closes the popup; Backspace on the empty input removes the last chip;
@@ -61,10 +61,10 @@ const CLEAR_SELECTOR = '[data-slot="combobox-clear"]'
 const CHIPS_SELECTOR = '[data-slot="combobox-chips"]'
 const CHIP_SELECTOR = '[data-slot="combobox-chip"]'
 const CHIP_REMOVE_SELECTOR = '[data-slot="combobox-chip-remove"]'
-const COMMAND_SELECTOR = '[data-slot="command"]'
-const INPUT_SELECTOR = '[data-slot="command-input"]'
-const ITEM_SELECTOR = '[data-slot="command-item"]'
-const ITEM_TEXT_SELECTOR = '[data-slot="command-item-text"]'
+const COMMAND_SELECTOR = '[data-slot="combobox-command"]'
+const INPUT_SELECTOR = '[data-slot="combobox-input"], [data-slot="combobox-chip-input"]'
+const ITEM_SELECTOR = '[data-slot="combobox-item"]'
+const ITEM_TEXT_SELECTOR = '[data-slot="combobox-item-text"]'
 
 const EVENT_PREFIX = "poetry:combobox"
 const COMMAND_IDENTIFIER = "poetry--core--command"

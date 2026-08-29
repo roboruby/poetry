@@ -21,7 +21,7 @@ export const SCORE_HIDDEN = 0
 // word-boundary definition).
 const WORD_SPLIT = /[\s\-_/]+/
 
-const ITEM_TEXT_SELECTOR = '[data-slot="command-item-text"]'
+const ITEM_TEXT_SELECTOR = '[data-slot="command-item-text"], [data-slot="combobox-item-text"]'
 
 // trim + lowercase + NFKD-fold combining marks: diacritic-insensitive
 // matching for free in every locale that marks are decorative in (folding
