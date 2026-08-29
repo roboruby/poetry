@@ -13,19 +13,27 @@ Gem::Specification.new do |spec|
   spec.homepage = "https://github.com/roboruby/poetry-core"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.3.0"
-  spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry-core"
-  spec.metadata["changelog_uri"] = "https://github.com/roboruby/poetry-core/blob/main/CHANGELOG.md"
 
   # Require MFA for gem pushes (supply-chain protection).
+  spec.metadata["homepage_uri"] = "https://github.com/roboruby/poetry-core"
+  spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry-core"
+  spec.metadata["changelog_uri"] = "https://github.com/roboruby/poetry-core/blob/main/CHANGELOG.md"
+  spec.metadata["bug_tracker_uri"] = "https://github.com/roboruby/poetry-core/issues"
   spec.metadata["rubygems_mfa_required"] = "true"
 
   # Files shipped in the gem come from git; tooling/test/docs are excluded.
   gemspec = File.basename(__FILE__)
+  # Dev-only surfaces never ship: the test/dummy host, scripts, rake tasks,
+  # internal docs and design exports, the fidelity ledgers' snapshots,
+  # editor/tooling files, and OS litter.
+  dev_only_dirs = %w[bin/ test/ docs/ script/ rakelib/ eval/ yard/ tmp/ .github/ .ruby-lsp/ .yardoc/
+                     config/theme_fidelity/ config/dictionary_fidelity/ config/upstream_
+                     config/hook_coverage config/theme_states]
+  dev_only_files = %w[Gemfile Gemfile.lock Rakefile AGENTS.md .gitignore .rubocop.yml .yardopts .yard_coverage
+                      .herb.yml .DS_Store package.json package-lock.json vitest.config.js]
   spec.files = IO.popen(%w[git ls-files -z], chdir: __dir__, err: IO::NULL) do |ls|
     ls.readlines("\x0", chomp: true).reject do |f|
-      (f == gemspec) ||
-        f.start_with?(*%w[bin/ test/ docs/ Gemfile .gitignore .github/ .rubocop.yml])
+      (f == gemspec) || f.start_with?(*dev_only_dirs) || dev_only_files.include?(File.basename(f))
     end
   end
   spec.bindir = "exe"
