@@ -2,7 +2,7 @@
    scoped. Wrapped fragments in ./styles/ are GENERATED from the sibling
    gems by script/build_style_registry.rb - regenerate, don't hand-edit.
 
-   Mechanism (upstream shadcn d0fae528, apps/v4): each fragment is nested
+   Mechanism (upstream shadcn 1773ecfe, the shadcn@4.19.0 release, apps/v4): each fragment is nested
    inside .style-<name> { ... } and imported into layer(base); the
    @custom-variant declarations below additionally allow markup-level
    opt-ins like style-vega:rounded-none. Exactly one .style-<name> class
