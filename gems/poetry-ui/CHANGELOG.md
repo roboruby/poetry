@@ -10,6 +10,7 @@
 
 ### Fixed
 
+- Questionnaire (mira, lyra): the choice indicator sat 1.5px below the text line - the source's optical nudge is tuned for the default style's 14px text, and these themes set the choice to text-xs. Dropped there and recorded in the fidelity ledger.
 - Questionnaire: the checkbox check glyph sat in the corner of its box (an unsized icon inside a wrapper span fell back to its 24px intrinsic size); the icon now carries the indicator-check part itself, sized by every theme. A `checked_choices` preview holds the checked geometry in the goldens, and the visual walk fails on any icon larger than its box.
 - CommandDialog: the panel carries the source's structural `overflow-hidden p-0`, so vega/nova/lyra no longer render the palette inside the dialog's own padding.
 - Combobox: the popup's list now carries the option inset (`cn-combobox-list`, with the group label on `cn-combobox-label` and groups unpadded), so ungrouped options no longer sit flush against the search field, and the popup's column layout lets long lists scroll to their last option under every theme's cap.

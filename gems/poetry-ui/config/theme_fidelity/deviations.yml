@@ -2547,6 +2547,11 @@ mira:
       - data-invalid:border-destructive
       added:
       - in-data-invalid:border-destructive
+    ".cn-questionnaire-choice-indicator":
+      reason: 'The source''s indicator nudge (1.8px, 2px with a description) centers a 16px box on the default style''s 14px text line (19.25px); this theme sets the choice to text-xs, whose 16.5px line needs 0.25px - the nudge pushed the box 1.5px below the text. Dropped; the box centers on the line by construction.'
+      dropped:
+      - group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5
+      - translate-y-[--spacing(0.45)]
     ".cn-sheet-content":
       reason: Side branches ride the cn-sheet-side-* rules; native-dialog positioning
         is re-expressed through top-layer margins.
@@ -6217,6 +6222,11 @@ lyra:
       - data-invalid:border-destructive
       added:
       - in-data-invalid:border-destructive
+    ".cn-questionnaire-choice-indicator":
+      reason: 'The source''s indicator nudge (1.8px, 2px with a description) centers a 16px box on the default style''s 14px text line (19.25px); this theme sets the choice to text-xs, whose 16.5px line needs 0.25px - the nudge pushed the box 1.5px below the text. Dropped; the box centers on the line by construction.'
+      dropped:
+      - group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5
+      - translate-y-[--spacing(0.45)]
     ".cn-sheet-content":
       reason: Side branches ride the cn-sheet-side-* rules; native-dialog positioning
         is re-expressed through top-layer margins.
