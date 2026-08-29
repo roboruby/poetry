@@ -4,3 +4,4 @@ test/dummy/tmp/
 test/dummy/log/
 /.yardoc
 /doc/
+.DS_Store
