@@ -32,7 +32,8 @@
                    <%= tag.attributes({ (choice.checked ? "data-checked" : "data-unchecked") => "" }) %>>
             <span aria-hidden="true" data-slot="questionnaire-choice-indicator" class="<%= css(:choice_indicator) %>">
               <span data-slot="questionnaire-choice-indicator-dot" class="<%= css(:choice_indicator_dot) %>"></span>
-              <span data-slot="questionnaire-choice-indicator-check" class="<%= css(:choice_indicator_check) %>"><%= render Poetry::Ui::Icon::Component.new(name: :check) %></span>
+              <%= render Poetry::Ui::Icon::Component.new(name: :check, class: css(:choice_indicator_check),
+                                                          data: { slot: "questionnaire-choice-indicator-check" }) %>
             </span>
             <span data-slot="questionnaire-choice-label" class="<%= css(:choice_label) %>">
               <span><%= choice.label %></span>

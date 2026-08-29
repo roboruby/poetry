@@ -173,6 +173,32 @@ def poetry_ui_axe_violations(session)
   result["violations"]
 end
 
+# Every visible svg whose box exceeds its nearest boxed ancestor's by more
+# than 2px (a 16px check centered in a 14px slot is the source's own shape;
+# a 24px fallback in a 14px box is the bug), skipping ancestors that clip.
+# Returns "<slot or tag> WxH in WxH" strings.
+POETRY_UI_ICON_OVERFLOW_JS = <<~JS
+  (() => {
+    const out = [];
+    for (const svg of document.querySelectorAll("svg")) {
+      const r = svg.getBoundingClientRect();
+      if (!r.width || !r.height) continue;
+      let parent = svg.parentElement;
+      while (parent && (!parent.getBoundingClientRect().width || getComputedStyle(parent).display === "contents")) {
+        parent = parent.parentElement;
+      }
+      if (!parent) continue;
+      const clip = getComputedStyle(parent);
+      if (clip.overflow !== "visible" || clip.clipPath !== "none") continue;
+      const p = parent.getBoundingClientRect();
+      if (r.width <= p.width + 2 && r.height <= p.height + 2) continue;
+      const label = svg.closest("[data-slot]")?.getAttribute("data-slot") || parent.tagName.toLowerCase();
+      out.push(`${label} ${Math.round(r.width)}x${Math.round(r.height)} in ${Math.round(p.width)}x${Math.round(p.height)}`);
+    }
+    return out;
+  })()
+JS
+
 namespace :test do
   desc "Run axe (#{POETRY_AXE_RULESETS.join(", ")}) against every registry component's preview " \
        "examples in headless Chrome (not in the default gate - needs Chrome)"
@@ -272,6 +298,13 @@ namespace :test do
       baseline = baseline_dir.join(name)
       candidate = Poetry::Ui.root.join("tmp", "visual_candidate.png")
       session.driver.save_screenshot(candidate.to_s, full: true)
+
+      # Geometry a golden cannot prove on its own: an icon that renders
+      # larger than the box holding it (an unsized svg falls back to its
+      # 24px intrinsic size and hangs off a 14px indicator). Visible svgs
+      # only; clipped parents (sr-only, overflow-hidden) hide the excess.
+      overflowing = session.evaluate_script(POETRY_UI_ICON_OVERFLOW_JS)
+      failures << "#{name}: icon larger than its box - #{overflowing.join("; ")}" unless overflowing.empty?
 
       if rebaseline || !baseline.exist?
         FileUtils.mv(candidate, baseline)

@@ -51,6 +51,26 @@ module Poetry
           end
         end
 
+        # Server-rendered CHECKED choices of both kinds on one screen: the
+        # checkbox's check glyph and the radio's dot, seated in their boxes -
+        # the geometry a golden must hold (an unsized glyph hangs off the box).
+        def checked_choices
+          render_component(url: "#", shortcuts: :letters, class: "w-full max-w-md") do |q|
+            q.with_progress
+            q.with_item(name: "signals", title: "What should every update include?",
+                        description: "Two are already selected.", multiple: true) do |item|
+              item.with_choice(value: "progress", label: "Progress", checked: true)
+              item.with_choice(value: "decisions", label: "Decisions",
+                               description: "Which options were weighed and what won.", checked: true)
+              item.with_choice(value: "risks", label: "Risks")
+            end
+            q.with_item(name: "timing", title: "When should work begin?", required: true) do |item|
+              item.with_choice(value: "now", label: "Start now", checked: true)
+              item.with_choice(value: "backlog", label: "Add it to the backlog")
+            end
+          end
+        end
+
         # Number shortcuts + a disabled choice + a pre-filled free answer.
         def numbers_and_disabled
           render_component(url: "#", shortcuts: :numbers, class: "w-full max-w-md") do |q|
