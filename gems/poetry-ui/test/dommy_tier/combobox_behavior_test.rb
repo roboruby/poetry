@@ -66,7 +66,7 @@ module DommyTier
     end
 
     def input_value(harness)
-      harness.evaluate(%(document.querySelector('[data-slot="command-input"]').value))
+      harness.evaluate(%(document.querySelector('[data-slot="combobox-input"]').value))
     end
 
     def record_events(harness)
@@ -109,14 +109,14 @@ module DommyTier
                       "the family's first popup without roving focus"
       assert_equal "trigger-press", reason
 
-      assert_equal "command-input",
+      assert_equal "combobox-input",
                    harness.evaluate("document.activeElement.getAttribute('data-slot')"),
                    "open focuses the INPUT for every reason (a typing session, not a picking session)"
 
       highlighted_value, descendant, highlighted_id = harness.evaluate(<<~JS)
         (() => {
           const highlighted = document.querySelector("[data-highlighted]");
-          const input = document.querySelector('[data-slot="command-input"]');
+          const input = document.querySelector('[data-slot="combobox-input"]');
           return [highlighted ? highlighted.dataset.value : null,
                   input.getAttribute("aria-activedescendant"),
                   highlighted ? highlighted.id : null];
@@ -148,11 +148,11 @@ module DommyTier
                      .getAttribute("data-open-seed"))),
                    "the typed char rides data-open-seed (poetry extension on the keyboard reason)"
       assert_equal "v", input_value(harness), "the typed char lands in the input - never lost"
-      assert_equal "command-input",
+      assert_equal "combobox-input",
                    harness.evaluate("document.activeElement.getAttribute('data-slot')")
 
       visible = harness.evaluate(<<~JS)
-        Array.from(document.querySelectorAll('[data-slot="command-item"]:not([hidden])'))
+        Array.from(document.querySelectorAll('[data-slot="combobox-item"]:not([hidden])'))
           .map((item) => item.dataset.value)
       JS
 
@@ -184,7 +184,7 @@ module DommyTier
                    "a REAL bubbling change fires on the native select (Turbo listeners work unmodified)"
 
       twins = harness.evaluate(<<~JS)
-        Array.from(document.querySelectorAll('[data-slot="command-item"]'))
+        Array.from(document.querySelectorAll('[data-slot="combobox-item"]'))
           .map((item) => [item.dataset.value, item.getAttribute("aria-selected"),
                           item.hasAttribute("data-selected")])
       JS
@@ -205,7 +205,7 @@ module DommyTier
 
       open_via_click(harness)
       harness.execute(<<~JS)
-        const input = document.querySelector('[data-slot="command-input"]');
+        const input = document.querySelector('[data-slot="combobox-input"]');
         input.value = "nux";
         input.dispatchEvent(new Event("input", { bubbles: true }));
       JS
@@ -296,12 +296,12 @@ module DommyTier
       harness.pump(rounds: 10)
 
       assert_no_js_errors harness
-      assert_equal "command-input",
+      assert_equal "combobox-chip-input",
                    harness.evaluate("document.activeElement.getAttribute('data-slot')"),
                    "a chips-area press focuses the INLINE input"
 
       harness.execute(<<~JS)
-        document.querySelector('[data-slot="command-item"][data-value="next.js"]')
+        document.querySelector('[data-slot="combobox-item"][data-value="next.js"]')
           .dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
       JS
       harness.pump(rounds: 10)

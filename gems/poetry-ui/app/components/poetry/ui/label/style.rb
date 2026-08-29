@@ -5,7 +5,8 @@ module Poetry
     module Label
       # Re-expressed through the cn-* theme layer.
       class Style < Poetry::Core::Style
-        base "cn-label flex items-center select-none peer-disabled:cursor-not-allowed"
+        base "cn-label flex items-center select-none peer-disabled:cursor-not-allowed " \
+             "group-data-[disabled=true]:pointer-events-none"
       end
     end
   end

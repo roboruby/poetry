@@ -88,7 +88,8 @@ module Poetry
                 "text-left outline-hidden transition-[width,height,padding] " \
                 "group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! " \
                 "disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none " \
-                "aria-disabled:opacity-50 [&_svg]:shrink-0 [&>span:last-child]:truncate"
+                "aria-disabled:opacity-50 [&_svg]:shrink-0 [&>span:last-child]:truncate " \
+                "[&_svg]:size-4 group/menu-button"
         element :menu_button_default, "cn-sidebar-menu-button-size-default"
 
         # The item-corner action + badge - positions and
@@ -116,7 +117,7 @@ module Poetry
                 "cn-sidebar-menu-badge pointer-events-none absolute right-1 flex items-center " \
                 "justify-center select-none group-data-[collapsible=icon]:hidden " \
                 "peer-data-[size=default]/menu-button:top-1.5 peer-data-[size=lg]/menu-button:top-2.5 " \
-                "peer-data-[size=sm]/menu-button:top-1"
+                "peer-data-[size=sm]/menu-button:top-1 tabular-nums"
         element :menu_button_sm, "cn-sidebar-menu-button-size-sm"
         element :menu_button_lg, "cn-sidebar-menu-button-size-lg group-data-[collapsible=icon]:p-0!"
 

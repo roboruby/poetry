@@ -14,7 +14,7 @@ module Poetry
       class Style < Poetry::Core::Style
         base "cn-button inline-flex shrink-0 items-center justify-center whitespace-nowrap " \
              "transition-all outline-none disabled:pointer-events-none disabled:opacity-50 " \
-             "[&_svg]:pointer-events-none [&_svg]:shrink-0"
+             "[&_svg]:pointer-events-none [&_svg]:shrink-0 group/button select-none"
 
         variant :variant, {
           default: "cn-button-variant-default",

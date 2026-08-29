@@ -87,13 +87,13 @@ module Poetry
           attrs = {
             # aria-hidden, never role=separator: inside role=listbox a
             # separator role is flagged (the select/command axe rule).
-            "data-slot" => "command-separator", "aria-hidden" => "true",
+            "data-slot" => "combobox-separator", "aria-hidden" => "true",
             "class" => Command::Style.css(:separator, class: options.delete(:class))
           }
           content_tag(:div, nil, attrs.merge(options))
         end
 
-        # COMBOBOX-OWNED addition onto each command-item: the
+        # COMBOBOX-OWNED addition onto each combobox-item: the
         # committed-value check - TRAILING (ms-auto), not Select's
         # absolute gutter. Server-rendered always; the item's
         # data-selected absence hides it in CSS while unselected.
@@ -149,10 +149,11 @@ module Poetry
                        selected_value.present? && @value == selected_value
                      end
           attrs = {
-            "id" => item_id, "data-slot" => "command-item", "role" => "option",
+            "id" => item_id, "data-slot" => "combobox-item", "role" => "option",
             "data-poetry-collection-item" => "", "data-value" => @value,
             "aria-selected" => selected.to_s,
-            "class" => Command::Style.css(:item, class: html_attributes.delete(:class))
+            "class" => Command::Style.css(:item, class: [Style.css(:item_fill),
+                                                         html_attributes.delete(:class)].compact.join(" "))
           }.merge(stimulus_attributes(:command) do |command|
             command.with_action(:activate, on: :click)
             command.with_action(:pointer_highlight, on: :pointermove)
@@ -170,7 +171,7 @@ module Poetry
           attrs["data-filter-value"] = @filter_value if @filter_value
           attrs["data-always-render"] = "" if @always_render
           content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, html_attributes)) do
-            safe_join([content_tag(:span, label_html, "data-slot" => "command-item-text",
+            safe_join([content_tag(:span, label_html, "data-slot" => "combobox-item-text",
                                                       "class" => Style.css(:item_text)),
                        item_indicator])
           end
@@ -213,7 +214,7 @@ module Poetry
         end
 
         def call
-          attrs = { "data-slot" => "command-group", "role" => "group", "aria-labelledby" => heading_id }
+          attrs = { "data-slot" => "combobox-group", "role" => "group", "aria-labelledby" => heading_id }
           # The group is unpadded and hookless (the list carries the
           # inset) - a class attribute only when the caller passes one.
           classes = Style.css(:group, class: html_attributes.delete(:class))
@@ -235,7 +236,7 @@ module Poetry
         end
 
         def heading_part
-          content_tag(:div, @heading_text, "data-slot" => "command-group-heading", "id" => heading_id,
+          content_tag(:div, @heading_text, "data-slot" => "combobox-label", "id" => heading_id,
                                            "class" => Style.css(:label))
         end
       end
@@ -474,11 +475,14 @@ module Poetry
                "data-placeholder" => "placeholder: is given - carries the placeholder text so " \
                                      "the controller can restore it"
              }
+        part "combobox-chip-input", "The inline filter input beside the chips (multiple: only) - the one " \
+                                    "typing surface; the source's chip input"
         part "combobox-content", "The popper-positioned popup housing the embedded Command " \
                                  "anatomy - open/closed and the resolved placement ride here",
              states: {
                "data-open" => "popup is open (the controller flips the pair at runtime)",
                "data-closed" => "popup is closed or animating out (the server-rendered state)",
+               "data-chips" => "multiple: - chips mode; the popup's minimum width follows the chips field",
                "data-side" => { condition: "the placement side - server-rendered from side:, " \
                                            "rewritten to the resolved side by popper on open",
                                 values: SIDES.map(&:to_s) },
@@ -499,27 +503,27 @@ module Poetry
                                "returns focus to the trigger. Wears the html hidden attribute " \
                                "while no value is committed (the controller flips it on every " \
                                "commit; the chevron swap derives from that one flip in CSS)"
-        part "command", "The embedded engine root - Command's anatomy rendered here against its " \
-                        "own controller (composition at the markup contract)"
-        part "command-input-wrapper", "The input row - search icon + filter input above the list"
-        part "command-search-icon", "Decorative search glyph beside the input"
-        part "command-input", "The filter input (role=combobox) - the typing session and " \
-                              "aria-activedescendant live here. Single: in the popup with its own " \
-                              "accessible name; multiple: INLINE in the chips frame (the " \
-                              "input-inside layout), where the field label reaches it",
+        part "combobox-command", "The embedded engine root - Command's anatomy rendered here against its " \
+                                 "own controller (composition at the markup contract)"
+        part "combobox-input-wrapper", "The input row - search icon + filter input above the list"
+        part "combobox-search-icon", "Decorative search glyph beside the input"
+        part "combobox-input", "The filter input (role=combobox) - the typing session and " \
+                               "aria-activedescendant live here. Single: in the popup with its own " \
+                               "accessible name; multiple: INLINE in the chips frame (the " \
+                               "input-inside layout), where the field label reaches it",
              states: {
                "data-popup-open" => "multiple: the popup is open (bare while open, absent while " \
                                     "closed - the input carries the flip; single's trigger owns it)"
              }
-        part "command-list", "THE role=listbox - the aria-controls target of both combobox roles"
-        part "command-empty", "Zero-matches message - rendered hidden; the engine unhides it " \
-                              "when the filter pass leaves no visible items"
-        part "command-group", "role=group labelled by its heading - hidden by the engine when " \
-                              "every member item is filtered out"
-        part "command-group-heading", "The group heading - styled, no ARIA role (the group " \
-                                      "points at it via aria-labelledby)"
-        part "command-item", "One role=option div wearing BOTH meanings - a Command item " \
-                             "(filtering + highlight) AND Select's committed-value surface",
+        part "combobox-list", "THE role=listbox - the aria-controls target of both combobox roles"
+        part "combobox-empty", "Zero-matches message - rendered hidden; the engine unhides it " \
+                               "when the filter pass leaves no visible items"
+        part "combobox-group", "role=group labelled by its heading - hidden by the engine when " \
+                               "every member item is filtered out"
+        part "combobox-label", "The group heading - styled, no ARIA role (the group " \
+                               "points at it via aria-labelledby)"
+        part "combobox-item", "One role=option div wearing BOTH meanings - a Command item " \
+                              "(filtering + highlight) AND Select's committed-value surface",
              states: {
                "data-value" => "always - the option's committable value (the native <option> twin)",
                "data-selected" => "the option is committed (bare; absent while unselected - the " \
@@ -531,14 +535,14 @@ module Poetry
                "data-hidden" => "the filter scored the item zero (the engine pairs it with " \
                                 "hidden; never rendered server-side)"
              }
-        part "command-item-text", "The option's label span - the filter/typematch text source"
+        part "combobox-item-text", "The option's label span - the filter/typematch text source"
         part "combobox-item-indicator", "The trailing committed-value check (ms-auto per the " \
                                         "demo) - the parent item's data-selected absence hides it"
-        part "command-separator", "Decorative divider (aria-hidden) - hidden by the engine " \
-                                  "whenever the query is non-empty"
-        part "command-loading", "Pending affordance (role=status) - rendered hidden; the HOST " \
-                                "unhides it around async refills"
-        part "command-status", "The engine's sr-only polite result-count live region",
+        part "combobox-separator", "Decorative divider (aria-hidden) - hidden by the engine " \
+                                   "whenever the query is non-empty"
+        part "combobox-loading", "Pending affordance (role=status) - rendered hidden; the HOST " \
+                                 "unhides it around async refills"
+        part "combobox-status", "The engine's sr-only polite result-count live region",
              states: {
                "data-zero" => "always - the localized zero-results template",
                "data-one" => "always - the localized one-result template",
@@ -789,7 +793,7 @@ module Poetry
         # each item, and could not retune the input's height.
         # @api private
         def command_attributes
-          { "data-slot" => "command", "class" => Command::Style.css }
+          { "data-slot" => "combobox-command", "class" => Command::Style.css }
             .merge(stimulus_attributes_for(:command_part))
         end
 
@@ -801,12 +805,14 @@ module Poetry
         # @api private
         def input_attributes
           attrs = {
-            "type" => "text", "id" => input_id, "data-slot" => "command-input",
+            "type" => "text", "id" => input_id, "data-slot" => "combobox-input",
             "role" => "combobox", "aria-expanded" => "true", "aria-controls" => list_id,
             "aria-autocomplete" => "list", "autocomplete" => "off", "autocorrect" => "off",
             "spellcheck" => "false", "aria-label" => t("poetry.combobox.filter_label"),
             "class" => Command::Style.css(:input, class: css(:input_fill))
           }
+          # The source stamps chips mode on the popup (its min-width follows the field).
+          attrs["data-chips"] = "true" if multiple
           attrs["placeholder"] = search_placeholder if search_placeholder.present?
           attrs["disabled"] = true if disabled
           attrs["aria-activedescendant"] = option_set.highlighted_id if option_set.highlighted_id
@@ -817,12 +823,12 @@ module Poetry
         # THE listbox - the aria-controls target of both combobox roles
         # (the trigger resolves the popup through it). multiple declares
         # aria-multiselectable. Wears the combobox's own list rule (the
-        # inset rides the list; Command's slot names stay - the engine
-        # resolves parts by data-slot).
+        # inset rides the list; the parts wear the source's combobox
+        # vocabulary - the engine resolves either family's slot names).
         # @api private
         def list_attributes
           attrs = {
-            "id" => list_id, "data-slot" => "command-list", "role" => "listbox",
+            "id" => list_id, "data-slot" => "combobox-list", "role" => "listbox",
             "tabindex" => "-1", "aria-label" => t("poetry.command.list_label"),
             "class" => css(:list)
           }
@@ -835,14 +841,14 @@ module Poetry
         # @api private
         def empty_part
           content_tag(:div, empty? ? empty : t("poetry.combobox.empty"),
-                      "data-slot" => "command-empty", "hidden" => true, "class" => Command::Style.css(:empty))
+                      "data-slot" => "combobox-empty", "hidden" => true, "class" => Command::Style.css(:empty))
         end
 
         # Pending affordance (role=status) - rendered hidden; the HOST
         # unhides it around async refills (Command's part, shared keys).
         # @api private
         def loading_part
-          content_tag(:div, "data-slot" => "command-loading", "role" => "status",
+          content_tag(:div, "data-slot" => "combobox-loading", "role" => "status",
                             "hidden" => true, "class" => Command::Style.css(:loading)) do
             safe_join([content_tag(:span, t("poetry.command.loading"), class: Command::Style.css(:sr_only)),
                        loading].compact)
@@ -854,7 +860,7 @@ module Poetry
         # @api private
         def status_part
           content_tag(:span, nil,
-                      "data-slot" => "command-status", "role" => "status", "aria-live" => "polite",
+                      "data-slot" => "combobox-status", "role" => "status", "aria-live" => "polite",
                       "class" => Command::Style.css(:status),
                       "data-zero" => t("poetry.command.results", count: 0),
                       "data-one" => t("poetry.command.results", count: 1),
@@ -975,7 +981,7 @@ module Poetry
         # text (the placeholder rides it; chips are the value display).
         def inline_input_attributes
           attrs = {
-            "type" => "text", "id" => trigger_id, "data-slot" => "command-input",
+            "type" => "text", "id" => trigger_id, "data-slot" => "combobox-chip-input",
             "role" => "combobox", "aria-expanded" => open.to_s, "aria-controls" => list_id,
             "aria-haspopup" => "listbox", "aria-autocomplete" => "list", "autocomplete" => "off",
             "autocorrect" => "off", "spellcheck" => "false", "class" => css(:chip_input)

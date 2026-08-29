@@ -16,7 +16,7 @@ module Poetry
         element :header, "cn-table-header"
         element :body, "cn-table-body"
         element :footer, "cn-table-footer"
-        element :row, "cn-table-row transition-colors"
+        element :row, "cn-table-row transition-colors has-aria-expanded:bg-muted/50"
         element :head, "cn-table-head"
         element :cell, "cn-table-cell"
         element :caption, "cn-table-caption"

@@ -14,7 +14,7 @@ module Poetry
         # dropped until a dictionary consumer references it - an unconsumed
         # named group never reaches the compiled CSS, and the verify gate
         # (rightly) rejects classes no build can produce.
-        base "relative flex size-full min-h-0 flex-col overflow-hidden"
+        base "relative flex size-full min-h-0 flex-col overflow-hidden group/message-scroller"
 
         element :viewport, "size-full min-h-0 min-w-0 scroll-fade-b scrollbar-thin scrollbar-gutter-stable " \
                            "overflow-y-auto overscroll-contain contain-content data-autoscrolling:scrollbar-none"

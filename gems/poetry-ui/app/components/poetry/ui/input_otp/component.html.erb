@@ -17,7 +17,7 @@
       <%# aria-hidden DESPITE the source's bare role=separator - between
           chunks of ONE field a semantic separator is AT noise (recorded
           divergence; the role stays for styling/self-id parity). %>
-      <div data-slot="input-otp-separator" class="cn-input-otp-separator" role="separator" aria-hidden="true">
+      <div data-slot="input-otp-separator" class="<%= css(:separator) %>" role="separator" aria-hidden="true">
         <%= render Poetry::Ui::Icon::Component.new(name: :minus) %>
       </div>
     <% end %>

@@ -10,7 +10,10 @@ module Poetry
       # split-side conflict rule).
       class Style < Poetry::Core::Style
         base "cn-badge inline-flex w-fit shrink-0 items-center justify-center overflow-hidden " \
-             "whitespace-nowrap [&>svg]:pointer-events-none"
+             "whitespace-nowrap [&>svg]:pointer-events-none aria-invalid:border-destructive " \
+             "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 " \
+             "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 " \
+             "group/badge"
 
         # success/warning/info: the poetry-original soft status vocabulary
         # (upstream Badge has no status variants); every theme carries the

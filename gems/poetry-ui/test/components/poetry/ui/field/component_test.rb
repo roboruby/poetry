@@ -35,10 +35,12 @@ module Poetry
           # The layout rides the dictionary (upstream cva parity): control
           # auto-places left, label pins to column 2, hint stacks under it.
           assert_includes root["class"], "grid-cols-[auto_1fr]"
-          assert_includes root["class"], "[&>[data-slot=label]]:col-start-2"
-          assert_includes root["class"], "[&>[data-slot=field-hint]]:col-start-2"
+          assert_includes root["class"], "[&>[data-slot=field-label]]:col-start-2"
+          assert_includes root["class"], "[&>[data-slot=field-description]]:col-start-2"
           # DOM order is unchanged - label first (the for= association).
-          assert_equal %w[label field-hint], root.css("[data-slot]").map { |el| el["data-slot"] } - ["field"],
+          assert_equal %w[field-label field-description], root.css("[data-slot]").map { |el|
+            el["data-slot"]
+          } - ["field"],
                        "the grid reorders visually, never the DOM"
         end
 
@@ -51,7 +53,7 @@ module Poetry
             %(<input id="field-plan">).html_safe
           end
 
-          hint = html.at_css("[data-slot=field-hint]")
+          hint = html.at_css("[data-slot=field-description]")
 
           assert_equal "/docs", hint.at_css("a")["href"]
           assert_includes component.control_attributes["aria-describedby"], component.hint_id
@@ -63,7 +65,7 @@ module Poetry
             %(<input id="field-esc">).html_safe
           end
 
-          hint = html.at_css("[data-slot=field-hint]")
+          hint = html.at_css("[data-slot=field-description]")
           # capture escapes a plain-String return: no elements survive.
           assert_nil hint.at_css("b")
           assert_nil hint.at_css("script")
@@ -98,9 +100,9 @@ module Poetry
 
           slots = root.element_children.map { |el| el["data-slot"] || el.name }
 
-          assert_equal "field-hint", slots[1], "hint renders between label and control: #{slots.inspect}"
+          assert_equal "field-description", slots[1], "hint renders between label and control: #{slots.inspect}"
           # The aria contract is untouched - visual order only.
-          assert root.at_css("[data-slot=field-hint][id]")
+          assert root.at_css("[data-slot=field-description][id]")
         end
 
         def test_an_unknown_hint_position_raises
@@ -119,7 +121,7 @@ module Poetry
           # skin flips, the hint stays a hint, no error <p> renders.
           assert_equal "true", root["data-invalid"]
           assert_nil root.at_css("[data-slot=field-error]")
-          assert root.at_css("[data-slot=field-hint]")
+          assert root.at_css("[data-slot=field-description]")
           attrs = component.control_attributes
 
           assert attrs["aria-invalid"]
@@ -137,8 +139,8 @@ module Poetry
           assert_includes root["class"], "grid-cols-[1fr_auto]"
           # Label + hint pin LEFT; the control auto-places into column 2 on
           # the label line (upstream's content-first horizontal Field).
-          assert_includes root["class"], "[&>[data-slot=label]]:col-start-1"
-          assert_includes root["class"], "[&>[data-slot=field-hint]]:col-start-1"
+          assert_includes root["class"], "[&>[data-slot=field-label]]:col-start-1"
+          assert_includes root["class"], "[&>[data-slot=field-description]]:col-start-1"
           assert_includes root["class"], "[&>[data-slot=field-error]]:col-start-1"
         end
 
@@ -159,12 +161,12 @@ module Poetry
           # plain vertical stack, so all placement classes carry the
           # container prefix and none appear bare.
           assert_includes root["class"], "@md/field-group:grid-cols-[1fr_auto]"
-          assert_includes root["class"], "@md/field-group:[&>[data-slot=label]]:col-start-1"
-          assert_includes root["class"], "@md/field-group:[&>[data-slot=field-hint]]:col-start-1"
+          assert_includes root["class"], "@md/field-group:[&>[data-slot=field-label]]:col-start-1"
+          assert_includes root["class"], "@md/field-group:[&>[data-slot=field-description]]:col-start-1"
           # The control spans the label+hint pair and centers against it
           # (upstream's FieldContent geometry on the flat quartet DOM).
           assert_includes root["class"],
-                          "@md/field-group:[&>:not([data-slot=label],[data-slot=field-hint]," \
+                          "@md/field-group:[&>:not([data-slot=field-label],[data-slot=field-description]," \
                           "[data-slot=field-error])]:row-span-2"
           refute_match(/(?<!field-group:)grid-cols-\[1fr_auto\]/, root["class"],
                        "responsive placement must stay behind the @container gate")

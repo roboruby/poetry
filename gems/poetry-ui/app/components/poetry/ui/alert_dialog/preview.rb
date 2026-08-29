@@ -17,6 +17,19 @@ module Poetry
           end
         end
 
+        # The media well above the title (an icon), the header's third row.
+        def with_media
+          render_component do |dialog|
+            dialog.with_trigger(variant: :outline) { "Archive project" }
+            dialog.with_media { embed(Icon::Component.new(name: :archive)) }
+            dialog.with_title { "Archive this project?" }
+            dialog.with_description { "Archived projects are read-only until restored." }
+            dialog.with_cancel { "Keep it" }
+            dialog.with_action { "Archive" }
+            ""
+          end
+        end
+
         # Initial focus lands on Cancel (autofocus - APG: focus the
         # least-destructive action); the compact sm size for quick confirms.
         def cancel_autofocus

@@ -106,6 +106,7 @@ module Poetry
                "data-disabled" => "with_item(disabled: true) - stamped beside the native disabled " \
                                   "attribute; roving focus filters it out at query time"
              }
+        part "accordion-trigger-icon", "The chevron svg inside the trigger (aria-hidden) - rotates with the item"
         part "accordion-content", "The role=region panel - the presence animation and the measured " \
                                   "height var ride here",
              states: {
@@ -183,7 +184,8 @@ module Poetry
         end
 
         def chevron
-          render(Icon::Component.new(name: :"chevron-down", class: css(:indicator)))
+          render(Icon::Component.new(name: :"chevron-down", class: css(:indicator),
+                                     data: { slot: "accordion-trigger-icon" }))
         end
 
         private :open_values, :root_attributes

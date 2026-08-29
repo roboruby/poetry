@@ -53,7 +53,7 @@ components:
     - indicator
     - content
     - inner
-    capsule: 3be341c9616e
+    capsule: 206ee68faf91
     controllers:
     - identifier: poetry--core--accordion
       targets: []
@@ -122,6 +122,9 @@ components:
       - attr: data-disabled
         condition: 'with_item(disabled: true) - stamped beside the native disabled
           attribute; roving focus filters it out at query time'
+    - name: accordion-trigger-icon
+      description: The chevron svg inside the trigger (aria-hidden) - rotates with
+        the item
     - name: accordion-content
       description: The role=region panel - the presence animation and the measured
         height var ride here
@@ -190,7 +193,7 @@ components:
     - title
     - action
     - description
-    capsule: '0358ff42034b'
+    capsule: 5fb1cebf9cca
     agent_rules:
     - Use poetry_alert for inline callouts - it carries role/aria-live; never a hand-rolled
       div.
@@ -283,7 +286,7 @@ components:
     - description
     - footer
     - footer_size_sm
-    capsule: f7242a603af4
+    capsule: e5c1096d0fe6
     controllers:
     - identifier: poetry--core--dialog
       targets:
@@ -336,6 +339,9 @@ components:
     - name: alert-dialog-header
       description: Title block - holds the optional media well, the title, and the
         description
+    - name: alert-dialog-media
+      description: The optional media well above the title (an icon or illustration)
+        - the header's first row; absent unless with_media is used
     - name: alert-dialog-title
       description: The heading - the alertdialog's accessible name (required slot)
     - name: alert-dialog-description
@@ -474,7 +480,7 @@ components:
     - actions
     - trigger
     - group
-    capsule: 11c088ffad9e
+    capsule: 5391289a07dd
     agent_rules:
     - 'State is server-owned: render data-upload-state and flip it by Turbo Stream
       replace - never toggle it in JS.'
@@ -745,7 +751,7 @@ components:
     - badge
     - group
     - group_count
-    capsule: e30772918548
+    capsule: 51971e7f585d
     agent_rules:
     - 'label: (the person''s name) is REQUIRED - it is the avatar''s accessible name
       (role=img).'
@@ -803,7 +809,7 @@ components:
     slots: []
     description: A small count or status descriptor.
     elements: []
-    capsule: c5b15aa26b77
+    capsule: 393fe8c869c4
     agent_rules:
     - Badges are non-interactive status labels - never attach click handlers; use
       Button for actions. The one interactive form is href:, which renders the badge
@@ -1076,7 +1082,7 @@ components:
     description: Triggers an action or event, such as submitting a form or opening
       a dialog.
     elements: []
-    capsule: 2f3c60cb16e5
+    capsule: 297bdbb8b63a
     agent_rules:
     - Use poetry_button - never a raw <button> with hand-written Tailwind.
     - 'The visible text is the content block: poetry_button { "Save" }. label: is
@@ -1217,7 +1223,7 @@ components:
     - week
     - day_cell
     - day
-    capsule: 9f255af15b4c
+    capsule: '09741944533c'
     controllers:
     - identifier: poetry--core--calendar
       targets:
@@ -1450,7 +1456,7 @@ components:
     - action
     - content
     - footer
-    capsule: 193d896af096
+    capsule: fb03834eac4a
     agent_rules:
     - Compose with the slots (title/description/action/footer) - never rebuild the
       header grid by hand.
@@ -2151,6 +2157,7 @@ components:
     - group
     - label
     - input_fill
+    - item_fill
     - item_text
     - item_indicator
     - item_indicator_state
@@ -2166,7 +2173,7 @@ components:
     - trigger_icon
     - indicator_check
     - chip_remove_icon
-    capsule: 1ab356dff1fc
+    capsule: df99f3bd77bb
     controllers:
     - identifier: poetry--core--combobox
       targets: []
@@ -2280,6 +2287,9 @@ components:
       - attr: data-placeholder
         condition: 'placeholder: is given - carries the placeholder text so the controller
           can restore it'
+    - name: combobox-chip-input
+      description: 'The inline filter input beside the chips (multiple: only) - the
+        one typing surface; the source''s chip input'
     - name: combobox-content
       description: The popper-positioned popup housing the embedded Command anatomy
         - open/closed and the resolved placement ride here
@@ -2288,6 +2298,9 @@ components:
         condition: popup is open (the controller flips the pair at runtime)
       - attr: data-closed
         condition: popup is closed or animating out (the server-rendered state)
+      - attr: data-chips
+        condition: 'multiple: - chips mode; the popup''s minimum width follows the
+          chips field'
       - attr: data-side
         condition: the placement side - server-rendered from side:, rewritten to the
           resolved side by popper on open
@@ -2321,14 +2334,14 @@ components:
         the trigger. Wears the html hidden attribute while no value is committed (the
         controller flips it on every commit; the chevron swap derives from that one
         flip in CSS)'
-    - name: command
+    - name: combobox-command
       description: The embedded engine root - Command's anatomy rendered here against
         its own controller (composition at the markup contract)
-    - name: command-input-wrapper
+    - name: combobox-input-wrapper
       description: The input row - search icon + filter input above the list
-    - name: command-search-icon
+    - name: combobox-search-icon
       description: Decorative search glyph beside the input
-    - name: command-input
+    - name: combobox-input
       description: 'The filter input (role=combobox) - the typing session and aria-activedescendant
         live here. Single: in the popup with its own accessible name; multiple: INLINE
         in the chips frame (the input-inside layout), where the field label reaches
@@ -2337,18 +2350,18 @@ components:
       - attr: data-popup-open
         condition: 'multiple: the popup is open (bare while open, absent while closed
           - the input carries the flip; single''s trigger owns it)'
-    - name: command-list
+    - name: combobox-list
       description: THE role=listbox - the aria-controls target of both combobox roles
-    - name: command-empty
+    - name: combobox-empty
       description: Zero-matches message - rendered hidden; the engine unhides it when
         the filter pass leaves no visible items
-    - name: command-group
+    - name: combobox-group
       description: role=group labelled by its heading - hidden by the engine when
         every member item is filtered out
-    - name: command-group-heading
+    - name: combobox-label
       description: The group heading - styled, no ARIA role (the group points at it
         via aria-labelledby)
-    - name: command-item
+    - name: combobox-item
       description: One role=option div wearing BOTH meanings - a Command item (filtering
         + highlight) AND Select's committed-value surface
       states:
@@ -2365,18 +2378,18 @@ components:
       - attr: data-hidden
         condition: the filter scored the item zero (the engine pairs it with hidden;
           never rendered server-side)
-    - name: command-item-text
+    - name: combobox-item-text
       description: The option's label span - the filter/typematch text source
     - name: combobox-item-indicator
       description: The trailing committed-value check (ms-auto per the demo) - the
         parent item's data-selected absence hides it
-    - name: command-separator
+    - name: combobox-separator
       description: Decorative divider (aria-hidden) - hidden by the engine whenever
         the query is non-empty
-    - name: command-loading
+    - name: combobox-loading
       description: Pending affordance (role=status) - rendered hidden; the HOST unhides
         it around async refills
-    - name: command-status
+    - name: combobox-status
       description: The engine's sr-only polite result-count live region
       states:
       - attr: data-zero
@@ -2612,7 +2625,7 @@ components:
     - search_icon
     - dialog_content
     - dialog_close
-    capsule: e5a56dd8d201
+    capsule: aa4134b2c480
     controllers:
     - identifier: poetry--core--command
       targets: []
@@ -3225,7 +3238,7 @@ components:
     - indicator_check
     - indicator_circle
     - sub_indicator
-    capsule: b281fa4ea8f5
+    capsule: 782677850eea
     controllers:
     - identifier: poetry--core--context-menu
       targets: []
@@ -3396,9 +3409,12 @@ components:
         condition: the radio's value
       - attr: data-disabled
         condition: item is disabled (always written together with aria-disabled)
-    - name: context-menu-item-indicator
-      description: The check/circle glyph slot inside checkbox and radio items - state
-        rides the parent item; the glyph stays decorative
+    - name: context-menu-checkbox-item-indicator
+      description: The check glyph inside checkbox items (aria-hidden; the item carries
+        the checked state)
+    - name: context-menu-radio-item-indicator
+      description: The circle glyph inside radio items (aria-hidden; the item carries
+        the checked state)
     - name: context-menu-separator
       description: role=separator rule between groups
     - name: context-menu-shortcut
@@ -4169,7 +4185,7 @@ components:
     - title
     - description
     - body
-    capsule: 483e972fceb8
+    capsule: b42028165fc3
     controllers:
     - identifier: poetry--core--drawer
       targets:
@@ -4658,7 +4674,7 @@ components:
     - indicator_check
     - indicator_circle
     - sub_indicator
-    capsule: f38561464410
+    capsule: 7e706784fb17
     controllers:
     - identifier: poetry--core--menu
       targets: []
@@ -4818,9 +4834,12 @@ components:
         condition: the radio's value
       - attr: data-disabled
         condition: item is disabled (always written together with aria-disabled)
-    - name: dropdown-menu-item-indicator
-      description: The check/circle glyph slot inside checkbox and radio items - state
-        rides the parent item; the glyph stays decorative
+    - name: dropdown-menu-checkbox-item-indicator
+      description: The check glyph inside checkbox items (aria-hidden; the item carries
+        the checked state)
+    - name: dropdown-menu-radio-item-indicator
+      description: The circle glyph inside radio items (aria-hidden; the item carries
+        the checked state)
     - name: dropdown-menu-separator
       description: role=separator rule between groups
     - name: dropdown-menu-shortcut
@@ -5060,9 +5079,10 @@ components:
     slot_extras:
     - hint
     elements:
+    - label
     - hint
     - error
-    capsule: a9242109ee53
+    capsule: 98d08f080836
     agent_rules:
     - Wire the control with field.control_attributes - never hand-write aria-describedby.
     - 'Error text arrives via error: (from model errors upstream) - never a bare red
@@ -5093,8 +5113,12 @@ components:
         - horizontal
         - setting
         - responsive
-    - name: field-hint
-      description: The hint <p> - its id lands in the control's aria-describedby
+    - name: field-label
+      description: The Label (composed) wearing the source's field-label slot - names
+        the control
+    - name: field-description
+      description: The hint <p> (the source's description) - its id lands in the control's
+        aria-describedby
     - name: field-error
       description: 'The error <p> - present only when error: is set; its id leads
         the control''s aria-describedby'
@@ -5774,10 +5798,11 @@ components:
     elements:
     - input
     - group
+    - separator
     - slot
     - caret
     - caret_bar
-    capsule: 60050e29b0eb
+    capsule: 760a5db749e1
     controllers:
     - identifier: poetry--core--otp
       targets:
@@ -6005,7 +6030,7 @@ components:
     slots: []
     description: An accessible caption bound to a form control.
     elements: []
-    capsule: 2652e627917b
+    capsule: b19260dfcda4
     agent_rules:
     - Every control gets a Label wired via for_id - placeholder text is never the
       label.
@@ -6446,7 +6471,7 @@ components:
     - indicator_check
     - indicator_circle
     - sub_indicator
-    capsule: 9bb56392d738
+    capsule: '041619b53311'
     controllers:
     - identifier: poetry--core--menu
       targets: []
@@ -6634,9 +6659,12 @@ components:
         condition: the radio's value
       - attr: data-disabled
         condition: item is disabled (always written together with aria-disabled)
-    - name: menubar-item-indicator
-      description: The check/circle glyph slot inside checkbox and radio items - state
-        rides the parent item; the glyph stays decorative
+    - name: menubar-checkbox-item-indicator
+      description: The check glyph slot inside checkbox items - aria-hidden; the item's
+        aria-checked/data-checked pair carries state
+    - name: menubar-radio-item-indicator
+      description: The circle glyph slot inside radio items - aria-hidden; the item's
+        aria-checked/data-checked pair carries state
     - name: menubar-separator
       description: role=separator rule between groups
     - name: menubar-shortcut
@@ -6867,7 +6895,7 @@ components:
     - content
     - item
     - button
-    capsule: ca2c7a64375e
+    capsule: cc8c5beaabc7
     controllers:
     - identifier: poetry--core--message-scroller
       targets:
@@ -7148,7 +7176,7 @@ components:
     - icon
     - option
     - optgroup
-    capsule: 0aac4b538ae8
+    capsule: 3177e4e698fb
     agent_rules:
     - This is a REAL <select> - use it for plain picking; the JS Select is for styled
       options.
@@ -8292,7 +8320,7 @@ components:
     - card_content
     - card_title
     - card_description
-    capsule: 4f1c89f116fd
+    capsule: e7c32dc8920b
     controllers:
     - identifier: poetry--core--radio-group
       targets:
@@ -8777,7 +8805,7 @@ components:
     - trigger_icon
     - indicator_check
     - scroll_icon
-    capsule: 74ca1c8083d8
+    capsule: 36f97d269d44
     controllers:
     - identifier: poetry--core--popper
       targets:
@@ -9478,7 +9506,7 @@ components:
     - menu_sub
     - menu_sub_item
     - menu_sub_button
-    capsule: 0120d6bd54d7
+    capsule: 1d7dc103b48b
     controllers:
     - identifier: poetry--core--sidebar
       targets:
@@ -9762,7 +9790,7 @@ components:
     - anchor_start
     - anchor_end
     - anchor_mid
-    capsule: 6b28ca91b803
+    capsule: 8e986162e801
     controllers:
     - identifier: poetry--core--slider
       targets:
@@ -10058,7 +10086,7 @@ components:
     elements:
     - thumb
     - input
-    capsule: d116e5cc39c8
+    capsule: e75df2910144
     controllers:
     - identifier: poetry--core--checked
       targets: []
@@ -10152,7 +10180,7 @@ components:
     - head
     - cell
     - caption
-    capsule: ec028efa9111
+    capsule: 22778ae1ac48
     agent_rules:
     - Compose the table with the part helpers (poetry_table_header/_body/_row/_head/_cell)
       - they carry the data-slot + classes onto real thead/tbody/tr/th/td.
@@ -10235,7 +10263,7 @@ components:
     - list_line
     - trigger
     - content
-    capsule: 9c382bb49130
+    capsule: 437020f84809
     controllers:
     - identifier: poetry--core--roving-focus
       targets: []
@@ -10783,7 +10811,7 @@ components:
     - description
     - action
     - close
-    capsule: 60bfa5117191
+    capsule: bcc3d06692ee
     controllers:
     - identifier: poetry--core--toast
       targets:
@@ -11440,7 +11468,7 @@ components:
     elements:
     - content
     - arrow
-    capsule: 6ecc2cdc3f1e
+    capsule: d3c5133d3fb9
     controllers:
     - identifier: poetry--core--popper
       targets:

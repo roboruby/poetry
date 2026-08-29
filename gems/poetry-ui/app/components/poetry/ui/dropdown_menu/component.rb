@@ -199,9 +199,10 @@ module Poetry
                "data-value" => "the radio's value",
                "data-disabled" => "item is disabled (always written together with aria-disabled)"
              }
-        part "dropdown-menu-item-indicator", "The check/circle glyph slot inside checkbox and radio " \
-                                             "items - state rides the parent item; the glyph stays " \
-                                             "decorative"
+        part "dropdown-menu-checkbox-item-indicator",
+             "The check glyph inside checkbox items (aria-hidden; the item carries the checked state)"
+        part "dropdown-menu-radio-item-indicator",
+             "The circle glyph inside radio items (aria-hidden; the item carries the checked state)"
         part "dropdown-menu-separator", "role=separator rule between groups"
         part "dropdown-menu-shortcut", "The trailing keybinding HINT - aria-hidden, never binds the key"
         part "dropdown-menu-sub", "A submenu scope - hosts its own popper around the sub trigger/" \

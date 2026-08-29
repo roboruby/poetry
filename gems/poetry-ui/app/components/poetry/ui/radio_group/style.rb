@@ -11,7 +11,7 @@ module Poetry
       # hidden native form bridge and :row the label pairing row - both
       # structural, no cn names.
       class Style < Poetry::Core::Style
-        base "cn-radio-group"
+        base "cn-radio-group w-full"
 
         element :item, "cn-radio-group-item group/radio-group-item peer relative aspect-square " \
                        "shrink-0 border outline-none after:absolute after:-inset-x-3 " \

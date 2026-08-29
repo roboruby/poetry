@@ -204,7 +204,7 @@ module Poetry
         # The group is named by the VISIBLE Field label (aria-labelledby) -
         # for= would be inert on a div (Chrome flags it), and a duplicated
         # aria-label string could drift from the rendered text.
-        group_label = fragment.css('label[data-slot="label"]').find { |label| label.text == "Plan" }
+        group_label = fragment.css('label[data-slot="field-label"]').find { |label| label.text == "Plan" }
 
         assert_equal group_label["id"], root["aria-labelledby"]
         assert_nil group_label["for"], "no inert label[for] pointing at the group div"
@@ -529,7 +529,7 @@ module Poetry
                      "the display shows the LABEL of the object's value"
         refute trigger.key?("data-placeholder")
         # The twin-write pair lands on the object's option.
-        selected = fragment.css('[data-slot="command-item"][aria-selected="true"]')
+        selected = fragment.css('[data-slot="combobox-item"][aria-selected="true"]')
         selected_values = selected.map { |item| item["data-value"] }
 
         assert_equal ["design"], selected_values
@@ -544,7 +544,7 @@ module Poetry
         assert trigger.key?("data-placeholder")
         assert_equal "Choose department", fragment.css('[data-slot="combobox-value"]').first.text
         assert native.css('option[value=""]').first.key?("selected")
-        assert_empty fragment.css('[data-slot="command-item"][aria-selected="true"]')
+        assert_empty fragment.css('[data-slot="combobox-item"][aria-selected="true"]')
       end
 
       def test_poetry_combobox_model_errors_flow_onto_the_trigger
@@ -571,10 +571,10 @@ module Poetry
         html = ApplicationController.renderer.render(inline: GROUPED_COMBOBOX_ERB,
                                                      locals: { model: Ticket.new(region: "de") }, layout: false)
         fragment = Nokogiri::HTML5.fragment(html)
-        groups = fragment.css('[data-slot="command-group"]')
+        groups = fragment.css('[data-slot="combobox-group"]')
 
         assert_equal 2, groups.size
-        assert_equal %w[Americas Europe], fragment.css('[data-slot="command-group-heading"]').map(&:text)
+        assert_equal %w[Americas Europe], fragment.css('[data-slot="combobox-label"]').map(&:text)
         assert_equal(%w[us de fr],
                      fragment.css('[data-slot="combobox-native"] option:not([value=""])').map { |o| o["value"] })
         assert_equal "Germany", fragment.css('[data-slot="combobox-value"]').first.text
@@ -599,7 +599,7 @@ module Poetry
                              .map { |chip| chip["data-value"] },
                      "one chip per model value IN VALUE ORDER"
         # The control_attributes land on the INLINE INPUT (no trigger exists).
-        input = fragment.css('[data-slot="command-input"]').first
+        input = fragment.css('[data-slot="combobox-chip-input"]').first
 
         assert_equal "poetry_ui_forms_test_ticket_department", input["id"]
         assert_equal fragment.css("label").first["for"], input["id"]

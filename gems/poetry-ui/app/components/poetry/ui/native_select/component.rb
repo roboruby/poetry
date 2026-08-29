@@ -110,11 +110,11 @@ module Poetry
           end)
         end
 
+        # The chevron svg is the icon part itself (the source's shape) - the
+        # theme rule sizes and pins it; no wrapper span.
         def chevron
-          content_tag(:span, "data-slot" => "native-select-icon", "aria-hidden" => "true",
-                             class: css(:icon)) do
-            render(Poetry::Ui::Icon::Component.new(name: :"chevron-down"))
-          end
+          render(Poetry::Ui::Icon::Component.new(name: :"chevron-down", class: css(:icon),
+                                                 data: { slot: "native-select-icon" }))
         end
 
         private :wrapper_attributes, :select_attributes

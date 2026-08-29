@@ -19,6 +19,7 @@ module Poetry
                         "disabled:cursor-not-allowed"
 
         element :group, "cn-input-otp-group flex items-center"
+        element :separator, "cn-input-otp-separator flex items-center"
 
         element :slot, "cn-input-otp-slot relative flex items-center justify-center " \
                        "data-[active=true]:z-10"

@@ -114,7 +114,7 @@ module Poetry
         # Bounded highlight walk: at most one pass over the items - a
         # missing/mistyped label raises instead of arrowing forever.
         def walk_highlight_to(text)
-          items = content.all("[data-slot='command-item']", visible: :all)
+          items = content.all("[data-slot='combobox-item']", visible: :all)
 
           (items.size + 1).times do
             return if highlighted_text == text
@@ -134,7 +134,7 @@ module Poetry
         # button (single) or the chips frame's inline input (multiple).
         def list_id
           @list_id ||= root.first(
-            "[data-slot='combobox-trigger'], [data-slot='combobox-chips'] [data-slot='command-input']",
+            "[data-slot='combobox-trigger'], [data-slot='combobox-chips'] [data-slot='combobox-chip-input']",
             minimum: 1, visible: :all
           )["aria-controls"]
         end
@@ -149,15 +149,15 @@ module Poetry
         end
 
         def filter_input
-          content.first("[data-slot='command-input']", minimum: 0, visible: :all) || part("command-input")
+          content.first("[data-slot='combobox-input']", minimum: 0, visible: :all) || part("combobox-input")
         end
 
         def option(text)
-          content.find("[data-slot='command-item']", text: text, exact_text: true)
+          content.find("[data-slot='combobox-item']", text: text, exact_text: true)
         end
 
         def highlighted_text
-          content.find("[data-slot='command-item'][data-highlighted]", wait: 1).text
+          content.find("[data-slot='combobox-item'][data-highlighted]", wait: 1).text
         rescue Capybara::ElementNotFound
           nil
         end

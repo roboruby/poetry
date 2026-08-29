@@ -1,0 +1,1435 @@
+# Dictionary transcription-fidelity deviations - the single source of truth
+# for every way a Style dictionary's structural tokens differ from the
+# styled source's classNames for the same data-slot at the pin
+# (config/dictionary_fidelity/upstream-<pin>.json). The gate
+# (test/poetry/ui/dictionary_fidelity_test.rb, rake css:verify_dictionary_fidelity)
+# holds this file and the rendered diff in exact two-way agreement: an
+# unrecorded difference fails, a recorded one that no longer exists fails
+# as stale. Change a dictionary -> reconcile this file in the same change,
+# with a reason. Bumping the pin regenerates the snapshot
+# (css:dictionary_snapshot) and re-opens every entry for review.
+#
+# Shape, per source file (the styled registry's basename):
+#   <file>:
+#     missing_slots: { reason: ..., list: [slot, ...] }   # source slots poetry never renders
+#     poetry_slots:  { reason: ..., list: [slot, ...] }   # poetry slots the source lacks
+#     slots:
+#       <slot>:
+#         reason: ...
+#         dropped: [token, ...]   # styled-source tokens the dictionary lacks
+#         added:   [token, ...]   # poetry-only tokens
+#         classic: [token, ...]   # tokens the classic source carries inline (theme material)
+#         tag: "span -> svg"      # element kind, when the source's is knowable
+# Top-level: missing_components / poetry_components (same list shape).
+missing_components:
+  reason: chart lives in poetry-charts; collapsible has no dictionary (its parts are
+    hook-only, held by the part contract); direction is a React RTL provider; sonner
+    is the source's third-party toaster (poetry's toast is its own).
+  list:
+  - chart
+  - collapsible
+  - direction
+  - sonner
+poetry_components:
+  reason: Poetry additions with no source file at the pin.
+  list:
+  - autocomplete
+  - clipboard-text
+  - code-block
+  - data-table
+  - date-field
+  - date-picker
+  - file-input
+  - link
+  - metadata-list
+  - meter
+  - number-field
+  - search-field
+  - sensitive-input
+  - stat
+  - tag-group
+  - time-field
+  - timeline
+  - toolbar
+  - tree
+  - typeset
+accordion:
+  poetry_slots:
+    reason: The heading wrapper (h3) around the trigger - the classic anatomy.
+    list:
+    - accordion-header
+  slots:
+    accordion-trigger:
+      reason: 'Native <button disabled> owns disabled (disabled: variants); the source''s
+        aria-disabled pair has no emitter. The chevron rotation rides the trigger''s
+        aria-expanded (poetry''s icon is one svg the theme sizes).'
+      dropped:
+      - aria-disabled:opacity-50
+      - aria-disabled:pointer-events-none
+      added:
+      - "[&[aria-expanded=true]>svg]:rotate-180"
+      classic:
+      - disabled:opacity-50
+      - disabled:pointer-events-none
+    accordion-trigger-icon:
+      reason: The source swaps two icons on aria-expanded (hidden/inline); poetry
+        rotates its single chevron (transition-transform duration-200).
+      dropped:
+      - group-aria-expanded/accordion-trigger:hidden
+      - group-aria-expanded/accordion-trigger:inline
+      - hidden
+      added:
+      - duration-200
+      - transition-transform
+alert-dialog:
+  missing_slots:
+    reason: 'Poetry''s dialog family is the native <dialog>: no portal, overlay, or
+      positioner element (the backdrop is ::backdrop), the trigger is the caller''s
+      Button, and the popup is the dialog itself - m-auto/open:grid replace the source''s
+      fixed/translate centering.'
+    list:
+    - alert-dialog-overlay
+    - alert-dialog-portal
+    - alert-dialog-trigger
+  slots:
+    alert-dialog-content:
+      reason: 'Poetry''s dialog family is the native <dialog>: no portal, overlay,
+        or positioner element (the backdrop is ::backdrop), the trigger is the caller''s
+        Button, and the popup is the dialog itself - m-auto/open:grid replace the
+        source''s fixed/translate centering.'
+      dropped:
+      - "-translate-x-1/2"
+      - "-translate-y-1/2"
+      - fixed
+      - grid
+      - left-1/2
+      - outline-none
+      - top-1/2
+      - w-full
+      - z-50
+      added:
+      - m-auto
+      - open:grid
+    alert-dialog-footer:
+      reason: The sm size layout is applied Ruby-side (footer_size_sm) instead of
+        the source's group-data-[size=sm] chain on a content group.
+      dropped:
+      - gap-2
+      - group-data-[size=sm]/alert-dialog-content:grid
+      - group-data-[size=sm]/alert-dialog-content:grid-cols-2
+      added:
+      - grid
+      - grid-cols-2
+    alert-dialog-header:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must. The responsive sm: placement is poetry''s (the classic
+        source''s) layout.'
+      added:
+      - grid-rows-[auto_auto_1fr]
+      - sm:grid-rows-[auto_1fr]
+      - sm:place-items-start
+      - sm:text-left
+      classic:
+      - grid
+      - grid-rows-[auto_1fr]
+      - place-items-center
+      - text-center
+    alert-dialog-media:
+      reason: The media well's centering mechanics are poetry's; the source's div
+        is hook-only.
+      added:
+      - sm:row-span-2
+      classic:
+      - inline-flex
+      - items-center
+      - justify-center
+    alert-dialog-title:
+      reason: Beside the media well the title starts in the header grid's second column
+        (poetry's layout).
+      added:
+      - sm:col-start-2
+attachment:
+  missing_slots:
+    reason: The group wrapper is the poetry_attachment_group helper, outside the component's
+      previews.
+    list:
+    - attachment-group
+  poetry_slots:
+    reason: attachment-status is poetry's upload-state readout.
+    list:
+    - attachment-status
+  slots:
+    attachment:
+      reason: 'State vocabulary: poetry names the attribute differently (documented
+        in the part contract). data-upload-state replaces the source''s data-state
+        (poetry never uses data-state); image handling is guarded by data-variant=image.'
+      dropped:
+      - data-[state=error]:border-destructive/30
+      - data-[state=idle]:border-dashed
+      added:
+      - data-[upload-state=error]:border-destructive/30
+      - data-[upload-state=idle]:border-dashed
+    attachment-description:
+      reason: 'State vocabulary: poetry names the attribute differently (documented
+        in the part contract). data-upload-state replaces the source''s data-state
+        (poetry never uses data-state); image handling is guarded by data-variant=image.'
+      dropped:
+      - group-data-[state=error]/attachment:text-destructive/80
+      added:
+      - group-data-[upload-state=error]/attachment:text-destructive/80
+    attachment-media:
+      reason: 'State vocabulary: poetry names the attribute differently (documented
+        in the part contract). data-upload-state replaces the source''s data-state
+        (poetry never uses data-state); image handling is guarded by data-variant=image.'
+      dropped:
+      - "*:[img]:aspect-square"
+      - "*:[img]:object-cover"
+      - "*:[img]:w-full"
+      - group-data-[state=error]/attachment:bg-destructive/10
+      - group-data-[state=error]/attachment:text-destructive
+      added:
+      - data-[variant=image]:*:[img]:aspect-square
+      - data-[variant=image]:*:[img]:object-cover
+      - data-[variant=image]:*:[img]:w-full
+      - data-[variant=image]:group-data-[upload-state=done]/attachment:opacity-100
+      - data-[variant=image]:group-data-[upload-state=idle]/attachment:opacity-100
+      - data-[variant=image]:opacity-60
+      - group-data-[upload-state=error]/attachment:bg-destructive/10
+      - group-data-[upload-state=error]/attachment:text-destructive
+      classic:
+      - group-data-[orientation=vertical]/attachment:*:data-[slot=spinner]:size-6!
+    attachment-title:
+      reason: 'State vocabulary: poetry names the attribute differently (documented
+        in the part contract). data-upload-state replaces the source''s data-state
+        (poetry never uses data-state); image handling is guarded by data-variant=image.'
+      dropped:
+      - group-data-[state=processing]/attachment:shimmer
+      - group-data-[state=uploading]/attachment:shimmer
+      added:
+      - group-data-[upload-state=processing]/attachment:shimmer
+      - group-data-[upload-state=uploading]/attachment:shimmer
+avatar:
+  missing_slots:
+    reason: The group and its count are the poetry_avatar_group helpers, outside the
+      component's previews.
+    list:
+    - avatar-group
+    - avatar-group-count
+  slots:
+    avatar-image:
+      reason: Poetry's image fills the avatar box absolutely (the source relies on
+        the primitive's sizing).
+      added:
+      - absolute
+      - inset-0
+bubble:
+  missing_slots:
+    reason: The group wrapper is a helper, outside the component's previews.
+    list:
+    - bubble-group
+  slots:
+    bubble:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must.'
+      classic:
+      - data-[align=end]:self-end
+      - group-data-[align=end]/message:self-end
+    bubble-content:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must.'
+      classic:
+      - "[button,a]:outline-none"
+      - "[button,a]:transition-colors"
+      - "[button]:text-left"
+      - group-data-[align=end]/bubble:self-end
+      - max-w-full
+      - min-w-0
+      - overflow-hidden
+      - w-fit
+      - wrap-break-word
+    bubble-reactions:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must. Reaction placement rides poetry''s data-align/data-side
+        stamps.'
+      added:
+      - data-[align=end]:right-3
+      - data-[align=start]:left-3
+      - data-[side=bottom]:-bottom-4.5
+      - data-[side=top]:-top-4.5
+      classic:
+      - shrink-0
+button-group:
+  missing_slots:
+    reason: The separator is the poetry_button_group_separator helper, outside the
+      component's previews.
+    list:
+    - button-group-separator
+  slots:
+    button-group:
+      reason: cva variant values flattened by the snapshot - poetry carries them through
+        its variant hooks and the theme rules, never as one flat set.
+      dropped:
+      - "*:data-slot:rounded-b-none"
+      - "*:data-slot:rounded-r-none"
+      - "[&>[data-slot]~[data-slot]]:border-l-0"
+      - "[&>[data-slot]~[data-slot]]:border-t-0"
+      - "[&>[data-slot]~[data-slot]]:rounded-l-none"
+      - "[&>[data-slot]~[data-slot]]:rounded-t-none"
+      - flex-col
+    button-group-text:
+      reason: Poetry addition with no source counterpart.
+      added:
+      - "[&_svg]:pointer-events-none"
+      - flex
+      - items-center
+calendar:
+  poetry_slots:
+    reason: 'Poetry''s calendar anatomy (no react-day-picker): every part is poetry''s
+      own.'
+    list:
+    - calendar-caption
+    - calendar-caption-label
+    - calendar-day
+    - calendar-day-cell
+    - calendar-day-label
+    - calendar-dropdown
+    - calendar-dropdown-value
+    - calendar-grid
+    - calendar-nav
+    - calendar-week
+    - calendar-week-number
+    - calendar-weekday
+    - calendar-weekdays
+  slots:
+    calendar:
+      reason: Poetry's calendar is its own anatomy (no react-day-picker); the cell-size
+        var and the fit/radius chrome are poetry's root tokens.
+      added:
+      - rounded-md
+      - w-fit
+      classic:
+      - "[--cell-size:--spacing(8)]"
+card:
+  slots:
+    card-title:
+      reason: 'Semantic element: poetry renders the heading/paragraph/label element
+        the source leaves as a div.'
+      tag: div -> h3
+carousel:
+  slots:
+    carousel-content:
+      reason: 'Poetry''s carousel is scroll-snap driven (no embla): overflow-auto
+        + snap mechanics replace overflow-hidden and the source''s orientation class.'
+      dropped:
+      - overflow-hidden
+      added:
+      - "[scrollbar-width:none]"
+      - overflow-auto
+      - snap-mandatory
+      - snap-x
+      - snap-y
+    carousel-item:
+      reason: 'Poetry''s carousel is scroll-snap driven (no embla): overflow-auto
+        + snap mechanics replace overflow-hidden and the source''s orientation class.'
+      dropped:
+      - horizontal
+      added:
+      - "-scroll-ml-4"
+      - "-scroll-mt-4"
+      - snap-start
+checkbox:
+  slots:
+    checkbox-indicator:
+      reason: Server-rendered indicator hidden by data-unchecked (the source mounts
+        it only while checked).
+      added:
+      - data-unchecked:invisible
+combobox:
+  missing_slots:
+    reason: combobox-collection is Base UI's virtualization wrapper; the source clears
+      through an InputGroupButton where poetry seats its own combobox-clear.
+    list:
+    - combobox-collection
+    - input-group-button
+  poetry_slots:
+    reason: The embedded engine's parts (the popup's search row, list chrome, loading
+      and status regions) and poetry's native <select> mirror.
+    list:
+    - combobox
+    - combobox-command
+    - combobox-input
+    - combobox-input-wrapper
+    - combobox-item-indicator
+    - combobox-item-text
+    - combobox-loading
+    - combobox-native
+    - combobox-search-icon
+    - combobox-status
+  slots:
+    combobox-chip:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must. The chip takes real focus (outline-none) and never
+        shrinks.'
+      added:
+      - outline-none
+      - shrink-0
+      classic:
+      - flex
+      - items-center
+    combobox-chip-input:
+      reason: The inline input is bare inside the chips field frame (bg-transparent).
+      added:
+      - bg-transparent
+    combobox-chip-remove:
+      reason: The remove button carries the ghost icon-button mechanics inline (the
+        source's ChipRemove is hook-only).
+      added:
+      - "[&_svg]:pointer-events-none"
+      - "[&_svg]:shrink-0"
+      - inline-flex
+      - items-center
+      - justify-center
+      - outline-none
+      - shrink-0
+    combobox-chips:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must. disabled plumbing mirrors the trigger''s; w-50 is
+        the demo width (the width: knob''s default).'
+      added:
+      - data-disabled:opacity-50
+      - data-disabled:pointer-events-none
+      - w-50
+      classic:
+      - flex
+      - flex-wrap
+      - items-center
+    combobox-clear:
+      reason: Poetry's show_clear X is a trigger sibling seated over the chevron slot;
+        the source clears through an InputGroupButton.
+      added:
+      - "-translate-y-1/2"
+      - absolute
+      - disabled:pointer-events-none
+      - end-2
+      - flex
+      - focus-visible:opacity-100
+      - focus-visible:ring-[3px]
+      - focus-visible:ring-ring/50
+      - hover:opacity-100
+      - items-center
+      - justify-center
+      - opacity-50
+      - outline-none
+      - rounded-sm
+      - size-6
+      - top-1/2
+      - transition-opacity
+    combobox-content:
+      reason: The popup's column chain (flex flex-col + the popper's available-height
+        cap) lets the list shrink under the cap; z-50 and outline-hidden are poetry's
+        popper chrome.
+      added:
+      - flex
+      - flex-col
+      - outline-hidden
+      - z-50
+    combobox-item:
+      reason: The row is Command's item (group/command-item is the engine's group
+        marker).
+      added:
+      - group/command-item
+    combobox-list:
+      reason: The list clips horizontally so long labels never scroll the popup sideways.
+      added:
+      - overflow-x-hidden
+    combobox-trigger:
+      reason: The trigger carries Button's mechanics inline (the source's Trigger
+        is a hook-only primitive); w-50 is the demo width.
+      added:
+      - "[&_svg]:pointer-events-none"
+      - "[&_svg]:shrink-0"
+      - disabled:opacity-50
+      - disabled:pointer-events-none
+      - inline-flex
+      - items-center
+      - justify-between
+      - outline-none
+      - shrink-0
+      - transition-all
+      - w-50
+      - whitespace-nowrap
+    combobox-value:
+      reason: The value display truncates inside the fixed-width trigger.
+      added:
+      - truncate
+command:
+  poetry_slots:
+    reason: 'Poetry''s engine parts: the group heading, item text wrapper, search
+      glyph, loading and status regions.'
+    list:
+    - command-group-heading
+    - command-item-text
+    - command-loading
+    - command-search-icon
+    - command-status
+  slots:
+    command-group:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must.'
+      classic:
+      - overflow-hidden
+    command-input:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must.'
+      classic:
+      - flex
+      - w-full
+    command-input-wrapper:
+      reason: The source builds this row from a composed InputGroup; poetry's single
+        div carries the row mechanics itself.
+      classic:
+      - flex
+      - items-center
+    command-item:
+      reason: 'Poetry''s DOM emits the bare attribute (data-disabled) - the source''s
+        cmdk vocabulary is data-disabled="true"; the bare variant is the matching
+        spelling. Classic mechanics poetry keeps inline: the styled source''s rules
+        do not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must.'
+      dropped:
+      - data-[disabled=true]:opacity-50
+      - data-[disabled=true]:pointer-events-none
+      added:
+      - data-disabled:opacity-50
+      - data-disabled:pointer-events-none
+      classic:
+      - cursor-default
+      - flex
+      - items-center
+      - outline-hidden
+      - relative
+      - select-none
+context-menu:
+  missing_slots:
+    reason: 'No portal/provider element in poetry: popups render in place and portal
+      to body at open time.'
+    list:
+    - context-menu-portal
+  poetry_slots:
+    reason: The two indicator glyph wrappers (server-rendered, hidden while unchecked).
+    list:
+    - context-menu-checkbox-item-indicator
+    - context-menu-radio-item-indicator
+  slots:
+    context-menu-sub-content:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must. origin-(--transform-origin) is the popper''s transform
+        origin.'
+      added:
+      - origin-(--transform-origin)
+      classic:
+      - overflow-hidden
+      - z-50
+    context-menu-trigger:
+      reason: Poetry's trigger wrapper centers its content (the source's trigger is
+        a hook-only primitive).
+      added:
+      - flex
+      - items-center
+      - justify-center
+dialog:
+  missing_slots:
+    reason: 'Poetry''s dialog family is the native <dialog>: no portal, overlay, or
+      positioner element (the backdrop is ::backdrop), the trigger is the caller''s
+      Button, and the popup is the dialog itself - m-auto/open:grid replace the source''s
+      fixed/translate centering.'
+    list:
+    - dialog-overlay
+    - dialog-portal
+    - dialog-trigger
+  slots:
+    dialog-content:
+      reason: 'Poetry''s dialog family is the native <dialog>: no portal, overlay,
+        or positioner element (the backdrop is ::backdrop), the trigger is the caller''s
+        Button, and the popup is the dialog itself - m-auto/open:grid replace the
+        source''s fixed/translate centering.'
+      dropped:
+      - "-translate-x-1/2"
+      - "-translate-y-1/2"
+      - fixed
+      - left-1/2
+      - outline-none
+      - top-1/2
+      - w-full
+      - z-50
+      added:
+      - m-auto
+      - open:grid
+drawer:
+  missing_slots:
+    reason: 'Poetry''s dialog family is the native <dialog>: no portal, overlay, or
+      positioner element (the backdrop is ::backdrop), the trigger is the caller''s
+      Button, and the popup is the dialog itself - m-auto/open:grid replace the source''s
+      fixed/translate centering. No corner close button and no swipe viewport/popup
+      split.'
+    list:
+    - drawer-close
+    - drawer-overlay
+    - drawer-popup
+    - drawer-portal
+    - drawer-trigger
+    - drawer-viewport
+  poetry_slots:
+    reason: The scrollable body region is poetry's.
+    list:
+    - drawer-body
+  slots:
+    drawer-content:
+      reason: Poetry's drawer engine (native <dialog> + presence + its own swipe/inset
+        vars) carries its transforms inline; the source's Base UI drawer vocabulary
+        (nested-drawer, snap points, swipe direction groups) has no poetry emitter.
+      dropped:
+      - duration-300
+      - ease-[cubic-bezier(0.45,1.005,0,1.005)]
+      - flex
+      - flex-1
+      - group-data-nested-drawer-open/drawer-popup:opacity-0
+      - group-data-nested-drawer-swiping/drawer-popup:opacity-100
+      - group-data-swiping/drawer-popup:select-none
+      - overflow-hidden
+      - overscroll-contain
+      - rounded-[inherit]
+      - select-text
+      - transition-opacity
+      added:
+      - "[--closed-transform:translate3d(0,calc(-100%-var(--drawer-inset,0px)-2px),0)]"
+      - "[--closed-transform:translate3d(0,calc(100%+var(--drawer-inset,0px)+2px),0)]"
+      - "[--closed-transform:translate3d(calc(-100%-var(--drawer-inset,0px)-2px),0,0)]"
+      - "[--closed-transform:translate3d(calc(100%+var(--drawer-inset,0px)+2px),0,0)]"
+      - "[--translate-x:calc(-1*var(--drawer-swipe-movement-x,0px))]"
+      - "[--translate-x:var(--drawer-swipe-movement-x,0px)]"
+      - "[--translate-y:calc(-1*var(--drawer-swipe-movement-y,0px))]"
+      - "[--translate-y:calc(var(--drawer-snap-point-offset,0px)+var(--drawer-swipe-movement-y,0px))]"
+      - backdrop:duration-450
+      - backdrop:opacity-[calc(1-var(--drawer-swipe-progress,0))]
+      - backdrop:transition-opacity
+      - data-ending-style:duration-[calc(var(--drawer-swipe-strength,1)*400ms)]
+      - data-ending-style:transform-(--closed-transform)
+      - data-snap-points:h-dvh
+      - data-snap-points:max-h-none
+      - data-starting-style:transform-(--closed-transform)
+      - data-swiping:backdrop:transition-none
+      - data-swiping:duration-0
+      - duration-450
+      - ease-[cubic-bezier(0.22,1,0.36,1)]
+      - h-fit
+      - inset-0
+      - m-0
+      - max-h-[calc(100dvh-6rem)]
+      - max-h-none
+      - max-w-none
+      - mb-(--drawer-inset,0px)
+      - mb-auto
+      - ml-(--drawer-inset,0px)
+      - ml-auto
+      - mr-(--drawer-inset,0px)
+      - mr-auto
+      - mt-(--drawer-inset,0px)
+      - mt-auto
+      - mx-(--drawer-inset,0px)
+      - my-(--drawer-inset,0px)
+      - open:flex
+      - outline-none
+      - select-none
+      - sm:max-w-sm
+      - transform-[translate3d(var(--translate-x,0px),var(--translate-y,0px),0)]
+      - transition-[transform,opacity]
+      - w-3/4
+      - w-auto
+      - will-change-transform
+      classic:
+      - fixed
+      - h-auto
+      - z-50
+    drawer-header:
+      reason: Poetry's drawer engine (native <dialog> + presence + its own swipe/inset
+        vars) carries its transforms inline; the source's Base UI drawer vocabulary
+        (nested-drawer, snap points, swipe direction groups) has no poetry emitter.
+      dropped:
+      - group-data-[swipe-axis=y]/drawer-popup:text-center
+    drawer-swipe-handle:
+      reason: Poetry's drawer engine (native <dialog> + presence + its own swipe/inset
+        vars) carries its transforms inline; the source's Base UI drawer vocabulary
+        (nested-drawer, snap points, swipe direction groups) has no poetry emitter.
+      dropped:
+      - duration-200
+      - group-data-[swipe-direction=left]/drawer-popup:order-last
+      - group-data-[swipe-direction=up]/drawer-popup:order-last
+      - group-data-nested-drawer-open/drawer-popup:opacity-0
+      - group-data-nested-drawer-swiping/drawer-popup:opacity-100
+      - transition-opacity
+      added:
+      - after:block
+      - after:shrink-0
+      - h-3
+      - items-center
+      - justify-center
+      - mx-auto
+      - touch-none
+      - w-full
+dropdown-menu:
+  missing_slots:
+    reason: 'No portal/provider element in poetry: popups render in place and portal
+      to body at open time.'
+    list:
+    - dropdown-menu-portal
+  slots:
+    dropdown-menu-checkbox-item-indicator:
+      reason: Server-rendered indicator, positioned and hidden by the item's data-unchecked
+        (the source mounts it only while checked).
+      added:
+      - "[[data-unchecked]>&]:hidden"
+      - absolute
+      - flex
+      - items-center
+      - justify-center
+    dropdown-menu-radio-item-indicator:
+      reason: Server-rendered indicator, positioned and hidden by the item's data-unchecked
+        (the source mounts it only while checked).
+      added:
+      - "[[data-unchecked]>&]:hidden"
+      - absolute
+      - flex
+      - items-center
+      - justify-center
+    dropdown-menu-sub-content:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must. origin-(--transform-origin) is the popper''s transform
+        origin.'
+      added:
+      - origin-(--transform-origin)
+      classic:
+      - overflow-hidden
+      - z-50
+empty:
+  slots:
+    empty-title:
+      reason: 'Semantic element: poetry renders the heading/paragraph/label element
+        the source leaves as a div.'
+      tag: div -> h3
+field:
+  missing_slots:
+    reason: 'No field-content column: poetry places label/description/error on a grid.'
+    list:
+    - field-content
+  poetry_slots:
+    reason: Nested toggle inputs and the fieldset hint are poetry's parts.
+    list:
+    - checkbox-input
+    - field-set-hint
+    - switch-input
+  slots:
+    field:
+      reason: Poetry's field is a CSS grid (label/control/description/error placement
+        by data-slot, responsive under @md/field-group); the source's flex row composes
+        a field-content column instead.
+      dropped:
+      - flex
+      added:
+      - "@md/field-group:[&>:not([data-slot=field-label],[data-slot=field-description],[data-slot=field-error])]:col-start-2"
+      - "@md/field-group:[&>:not([data-slot=field-label],[data-slot=field-description],[data-slot=field-error])]:row-span-2"
+      - "@md/field-group:[&>:not([data-slot=field-label],[data-slot=field-description],[data-slot=field-error])]:row-start-1"
+      - "@md/field-group:[&>:not([data-slot=field-label],[data-slot=field-description],[data-slot=field-error])]:self-center"
+      - "@md/field-group:[&>[data-slot=field-description]]:col-start-1"
+      - "@md/field-group:[&>[data-slot=field-error]]:col-start-1"
+      - "@md/field-group:[&>[data-slot=field-label]]:col-start-1"
+      - "@md/field-group:[&>[data-slot=field-label]]:row-start-1"
+      - "@md/field-group:[&>[data-slot=field-label]]:self-center"
+      - "@md/field-group:grid-cols-[1fr_auto]"
+      - "[&>[data-slot=field-description]]:col-start-1"
+      - "[&>[data-slot=field-description]]:col-start-2"
+      - "[&>[data-slot=field-error]]:col-start-1"
+      - "[&>[data-slot=field-error]]:col-start-2"
+      - "[&>[data-slot=field-label]]:col-start-1"
+      - "[&>[data-slot=field-label]]:col-start-2"
+      - "[&>[data-slot=field-label]]:row-start-1"
+      - grid
+      - grid-cols-[1fr_auto]
+      - grid-cols-[auto_1fr]
+      - items-center
+    field-error:
+      reason: 'Semantic element: poetry renders the heading/paragraph/label element
+        the source leaves as a div.'
+      tag: div -> p
+    field-label:
+      reason: 'Semantic element: poetry renders the heading/paragraph/label element
+        the source leaves as a div. The Label component renders a real <label>.'
+      tag: div -> label
+input:
+  slots:
+    input:
+      reason: 'Deliberately theme-side: an inline copy would beat every theme''s rule
+        (rhea darkens the placeholder for AA on tinted surfaces; the toggle''s outline
+        variant wins its hover by rule order).'
+      dropped:
+      - placeholder:text-muted-foreground
+input-group:
+  slots:
+    input-group:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must.'
+      classic:
+      - has-[>[data-align=block-end]]:flex-col
+      - has-[>[data-align=block-end]]:h-auto
+      - has-[>[data-align=block-start]]:flex-col
+      - has-[>[data-align=block-start]]:h-auto
+input-otp:
+  poetry_slots:
+    reason: The caret overlay and the slot container are poetry's (the hidden native
+      input paints over them).
+    list:
+    - input-otp-caret
+    - input-otp-container
+  slots:
+    input-otp:
+      reason: Poetry's hidden native input is painted (opacity 0.005, transparent
+        text/caret) over the slots so autofill and IME keep working; the source's
+        input is a primitive.
+      added:
+      - absolute
+      - caret-transparent
+      - h-full
+      - inset-0
+      - opacity-[0.005]
+      - outline-none
+      - selection:bg-transparent
+      - text-transparent
+      - w-full
+      - z-20
+menubar:
+  missing_slots:
+    reason: 'No portal/provider element in poetry: popups render in place and portal
+      to body at open time.'
+    list:
+    - menubar-portal
+  poetry_slots:
+    reason: The two indicator glyph wrappers (server-rendered, hidden while unchecked).
+    list:
+    - menubar-checkbox-item-indicator
+    - menubar-radio-item-indicator
+  slots:
+    menubar-content:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must. origin-(--transform-origin) is the popper''s transform
+        origin.'
+      added:
+      - origin-(--transform-origin)
+      classic:
+      - overflow-hidden
+      - z-50
+    menubar-item:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must. The bare data-disabled pair is poetry''s DOM spelling.'
+      added:
+      - data-disabled:opacity-50
+      - data-disabled:pointer-events-none
+      classic:
+      - "[&_svg]:pointer-events-none"
+      - "[&_svg]:shrink-0"
+      - cursor-default
+      - flex
+      - items-center
+      - outline-hidden
+      - relative
+      - select-none
+    menubar-menu:
+      reason: 'The menu wrapper is display: contents so the bar''s flex row sees the
+        triggers.'
+      added:
+      - contents
+    menubar-radio-item:
+      reason: The bare data-disabled pair is poetry's DOM spelling.
+      added:
+      - data-disabled:opacity-50
+    menubar-shortcut:
+      reason: 'ms-auto instead of ml-auto: the family RTL fix (documented in the theme
+        ledger).'
+      dropped:
+      - ml-auto
+    menubar-sub-content:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must. origin-(--transform-origin) is the popper''s transform
+        origin.'
+      added:
+      - origin-(--transform-origin)
+      classic:
+      - overflow-hidden
+      - z-50
+    menubar-sub-trigger:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must.'
+      classic:
+      - cursor-default
+      - flex
+      - items-center
+      - outline-none
+      - select-none
+message:
+  missing_slots:
+    reason: The group wrapper is a helper, outside the component's previews.
+    list:
+    - message-group
+  slots:
+    message-avatar:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must.'
+      classic:
+      - group-has-data-[slot=message-footer]/message:-translate-y-8
+    message-content:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must.'
+      classic:
+      - group-data-[align=end]/message:*:data-slot:self-end
+message-scroller:
+  poetry_slots:
+    reason: The bottom spacer is poetry's scroll anchor.
+    list:
+    - message-scroller-spacer
+  slots:
+    message-scroller-viewport:
+      reason: Poetry hides the scrollbar entirely while autoscrolling (scrollbar-none)
+        instead of the source's transparent thumb/track pair.
+      dropped:
+      - data-autoscrolling:scrollbar-thumb-transparent
+      - data-autoscrolling:scrollbar-track-transparent
+      classic:
+      - data-autoscrolling:scrollbar-none
+native-select:
+  missing_slots:
+    reason: The optgroup is the poetry_native_select_optgroup helper, outside the
+      component's previews.
+    list:
+    - native-select-optgroup
+  slots:
+    native-select:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must.'
+      classic:
+      - appearance-none
+      - w-full
+navigation-menu:
+  missing_slots:
+    reason: No sliding indicator arrow in poetry.
+    list:
+    - navigation-menu-indicator
+  poetry_slots:
+    reason: Poetry's positioner/popup/viewport engine parts.
+    list:
+    - navigation-menu-popup
+    - navigation-menu-positioner
+    - navigation-menu-viewport
+  slots:
+    navigation-menu-content:
+      reason: 'Poetry''s positioner/popup engine: per-item popups or the shared viewport,
+        the activation-direction slide expressed on poetry''s data-activation-direction
+        stamp.'
+      dropped:
+      - data-ending-style:data-activation-direction=left:translate-x-[50%]
+      - data-ending-style:data-activation-direction=right:translate-x-[-50%]
+      - data-starting-style:data-activation-direction=left:translate-x-[-50%]
+      - data-starting-style:data-activation-direction=right:translate-x-[50%]
+      - h-full
+      added:
+      - absolute
+      - data-[activation-direction=left]:data-ending-style:translate-x-1/2
+      - data-[activation-direction=left]:data-starting-style:-translate-x-1/2
+      - data-[activation-direction=right]:data-ending-style:-translate-x-1/2
+      - data-[activation-direction=right]:data-starting-style:translate-x-1/2
+      - data-ending-style:absolute
+      - data-ending-style:left-0
+      - data-ending-style:top-0
+      - ease-[cubic-bezier(0.22,1,0.36,1)]
+      - group-data-[viewport=false]/navigation-menu:duration-300
+      - group-data-[viewport=true]/navigation-menu:h-full
+      - isolate
+      - min-w-48
+      - mt-1.5
+      - top-full
+      - w-max
+      - z-50
+      classic:
+      - left-0
+    navigation-menu-link:
+      reason: Links carry the trigger's shape inline (inline-flex h-9 …) so link items
+        and trigger items line up; the source styles links by rule only.
+      added:
+      - disabled:opacity-50
+      - disabled:pointer-events-none
+      - group/navigation-menu-trigger
+      - h-9
+      - inline-flex
+      - items-center
+      - justify-center
+      - w-max
+      classic:
+      - flex
+      - outline-none
+    navigation-menu-trigger:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must.'
+      classic:
+      - disabled:opacity-50
+popover:
+  poetry_slots:
+    reason: The anchor element poetry positions against.
+    list:
+    - popover-anchor
+  slots:
+    popover-header:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must.'
+      classic:
+      - flex
+      - flex-col
+resizable:
+  slots:
+    resizable-handle:
+      reason: Poetry's resizable emits data-orientation (its own controller); cursors
+        and touch-none are poetry's handle mechanics.
+      added:
+      - aria-[orientation=horizontal]:cursor-row-resize
+      - cursor-col-resize
+      - touch-none
+    resizable-panel:
+      reason: Poetry's resizable emits data-orientation (its own controller); cursors
+        and touch-none are poetry's handle mechanics.
+      added:
+      - overflow-hidden
+    resizable-panel-group:
+      reason: Poetry's resizable emits data-orientation (its own controller); cursors
+        and touch-none are poetry's handle mechanics.
+      dropped:
+      - aria-[orientation=vertical]:flex-col
+      added:
+      - data-[orientation=vertical]:flex-col
+scroll-area:
+  missing_slots:
+    reason: 'Native scrollbars: no custom scrollbar or thumb parts.'
+    list:
+    - scroll-area-scrollbar
+    - scroll-area-thumb
+  slots:
+    scroll-area-viewport:
+      reason: Native scrollbars styled thin (scrollbar-color/width) instead of the
+        source's custom scrollbar and thumb parts.
+      added:
+      - "[scrollbar-color:var(--color-border)_transparent]"
+      - "[scrollbar-width:thin]"
+      - overflow-auto
+select:
+  poetry_slots:
+    reason: Poetry's root wrapper, native <select> mirror, viewport, and the item's
+      text/indicator wrappers.
+    list:
+    - select
+    - select-item-indicator
+    - select-item-text
+    - select-native
+    - select-viewport
+  slots:
+    select-content:
+      reason: No align-trigger mode in poetry (the source's data-align-trigger has
+        no emitter).
+      dropped:
+      - data-[align-trigger=true]:animate-none
+    select-scroll-down-button:
+      reason: The scroll buttons are positioned by the theme rule (one dictionary
+        element serves both directions).
+      dropped:
+      - bottom-0
+      - w-full
+    select-scroll-up-button:
+      reason: The scroll buttons are positioned by the theme rule (one dictionary
+        element serves both directions).
+      dropped:
+      - top-0
+      - w-full
+sheet:
+  missing_slots:
+    reason: 'Poetry''s dialog family is the native <dialog>: no portal, overlay, or
+      positioner element (the backdrop is ::backdrop), the trigger is the caller''s
+      Button, and the popup is the dialog itself - m-auto/open:grid replace the source''s
+      fixed/translate centering.'
+    list:
+    - sheet-overlay
+    - sheet-portal
+    - sheet-trigger
+  slots:
+    sheet-content:
+      reason: 'Poetry''s dialog family is the native <dialog>: no portal, overlay,
+        or positioner element (the backdrop is ::backdrop), the trigger is the caller''s
+        Button, and the popup is the dialog itself - m-auto/open:grid replace the
+        source''s fixed/translate centering. The side slide-in rides poetry''s presence
+        transitions in the theme, not per-side inline transforms.'
+      dropped:
+      - data-[side=bottom]:data-ending-style:translate-y-[2.5rem]
+      - data-[side=bottom]:data-starting-style:translate-y-[2.5rem]
+      - data-[side=left]:data-ending-style:translate-x-[-2.5rem]
+      - data-[side=left]:data-starting-style:translate-x-[-2.5rem]
+      - data-[side=right]:data-ending-style:translate-x-[2.5rem]
+      - data-[side=right]:data-starting-style:translate-x-[2.5rem]
+      - data-[side=top]:data-ending-style:translate-y-[-2.5rem]
+      - data-[side=top]:data-starting-style:translate-y-[-2.5rem]
+      - data-ending-style:opacity-0
+      - data-starting-style:opacity-0
+      added:
+      - open:flex
+      classic:
+      - flex-col
+sidebar:
+  missing_slots:
+    reason: 'Poetry''s sidebar ships the core anatomy: no rail, input, separator,
+      group action/content, skeleton, or sub-menu parts yet.'
+    list:
+    - sidebar-group-action
+    - sidebar-group-content
+    - sidebar-input
+    - sidebar-menu-skeleton
+    - sidebar-menu-sub
+    - sidebar-menu-sub-button
+    - sidebar-menu-sub-item
+    - sidebar-rail
+    - sidebar-separator
+  poetry_slots:
+    reason: The mobile shell (a sheet) and its inner scroller.
+    list:
+    - sidebar-mobile
+    - sidebar-mobile-inner
+  slots:
+    sidebar:
+      reason: The source reuses data-slot=sidebar for its mobile Sheet content; poetry
+        names the mobile shell sidebar-mobile, so the sheet tokens never apply to
+        the desktop root.
+      dropped:
+      - "[&>button]:hidden"
+      - bg-sidebar
+      - flex
+      - flex-col
+      - h-full
+      - p-0
+      - w-(--sidebar-width)
+    sidebar-container:
+      reason: cva variant values flattened by the snapshot - poetry carries them through
+        its variant hooks and the theme rules, never as one flat set.
+      dropped:
+      - floating
+      - group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]
+      - inset
+      - p-2
+    sidebar-content:
+      reason: Poetry hides the content scrollbar (no-scrollbar).
+      added:
+      - no-scrollbar
+    sidebar-gap:
+      reason: cva variant values flattened by the snapshot - poetry carries them through
+        its variant hooks and the theme rules, never as one flat set.
+      dropped:
+      - floating
+      - group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]
+      - inset
+    sidebar-group-label:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must.'
+      classic:
+      - "[&>svg]:shrink-0"
+      - duration-200
+      - ease-linear
+      - flex
+      - group-data-[collapsible=icon]:-mt-8
+      - group-data-[collapsible=icon]:opacity-0
+      - items-center
+      - outline-hidden
+      - shrink-0
+      - transition-[margin,opacity]
+    sidebar-menu-action:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must.'
+      classic:
+      - "[&>svg]:shrink-0"
+      - absolute
+      - after:-inset-2
+      - after:absolute
+      - aspect-square
+      - flex
+      - group-data-[collapsible=icon]:hidden
+      - items-center
+      - justify-center
+      - md:after:hidden
+      - outline-hidden
+      - peer-data-[size=default]/menu-button:top-1.5
+      - peer-data-[size=lg]/menu-button:top-2.5
+      - peer-data-[size=sm]/menu-button:top-1
+      - right-1
+      - top-1.5
+      - transition-transform
+    sidebar-menu-badge:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must.'
+      classic:
+      - absolute
+      - peer-data-[size=default]/menu-button:top-1.5
+      - peer-data-[size=lg]/menu-button:top-2.5
+      - peer-data-[size=sm]/menu-button:top-1
+      - pointer-events-none
+      - right-1
+    sidebar-menu-button:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must.'
+      classic:
+      - group-data-[collapsible=icon]:p-2!
+      - group-data-[collapsible=icon]:size-8!
+      - text-left
+      - transition-[width,height,padding]
+slider:
+  poetry_slots:
+    reason: The tooltip anchor poetry stamps on the thumb.
+    list:
+    - slider-anchor
+  slots:
+    slider:
+      reason: Poetry's slider emits data-orientation (the classic vocabulary); the
+        source's bare data-horizontal/data-vertical variants have no emitter. Range
+        placement rides poetry's --slider-start/--slider-end vars.
+      dropped:
+      - data-horizontal:w-full
+      - data-vertical:h-full
+      classic:
+      - data-[disabled]:opacity-50
+      - data-[orientation=vertical]:flex-col
+      - data-[orientation=vertical]:h-full
+      - data-[orientation=vertical]:w-auto
+      - flex
+      - items-center
+      - relative
+      - select-none
+      - touch-none
+      - w-full
+    slider-range:
+      reason: Poetry's slider emits data-orientation (the classic vocabulary); the
+        source's bare data-horizontal/data-vertical variants have no emitter. Range
+        placement rides poetry's --slider-start/--slider-end vars.
+      dropped:
+      - data-horizontal:h-full
+      - data-vertical:w-full
+      added:
+      - data-[orientation=horizontal]:end-[calc(100%-var(--slider-end))]
+      - data-[orientation=horizontal]:start-(--slider-start)
+      - data-[orientation=vertical]:bottom-(--slider-start)
+      - data-[orientation=vertical]:top-[calc(100%-var(--slider-end))]
+      classic:
+      - absolute
+      - data-[orientation=horizontal]:h-full
+      - data-[orientation=vertical]:w-full
+switch:
+  slots:
+    switch:
+      reason: 'Native <button disabled> owns disabled (disabled: variants); the source''s
+        data-disabled pair has no emitter.'
+      dropped:
+      - data-disabled:cursor-not-allowed
+      - data-disabled:opacity-50
+      classic:
+      - disabled:cursor-not-allowed
+      - disabled:opacity-50
+table:
+  missing_slots:
+    reason: The scroll container wraps the <table> root; ownership climbs to the table's
+      data-component, which sits inside it.
+    list:
+    - table-container
+  slots:
+    table-row:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must.'
+      classic:
+      - transition-colors
+tabs:
+  slots:
+    tabs-list:
+      reason: cva variant values flattened by the snapshot - poetry carries them through
+        its variant hooks and the theme rules, never as one flat set.
+      dropped:
+      - bg-muted
+      - bg-transparent
+      - gap-1
+      - text-muted-foreground
+textarea:
+  slots:
+    textarea:
+      reason: 'Deliberately theme-side: an inline copy would beat every theme''s rule
+        (rhea darkens the placeholder for AA on tinted surfaces; the toggle''s outline
+        variant wins its hover by rule order).'
+      dropped:
+      - placeholder:text-muted-foreground
+toast:
+  missing_slots:
+    reason: Poetry's toast is Turbo-Stream driven and stacks via its own toaster;
+      the source's Base UI toast swipe/stack transform vars have no poetry emitter.
+      Title/description/icon tokens adopted.
+    list:
+    - toast-content
+    - toast-portal
+    - toast-viewport
+  poetry_slots:
+    reason: The toaster region is poetry's.
+    list:
+    - toaster
+  slots:
+    toast:
+      reason: Poetry's toast is Turbo-Stream driven and stacks via its own toaster;
+        the source's Base UI toast swipe/stack transform vars have no poetry emitter.
+        Title/description/icon tokens adopted.
+      dropped:
+      - "[&[data-ending-style]:not([data-limited]):not([data-swipe-direction])]:[transform:translateY(150%)]"
+      - "[--gap:0.75rem]"
+      - "[--height:var(--toast-frontmost-height,var(--toast-height))]"
+      - "[--offset-y:calc(var(--toast-offset-y)*-1+calc(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))]"
+      - "[--peek:0.75rem]"
+      - "[--scale:calc(max(0,1-(var(--toast-index)*0.1)))]"
+      - "[--shrink:calc(1-var(--scale))]"
+      - "[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))]"
+      - "[transition:transform_500ms_cubic-bezier(0.22,1,0.36,1),opacity_500ms,height_150ms]"
+      - absolute
+      - after:absolute
+      - after:content-['']
+      - after:h-[calc(var(--gap)+1px)]
+      - after:left-0
+      - after:top-full
+      - after:w-full
+      - bg-popover
+      - border
+      - bottom-0
+      - data-ending-style:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))]
+      - data-ending-style:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))]
+      - data-ending-style:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))]
+      - data-ending-style:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))]
+      - data-expanded:[transform:translateX(var(--toast-swipe-movement-x))_translateY(var(--offset-y))]
+      - data-expanded:data-ending-style:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))]
+      - data-expanded:data-ending-style:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))]
+      - data-expanded:data-ending-style:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))]
+      - data-expanded:data-ending-style:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))]
+      - data-expanded:h-(--toast-height)
+      - data-limited:opacity-0
+      - data-starting-style:[transform:translateY(150%)]
+      - focus-visible:border-ring
+      - focus-visible:ring-[3px]
+      - focus-visible:ring-ring/50
+      - group/toast
+      - h-(--height)
+      - origin-bottom
+      - outline-none
+      - right-0
+      - select-none
+      - shadow-lg
+      - text-popover-foreground
+      - will-change-transform
+      - z-[calc(1000-var(--toast-index))]
+      added:
+      - flex
+      - items-start
+      - outline-hidden
+      - relative
+    toast-icon:
+      reason: Poetry's toast is Turbo-Stream driven and stacks via its own toaster;
+        the source's Base UI toast swipe/stack transform vars have no poetry emitter.
+        Title/description/icon tokens adopted.
+      added:
+      - flex
+      - items-center
+      - justify-center
+toggle:
+  slots:
+    toggle:
+      reason: 'Deliberately theme-side: an inline copy would beat every theme''s rule
+        (rhea darkens the placeholder for AA on tinted surfaces; the toggle''s outline
+        variant wins its hover by rule order).'
+      dropped:
+      - hover:bg-muted
+toggle-group:
+  slots:
+    toggle-group-item:
+      reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
+        not carry them (its element relies on a composed child or a primitive default),
+        so the dictionary must.'
+      added:
+      - items-center
+      classic:
+      - data-[spacing=0]:shadow-none
+      - min-w-0
+      - w-auto
+tooltip:
+  missing_slots:
+    reason: 'No provider element: delay/skip settings ride the controller.'
+    list:
+    - tooltip-provider
+  poetry_slots:
+    reason: The arrow element poetry positions.
+    list:
+    - tooltip-arrow
+hover-card:
+  missing_slots:
+    reason: 'No portal/provider element in poetry: popups render in place and portal
+      to body at open time.'
+    list:
+    - hover-card-portal
+item:
+  missing_slots:
+    reason: The group wrapper is a helper, outside the component's previews.
+    list:
+    - item-group
+kbd:
+  missing_slots:
+    reason: The group wrapper is a helper, outside the component's previews.
+    list:
+    - kbd-group
+button:
+  poetry_slots:
+    reason: Button's skeleton parts (icon, label, spinner) - the source leaves children
+      unnamed.
+    list:
+    - icon
+    - label
+    - spinner
+radio-group:
+  poetry_slots:
+    reason: The choice-card parts (card/content/title/description) are poetry's.
+    list:
+    - radio-group-card
+    - radio-group-card-content
+    - radio-group-card-description
+    - radio-group-card-title

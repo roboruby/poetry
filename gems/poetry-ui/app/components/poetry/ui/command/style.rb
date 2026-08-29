@@ -12,7 +12,7 @@ module Poetry
       # rule - the styled sources carry no chain, so the dictionary must
       # not either (an inline utility would override all nine themes).
       class Style < Poetry::Core::Style
-        base "cn-command flex h-full w-full flex-col overflow-hidden"
+        base "cn-command flex flex-col overflow-hidden size-full"
 
         element :input_wrapper, "cn-command-input-wrapper flex items-center"
 
@@ -36,9 +36,9 @@ module Poetry
 
         # group/command-item: bare marker, no CSS - the vega shortcut
         # re-color (group-data-selected/command-item) keys on it.
-        element :item, "cn-command-item group/command-item relative flex cursor-default " \
-                       "items-center outline-hidden select-none data-[disabled]:pointer-events-none " \
-                       "data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0"
+        element :item, "cn-command-item group/command-item relative flex cursor-default items-center " \
+                       "outline-hidden select-none [&_svg]:pointer-events-none [&_svg]:shrink-0 " \
+                       "data-disabled:opacity-50 data-disabled:pointer-events-none"
 
         # POETRY ADDITION: the label wrapper is layout-transparent - it
         # mirrors the item's own row (preflight blockifies svg, so a bare

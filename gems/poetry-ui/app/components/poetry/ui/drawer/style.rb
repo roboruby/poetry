@@ -90,7 +90,7 @@ module Poetry
         element :nonmodal, "fixed inset-0 z-50"
         element :footer, "cn-drawer-footer mt-auto flex shrink-0 flex-col"
         element :title, "cn-drawer-title"
-        element :description, "cn-drawer-description"
+        element :description, "cn-drawer-description text-balance"
         element :body, "cn-drawer-body flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain"
 
         # The direction's edge classes for the <dialog> element (the Sheet

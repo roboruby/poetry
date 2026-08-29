@@ -33,8 +33,8 @@
         controller reused verbatim; chrome flattened - rounded/border ride
         the content). %>
     <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(command_attributes).to_attributes) do %>
-      <div data-slot="command-input-wrapper" class="<%= Poetry::Ui::Command::Style.css(:input_wrapper) %>">
-        <span data-slot="command-search-icon"><%= render(Poetry::Ui::Icon::Component.new(name: :search, class: Poetry::Ui::Command::Style.css(:search_icon))) %></span>
+      <div data-slot="combobox-input-wrapper" class="<%= Poetry::Ui::Command::Style.css(:input_wrapper) %>">
+        <span data-slot="combobox-search-icon"><%= render(Poetry::Ui::Icon::Component.new(name: :search, class: Poetry::Ui::Command::Style.css(:search_icon))) %></span>
         <%= tag.input(**Poetry::Core::HTML::Attributes.new(input_attributes).to_attributes) %>
       </div>
       <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(list_attributes).to_attributes) do %>

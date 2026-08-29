@@ -44,13 +44,14 @@ module Poetry
           stimulus_attributes(:menu) { |menu| menu.with_action(:activate, on: :click) }
         end
 
-        # The named check/circle glyph wrapper (the self-identification
-        # rule: data-slot="<family>-item-indicator"). State is carried by
+        # The named check/circle glyph wrapper (the source's two slots:
+        # <family>-checkbox-item-indicator / <family>-radio-item-indicator).
+        # State is carried by
         # the parent item's aria-checked/data-checked pair; the glyph
         # itself stays decorative (Icon defaults to aria-hidden).
         def item_indicator(icon, icon_class, kind)
           extra = [family_style.css(:item_indicator_state), indicator_extra_class(kind)].compact
-          content_tag(:span, "data-slot" => "#{family_slot_prefix}-item-indicator",
+          content_tag(:span, "data-slot" => "#{family_slot_prefix}-#{kind}-item-indicator",
                              "class" => family_style.css(:item_indicator, class: extra)) do
             render(Icon::Component.new(name: icon, class: icon_class))
           end

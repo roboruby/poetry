@@ -86,7 +86,7 @@ module Poetry
           combobox.with_item(value: "next.js", data: { action: HOST_ACTION }) { "Next.js" }
         end
 
-        assert_survival page.find("[data-slot=command-item]", visible: :all)["data-action"], "combobox item"
+        assert_survival page.find("[data-slot=combobox-item]", visible: :all)["data-action"], "combobox item"
       end
 
       def test_select_item_keeps_wiring_and_data_value

@@ -49,7 +49,7 @@ module Poetry
           assert_equal "true", root["data-poetry--core--command-filter-value"]
           assert_equal "false", root["data-poetry--core--command-loop-value"]
           # The popover chrome rides .cn-command; the layout stays inline.
-          %w[cn-command flex h-full w-full flex-col
+          %w[cn-command flex size-full flex-col
              overflow-hidden].each { |token| assert_includes root["class"], token }
         end
 
@@ -138,7 +138,7 @@ module Poetry
 
           # The data-[highlighted] delta rides .cn-command-item in the theme.
           assert_includes item["class"], "cn-command-item"
-          assert_includes item["class"], "data-[disabled]:pointer-events-none"
+          assert_includes item["class"], "data-disabled:pointer-events-none"
           refute_includes item["class"], "data-[selected=true]", "the one deliberate class delta vs source"
         end
 

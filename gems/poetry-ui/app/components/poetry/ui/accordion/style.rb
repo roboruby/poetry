@@ -11,7 +11,7 @@ module Poetry
         # Root hook: several themes (mira, rhea, luma, maia) style the
         # root as a box - the name must compile in EVERY theme, so each
         # fragment carries a rule (default: w-full).
-        base "cn-accordion"
+        base "cn-accordion flex flex-col w-full"
 
         element :item, "cn-accordion-item"
 
@@ -20,9 +20,10 @@ module Poetry
         # The chevron flips on aria-expanded, not a data attribute: the
         # controller reflects only aria-expanded on the trigger (the
         # data-open/data-closed pair lives on the item and panel).
-        element :trigger, "cn-accordion-trigger flex flex-1 items-start justify-between " \
-                          "transition-all outline-none disabled:pointer-events-none " \
-                          "disabled:opacity-50 [&[aria-expanded=true]>svg]:rotate-180"
+        element :trigger, "cn-accordion-trigger flex flex-1 items-start justify-between transition-all " \
+                          "outline-none disabled:pointer-events-none disabled:opacity-50 " \
+                          "[&[aria-expanded=true]>svg]:rotate-180 border border-transparent " \
+                          "group/accordion-trigger relative"
 
         element :indicator, "cn-accordion-trigger-icon pointer-events-none shrink-0 " \
                             "transition-transform duration-200"

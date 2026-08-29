@@ -8,25 +8,22 @@ module Poetry
       # adds text-foreground, the sub-trigger omits gap-2, the sub chevron
       # is a bare ml-auto); the trigger SURFACE still ships no classes.
       class Style < Poetry::Core::Style
-        element :content, "cn-context-menu-content cn-menu-translucent z-50 " \
-                          "max-h-(--available-height) " \
-                          "origin-(--transform-origin) " \
-                          "overflow-x-hidden overflow-y-auto"
+        element :content, "cn-context-menu-content cn-menu-translucent z-50 max-h-(--available-height) " \
+                          "origin-(--transform-origin) overflow-x-hidden overflow-y-auto outline-none"
 
         # group/context-menu-item: bare marker, no CSS - the vega theme's
         # shortcut re-color (group-focus/context-menu-item) keys on it.
         element :item, "cn-context-menu-item group/context-menu-item relative flex cursor-default " \
-                       "items-center outline-hidden select-none data-[disabled]:pointer-events-none " \
-                       "data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0"
+                       "items-center outline-hidden select-none [&_svg]:pointer-events-none [&_svg]:shrink-0 " \
+                       "data-disabled:opacity-50 data-disabled:pointer-events-none"
 
-        element :checkbox_item, "cn-context-menu-checkbox-item relative flex cursor-default " \
-                                "items-center outline-hidden select-none " \
-                                "data-[disabled]:pointer-events-none data-[disabled]:opacity-50 " \
-                                "[&_svg]:pointer-events-none [&_svg]:shrink-0"
+        element :checkbox_item, "cn-context-menu-checkbox-item relative flex cursor-default items-center " \
+                                "outline-hidden select-none [&_svg]:pointer-events-none [&_svg]:shrink-0 " \
+                                "data-disabled:opacity-50 data-disabled:pointer-events-none"
 
-        element :radio_item, "cn-context-menu-radio-item relative flex cursor-default items-center " \
-                             "outline-hidden select-none data-[disabled]:pointer-events-none " \
-                             "data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0"
+        element :radio_item, "cn-context-menu-radio-item relative flex cursor-default items-center outline-hidden " \
+                             "select-none [&_svg]:pointer-events-none [&_svg]:shrink-0 data-disabled:opacity-50 " \
+                             "data-disabled:pointer-events-none"
 
         element :label, "cn-context-menu-label"
 

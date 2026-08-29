@@ -9,9 +9,8 @@ module Poetry
       # box, type, and animation chain ride the theme (animate-in remains
       # UNGATED there, source-exact).
       class Style < Poetry::Core::Style
-        element :content, "cn-tooltip-content z-50 w-fit " \
-                          "origin-(--transform-origin) " \
-                          "bg-foreground text-background"
+        element :content, "cn-tooltip-content z-50 w-fit origin-(--transform-origin) bg-foreground " \
+                          "text-background max-w-xs"
 
         # The arrow: popper positions/rotates the outer box; the visual
         # size/rounding rides the theme, the paint + geometry stay inline.

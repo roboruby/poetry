@@ -242,7 +242,7 @@ module Poetry
           assert_equal "false", colm["aria-checked"]
           assert colm.key?("data-unchecked")
           refute colm.key?("data-checked")
-          assert_predicate group.css('[data-slot="context-menu-item-indicator"]'), :any?
+          assert_predicate group.css('[data-slot="context-menu-radio-item-indicator"]'), :any?
         end
 
         def test_duplicate_radio_values_raise

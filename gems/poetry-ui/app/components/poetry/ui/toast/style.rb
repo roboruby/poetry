@@ -20,10 +20,11 @@ module Poetry
           destructive: "cn-toast-variant-destructive"
         }
 
-        element :icon, "cn-toast-icon flex shrink-0 items-center justify-center"
+        element :icon, "cn-toast-icon flex shrink-0 items-center justify-center " \
+                       "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none"
         element :body, "cn-toast-body flex min-w-0 flex-1 flex-col"
-        element :title, "cn-toast-title"
-        element :description, "cn-toast-description"
+        element :title, "cn-toast-title font-medium text-sm"
+        element :description, "cn-toast-description text-muted-foreground text-sm"
         element :action, "shrink-0 self-start"
         element :close, "shrink-0 self-start"
       end

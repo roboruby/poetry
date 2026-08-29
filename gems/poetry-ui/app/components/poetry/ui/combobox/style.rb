@@ -41,8 +41,9 @@ module Poetry
         # command's own padding; the list's themed max-height holds the
         # design height.
         element :content, "cn-combobox-content cn-menu-translucent z-50 flex w-(--anchor-width) " \
-                          "max-h-(--available-height) origin-(--transform-origin) flex-col " \
-                          "outline-hidden"
+                          "max-h-(--available-height) origin-(--transform-origin) flex-col outline-hidden " \
+                          "data-[chips=true]:min-w-(--anchor-width) group/combobox-content " \
+                          "max-w-(--available-width) min-w-[calc(var(--anchor-width)+--spacing(7))] relative"
 
         # THE listbox, the popup's scroll owner: the source's combobox
         # list, where the option inset rides the LIST and groups stay
@@ -70,6 +71,10 @@ module Poetry
         # input by its group the same way.
         element :input_fill, "h-full"
 
+        # The source's option fills its list row (Command's item leaves width
+        # to the palette; the combobox row is the source's w-full).
+        element :item_fill, "w-full"
+
         # POETRY ADDITION (Command's precedent): the label wrapper is
         # layout-transparent - it mirrors the item's own row (preflight
         # blockifies svg, so a bare span would stack an icon above its text).
@@ -95,7 +100,9 @@ module Poetry
                         "data-disabled:pointer-events-none data-disabled:opacity-50"
 
         # One chip: real-focus surface (:focus-visible ring is theme-side).
-        element :chip, "cn-combobox-chip flex shrink-0 items-center outline-none"
+        element :chip, "cn-combobox-chip flex shrink-0 items-center outline-none " \
+                       "has-disabled:cursor-not-allowed has-disabled:opacity-50 " \
+                       "has-disabled:pointer-events-none"
 
         # ChipRemove: the ghost icon-button mechanism; the dim/hover/size
         # treatment is theme-side.
@@ -104,7 +111,7 @@ module Poetry
 
         # The inline filter input: bare (the FRAME is the visual field) -
         # min-width and placeholder color are theme-side.
-        element :chip_input, "cn-combobox-chip-input flex-1 bg-transparent outline-none"
+        element :chip_input, "cn-combobox-chip-input flex-1 bg-transparent outline-none min-w-16"
 
         # The show_clear: positioning wrapper - shrink-wraps the trigger so
         # the absolute X seats against the TRIGGER's edge, not the

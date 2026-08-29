@@ -14,7 +14,7 @@ module Poetry
         # `absolute`, pinning the panel to the document origin so it scrolls
         # off-screen below the fold); the UA `:modal` rule keeps it fixed and
         # viewport-centered instead. See the parent Dialog.
-        element :content, "cn-alert-dialog-content m-auto open:grid"
+        element :content, "cn-alert-dialog-content m-auto open:grid group/alert-dialog-content"
 
         element :header, "cn-alert-dialog-header grid grid-rows-[auto_1fr] place-items-center text-center"
         # The with-media x-gap is theme-side (.cn-alert-dialog-header

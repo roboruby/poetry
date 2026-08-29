@@ -24,21 +24,21 @@ module Poetry
 
         # group/menubar-item: bare marker, no CSS - the vega theme's
         # shortcut re-color (group-focus/menubar-item) keys on it.
-        element :item, "cn-menubar-item group/menubar-item relative flex cursor-default " \
-                       "items-center outline-hidden select-none data-[disabled]:pointer-events-none " \
-                       "data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0"
+        element :item, "cn-menubar-item group/menubar-item relative flex cursor-default items-center " \
+                       "outline-hidden select-none [&_svg]:pointer-events-none [&_svg]:shrink-0 " \
+                       "data-disabled:opacity-50 data-disabled:pointer-events-none"
 
-        element :checkbox_item, "cn-menubar-checkbox-item relative flex cursor-default items-center " \
-                                "outline-hidden select-none data-[disabled]:pointer-events-none " \
-                                "data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0"
+        element :checkbox_item, "cn-menubar-checkbox-item relative flex cursor-default items-center outline-hidden " \
+                                "select-none [&_svg]:pointer-events-none [&_svg]:shrink-0 data-disabled:opacity-50 " \
+                                "data-disabled:pointer-events-none"
 
-        element :radio_item, "cn-menubar-radio-item relative flex cursor-default items-center " \
-                             "outline-hidden select-none data-[disabled]:pointer-events-none " \
-                             "data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0"
+        element :radio_item, "cn-menubar-radio-item relative flex cursor-default items-center outline-hidden " \
+                             "select-none [&_svg]:pointer-events-none [&_svg]:shrink-0 data-disabled:opacity-50 " \
+                             "data-disabled:pointer-events-none"
 
         element :label, "cn-menubar-label"
 
-        element :separator, "cn-menubar-separator"
+        element :separator, "cn-menubar-separator -mx-1 h-px my-1"
 
         element :shortcut, "cn-menubar-shortcut"
 

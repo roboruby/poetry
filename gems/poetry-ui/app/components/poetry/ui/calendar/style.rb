@@ -13,7 +13,8 @@ module Poetry
         # group/calendar stays dropped (no consumer; the compiled-CSS gate
         # flags markers nothing consumes). It returns with a consumer.
         base "cn-calendar bg-background [--cell-size:--spacing(8)] w-fit " \
-             "in-data-[slot=popover-content]:bg-transparent"
+             "in-data-[slot=popover-content]:bg-transparent group/calendar " \
+             "in-data-[slot=card-content]:bg-transparent"
 
         element :nav, "flex items-center justify-between gap-1 pb-2"
         element :nav_button, "size-(--cell-size) p-0 select-none aria-disabled:opacity-50"

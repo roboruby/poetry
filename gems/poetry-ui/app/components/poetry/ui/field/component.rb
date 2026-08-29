@@ -75,7 +75,9 @@ module Poetry
                                                   "(horizontal is the boolean-control layout)",
                                        values: ORIENTATIONS.map(&:to_s) }
              }
-        part "field-hint", "The hint <p> - its id lands in the control's aria-describedby"
+        part "field-label", "The Label (composed) wearing the source's field-label slot - names the control"
+        part "field-description", "The hint <p> (the source's description) - its id lands in the control's " \
+                                  "aria-describedby"
         part "field-error", "The error <p> - present only when error: is set; its id leads " \
                             "the control's aria-describedby"
         part "checkbox-input", "A nested Checkbox's hidden native input - the toggle renders " \

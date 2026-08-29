@@ -43,8 +43,8 @@ module Poetry
           fragment = doc(render_combobox)
 
           %w[combobox combobox-trigger combobox-value combobox-native combobox-content
-             combobox-item-indicator command command-input-wrapper command-input command-list
-             command-empty command-item command-item-text command-status].each do |slot|
+             combobox-item-indicator combobox-command combobox-input-wrapper combobox-input combobox-list
+             combobox-empty combobox-item combobox-item-text combobox-status].each do |slot|
             assert_predicate fragment.css(%([data-slot="#{slot}"])), :any?, "missing data-slot #{slot}"
           end
         end
@@ -53,8 +53,8 @@ module Poetry
           html = render_combobox
           fragment = doc(html)
           trigger = fragment.css('button[data-slot="combobox-trigger"]').first
-          list = fragment.css('[data-slot="command-list"]').first
-          input = fragment.css('[data-slot="command-input"]').first
+          list = fragment.css('[data-slot="combobox-list"]').first
+          input = fragment.css('[data-slot="combobox-input"]').first
 
           assert_equal "combobox", trigger["role"]
           assert_equal "button", trigger["type"], "never an implicit submit"
@@ -159,13 +159,13 @@ module Poetry
           # controller on open (NEVER roving-focus) - never server-rendered.
           assert_nil content["data-controller"]
           assert_includes content["class"], "cn-combobox-content" # p-0 rides the theme rule
-          assert_predicate content.css('[data-slot="command-list"]'), :any?,
+          assert_predicate content.css('[data-slot="combobox-list"]'), :any?,
                            "the listbox sits INSIDE the content (the controller's closest() resolution)"
         end
 
         def test_embedded_command_root_carries_its_own_engine_controller
           html = render_combobox(filter: false, loop: true)
-          command = doc(html).css('[data-slot="command"]').first
+          command = doc(html).css('[data-slot="combobox-command"]').first
 
           assert_equal "poetry--core--command", command["data-controller"]
           assert_equal "false", command["data-poetry--core--command-filter-value"],
@@ -176,7 +176,7 @@ module Poetry
 
         def test_filter_input_is_the_command_contract_at_the_demo_scale
           html = render_combobox
-          input = doc(html).css('input[data-slot="command-input"]').first
+          input = doc(html).css('input[data-slot="combobox-input"]').first
 
           assert_equal "text", input["type"]
           assert_equal "combobox", input["role"]
@@ -194,14 +194,14 @@ module Poetry
 
         def test_search_placeholder_lands_on_the_input
           input = doc(render_combobox(search_placeholder: "Search framework...."))
-                  .css('[data-slot="command-input"]').first
+                  .css('[data-slot="combobox-input"]').first
 
           assert_equal "Search framework....", input["placeholder"]
         end
 
         def test_items_are_command_items_wearing_the_twin_selected_write_and_the_indicator
           html = render_combobox(value: "sveltekit")
-          nextjs, sveltekit = doc(html).css('[data-slot="command-item"]').to_a
+          nextjs, sveltekit = doc(html).css('[data-slot="combobox-item"]').to_a
 
           assert_equal "option", nextjs["role"]
           assert_nil nextjs["tabindex"], "options are NEVER focusable (activedescendant, not roving focus)"
@@ -215,10 +215,10 @@ module Poetry
           refute nextjs.key?("data-selected")
           assert_equal "true", sveltekit["aria-selected"]
           assert sveltekit.key?("data-selected")
-          assert_equal 1, doc(html).css('[data-slot="command-item"][aria-selected="true"]').size,
+          assert_equal 1, doc(html).css('[data-slot="combobox-item"][aria-selected="true"]').size,
                        "exactly one option selected per non-nil value"
 
-          doc(html).css('[data-slot="command-item"]').each do |item|
+          doc(html).css('[data-slot="combobox-item"]').each do |item|
             indicator = item.css('[data-slot="combobox-item-indicator"]').first
 
             assert indicator, "every item ships the indicator (data-selected drives visibility)"
@@ -227,7 +227,7 @@ module Poetry
                             "visible iff data-selected present - the attribute-driven check"
             assert_equal "true", indicator.css("svg").first["aria-hidden"]
           end
-          assert_equal "SvelteKit", sveltekit.css('[data-slot="command-item-text"]').first.text,
+          assert_equal "SvelteKit", sveltekit.css('[data-slot="combobox-item-text"]').first.text,
                        "item-text is the node whose textContent becomes the display on commit"
         end
 
@@ -235,7 +235,7 @@ module Poetry
           html = render_combobox(value: "sveltekit")
           fragment = doc(html)
           highlighted = fragment.css("[data-highlighted]").first
-          input = fragment.css('[data-slot="command-input"]').first
+          input = fragment.css('[data-slot="combobox-input"]').first
 
           assert_equal "sveltekit", highlighted["data-value"],
                        "the committed option takes the server-rendered highlight seat"
@@ -260,7 +260,7 @@ module Poetry
             combobox.with_item(value: "api", disabled: true) { "API" }
             combobox.with_item(value: "pinned", always_render: true) { "Pinned" }
           end
-          icon_rich, disabled, pinned = doc(html).css('[data-slot="command-item"]').to_a
+          icon_rich, disabled, pinned = doc(html).css('[data-slot="combobox-item"]').to_a
 
           assert_equal "Move up", icon_rich["data-text-value"]
           assert_equal "raise lift", icon_rich["data-keywords"]
@@ -290,9 +290,9 @@ module Poetry
             combobox.with_item(value: "other") { "Other" }
           end
           fragment = doc(html)
-          group = fragment.css('[data-slot="command-group"]').first
-          heading = group.css('[data-slot="command-group-heading"]').first
-          separator = fragment.css('[data-slot="command-separator"]').first
+          group = fragment.css('[data-slot="combobox-group"]').first
+          heading = group.css('[data-slot="combobox-label"]').first
+          separator = fragment.css('[data-slot="combobox-separator"]').first
 
           assert_equal "group", group["role"]
           assert_equal heading["id"], group["aria-labelledby"]
@@ -314,7 +314,7 @@ module Poetry
 
         def test_empty_part_renders_hidden_with_the_i18n_default_and_the_slot_override
           fragment = doc(render_combobox)
-          empty = fragment.css('[data-slot="command-empty"]').first
+          empty = fragment.css('[data-slot="combobox-empty"]').first
 
           assert empty.key?("hidden"), "the engine unhides it on zero matches"
           assert_equal "No results found.", empty.text
@@ -324,11 +324,11 @@ module Poetry
             combobox.with_item(value: "a") { "A" }
           end
 
-          assert_equal "No framework found.", doc(html).css('[data-slot="command-empty"]').first.text
+          assert_equal "No framework found.", doc(html).css('[data-slot="combobox-empty"]').first.text
         end
 
         def test_status_live_region_carries_the_localized_count_templates
-          status = doc(render_combobox).css('[data-slot="command-status"]').first
+          status = doc(render_combobox).css('[data-slot="combobox-status"]').first
 
           assert_equal "status", status["role"]
           assert_equal "polite", status["aria-live"]
@@ -344,11 +344,11 @@ module Poetry
 
           assert_equal "post-framework", trigger["id"], "label[for] must reach the combobox"
           assert_equal "post-framework-content", fragment.css('[data-slot="combobox-content"]').first["id"]
-          assert_equal "post-framework-list", fragment.css('[data-slot="command-list"]').first["id"]
+          assert_equal "post-framework-list", fragment.css('[data-slot="combobox-list"]').first["id"]
           assert_equal "post-framework-native", fragment.css('[data-slot="combobox-native"]').first["id"]
-          assert_equal "post-framework-input", fragment.css('[data-slot="command-input"]').first["id"]
+          assert_equal "post-framework-input", fragment.css('[data-slot="combobox-input"]').first["id"]
           assert_equal(%w[post-framework-item-0 post-framework-item-1],
-                       fragment.css('[data-slot="command-item"]').map { |item| item["id"] })
+                       fragment.css('[data-slot="combobox-item"]').map { |item| item["id"] })
           # Field control_attributes land on the TRIGGER, never the root.
           assert_equal "post-framework-error", trigger["aria-describedby"]
           assert_equal "true", trigger["aria-invalid"]
@@ -375,7 +375,7 @@ module Poetry
 
           assert fragment.css('[data-slot="combobox-trigger"]').first.key?("disabled")
           assert fragment.css('[data-slot="combobox-native"]').first.key?("disabled")
-          assert fragment.css('[data-slot="command-input"]').first.key?("disabled")
+          assert fragment.css('[data-slot="combobox-input"]').first.key?("disabled")
         end
 
         def test_rtl_sets_dir_on_the_root
@@ -390,7 +390,7 @@ module Poetry
 
           assert_equal "Select framework...", fragment.css('[data-slot="combobox-value"]').first.text
           assert fragment.css('[data-slot="combobox-trigger"]').first.key?("data-placeholder")
-          assert_empty fragment.css('[data-slot="command-item"][aria-selected="true"]')
+          assert_empty fragment.css('[data-slot="combobox-item"][aria-selected="true"]')
         end
 
         def test_duplicate_option_values_raise

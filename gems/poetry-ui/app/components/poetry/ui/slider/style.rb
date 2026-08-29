@@ -15,7 +15,7 @@ module Poetry
              "data-[disabled]:opacity-50 data-[orientation=vertical]:h-full " \
              "data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col"
 
-        element :track, "cn-slider-track relative grow overflow-hidden"
+        element :track, "cn-slider-track relative grow overflow-hidden select-none"
 
         # The geometry rules: horizontal spans [--slider-start,
         # --slider-end] along the inline axis; vertical grows BOTTOM-up
@@ -25,10 +25,10 @@ module Poetry
                         "data-[orientation=horizontal]:start-(--slider-start) " \
                         "data-[orientation=horizontal]:end-[calc(100%-var(--slider-end))] " \
                         "data-[orientation=vertical]:bottom-(--slider-start) " \
-                        "data-[orientation=vertical]:top-[calc(100%-var(--slider-end))]"
+                        "data-[orientation=vertical]:top-[calc(100%-var(--slider-end))] select-none"
 
-        element :thumb, "cn-slider-thumb block shrink-0 " \
-                        "disabled:pointer-events-none disabled:opacity-50"
+        element :thumb, "cn-slider-thumb block shrink-0 disabled:pointer-events-none disabled:opacity-50 " \
+                        "select-none"
 
         # The per-thumb positioning anchor - an absolutely positioned span
         # riding the geometry vars; calc(P% - 0.5rem) centers the 1rem

@@ -210,7 +210,7 @@ module Poetry
           assert unchecked.key?("data-unchecked")
           refute unchecked.key?("data-checked")
 
-          indicator = checked.css('[data-slot="dropdown-menu-item-indicator"]').first
+          indicator = checked.css('[data-slot="dropdown-menu-checkbox-item-indicator"]').first
 
           assert indicator, "the check indicator ships built in, named (poetry addition over the anonymous span)"
           assert_equal "true", indicator.css("svg").first["aria-hidden"]
@@ -236,7 +236,7 @@ module Poetry
           assert_equal "false", bottom["aria-checked"]
           assert bottom.key?("data-unchecked")
           refute bottom.key?("data-checked")
-          assert_predicate group.css('[data-slot="dropdown-menu-item-indicator"]'), :any?
+          assert_predicate group.css('[data-slot="dropdown-menu-radio-item-indicator"]'), :any?
         end
 
         def test_duplicate_radio_values_raise

@@ -12,7 +12,6 @@ border-border
 border-destructive/50
 border-primary
 bottom-2
-cn-input-otp-separator
 contents
 data-[side]:visible
 data-open:opacity-100

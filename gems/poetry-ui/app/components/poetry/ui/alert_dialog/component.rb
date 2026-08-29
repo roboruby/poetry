@@ -125,6 +125,8 @@ module Poetry
              }
         part "alert-dialog-header", "Title block - holds the optional media well, the title, " \
                                     "and the description"
+        part "alert-dialog-media", "The optional media well above the title (an icon or illustration) - the " \
+                                   "header's first row; absent unless with_media is used"
         part "alert-dialog-title", "The heading - the alertdialog's accessible name " \
                                    "(required slot)"
         part "alert-dialog-description", "The explanation, wired to aria-describedby " \

@@ -44,7 +44,7 @@ module Poetry
                         "group-data-[upload-state=uploading]/attachment:shimmer"
 
         element :description, "cn-attachment-description block max-w-full min-w-0 truncate " \
-                              "group-data-[upload-state=error]/attachment:text-destructive/80"
+                              "group-data-[upload-state=error]/attachment:text-destructive/80 text-muted-foreground"
 
         element :actions, "cn-attachment-actions flex shrink-0 items-center"
 

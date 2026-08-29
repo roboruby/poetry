@@ -50,6 +50,8 @@ module Poetry
         "collapsible" => "sidebar collapse-mode marker (server + poetry--core--sidebar; " \
                          "the mode while collapsed)",
         "viewport" => "navigation-menu mode marker (server-rendered; false = per-item popups)",
+        "chips" => "combobox popup chips-mode marker (server-rendered; the popup's minimum width " \
+                   "follows the chips field)",
         "sidebar" => "sidebar part marker (server-rendered; menu-action reserves menu-button room " \
                      "via group-has)",
         "activation-direction" => "navigation-menu travel direction (poetry--core--navigation-menu " \

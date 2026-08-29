@@ -11,10 +11,9 @@ module Poetry
                           "*:data-[slot=select-value]:items-center " \
                           "[&_svg]:pointer-events-none [&_svg]:shrink-0"
 
-        element :content, "cn-select-content cn-menu-translucent relative z-50 " \
-                          "max-h-(--available-height) " \
-                          "origin-(--transform-origin) " \
-                          "overflow-x-hidden overflow-y-auto"
+        element :content, "cn-select-content cn-menu-translucent relative z-50 max-h-(--available-height) " \
+                          "origin-(--transform-origin) overflow-x-hidden overflow-y-auto " \
+                          "isolate w-(--anchor-width)"
 
         # Padding/scroll-margin are theme-owned via cn-select-viewport
         # (sera runs p-1.5). Sizing vars stay structural.
@@ -25,10 +24,9 @@ module Poetry
         element :viewport, "cn-select-viewport min-h-[var(--radix-select-trigger-height)] w-full " \
                            "min-w-[var(--radix-select-trigger-width)]"
 
-        element :item, "cn-select-item relative flex w-full cursor-default items-center " \
-                       "outline-hidden select-none data-[disabled]:pointer-events-none " \
-                       "data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 " \
-                       "*:[span]:last:flex *:[span]:last:items-center"
+        element :item, "cn-select-item relative flex w-full cursor-default items-center outline-hidden " \
+                       "select-none [&_svg]:pointer-events-none [&_svg]:shrink-0 data-disabled:opacity-50 " \
+                       "data-disabled:pointer-events-none"
 
         element :label, "cn-select-label"
 

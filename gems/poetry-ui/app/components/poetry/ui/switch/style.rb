@@ -9,7 +9,8 @@ module Poetry
       # sr-only form store.
       class Style < Poetry::Core::Style
         base "cn-switch peer group/switch inline-flex items-center transition-all outline-none " \
-             "disabled:cursor-not-allowed disabled:opacity-50"
+             "disabled:cursor-not-allowed disabled:opacity-50 after:-inset-x-3 after:-inset-y-2 " \
+             "after:absolute relative"
 
         element :thumb, "cn-switch-thumb pointer-events-none block ring-0 transition-transform"
 
