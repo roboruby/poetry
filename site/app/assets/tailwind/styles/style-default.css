@@ -434,7 +434,7 @@
 }
 
 .cn-card-footer {
-  @apply px-6;
+  @apply px-6 [.border-t]:pt-6;
 }
 
 /* MARK: Checkbox */
@@ -1266,7 +1266,7 @@
 }
 
 .cn-select-item {
-  @apply gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm focus:bg-accent focus:text-accent-foreground [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground *:[span]:last:gap-2;
+  @apply gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm focus:bg-accent focus:text-accent-foreground [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2;
 }
 
 .cn-select-label {
