@@ -138,6 +138,15 @@ module Poetry
         assert_includes html_attrs[:class], "custom-class"
       end
 
+      def test_html_attributes_carries_each_caller_class_once
+        component = TestComponent.new(class: "cn-custom hidden")
+        classes = component.html_attributes[:class].split
+
+        assert_equal 1, classes.count("cn-custom")
+        assert_equal 1, classes.count("hidden")
+        assert_includes classes, "test-component"
+      end
+
       def test_html_attributes_preserves_non_class_attributes
         component = TestComponent.new(id: "test-id", data: { controller: "example" })
         html_attrs = component.html_attributes

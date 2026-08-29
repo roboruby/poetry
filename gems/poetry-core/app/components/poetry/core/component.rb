@@ -287,7 +287,13 @@ module Poetry
       #   component = MyComponent.new(class: "custom-class")
       #   component.html_attributes # => { class: "component-base-class custom-class" }
       def html_attributes
-        @html_attributes.merge(class: classnames(css, @html_attributes[:class]))
+        # Set, never merge: Attributes#merge folds a class through the merger
+        # against the caller's original, so every non-utility token the caller
+        # passed (a cn-* hook) came out twice. The resolved string already
+        # carries the caller's classes once, where they win conflicts.
+        attributes = @html_attributes.deep_dup
+        attributes[:class] = classnames(css, @html_attributes[:class])
+        attributes
       end
 
       # The caller-supplied semantic identity (key:), if any.
