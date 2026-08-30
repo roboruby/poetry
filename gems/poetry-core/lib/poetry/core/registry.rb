@@ -28,6 +28,11 @@ module Poetry
       # Stimulus lifecycle callbacks are not consumer-callable actions.
       LIFECYCLE_METHODS = %w[connect disconnect initialize].freeze
 
+      # The id-minting funnel, as source text: a component family whose
+      # sources never match renders no poetry-minted random id (the
+      # "identity" derivation - see the entry's identity key).
+      MINT_PATTERN = /\bpoetry_instance_id\b|\binstance_id\b|\bSecureRandom\b/
+
       # The committed-registry view: the four generated sections
       # plus the root they resolve against, read straight from the YAML a
       # `registry:generate` run committed - no component classes, no Rails.
@@ -187,6 +192,34 @@ module Poetry
         end
       end
 
+      # Whether the component's rendered output can carry a poetry-minted
+      # id. An IDENTITY constant declared on the component's own ancestry
+      # wins (composition: a component whose DOM carries ids minted by
+      # components it RENDERS derives false and declares true). Otherwise
+      # the ancestor chain below Poetry::Core::Component - the class
+      # itself, family modules, intermediate bases; everywhere minting
+      # calls live - is source-scanned for the poetry_instance_id funnel
+      # (or a direct SecureRandom mint). The walk stops at the base class
+      # so the funnel's own definition never reads as a call, and the
+      # scan errs toward true: a false positive keeps a warning, a false
+      # negative would silence a real one.
+      def mints_identity?(component)
+        family = component.ancestors.take_while { |mod| mod != Poetry::Core::Component }
+        override = family.find { |mod| mod.const_defined?(:IDENTITY, false) }
+        return override.const_get(:IDENTITY, false) if override
+
+        family.any? { |mod| mint_source?(mod) }
+      end
+
+      # Whether one ancestor's source file mentions the minting funnel.
+      def mint_source?(mod)
+        path = mod.name && Object.const_source_location(mod.name)&.first
+        return false unless path && File.exist?(path)
+
+        mint_sources = (@mint_sources ||= {})
+        mint_sources.fetch(path) { mint_sources[path] = File.read(path).match?(MINT_PATTERN) }
+      end
+
       def entry_for(component)
         props = component.prop_definitions
         entry = {
@@ -239,6 +272,11 @@ module Poetry
         # The REQUIRES_ANY declaration: the conditional any-of
         # contracts - the before_render disjunction, stated statically.
         entry["requires_any"] = plain(props[:requires_any]) if props[:requires_any]&.any?
+        # The identity fact: false when the family renders no
+        # poetry-minted id - key:/id: would have nothing to stabilize, so
+        # check's stable-identity rules skip the helper. Absent = the
+        # component mints (legacy registries keep every warning).
+        entry["identity"] = false unless mints_identity?(component)
         # The part contract: the
         # styling surface - data-slot parts, state attributes per part,
         # CSS var seams - hand-authored prose that PartContract.verify

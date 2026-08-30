@@ -9,6 +9,7 @@ components:
     styles: []
     options: []
     slots: []
+    identity: false
   poetry/core/x:
     class_name: Poetry::Core::X::Component
     identifier: poetry--core--x
@@ -71,6 +72,7 @@ components:
     slots: []
     elements: []
     capsule: 02e59d06f424
+    identity: false
     parts:
     - name: icon
       description: The demo SVG itself - the whole component is one part

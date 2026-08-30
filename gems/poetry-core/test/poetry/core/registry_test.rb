@@ -61,6 +61,16 @@ module Poetry
         Registry.new(components: [Poetry::Core::X::Component, Poetry::Core::Generic::Component])
       end
 
+      # Defines a probe whose const_source_location is a REAL file with
+      # controlled content - the identity derivation scans ancestor
+      # sources, so probes defined inline would all share this test
+      # file's text (which mentions the funnel).
+      def eval_probe(dir, name, code)
+        path = File.join(dir, "#{name}.rb")
+        File.write(path, code)
+        eval(File.read(path), TOPLEVEL_BINDING, path, 1) # rubocop:disable Security/Eval
+      end
+
       def test_entries_are_keyed_by_component_path
         assert_equal %w[poetry/core/generic poetry/core/x], registry.entries.keys.sort
       end
@@ -96,6 +106,76 @@ module Poetry
         assert_includes color["variants"], "indigo"
         assert_equal "indigo", color["default"]
         assert_equal Poetry::Core::X::Style.capsule, entry["capsule"]
+      end
+
+      def test_identity_is_false_for_components_that_never_mint
+        entry = registry.entries.fetch("poetry/core/x")
+
+        assert entry.key?("identity"), "the derived fact must be emitted, not just absent"
+        refute entry["identity"], "X's family never reaches poetry_instance_id"
+      end
+
+      def test_identity_is_absent_when_the_class_source_reaches_the_funnel
+        Dir.mktmpdir do |dir|
+          eval_probe(dir, "minting_probe", <<~RUBY)
+            module IdentityMintingProbe
+              class Component < Poetry::Core::Component
+                def call
+                  content_tag(:div, content, id: poetry_instance_id("probe"))
+                end
+              end
+            end
+          RUBY
+
+          entry = Registry.new(components: [::IdentityMintingProbe::Component]).entries.values.first
+
+          refute entry.key?("identity"), "a funnel call in the class's own source = minting"
+        end
+      end
+
+      def test_identity_sees_family_modules_below_the_base_class
+        Dir.mktmpdir do |dir|
+          eval_probe(dir, "family_module", <<~RUBY)
+            module IdentityFamilyProbe
+              module Identity
+                def instance_id = (@instance_id ||= poetry_instance_id("fam"))
+              end
+            end
+          RUBY
+          eval_probe(dir, "family_component", <<~RUBY)
+            module IdentityFamilyProbe
+              class Component < Poetry::Core::Component
+                include Identity
+
+                def call = content_tag(:div, content)
+              end
+            end
+          RUBY
+
+          entry = Registry.new(components: [::IdentityFamilyProbe::Component]).entries.values.first
+
+          refute entry.key?("identity"), "the module's source carries the funnel for its includers"
+        end
+      end
+
+      def test_identity_constant_overrides_the_derivation
+        Dir.mktmpdir do |dir|
+          eval_probe(dir, "override_probe", <<~RUBY)
+            module IdentityOverrideProbe
+              class Component < Poetry::Core::Component
+                # Composition: the rendered DOM carries ids minted by the
+                # components this one renders.
+                IDENTITY = true
+
+                def call = content_tag(:div, content)
+              end
+            end
+          RUBY
+
+          entry = Registry.new(components: [::IdentityOverrideProbe::Component]).entries.values.first
+
+          refute entry.key?("identity"), "IDENTITY = true forces minting for compositional DOMs"
+        end
       end
 
       def test_yaml_is_plain_data_with_no_ruby_tags

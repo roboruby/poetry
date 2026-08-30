@@ -64,7 +64,8 @@ module Poetry
           },
           "poetry/ui/badge" => {
             "styles" => [{ "name" => "variant", "variants" => %w[default success] }],
-            "requires_content" => "the visible status text"
+            "requires_content" => "the visible status text",
+            "identity" => false
           },
           "poetry/ui/carousel" => {
             "options" => [{ "name" => "label" }],
@@ -1094,6 +1095,29 @@ module Poetry
 
         assert_equal 1, findings.size, "the if-block end must not close the cache frame"
         assert_equal "stable-identity/cache", findings.first.rule
+      end
+
+      def test_identity_free_component_is_skipped_while_a_minting_neighbor_warns
+        findings = stable_identity_findings(<<~ERB)
+          <% cache @project do %>
+            <%= poetry_badge %>
+            <%= poetry_button(label: "Save") %>
+          <% end %>
+          <% @rows.each do |row| %>
+            <%= poetry_badge %>
+          <% end %>
+        ERB
+
+        assert_equal ["stable-identity/cache"], findings.map(&:rule)
+        assert_includes findings.first.message, "poetry_button",
+                        "only the minting neighbor warns - badge's entry declares identity false"
+      end
+
+      def test_identity_free_reads_the_registry_declaration
+        assert CATALOG.identity_free?("poetry_badge")
+        refute CATALOG.identity_free?("poetry_button"), "no identity key = minting (legacy registries keep warning)"
+        refute CATALOG.identity_free?("poetry_sidebar_group"), "pathless helpers read as minting"
+        refute CATALOG.identity_free?("poetry_nonexistent")
       end
 
       def test_key_is_passthrough_not_an_unknown_option

@@ -119,6 +119,13 @@ module Poetry
         # that yields its slot builder.
         def helper_yields?(helper) = !@helper_entries.dig(helper, "yields").nil?
 
+        # A helper whose component entry declares "identity" => false:
+        # its rendered output carries no poetry-minted id, so key:/id:
+        # have nothing to stabilize and the stable-identity rules skip
+        # it. Pathless helpers and legacy entries (no key) read as
+        # minting - their warnings stand.
+        def identity_free?(helper) = @components.dig(@path_by_helper[helper], "identity") == false
+
         # The element-level wiring projection: which elements of
         # a component carry which controllers, values, actions, and
         # targets - use_stimulus declarations, serialized. Empty for

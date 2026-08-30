@@ -22,14 +22,13 @@ module Poetry
       #   render, so Turbo morph replaces it on any reorder instead of
       #   following the record.
       #
+      # A component whose registry entry declares "identity" => false
+      # renders no poetry-minted id - key:/id: would have nothing to
+      # stabilize - so both rules skip it. The registry derivation owns
+      # that fact per gem; legacy entries without the key keep warning.
+      #
       # @api private
       class StableIdentity
-        # Decorative/id-less helpers where the warnings would be noise.
-        SKIP_HELPERS = %w[
-          poetry_icon poetry_separator poetry_skeleton poetry_kbd poetry_badge
-          poetry_label poetry_spinner poetry_typeset poetry_link poetry_empty
-        ].freeze
-
         # A scriptlet that OPENS a Ruby block (needs its own <% end %>):
         # trailing `do |...|`, or a non-modifier if/unless/case/begin.
         BLOCK_OPENER =
@@ -79,7 +78,7 @@ module Poetry
         def flag_helpers(code, line, stack, findings)
           code.scan(/\b(poetry_[a-z0-9_]+)\b/) do |(helper)|
             next unless @catalog.helper?(helper)
-            next if SKIP_HELPERS.include?(helper)
+            next if @catalog.identity_free?(helper)
             next if code.match?(IDENTITY_ARG)
 
             if stack.include?(:cache)
