@@ -37,6 +37,11 @@ class DocsCatalog
                        "(poetry_dialog, poetry_select, poetry_combobox, poetry_dropdown_menu, " \
                        "assert_poetry_controllers_registered), " \
                        "and the browser only for what needs a layout engine."),
+    Entry.new(slug: "i18n", title: "I18n", section: "docs", icon: :languages,
+              description: "Poetry's interface strings ride I18n keys under poetry.* - override " \
+                       "the shipped en.yml per key, add locales with fallbacks, and keep visible " \
+                       "copy in your own templates; form labels and errors localize through the " \
+                       "model layer."),
     Entry.new(slug: "stimulus", title: "Stimulus", section: "docs", icon: :zap,
               description: "Compose your own Stimulus controllers with Poetry's: data: keywords merge onto " \
                        "any root or slot, forty-two controllers dispatch namespaced events, your markup " \
@@ -176,7 +181,7 @@ class DocsCatalog
     # The sidebar's guide sections. Order within a section is the display
     # order; Agent stays last in AI Native while it is experimental.
     DOC_SECTIONS = {
-      "Get Started" => %w[installation theming typography testing stimulus editors api],
+      "Get Started" => %w[installation theming typography testing i18n stimulus editors api],
       "Advanced" => %w[accessibility forms pagination data-table deferred optimistic-forms caching stable-ids engines],
       "AI Native" => %w[mcp-server webmcp agent-skills recipes page-agent]
     }.freeze

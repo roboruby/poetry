@@ -24,6 +24,9 @@ class DocsController < ApplicationController
   def testing
   end
 
+  def i18n
+  end
+
   def stimulus
   end
 
@@ -169,6 +172,7 @@ class DocsController < ApplicationController
     when "theming" then DocsMarkdown.theming(guide_entry("theming"))
     when "editors" then DocsMarkdown.editors(guide_entry("editors"))
     when "testing" then DocsMarkdown.testing(guide_entry("testing"))
+    when "i18n" then DocsMarkdown.i18n(guide_entry("i18n"))
     when "stimulus" then DocsMarkdown.stimulus(guide_entry("stimulus"))
     when "accessibility" then DocsMarkdown.accessibility(guide_entry("accessibility"))
     when "caching" then DocsMarkdown.caching(guide_entry("caching"))

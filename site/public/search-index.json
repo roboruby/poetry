@@ -204,6 +204,42 @@
     "path": "/testing#what-to-assert"
   },
   {
+    "title": "I18n",
+    "page": "I18n",
+    "section": "docs",
+    "path": "/i18n"
+  },
+  {
+    "title": "The shipped catalogue",
+    "page": "I18n",
+    "section": "docs",
+    "path": "/i18n#catalogue"
+  },
+  {
+    "title": "Overriding keys and adding locales",
+    "page": "I18n",
+    "section": "docs",
+    "path": "/i18n#locales"
+  },
+  {
+    "title": "Visible copy is yours",
+    "page": "I18n",
+    "section": "docs",
+    "path": "/i18n#copy"
+  },
+  {
+    "title": "Forms localize through the model",
+    "page": "I18n",
+    "section": "docs",
+    "path": "/i18n#forms"
+  },
+  {
+    "title": "Dates",
+    "page": "I18n",
+    "section": "docs",
+    "path": "/i18n#dates"
+  },
+  {
     "title": "Stimulus",
     "page": "Stimulus",
     "section": "docs",

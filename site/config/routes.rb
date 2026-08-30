@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   post "optimistic-forms/rejected" => "docs#optimistic_rejected", as: :optimistic_rejected
   get "editors" => "docs#editors", as: :editors
   get "testing" => "docs#testing", as: :testing
+  get "i18n" => "docs#i18n", as: :i18n
   get "stimulus" => "docs#stimulus", as: :stimulus
   get "accessibility" => "docs#accessibility", as: :accessibility
   get "caching" => "docs#caching", as: :caching

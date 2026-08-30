@@ -1,0 +1,166 @@
+<% content_for :title, "I18n" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("I18n") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag; keep ERB delimiters out of them.
+  catalogue_source = <<~CODE
+    en:
+      poetry:
+        combobox:
+          clear: "Clear selection"
+          empty: "No results found."
+          remove: "Remove %{label}"
+        command:
+          results:
+            zero: "0 results"
+            one: "1 result"
+            other: "%{count} results"
+        dialog:
+          close: "Close"
+        deferred:
+          failed: "This section failed to load."
+          retry: "Retry"
+        toast:
+          region_label: "Notifications (%{hotkey})"
+  CODE
+  override_source = <<~CODE
+    # config/locales/poetry.es.yml (your app's file loads after the
+    # engine's, so a key you redefine wins - per key, not per file)
+    es:
+      poetry:
+        combobox:
+          clear: "Quitar selección"
+          empty: "Sin resultados."
+        dialog:
+          close: "Cerrar"
+  CODE
+  fallbacks_source = <<~CODE
+    # config/application.rb
+    config.i18n.available_locales = [:en, :es]
+    config.i18n.fallbacks = [:en] # a poetry.* key you have not translated yet reads English
+  CODE
+  copy_source = <<~CODE
+    poetry_data_table(rows: @orders,
+                      empty_text: t(".no_orders"),
+                      filter_label: t(".filter_orders"))
+
+    poetry_date_picker(name: "due_on", placeholder: t(".pick_due_date"))
+  CODE
+  form_source = <<~CODE
+    # config/locales/es.yml
+    es:
+      activerecord:
+        attributes:
+          order:
+            due_on: "Fecha de entrega"
+
+    # The label localizes with zero view changes:
+    #   form.field(:due_on)  # label from Order.human_attribute_name(:due_on)
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">I18n</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      Poetry splits translation duty cleanly: the library's own interface
+      strings ride I18n keys you can override per locale, and every string
+      that is your content arrives as an option you pass - copy lives in
+      your templates and locale files, never hardcoded in a component.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="catalogue">The shipped catalogue</h2>
+      <p>
+        Every built-in interface string - accessible names like Close and
+        Clear selection, empty and loading states, screen-reader counts -
+        resolves through <code>I18n.t</code> under the <code>poetry</code>
+        namespace, one family per key group:
+        <code>poetry.&lt;component&gt;.&lt;key&gt;</code>. The catalogue
+        ships in poetry-ui's <code>config/locales/en.yml</code> and loads
+        through the standard engine convention; that file is the complete
+        key list, and pluralization and <code>%{interpolation}</code>
+        follow I18n's own rules.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: catalogue_source, language: "yaml", label: "The keyspace (excerpt)") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="locales">Overriding keys and adding locales</h2>
+      <p>
+        Your application's locale files load after the engine's, so
+        redefining a key overrides it - per key, not per file. The same
+        mechanism adds a language: ship the <code>poetry.*</code> keys for
+        the new locale, and enable fallbacks so a key you have not
+        translated yet reads the shipped English instead of raising a
+        missing-translation error.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: override_source, language: "yaml", label: "Override, or a new locale") %>
+    <%= poetry_code_block(code: fallbacks_source, language: "ruby", label: "Fallbacks") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="copy">Visible copy is yours</h2>
+      <p>
+        Strings that carry meaning in your product - labels, placeholders,
+        empty-state prose, filter captions - are options, not library
+        keys: <code>label:</code>, <code>placeholder:</code>,
+        <code>empty_text:</code>, <code>filter_label:</code>,
+        <code>hint:</code>. Their defaults are English conveniences for a
+        zero-config start (DatePicker's <code>"Pick a date"</code>); a
+        localized app passes its own translations at the call site, with
+        Rails' usual template-scoped <code>t(".key")</code> lookup.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: copy_source, language: "ruby", label: "Localized call sites") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="forms">Forms localize through the model</h2>
+      <p>
+        The <%= link_to "FormBuilder", forms_path %> derives its labels
+        from <code>human_attribute_name</code>, so they localize through
+        the <code>activerecord.attributes</code> keys you already
+        maintain; validation messages arrive through Active Model's own
+        I18n chain. <code>hint:</code> and <code>placeholder:</code> stay
+        explicit options. Apps migrating with poetry-simple_form keep
+        their existing <code>simple_form.*</code> label, hint, and
+        placeholder keys working - the bridge reads them as a fallback
+        chain.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: form_source, language: "yaml", label: "Model-layer keys") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="dates">Dates</h2>
+      <p>
+        DateField and TimeField speak the catalogue: segment names and
+        placeholders (<code>year</code>, <code>yyyy</code>,
+        <code>AM/PM</code>) live under <code>poetry.date_field.*</code>,
+        so a locale file retitles every segment. Calendar's month dropdown
+        (<code>caption_layout: :dropdown</code>) reads Rails' own
+        <code>date.month_names</code> keys and follows your locale files
+        the same way.
+      </p>
+      <p>
+        The accessible names this page's catalogue ships are part of the
+        accessibility contract - the keyboard and screen-reader protocol
+        for verifying them in your app lives in the
+        <%= link_to "accessibility guide", accessibility_path %>.
+      </p>
+    <% end %>
+  </section>
+</div>

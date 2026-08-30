@@ -41,6 +41,16 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-slot=collapsible][data-open]", 0 # an explicit close beats the section default
   end
 
+  test "the i18n guide serves the catalogue, the override story, and the model chain" do
+    get "/i18n"
+
+    assert_response :success
+    assert_select "h2#catalogue"
+    assert_select "h2#locales"
+    assert_match "poetry.es.yml", response.body
+    assert_match "human_attribute_name", response.body
+  end
+
   test "the landing nav links Components at the catalog's first page" do
     get root_url
 
