@@ -227,6 +227,16 @@ module Poetry
       #   @param callable [#call] receives the request, returns the seed
       #   @return [#call]
 
+      # The declared configuration surface: every key {.defaults} ships.
+      # Each is a real reader/writer pair (delegated just below); unknown
+      # keys still flow through delegate_missing_to, so hosts may stash
+      # their own values.
+      SETTINGS = %i[classname_merger stimulus_merger css_mode icon_library
+                    raise_on_missing_icon icon_fallback on_missing_icon
+                    stable_id_mode stable_id_seed].freeze
+
+      delegate(*SETTINGS, *SETTINGS.map { |key| :"#{key}=" }, to: :@config)
+
       # Delegates all method calls to the internal configuration object.
       #
       # This allows the Config instance to act as a transparent wrapper around

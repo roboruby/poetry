@@ -415,6 +415,23 @@ module Poetry
         assert_equal({ key: "value" }, config.hash_option)
       end
 
+      # Test the declared settings surface
+      def test_settings_declares_every_default_key
+        assert_equal Poetry::Core::Config.defaults.keys.map(&:to_sym).sort,
+                     Poetry::Core::Config::SETTINGS.sort
+        Poetry::Core::Config::SETTINGS.each do |key|
+          assert_includes Poetry::Core::Config.instance_methods, key
+          assert_includes Poetry::Core::Config.instance_methods, :"#{key}="
+        end
+      end
+
+      def test_every_setting_carries_its_method_directives
+        source = Poetry::Core.root.join("lib/poetry/core/config.rb").read
+        documented = source.scan(/@!method ([a-z_]+)\n/).flatten.map(&:to_sym)
+
+        assert_equal Poetry::Core::Config::SETTINGS.sort, documented.sort
+      end
+
       # Test delegate_missing_to behavior
       def test_responds_to_default_options
         config = Poetry::Core::Config.new
