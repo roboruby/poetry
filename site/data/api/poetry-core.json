@@ -7988,7 +7988,7 @@
       "path": "Poetry::Core::Wrapper::Component",
       "type": "class",
       "superclass": "ViewComponent::Base",
-      "docstring": "Wraps any component with custom HTML.\nThe whole wrapper is only rendered when the child component's #render? returns true,\nso it can conditionally render the outer HTML for a component without\nconditionals in templates.",
+      "docstring": "Wraps any component with custom HTML.\nThe whole wrapper is only rendered when the child component's #render? returns true,\nso it can conditionally render the outer HTML for a component without\nconditionals in templates.\n\nAdapted from an MIT-licensed source (source and license in\nTHIRD_PARTY_NOTICES.md).\n\nThe child's render? is consulted before the child gains a view\ncontext: a render? that calls view helpers works standalone but\nnot under the wrapper.",
       "examples": [
         {
           "title": "",
@@ -8002,7 +8002,7 @@
           "scope": "instance",
           "group": null,
           "signature": "call",
-          "docstring": "Simply return the contents of the block passed to #render_component.\n(Alias couldn't be used here 'cause ViewComponent check for the method presence when\nchoosing between #call and a template.)",
+          "docstring": "Returns the block's output, which must have rendered the child -\na block that skips {#component} would drop the child silently,\nso it teaches instead. (An alias couldn't be used here:\nViewComponent checks method presence when choosing between\n#call and a template.)",
           "params": [],
           "return": {
             "types": [
@@ -8013,7 +8013,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/wrapper/component.rb",
-          "line": 47
+          "line": 70
         },
         {
           "name": "component",
@@ -8030,7 +8030,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/wrapper/component.rb",
-          "line": 57
+          "line": 82
         },
         {
           "name": "component_instance",
@@ -8042,7 +8042,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/core/wrapper/component.rb",
-          "line": 30
+          "line": 48
         },
         {
           "name": "initialize",
@@ -8067,7 +8067,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/wrapper/component.rb",
-          "line": 38
+          "line": 56
         }
       ],
       "constants": []
@@ -8075,7 +8075,7 @@
     {
       "path": "Poetry::Core::Wrapper::Component::DoubleRenderError",
       "type": "class",
-      "superclass": "StandardError",
+      "superclass": "Poetry::Core::Error",
       "docstring": "Raised when the block calls #component more than once - each\nwrapper renders its child exactly one time.",
       "examples": [],
       "file": "app/components/poetry/core/wrapper/component.rb",
@@ -8103,7 +8103,43 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/wrapper/component.rb",
-          "line": 25
+          "line": 32
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Core::Wrapper::Component::UnrenderedChildError",
+      "type": "class",
+      "superclass": "Poetry::Core::Error",
+      "docstring": "Raised when the wrapper's block never rendered the child - the\nwrap would silently drop it.",
+      "examples": [],
+      "file": "app/components/poetry/core/wrapper/component.rb",
+      "methods": [
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(component)",
+          "docstring": "Names the dropped child in the message.",
+          "params": [
+            {
+              "name": "component",
+              "types": [
+                "ViewComponent::Base"
+              ],
+              "text": "the child the block skipped"
+            }
+          ],
+          "return": {
+            "types": [
+              "UnrenderedChildError"
+            ],
+            "text": "a new instance of UnrenderedChildError"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/wrapper/component.rb",
+          "line": 43
         }
       ],
       "constants": []
