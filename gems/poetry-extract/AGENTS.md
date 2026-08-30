@@ -51,6 +51,8 @@ identifiers stay as they are.
 Third-party code: adapt only from MIT-compatible sources (MIT/ISC/BSD;
 Apache-2.0 carries its notice). Copyleft (GPL/LGPL/AGPL), restricted-use,
 and commercial sources are patterns-and-ideas only — never code. Every
-adaptation: source URL in the file header + a THIRD_PARTY_NOTICES.md
-section. An adaptation change that doesn't touch THIRD_PARTY_NOTICES.md
+adaptation: the class-doc pointer ("Adapted from an MIT-licensed source
+- source and license in THIRD_PARTY_NOTICES.md") + a
+THIRD_PARTY_NOTICES.md section — the source URL lives there, never in
+code. An adaptation change that doesn't touch THIRD_PARTY_NOTICES.md
 is incomplete.
