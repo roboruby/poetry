@@ -43,5 +43,5 @@ Gem::Specification.new do |spec|
   # dictionaries, Stimulus::Builder, and HTML::Attributes all come from core.
   # poetry-ui is deliberately NOT required - the chart frame is
   # self-contained; composition with poetry-ui components happens in hosts.
-  spec.add_dependency "poetry-core"
+  spec.add_dependency "poetry-core", "= #{Poetry::Charts::VERSION}"
 end
