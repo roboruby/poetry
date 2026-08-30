@@ -49,6 +49,10 @@ module Poetry
         # class sets no i18n_namespace of its own.
         DEFAULT_NAMESPACE = "view_components"
 
+        # Extends the including class with {ClassMethods}.
+        #
+        # @param base [Class] the including component class
+        # @return [void]
         def self.included(base)
           base.extend ClassMethods
         end

@@ -67,12 +67,17 @@ module Poetry
 
       attr_reader :data
 
+      # Wraps one parsed DTCG document; {.load} is the file-backed form.
+      #
+      # @param data [Hash] the parsed DTCG JSON
       def initialize(data)
         @data = data
         @colors = {}
       end
 
       # Mode names ("light", "dark"), skipping DTCG $-metadata keys.
+      #
+      # @return [Array<String>]
       def modes
         data.fetch("color").keys.reject { |k| k.start_with?("$") }
       end
@@ -101,6 +106,8 @@ module Poetry
       end
 
       # The radius dimension as CSS ("0.625rem").
+      #
+      # @return [String]
       def radius_css
         value = data.fetch("dimension").fetch("radius").fetch("$value")
         "#{format("%g", value.fetch("value"))}#{value.fetch("unit")}"

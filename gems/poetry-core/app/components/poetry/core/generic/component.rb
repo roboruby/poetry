@@ -35,6 +35,8 @@ module Poetry
 
         # Emits the chosen tag: self-closing for void elements, wrapping
         # the content block otherwise.
+        #
+        # @return [ActiveSupport::SafeBuffer]
         def call
           if self_closing_tag?(html_tag)
             tag(html_tag) # , html_attributes)

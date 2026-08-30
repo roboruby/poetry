@@ -57,6 +57,8 @@ module Poetry
         part "icon", "The demo SVG itself - the whole component is one part"
 
         # Emits the styled <svg> with its X-path.
+        #
+        # @return [ActiveSupport::SafeBuffer]
         def call
           content_tag(:svg, **svg_attributes.to_attributes) do
             tag.path(d: "M4 4l6 6m0-6l-6 6")
@@ -65,6 +67,8 @@ module Poetry
 
         # The root <svg> attributes: caller HTML attributes over the SVG
         # defaults (namespace, viewbox, data-slot).
+        #
+        # @return [Poetry::Core::HTML::Attributes]
         def svg_attributes
           html_attributes.merge_if_not_set(default_svg_attributes)
         end

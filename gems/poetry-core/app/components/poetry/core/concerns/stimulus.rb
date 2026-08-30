@@ -54,6 +54,12 @@ module Poetry
           # Declares (part of) the component's stimulus wiring. Multiple
           # blocks compose additively within a class; shared wiring modules
           # call this from their `included` hook.
+          #
+          # @yield evaluates the block as a
+          #   {Poetry::Core::Stimulus::Declarations::RootDSL}:
+          #   `on :element do controller :name do ... end end`
+          # @return [void]
+          # @raise [ArgumentError] without a block
           def use_stimulus(&block)
             raise ArgumentError, "use_stimulus requires a block" unless block
 
@@ -63,6 +69,8 @@ module Poetry
           end
 
           # This class's own declarations, element name -> Element.
+          #
+          # @return [Hash{Symbol => Poetry::Core::Stimulus::Declarations::Element}]
           def own_stimulus_elements
             @own_stimulus_elements ||= {}
           end
@@ -72,6 +80,8 @@ module Poetry
           # inherited set - redeclared elements replace wholesale unless
           # declared with extend: true, which appends to the inherited
           # element's wirings.
+          #
+          # @return [Hash{Symbol => Poetry::Core::Stimulus::Declarations::Element}]
           def stimulus_elements
             chain = []
             klass = self
@@ -98,6 +108,8 @@ module Poetry
           # Every controller identifier declared anywhere on the class, in
           # declaration order - the search space for unqualified
           # stimulus_action / stimulus_event resolution.
+          #
+          # @return [Array<String>]
           def stimulus_identifiers
             stimulus_elements.values.flat_map { |element| element.wirings.map(&:identifier) }.uniq
           end
@@ -105,6 +117,9 @@ module Poetry
           # Resolves a declaration-style identifier (Symbol suffix, String,
           # or Array) to its full manifest identifier - see
           # {Poetry::Core::Stimulus::Declarations.resolve_identifier}.
+          #
+          # @param identifier [Symbol, String, Array] the declaration-style identifier
+          # @return [String] the full Stimulus identifier
           def resolve_stimulus_identifier(identifier)
             Poetry::Core::Stimulus::Declarations.resolve_identifier(identifier)
           end
@@ -112,6 +127,8 @@ module Poetry
           # The registry-shaped projection of the RESOLVED wiring (post-
           # inheritance, so Sheet publishes sheet controllers) - plain data
           # for the registry, skill text, and docs tables.
+          #
+          # @return [Array<Hash>] one serialized element per declared element
           def stimulus_definitions
             stimulus_elements.values.map do |element|
               Poetry::Core::Stimulus::Declarations.serialize_element(element)
@@ -123,6 +140,12 @@ module Poetry
           # test selectors consume them without an instance. on:/at: build
           # the evented token ("click->id#method"); without on: the bare
           # descriptor (element-default event).
+          #
+          # @param args [Array<Symbol, String>] `(method)` resolves the method
+          #   across the declared controllers; `(controller, method)` pins one
+          # @param on [Symbol, String, Array<Symbol>, nil] the event(s) to listen for
+          # @param at [Symbol, String, nil] the event target (:window, :document)
+          # @return [String] the action descriptor ("click->poetry--core--x#open")
           def stimulus_action(*args, on: nil, at: nil)
             controller, method = unpack_stimulus_descriptor_args(args, :action)
             identifier = resolve_stimulus_descriptor(controller, method, kind: :action)
@@ -133,6 +156,9 @@ module Poetry
           # A validated event-name string for listening markup;
           # stimulus_event(:change) resolves across the declared
           # controllers, stimulus_event(:controller, :change) pins one.
+          #
+          # @param args [Array<Symbol, String>] `(name)` or `(controller, name)`
+          # @return [String] the full event name
           def stimulus_event(*args)
             controller, name = unpack_stimulus_descriptor_args(args, :event)
             identifier = resolve_stimulus_descriptor(controller, name, kind: :event)
@@ -206,6 +232,11 @@ module Poetry
         # ready to merge into the element's tag or forward as component
         # kwargs. Public by design - templates call it, ending the
         # `public :inner_stimulus_attributes` juggling.
+        #
+        # @param element_name [Symbol, String] a declared element (:root, ...)
+        # @return [Hash] the element's data attributes; empty when the
+        #   element's if:/unless: conditions do not hold
+        # @raise [ArgumentError] for an element no use_stimulus block declared
         def stimulus_attributes_for(element_name)
           element = self.class.stimulus_elements[element_name.to_sym]
           unless element
@@ -235,6 +266,13 @@ module Poetry
         # Builder per controller, all sharing ONE Attributes instance.
         # Controllers resolve like declarations (Symbol -> manifest,
         # String/Array -> verbatim).
+        #
+        # @param controllers [Array<Symbol, String, Array>] one or more
+        #   controller identifiers
+        # @yield [*builders] one {Poetry::Core::Stimulus::Builder} per
+        #   controller, in order
+        # @return [Hash] the accumulated attributes
+        # @raise [ArgumentError] with no controllers
         def stimulus_attributes(*controllers)
           raise ArgumentError, "stimulus_attributes needs at least one controller" if controllers.empty?
 
@@ -251,11 +289,19 @@ module Poetry
         # Delegates to the class-level builder (descriptors are static
         # facts of the declarations); stimulus_action(:open) resolves
         # across declared controllers, on:/at: build the evented token.
+        #
+        # @param on [Symbol, String, Array<Symbol>, nil] the event(s) to listen for
+        # @param at [Symbol, String, nil] the event target (:window, :document)
+        # @return [String] the action descriptor
         def stimulus_action(*, on: nil, at: nil)
           self.class.stimulus_action(*, on: on, at: at)
         end
 
-        # Delegates to the class-level builder.
+        # Delegates to the class-level builder: stimulus_event(:change)
+        # resolves across the declared controllers,
+        # stimulus_event(:controller, :change) pins one.
+        #
+        # @return [String] the full event name
         def stimulus_event(*)
           self.class.stimulus_event(*)
         end
@@ -284,6 +330,12 @@ module Poetry
           end
         end
 
+        # Whether a declaration's if:/unless: conditions hold for this
+        # instance; nil conditions always hold.
+        #
+        # @param conditions [Hash{Symbol => Symbol, Proc}, nil] the if:/unless: pair
+        # @return [Boolean]
+        # @api private
         def stimulus_conditions_met?(conditions)
           return true if conditions.nil?
 

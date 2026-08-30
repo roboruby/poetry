@@ -21,12 +21,17 @@ module Poetry
         # computed from gamma-encoded sRGB (the value a browser actually paints).
         module Contrast
           # WCAG 2.x relative luminance of the painted color.
+          #
+          # @return [Float] 0.0 (black) to 1.0 (white)
           def luminance
             r, g, b = srgb.map { |v| v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055)**2.4 }
             (0.2126 * r) + (0.7152 * g) + (0.0722 * b)
           end
 
           # The WCAG contrast ratio against another color, from 1 to 21.
+          #
+          # @param other [#luminance] a Color or Blend
+          # @return [Float]
           def contrast_ratio(other)
             pair = [luminance, other.luminance].sort
             (pair[1] + 0.05) / (pair[0] + 0.05)
@@ -43,6 +48,12 @@ module Poetry
 
         attr_reader :l, :c, :h, :alpha
 
+        # An OKLCH color; every component is stored as a Float.
+        #
+        # @param l [Numeric] lightness, 0 to 1
+        # @param c [Numeric] chroma
+        # @param h [Numeric] hue, in degrees
+        # @param alpha [Numeric] opacity, 0 to 1
         def initialize(l:, c: 0.0, h: 0.0, alpha: 1.0)
           @l = l.to_f
           @c = c.to_f
@@ -52,6 +63,10 @@ module Poetry
 
         # Build from a DTCG color $value: {"colorSpace" => "oklch",
         # "components" => [l, c, h], "alpha" => 0.1 (optional)}.
+        #
+        # @param value [Hash] the token's `$value`
+        # @return [Color]
+        # @raise [ArgumentError] for any colorSpace other than oklch
         def self.from_dtcg(value)
           color_space = value["colorSpace"]
           unless color_space == "oklch"
@@ -64,7 +79,8 @@ module Poetry
 
         # Pure white - the literal foreground on destructive surfaces.
         WHITE = new(l: 1.0)
-        # Pure black.
+        # Pure black - the dark end of the contrast scale, the counterpart
+        # of {WHITE}.
         BLACK = new(l: 0.0)
 
         # The CSS color spellings DESIGN.md files carry across the design-skill
@@ -82,6 +98,9 @@ module Poetry
           # DROPS what it cannot parse, never guesses. oklch input keeps its
           # components verbatim so poetry-authored values round-trip
           # byte-exact through parse -> css.
+          #
+          # @param css [String, #to_s] a CSS color: oklch(), #hex, rgb()/rgba()
+          # @return [Color, nil]
           def parse(css)
             value = css.to_s.strip
             if (match = value.match(OKLCH_CSS))
@@ -98,6 +117,10 @@ module Poetry
           # Gamma-encoded sRGB [0,1] triplet -> Color, via Ottosson's inverse
           # path (linear sRGB -> LMS -> OKLab -> LCH). Components round to the
           # 3-decimal precision distributed theme files publish.
+          #
+          # @param srgb [Array<Numeric>] gamma-encoded r, g, b, each in [0, 1]
+          # @param alpha [Numeric] opacity, 0 to 1
+          # @return [Color]
           def from_srgb(srgb, alpha: 1.0)
             r, g, b = srgb.map { |v| v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055)**2.4 }
 
@@ -131,24 +154,38 @@ module Poetry
 
         # A copy with any component replaced. The import AA-walk moves L in
         # fixed steps while chroma holds - deterministic.
+        #
+        # @param l [Numeric] lightness, 0 to 1
+        # @param c [Numeric] chroma
+        # @param h [Numeric] hue, in degrees
+        # @param alpha [Numeric] opacity, 0 to 1
+        # @return [Color]
         def with(l: self.l, c: self.c, h: self.h, alpha: self.alpha)
           self.class.new(l: l, c: c, h: h, alpha: alpha)
         end
 
         # The CSS serialization, matching the distributed themes' formatting:
         # "oklch(0.577 0.245 27.325)" / "oklch(1 0 0 / 10%)".
+        #
+        # @return [String]
         def css
           base = [l, c, h].map { |v| format("%g", v) }.join(" ")
           alpha < 1.0 ? "oklch(#{base} / #{format("%g", alpha * 100)}%)" : "oklch(#{base})"
         end
 
         # Gamma-encoded sRGB components, each clamped to [0, 1].
+        #
+        # @return [Array<Float>] r, g, b
         def srgb
           @srgb ||= linear_srgb.map { |v| v <= 0.0031308 ? 12.92 * v : (1.055 * (v**(1.0 / 2.4))) - 0.055 }
         end
 
         # Alpha-composite this color over an opaque background, the way a
         # browser blends (per-channel, gamma-encoded). Returns a Blend.
+        #
+        # @param background [Color, Blend] the opaque color underneath
+        #   (anything answering #srgb)
+        # @return [Blend]
         def composite_over(background)
           blended = srgb.zip(background.srgb).map { |fg, bg| (alpha * fg) + ((1.0 - alpha) * bg) }
           Blend.new(blended)

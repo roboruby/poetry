@@ -209,6 +209,8 @@ module Poetry
           # @param klass [Class] a component or builder class
           # @param seen [Array<Class>] the recursion guard
           # @return [Array<Hash>]
+          # @raise [Poetry::Core::Error] when a SLOT_RENDERS entry is not a
+          #   poetry component class
           def slot_surface(klass, seen: [])
             return [] unless klass.respond_to?(:registered_slots)
 
@@ -254,6 +256,11 @@ module Poetry
           # each key must name a setter the given slot definitions actually
           # generate (the slot itself, a collection's singular, or a
           # polymorphic type).
+          #
+          # @param klass [Class] the slot-owning class
+          # @param definitions [Array<Hash>] the class's {slot_surface}
+          # @return [Hash{String => String}] setter name => hint
+          # @raise [Poetry::Core::Error] for a key matching no slot setter
           def required_slots_surface(klass, definitions)
             declared_constant(klass, :REQUIRED_SLOTS).to_h do |key, hint|
               name = key.to_s
@@ -269,6 +276,13 @@ module Poetry
           # The validated REQUIRES_ANY declaration: each group needs
           # a hint plus at least one alternative, and slot alternatives must
           # name setters the definitions actually generate.
+          #
+          # @param klass [Class] the slot-owning class
+          # @param definitions [Array<Hash>] the class's {slot_surface}
+          # @return [Array<Hash>] one normalized group per declaration
+          #   (hint, plus content/slots/options as declared)
+          # @raise [Poetry::Core::Error] for a group without a hint or an
+          #   alternative, or a slot matching no slot setter
           def requires_any_surface(klass, definitions)
             declared_constant(klass, :REQUIRES_ANY).map do |group|
               group = group.transform_keys(&:to_s)
@@ -296,6 +310,11 @@ module Poetry
           # Every own with_* method that is neither a slot-generated setter
           # (with_<name>/<singular>/<type> and their _content twins) nor
           # inherited - NavigationMenu#with_link, PieChart's with_py.
+          #
+          # @param klass [Class] the slot-owning class
+          # @param definitions [Array<Hash>] the class's {slot_surface}
+          # @return [Array<String>] the setter names without their with_
+          #   prefix, sorted
           def hand_rolled_setters(klass, definitions)
             generated = definitions.flat_map do |slot|
               names = [slot[:name].to_s]

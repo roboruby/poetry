@@ -87,6 +87,9 @@ module Poetry
         #
         # @param hashes [Array<Hash>] One or more stimulus data hashes
         # @param block [Proc] Optional block passed to Hash#merge for custom merge logic
+        # @yield [key, existing, incoming] Hash#merge's conflict resolver for
+        #   every key other than controller and action
+        # @yieldreturn [Object] the value to keep
         # @return [Hash] A new hash with merged stimulus data
         # @example
         #   merge(

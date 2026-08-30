@@ -83,6 +83,7 @@ module Poetry
           #
           # @example Value format (machine-checkable value contract)
           #   option :name, :symbol, required: true, format: :"icon-name"
+          # @return [void]
           def option(name, type, **options)
             register_declared_attribute(:option, name, options)
 

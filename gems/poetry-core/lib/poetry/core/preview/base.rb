@@ -195,6 +195,7 @@ module Poetry
         # @param component_or_props [ViewComponent::Base, Hash, nil] either a component instance
         #   or a hash of props to pass to the component constructor
         # @param block [Proc, nil] optional block to pass as content to the component
+        # @yield the component's content
         # @return [String] the rendered component
         # @example With props hash
         #   def default

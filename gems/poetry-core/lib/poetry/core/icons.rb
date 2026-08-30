@@ -28,16 +28,31 @@ module Poetry
 
         attr_reader :dir
 
+        # A set over one directory of sanitized SVG files, one file per
+        # icon name (`circle-alert.svg`); each icon is read once and cached.
+        #
+        # @param dir [String, Pathname] the directory holding the SVGs
         def initialize(dir:)
           @dir = Pathname.new(dir)
           @cache = {}
           @mutex = Mutex.new
         end
 
+        # Whether the set has an icon of this name: the name must be
+        # well-formed and its SVG present on disk.
+        #
+        # @param name [Symbol, String] the icon name
+        # @return [Boolean]
         def include?(name)
           valid_name?(name) && path_for(name).exist?
         end
 
+        # The inner SVG markup of one icon, read once and cached.
+        #
+        # @param name [Symbol, String] the icon name
+        # @return [String] the icon's inner SVG markup
+        # @raise [ArgumentError] for a malformed name, or an unknown one
+        #   (the message carries a did-you-mean suggestion when one exists)
         def fetch(name)
           raise ArgumentError, "invalid icon name #{name.inspect}" unless valid_name?(name)
 
@@ -111,12 +126,18 @@ module Poetry
         #   Poetry::Core::Icons.register(:my_icons,
         #     Poetry::Core::Icons::FileSet.new(dir: root.join("icons")))
         #   # config/initializers/poetry.rb: config.icon_library = :my_icons
+        # @return [Object] the set, now registered
         def register(key, set)
           registry[key.to_sym] = set
         end
 
         # The set for the given library key, defaulting to
         # config.icon_library. Raises with the fix when unregistered.
+        #
+        # @param library [Symbol, String, nil] the library key; nil reads
+        #   `Poetry::Core::Config.current.icon_library`
+        # @return [Object] the registered set
+        # @raise [Poetry::Core::Error] when no set is registered under the key
         def set(library = nil)
           key = (library || Poetry::Core::Config.current.icon_library).to_sym
           registry.fetch(key) do

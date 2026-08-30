@@ -30,18 +30,31 @@ module Poetry
 
         module_function
 
-        # identifier => {"targets" =>, "values" =>, "classes" =>, "methods" =>}
+        # The merged controller catalog, identifier => definition
+        # (`{"targets" =>, "values" =>, "classes" =>, "methods" =>}`),
+        # loaded from poetry-core's committed manifest on first read.
+        #
+        # @return [Hash{String => Hash}]
         def catalog
           @catalog ||= JSON.parse(Poetry::Core.root.join("config/controllers_manifest.json").read)
         end
 
         # Other poetry gems merge their committed manifests here.
+        #
+        # @param path [String, Pathname] a committed controllers_manifest.json
+        # @return [Hash{String => Hash}] the catalog after the merge
         def register(path)
           catalog.merge!(JSON.parse(File.read(path)))
         end
 
+        # The catalog definition of one controller.
+        #
+        # @param identifier [String] the full Stimulus identifier
+        #   ("poetry--core--popper")
         # @return [Hash, nil] the controller's definition; nil for host-app
         #   (non-poetry) identifiers, which are not poetry's to validate.
+        # @raise [UnknownController] for a `poetry--` identifier the catalog
+        #   does not know
         def definition(identifier)
           return catalog[identifier] if catalog.key?(identifier)
           return nil unless identifier.start_with?(POETRY_PREFIX)

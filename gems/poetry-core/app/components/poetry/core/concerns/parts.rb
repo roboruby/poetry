@@ -47,6 +47,9 @@ module Poetry
           #   => { condition: "...", values: %w[...] } for valued
           #   attributes (data-side => top/right/bottom/left)
           # @param vars [Hash] CSS custom property => description
+          # @return [void]
+          # @raise [Poetry::Core::Error] when the class already declares a
+          #   part of that name
           def part(name, description, states: {}, vars: {})
             definition = Parts.build(self, name, description, states: states, vars: vars)
             own = (@part_definitions ||= [])

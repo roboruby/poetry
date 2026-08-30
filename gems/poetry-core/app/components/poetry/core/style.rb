@@ -21,6 +21,7 @@ module Poetry
     # component's ActiveModel attributes resolve them before render). A
     # `defaults` call raises to enforce that.
     class Style
+      # The Tailwind palette names, as a reference list -
       # https://tailwindcss.com/docs/colors
       COLORS = %i[
         red
@@ -47,6 +48,7 @@ module Poetry
         stone
       ].freeze
 
+      # The Tailwind fill keywords, as a reference list -
       # https://tailwindcss.com/docs/fill
       FILLS = %i[
         none
@@ -74,6 +76,7 @@ module Poetry
         # @param classes [String] space-separated utility classes
         # @example
         #   base "inline-flex items-center rounded-md"
+        # @return [void]
         def base(classes)
           resolver.base(classes)
         end
@@ -85,6 +88,7 @@ module Poetry
         # @param classes [String] space-separated utility classes
         # @example
         #   element :icon, "size-3 shrink-0"
+        # @return [void]
         def element(name, classes)
           resolver.element(name, classes)
         end
@@ -97,6 +101,7 @@ module Poetry
         # @example
         #   variant :color, red: "bg-destructive/15 text-destructive",
         #                   gray: "bg-muted text-muted-foreground"
+        # @return [void]
         def variant(attr, mapping)
           resolver.variant(attr, mapping)
         end
@@ -109,12 +114,16 @@ module Poetry
         # @param classes [String] utility classes added on a full match
         # @example
         #   compound({ color: :red, mode: :dark }, "bg-destructive/25")
+        # @return [void]
         def compound(criteria, classes)
           resolver.compound(criteria, classes)
         end
 
         # Single-source-of-defaults enforcement: defaults belong on the
         # component (`style :attr, default:`), never in the style dictionary.
+        #
+        # @return [void]
+        # @raise [Poetry::Core::Error] always
         def defaults(*)
           raise Poetry::Core::Error,
                 "#{name} declares defaults in the style dictionary - defaults live on the component " \
@@ -169,6 +178,8 @@ module Poetry
 
       # Instance-level mirror so `styler.css(...)` keeps working from the
       # Styles concern.
+      #
+      # @return [String] the resolved utility classes (see {.css})
       def css(...)
         self.class.css(...)
       end

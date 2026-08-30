@@ -63,13 +63,15 @@ module Poetry
         #   class DropdownMenu::Item::Component < Poetry::Core::Component
         #     internal_component!
         #   end
+        # @return [void]
         def internal_component!
           self.internal_component = true
         end
       end
 
       class << self
-        # Returns the current Poetry::Core configuration.
+        # The current Poetry::Core configuration - a shortcut to
+        # {Poetry::Core::Config.current} for components and their templates.
         #
         # @return [Poetry::Core::Config] the current configuration instance
         def config

@@ -46,20 +46,36 @@ module Poetry
         # These defaults are used when initializing new configuration instances and
         # define the standard behavior for all Poetry::Core components.
         #
-        # @return [ActiveSupport::OrderedOptions] Hash-like object containing default configuration
+        # The keys and their defaults:
         #
-        # @option defaults [Poetry::Core::CSS::Merger] :classname_merger
-        #   Merger instance for intelligently combining Tailwind CSS classes while
-        #   resolving conflicts. Used throughout Poetry::Core components to handle CSS class merging.
+        # - `classname_merger` ({Poetry::Core::CSS::Merger}) - resolves
+        #   conflicting utility classes when caller classes meet component
+        #   classes.
+        # - `stimulus_merger` ({Poetry::Core::Stimulus::Merger}) - combines
+        #   Stimulus data attributes without duplicating controllers or
+        #   actions.
+        # - `raise_on_asset_not_found` (`true`) - raise when a referenced
+        #   asset cannot be found.
+        # - `css_mode` (`:tailwind`) - `:tailwind` emits resolved utility
+        #   classes; `:bem` emits the BEM token IR for bring-your-own-CSS
+        #   hosts.
+        # - `icon_library` (`:lucide`) - the active icon set, by the key it
+        #   registered under ({Poetry::Core::Icons.register}).
+        # - `raise_on_missing_icon` (`nil`) - the policy for a dynamic icon
+        #   name that resolves to nothing: nil raises in local environments
+        #   and degrades to the fallback elsewhere; true/false force one
+        #   behavior.
+        # - `icon_fallback` (`:"circle-question-mark"`) - rendered instead
+        #   of a missing icon when not raising; nil re-raises.
+        # - `on_missing_icon` (`nil`) - an optional callable
+        #   `(name:, library:, error:)` fired before the fallback renders.
+        # - `stable_id_mode` (`:off`) - the opt-in `:sequence` mode seeds a
+        #   per-request deterministic id sequence (read the hazards in
+        #   StableId before enabling).
+        # - `stable_id_seed` - the request-to-seed callable for that mode
+        #   (defaults to the request path).
         #
-        # @option defaults [Poetry::Core::Stimulus::Merger] :stimulus_merger
-        #   Merger instance for combining Stimulus controller data attributes without
-        #   duplicating controllers or actions. Used when components need to merge
-        #   Stimulus attributes from multiple sources.
-        #
-        # @option defaults [Boolean] :raise_on_asset_not_found (true)
-        #   When true, raises an error if a referenced asset (JavaScript, CSS, etc.)
-        #   cannot be found. Set to false for more lenient behavior in development.
+        # @return [ActiveSupport::OrderedOptions] the default configuration
         #
         # @example Getting default values
         #   defaults = Poetry::Core::Config.defaults
@@ -126,25 +142,102 @@ module Poetry
       end
 
       # @!method classname_merger
+      #   The merger that resolves conflicting utility classes when caller
+      #   classes meet component classes.
       #   @return [Poetry::Core::CSS::Merger] The CSS class merger instance
       #
       # @!method classname_merger=(merger)
+      #   Replaces the class merger.
       #   @param merger [Poetry::Core::CSS::Merger] The CSS class merger instance to use
       #   @return [Poetry::Core::CSS::Merger]
       #
       # @!method stimulus_merger
+      #   The merger that combines Stimulus data attributes without
+      #   duplicating controllers or actions.
       #   @return [Poetry::Core::Stimulus::Merger] The Stimulus attribute merger instance
       #
       # @!method stimulus_merger=(merger)
+      #   Replaces the Stimulus attribute merger.
       #   @param merger [Poetry::Core::Stimulus::Merger] The Stimulus attribute merger instance to use
       #   @return [Poetry::Core::Stimulus::Merger]
       #
       # @!method raise_on_asset_not_found
+      #   Whether a missing referenced asset raises.
       #   @return [Boolean] Whether to raise errors when assets are not found
       #
       # @!method raise_on_asset_not_found=(value)
+      #   Sets the missing-asset policy.
       #   @param value [Boolean] Whether to raise errors when assets are not found
       #   @return [Boolean]
+      #
+      # @!method css_mode
+      #   The class emission mode: `:tailwind` resolves style values to
+      #   utility classes, `:bem` emits the BEM token IR.
+      #   @return [Symbol] :tailwind or :bem
+      #
+      # @!method css_mode=(mode)
+      #   Sets the class emission mode.
+      #   @param mode [Symbol] :tailwind or :bem
+      #   @return [Symbol]
+      #
+      # @!method icon_library
+      #   The key of the active icon set ({Poetry::Core::Icons.register}).
+      #   @return [Symbol]
+      #
+      # @!method icon_library=(key)
+      #   Selects the active icon set.
+      #   @param key [Symbol, String] a registered library key
+      #   @return [Symbol, String]
+      #
+      # @!method raise_on_missing_icon
+      #   The policy for a dynamic icon name that resolves to nothing: nil
+      #   raises in local environments and degrades to the fallback
+      #   elsewhere; true/false force one behavior.
+      #   @return [Boolean, nil]
+      #
+      # @!method raise_on_missing_icon=(policy)
+      #   Sets the missing-icon policy.
+      #   @param policy [Boolean, nil]
+      #   @return [Boolean, nil]
+      #
+      # @!method icon_fallback
+      #   The icon rendered instead of a missing one when not raising; nil
+      #   re-raises. Must exist in every registered set.
+      #   @return [Symbol, nil]
+      #
+      # @!method icon_fallback=(name)
+      #   Sets the fallback icon.
+      #   @param name [Symbol, nil]
+      #   @return [Symbol, nil]
+      #
+      # @!method on_missing_icon
+      #   The instrumentation hook fired before a fallback icon renders,
+      #   called with `name:`, `library:`, and `error:`.
+      #   @return [#call, nil]
+      #
+      # @!method on_missing_icon=(callable)
+      #   Sets the missing-icon hook.
+      #   @param callable [#call, nil]
+      #   @return [#call, nil]
+      #
+      # @!method stable_id_mode
+      #   The StableId sequence mode: `:off`, or the opt-in `:sequence`.
+      #   @return [Symbol]
+      #
+      # @!method stable_id_mode=(mode)
+      #   Sets the StableId sequence mode.
+      #   @param mode [Symbol] :off or :sequence
+      #   @return [Symbol]
+      #
+      # @!method stable_id_seed
+      #   The request-to-seed callable the `:sequence` mode derives its
+      #   per-request id sequence from.
+      #   @return [#call]
+      #
+      # @!method stable_id_seed=(callable)
+      #   Sets the seed callable.
+      #   @param callable [#call] receives the request, returns the seed
+      #   @return [#call]
 
       # Delegates all method calls to the internal configuration object.
       #

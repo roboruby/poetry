@@ -2,7 +2,9 @@
 
 module Poetry
   module Core
-    # Namespace of the conditional-wrapper component.
+    # Namespace of the conditional wrapper: {Wrapper::Component} renders
+    # outer HTML around a child component only when the child itself
+    # renders.
     module Wrapper
       # Wraps any component with custom HTML.
       # The whole wrapper is only rendered when the child component's #render? returns true,
@@ -17,6 +19,9 @@ module Poetry
         # Raised when the block calls #component more than once - each
         # wrapper renders its child exactly one time.
         class DoubleRenderError < StandardError
+          # Names the child in the message.
+          #
+          # @param component [ViewComponent::Base] the child rendered twice
           def initialize(component)
             super("A child component could only be rendered once within a wrapper: #{component}")
           end
@@ -28,6 +33,8 @@ module Poetry
 
         # Wraps a single child component; intentionally does not chain to
         # ViewComponent::Base#initialize (it only needs the child reference).
+        #
+        # @param component [ViewComponent::Base] the child component to wrap
         def initialize(component) # rubocop:disable Lint/MissingSuper
           @component_instance = component
         end
@@ -35,6 +42,8 @@ module Poetry
         # Simply return the contents of the block passed to #render_component.
         # (Alias couldn't be used here 'cause ViewComponent check for the method presence when
         # choosing between #call and a template.)
+        #
+        # @return [ActiveSupport::SafeBuffer, nil] the block's output
         def call
           content
         end

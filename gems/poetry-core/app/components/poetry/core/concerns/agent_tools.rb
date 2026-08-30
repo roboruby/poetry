@@ -316,6 +316,8 @@ module Poetry
         # duplicate tool names).
         #
         # @return [String, nil] nil when not enabled
+        # @raise [ToolError] when the explicit name is not a valid instance
+        #   name
         def webmcp_name
           return nil unless webmcp_enabled?
 

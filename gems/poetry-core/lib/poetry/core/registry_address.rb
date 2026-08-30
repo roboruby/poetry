@@ -21,13 +21,21 @@ module Poetry
     # @example
     #   Poetry::Core::RegistryAddress.parse("@acme/fancy-chart").kind # => :namespace
     class RegistryAddress
-      # The @namespace/name address shape.
+      # The `@namespace/item-name` address shape (`@acme/fancy-chart`): a
+      # registry namespace, a slash, an item name.
       NAMESPACED = %r{\A(@[a-z0-9][a-z0-9_-]*)/([A-Za-z0-9_-]+)\z}
       # The bare item-name address shape (the installed gems).
       BARE = /\A[A-Za-z0-9_-]+\z/
 
       attr_reader :kind, :raw, :namespace, :name, :location
 
+      # Parses one address into its kind: `http(s)://` is a :url, `@x/y` a
+      # :namespace, a `.json` path or a `./`, `../`, `/`, `~` prefix a
+      # :file, and a plain item name a :bare address.
+      #
+      # @param raw [String, #to_s] the address as typed
+      # @return [RegistryAddress]
+      # @raise [ArgumentError] for an empty or unrecognized address
       def self.parse(raw)
         raw = raw.to_s.strip
         raise ArgumentError, "empty registry address" if raw.empty?
@@ -43,6 +51,11 @@ module Poetry
         end
       end
 
+      # Parses an `@namespace/item-name` address.
+      #
+      # @param raw [String] the address, already known to start with `@`
+      # @return [RegistryAddress] a :namespace address
+      # @raise [ArgumentError] when the shape is not `@registry/item-name`
       def self.parse_namespaced(raw)
         match = NAMESPACED.match(raw)
         raise ArgumentError, "malformed namespaced address #{raw.inspect} (expected @registry/item-name)" unless match
@@ -51,10 +64,20 @@ module Poetry
       end
 
       # CamelCase / snake_case / kebab-case all land on the kebab item name.
+      #
+      # @param name [String] an item name in any of the three spellings
+      # @return [String] the kebab-case item name
       def self.normalize(name)
         name.gsub(/([a-z\d])([A-Z])/, '\1_\2').downcase.tr("_", "-")
       end
 
+      # Builds a frozen address; {.parse} is the usual entry point.
+      #
+      # @param kind [Symbol] :bare, :namespace, :url, or :file
+      # @param raw [String] the address as typed
+      # @param namespace [String, nil] the `@registry` part of a :namespace address
+      # @param name [String, nil] the normalized item name (:bare, :namespace)
+      # @param location [String, nil] the URL or path (:url, :file)
       def initialize(kind:, raw:, namespace: nil, name: nil, location: nil)
         @kind = kind
         @raw = raw
@@ -64,6 +87,10 @@ module Poetry
         freeze
       end
 
+      # Whether the item has to be fetched rather than found among the
+      # installed gems - every kind but :bare.
+      #
+      # @return [Boolean]
       def remote?
         kind != :bare
       end
@@ -71,6 +98,10 @@ module Poetry
       # The address of a bare dependency named inside a parent item - the
       # sibling convention: an @acme item's bare deps are @acme items; a
       # url/file item's bare deps sit next to it.
+      #
+      # @param dep_name [String] the dependency's bare item name
+      # @return [RegistryAddress]
+      # @raise [ArgumentError] for a :bare address, which has no siblings
       def sibling(dep_name)
         case kind
         when :namespace then self.class.parse("#{namespace}/#{dep_name}")

@@ -169,7 +169,8 @@ module Poetry
           html_attributes.merge_stimulus! key(format_identifier(name), :outlet) => value
         end
 
-        # Adds a custom parameter attribute
+        # Adds an action parameter attribute (`data-<identifier>-<name>-param`),
+        # which the controller reads from `event.params`.
         #
         # @param name [String, Symbol] The parameter name
         # @param value [Object] The parameter value
@@ -216,7 +217,8 @@ module Poetry
           html_attributes.merge_stimulus_actions! action(method, on: on, at: at)
         end
 
-        # Builds a Stimulus action string
+        # Builds a Stimulus action descriptor string without adding it to the
+        # attributes ({#with_action} adds it).
         #
         # @param method [String, Symbol] The controller method to call
         # @param on [Symbol, String, Array<Symbol>, nil] The event(s) to listen for

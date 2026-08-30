@@ -37,6 +37,15 @@ module Poetry
       class Committed
         attr_reader :entries, :blocks, :helpers, :helper_args, :form_builder, :source_root
 
+        # Holds the sections of one committed registry file;
+        # {Registry.committed} is the loader.
+        #
+        # @param entries [Array<Hash>] the "components" section
+        # @param blocks [Array<Hash>, nil] the "blocks" section
+        # @param helpers [Hash, nil] the "helpers" section
+        # @param helper_args [Hash, nil] the "helper_args" section
+        # @param source_root [Pathname] the gem root the paths resolve against
+        # @param form_builder [Hash, nil] the "form_builder" section
         def initialize(entries:, blocks:, helpers:, helper_args:, source_root:, form_builder: nil)
           @form_builder = form_builder
           @entries = entries
@@ -150,6 +159,9 @@ module Poetry
       end
 
       # False when the committed registry does not match a fresh build.
+      #
+      # @param root [Pathname, String] the gem root holding the committed file
+      # @return [Boolean]
       def verified?(root: @source_root)
         path = Pathname.new(root).join(RELATIVE_PATH)
         path.exist? && path.read == to_yaml

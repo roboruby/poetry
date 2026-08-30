@@ -33,7 +33,8 @@ module Poetry
       # @return [String] the name or path of the asset that could not be found
       attr_reader :asset
 
-      # Creates a new AssetNotFound error.
+      # Creates a new AssetNotFound error; the default message names the
+      # asset.
       #
       # @param asset [String] the name or path of the asset that could not be found
       # @param msg [String] optional custom error message. Defaults to a formatted
@@ -79,7 +80,8 @@ module Poetry
       # @return [Array<String>] the paths that were searched for the icon
       attr_reader :searched_paths
 
-      # Creates a new IconNotFound error.
+      # Creates a new IconNotFound error; the message names the icon, its
+      # type, and every searched path.
       #
       # @param icon_name [String] the name of the icon that could not be found
       # @param icon_type [String] the type/variant of the icon (e.g., 'solid', 'outline')

@@ -20,11 +20,15 @@ module Poetry
   module Core
     class << self
       # Gem root (the directory containing lib/, app/, etc.).
+      #
+      # @return [Pathname]
       def root
         @root ||= Pathname.new(File.expand_path("../..", __dir__))
       end
 
       # The dedicated Zeitwerk loader for poetry-core's lib/ tree.
+      #
+      # @return [Zeitwerk::Loader]
       def loader
         @loader ||= Zeitwerk::Loader.new.tap do |loader|
           loader.tag = "poetry-core"

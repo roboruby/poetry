@@ -79,6 +79,7 @@ module Poetry
           #
           # @example Boolean attribute
           #   style :outlined, variants: :boolean, default: false
+          # @return [void]
           def style(name, **options)
             register_declared_attribute(:style, name, options)
 
@@ -268,7 +269,10 @@ module Poetry
         # @param element [Symbol, nil] a named element (BEM `block__element`)
         # @param options [Hash] additional style options to merge
         # @yield optional block passed to the style class
-        # @return [String] the generated CSS classes
+        # @return [String, nil] the generated CSS classes; nil in :tailwind
+        #   mode for a component without a sidecar Style class
+        # @raise [Poetry::Core::Error] for a css_mode other than :tailwind
+        #   or :bem
         def css(element = nil, **options, &)
           mode = options.delete(:css_mode) || Poetry::Core::Config.current.css_mode
 
