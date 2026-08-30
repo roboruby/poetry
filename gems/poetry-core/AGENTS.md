@@ -1,20 +1,25 @@
 # AGENTS.md — poetry-core
 
 The machinery gem: Stimulus controllers (overlay/focus/presence/popper and the
-component machines), the token pipeline, and the shared contract
-infrastructure (Registry, LlmsText, controllers manifest, `poetry check`
-internals) the component gems build on.
+component machines), the token pipeline, the design interop (DESIGN.md
+serialize/parse/import, DesignLint), and the shared contract infrastructure
+(Registry, LlmsText, controllers manifest, the part/stimulus/agent-tool
+contracts, `poetry check` internals) the component gems build on. The MCP
+server lives in poetry-agent; core keeps the `tool` DSL it projects.
 
 ## Gates
 
-- `bundle exec rake test` — Ruby suite
+- `bundle exec rake` — the default chain: `test`, `rubocop`, `tokens:verify`,
+  `registry:verify`, `herb:compile`, `yard:verify`, `yard:coverage`. Green
+  before every commit.
 - `npm test` — vitest (controller behavior + the drift gates:
-  controllers_manifest, state_vocabulary, events_declaration)
+  controllers_manifest, state_vocabulary, events_declaration).
 - `npm run manifest` — regenerate `config/controllers_manifest.json` +
-  `config/state_vocabulary.json` after any controller surface change
-- `bundle exec rake registry:verify` / `tokens:verify` — generated-artifact
-  drift (regen with the matching `:generate`)
-- `bundle exec rubocop`
+  `config/state_vocabulary.json` after any controller surface change.
+- Generated artifacts regenerate with the matching task: `tokens:generate`
+  (tokens/*.css + the DESIGN.md front matter), `registry:generate`.
+- CI (`.github/workflows/main.yml`) adds `bundle-audit`, the Herb linter
+  (`rake herb:lint`, rules pinned in `.herb.yml`), and the vitest suite.
 
 ## Cross-repo render surface
 
@@ -29,6 +34,19 @@ re-bless deliberately if pixels moved; poetry-ui's `goldens:verify_inputs`
 default-gate check will catch the drift there regardless, by hashing these
 files against the manifest stamped at last bless.
 
+## Templates and documentation
+
+- Templates must compile under `Herb::Engine` (`rake herb:compile`): no ERB
+  output in an attribute NAME (`data-<%= state %>=""` → static names under
+  control flow), no bare output in attribute position, and
+  `<%= tag.attributes(...) %>` only as the last thing before `>`. Docs
+  heredoc samples escape `<%` openers as well as closers.
+- Every public object is documented; the YARD floors are 0 and
+  `yard:verify` fails on any warning. Declarations carry their own docs
+  (`doc:` on `option`/`style`, `slot_doc` on slots) and the registry projects
+  them. Template-facing methods are `@api private`; the handler kit in
+  `yard/poetry_yard.rb` parses the declarative surfaces.
+
 ## Design interop + slop rules
 
 - `Poetry::Core::DesignMd` — DESIGN.md serialize/parse (front
@@ -37,9 +55,26 @@ files against the manifest stamped at last bless.
   WCAG AA enforced on the merged set (nearest-AA = a deterministic OKLCH
   L-walk, chroma held) and DROP-not-fabricate for the rest.
 - `Poetry::Core::DesignLint` — twenty-three deterministic design-slop
-  rules (AST tier on the herb walk, ERB or plain HTML; DOM tier on
-  computed styles; motion-floor tier). Warnings that name the
-  fix; provenance cited per rule.
+  rules: nineteen on the Herb AST (ERB or plain HTML, the motion floor
+  among them), four on computed styles. Warnings name the fix; provenance
+  cited per rule.
+
+## Contracts
+
+- `use_stimulus` declares a component's wiring; `StimulusContract.verify`
+  gates every declaration against the controllers manifest and the rendered
+  previews (both component gems run it). The registry, agent surface, and
+  docs all project from the declaration.
+- `part` declares anatomy and states; `PartContract.verify` reconciles the
+  declarations against rendered previews both ways. Ownership climbs to the
+  nearest `data-component` root, with one exception: another component's
+  root wearing a part the outer declares (an icon rendered as the indicator
+  glyph) belongs to the outer.
+- `tool` declares an agent-callable action in MCP `Tool` shape; `executes:`
+  resolves through `stimulus_action` against the declared controllers and
+  the manifest at CLASS LOAD, so declare `use_stimulus` before `tool`. The
+  registry and llms-full list declared tools; `poetry check` carries the
+  WebMCP rules; poetry-agent registers them at runtime.
 
 ## Controller conventions
 
@@ -55,14 +90,13 @@ files against the manifest stamped at last bless.
   llms-full all render from the declaration.
 - Subclasses (Drawer extends Dialog) get their statics merged up the class
   chain by the manifest — declare only what the subclass itself adds.
-- The Ruby side declares wiring with the `use_stimulus` DSL;
-  `Poetry::Core::StimulusContract.verify` gates every declaration against
-  the controllers manifest (both component gems run it) — the registry,
-  agent surface, and docs all project from the declaration.
 - Component DOM ids derive through `Poetry::Core::StableId` (`key:` →
   dom_id-first token, explicit `id:` wins) so Turbo morph pairs identity
   across renders and cached fragments stay composable — never mint bare
   random ids in components.
+- `html_attributes` SETS the resolved class (the caller's classes merged
+  once through the dictionary); never merge a class back over the caller's
+  original.
 - The dommy tier runs controllers on QuickJS + a real DOM: no layout, no
   matchMedia (reports desktop), no Intl — server-feed what needs those.
 
@@ -74,7 +108,17 @@ Traps that recur across controllers: value callbacks fire async
 
 ## Standing rules
 
-The naming hold: never push, publish, or claim gems.
+Releases: versions move in lockstep across the family, with internal
+dependencies pinned exactly (`= VERSION`); bumps happen only on the
+maintainer's explicit go. Publishing runs only through the tag-triggered
+release workflow (OIDC trusted publishing) — never `gem push` by hand. The
+CHANGELOG stays bare until 0.1.0; commit messages carry the record.
+Sibling gems ride local paths in the Gemfile only when checked out side by
+side; the lockfile is not committed; the gemspec's dev-only list keeps
+tooling, tests, docs, and the ledgers out of the gem.
+
+Naming: "Poetry" is the product in prose; gem names, constants, and
+identifiers stay as they are.
 
 Third-party code: adapt or vendor only from MIT-compatible sources
 (MIT/ISC/BSD; Apache-2.0 carries its notice). Copyleft (GPL/LGPL/AGPL),
