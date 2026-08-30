@@ -8,13 +8,14 @@ Gem::Specification.new do |spec|
   spec.authors = ["Matt Solt"]
   spec.email = ["mattsolt@gmail.com"]
 
-  spec.summary = "The poetry component library: shadcn-parity ViewComponents on poetry-core."
-  spec.description = "poetry's components - accessible, themeable, agent-legible ViewComponents " \
-                     "built entirely on poetry-core's public DSL."
-  spec.homepage = "https://github.com/roboruby/poetry-ui"
+  spec.summary = "The Poetry component library: shadcn-parity ViewComponents on poetry-core."
+  spec.description = "Poetry's components for the AI-native UI component library: accessible, themeable, " \
+                     "agent-legible ViewComponents built entirely on poetry-core's public DSL."
+  spec.homepage = "https://poetryui.com"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.3.0"
-  spec.metadata["homepage_uri"] = "https://github.com/roboruby/poetry-ui"
+  spec.metadata["homepage_uri"] = "https://poetryui.com"
+  spec.metadata["documentation_uri"] = "https://poetryui.com/docs"
   spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry-ui"
   spec.metadata["changelog_uri"] = "https://github.com/roboruby/poetry-ui/blob/main/CHANGELOG.md"
   spec.metadata["bug_tracker_uri"] = "https://github.com/roboruby/poetry-ui/issues"
