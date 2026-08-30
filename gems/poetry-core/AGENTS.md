@@ -123,8 +123,9 @@ identifiers stay as they are.
 Third-party code: adapt or vendor only from MIT-compatible sources
 (MIT/ISC/BSD; Apache-2.0 carries its notice). Copyleft (GPL/LGPL/AGPL),
 restricted-use, and commercial sources are patterns-and-ideas only —
-never code. Every adaptation gets a source URL in the file header AND a
-THIRD_PARTY_NOTICES.md section (upstream, license, adapted files, full
-license text); vendored assets keep their LICENSE next to the code under
-vendor/. An adaptation PR that doesn't touch THIRD_PARTY_NOTICES.md is
-incomplete.
+never code. Every adaptation notes "Adapted from an MIT-licensed source
+(source and license in THIRD_PARTY_NOTICES.md)" in its class doc AND
+gets a THIRD_PARTY_NOTICES.md section (upstream, license, adapted files,
+full license text) — the source URL lives there, never in code; vendored
+assets keep their LICENSE next to the code under vendor/. An adaptation
+PR that doesn't touch THIRD_PARTY_NOTICES.md is incomplete.
