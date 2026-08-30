@@ -35,6 +35,7 @@ module Poetry
           loader.inflector.inflect("css" => "CSS", "html" => "HTML")
           loader.push_dir("#{root}/lib")
           loader.ignore("#{root}/lib/poetry-core.rb") # hyphenated auto-require shim
+          loader.ignore("#{root}/lib/active_model")        # the option types, required directly above
           loader.ignore("#{root}/lib/poetry/core/version.rb") # required directly above
           loader.ignore("#{root}/lib/poetry/core/engine.rb")  # required after setup
           loader.ignore("#{root}/lib/poetry/core/errors.rb")  # required after setup

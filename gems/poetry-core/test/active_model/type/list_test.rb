@@ -9,6 +9,10 @@ module ActiveModel
         assert_equal :list, List.new.type
       end
 
+      def test_registered_as_active_model_type
+        assert_instance_of List, ActiveModel::Type.lookup(:list)
+      end
+
       def test_casts_scalars_and_arrays_to_string_arrays
         type = List.new
 

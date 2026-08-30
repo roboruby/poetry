@@ -9,6 +9,14 @@ module ActiveModel
         assert_equal :foo, Symbol.new.cast("foo")
       end
 
+      def test_cast_passes_symbols_through
+        assert_equal :foo, Symbol.new.cast(:foo)
+      end
+
+      def test_reports_symbol_for_introspection
+        assert_equal :symbol, Symbol.new.type
+      end
+
       def test_cast_returns_nil_for_nil
         assert_nil Symbol.new.cast(nil)
       end
