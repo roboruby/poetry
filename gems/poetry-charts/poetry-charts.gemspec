@@ -8,16 +8,17 @@ Gem::Specification.new do |spec|
   spec.authors = ["Matt Solt"]
   spec.email = ["mattsolt@gmail.com"]
 
-  spec.summary = "poetry's chart tier: the shadcn chart surface as server-rendered SVG."
+  spec.summary = "Poetry's chart tier: the shadcn chart surface as server-rendered SVG."
   spec.description = "Charts whose geometry is computed on the server (Ruby; d3-scale/d3-shape " \
                      "semantics, recharts' nice ticks) and shipped as finished SVG - no-JS valid, " \
                      "CSS-variable themed, zero client chart math. Stimulus chrome reads " \
                      "server-embedded coordinates for tooltips and legends; engines stay swappable " \
                      "behind a closed, versioned chart-spec (Chart.js reference adapter)."
-  spec.homepage = "https://github.com/roboruby/poetry-charts"
+  spec.homepage = "https://poetryui.com"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.3.0"
-  spec.metadata["homepage_uri"] = "https://github.com/roboruby/poetry-charts"
+  spec.metadata["homepage_uri"] = "https://poetryui.com"
+  spec.metadata["documentation_uri"] = "https://poetryui.com/docs"
   spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry-charts"
   spec.metadata["changelog_uri"] = "https://github.com/roboruby/poetry-charts/blob/main/CHANGELOG.md"
   spec.metadata["bug_tracker_uri"] = "https://github.com/roboruby/poetry-charts/issues"
