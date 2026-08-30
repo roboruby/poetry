@@ -8694,7 +8694,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/date_picker/component.rb",
-          "line": 73
+          "line": 75
         },
         {
           "name": "label",
@@ -8711,7 +8711,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/date_picker/component.rb",
-          "line": 67
+          "line": 69
         },
         {
           "name": "mode",
@@ -8728,7 +8728,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/date_picker/component.rb",
-          "line": 64
+          "line": 66
         },
         {
           "name": "name",
@@ -8745,7 +8745,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/date_picker/component.rb",
-          "line": 63
+          "line": 65
         },
         {
           "name": "placeholder",
@@ -8762,7 +8762,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/date_picker/component.rb",
-          "line": 66
+          "line": 68
         },
         {
           "name": "variant",
@@ -8779,7 +8779,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/date_picker/component.rb",
-          "line": 69
+          "line": 71
         }
       ],
       "constants": [
@@ -8791,7 +8791,7 @@
         {
           "name": "IDENTITY",
           "value": "true",
-          "docstring": "Composition: every DatePicker renders a Popover, whose minted\ntrigger/content ids ride this DOM - a cached or looped\nDatePicker without identity freezes them, so the stable-identity\nwarning is the point. Forces the registry identity fact past\nthe source derivation (no funnel call in this family\nitself); note key: does not yet reach the inner Popover."
+          "docstring": "Composition: every DatePicker renders a Popover, whose minted\ntrigger/content ids ride this DOM - a cached or looped\nDatePicker without identity freezes them, so the stable-identity\nwarning is the point. Forces the registry identity fact past\nthe source derivation (no funnel call in this family itself);\npopover_options forwards key:/id: to that Popover, so the\nwarning's remedy works through the composition."
         }
       ]
     },
