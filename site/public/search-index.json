@@ -6144,6 +6144,24 @@
     "path": "/libraries/core#the-check"
   },
   {
+    "title": "Box and Wrapper",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#box-and-wrapper"
+  },
+  {
+    "title": "Box, the polymorphic element",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#box"
+  },
+  {
+    "title": "Wrapper, conditional outer HTML",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#wrapper"
+  },
+  {
     "title": "UI",
     "page": "UI",
     "section": "libraries",

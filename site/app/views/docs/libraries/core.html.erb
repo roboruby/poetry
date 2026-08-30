@@ -147,6 +147,21 @@
     bin/rails poetry:check                     # sweep app views + app Ruby
     POETRY_CHECK_JSON=1 bin/rails poetry:check # JSON for editors / CI
   CODE
+  box_source = <<~CODE
+    #{o}= render Poetry::Core::Box::Component.new(html_tag: "section", class: "grid gap-4") do #{e}
+      Cards, text, other components...
+    #{o} end #{e}
+
+    #{o}= render Poetry::Core::Box::Component.new(html_tag: "hr", class: "my-6") #{e}
+  CODE
+  wrapper_source = <<~CODE
+    #{o} pill = MyKit::Pill::Component.new(variant: :success).with_content("Deployed") #{e}
+    #{o}= render pill.wrapped do |wrapper| #{e}
+      <div class="mt-2 flex items-center gap-2">
+        #{o}= wrapper.component #{e}
+      </div>
+    #{o} end #{e}
+  CODE
 %>
 
 <div class="flex flex-col gap-8">
@@ -443,6 +458,57 @@
         check in the wider test ladder, and the
         <%= link_to "API reference", api_index_path %> documents the
         framework surface this page introduces.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="box-and-wrapper">Box and Wrapper</h2>
+      <p>
+        The catalog lives in poetry-ui, but the engine ships two pieces of
+        its own: <code>Box</code>, the one component in core's registry,
+        and <code>Wrapper</code>, a rendering utility. Both live at this
+        layer because they are about the machinery itself rather than any
+        design system.
+      </p>
+      <h3 id="box">Box, the polymorphic element</h3>
+      <p>
+        Box renders one element of any tag with the full poetry attribute
+        machinery attached - the class merger, Stimulus <code>data:</code>
+        merging, and <code>data-slot</code> self-identification that a raw
+        <code>content_tag</code> skips. It exists for the bare styled
+        element a real component would be too much for: a spacer, a
+        semantic wrapper, a grid cell. <code>html_tag:</code> (default
+        <code>div</code>) is validated as a tag name, and void elements
+        (<code>br</code>, <code>hr</code>, <code>img</code>, ...)
+        self-close - passing one a content block raises rather than
+        silently dropping the content.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: box_source, language: "erb", label: "Box") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h3 id="wrapper">Wrapper, conditional outer HTML</h3>
+      <p>
+        Wrapper renders custom HTML around a child component only when the
+        child's own <code>render?</code> returns true, so a conditional
+        shell needs no conditionals in your template. The block receives
+        the wrapper and must call <code>wrapper.component</code> exactly
+        once, where the child belongs: a block that skips it raises (the
+        wrap would silently drop the child), and a second call raises too.
+        Every <code>Poetry::Core::Component</code> answers
+        <code>#wrapped</code>, the shorthand for
+        <code>Wrapper::Component.new(self)</code>.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: wrapper_source, language: "erb", label: "Wrapper") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        One caveat travels with the conditional: the child's
+        <code>render?</code> is consulted before the child gains a view
+        context, so a <code>render?</code> that calls view helpers works
+        standalone but not under the wrapper. Both classes are documented
+        in full in the <%= link_to "API reference", api_index_path %>.
       </p>
     <% end %>
   </section>
