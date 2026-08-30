@@ -9,14 +9,15 @@ Gem::Specification.new do |spec|
   spec.email = ["mattsolt@gmail.com"]
 
   spec.summary = "Domain in, theme out: extract a DESIGN.md + design tokens from any public website."
-  spec.description = "The optional design-extraction gem for poetry: fetches a site's styleguide, " \
-                     "brand, screenshot, and homepage markdown (context.dev), composes a DESIGN.md " \
-                     "in one Claude call, derives Tailwind v4 @theme + CSS :root tokens " \
-                     "deterministically, and hands the result to poetry's AA-gated design importer."
-  spec.homepage = "https://github.com/roboruby/poetry-extract"
+  spec.description = "The optional design-extraction gem for Poetry: fetches a site's styleguide, brand, " \
+                     "screenshot, and homepage markdown (context.dev), composes a DESIGN.md in one Claude call, " \
+                     "derives Tailwind v4 @theme + CSS :root tokens deterministically, and hands the result to " \
+                     "Poetry's AA-gated design importer."
+  spec.homepage = "https://poetryui.com"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.3.0"
-  spec.metadata["homepage_uri"] = "https://github.com/roboruby/poetry-extract"
+  spec.metadata["homepage_uri"] = "https://poetryui.com"
+  spec.metadata["documentation_uri"] = "https://poetryui.com/docs"
   spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry-extract"
   spec.metadata["changelog_uri"] = "https://github.com/roboruby/poetry-extract/blob/main/CHANGELOG.md"
   spec.metadata["bug_tracker_uri"] = "https://github.com/roboruby/poetry-extract/issues"
