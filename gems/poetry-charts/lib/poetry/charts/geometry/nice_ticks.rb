@@ -5,6 +5,9 @@ require "bigdecimal"
 module Poetry
   module Charts
     module Geometry
+      # Adapted from an MIT-licensed source (source and license in
+      # THIRD_PARTY_NOTICES.md).
+      #
       # The nice-ticks algorithm on BigDecimal, so the tick values stay
       # decimal-exact. Every operation is decimal, not binary: values
       # construct from the double's shortest decimal string, remainders

@@ -61,9 +61,12 @@ identifiers stay as they are.
 Third-party code: adapt or bundle only from MIT-compatible sources
 (MIT/ISC/BSD; Apache-2.0 carries its notice). Copyleft (GPL/LGPL/AGPL),
 restricted-use, and commercial sources are patterns-and-ideas only —
-never code. Every adaptation or bundled upstream: attribution in the
-artifact banner or file header + license text under vendor/ + a
-THIRD_PARTY_NOTICES.md entry (the d3 modules, decimal.js-light, and the
-recharts nice-tick transcription under `vendor/d3-kernel/`; the chart
-anatomy and theme rules under the shadcn/ui section). An adaptation
-change that doesn't touch THIRD_PARTY_NOTICES.md is incomplete.
+never code. Bundled upstreams keep their attribution banner and license
+text under vendor/; every adaptation notes "Adapted from an MIT-licensed
+source (source and license in THIRD_PARTY_NOTICES.md)" in its class doc.
+Both get a THIRD_PARTY_NOTICES.md entry (the d3 modules,
+decimal.js-light, and the recharts nice-tick transcription under
+`vendor/d3-kernel/`; the chart anatomy and theme rules under the
+shadcn/ui section) — source URLs live there, never in code. An
+adaptation change that doesn't touch THIRD_PARTY_NOTICES.md is
+incomplete.
