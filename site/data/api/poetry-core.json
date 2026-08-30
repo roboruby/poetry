@@ -191,6 +191,81 @@
       ]
     },
     {
+      "path": "Poetry::Core::Box",
+      "type": "module",
+      "superclass": null,
+      "docstring": "Namespace of the Box primitive.",
+      "examples": [],
+      "file": "app/components/poetry/core/box/component.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Core::Box::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "The polymorphic-tag primitive: one element, any tag, the full\npoetry attribute machinery. Box exists for the bare styled\nelement a real component would be too much for - a spacer, a\nsemantic wrapper, a grid cell - while keeping the class merger,\nStimulus `data:` merging, and self-identification that a raw\n`content_tag` skips. Void elements (`br`, `hr`, `img`, ...)\nself-close and take no content block.\n\n**Anatomy** (`data-slot` parts):\n\n- `box` - The rendered element itself - the whole component is one part",
+      "examples": [
+        {
+          "title": "A semantic wrapper",
+          "text": "render Poetry::Core::Box::Component.new(html_tag: \"section\", class: \"grid gap-4\") do\n  \"content\"\nend"
+        },
+        {
+          "title": "A void element",
+          "text": "render Poetry::Core::Box::Component.new(html_tag: \"hr\", class: \"my-6\")"
+        }
+      ],
+      "file": "app/components/poetry/core/box/component.rb",
+      "methods": [
+        {
+          "name": "call",
+          "scope": "instance",
+          "group": null,
+          "signature": "call",
+          "docstring": "Emits the chosen tag: self-closing for void elements, wrapping\nthe content block otherwise. A void element with a content\nblock raises - the content would be silently unrenderable.",
+          "params": [],
+          "return": {
+            "types": [
+              "ActiveSupport::SafeBuffer"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/box/component.rb",
+          "line": 51
+        },
+        {
+          "name": "html_tag",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The element to render ('div', 'section', 'span', ...); void elements (br, hr, img, ...) self-close and take no content block.\n\nConstructor option `html_tag:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "defaults to `\"div\"`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/box/component.rb",
+          "line": 33
+        }
+      ],
+      "constants": [
+        {
+          "name": "TAG_NAME",
+          "value": "/\\A[a-z][a-z0-9-]*\\z/i",
+          "docstring": "Tag names: letters, digits, and dashes (custom elements),\nstarting with a letter."
+        },
+        {
+          "name": "VOID_TAGS",
+          "value": "%w[\n  area base br col embed hr img input link meta param source track wbr\n].freeze",
+          "docstring": "The HTML void elements: they emit a self-closing tag and take\nno content block."
+        }
+      ]
+    },
+    {
       "path": "Poetry::Core::CSS",
       "type": "module",
       "superclass": null,
@@ -2611,7 +2686,7 @@
           "scope": "instance",
           "group": null,
           "signature": "bem_block",
-          "docstring": "The component's BEM block name - the stable, framework-agnostic\nclass contract of the token IR (\"poetry/core/x\" -> \"poetry-core-x\").",
+          "docstring": "The component's BEM block name - the stable, framework-agnostic\nclass contract of the token IR (\"poetry/core/dot\" -> \"poetry-core-dot\").",
           "params": [],
           "return": {
             "types": [
@@ -3404,55 +3479,6 @@
       "file": "lib/poetry/core/errors.rb",
       "methods": [],
       "constants": []
-    },
-    {
-      "path": "Poetry::Core::Generic",
-      "type": "module",
-      "superclass": null,
-      "docstring": "Namespace of the generic tag-of-your-choice component.",
-      "examples": [],
-      "file": "app/components/poetry/core/generic/component.rb",
-      "methods": [],
-      "constants": []
-    },
-    {
-      "path": "Poetry::Core::Generic::Component",
-      "type": "class",
-      "superclass": "Poetry::Core::Component",
-      "docstring": "Renders an arbitrary HTML element chosen at render time via\n`html_tag:` - a void element emits a self-closing tag, anything\nelse wraps the content block.",
-      "examples": [
-        {
-          "title": "",
-          "text": "render Poetry::Core::Generic::Component.new(html_tag: \"span\") { \"text\" }"
-        }
-      ],
-      "file": "app/components/poetry/core/generic/component.rb",
-      "methods": [
-        {
-          "name": "call",
-          "scope": "instance",
-          "group": null,
-          "signature": "call",
-          "docstring": "Emits the chosen tag: self-closing for void elements, wrapping\nthe content block otherwise.",
-          "params": [],
-          "return": {
-            "types": [
-              "ActiveSupport::SafeBuffer"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "app/components/poetry/core/generic/component.rb",
-          "line": 40
-        }
-      ],
-      "constants": [
-        {
-          "name": "SELF_CLOSING_TAGS",
-          "value": "%w[\n  area\n  base\n  br\n  col\n  embed\n  hr\n  img\n  input\n  link\n  meta\n  param\n  source\n  track\n  wbr\n].freeze",
-          "docstring": "The HTML void elements, which emit a self-closing tag and take no\ncontent block."
-        }
-      ]
     },
     {
       "path": "Poetry::Core::HTML",
@@ -7040,7 +7066,7 @@
           "scope": "class",
           "group": null,
           "signature": "bem_block",
-          "docstring": "The BEM block this dictionary belongs to, derived from the sibling\ncomponent (\"poetry/core/x\" -> \"poetry-core-x\").",
+          "docstring": "The BEM block this dictionary belongs to, derived from the sibling\ncomponent (\"poetry/core/dot\" -> \"poetry-core-dot\").",
           "params": [],
           "return": {
             "types": [
@@ -7075,7 +7101,7 @@
           "scope": "class",
           "group": null,
           "signature": "component_class",
-          "docstring": "The sibling component class by convention\n(Poetry::Core::X::Style -> Poetry::Core::X::Component).",
+          "docstring": "The sibling component class by convention\n(Poetry::Core::Dot::Style -> Poetry::Core::Dot::Component).",
           "params": [],
           "return": {
             "types": [
@@ -8080,144 +8106,6 @@
           "line": 25
         }
       ],
-      "constants": []
-    },
-    {
-      "path": "Poetry::Core::X",
-      "type": "module",
-      "superclass": null,
-      "docstring": "Namespace of the X demo component - legacy reference code exercising\nthe style machinery.",
-      "examples": [],
-      "file": "app/components/poetry/core/x/component.rb",
-      "methods": [],
-      "constants": []
-    },
-    {
-      "path": "Poetry::Core::X::Component",
-      "type": "class",
-      "superclass": "Poetry::Core::Component",
-      "docstring": "Renders one X-shaped SVG glyph, styled through the sidecar Style\ndictionary (color x mode x size x shape). Retained as legacy\nreference code exercising the style machinery - not a pattern for\nnew components.\n\n**Anatomy** (`data-slot` parts):\n\n- `icon` - The demo SVG itself - the whole component is one part",
-      "examples": [
-        {
-          "title": "",
-          "text": "render Poetry::Core::X::Component.new(color: :red, size: :large)"
-        }
-      ],
-      "file": "app/components/poetry/core/x/component.rb",
-      "methods": [
-        {
-          "name": "call",
-          "scope": "instance",
-          "group": null,
-          "signature": "call",
-          "docstring": "Emits the styled <svg> with its X-path.",
-          "params": [],
-          "return": {
-            "types": [
-              "ActiveSupport::SafeBuffer"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "app/components/poetry/core/x/component.rb",
-          "line": 62
-        },
-        {
-          "name": "color",
-          "scope": "instance",
-          "group": "Style axes",
-          "signature": "",
-          "docstring": "The stroke color family.\n\nStyle axis `color:`.",
-          "params": [],
-          "return": {
-            "types": [
-              "Symbol"
-            ],
-            "text": "one of: `slate, gray, zinc, neutral, stone, red, orange, amber, yellow, lime, green, emerald, teal, cyan, sky, blue, indigo, violet, purple, fuchsia, pink, rose`; defaults to `:indigo`"
-          },
-          "examples": [],
-          "file": "app/components/poetry/core/x/component.rb",
-          "line": 21
-        },
-        {
-          "name": "mode",
-          "scope": "instance",
-          "group": "Style axes",
-          "signature": "",
-          "docstring": "The color-scheme axis the compound dark strokes key on.\n\nStyle axis `mode:`.",
-          "params": [],
-          "return": {
-            "types": [
-              "Symbol"
-            ],
-            "text": "one of: `light, dark`; defaults to `:light`"
-          },
-          "examples": [],
-          "file": "app/components/poetry/core/x/component.rb",
-          "line": 16
-        },
-        {
-          "name": "shape",
-          "scope": "instance",
-          "group": "Style axes",
-          "signature": "",
-          "docstring": "The outline shape (visual no-op in the shipped dictionary).\n\nStyle axis `shape:`.",
-          "params": [],
-          "return": {
-            "types": [
-              "Symbol"
-            ],
-            "text": "one of: `square, round`; defaults to `:square`"
-          },
-          "examples": [],
-          "file": "app/components/poetry/core/x/component.rb",
-          "line": 52
-        },
-        {
-          "name": "size",
-          "scope": "instance",
-          "group": "Style axes",
-          "signature": "",
-          "docstring": "The rendered glyph size.\n\nStyle axis `size:`.",
-          "params": [],
-          "return": {
-            "types": [
-              "Symbol"
-            ],
-            "text": "one of: `small, medium, large`; defaults to `:medium`"
-          },
-          "examples": [],
-          "file": "app/components/poetry/core/x/component.rb",
-          "line": 46
-        },
-        {
-          "name": "svg_attributes",
-          "scope": "instance",
-          "group": null,
-          "signature": "svg_attributes",
-          "docstring": "The root <svg> attributes: caller HTML attributes over the SVG\ndefaults (namespace, viewbox, data-slot).",
-          "params": [],
-          "return": {
-            "types": [
-              "Poetry::Core::HTML::Attributes"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "app/components/poetry/core/x/component.rb",
-          "line": 72
-        }
-      ],
-      "constants": []
-    },
-    {
-      "path": "Poetry::Core::X::Style",
-      "type": "class",
-      "superclass": "Poetry::Core::Style",
-      "docstring": "The X demo component's style dictionary: stroke color x mode x\nsize x shape.",
-      "examples": [],
-      "file": "app/components/poetry/core/x/style.rb",
-      "methods": [],
       "constants": []
     }
   ]
