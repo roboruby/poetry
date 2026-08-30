@@ -137,7 +137,11 @@
         <code>poetry:check</code> warns on the first two
         (<code>stable-identity/cache</code>,
         <code>stable-identity/collection</code>); they are heuristics over
-        conventional ERB, not proofs. The runtime complement is
+        conventional ERB, not proofs. Components whose registry entry
+        declares <code>identity: false</code> are exempt - their families
+        never reach the id mint, so <code>key:</code> would have nothing
+        to stabilize - and the warnings fire only where a random id truly
+        exists. The runtime complement is
         <code>poetry_id_integrity_script</code>: it scans the composed page
         for duplicate ids after every load, frame load, morph, and stream
         insertion, the only check that sees real cross-template

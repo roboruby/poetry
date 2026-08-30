@@ -8694,7 +8694,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/date_picker/component.rb",
-          "line": 65
+          "line": 73
         },
         {
           "name": "label",
@@ -8711,7 +8711,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/date_picker/component.rb",
-          "line": 59
+          "line": 67
         },
         {
           "name": "mode",
@@ -8728,7 +8728,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/date_picker/component.rb",
-          "line": 56
+          "line": 64
         },
         {
           "name": "name",
@@ -8745,7 +8745,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/date_picker/component.rb",
-          "line": 55
+          "line": 63
         },
         {
           "name": "placeholder",
@@ -8762,7 +8762,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/date_picker/component.rb",
-          "line": 58
+          "line": 66
         },
         {
           "name": "variant",
@@ -8779,7 +8779,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/date_picker/component.rb",
-          "line": 61
+          "line": 69
         }
       ],
       "constants": [
@@ -8787,6 +8787,11 @@
           "name": "AGENT_RULES",
           "value": "[\n  \"name: is REQUIRED - the chosen date posts as an ISO string (the Calendar's hidden input).\",\n  \"value: preselects a date (a Date or ISO string) - the trigger shows it formatted, no JS needed.\",\n  ",
           "docstring": "Projected into the registry, llms.txt, and the agent surface."
+        },
+        {
+          "name": "IDENTITY",
+          "value": "true",
+          "docstring": "Composition: every DatePicker renders a Popover, whose minted\ntrigger/content ids ride this DOM - a cached or looped\nDatePicker without identity freezes them, so the stable-identity\nwarning is the point. Forces the registry identity fact past\nthe source derivation (no funnel call in this family\nitself); note key: does not yet reach the inner Popover."
         }
       ]
     },

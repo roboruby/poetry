@@ -4503,7 +4503,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 63
+          "line": 68
         },
         {
           "name": "blocks",
@@ -4515,7 +4515,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 122
+          "line": 127
         },
         {
           "name": "components",
@@ -4527,7 +4527,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 118
+          "line": 123
         },
         {
           "name": "entries",
@@ -4544,7 +4544,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 132
+          "line": 137
         },
         {
           "name": "form_builder",
@@ -4556,7 +4556,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 126
+          "line": 131
         },
         {
           "name": "generate!",
@@ -4582,7 +4582,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 154
+          "line": 159
         },
         {
           "name": "initialize",
@@ -4656,7 +4656,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 105
+          "line": 110
         },
         {
           "name": "source_root",
@@ -4668,7 +4668,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 122
+          "line": 127
         },
         {
           "name": "to_yaml",
@@ -4685,7 +4685,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 141
+          "line": 146
         },
         {
           "name": "verified?",
@@ -4711,7 +4711,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 165
+          "line": 170
         }
       ],
       "constants": [
@@ -4724,6 +4724,11 @@
           "name": "LIFECYCLE_METHODS",
           "value": "%w[connect disconnect initialize].freeze",
           "docstring": "Stimulus lifecycle callbacks are not consumer-callable actions."
+        },
+        {
+          "name": "MINT_PATTERN",
+          "value": "/\\bpoetry_instance_id\\b|\\binstance_id\\b|\\bSecureRandom\\b/",
+          "docstring": "The id-minting funnel, as source text: a component family whose\nsources never match renders no poetry-minted random id (the\n\"identity\" derivation - see the entry's identity key)."
         },
         {
           "name": "RELATIVE_PATH",
@@ -4750,7 +4755,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 38
+          "line": 43
         },
         {
           "name": "entries",
@@ -4762,7 +4767,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 38
+          "line": 43
         },
         {
           "name": "form_builder",
@@ -4774,7 +4779,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 38
+          "line": 43
         },
         {
           "name": "helper_args",
@@ -4786,7 +4791,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 38
+          "line": 43
         },
         {
           "name": "helpers",
@@ -4798,7 +4803,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 38
+          "line": 43
         },
         {
           "name": "initialize",
@@ -4862,7 +4867,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 49
+          "line": 54
         },
         {
           "name": "source_root",
@@ -4874,7 +4879,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 38
+          "line": 43
         }
       ],
       "constants": []
