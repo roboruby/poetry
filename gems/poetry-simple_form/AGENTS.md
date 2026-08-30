@@ -45,5 +45,7 @@ identifiers stay as they are.
 
 Third-party code: adapt only from MIT-compatible sources (MIT/ISC/BSD;
 Apache-2.0 carries its notice); simple_form itself is a runtime dependency,
-not adapted code. Every adaptation gets a source URL in the file header and
-a THIRD_PARTY_NOTICES.md section.
+not adapted code. Every adaptation notes "Adapted from an MIT-licensed
+source (source and license in THIRD_PARTY_NOTICES.md)" in its class doc
+and gets a THIRD_PARTY_NOTICES.md section — the source URL lives there,
+never in code.
