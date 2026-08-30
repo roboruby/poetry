@@ -3328,7 +3328,7 @@
       "path": "Poetry::Core::Contrib",
       "type": "module",
       "superclass": null,
-      "docstring": "Opt-in helper mixins shipped alongside the core (wrapping, translations).",
+      "docstring": "Opt-in helper mixins shipped alongside the core.",
       "examples": [],
       "file": "lib/poetry/core/contrib/wrapped_helper.rb",
       "methods": [],
@@ -3338,7 +3338,7 @@
       "path": "Poetry::Core::Contrib::WrappedHelper",
       "type": "module",
       "superclass": null,
-      "docstring": "Provides a convenient method to wrap components with custom HTML code.\n\nThis module adds the `#wrapped` method to components, allowing them to be\neasily wrapped with a {Poetry::Core::Wrapper::Component}. The wrapper component\nenables adding custom HTML around a component without modifying the\ncomponent itself, and respects the component's `render?` conditional logic.",
+      "docstring": "Provides a convenient method to wrap components with custom HTML code.\nAdapted from an MIT-licensed source (source and license in\nTHIRD_PARTY_NOTICES.md).\n\nThis module adds the `#wrapped` method to components, allowing them to be\neasily wrapped with a {Poetry::Core::Wrapper::Component}. The wrapper component\nenables adding custom HTML around a component without modifying the\ncomponent itself, and respects the component's `render?` conditional logic.",
       "examples": [
         {
           "title": "Basic usage",
@@ -3375,7 +3375,7 @@
             }
           ],
           "file": "lib/poetry/core/contrib/wrapped_helper.rb",
-          "line": 60
+          "line": 62
         }
       ],
       "constants": []
