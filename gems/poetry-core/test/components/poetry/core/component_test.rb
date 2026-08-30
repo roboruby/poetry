@@ -230,12 +230,6 @@ module Poetry
         assert_respond_to component, :errors
       end
 
-      def test_component_includes_translation_helper
-        component = TestComponent.new
-        # TranslationHelper methods are available
-        assert_kind_of Poetry::Core::Contrib::TranslationHelper, component
-      end
-
       def test_component_includes_wrapped_helper
         component = TestComponent.new
         # WrappedHelper methods are available

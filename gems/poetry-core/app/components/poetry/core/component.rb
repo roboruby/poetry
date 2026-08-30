@@ -38,7 +38,6 @@ module Poetry
       include ActiveModel::Attributes
       include ActiveModel::AttributeAssignment
       include ActiveModel::Validations
-      include Poetry::Core::Contrib::TranslationHelper
       include Poetry::Core::Contrib::WrappedHelper
       include Poetry::Core::Concerns::Styles
       include Poetry::Core::Concerns::Options
