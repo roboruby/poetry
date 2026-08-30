@@ -271,8 +271,54 @@
       "superclass": null,
       "docstring": "The CSS tooling namespace: class-name merging and the compiled-build gates.",
       "examples": [],
-      "file": "lib/poetry/core/css/merger.rb",
+      "file": "lib/poetry/core/css/tailwind_merger.rb",
       "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Core::CSS::BemMerger",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The BEM-mode classname merger: the classname_merger a host pairs\nwith `css_mode = :bem`. Same contract as {TailwindMerger}\n(flatten, stringify, drop blanks, nil for empty input) with\nexactly two behaviors on top: order-preserving token dedupe and\na space join - no Tailwind conflict semantics applied to a BEM\nhost's classes.\n\nDeliberately NO modifier-axis conflict resolution: the BEM\nmodifier grammar is dictionary-dependent at the string level\n(values carry dashes - `--align-inline-start` - and names carry\nunderscores), so a string merger guessing axes would be wrong.\nStyle axes are driven through component options; conflicts\nbetween raw caller classes belong to the host stylesheet's\ncascade.",
+      "examples": [
+        {
+          "title": "Pairing with BEM mode (config/initializers/poetry.rb)",
+          "text": "Poetry::Core::Config.current.css_mode = :bem\nPoetry::Core::Config.current.classname_merger =\n  Poetry::Core::CSS::BemMerger.new"
+        },
+        {
+          "title": "Dedupe without Tailwind semantics",
+          "text": "Poetry::Core::CSS::BemMerger.new.merge(\"pill pill--variant-danger\", \"pill\", \"p-4 p-2\")\n# => \"pill pill--variant-danger p-4 p-2\""
+        }
+      ],
+      "file": "lib/poetry/core/css/bem_merger.rb",
+      "methods": [
+        {
+          "name": "merge",
+          "scope": "instance",
+          "group": null,
+          "signature": "merge(*classes)",
+          "docstring": "Merges class lists BEM-style: normalize, dedupe at the token\nlevel (first occurrence keeps its position), join.",
+          "params": [
+            {
+              "name": "classes",
+              "types": [
+                "Array<String, Symbol, Array, nil>"
+              ],
+              "text": "class names,\narrays of class names, or nils"
+            }
+          ],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": "the merged classes, or nil when empty"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/css/bem_merger.rb",
+          "line": 36
+        }
+      ],
       "constants": []
     },
     {
@@ -2892,7 +2938,7 @@
       "examples": [
         {
           "title": "Accessing global configuration",
-          "text": "Poetry::Core::Config.current.classname_merger\n# => #<Poetry::Core::CSS::Merger:0x00007f8b1c0a3b40>"
+          "text": "Poetry::Core::Config.current.classname_merger\n# => #<Poetry::Core::CSS::TailwindMerger:0x00007f8b1c0a3b40>"
         },
         {
           "title": "Modifying global configuration",
@@ -2962,7 +3008,7 @@
           "scope": "class",
           "group": null,
           "signature": "defaults",
-          "docstring": "Returns the default configuration values.\n\nThese defaults are used when initializing new configuration instances and\ndefine the standard behavior for all Poetry::Core components.\n\nThe keys and their defaults:\n\n- `classname_merger` ({Poetry::Core::CSS::Merger}) - resolves\n  conflicting utility classes when caller classes meet component\n  classes.\n- `stimulus_merger` ({Poetry::Core::Stimulus::Merger}) - combines\n  Stimulus data attributes without duplicating controllers or\n  actions.\n- `css_mode` (`:tailwind`) - `:tailwind` emits resolved utility\n  classes; `:bem` emits the BEM token IR for bring-your-own-CSS\n  hosts.\n- `icon_library` (`:lucide`) - the active icon set, by the key it\n  registered under ({Poetry::Core::Icons.register}).\n- `raise_on_missing_icon` (`nil`) - the policy for a dynamic icon\n  name that resolves to nothing: nil raises in local environments\n  and degrades to the fallback elsewhere; true/false force one\n  behavior.\n- `icon_fallback` (`:\"circle-question-mark\"`) - rendered instead\n  of a missing icon when not raising; nil re-raises.\n- `on_missing_icon` (`nil`) - an optional callable\n  `(name:, library:, error:)` fired before the fallback renders.\n- `stable_id_mode` (`:off`) - the opt-in `:sequence` mode seeds a\n  per-request deterministic id sequence (read the hazards in\n  StableId before enabling).\n- `stable_id_seed` - the request-to-seed callable for that mode\n  (defaults to the request path).",
+          "docstring": "Returns the default configuration values.\n\nThese defaults are used when initializing new configuration instances and\ndefine the standard behavior for all Poetry::Core components.\n\nThe keys and their defaults:\n\n- `classname_merger` ({Poetry::Core::CSS::TailwindMerger}) - resolves\n  conflicting utility classes when caller classes meet component\n  classes.\n- `stimulus_merger` ({Poetry::Core::Stimulus::Merger}) - combines\n  Stimulus data attributes without duplicating controllers or\n  actions.\n- `css_mode` (`:tailwind`) - `:tailwind` emits resolved utility\n  classes; `:bem` emits the BEM token IR for bring-your-own-CSS\n  hosts.\n- `icon_library` (`:lucide`) - the active icon set, by the key it\n  registered under ({Poetry::Core::Icons.register}).\n- `raise_on_missing_icon` (`nil`) - the policy for a dynamic icon\n  name that resolves to nothing: nil raises in local environments\n  and degrades to the fallback elsewhere; true/false force one\n  behavior.\n- `icon_fallback` (`:\"circle-question-mark\"`) - rendered instead\n  of a missing icon when not raising; nil re-raises.\n- `on_missing_icon` (`nil`) - an optional callable\n  `(name:, library:, error:)` fired before the fallback renders.\n- `stable_id_mode` (`:off`) - the opt-in `:sequence` mode seeds a\n  per-request deterministic id sequence (read the hazards in\n  StableId before enabling).\n- `stable_id_seed` - the request-to-seed callable for that mode\n  (defaults to the request path).",
           "params": [],
           "return": {
             "types": [
@@ -2973,7 +3019,7 @@
           "examples": [
             {
               "title": "Getting default values",
-              "text": "defaults = Poetry::Core::Config.defaults\ndefaults.classname_merger # => #<Poetry::Core::CSS::Merger:0x00007f8b1c0a3b40>\ndefaults.css_mode # => :tailwind"
+              "text": "defaults = Poetry::Core::Config.defaults\ndefaults.classname_merger # => #<Poetry::Core::CSS::TailwindMerger:0x00007f8b1c0a3b40>\ndefaults.css_mode # => :tailwind"
             }
           ],
           "file": "lib/poetry/core/config.rb",
@@ -2988,7 +3034,7 @@
           "params": [],
           "return": {
             "types": [
-              "Poetry::Core::CSS::Merger"
+              "Poetry::Core::CSS::TailwindMerger"
             ],
             "text": "The CSS class merger instance"
           },
@@ -3006,14 +3052,14 @@
             {
               "name": "merger",
               "types": [
-                "Poetry::Core::CSS::Merger"
+                "Poetry::Core::CSS::TailwindMerger"
               ],
               "text": "The CSS class merger instance to use"
             }
           ],
           "return": {
             "types": [
-              "Poetry::Core::CSS::Merger"
+              "Poetry::Core::CSS::TailwindMerger"
             ],
             "text": ""
           },

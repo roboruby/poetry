@@ -115,6 +115,7 @@
   bem_mode_source = <<~CODE
     # config/initializers/poetry.rb
     Poetry::Core::Config.current.css_mode = :bem
+    Poetry::Core::Config.current.classname_merger = Poetry::Core::CSS::BemMerger.new
   CODE
   bem_classes_source = <<~CODE
     pill = MyKit::Pill::Component.new(variant: :danger, interactive: true)
@@ -364,7 +365,10 @@
         from the component path, each style value becomes a
         <code>block--attribute-value</code> modifier, booleans become
         presence modifiers, and named elements become
-        <code>block__element</code>. The mode is global through
+        <code>block__element</code>. The merger pairs with the mode:
+        <code>BemMerger</code> dedupes and joins caller classes instead
+        of applying Tailwind conflict semantics to a stylesheet that is
+        not Tailwind. The mode is global through
         <code>Poetry::Core::Config</code> or per call
         (<code>css(css_mode: :bem)</code>); there is deliberately no mode
         that emits both.
