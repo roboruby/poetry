@@ -8,11 +8,12 @@ Gem::Specification.new do |spec|
   spec.authors = ["Matt Solt"]
   spec.email = ["mattsolt@gmail.com"]
 
-  spec.summary = "AI-native component library for Rails: shadcn-parity ViewComponents on Hotwire and Tailwind."
-  spec.description = "The poetry umbrella gem: installs poetry-core (the Rails engine and component DSL), " \
-                     "poetry-ui (the accessible, themeable, agent-legible component library) and " \
-                     "poetry-lucide (the default icon set) together."
-  spec.homepage = "https://github.com/roboruby/poetry"
+  spec.summary = "Poetry, the AI-native UI component library for Rails: shadcn-parity ViewComponents on " \
+                 "Hotwire and Tailwind."
+  spec.description = "The Poetry umbrella gem: installs poetry-core (the Rails engine and component DSL), " \
+                     "poetry-ui (the accessible, themeable, agent-legible component library) and poetry-lucide " \
+                     "(the default icon set) together."
+  spec.homepage = "https://poetryui.com"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.3.0"
 
@@ -20,7 +21,8 @@ Gem::Specification.new do |spec|
   # This helps protect your gem from supply chain attacks by ensuring
   # no one can publish a new version without multi-factor authentication.
   # See: https://guides.rubygems.org/mfa-requirement-opt-in/
-  spec.metadata["homepage_uri"] = "https://github.com/roboruby/poetry"
+  spec.metadata["homepage_uri"] = "https://poetryui.com"
+  spec.metadata["documentation_uri"] = "https://poetryui.com/docs"
   spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry"
   spec.metadata["changelog_uri"] = "https://github.com/roboruby/poetry/blob/main/CHANGELOG.md"
   spec.metadata["bug_tracker_uri"] = "https://github.com/roboruby/poetry/issues"
