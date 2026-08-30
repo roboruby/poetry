@@ -27,8 +27,9 @@ module Poetry
       #   merger.merge(:rounded, :'text-center')
       #   # => 'rounded text-center' (symbols converted to strings)
       #
+      # @see Poetry::Core::CSS::BemMerger (the css_mode = :bem counterpart)
       # @api private
-      class Merger
+      class TailwindMerger
         # Bounded FIFO cache over merge results: components render the same
         # class combinations over and over, so tailwind_merge runs once per
         # DISTINCT combo instead of once per render.

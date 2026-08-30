@@ -14,7 +14,7 @@ module Poetry
     #
     # @example Accessing global configuration
     #   Poetry::Core::Config.current.classname_merger
-    #   # => #<Poetry::Core::CSS::Merger:0x00007f8b1c0a3b40>
+    #   # => #<Poetry::Core::CSS::TailwindMerger:0x00007f8b1c0a3b40>
     #
     # @example Modifying global configuration
     #   Poetry::Core::Config.current.icon_library = :my_icons
@@ -27,7 +27,7 @@ module Poetry
     #   Poetry::Core::Config.current[:classname_merger]
     #   Poetry::Core::Config.current[:custom_setting] = "value"
     #
-    # @see Poetry::Core::CSS::Merger
+    # @see Poetry::Core::CSS::TailwindMerger
     # @see Poetry::Core::Stimulus::Merger
     class Config
       class << self
@@ -48,7 +48,7 @@ module Poetry
         #
         # The keys and their defaults:
         #
-        # - `classname_merger` ({Poetry::Core::CSS::Merger}) - resolves
+        # - `classname_merger` ({Poetry::Core::CSS::TailwindMerger}) - resolves
         #   conflicting utility classes when caller classes meet component
         #   classes.
         # - `stimulus_merger` ({Poetry::Core::Stimulus::Merger}) - combines
@@ -77,11 +77,11 @@ module Poetry
         #
         # @example Getting default values
         #   defaults = Poetry::Core::Config.defaults
-        #   defaults.classname_merger # => #<Poetry::Core::CSS::Merger:0x00007f8b1c0a3b40>
+        #   defaults.classname_merger # => #<Poetry::Core::CSS::TailwindMerger:0x00007f8b1c0a3b40>
         #   defaults.css_mode # => :tailwind
         def defaults
           ActiveSupport::OrderedOptions.new.merge!({
-                                                     classname_merger: Poetry::Core::CSS::Merger.new,
+                                                     classname_merger: Poetry::Core::CSS::TailwindMerger.new,
                                                      stimulus_merger: Poetry::Core::Stimulus::Merger.new,
                                                      # :tailwind emits resolved utility classes (default);
                                                      # :bem emits the BEM token IR for bring-your-own-CSS
@@ -141,12 +141,12 @@ module Poetry
       # @!method classname_merger
       #   The merger that resolves conflicting utility classes when caller
       #   classes meet component classes.
-      #   @return [Poetry::Core::CSS::Merger] The CSS class merger instance
+      #   @return [Poetry::Core::CSS::TailwindMerger] The CSS class merger instance
       #
       # @!method classname_merger=(merger)
       #   Replaces the class merger.
-      #   @param merger [Poetry::Core::CSS::Merger] The CSS class merger instance to use
-      #   @return [Poetry::Core::CSS::Merger]
+      #   @param merger [Poetry::Core::CSS::TailwindMerger] The CSS class merger instance to use
+      #   @return [Poetry::Core::CSS::TailwindMerger]
       #
       # @!method stimulus_merger
       #   The merger that combines Stimulus data attributes without

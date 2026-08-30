@@ -25,7 +25,7 @@ module Poetry
       def test_defaults_includes_classname_merger
         defaults = Poetry::Core::Config.defaults
 
-        assert_instance_of Poetry::Core::CSS::Merger, defaults.classname_merger
+        assert_instance_of Poetry::Core::CSS::TailwindMerger, defaults.classname_merger
       end
 
       def test_defaults_includes_stimulus_merger
@@ -64,7 +64,7 @@ module Poetry
       def test_current_creates_instance_with_defaults
         config = Poetry::Core::Config.current
 
-        assert_instance_of Poetry::Core::CSS::Merger, config.classname_merger
+        assert_instance_of Poetry::Core::CSS::TailwindMerger, config.classname_merger
         assert_instance_of Poetry::Core::Stimulus::Merger, config.stimulus_merger
         assert_equal :tailwind, config.css_mode
       end
@@ -88,7 +88,7 @@ module Poetry
       def test_initialize_sets_default_values
         config = Poetry::Core::Config.new
 
-        assert_instance_of Poetry::Core::CSS::Merger, config.classname_merger
+        assert_instance_of Poetry::Core::CSS::TailwindMerger, config.classname_merger
         assert_instance_of Poetry::Core::Stimulus::Merger, config.stimulus_merger
         assert_equal :tailwind, config.css_mode
       end
@@ -118,7 +118,7 @@ module Poetry
       def test_method_style_getter_for_classname_merger
         config = Poetry::Core::Config.new
 
-        assert_instance_of Poetry::Core::CSS::Merger, config.classname_merger
+        assert_instance_of Poetry::Core::CSS::TailwindMerger, config.classname_merger
       end
 
       def test_method_style_getter_for_stimulus_merger
@@ -135,7 +135,7 @@ module Poetry
 
       def test_method_style_setter_for_classname_merger
         config = Poetry::Core::Config.new
-        custom_merger = Poetry::Core::CSS::Merger.new
+        custom_merger = Poetry::Core::CSS::TailwindMerger.new
         config.classname_merger = custom_merger
 
         assert_same custom_merger, config.classname_merger
@@ -160,7 +160,7 @@ module Poetry
       def test_hash_style_getter_for_classname_merger
         config = Poetry::Core::Config.new
 
-        assert_instance_of Poetry::Core::CSS::Merger, config[:classname_merger]
+        assert_instance_of Poetry::Core::CSS::TailwindMerger, config[:classname_merger]
       end
 
       def test_hash_style_getter_for_stimulus_merger
@@ -177,7 +177,7 @@ module Poetry
 
       def test_hash_style_setter_for_classname_merger
         config = Poetry::Core::Config.new
-        custom_merger = Poetry::Core::CSS::Merger.new
+        custom_merger = Poetry::Core::CSS::TailwindMerger.new
         config[:classname_merger] = custom_merger
 
         assert_same custom_merger, config[:classname_merger]
@@ -209,13 +209,13 @@ module Poetry
 
       def test_method_and_hash_setters_are_equivalent
         config = Poetry::Core::Config.new
-        custom_merger = Poetry::Core::CSS::Merger.new
+        custom_merger = Poetry::Core::CSS::TailwindMerger.new
 
         config.classname_merger = custom_merger
 
         assert_same custom_merger, config[:classname_merger]
 
-        another_merger = Poetry::Core::CSS::Merger.new
+        another_merger = Poetry::Core::CSS::TailwindMerger.new
         config[:classname_merger] = another_merger
 
         assert_same another_merger, config.classname_merger
@@ -264,7 +264,7 @@ module Poetry
         config2 = Poetry::Core::Config.new
 
         original_merger2 = config2.classname_merger
-        custom_merger = Poetry::Core::CSS::Merger.new
+        custom_merger = Poetry::Core::CSS::TailwindMerger.new
         config1.classname_merger = custom_merger
 
         assert_same custom_merger, config1.classname_merger
@@ -327,7 +327,7 @@ module Poetry
 
       def test_custom_classname_merger_can_be_used
         config = Poetry::Core::Config.new
-        custom_merger = Poetry::Core::CSS::Merger.new
+        custom_merger = Poetry::Core::CSS::TailwindMerger.new
         config.classname_merger = custom_merger
 
         result = config.classname_merger.merge("p-4", "rounded")

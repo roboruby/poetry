@@ -5,9 +5,9 @@ require "test_helper"
 module Poetry
   module Core
     module CSS
-      class MergerTest < Minitest::Test
+      class TailwindMergerTest < Minitest::Test
         def setup
-          @merger = Merger.new
+          @merger = TailwindMerger.new
         end
 
         def test_merges_and_resolves_tailwind_conflicts
@@ -26,7 +26,7 @@ module Poetry
         end
 
         def test_cache_is_bounded_fifo
-          limit = Merger::CACHE_LIMIT
+          limit = TailwindMerger::CACHE_LIMIT
           (limit + 10).times { |i| @merger.merge("p-#{i}") }
           cache = @merger.instance_variable_get(:@cache)
 
