@@ -21,7 +21,7 @@ module Poetry
       #
       # @example Basic usage with default template
       #   class ButtonPreview < Poetry::Core::Preview::Base
-      #     # Uses default template at app/views/plus/preview.html.erb
+      #     # Uses the default template (poetry/core/preview)
       #     def default
       #       render_component(text: "Click me")
       #     end
@@ -76,28 +76,7 @@ module Poetry
         # - A preview-level shared template
         #
         # @api public
-        # DEFAULT_TEMPLATE = "plus/preview/component"
         DEFAULT_TEMPLATE = "poetry/core/preview"
-
-        # Make sure view components errors are loaded
-        begin
-          require "view_component/errors"
-        rescue LoadError
-          # Older ViewComponent versions may not ship this file; it is optional.
-        end
-
-        # Exception class used when a preview template cannot be found.
-        #
-        # ViewComponent renamed this error class across versions. This constant
-        # provides compatibility by selecting the correct error class for the
-        # installed ViewComponent version.
-        #
-        # @api private
-        MISSING_TEMPLATE_ERROR = if ViewComponent.const_defined?(:MissingPreviewTemplateError)
-                                   ViewComponent::MissingPreviewTemplateError
-                                 else
-                                   ViewComponent::PreviewTemplateError
-                                 end
 
         # @api private
         def self.included(base)
@@ -176,13 +155,13 @@ module Poetry
           #   # 1. ViewComponent default (e.g., test/components/previews/button_preview/primary.html.erb)
           #   # 2. test/components/previews/button_preview/previews/primary.html.erb
           #   # 3. test/components/previews/button_preview/preview.html.erb
-          #   # 4. app/views/plus/preview.html.erb (default)
+          #   # 4. the default template (poetry/core/preview)
           #
           # @note The method searches across all configured preview_paths
           # @note Supports any template handler (erb, haml, slim, etc.)
           def preview_example_template_path(example)
             super
-          rescue MISSING_TEMPLATE_ERROR
+          rescue ViewComponent::MissingPreviewTemplateError
             # Look for example-specific template: preview_name/previews/example.html.*
             has_example_preview = preview_paths.find do |path|
               Dir.glob(File.join(path, preview_name, "previews", "#{example}.html.*")).any?

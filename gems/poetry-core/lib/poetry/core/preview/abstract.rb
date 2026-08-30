@@ -108,7 +108,10 @@ module Poetry
           #   ViewComponent::Preview.all
           #   # => [ButtonPreview, CardPreview] (BasePreview excluded)
           def all
-            load_previews if descendants.reject(&:abstract_class?).empty?
+            # Loading delegates to Sidecarable#load_previews when present
+            # (poetry's engine wires both onto ViewComponent::Preview);
+            # standalone, already-loaded descendants are filtered as-is.
+            load_previews if respond_to?(:load_previews) && descendants.reject(&:abstract_class?).empty?
             descendants.reject(&:abstract_class?)
           end
         end

@@ -2,7 +2,10 @@
     component passed by Preview::Base#render_component, with its content
     block, inside the preview's configured container class. %>
 <div class="<%= defined?(container_class) && container_class.presence || "p-4" %>">
-  <% if defined?(content_block) && content_block %>
+  <% if !defined?(component) || component.nil? %>
+    <%# The build error surfaces instead of crashing on render(nil). %>
+    <p class="text-sm text-destructive"><%= (defined?(error) && error) || "preview component could not be built" %></p>
+  <% elsif defined?(content_block) && content_block %>
     <%= render(component, &content_block) %>
   <% else %>
     <%= render(component) %>

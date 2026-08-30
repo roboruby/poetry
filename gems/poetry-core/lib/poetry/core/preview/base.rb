@@ -17,8 +17,12 @@ module Poetry
       # - Automatic component class inference from preview class name
       # - Template rendering support with custom layouts
       # - Container class configuration with inheritance
-      # - Lookbook display parameters integration
       # - Convenient shortcut methods for rendering components
+      #
+      # Theme and mode switching in Lookbook is a LAYOUT concern, not a
+      # preview-class one: the preview layout reads
+      # `lookbook_display(:theme)` / `lookbook_display(:mode)` and stamps
+      # classes on <html>; components stay theme-agnostic by construction.
       #
       # @example Basic usage
       #   class ButtonPreview < Poetry::Core::Preview::Base
@@ -45,14 +49,6 @@ module Poetry
       #     def warning
       #       component = AlertComponent.new(type: :warning, dismissible: true)
       #       render_component(component)
-      #     end
-      #   end
-      #
-      # @example Accessing Lookbook theme
-      #   class ThemeAwarePreview < Poetry::Core::Preview::Base
-      #     def default
-      #       theme = current_theme # Gets current Lookbook theme
-      #       render_component(theme: theme)
       #     end
       #   end
       #
@@ -224,49 +220,6 @@ module Poetry
                       end
 
           render_with(component: component, content_block: block)
-        end
-
-        # Retrieves Lookbook display parameters from the current request.
-        #
-        # This method accesses display parameters set by Lookbook (such as theme, viewport, etc.)
-        # by accessing the controller from the request store or thread local storage.
-        #
-        # @return [Hash] the Lookbook display parameters, or empty hash if not available
-        # @example
-        #   def default
-        #     params = lookbook_display_params
-        #     # => { theme: "dark", viewport: "mobile" }
-        #   end
-        def lookbook_display_params
-          # Try to get the controller from Rails request store
-          if defined?(RequestStore) && RequestStore.store[:controller]
-            RequestStore.store[:controller].params.dig(:lookbook, :display) || {}
-          elsif Thread.current[:__view_component_preview_controller__]
-            Thread.current[:__view_component_preview_controller__].params.dig(:lookbook, :display) || {}
-          else
-            {}
-          end
-        end
-
-        # Returns the current Lookbook theme.
-        #
-        # This is a convenience wrapper around lookbook_display_params that specifically
-        # retrieves the theme parameter, useful for creating theme-aware preview examples.
-        #
-        # @return [String, nil] the current theme name, or nil if not set
-        # @example
-        #   def default
-        #     case current_theme
-        #     when "dark"
-        #       render_component(bg_color: "bg-gray-900")
-        #     when "light"
-        #       render_component(bg_color: "bg-white")
-        #     else
-        #       render_component
-        #     end
-        #   end
-        def current_theme
-          lookbook_display_params[:theme]
         end
       end
     end
