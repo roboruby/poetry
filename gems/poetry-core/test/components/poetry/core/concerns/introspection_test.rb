@@ -229,10 +229,14 @@ module Poetry
           refute entries[:builders].key?(:divider), "no builder declared means no surface"
         end
 
-        def test_x_component_full_surface
-          styles = Poetry::Core::X::Component.prop_definitions[:styles]
+        def test_required_styles_carry_the_flag_through_the_projection
+          klass = Class.new(Poetry::Core::Component) do
+            style :tone, default: :gray, required: true, variants: %i[gray red]
+            style :size, default: :small, required: true, variants: %i[small large]
+          end
+          styles = klass.prop_definitions[:styles]
 
-          assert_equal %i[color mode shape size], styles.map { |s| s[:name] }.sort
+          assert_equal %i[size tone], styles.map { |s| s[:name] }.sort
           assert(styles.all? { |s| s[:required] })
         end
 

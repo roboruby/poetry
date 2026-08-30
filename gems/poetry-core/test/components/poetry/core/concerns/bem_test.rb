@@ -31,16 +31,18 @@ module Poetry
         end
 
         def test_bem_block_derives_from_component_path
-          assert_equal "poetry-core-x", Poetry::Core::X::Component.new.bem_block
+          assert_equal "poetry-core-box", Poetry::Core::Box::Component.new.bem_block
         end
 
         def test_bem_emits_block_plus_value_modifiers
-          bem = Poetry::Core::X::Component.new(color: :red, size: :small).bem
+          chip = Chip::Component.new(color: :red)
+          bem = chip.bem
 
-          assert_includes bem, "poetry-core-x"
-          assert_includes bem, "poetry-core-x--color-red"
-          assert_includes bem, "poetry-core-x--size-small"
-          assert_includes bem, "poetry-core-x--mode-light" # default value still names its modifier
+          assert_includes bem, chip.bem_block
+          assert_includes bem, "#{chip.bem_block}--color-red"
+          # A defaulted VALUE variant still names its modifier (booleans
+          # are presence modifiers - false emits nothing).
+          assert_includes Chip::Component.new(outlined: true).bem, "#{chip.bem_block}--color-gray"
         end
 
         def test_boolean_styles_are_presence_modifiers
@@ -51,7 +53,9 @@ module Poetry
         end
 
         def test_bem_element
-          assert_equal "poetry-core-x__icon", Poetry::Core::X::Component.new.bem(:icon)
+          chip = Chip::Component.new
+
+          assert_equal "#{chip.bem_block}__icon", chip.bem(:icon)
         end
 
         def test_css_mode_tailwind_is_the_default

@@ -177,7 +177,7 @@ module Poetry
         catalog = Poetry::Core::Check::Catalog.from_registry(Poetry::Core.root)
 
         assert_equal [], catalog.stimulus_wiring("poetry/core/nope")
-        assert_kind_of Array, catalog.stimulus_wiring("poetry/core/x")
+        assert_kind_of Array, catalog.stimulus_wiring("poetry/core/box")
       end
 
       def test_a_charts_component_helper_maps_to_its_path_in_a_merged_catalog

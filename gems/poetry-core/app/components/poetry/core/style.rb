@@ -113,7 +113,7 @@ module Poetry
         end
 
         # The sibling component class by convention
-        # (Poetry::Core::X::Style -> Poetry::Core::X::Component).
+        # (Poetry::Core::Dot::Style -> Poetry::Core::Dot::Component).
         #
         # @return [Class, nil]
         def component_class
@@ -123,7 +123,7 @@ module Poetry
         end
 
         # The BEM block this dictionary belongs to, derived from the sibling
-        # component ("poetry/core/x" -> "poetry-core-x").
+        # component ("poetry/core/dot" -> "poetry-core-dot").
         #
         # @return [String, nil]
         def bem_block

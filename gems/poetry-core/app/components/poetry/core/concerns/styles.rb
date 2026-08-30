@@ -293,7 +293,7 @@ module Poetry
         end
 
         # The component's BEM block name - the stable, framework-agnostic
-        # class contract of the token IR ("poetry/core/x" -> "poetry-core-x").
+        # class contract of the token IR ("poetry/core/dot" -> "poetry-core-dot").
         #
         # @return [String]
         def bem_block

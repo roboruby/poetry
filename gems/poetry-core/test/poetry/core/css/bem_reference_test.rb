@@ -6,29 +6,41 @@ module Poetry
   module Core
     module CSS
       class BemReferenceTest < Minitest::Test
+        # A dictionary exercising base, empty and valued variants, and a
+        # compound rule - the reference generator's whole surface.
+        module Fixture
+          class Style < Poetry::Core::Style
+            base "shrink-0"
+            variant :mode, light: "", dark: ""
+            variant :size, small: "size-3", medium: "size-3.5"
+            variant :color, red: "stroke-red-600/50"
+            compound({ color: :red, mode: :dark }, "stroke-red-400 group-hover:stroke-red-300")
+          end
+        end
+
         def reference_css
-          BemReference.new(Poetry::Core::X::Style).css
+          BemReference.new(Fixture::Style, block: "bem-fixture").css
         end
 
         def test_header_carries_the_capsule_digest
-          assert_includes reference_css, "capsule #{Poetry::Core::X::Style.capsule}"
+          assert_includes reference_css, "capsule #{Fixture::Style.capsule}"
         end
 
         def test_root_and_modifier_selectors_document_their_utilities
           css = reference_css
 
-          assert_includes css, ".poetry-core-x { /* tailwind-equivalent: shrink-0 */ }"
-          assert_includes css, ".poetry-core-x--size-small { /* tailwind-equivalent: size-3 */ }"
+          assert_includes css, ".bem-fixture { /* tailwind-equivalent: shrink-0 */ }"
+          assert_includes css, ".bem-fixture--size-small { /* tailwind-equivalent: size-3 */ }"
         end
 
         def test_compound_rules_chain_modifier_selectors
           assert_includes reference_css,
-                          ".poetry-core-x--color-red.poetry-core-x--mode-dark " \
+                          ".bem-fixture--color-red.bem-fixture--mode-dark " \
                           "{ /* tailwind-equivalent: stroke-red-400 group-hover:stroke-red-300 */ }"
         end
 
         def test_empty_utilities_are_documented_not_dropped
-          assert_includes reference_css, ".poetry-core-x--mode-light { /* (no default styles) */ }"
+          assert_includes reference_css, ".bem-fixture--mode-light { /* (no default styles) */ }"
         end
 
         def test_digest_is_deterministic_and_content_sensitive

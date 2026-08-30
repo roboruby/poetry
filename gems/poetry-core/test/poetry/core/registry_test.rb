@@ -18,6 +18,25 @@ module Poetry
         end
       end
 
+      # A styled probe with a sidecar dictionary: the introspected-surface
+      # fields (styles, bem_block, capsule) need a component that carries
+      # them.
+      module StyleProbe
+        class Component < Poetry::Core::Component
+          style :tone, default: :sky, required: true, variants: %i[sky rose]
+          part "swatch", "The probe's one part"
+
+          def call
+            content_tag(:span, content, class: css)
+          end
+        end
+
+        class Style < Poetry::Core::Style
+          base "inline-flex"
+          variant :tone, sky: "bg-sky-100", rose: "bg-rose-100"
+        end
+      end
+
       # use_stimulus declarations feed the registry's controllers section
       # directly (the constant scan remains for unmigrated components).
       module DeclaredProbe
@@ -58,7 +77,7 @@ module Poetry
       def registry
         # Explicit component list: descendant discovery inside the test suite
         # would pick up test-defined probe components.
-        Registry.new(components: [Poetry::Core::X::Component, Poetry::Core::Generic::Component])
+        Registry.new(components: [Poetry::Core::Box::Component, StyleProbe::Component])
       end
 
       # Defines a probe whose const_source_location is a REAL file with
@@ -72,7 +91,7 @@ module Poetry
       end
 
       def test_entries_are_keyed_by_component_path
-        assert_equal %w[poetry/core/generic poetry/core/x], registry.entries.keys.sort
+        assert_equal %w[poetry/core/box poetry/core/registry_test/style_probe], registry.entries.keys.sort
       end
 
       def test_controllers_come_from_use_stimulus_declarations
@@ -93,26 +112,26 @@ module Poetry
         assert_equal "poetry--core--accordion#toggle", tool["executes"]
         assert_equal ["value"], tool.dig("inputSchema", "required")
         assert_equal({ "readOnlyHint" => false, "untrustedContentHint" => false }, tool["annotations"])
-        refute registry.entries.fetch("poetry/core/x").key?("tools")
+        refute registry.entries.fetch("poetry/core/box").key?("tools")
       end
 
       def test_entry_carries_the_introspected_surface
-        entry = registry.entries.fetch("poetry/core/x")
+        entry = registry.entries.fetch("poetry/core/registry_test/style_probe")
 
-        assert_equal "Poetry::Core::X::Component", entry["class_name"]
-        assert_equal "poetry-core-x", entry["bem_block"]
-        color = entry["styles"].find { |style| style["name"] == "color" }
+        assert_equal "Poetry::Core::RegistryTest::StyleProbe::Component", entry["class_name"]
+        assert_equal "poetry-core-registry_test-style_probe", entry["bem_block"]
+        tone = entry["styles"].find { |style| style["name"] == "tone" }
 
-        assert_includes color["variants"], "indigo"
-        assert_equal "indigo", color["default"]
-        assert_equal Poetry::Core::X::Style.capsule, entry["capsule"]
+        assert_includes tone["variants"], "sky"
+        assert_equal "sky", tone["default"]
+        assert_equal StyleProbe::Style.capsule, entry["capsule"]
       end
 
       def test_identity_is_false_for_components_that_never_mint
-        entry = registry.entries.fetch("poetry/core/x")
+        entry = registry.entries.fetch("poetry/core/box")
 
         assert entry.key?("identity"), "the derived fact must be emitted, not just absent"
-        refute entry["identity"], "X's family never reaches poetry_instance_id"
+        refute entry["identity"], "Box's family never reaches poetry_instance_id"
       end
 
       def test_identity_is_absent_when_the_class_source_reaches_the_funnel
@@ -184,7 +203,7 @@ module Poetry
         refute_includes yaml, "!ruby", "symbols must be stringified for language-agnostic consumers"
         parsed = YAML.safe_load(yaml)
 
-        assert parsed["components"].key?("poetry/core/x")
+        assert parsed["components"].key?("poetry/core/box")
       end
 
       def test_generate_and_verify_round_trip
@@ -218,7 +237,7 @@ module Poetry
           },
           "poetry_widget_group" => {}
         }
-        with_helpers = Registry.new(components: [Poetry::Core::X::Component], helpers: contracts)
+        with_helpers = Registry.new(components: [Poetry::Core::Box::Component], helpers: contracts)
         parsed = YAML.safe_load(with_helpers.to_yaml)
 
         assert_equal %w[poetry_widget_addon poetry_widget_group], parsed["helpers"].keys
@@ -234,7 +253,7 @@ module Poetry
           "data-index" => { "title" => "Data index", "description" => "A records screen.",
                             "components" => %w[badge table], "template" => "blocks/data_index.html.erb" }
         }
-        with_blocks = Registry.new(components: [Poetry::Core::X::Component], blocks: blocks)
+        with_blocks = Registry.new(components: [Poetry::Core::Box::Component], blocks: blocks)
         parsed = YAML.safe_load(with_blocks.to_yaml)
 
         assert_equal %w[badge table], parsed.dig("blocks", "data-index", "components")
@@ -243,11 +262,11 @@ module Poetry
       end
 
       def test_requires_content_is_emitted_when_declared_and_absent_otherwise
-        entries = Registry.new(components: [ContentProbe::Component, Poetry::Core::X::Component]).entries
+        entries = Registry.new(components: [ContentProbe::Component, Poetry::Core::Box::Component]).entries
         probe = entries.fetch(ContentProbe::Component.component_path)
 
         assert_equal "the probe body", probe["requires_content"]
-        refute entries.fetch("poetry/core/x").key?("requires_content"),
+        refute entries.fetch("poetry/core/box").key?("requires_content"),
                "no declaration means no requirement claimed"
       end
 

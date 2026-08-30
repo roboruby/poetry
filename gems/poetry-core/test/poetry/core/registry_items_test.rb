@@ -8,48 +8,67 @@ module Poetry
     class RegistryItemsTest < Minitest::Test
       # Real components: core's own registry over its own source tree.
       def core_items(dependencies: {})
-        registry = Registry.new(components: [Poetry::Core::X::Component, Poetry::Core::Generic::Component])
+        registry = Registry.new(components: [Poetry::Core::Box::Component])
         RegistryItems.new(registry: YAML.safe_load(registry.to_yaml), root: Poetry::Core.root,
                           gem_name: "poetry-core", gem_version: Poetry::Core::VERSION,
                           dependencies: dependencies)
       end
 
       def test_component_items_match_the_shadcn_item_schema
-        item = core_items.item("x")
+        item = core_items.item("box")
 
         assert_equal RegistryItems::ITEM_SCHEMA, item["$schema"]
-        assert_equal "x", item["name"]
+        assert_equal "box", item["name"]
         assert_equal "registry:component", item["type"]
-        assert_equal "X", item["title"]
+        assert_equal "Box", item["title"]
         assert_equal "poetry-core", item.dig("meta", "gem")
         assert_equal "runtime-gem", item.dig("meta", "provided")
-        assert_equal "Poetry::Core::X::Component", item.dig("meta", "class_name")
+        assert_equal "Poetry::Core::Box::Component", item.dig("meta", "class_name")
         # The part contract rides meta - /r consumers see the
         # DOM-verified styling surface without fetching source.
-        assert_equal "icon", item.dig("meta", "parts", 0, "name")
+        assert_equal "box", item.dig("meta", "parts", 0, "name")
       end
 
       def test_component_files_carry_real_source_with_mirrored_targets
-        file = core_items.item("x")["files"].find { |entry| entry["path"].end_with?("component.rb") }
+        file = core_items.item("box")["files"].find { |entry| entry["path"].end_with?("component.rb") }
 
-        assert_equal "app/components/poetry/core/x/component.rb", file["path"]
+        assert_equal "app/components/poetry/core/box/component.rb", file["path"]
         assert_equal file["path"], file["target"]
         assert_equal Poetry::Core.root.join(file["path"]).read, file["content"]
       end
 
       def test_curated_dependencies_emit_as_kebab_registry_dependencies
-        item = core_items(dependencies: { "x" => %w[generic] }).item("x")
-
-        assert_equal %w[generic], item["registryDependencies"]
-        assert_empty core_items.item("generic")["registryDependencies"]
+        synthetic_items(dependencies: { "tag" => %w[dot] }) do |items|
+          assert_equal %w[dot], items.item("tag")["registryDependencies"]
+          assert_empty items.item("dot")["registryDependencies"]
+        end
       end
 
       def test_names_are_sorted_and_collision_checked
-        assert_equal %w[generic x], core_items.names
+        synthetic_items { |items| assert_equal %w[dot tag], items.names }
+      end
+
+      # Two synthetic components on a throwaway root: the multi-item
+      # behaviors (ordering, curated dependencies) without a second real
+      # core component to ship.
+      def synthetic_items(dependencies: {})
+        Dir.mktmpdir do |root|
+          entries = {}
+          %w[dot tag].each do |name|
+            path = "poetry/core/#{name}"
+            dir = File.join(root, "app/components", path)
+            FileUtils.mkdir_p(dir)
+            File.write(File.join(dir, "component.rb"), "# #{name} probe source\n")
+            entries[path] = { "class_name" => "Poetry::Core::#{name.capitalize}::Component" }
+          end
+          yield RegistryItems.new(registry: { "components" => entries }, root: root,
+                                  gem_name: "poetry-core", gem_version: Poetry::Core::VERSION,
+                                  dependencies: dependencies)
+        end
       end
 
       def test_summaries_strip_content_but_keep_paths_and_targets
-        summary = core_items.summaries.find { |entry| entry["name"] == "x" }
+        summary = core_items.summaries.find { |entry| entry["name"] == "box" }
 
         refute_empty summary["files"]
         summary["files"].each do |file|
