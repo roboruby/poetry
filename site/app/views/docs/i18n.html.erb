@@ -57,9 +57,13 @@
         attributes:
           order:
             due_on: "Fecha de entrega"
+      poetry_form:
+        hints:
+          order:
+            due_on: "Formato: AAAA-MM-DD"
 
-    # The label localizes with zero view changes:
-    #   form.field(:due_on)  # label from Order.human_attribute_name(:due_on)
+    # Label and hint localize with zero view changes:
+    #   form.field(:due_on)  # label via human_attribute_name, hint via poetry_form.hints
   CODE
 %>
 
@@ -78,14 +82,14 @@
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <h2 id="catalogue">The shipped catalogue</h2>
       <p>
-        Every built-in interface string - accessible names like Close and
+        The built-in interface strings - accessible names like Close and
         Clear selection, empty and loading states, screen-reader counts -
-        resolves through <code>I18n.t</code> under the <code>poetry</code>
+        resolve through <code>I18n.t</code> under the <code>poetry</code>
         namespace, one family per key group:
         <code>poetry.&lt;component&gt;.&lt;key&gt;</code>. The catalogue
         ships in poetry-ui's <code>config/locales/en.yml</code> and loads
         through the standard engine convention; that file is the complete
-        key list, and pluralization and <code>%{interpolation}</code>
+        <code>poetry.*</code> key list, and pluralization and <code>%{interpolation}</code>
         follow I18n's own rules.
       </p>
     <% end %>
@@ -100,8 +104,8 @@
         redefining a key overrides it - per key, not per file. The same
         mechanism adds a language: ship the <code>poetry.*</code> keys for
         the new locale, and enable fallbacks so a key you have not
-        translated yet reads the shipped English instead of raising a
-        missing-translation error.
+        translated yet reads the shipped English instead of rendering a
+        translation-missing marker.
       </p>
     <% end %>
     <%= poetry_code_block(code: override_source, language: "yaml", label: "Override, or a new locale") %>
@@ -115,14 +119,25 @@
         Strings that carry meaning in your product - labels, placeholders,
         empty-state prose, filter captions - are options, not library
         keys: <code>label:</code>, <code>placeholder:</code>,
-        <code>empty_text:</code>, <code>filter_label:</code>,
-        <code>hint:</code>. Their defaults are English conveniences for a
+        <code>empty_text:</code>, <code>filter_label:</code>. Their
+        defaults are English conveniences for a
         zero-config start (DatePicker's <code>"Pick a date"</code>); a
         localized app passes its own translations at the call site, with
         Rails' usual template-scoped <code>t(".key")</code> lookup.
       </p>
     <% end %>
     <%= poetry_code_block(code: copy_source, language: "ruby", label: "Localized call sites") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Components you author on <code>Poetry::Core::Component</code>
+        speak relative lookup too: <code>t(".title")</code> resolves under
+        a scope derived from the class name
+        (<code>admin.alert_component.title</code>), and assigning
+        ViewComponent's own attribute in the class -
+        <code>self.virtual_path = "view_components/admin/alert"</code> -
+        reshapes that scope when you want a designed keyspace.
+      </p>
+    <% end %>
   </section>
 
   <section class="flex flex-col gap-4">
@@ -133,11 +148,12 @@
         from <code>human_attribute_name</code>, so they localize through
         the <code>activerecord.attributes</code> keys you already
         maintain; validation messages arrive through Active Model's own
-        I18n chain. <code>hint:</code> and <code>placeholder:</code> stay
-        explicit options. Apps migrating with poetry-simple_form keep
-        their existing <code>simple_form.*</code> label, hint, and
-        placeholder keys working - the bridge reads them as a fallback
-        chain.
+        I18n chain. Hints and placeholders resolve from locale files too:
+        <code>poetry_form.hints.&lt;model&gt;.&lt;attribute&gt;</code>
+        (then a <code>defaults</code> rung), falling back to the same
+        keys under <code>simple_form.*</code> - a migrating app's
+        existing locale files keep working - with <code>hint:</code> and
+        <code>placeholder:</code> arguments overriding both.
       </p>
     <% end %>
     <%= poetry_code_block(code: form_source, language: "yaml", label: "Model-layer keys") %>

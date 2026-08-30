@@ -237,7 +237,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 108
+          "line": 107
         },
         {
           "name": "component_module",
@@ -259,7 +259,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 97
+          "line": 96
         },
         {
           "name": "component_path",
@@ -281,7 +281,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 88
+          "line": 87
         },
         {
           "name": "component_title",
@@ -303,7 +303,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 118
+          "line": 117
         },
         {
           "name": "config",
@@ -320,7 +320,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 77
+          "line": 76
         },
         {
           "name": "internal_component!",
@@ -342,7 +342,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 67
+          "line": 66
         },
         {
           "name": "required_content",
@@ -360,7 +360,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 142
+          "line": 141
         },
         {
           "name": "requires_content",
@@ -390,7 +390,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 135
+          "line": 134
         },
         {
           "name": "attributes",
@@ -407,7 +407,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 265
+          "line": 264
         },
         {
           "name": "classnames",
@@ -437,7 +437,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 337
+          "line": 336
         },
         {
           "name": "component_data_attributes",
@@ -454,7 +454,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 155
+          "line": 154
         },
         {
           "name": "dom_id_token",
@@ -480,7 +480,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 371
+          "line": 370
         },
         {
           "name": "ensure_content!",
@@ -497,7 +497,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 175
+          "line": 174
         },
         {
           "name": "html_attributes",
@@ -519,7 +519,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 291
+          "line": 290
         },
         {
           "name": "initialize",
@@ -557,7 +557,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 214
+          "line": 213
         },
         {
           "name": "persisted?",
@@ -574,7 +574,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 186
+          "line": 185
         },
         {
           "name": "poetry_instance_id",
@@ -599,7 +599,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 315
+          "line": 314
         },
         {
           "name": "script_json",
@@ -625,7 +625,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 357
+          "line": 356
         },
         {
           "name": "slot_data_attributes",
@@ -651,7 +651,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 164
+          "line": 163
         },
         {
           "name": "stable_key",
@@ -669,7 +669,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 304
+          "line": 303
         },
         {
           "name": "to_html",
@@ -691,7 +691,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 384
+          "line": 383
         }
       ],
       "constants": [
@@ -699,11 +699,6 @@
           "name": "BASE_COMPONENT_CLASS",
           "value": "Poetry::Core::Component",
           "docstring": "Where ancestor walks stop: declarations above the base component\nclass are nobody's."
-        },
-        {
-          "name": "DEFAULT_NAMESPACE",
-          "value": "\"view_components\"",
-          "docstring": "The top-level locale key component translations live under when a\nclass sets no i18n_namespace of its own."
         },
         {
           "name": "DESCRIPTION_LIMIT",
@@ -3337,189 +3332,6 @@
       "examples": [],
       "file": "lib/poetry/core/contrib/wrapped_helper.rb",
       "methods": [],
-      "constants": []
-    },
-    {
-      "path": "Poetry::Core::Contrib::TranslationHelper",
-      "type": "module",
-      "superclass": null,
-      "docstring": "Provides internationalization (I18n) support for ViewComponents by managing\ntranslation namespaces and scopes.\n\nThis module enables components to have scoped translations following Rails'\nI18n conventions, making it easier to organize and manage component-specific\ntranslations in your locale files.",
-      "examples": [
-        {
-          "title": "Basic usage",
-          "text": "class MyButton::Component < ViewComponent::Base\n  include Poetry::Core::Contrib::TranslationHelper\n\n  def initialize(text: nil)\n    @text = text\n  end\n\n  def call\n    content_tag :button, @text || t('.default_text')\n  end\nend\n\n# In your locale file (en.yml):\n# en:\n#   view_components:\n#     my_button:\n#       default_text: \"Click me\""
-        },
-        {
-          "title": "Custom namespace",
-          "text": "class Admin::Alert::Component < ViewComponent::Base\n  include Poetry::Core::Contrib::TranslationHelper\n  self.i18n_namespace = \"admin_components\"\nend\n\n# Translations will be looked up under admin_components.admin.alert"
-        },
-        {
-          "title": "Custom scope",
-          "text": "class Shared::Modal::Component < ViewComponent::Base\n  include Poetry::Core::Contrib::TranslationHelper\n  self.i18n_scope = %w[ui modals]\nend\n\n# Translations will be looked up under view_components.ui.modals"
-        }
-      ],
-      "file": "lib/poetry/core/contrib/translation_helper.rb",
-      "methods": [
-        {
-          "name": "included",
-          "scope": "class",
-          "group": null,
-          "signature": "included(base)",
-          "docstring": "Extends the including class with {ClassMethods}.",
-          "params": [
-            {
-              "name": "base",
-              "types": [
-                "Class"
-              ],
-              "text": "the including component class"
-            }
-          ],
-          "return": {
-            "types": [
-              "void"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "lib/poetry/core/contrib/translation_helper.rb",
-          "line": 56
-        }
-      ],
-      "constants": [
-        {
-          "name": "DEFAULT_NAMESPACE",
-          "value": "\"view_components\"",
-          "docstring": "The top-level locale key component translations live under when a\nclass sets no i18n_namespace of its own."
-        }
-      ]
-    },
-    {
-      "path": "Poetry::Core::Contrib::TranslationHelper::ClassMethods",
-      "type": "module",
-      "superclass": null,
-      "docstring": "The class-level i18n surface: namespace, scope, and the virtual\npath Rails' I18n lookups resolve `t('.key')` against.",
-      "examples": [],
-      "file": "lib/poetry/core/contrib/translation_helper.rb",
-      "methods": [
-        {
-          "name": "contrib_i18n_scope",
-          "scope": "instance",
-          "group": null,
-          "signature": "contrib_i18n_scope",
-          "docstring": "Returns the I18n scope derived from the component's class name.\n\nThe scope is automatically generated by removing the \"::Component\" suffix,\nconverting to snake_case, and splitting by \"/\". This creates a hierarchical\npath structure for organizing translations.",
-          "params": [],
-          "return": {
-            "types": [
-              "Array<String>"
-            ],
-            "text": "array of scope segments"
-          },
-          "examples": [
-            {
-              "title": "",
-              "text": "class Admin::Dashboard::Alert::Component < ViewComponent::Base\n  include Poetry::Core::Contrib::TranslationHelper\nend\n\nAdmin::Dashboard::Alert::Component.contrib_i18n_scope\n# => [\"admin\", \"dashboard\", \"alert\"]"
-            }
-          ],
-          "file": "lib/poetry/core/contrib/translation_helper.rb",
-          "line": 115
-        },
-        {
-          "name": "i18n_namespace",
-          "scope": "instance",
-          "group": null,
-          "signature": "i18n_namespace",
-          "docstring": "Returns the I18n namespace for the component.\n\nThe namespace is the top-level key under which component translations\nare organized. If not explicitly set, it inherits from the superclass\nor defaults to \"view_components\".",
-          "params": [],
-          "return": {
-            "types": [
-              "String"
-            ],
-            "text": "the I18n namespace"
-          },
-          "examples": [
-            {
-              "title": "",
-              "text": "class Button::Component < ViewComponent::Base\n  include Poetry::Core::Contrib::TranslationHelper\nend\n\nButton::Component.i18n_namespace\n# => \"view_components\""
-            },
-            {
-              "title": "With custom namespace",
-              "text": "class Alert::Component < ViewComponent::Base\n  include Poetry::Core::Contrib::TranslationHelper\n  self.i18n_namespace = \"components\"\nend\n\nAlert::Component.i18n_namespace\n# => \"components\""
-            }
-          ],
-          "file": "lib/poetry/core/contrib/translation_helper.rb",
-          "line": 89
-        },
-        {
-          "name": "i18n_namespace=",
-          "scope": "instance",
-          "group": null,
-          "signature": "i18n_namespace=(value)",
-          "docstring": "Sets the attribute i18n_namespace",
-          "params": [
-            {
-              "name": "value",
-              "types": [],
-              "text": "the value to set the attribute i18n_namespace to."
-            }
-          ],
-          "return": null,
-          "examples": [],
-          "file": "lib/poetry/core/contrib/translation_helper.rb",
-          "line": 63
-        },
-        {
-          "name": "i18n_scope=",
-          "scope": "instance",
-          "group": null,
-          "signature": "i18n_scope=(val)",
-          "docstring": "Sets a custom I18n scope for the component.\n\nUse this to override the automatically generated scope with a custom\ntranslation path structure.",
-          "params": [
-            {
-              "name": "val",
-              "types": [
-                "Array<String>"
-              ],
-              "text": "array of scope segments"
-            }
-          ],
-          "return": null,
-          "examples": [
-            {
-              "title": "",
-              "text": "class MyButton::Component < ViewComponent::Base\n  include Poetry::Core::Contrib::TranslationHelper\n  self.i18n_scope = %w[buttons primary]\nend\n\n# Translations will be looked up under view_components.buttons.primary"
-            }
-          ],
-          "file": "lib/poetry/core/contrib/translation_helper.rb",
-          "line": 136
-        },
-        {
-          "name": "virtual_path",
-          "scope": "instance",
-          "group": null,
-          "signature": "virtual_path",
-          "docstring": "Returns the complete virtual path for I18n lookups.\n\nThe virtual path combines the namespace and scope into a dot-separated\nstring that represents the full translation key prefix. This is used\nby Rails' I18n system to look up translations.",
-          "params": [],
-          "return": {
-            "types": [
-              "String"
-            ],
-            "text": "the complete virtual path"
-          },
-          "examples": [
-            {
-              "title": "",
-              "text": "class Admin::Alert::Component < ViewComponent::Base\n  include Poetry::Core::Contrib::TranslationHelper\nend\n\nAdmin::Alert::Component.virtual_path\n# => \"view_components.admin.alert\""
-            },
-            {
-              "title": "With custom namespace and scope",
-              "text": "class Modal::Component < ViewComponent::Base\n  include Poetry::Core::Contrib::TranslationHelper\n  self.i18n_namespace = \"ui\"\n  self.i18n_scope = %w[dialogs modal]\nend\n\nModal::Component.virtual_path\n# => \"ui.dialogs.modal\""
-            }
-          ],
-          "file": "lib/poetry/core/contrib/translation_helper.rb",
-          "line": 167
-        }
-      ],
       "constants": []
     },
     {
