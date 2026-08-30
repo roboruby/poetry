@@ -9,15 +9,16 @@ Gem::Specification.new do |spec|
   spec.email = ["mattsolt@gmail.com"]
 
   spec.summary = "Poetry's agent surfaces: the MCP server and the WebMCP runtime."
-  spec.description = "The agent-interop gem of the poetry component library: the boot-free " \
-                     "poetry-agent MCP server (the component contract over Model Context Protocol) " \
-                     "and the WebMCP runtime that registers rendered components' declared tools with " \
-                     "in-browser agents (document.modelContext), with declarative forms, an " \
-                     "origin-trial middleware, and safe-by-default, opt-in registration."
-  spec.homepage = "https://github.com/roboruby/poetry-agent"
+  spec.description = "The agent-interop gem of Poetry, the AI-native UI component library: the boot-free " \
+                     "poetry-agent MCP server (the component contract over Model Context Protocol) and the WebMCP " \
+                     "runtime that registers rendered components' declared tools with in-browser agents " \
+                     "(document.modelContext), with declarative forms, an origin-trial middleware, and " \
+                     "safe-by-default, opt-in registration."
+  spec.homepage = "https://poetryui.com"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.3.0"
-  spec.metadata["homepage_uri"] = "https://github.com/roboruby/poetry-agent"
+  spec.metadata["homepage_uri"] = "https://poetryui.com"
+  spec.metadata["documentation_uri"] = "https://poetryui.com/docs"
   spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry-agent"
   spec.metadata["changelog_uri"] = "https://github.com/roboruby/poetry-agent/blob/main/CHANGELOG.md"
   spec.metadata["bug_tracker_uri"] = "https://github.com/roboruby/poetry-agent/issues"
