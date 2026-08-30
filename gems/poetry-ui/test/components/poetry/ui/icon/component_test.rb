@@ -65,7 +65,7 @@ module Poetry
         def test_an_unknown_icon_raises_in_local_envs
           # Rails.env "test" is local - dev/test keep the raise, so bad
           # literals die loudly where they're written.
-          error = assert_raises(ArgumentError) do
+          error = assert_raises(Poetry::Core::IconNotFound) do
             render_inline(Component.new(name: :"definitely-not-an-icon"))
           end
 
@@ -83,7 +83,7 @@ module Poetry
           # The fallback's path data (render_inline normalizes self-closing
           # tags, so compare path geometry, not raw markup).
           assert_includes html, "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"
-          assert_equal [:"definitely-not-an-icon", :lucide, ArgumentError], seen
+          assert_equal [:"definitely-not-an-icon", :lucide, Poetry::Core::IconNotFound], seen
         ensure
           config.raise_on_missing_icon = nil
           config.on_missing_icon = nil
@@ -94,7 +94,7 @@ module Poetry
           config.raise_on_missing_icon = false
           config.icon_fallback = nil
 
-          error = assert_raises(ArgumentError) do
+          error = assert_raises(Poetry::Core::IconNotFound) do
             render_inline(Component.new(name: :"definitely-not-an-icon"))
           end
 
@@ -109,7 +109,7 @@ module Poetry
           config.raise_on_missing_icon = false
           config.icon_fallback = :"also-not-an-icon"
 
-          error = assert_raises(ArgumentError) do
+          error = assert_raises(Poetry::Core::IconNotFound) do
             render_inline(Component.new(name: :"definitely-not-an-icon"))
           end
 

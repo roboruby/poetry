@@ -60,7 +60,7 @@ module Poetry
         # concern). A nil or itself-missing fallback re-raises the original.
         def resolved_markup
           icon_set.fetch(name)
-        rescue ArgumentError => e
+        rescue Poetry::Core::IconNotFound => e
           raise if raise_on_missing_icon?
 
           config = self.class.config
@@ -70,7 +70,7 @@ module Poetry
 
           begin
             icon_set.fetch(fallback)
-          rescue ArgumentError
+          rescue Poetry::Core::IconNotFound
             raise e
           end
         end
