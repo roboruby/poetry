@@ -15,6 +15,10 @@ module ActiveModel
 
       def test_cast_raises_for_non_symbolizable
         assert_raises(ArgumentError) { Symbol.new.cast(Object.new) }
+
+        error = assert_raises(ArgumentError) { Symbol.new.cast(123) }
+
+        assert_includes error.message, "123 can't become a Symbol"
       end
 
       def test_registered_as_active_model_type
