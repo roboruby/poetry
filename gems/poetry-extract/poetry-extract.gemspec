@@ -38,7 +38,7 @@ Gem::Specification.new do |spec|
   end
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "poetry-core"
+  spec.add_dependency "poetry-core", "= #{Poetry::Extract::VERSION}"
   # The fetch layer's service SDK - an honest, pinned hard dependency:
   # installing this gem IS the opt-in to the external service. Pinned
   # because the SDK's source repo has vanished; bump deliberately.
