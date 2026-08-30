@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = ">= 3.3.0"
   spec.files = Dir["lib/**/*", "README.md", "LICENSE.txt", "CHANGELOG.md"]
 
-  spec.add_dependency "poetry-ui"
+  spec.add_dependency "poetry-ui", "= #{Poetry::SimpleForm::VERSION}"
   spec.add_dependency "simple_form", ">= 5.3", "< 6"
   spec.metadata["homepage_uri"] = "https://github.com/roboruby/poetry-simple_form"
   spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry-simple_form"
