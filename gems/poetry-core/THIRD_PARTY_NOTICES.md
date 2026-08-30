@@ -6,6 +6,36 @@ projects below (MIT unless an entry says otherwise). Vendored assets keep their 
 `vendor/tw-animate-css/LICENSE`); the license texts for adapted files
 are reproduced here. Adapted files carry a source URL in their header.
 
+## shadcn/ui
+
+- Source: https://github.com/shadcn-ui/ui (MIT)
+- Vendored: vendor/shadcn-tailwind/tailwind.css (the bridge variants from packages/shadcn/src/tailwind.css, at the commit in vendor/shadcn-tailwind/VENDORED_COMMIT; license beside it)
+- Adapted: tokens/tokens.dtcg.json (the semantic role token set follows shadcn/ui v4's neutral theme variables, with the AA contrast deltas noted inline), tokens/aliases.css (the Radix-namespaced content variable names the source's class strings read); lib/poetry/core/registry_items.rb targets the shadcn registry-item JSON schema
+
+```
+MIT License
+
+Copyright (c) 2023 shadcn
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
 ## fox_tail
 
 - Source: https://github.com/jefawks3/fox_tail (MIT)
