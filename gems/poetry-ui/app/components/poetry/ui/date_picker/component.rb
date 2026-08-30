@@ -19,6 +19,14 @@ module Poetry
       #     name: "due_on", label: "Due date", value: Date.new(2026, 6, 5)
       #   )
       class Component < Poetry::Core::Component
+        # Composition: every DatePicker renders a Popover, whose minted
+        # trigger/content ids ride this DOM - a cached or looped
+        # DatePicker without identity freezes them, so the stable-identity
+        # warning is the point. Forces the registry identity fact past
+        # the source derivation (no funnel call in this family
+        # itself); note key: does not yet reach the inner Popover.
+        IDENTITY = true
+
         # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "name: is REQUIRED - the chosen date posts as an ISO string (the Calendar's hidden input).",

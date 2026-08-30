@@ -199,6 +199,7 @@ components:
       div.
     - destructive announces assertively (role=alert) - reserve it for errors, not
       emphasis.
+    identity: false
     parts:
     - name: alert
       description: The callout root - role rides the variant (destructive announces
@@ -394,6 +395,7 @@ components:
     - 'Pass ratio: as a string fraction (''16/9'', ''1/1'') - Ruby''s 16/9 is integer
       division (1).'
     - The child fills the box itself (size-full object-cover on an image).
+    identity: false
     parts:
     - name: aspect-ratio
       description: The ratio-locked box - the content block fills it
@@ -492,6 +494,7 @@ components:
       actions) - don't also wrap the chip in a link.
     - error state needs a with_description explaining the failure - the tint alone
       is not the message.
+    identity: false
     parts:
     - name: attachment
       description: The chip root - the server-owned upload lifecycle rides here (flip
@@ -761,6 +764,7 @@ components:
       not in the badge.
     - Stack avatars with poetry_avatar_group; the overflow count is poetry_avatar_group_count.
     requires_content: the initials fallback
+    identity: false
     parts:
     - name: avatar
       description: Root span (role=img carrying the accessible name) - fallback, image,
@@ -823,6 +827,7 @@ components:
       never a solid destructive pill inside a soft status column (design lint flags
       the mix).'
     requires_content: the visible status text
+    identity: false
     parts:
     - name: badge
       description: 'The status pill itself (a <span>; a real <a> when href: is given)
@@ -892,6 +897,7 @@ components:
       the default chevron RTL-flips, a custom glyph is used as given.'
     required_slots:
       item: at least one item
+    identity: false
     parts:
     - name: breadcrumb
       description: The <nav> landmark (aria-label=breadcrumb) around the trail
@@ -978,6 +984,7 @@ components:
     - 'Reactions REQUIRE label: (the accessible name for the cluster).'
     - Inside a Message, alignment follows the Message's align - do not set both.
     requires_content: the message content
+    identity: false
     parts:
     - name: bubble
       description: The message surface root - variant and alignment ride here
@@ -1102,6 +1109,7 @@ components:
       - trailing
       options:
       - loading
+    identity: false
     parts:
     - name: button
       description: 'The rendered control itself (<button>, or <a> when tag: :a) -
@@ -1165,6 +1173,7 @@ components:
     - A visual divider between members is poetry_button_group_separator, not a styled
       border.
     requires_content: its member controls
+    identity: false
     parts:
     - name: button-group
       description: The role=group root - its selectors join ANY data-slot children
@@ -1270,6 +1279,7 @@ components:
       years around the initial month.'
     - 'week_numbers: true adds the ISO week column (each row''s Thursday decides the
       number).'
+    identity: false
     parts:
     - name: calendar
       description: Root wrapper - the calendar controller (navigation, selection,
@@ -1463,6 +1473,7 @@ components:
     - The card body is the content block; use CardAction for the header-corner control.
     - 'The title renders as a real heading (h3 default) - set title_tag: to fit the
       page outline.'
+    identity: false
     parts:
     - name: card
       description: Root container - the vertical flex stack
@@ -1565,6 +1576,7 @@ components:
       -scroll-ml-1" - the gutter padding and its snap scroll-margin move together.'
     required_slots:
       item: at least one slide
+    identity: false
     parts:
     - name: carousel
       description: The role=region root - the controller (paging, button state, arrow
@@ -1890,6 +1902,7 @@ components:
       renders plain (same markup, no colors). Inline code stays plain <code> typography.
     - 'highlight_lines: takes 1-based line numbers; line numbers are CSS counters
       and never pollute copied text.'
+    identity: false
     parts:
     - name: code-block
       description: Root - the syntax-palette surface (cn-code-block)
@@ -3941,6 +3954,7 @@ components:
     - The block is the placeholder (a Skeleton renders when absent); failure shows
       a retryable error card automatically - never hand-wire loading or error states
       around it.
+    identity: false
     parts:
     - name: deferred
       description: The <turbo-frame> root - src is armed at connect(); failure is
@@ -4995,6 +5009,7 @@ components:
       page outline.'
     - 'media_variant: :icon gives the rounded muted icon tile; wrap a poetry_icon
       in with_media.'
+    identity: false
     parts:
     - name: empty
       description: The empty-state root - the centered header and content stack
@@ -5094,6 +5109,7 @@ components:
     - 'orientation: :responsive stacks by default and flips label-left / control-right
       once its poetry_field_group container passes the md mark - the settings-page
       recipe (it needs that FieldGroup ancestor to measure against).'
+    identity: false
     parts:
     - name: field
       description: The quartet's grid root - label, control, hint, and error stack
@@ -5153,6 +5169,7 @@ components:
       (the choice-group form).'
     - 'Field''s orientation: :responsive is container-driven: it needs a FieldGroup
       ancestor to measure against - without one it stays stacked.'
+    identity: false
     parts:
     - name: field-group
       description: The stacking container - fields, fieldsets, and separators render
@@ -5173,6 +5190,7 @@ components:
       (that is poetry_separator).
     - Pass a block for the inline caption form ("Or continue with") - the caption
       sits on the line, backed by the page background.
+    identity: false
     parts:
     - name: field-separator
       description: The divider row - a decorative Separator drawn across it
@@ -5220,6 +5238,7 @@ components:
     - 'hint: is the muted description under the legend; per-field hints stay on the
       fields.'
     - Stack the fields inside with poetry_field_group - never hand-spaced flex columns.
+    identity: false
     parts:
     - name: field-set
       description: The <fieldset> root - legend, optional hint, then the fields
@@ -5318,6 +5337,7 @@ components:
       - compose prompt:/hint: copy instead of adding your own list markup.'
     - In a Field, prefer form.file_input (the builder wires id/label/errors); the
       bare component suits standalone dropzones.
+    identity: false
     parts:
     - name: file-input
       description: The dropzone root - wraps the zone, the selection list, and clear
@@ -5631,6 +5651,7 @@ components:
     - 'Icons are decorative by default (aria-hidden); pass label: when the icon stands
       alone.'
     - Never inline raw <svg> markup where an icon exists - use poetry_icon.
+    identity: false
     parts:
     - name: icon
       description: 'The <svg> root itself - the vendored icon markup renders inside;
@@ -5693,6 +5714,7 @@ components:
     - 'mask: formats as the user types (''(999) 999-9999''; 9=digit, a=letter, A=upper,
       *=alnum, #=sign/digit, \\ escapes, ? makes the rest optional) - the MASKED text
       submits; read data-raw for the bare value.'
+    identity: false
     parts:
     - name: input
       description: The <input> element itself - no inner anatomy; error state is aria-invalid
@@ -5733,6 +5755,7 @@ components:
     - The group is a surface, not a label - the control still needs its Label/Field
       pairing.
     requires_content: its control + addons
+    identity: false
     parts:
     - name: input-group
       description: The bordered group surface (role=group) - wears the border, the
@@ -5962,6 +5985,7 @@ components:
       in the content column after the description.
     - 'media_variant: :icon for a glyph, :image for a thumbnail (sized/rounded automatically).'
     - 'A clickable row is tag: :a with href: - never wrap an Item in a bare <a>.'
+    identity: false
     parts:
     - name: item
       description: 'The row root (a div by default; tag: :a for a clickable row) -
@@ -6014,6 +6038,7 @@ components:
     - Kbd renders a real <kbd> - the key text is the content block (⌘, Esc, Ctrl).
     - For a chord (⌘+K) render one Kbd per key inside an inline-flex row.
     requires_content: the key text
+    identity: false
     parts:
     - name: kbd
       description: The <kbd> element itself - the key text renders here
@@ -6034,6 +6059,7 @@ components:
     agent_rules:
     - Every control gets a Label wired via for_id - placeholder text is never the
       label.
+    identity: false
     parts:
     - name: label
       description: The <label> element itself - for= rides it (dropped in group mode,
@@ -6076,6 +6102,7 @@ components:
       class.'
     - 'external: true handles target/rel safely - never hand-write target=_blank.'
     requires_content: the visible link text
+    identity: false
     parts:
     - name: link
       description: 'The rendered <a> - the whole component; current: marks it aria-current=page'
@@ -6130,6 +6157,7 @@ components:
       glyph, with_icon { } for other media (a Spinner mid-run).'
     - 'Use variant: :separator for date/section breaks; :border under pinned headers.'
     requires_content: the marker label
+    identity: false
     parts:
     - name: marker
       description: 'The divider/status root - the label is real announced content
@@ -6829,6 +6857,7 @@ components:
       in the header.
     - Timestamps and delivery state belong in the footer slot (it lifts the avatar
       automatically).
+    identity: false
     parts:
     - name: message
       description: 'The chat-row root - avatar plus a content column; align: :end
@@ -6936,6 +6965,7 @@ components:
     - History loads PREPEND into the content element - the controller preserves the
       reading position.
     - Never nest a second scroll container inside the viewport.
+    identity: false
     parts:
     - name: message-scroller
       description: The transcript root the controller drives - runtime scroll state
@@ -7056,6 +7086,7 @@ components:
       block; the list itself stays read-only vocabulary.
     required_slots:
       item: 'at least one item (label: plus the value block)'
+    identity: false
     parts:
     - name: metadata-list
       description: The <dl> root - the record's fact sheet
@@ -7120,6 +7151,7 @@ components:
     - 'value_text: replaces the visible readout verbatim ("3 of 4 seats"); without
       it the readout shows the percentage of the RANGE. No aria-valuetext - ARIA 1.2
       deprecated it on role=meter; aria-valuenow carries the value.'
+    identity: false
     parts:
     - name: meter
       description: Root (role=meter, aria-value*, and the accessible name); label,
@@ -7184,6 +7216,7 @@ components:
       name.'
     - 'The fast path is options: [[label, value], ...] + selected:; a content block
       overrides it.'
+    identity: false
     parts:
     - name: native-select-wrapper
       description: Relative shell around the select and the chevron - dims the pair
@@ -7708,6 +7741,7 @@ components:
       g poetry:pagination (no argument = detect and install an adapter for each loaded
       gem) and keep calling paginate / poetry_pagy_nav / will_paginate(renderer: PoetryLinkRenderer)
       - never hand-wire poetry_pagination around a paginator gem.'
+    identity: false
     parts:
     - name: pagination
       description: The <nav> landmark (role=navigation, aria-label) around the page
@@ -7979,6 +8013,7 @@ components:
     - 'value: is the current progress (0..max:, default max 100); the component computes
       the width.'
     - For an UNKNOWN duration use Spinner, not Progress - this bar is determinate.
+    identity: false
     parts:
     - name: progress
       description: Root (role=progressbar, aria-value* and the accessible name) -
@@ -8555,6 +8590,7 @@ components:
     - This is a NATIVE scroll surface - never bolt scroll JS onto it; use MessageScroller
       for chat transcripts.
     requires_content: what scrolls
+    identity: false
     parts:
     - name: scroll-area
       description: The bounding wrapper - size it with classes; content decides the
@@ -9266,6 +9302,7 @@ components:
     agent_rules:
     - 'A purely visual divider stays decorative (the default): aria-hidden, role absent.'
     - 'Set decorative: false only when the divide is semantically meaningful (role=separator).'
+    identity: false
     parts:
     - name: separator
       description: 'The divider itself - decorative (aria-hidden) by default, role=separator
@@ -9708,6 +9745,7 @@ components:
       no content of its own.
     - Mark the live region that will replace it (aria-busy on the container), not
       the skeleton.
+    identity: false
     parts:
     - name: skeleton
       description: The pulsing placeholder box itself - sized entirely by utility
@@ -9947,6 +9985,7 @@ components:
     - Spinner announces itself (role=status + aria-label) - never a bare spinning
       div.
     - 'Set label: for the loading context (''Saving…''); the default is ''Loading''.'
+    identity: false
     parts:
     - name: spinner
       description: 'The spinning <svg> itself (the lucide loader-circle) - announces
@@ -10011,6 +10050,7 @@ components:
       belong in the content ('$45,231', '99.98%').
     - 'A Stat is not a chart: a trend over time goes in the media slot (or use poetry-charts).'
     requires_content: the metric value
+    identity: false
     parts:
     - name: stat
       description: The stat root - a label/value/delta/description column
@@ -10194,6 +10234,7 @@ components:
       region (tabindex=0 + role=region) and a keyboard-reachable region needs a name
       (the ScrollArea rule).'
     requires_content: the table sections (poetry_table_* helpers)
+    identity: false
     parts:
     - name: table
       description: The semantic <table> element itself - the root the part helpers
@@ -10523,6 +10564,7 @@ components:
     - Use Textarea for free text; Input for single-line; do not bolt a JS autosizer
       on (auto-grow is CSS).
     - Do not set native required - required flows as aria-required via Field.
+    identity: false
     parts:
     - name: textarea
       description: The <textarea> element itself - value renders as content; auto-grow
@@ -10724,6 +10766,7 @@ components:
       - a Timeline records, it never navigates.'
     required_slots:
       item: at least one item (title:, with the description as its block)
+    identity: false
     parts:
     - name: timeline
       description: The <ol> root - the event sequence
@@ -10839,6 +10882,7 @@ components:
     - 'Toasts are supplementary: never the only place an outcome is recorded.'
     required_slots:
       title: the message
+    identity: false
     parts:
     - name: toast
       description: The notification item itself (<li>, role=status) - variant, open
@@ -10948,6 +10992,7 @@ components:
       persistent toasts.
     - Server round-trips keep using turbo_stream.poetry_toast - this trigger is for
       purely client-side moments (copied, undone, queued).
+    identity: false
     parts:
     - name: toast-trigger
       description: The stamping button - press clones the template's toast into the
@@ -11024,6 +11069,7 @@ components:
       the region.
     - Do not announce() toast content yourself - the toast controller already does;
       double-announcing is a regression.
+    identity: false
     parts:
     - name: toaster
       description: The toast viewport itself (<ol>, role=region, data-turbo-permanent)
@@ -11112,6 +11158,7 @@ components:
       on failure - a pressed toggle whose effect failed is a lie.
     - Pressed visual is accent - don't override data-pressed colors per-instance (theme-level
       only).
+    identity: false
     parts:
     - name: toggle
       description: The pressed-state <button> - the whole component; aria-pressed
@@ -11249,6 +11296,7 @@ components:
       handle the empty change in the host.
     required_slots:
       item: at least one item
+    identity: false
     parts:
     - name: toggle-group
       description: The role=radiogroup (single) / role=toolbar (multiple) root - the
@@ -11387,6 +11435,7 @@ components:
       locally); place it between separators so the seam reads as a group.
     required_slots:
       button: at least one control (with_button / with_input)
+    identity: false
     parts:
     - name: toolbar
       description: The role=toolbar root - one Tab stop; arrow keys rove across the
@@ -11749,6 +11798,7 @@ components:
     - Wrap a wide table (or any wide block) in a typeset-scroll div inside the prose
       to scroll horizontally instead of compressing.
     requires_content: the rendered prose HTML
+    identity: false
     parts:
     - name: typeset
       description: The prose container - every bare element inside is styled by the
