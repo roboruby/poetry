@@ -10,7 +10,8 @@ this gem never writes one.
 
 ## Gates
 
-- `bundle exec rake` — test + rubocop
+- `bundle exec rake` — the default chain: `test`, `rubocop`, `yard:verify`,
+  `yard:coverage` (every public object documented; floors at 0).
 
 ## The parity doctrine
 
@@ -36,7 +37,16 @@ half-to-even and WILL diverge).
 
 ## Standing rules
 
-The naming hold: never push, publish, or claim gems.
+Releases: versions move in lockstep across the family, with internal
+dependencies pinned exactly (`= VERSION`); bumps happen only on the
+maintainer's explicit go. Publishing runs only through the tag-triggered
+release workflow (OIDC trusted publishing) — never `gem push` by hand. The
+CHANGELOG stays bare until 0.1.0; commit messages carry the record.
+poetry-core rides a local path in the Gemfile only when checked out beside
+this repo; the lockfile is not committed.
+
+Naming: "Poetry" is the product in prose; gem names, constants, and
+identifiers stay as they are.
 
 Third-party code: adapt only from MIT-compatible sources (MIT/ISC/BSD;
 Apache-2.0 carries its notice). Copyleft (GPL/LGPL/AGPL), restricted-use,
