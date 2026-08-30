@@ -175,6 +175,32 @@ module Poetry
         assert_match(/unknown caption_layout/, error.message)
       end
 
+      def test_the_calendar_localizes_weekdays_caption_and_dropdown
+        I18n.backend.store_translations(:xx, date: {
+                                               abbr_day_names: %w[Dom Seg Ter Qua Qui Sex Sab],
+                                               month_names: [nil, "Janeiro", "Fevereiro", "Marco", "Abril", "Maio",
+                                                             "Junho", "Julho", "Agosto", "Setembro", "Outubro",
+                                                             "Novembro", "Dezembro"]
+                                             },
+                                             poetry: { calendar: { month: "Mes", year: "Ano" } })
+        previous = I18n.available_locales
+        I18n.available_locales = previous | [:xx]
+        I18n.with_locale(:xx) do
+          html = render_calendar
+
+          assert_equal %w[Do Se Te Qu Qu Se Sa], html.css('[data-slot="calendar-weekday"]').map(&:text)
+          assert_equal "Junho 2026", html.css('[data-slot="calendar-caption"]').first.text
+
+          dropdown = render_calendar(caption_layout: :dropdown)
+
+          assert_equal "Junho", dropdown.css('[data-slot="calendar-dropdown-value"]').first.text
+          assert_equal "Mes", dropdown.css('[data-calendar-unit="month"] select').first["aria-label"],
+                       "the caption dropdown aria labels ride poetry.calendar.*"
+        end
+      ensure
+        I18n.available_locales = previous if previous
+      end
+
       # -- DatePicker -----------------------------------------------------------
 
       def test_the_date_picker_is_a_popover_wrapping_a_calendar

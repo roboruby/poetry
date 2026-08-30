@@ -196,8 +196,10 @@ module Poetry
         end
 
         # @api private
+        # Two-letter column labels from the locale's abbreviated day
+        # names, rotated to week_start.
         def weekday_labels
-          Date::ABBR_DAYNAMES.rotate(week_start).map { |name| name[0, 2] }
+          I18n.t("date.abbr_day_names").rotate(week_start).map { |name| name[0, 2] }
         end
 
         # @api private
@@ -210,8 +212,11 @@ module Poetry
         def disabled?(date) = (@min && date < @min) || (@max && date > @max)
 
         # @api private
+        # Mirrors the controller's #captionText exactly (localized month
+        # name + year), so server render and client navigation agree in
+        # every locale.
         def caption
-          @month.strftime("%B %Y")
+          "#{month_names_list[@month.month - 1]} #{@month.year}"
         end
 
         # @api private
@@ -219,7 +224,7 @@ module Poetry
 
         # @api private
         def month_options
-          Date::MONTHNAMES.compact.each_with_index.map { |label, index| [label, index + 1] }
+          month_names_list.each_with_index.map { |label, index| [label, index + 1] }
         end
 
         # min:/max: pin the year list when both are given; otherwise ten

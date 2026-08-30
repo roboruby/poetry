@@ -10,8 +10,8 @@
           is what you SEE (aria-hidden - the select carries the value);
           the real select sits invisibly on top. %>
       <div data-slot="calendar-caption" class="<%= css(:caption_dropdowns) %>">
-        <% { "month" => [month_options, @month.month, "Month", Date::MONTHNAMES[@month.month]],
-             "year" => [year_options, @month.year, "Year", @month.year.to_s] }.each do |unit, (options, current, label, text)| %>
+        <% { "month" => [month_options, @month.month, t("poetry.calendar.month"), month_names_list[@month.month - 1]],
+             "year" => [year_options, @month.year, t("poetry.calendar.year"), @month.year.to_s] }.each do |unit, (options, current, label, text)| %>
           <span data-slot="calendar-dropdown" data-calendar-unit="<%= unit %>" class="<%= css(:dropdown_root) %>"
                 <%= tag.attributes(**stimulus_attributes_for(:dropdown)) %>>
             <span data-slot="calendar-caption-label" aria-hidden="true" class="<%= css(:dropdown_label) %>">

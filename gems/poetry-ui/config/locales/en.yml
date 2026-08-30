@@ -2,6 +2,9 @@ en:
   poetry:
     button:
       loading: "Loading…"
+    calendar:
+      month: "Month"
+      year: "Year"
     combobox:
       clear: "Clear selection"
       empty: "No results found."
