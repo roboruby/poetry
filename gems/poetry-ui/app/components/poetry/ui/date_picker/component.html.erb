@@ -3,8 +3,7 @@
     <%= helpers.poetry_input_group do %>
       <%= helpers.poetry_input_group_input(**input_attributes.symbolize_keys) %>
       <%= helpers.poetry_input_group_addon(align: :"inline-end") do %>
-        <%= helpers.poetry_popover(label: label.presence || "Choose date", content_class: "w-auto p-0",
-                                   align: :end) do |popover| %>
+        <%= helpers.poetry_popover(**popover_options, align: :end) do |popover| %>
           <% popover.with_trigger(**input_trigger_options) do %>
             <%= render Poetry::Ui::Icon::Component.new(name: :calendar) %>
           <% end %>
@@ -13,7 +12,7 @@
       <% end %>
     <% end %>
   <% else %>
-    <%= helpers.poetry_popover(label: label.presence || "Choose date", content_class: "w-auto p-0") do |popover| %>
+    <%= helpers.poetry_popover(**popover_options) do |popover| %>
       <% popover.with_trigger(**trigger_options) do %>
         <%= render Poetry::Ui::Icon::Component.new(name: :calendar) %>
         <span class="min-w-0 truncate" <%= tag.attributes(**label_target_attributes) %>><%= formatted %></span>

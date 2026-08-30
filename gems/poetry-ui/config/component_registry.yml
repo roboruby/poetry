@@ -3882,6 +3882,8 @@ components:
       no JS needed.'
     - 'min:/max: bound the selectable range; the label + placeholder are the trigger''s
       text.'
+    - 'key:/id: forwards to the composed Popover - a keyed DatePicker renders cache-stable
+      popover ids.'
     - 'variant: :input renders a text field with a calendar button - typed parseable
       dates re-select the calendar; single mode only.'
     - For an always-visible grid use Calendar directly - DatePicker is the field+popover

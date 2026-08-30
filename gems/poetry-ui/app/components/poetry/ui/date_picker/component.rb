@@ -23,8 +23,9 @@ module Poetry
         # trigger/content ids ride this DOM - a cached or looped
         # DatePicker without identity freezes them, so the stable-identity
         # warning is the point. Forces the registry identity fact past
-        # the source derivation (no funnel call in this family
-        # itself); note key: does not yet reach the inner Popover.
+        # the source derivation (no funnel call in this family itself);
+        # popover_options forwards key:/id: to that Popover, so the
+        # warning's remedy works through the composition.
         IDENTITY = true
 
         # Projected into the registry, llms.txt, and the agent surface.
@@ -32,6 +33,7 @@ module Poetry
           "name: is REQUIRED - the chosen date posts as an ISO string (the Calendar's hidden input).",
           "value: preselects a date (a Date or ISO string) - the trigger shows it formatted, no JS needed.",
           "min:/max: bound the selectable range; the label + placeholder are the trigger's text.",
+          "key:/id: forwards to the composed Popover - a keyed DatePicker renders cache-stable popover ids.",
           "variant: :input renders a text field with a calendar button - typed parseable dates " \
           "re-select the calendar; single mode only.",
           "For an always-visible grid use Calendar directly - DatePicker is the field+popover form."
@@ -190,6 +192,24 @@ module Poetry
           }
         end
 
+        # Options for the composed Popover. Identity forwards: a keyed
+        # (or explicitly-id'd) DatePicker keys the Popover too, so its
+        # minted trigger/content ids are render-stable - the
+        # stable-identity warning's remedy works through the composition.
+        # @api private
+        def popover_options
+          { label: label.presence || "Choose date", content_class: "w-auto p-0",
+            key: popover_key }.compact
+        end
+
+        # The forwarded identity: the caller's key:, or the explicit root
+        # id (render-stable already; the Popover namespaces its own ids
+        # from it, so no duplicate).
+        # @api private
+        def popover_key
+          stable_key || html_attributes["id"].presence
+        end
+
         private
 
         def to_date(value)
@@ -215,6 +235,7 @@ module Poetry
 
         private :range?, :input_variant?, :formatted, :calendar_options, :root_attributes, :trigger_options
         private :label_target_attributes, :input_attributes, :input_trigger_options
+        private :popover_options, :popover_key
       end
     end
   end

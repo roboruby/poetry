@@ -258,6 +258,26 @@ module Poetry
         assert_match(/single-mode/, error.message)
       end
 
+      def test_key_forwards_to_the_composed_popover
+        html = render_inline(DatePicker::Component.new(name: "due_on", key: "due-picker"))
+
+        assert_equal "poetry-popover-due-picker-trigger", html.css('[data-slot="popover-trigger"]').first["id"]
+        assert_equal "poetry-popover-due-picker-content", html.css('[data-slot="popover-content"]').first["id"]
+      end
+
+      def test_an_explicit_root_id_keys_the_composed_popover_too
+        html = render_inline(DatePicker::Component.new(name: "due_on", id: "due-picker"))
+
+        assert_equal "due-picker", html.css('[data-slot="date-picker"]').first["id"]
+        assert_equal "poetry-popover-due-picker-trigger", html.css('[data-slot="popover-trigger"]').first["id"]
+      end
+
+      def test_an_unkeyed_picker_still_mints_random_popover_ids
+        html = render_inline(DatePicker::Component.new(name: "due_on"))
+
+        assert_match(/\Apoetry-popover-\h{16}-trigger\z/, html.css('[data-slot="popover-trigger"]').first["id"])
+      end
+
       def test_the_date_picker_requires_a_name
         error = assert_raises(ArgumentError) { render_inline(DatePicker::Component.new) }
 
