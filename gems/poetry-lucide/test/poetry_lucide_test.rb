@@ -23,7 +23,7 @@ class PoetryLucideTest < Minitest::Test
   end
 
   def test_icon_names_are_traversal_safe
-    assert_raises(ArgumentError) { Poetry::Lucide.set.fetch("../secrets") }
+    assert_raises(Poetry::Core::IconNotFound) { Poetry::Lucide.set.fetch("../secrets") }
     refute_includes Poetry::Lucide.set, "../secrets"
   end
 
