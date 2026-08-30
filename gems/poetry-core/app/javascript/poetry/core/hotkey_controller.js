@@ -21,6 +21,10 @@ export default class extends Controller {
 
   #onKeydown = null
 
+  /**
+   * Arms the window keydown listener when a descriptor is declared (an
+   * empty keys value stays inert).
+   */
   connect() {
     if (this.keysValue === "") return
 
@@ -37,6 +41,7 @@ export default class extends Controller {
     window.addEventListener("keydown", this.#onKeydown)
   }
 
+  /** Disarms the listener. */
   disconnect() {
     if (!this.#onKeydown) return
 

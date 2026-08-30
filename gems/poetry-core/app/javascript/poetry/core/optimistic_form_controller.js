@@ -20,8 +20,11 @@ import { Controller } from "@hotwired/stimulus"
 export default class OptimisticFormController extends Controller {
   static targets = ["template"]
 
-  // Applies every template's stream(s). Rapid resubmits inside the window
-  // cannot stack duplicate clones; the first paint is still immediate.
+  /**
+   * Applies every template's stream(s) - the turbo:submit-start action.
+   * Rapid resubmits inside the window cannot stack duplicate clones; the
+   * first paint is still immediate.
+   */
   apply() {
     const now = Date.now()
     if (this.lastAppliedAt && now - this.lastAppliedAt < 200) return
@@ -32,6 +35,12 @@ export default class OptimisticFormController extends Controller {
     })
   }
 
+  /**
+   * The turbo:submit-end action: appends the authoritative refresh stream
+   * ONLY when the submission failed (the body comment holds the rule).
+   *
+   * @param {CustomEvent} event - detail.success decides
+   */
   reconcile(event) {
     // On success the optimistic paint already reflects the new state (or
     // the server's targeted stream corrected it); only a rejection needs

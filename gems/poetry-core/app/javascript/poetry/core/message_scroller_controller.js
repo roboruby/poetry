@@ -82,6 +82,11 @@ export default class extends Controller {
     scrollMargin: { type: Number, default: 0 }
   }
 
+  /**
+   * Builds the ref bag, wires the viewport listeners and the three
+   * observers, runs the mount pass (rows counted, defaultScrollPosition
+   * applied once), and arms visibility tracking when opted in.
+   */
   connect() {
     // The ref bag, as instance fields.
     this.mode = this.autoScrollValue ? "following-bottom" : "free-scrolling"
@@ -149,6 +154,10 @@ export default class extends Controller {
     this.started = true
   }
 
+  /**
+   * Cancels every frame/timer, disconnects the observers, and unwires the
+   * viewport listeners (the body comment holds the stale-id rule).
+   */
   disconnect() {
     // Cancel and NULL every frame/timer id - a stale non-null id after a
     // Turbo cache restore / morph reconnect makes the scheduler think a
@@ -189,13 +198,19 @@ export default class extends Controller {
     viewport.removeEventListener("keydown", this.onKeydown)
   }
 
-  // Source: a defaultScrollPosition prop change re-arms the one-shot apply.
+  /**
+   * Stimulus value callback (source: a defaultScrollPosition prop change
+   * re-arms the one-shot apply).
+   */
   defaultScrollPositionValueChanged() {
     if (!this.started) return
     this.defaultScrollPositionApplied = false
   }
 
-  // Source: the autoScroll layout effect - re-pin if we were following.
+  /**
+   * Stimulus value callback (source: the autoScroll layout effect) -
+   * re-pin if we were following.
+   */
   autoScrollValueChanged() {
     if (!this.started) return
 
@@ -209,14 +224,21 @@ export default class extends Controller {
 
   // --- viewport handlers (wired in connect; public for outlet callers) ---
 
+  /**
+   * The viewport's scroll handler: commits scrollable state, schedules a
+   * visibility sync, and re-captures the prepend anchor.
+   */
   syncAfterScroll() {
     this.#commitScrollState()
     this.#scheduleVisibilitySync()
     this.#capturePrependAnchor()
   }
 
-  // A deliberate gesture releases auto-follow, turn-anchoring, AND an
-  // in-flight programmatic jump so re-pinning never fights the reader.
+  /**
+   * The wheel/touchmove handler: a deliberate gesture releases
+   * auto-follow, turn-anchoring, AND an in-flight programmatic jump so
+   * re-pinning never fights the reader.
+   */
   userScrollIntent() {
     if (
       this.mode === "following-bottom" ||
@@ -228,14 +250,24 @@ export default class extends Controller {
     }
   }
 
+  /**
+   * The viewport's keydown handler: scroll keys count as deliberate
+   * intent.
+   *
+   * @param {KeyboardEvent} event
+   */
   keydownIntent(event) {
     if (USER_SCROLL_KEYS.has(event.key)) this.userScrollIntent()
   }
 
   // --- actions / commands (the useMessageScroller hook surface) ---
 
-  // Jump-button action. No-op while inactive; blurs so focus is not stranded
-  // on a control about to inert itself.
+  /**
+   * The jump button's click action. No-op while inactive; blurs so focus
+   * is not stranded on a control about to inert itself.
+   *
+   * @param {MouseEvent} event
+   */
   jump(event) {
     const button = event.currentTarget
 
@@ -249,18 +281,37 @@ export default class extends Controller {
     else this.#scrollToEnd({ behavior })
   }
 
-  // Callable as a Stimulus action (options via params) or directly with an
-  // options object (outlet callers).
+  /**
+   * Scrolls to the end - callable as a Stimulus action (options via
+   * params) or directly with an options object (outlet callers).
+   *
+   * @param {Event | Object} [eventOrOptions] - behavior: "auto" | "smooth"
+   * @returns {boolean} whether a scroll was issued
+   */
   scrollToEnd(eventOrOptions = {}) {
     return this.#scrollToEnd(this.#optionsFrom(eventOrOptions))
   }
 
+  /**
+   * Scrolls to the start (scrollToEnd's calling conventions).
+   *
+   * @param {Event | Object} [eventOrOptions]
+   * @returns {boolean} whether a scroll was issued
+   */
   scrollToStart(eventOrOptions = {}) {
     return this.#scrollToStart(this.#optionsFrom(eventOrOptions))
   }
 
-  // scrollToMessage("id", options) programmatically, or as an action with
-  // data-...-message-id-param (align/behavior/scrollMargin params pass through).
+  /**
+   * scrollToMessage("id", options) programmatically, or as an action with
+   * data-...-message-id-param (align/behavior/scrollMargin params pass
+   * through).
+   *
+   * @param {Event | string} eventOrId
+   * @param {Object} [options] - align / behavior / scrollMargin
+   * @returns {boolean} true when scrolled - or queued (a miss on an empty
+   *   transcript queues the request for the next content change)
+   */
   scrollToMessage(eventOrId, options) {
     if (typeof eventOrId === "string") return this.#scrollToMessage(eventOrId, options)
 

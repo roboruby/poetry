@@ -25,6 +25,11 @@ export default class DeferredController extends Controller {
   static targets = ["placeholder", "error"]
   static values = { src: String }
 
+  /**
+   * Wires the three failure listeners, subscribes the before-cache reset,
+   * and arms src LAST (the boot contract above: no fetch can predate the
+   * instance).
+   */
   connect() {
     // Three failure paths, one state. turbo:before-fetch-response is the
     // load-bearing one: for 4xx/5xx frame responses Turbo 8 fires NO
@@ -45,6 +50,7 @@ export default class DeferredController extends Controller {
     if (!this.element.getAttribute("src")) this.element.setAttribute("src", this.srcValue)
   }
 
+  /** Unwires the listeners and the before-cache subscription. */
   disconnect() {
     this.element.removeEventListener("turbo:before-fetch-response", this.#onResponse)
     this.element.removeEventListener("turbo:frame-missing", this.#failed)
@@ -53,6 +59,11 @@ export default class DeferredController extends Controller {
     this.#unsubscribeBeforeCache = null
   }
 
+  /**
+   * The retry action: back to the placeholder posture, then reload -
+   * Turbo's FrameElement#reload when the runtime is present, else the
+   * re-set-src fallback (the same signal Turbo reacts to).
+   */
   retry() {
     this.#reset()
 

@@ -32,18 +32,25 @@ export default class TableSelectionController extends Controller {
   #anchor = null
   #onClear = () => this.#clearAll()
 
+  /** Wires the ActionBar's clear-selection listener and reflects silently. */
   connect() {
     this.element.addEventListener("poetry:data-table:clear-selection", this.#onClear)
     this.#reflect({ announceCount: false })
   }
 
+  /** Unwires the clear-selection listener. */
   disconnect() {
     this.element.removeEventListener("poetry:data-table:clear-selection", this.#onClear)
   }
 
-  // change on a ROW checkbox (data-action). Shift ranges ride the click
-  // that produced the change (shiftKey survives on the change event's
-  // originating input via the captured state below).
+  /**
+   * Each row checkbox's change action. Shift ranges ride the click that
+   * produced the change (change events carry no modifiers - press
+   * captures the gesture): a shift-toggle sets anchor..target to the
+   * ANCHOR row's state; a plain toggle re-anchors.
+   *
+   * @param {Event} event
+   */
   toggled(event) {
     const checkbox = event.target
 
@@ -57,13 +64,22 @@ export default class TableSelectionController extends Controller {
     this.#reflect()
   }
 
-  // pointerdown/keydown seam: remember whether the NEXT change was a
-  // shift-gesture (change events themselves carry no modifiers).
+  /**
+   * The pointerdown/keydown seam: remembers whether the NEXT change was
+   * a shift-gesture (change events themselves carry no modifiers).
+   *
+   * @param {PointerEvent | KeyboardEvent} event
+   */
   press(event) {
     this.#shiftRange = event.shiftKey === true
   }
 
-  // change on the select-all checkbox.
+  /**
+   * The select-all checkbox's change action: fans its new state out to
+   * every ENABLED row and clears the anchor.
+   *
+   * @param {Event} event
+   */
   toggleAll(event) {
     const target = event.target.checked
 

@@ -54,6 +54,10 @@ export default class SliderController extends Controller {
   #trackRect = null
   #gestureChanged = false
 
+  /**
+   * Adopts the value (the Value, else the server-rendered aria-valuenow),
+   * projects, and primes the hidden inputs silently.
+   */
   connect() {
     this.#values = this.valueValue.length > 0
       ? this.valueValue.map(Number)
@@ -64,12 +68,18 @@ export default class SliderController extends Controller {
     this.#connected = true
   }
 
+  /** Ends any in-flight gesture without committing. */
   disconnect() {
     this.#connected = false
     this.#endGesture({ commit: false })
   }
 
-  // Controllable state: a host (outlet / Turbo Stream) may own the value.
+  /**
+   * Stimulus value callback - controllable state: a host (outlet / Turbo
+   * Stream) may own the value.
+   *
+   * @param {number[]} value
+   */
   valueValueChanged(value) {
     if (!this.#connected || this.#same(value)) return
 
@@ -80,6 +90,14 @@ export default class SliderController extends Controller {
 
   // --- the keyboard path (action: keydown->...#keydown on each thumb) ---
 
+  /**
+   * Each thumb's keydown action: the APG map (arrows step, Shift/Page =
+   * large step, Home/End to the thumb's EFFECTIVE bounds) under the
+   * orientation x RTL x inverted resolution; every change commits (Radix
+   * parity).
+   *
+   * @param {KeyboardEvent} event
+   */
   keydown(event) {
     if (this.#disabled()) return
 
@@ -136,6 +154,13 @@ export default class SliderController extends Controller {
 
   // --- the pointer path (action: pointerdown->...#pointerdown on the root) ---
 
+  /**
+   * The root's pointerdown action: jumps the NEAREST thumb to the pointer
+   * (ties to the later index), reads the track box once, and starts the
+   * window-level drag; pointerup commits.
+   *
+   * @param {PointerEvent} event
+   */
   pointerdown(event) {
     if (this.#disabled() || this.thumbTargets.length === 0) return
 
@@ -230,6 +255,12 @@ export default class SliderController extends Controller {
 
   // --- the programmatic controllable-state surface ---
 
+  /**
+   * The programmatic controllable-state surface: must keep the thumb
+   * count; changes commit.
+   *
+   * @param {number | number[]} value
+   */
   setValue(value) {
     const values = (Array.isArray(value) ? value : [value]).map(Number)
 

@@ -45,6 +45,11 @@ export default class DismissableController extends Controller {
   #unsubscribeBeforeCache = null
   #onPointerdown = (event) => this.#handlePointerdown(event)
 
+  /**
+   * Registers on the layer stack, wires the capture-phase Escape and
+   * pointerdown listeners, subscribes the before-cache dismissal, and
+   * takes the body scrim when configured.
+   */
   connect() {
     DismissableController.stack.push(this)
 
@@ -71,6 +76,10 @@ export default class DismissableController extends Controller {
     if (this.disableOutsidePointerEventsValue) this.#enableScrim()
   }
 
+  /**
+   * Leaves the stack and unwires everything, releasing the scrim when
+   * held.
+   */
   disconnect() {
     const index = DismissableController.stack.indexOf(this)
 

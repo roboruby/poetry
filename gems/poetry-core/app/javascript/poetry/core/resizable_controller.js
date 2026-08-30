@@ -29,11 +29,17 @@ export default class ResizableController extends Controller {
 
   #drag = null
 
+  /** Writes the initial aria-value* reflection onto every handle. */
   connect() {
     this.#reflectAll()
   }
 
-  // Action: pointerdown->poetry--core--resizable#dragStart on each handle.
+  /**
+   * Each handle's pointerdown action: begins a drag between the two
+   * adjacent panels (pointer capture holds the gesture).
+   *
+   * @param {PointerEvent} event
+   */
   dragStart(event) {
     if (event.button !== 0 && event.pointerType === "mouse") return
 
@@ -51,6 +57,12 @@ export default class ResizableController extends Controller {
     handle.setPointerCapture(event.pointerId)
   }
 
+  /**
+   * The captured pointermove action: redistributes the two panels by the
+   * drag delta, clamped to both panels' min/max.
+   *
+   * @param {PointerEvent} event
+   */
   dragMove(event) {
     const drag = this.#drag
     if (!drag || event.pointerId !== drag.pointerId) return
@@ -62,14 +74,23 @@ export default class ResizableController extends Controller {
     this.#reflect(drag.handle)
   }
 
+  /**
+   * The pointerup / pointercancel action: ends the drag.
+   *
+   * @param {PointerEvent} event
+   */
   dragEnd(event) {
     if (!this.#drag || event.pointerId !== this.#drag.pointerId) return
 
     this.#drag = null
   }
 
-  // Action: keydown->poetry--core--resizable#keydown on each handle (the
-  // APG window splitter: arrows step, Home/End jump).
+  /**
+   * Each handle's keydown action (the APG window splitter): arrows step
+   * by 5%, Home/End jump the range.
+   *
+   * @param {KeyboardEvent} event
+   */
   keydown(event) {
     const handle = this.#handleFrom(event)
     if (!handle) return

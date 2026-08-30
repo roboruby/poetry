@@ -37,6 +37,10 @@ export default class ToasterController extends Controller {
   #onDismiss = (event) => this.#handleDismiss(event)
   #onStamp = (event) => this.#stamp(event)
 
+  /**
+   * Acquires the announce singleton, wires the hotkey / stamp / dismiss
+   * listeners, and starts the childList reconciler.
+   */
   connect() {
     acquire() // the singleton lives while a toaster is connected
 
@@ -50,6 +54,7 @@ export default class ToasterController extends Controller {
     this.#reconcile()
   }
 
+  /** Unwires everything and releases the announce singleton. */
   disconnect() {
     this.#observer?.disconnect()
     this.#observer = null
@@ -78,9 +83,14 @@ export default class ToasterController extends Controller {
     this.element.append(node.content.cloneNode(true))
   }
 
-  // The hotkey (F8 default, configurable): move focus into the region -
-  // onto the most recent visible toast, else the region itself. The prior
-  // focus is remembered for the dismiss return.
+  /**
+   * The hotkey's landing (F8 default, configurable): moves focus into the
+   * region - onto the most recent visible toast, else the region itself.
+   * The prior focus is remembered for the dismiss return.
+   *
+   * @param {Event} [event] - the window keydown when the hotkey drove it;
+   *   programmatic calls may omit it
+   */
   focusRegion(event) {
     if (event instanceof KeyboardEvent) {
       // The full descriptor grammar + the editing-target rule (the hotkey
@@ -103,7 +113,10 @@ export default class ToasterController extends Controller {
     target.focus()
   }
 
-  // Stack reflow: newest toast = index 0 (the front of the stack).
+  /**
+   * Stack reflow: newest toast = index 0 (the front of the stack),
+   * written as the offset/scale custom property.
+   */
   reflow() {
     const visible = this.#visibleToasts()
 

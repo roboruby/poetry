@@ -30,6 +30,13 @@ export default class extends Controller {
   // panel -> a clear() that ends its data-transitioning window.
   #transitions = new Map()
 
+  /**
+   * Each trigger's click action: toggles its item - single mode closes
+   * the others first; single non-collapsible keeps the open item open.
+   * The change event reports the open values.
+   *
+   * @param {MouseEvent} event
+   */
   toggle(event) {
     const item = event.currentTarget.closest('[data-slot="accordion-item"]')
     if (!item) return
@@ -45,14 +52,20 @@ export default class extends Controller {
     this.dispatch("change", { prefix: EVENT_PREFIX, detail: { values: this.#openItems().map((i) => i.dataset.value) } })
   }
 
+  /**
+   * Reflects the locked-open trigger (aria-disabled) and adopts
+   * data-panel-open onto server-open triggers.
+   */
   connect() {
     this.#reflectDisabled()
     this.#reflectTriggers() // server-open items adopt data-panel-open on connect
   }
 
+  /**
+   * Flushes any in-flight transition window so its timer/listener doesn't
+   * outlive the controller (Turbo teardown, or a test between cases).
+   */
   disconnect() {
-    // Flush any in-flight transition window so its timer/listener doesn't
-    // outlive the controller (Turbo teardown, or a test between cases).
     for (const clear of [...this.#transitions.values()]) clear()
   }
 

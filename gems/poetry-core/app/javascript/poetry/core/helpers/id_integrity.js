@@ -10,6 +10,12 @@
 // signature of the two documented hazards: the same key rendered twice,
 // or sequence-mode collisions across frames/cached fragments.
 
+/**
+ * Scans the live (composed) document for duplicate [id] values.
+ *
+ * @param {ParentNode} [root=document]
+ * @returns {string[]} the duplicated ids, each listed once ("" ignored)
+ */
 export function scanForDuplicateIds(root = document) {
   const seen = new Set()
   const dups = new Set()
@@ -21,10 +27,16 @@ export function scanForDuplicateIds(root = document) {
   return [...dups]
 }
 
-// Installs the scanner on the page's composition events (initial load,
-// Turbo loads, frame loads, morphs, stream insertions - each checked one
-// frame after the event so the DOM has settled). Returns the scan
-// trigger for manual use. `report` overrides the console warning.
+/**
+ * Installs the scanner on the page's composition events (initial load,
+ * Turbo loads, frame loads, morphs, stream insertions - each checked one
+ * frame after the event so the DOM has settled).
+ *
+ * @param {Object} [options]
+ * @param {(dups: string[]) => void} [options.report] - overrides the
+ *   console warning
+ * @returns {() => string[]} the scan trigger, for manual use
+ */
 export function installPoetryIdIntegrityCheck({ report } = {}) {
   const notify = report || ((dups) => {
     console.warn(

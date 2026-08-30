@@ -75,6 +75,11 @@ export default class TooltipController extends Controller {
   #onWillOpen = (event) => this.#handleWillOpen(event)
   #onPointerup = () => { this.#isPointerDown = false }
 
+  /**
+   * Wires the content listeners plus the document-level will-open
+   * listener, and reconciles a server-pinned tooltip (describedby, layer,
+   * scope count catch up; the DOM wins).
+   */
   connect() {
     const content = this.#content()
 
@@ -94,6 +99,11 @@ export default class TooltipController extends Controller {
     }
   }
 
+  /**
+   * Clears the timers, balances the warm-scope count for an open tooltip,
+   * drops the scroll listener, restores portaled content
+   * (drop-never-strand), and unwires everything.
+   */
   disconnect() {
     this.#connected = false
     this.#clearOpenTimer()
@@ -123,7 +133,12 @@ export default class TooltipController extends Controller {
     document.removeEventListener("pointerup", this.#onPointerup)
   }
 
-  // Controllable state: pinned tooltips (Turbo Stream / Outlet ownership).
+  /**
+   * Stimulus value callback - controllable state: pinned tooltips (Turbo
+   * Stream / Outlet ownership).
+   *
+   * @param {boolean} value
+   */
   openValueChanged(value) {
     if (!this.#connected) return
 
@@ -133,8 +148,13 @@ export default class TooltipController extends Controller {
 
   // --- trigger actions: the pointer path (Radix's handlers, ported) ---
 
-  // pointermove, not pointerenter (Radix): opens once per hover via the
-  // hasPointerMoveOpened latch; touch pointerType is EXCLUDED entirely.
+  /**
+   * The trigger's pointermove action (not pointerenter - Radix): opens
+   * once per hover via the latch - instantly when the provider scope is
+   * warm, else after the delay; touch pointerType is EXCLUDED entirely.
+   *
+   * @param {PointerEvent} event
+   */
   pointerMove(event) {
     if (event.pointerType === "touch") return
 
@@ -164,6 +184,12 @@ export default class TooltipController extends Controller {
     }, delay)
   }
 
+  /**
+   * The trigger's pointerleave action: cancels a pending open; with
+   * hoverable content the close waits its grace, else it closes now.
+   *
+   * @param {PointerEvent} [event]
+   */
   pointerLeave(event) {
     if (event?.pointerType === "touch") return
 
@@ -178,9 +204,11 @@ export default class TooltipController extends Controller {
     else this.#scheduleClose()
   }
 
-  // Activating the control dismisses its hint; the pointerdown latch also
-  // suppresses the focus-open until pointerup (pointer users never get a
-  // focus-opened tooltip - Radix-exact).
+  /**
+   * The trigger's pointerdown action: activating the control dismisses
+   * its hint; the latch also suppresses the focus-open until pointerup
+   * (pointer users never get a focus-opened tooltip - Radix-exact).
+   */
   pointerDown() {
     this.#isPointerDown = true
     document.addEventListener("pointerup", this.#onPointerup, { once: true })
@@ -189,6 +217,7 @@ export default class TooltipController extends Controller {
     if (this.#isOpen()) this.#close("trigger-press")
   }
 
+  /** The trigger's click action: an activation dismisses its hint. */
   clickClose() {
     this.#clearOpenTimer()
 
@@ -197,8 +226,10 @@ export default class TooltipController extends Controller {
 
   // --- trigger actions: the keyboard path ---
 
-  // Focus opens INSTANTLY (skipping all delays) - unless the focus was
-  // caused by a pointerdown (the isPointerDown latch).
+  /**
+   * The trigger's focus action: opens INSTANTLY (skipping all delays) -
+   * unless the focus was caused by a pointerdown (the latch).
+   */
   focusOpen() {
     if (this.#isPointerDown) return
     if (this.#isOpen()) return
@@ -206,6 +237,7 @@ export default class TooltipController extends Controller {
     this.#open({ instant: "focus" })
   }
 
+  /** The trigger's blur action: closes (the focus interaction's exit). */
   blurClose() {
     this.#clearOpenTimer()
 

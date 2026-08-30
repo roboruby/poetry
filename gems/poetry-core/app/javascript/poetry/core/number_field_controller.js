@@ -40,6 +40,11 @@ export default class extends Controller {
   #onWheel = null
   #onRelease = null
 
+  /**
+   * Adopts the hidden value, paints the formatted display, reflects the
+   * boundaries, and wires the opt-in wheel plus the window-level release
+   * listeners.
+   */
   connect() {
     this.#value = this.#fromHidden()
     if (this.#value !== null) this.inputTarget.value = this.#format(this.#value)
@@ -55,6 +60,7 @@ export default class extends Controller {
     window.addEventListener("pointercancel", this.#onRelease)
   }
 
+  /** Unwires the wheel/release listeners and stops any repeat. */
   disconnect() {
     if (this.#onWheel) this.inputTarget.removeEventListener("wheel", this.#onWheel)
     window.removeEventListener("pointerup", this.#onRelease)
@@ -64,6 +70,13 @@ export default class extends Controller {
 
   // --- input events -------------------------------------------------------
 
+  /**
+   * The visible input's keydown action: ArrowUp/Down step (Shift = large
+   * step, Alt = small), Home/End jump to the bounds, and printable keys
+   * pass the character gate.
+   *
+   * @param {KeyboardEvent} event
+   */
   keydown(event) {
     if (this.inputTarget.readOnly) return
 
@@ -91,8 +104,11 @@ export default class extends Controller {
     }
   }
 
-  // Text updates freely; the value goes live only while parseable. The
-  // display is NEVER rewritten mid-typing (dirty-text authority).
+  /**
+   * The input action: text updates freely; the value goes live only
+   * while parseable. The display is NEVER rewritten mid-typing
+   * (dirty-text authority).
+   */
   input() {
     const text = this.inputTarget.value
     if (text.trim() === "") {
@@ -103,6 +119,7 @@ export default class extends Controller {
     if (parsed !== null) this.#apply(parsed, { display: false })
   }
 
+  /** The focus action: the first focus parks the caret at the end. */
   focus() {
     if (this.#focusedOnce) return
 
@@ -111,9 +128,12 @@ export default class extends Controller {
     this.inputTarget.setSelectionRange(end, end)
   }
 
-  // Blur is the text commit point: empty clears, unparseable text is left
-  // as typed with no commit, parseable text clamps and normalizes to the
-  // canonical formatted display (never snapped to step - Base UI).
+  /**
+   * The blur action - the text commit point: empty clears, unparseable
+   * text is left as typed with no commit, parseable text clamps and
+   * normalizes to the canonical formatted display (never snapped to step
+   * - Base UI).
+   */
   blur() {
     const text = this.inputTarget.value
     if (text.trim() === "") {
@@ -130,6 +150,13 @@ export default class extends Controller {
 
   // --- steppers -----------------------------------------------------------
 
+  /**
+   * Each stepper's pointerdown action: steps once, then repeats after the
+   * hold delay (mouse focuses the input; touch would pop the software
+   * keyboard).
+   *
+   * @param {PointerEvent} event
+   */
   press(event) {
     if (event.button !== 0 || this.inputTarget.readOnly) return
 
@@ -147,8 +174,13 @@ export default class extends Controller {
     }, START_AUTO_CHANGE_DELAY)
   }
 
-  // Quick touch taps synthesize click without a held pointer - step once,
-  // but never double-step after a handled pointerdown.
+  /**
+   * The stepper's click action: quick touch taps synthesize click
+   * without a held pointer - step once, but never double-step after a
+   * handled pointerdown.
+   *
+   * @param {MouseEvent} event
+   */
   tap(event) {
     if (this.#pressTicked) {
       this.#pressTicked = false
@@ -160,6 +192,7 @@ export default class extends Controller {
     this.#commit()
   }
 
+  /** The stepper's pointerleave action: stops the repeat. */
   leave() {
     this.#stopRepeat()
   }
@@ -359,7 +392,10 @@ export default class extends Controller {
     event.preventDefault()
   }
 
-  // Browser autofill lands on the hidden number input - adopt it.
+  /**
+   * The hidden input's change action: browser autofill lands there -
+   * adopt, clamp, commit.
+   */
   hiddenChanged() {
     const adopted = this.#fromHidden()
     this.#apply(adopted === null ? null : this.#clamp(adopted), { display: true })

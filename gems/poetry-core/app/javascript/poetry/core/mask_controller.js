@@ -71,6 +71,11 @@ export default class MaskController extends Controller {
   #undoStack = []
   #redoStack = []
 
+  /**
+   * Parses the mask, stamps the pattern attribute (unless the input
+   * carries one), wires the listener set, and processes a server-rendered
+   * value silently.
+   */
   connect() {
     if (this.element.tagName !== "INPUT") {
       console.warn("poetry--core--mask: must be attached to an <input>")
@@ -87,6 +92,7 @@ export default class MaskController extends Controller {
     this.#initialize()
   }
 
+  /** Unwires the listener set. */
   disconnect() {
     this.#listen("removeEventListener")
   }

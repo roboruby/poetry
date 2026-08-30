@@ -96,6 +96,10 @@ export default class MenuController extends Controller {
   #subCloseTimers = new Map()
   #portaledSubs = new Set()
 
+  /**
+   * Wires the content listeners (portal-safe) and reconciles: server-open
+   * content adopts the layer stack and re-portals one frame late.
+   */
   connect() {
     const content = this.#content()
 
@@ -128,6 +132,10 @@ export default class MenuController extends Controller {
     })
   }
 
+  /**
+   * Restores portaled subs then the content (drop-never-strand), unwires
+   * everything, and clears the sub hover-intent timers.
+   */
   disconnect() {
     this.#connected = false
 
@@ -158,8 +166,13 @@ export default class MenuController extends Controller {
     this.#cancelExit = null
   }
 
-  // Controllable state: a host (outlet / Turbo Stream / URL param) may own
-  // the open value; flipping the attribute drives the same machine.
+  /**
+   * Stimulus value callback - controllable state: a host (outlet / Turbo
+   * Stream / URL param) may own the open value; flipping the attribute
+   * drives the same machine.
+   *
+   * @param {boolean} value
+   */
   openValueChanged(value) {
     if (!this.#connected) return
 
@@ -169,14 +182,20 @@ export default class MenuController extends Controller {
 
   // --- trigger actions ---
 
+  /** The trigger's click action: open <-> close. */
   toggle() {
     if (this.#isOpen()) this.#hide("trigger-press")
     else this.#show("trigger-press")
   }
 
-  // Enter / Space / ArrowDown: open + focus FIRST enabled item; ArrowUp:
-  // open + focus LAST (the APG menu-button map). preventDefault also
-  // suppresses the button's synthetic click, so toggle cannot double-fire.
+  /**
+   * The trigger's keydown action: Enter / Space / ArrowDown open + focus
+   * the FIRST enabled item; ArrowUp opens + focuses the LAST (the APG
+   * menu-button map). preventDefault also suppresses the button's
+   * synthetic click, so toggle cannot double-fire.
+   *
+   * @param {KeyboardEvent} event
+   */
   triggerKeydown(event) {
     if (this.#isOpen()) return
 
@@ -191,15 +210,33 @@ export default class MenuController extends Controller {
 
   // --- programmatic API (the family surface Menubar's coordinator calls) ---
 
-  // focus: false is the coordinator's pointer-toggle contract (a menubar
-  // pointer-open leaves focus on the trigger; keyboard-open focuses an item).
+  /**
+   * Programmatically opens (the family surface Menubar's coordinator
+   * calls).
+   *
+   * @param {string | Event} [reason="trigger-press"] - a family reason
+   *   string; an Event (data-action use) reads as trigger-press
+   * @param {Object} [options]
+   * @param {boolean} [options.focus=true] - false is the coordinator's
+   *   pointer-toggle contract (a menubar pointer-open leaves focus on the
+   *   trigger; keyboard-open focuses an item)
+   * @param {"first" | "last" | null} [options.seed=null] - the
+   *   initial-focus seed
+   */
   open(reason = "trigger-press", { focus = true, seed = null } = {}) {
     if (reason instanceof Event) this.#show("trigger-press")
     else this.#show(reason, { focus, seed })
   }
 
-  // restoreFocus: false is the hover-slide/edge-navigate contract (the
-  // outgoing menu must not yank focus back mid-swap).
+  /**
+   * Programmatically closes.
+   *
+   * @param {string | Event} [reason="none"]
+   * @param {Object} [options]
+   * @param {boolean} [options.restoreFocus=true] - false is the
+   *   hover-slide/edge-navigate contract (the outgoing menu must not yank
+   *   focus back mid-swap)
+   */
   close(reason = "none", { restoreFocus = true } = {}) {
     if (reason instanceof Event) this.#hide("none")
     else this.#hide(reason, { restoreFocus })
@@ -207,9 +244,13 @@ export default class MenuController extends Controller {
 
   // --- item activation ---
 
-  // click/Enter/Space unified. Kept as a public action for markup-declared
-  // data-action; the delegated content listener claims the event first, so
-  // both paths never double-activate.
+  /**
+   * Item activation - click/Enter/Space unified. Kept as a public action
+   * for markup-declared data-action; the delegated content listener
+   * claims the event first, so both paths never double-activate.
+   *
+   * @param {Event} event
+   */
   activate(event) {
     if (this.#claim(event)) return
 
@@ -224,6 +265,15 @@ export default class MenuController extends Controller {
 
   // --- content keydown (Enter/Space, submenu arrows, edges, Tab, typeahead) ---
 
+  /**
+   * The content's keydown route (also wired programmatically): Tab closes
+   * and lets focus move on, Enter/Space activate (Space defers to a live
+   * typeahead; native link/submit items act through the element itself),
+   * the direction-aware horizontal pair opens/closes submenus or fires
+   * the Menubar edge seam, and printable keys run typeahead per level.
+   *
+   * @param {KeyboardEvent} event
+   */
   keydown(event) {
     if (this.#claim(event)) return
     if (!this.#isOpen()) return
@@ -271,12 +321,24 @@ export default class MenuController extends Controller {
 
   // --- submenu actions (pointer + markup-declared) ---
 
+  /**
+   * Each sub-trigger's pointerenter action: hover intent toward opening
+   * its sub level.
+   *
+   * @param {PointerEvent} event
+   */
   subEnter(event) {
     const subTrigger = this.#subTriggerFrom(event)
 
     if (subTrigger) this.#subPointerEnter(subTrigger)
   }
 
+  /**
+   * Each sub-trigger's pointerleave action: hover intent toward closing
+   * (entering the sub pair within the grace cancels it).
+   *
+   * @param {PointerEvent} event
+   */
   subLeave(event) {
     const subTrigger = this.#subTriggerFrom(event)
     const related = event.relatedTarget instanceof Element ? event.relatedTarget : null
@@ -284,6 +346,12 @@ export default class MenuController extends Controller {
     if (subTrigger) this.#subPointerLeave(subTrigger, related)
   }
 
+  /**
+   * The sub-trigger's click action: opens its sub level (the delegated
+   * click claims first).
+   *
+   * @param {MouseEvent} event
+   */
   openSub(event) {
     if (this.#claim(event)) return
 
@@ -292,6 +360,11 @@ export default class MenuController extends Controller {
     if (subTrigger && !this.#isDisabled(subTrigger)) this.#showSub(subTrigger, { focusFirst: false })
   }
 
+  /**
+   * Closes a sub-trigger's whole subtree (markup-declared affordances).
+   *
+   * @param {Event} event
+   */
   closeSub(event) {
     const subTrigger = this.#subTriggerFrom(event)
 

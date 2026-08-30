@@ -34,13 +34,19 @@ export default class SensitiveInputController extends Controller {
     readOnly: Boolean
   }
 
+  /** Adopts the server-rendered data-state and re-derives the reflection. */
   connect() {
     this.#visible = this.element.getAttribute("data-state") === "revealed"
     this.#reflect()
   }
 
-  // click anywhere on the bordered group (the mask button's own clicks
-  // bubble here too).
+  /**
+   * The group's click action: click anywhere on the bordered group
+   * reveals (the mask button's own clicks bubble here too). Addon-cell
+   * clicks and synthetic label clicks are filtered (the body comments).
+   *
+   * @param {MouseEvent} event
+   */
   reveal(event) {
     if (this.#disabled || this.#state !== "masked") return
     // The addon cell holds its own actions (copy/eye) - their clicks
@@ -53,6 +59,12 @@ export default class SensitiveInputController extends Controller {
     this.#reveal()
   }
 
+  /**
+   * The mask overlay's keydown action: Enter/Space reveals (the overlay
+   * is the reveal affordance while masked).
+   *
+   * @param {KeyboardEvent} event
+   */
   maskKeydown(event) {
     if (this.#disabled || this.#state !== "masked") return
     if (event.target !== this.maskTarget) return
@@ -62,6 +74,12 @@ export default class SensitiveInputController extends Controller {
     this.#reveal()
   }
 
+  /**
+   * The input's keydown action: Escape re-masks and is consumed - the
+   * NEXT press reaches the dismissal layer.
+   *
+   * @param {KeyboardEvent} event
+   */
   inputKeydown(event) {
     if (event.key !== "Escape" || isImeKeydown(event)) return
     if (this.#state !== "revealed") return
@@ -72,7 +90,12 @@ export default class SensitiveInputController extends Controller {
     this.#mask({ focusMask: true })
   }
 
-  // focusout on the root: leaving the component with a value re-masks.
+  /**
+   * The root's focusout action: leaving the component with a value
+   * re-masks.
+   *
+   * @param {FocusEvent} event
+   */
   blurred(event) {
     if (event.relatedTarget instanceof Node && this.element.contains(event.relatedTarget)) return
     if (this.#state !== "revealed") return
@@ -80,16 +103,22 @@ export default class SensitiveInputController extends Controller {
     this.#mask()
   }
 
-  // input event: emptiness drives the state; the first character typed
-  // into an empty field reveals (composition belongs in type=text).
+  /**
+   * The input action: emptiness drives the state; the first character
+   * typed into an empty field reveals (composition belongs in type=text).
+   */
   changed() {
     if (this.#state === "empty" && this.inputTarget.value !== "") this.#visible = true
 
     this.#reflect()
   }
 
-  // the eye: re-mask, and hand focus to the mask button - the eye is about
-  // to hide (it only exists while revealed).
+  /**
+   * The eye's click action: re-masks and hands focus to the mask button -
+   * the eye is about to hide (it only exists while revealed).
+   *
+   * @param {MouseEvent} event
+   */
   toggle(event) {
     event.stopPropagation()
     if (this.#state !== "revealed") return

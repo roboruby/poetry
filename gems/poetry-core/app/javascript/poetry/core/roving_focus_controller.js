@@ -32,6 +32,10 @@ export default class RovingFocusController extends Controller {
 
   #observer = null
 
+  /**
+   * Stamps the initial tab stops and starts the item-mutation
+   * re-stamping (the header's second-Tab-stop hazard).
+   */
   connect() {
     this.#syncItems()
 
@@ -39,12 +43,20 @@ export default class RovingFocusController extends Controller {
     this.#observer.observe(this.element, { childList: true, subtree: true })
   }
 
+  /** Stops the mutation observer. */
   disconnect() {
     this.#observer?.disconnect()
     this.#observer = null
   }
 
-  // Action: keydown->poetry--core--roving-focus#keydown on the group root.
+  /**
+   * The group root's keydown action: arrows/Home/End move the roving
+   * focus - orientation-gated, RTL-aware, loop-wrapping. The caret guard
+   * leaves text-entry controls their keys until the caret reaches the
+   * travel-direction boundary.
+   *
+   * @param {KeyboardEvent} event
+   */
   keydown(event) {
     if (event.defaultPrevented) return // a nested group (an open menu level) already moved focus
     if (this.#caretTrapped(event)) return // the caret owns this key inside a text control

@@ -30,6 +30,10 @@ export default class ActionBarController extends Controller {
     this.#focusBefore = event.relatedTarget instanceof HTMLElement ? event.relatedTarget : null
   }
 
+  /**
+   * Subscribes to the table's selection-change on the shared wrapper and
+   * starts the focus bookkeeping the hide-restore needs.
+   */
   connect() {
     // The bar and its table share a wrapper; listen there so the pairing
     // is positional, never an id contract.
@@ -39,6 +43,7 @@ export default class ActionBarController extends Controller {
     document.addEventListener("focusin", this.#onFocusin)
   }
 
+  /** Unwires both listeners. */
   disconnect() {
     this.element.parentElement?.removeEventListener(
       "poetry:data-table:selection-change", this.#onSelectionChange
@@ -46,7 +51,11 @@ export default class ActionBarController extends Controller {
     document.removeEventListener("focusin", this.#onFocusin)
   }
 
-  // keydown (data-action): Escape anywhere inside clears the selection.
+  /**
+   * The keydown action: Escape anywhere inside clears the selection.
+   *
+   * @param {KeyboardEvent} event
+   */
   keydown(event) {
     if (event.key !== "Escape" || isImeKeydown(event)) return
 
@@ -55,7 +64,10 @@ export default class ActionBarController extends Controller {
     this.clear()
   }
 
-  // The clear affordance (and Escape): the table's engine owns the state.
+  /**
+   * The clear affordance (and Escape): asks the table's engine - which
+   * owns the state - to clear the selection.
+   */
   clear() {
     this.dispatch("clear-selection", { prefix: "poetry:data-table" })
   }

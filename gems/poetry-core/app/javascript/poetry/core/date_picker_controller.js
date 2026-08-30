@@ -14,10 +14,16 @@ export default class DatePickerController extends Controller {
     locale: { type: String, default: "en-US" }
   }
 
-  // Action: poetry:calendar:change->poetry--core--date-picker#picked
-  // on the wrapper. Range mode: the label joins the pair, a
-  // start-only pick shows one date, and the popover closes only once the
-  // range COMPLETES (the shadcn convention - never mid-range).
+  /**
+   * The calendar-change action on the wrapper: writes the formatted date
+   * into the trigger label (and input, when present) and closes the
+   * popover so the pick feels complete. Range mode: the label joins the
+   * pair, a start-only pick shows one date, and the popover closes only
+   * once the range COMPLETES (the upstream convention - never mid-range).
+   *
+   * @param {CustomEvent} event - detail carries value (single) or
+   *   start/end (range) as ISO strings
+   */
   picked(event) {
     if (this.modeValue === "range") {
       const { start, end } = event.detail ?? {}
@@ -41,10 +47,12 @@ export default class DatePickerController extends Controller {
 
   // --- the input variant (upstream's date-picker-input recipe) ---
 
-  // Typing syncs the calendar: a parseable date re-selects and re-months
-  // it through the reactive calendar values (the DOM is the store), and
-  // the calendar's own render refreshes the hidden ISO form value.
-  // Unparseable text changes nothing - exactly upstream's isValidDate.
+  /**
+   * The input's change action: a parseable date re-selects and re-months
+   * the calendar through its reactive values (the DOM is the store), and
+   * the calendar's own render refreshes the hidden ISO form value.
+   * Unparseable text changes nothing - exactly upstream's isValidDate.
+   */
   inputChanged() {
     if (!this.hasInputTarget) return
 
@@ -62,7 +70,12 @@ export default class DatePickerController extends Controller {
     calendar.selectedValue = iso
   }
 
-  // ArrowDown from the input opens the calendar (upstream's affordance).
+  /**
+   * The input's keydown action: ArrowDown opens the calendar (upstream's
+   * affordance).
+   *
+   * @param {KeyboardEvent} event
+   */
   inputKeydown(event) {
     if (event.key !== "ArrowDown") return
 

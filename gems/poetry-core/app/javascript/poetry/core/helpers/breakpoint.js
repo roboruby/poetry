@@ -3,10 +3,17 @@
 // first poetry consumer is the Sidebar's mobile-Sheet mode. Environments
 // without matchMedia (the dommy QuickJS engine, bare jsdom) report
 // DESKTOP - the server-rendered desktop shell is the safe default.
+/** The mobile cutoff (px): viewports strictly narrower are mobile. */
 export const MOBILE_BREAKPOINT = 768
 
-// Calls onChange(isMobile) immediately with the current state and again on
-// every crossing; returns an unwatch().
+/**
+ * Watches the mobile breakpoint: calls `onChange(isMobile)` immediately
+ * with the current state and again on every crossing. Environments
+ * without matchMedia report desktop once and never call again.
+ *
+ * @param {(isMobile: boolean) => void} onChange
+ * @returns {() => void} unwatch
+ */
 export function watchMobile(onChange) {
   if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
     onChange(false)

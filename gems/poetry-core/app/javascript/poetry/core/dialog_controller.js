@@ -30,6 +30,10 @@ export default class extends Controller {
   #onHotkey = null
   #unsubscribeBeforeCache = null
 
+  /**
+   * Heals a restored zombie snapshot, subscribes the before-cache close,
+   * and arms the opt-in global hotkey.
+   */
   connect() {
     this.#healRestoredSnapshot()
     // Close before Turbo snapshots: an open dialog serialized into the
@@ -57,6 +61,10 @@ export default class extends Controller {
     window.addEventListener("keydown", this.#onHotkey)
   }
 
+  /**
+   * Balances the scroll lock and unwires the hotkey and before-cache
+   * subscriptions.
+   */
   disconnect() {
     this.unlockScroll()
     this.#unsubscribeBeforeCache?.()
@@ -98,17 +106,31 @@ export default class extends Controller {
     document.documentElement.style.scrollbarGutter = ""
   }
 
+  /** The toggle action (and the hotkey's landing): open <-> close. */
   toggle() {
     if (this.dialogTarget.open) this.close()
     else this.open()
   }
 
+  /**
+   * Opens modally: showModal() (the platform trap, top-layer and focus
+   * return), the pair flip, and the body scroll lock.
+   */
   open() {
     this.dialogTarget.showModal()
     setState(this.dialogTarget, "open")
     this.lockScroll()
   }
 
+  /**
+   * Closes with the presence hold: flips the pair to data-closed and
+   * holds the dialog through its CSS exit animation before the native
+   * close() and the unlock (synchronous when no exit animation applies).
+   * The native cancel event (Esc) routes through here so state stays in
+   * sync.
+   *
+   * @param {Event} [event] - the native cancel event, when Esc drove it
+   */
   close(event) {
     if (event?.type === "cancel") event.preventDefault() // route Esc through close() so state stays in sync
     if (this.#closing || !this.dialogTarget.open) return
@@ -123,11 +145,16 @@ export default class extends Controller {
     })
   }
 
-  // A backdrop click targets the <dialog> element itself AND lands outside
-  // its bounding rect (the backdrop is rendered by the dialog). The target
-  // check alone is not enough: clicks on the dialog's own padding / grid
-  // gaps also target the element (2026-07-01 browser pass - they were
-  // incorrectly dismissing).
+  /**
+   * The click action discriminating backdrop presses: a backdrop click
+   * targets the <dialog> element itself AND lands outside its bounding
+   * rect (the backdrop is rendered by the dialog). The target check alone
+   * is not enough: clicks on the dialog's own padding / grid gaps also
+   * target the element (2026-07-01 browser pass - they were incorrectly
+   * dismissing).
+   *
+   * @param {MouseEvent} event
+   */
   backdropClose(event) {
     if (!this.dismissibleValue) return
     if (event.target !== this.dialogTarget) return
@@ -144,9 +171,12 @@ export default class extends Controller {
     return matchesHotkey(event, this.hotkeyValue)
   }
 
-  // Shared refcounted lock with scrollbar-gutter compensation - subclasses
-  // (sheet/drawer/sidebar) inherit these entry points unchanged; the
-  // instance flag keeps double-unlocks (disconnect after close) balanced.
+  /**
+   * Takes the shared refcounted body scroll lock (scrollbar-width
+   * compensated) - subclasses (sheet/drawer/sidebar) inherit these entry
+   * points unchanged; the instance flag keeps double-unlocks (disconnect
+   * after close) balanced.
+   */
   lockScroll() {
     if (this.#locked) return
 
@@ -154,6 +184,7 @@ export default class extends Controller {
     lockScroll()
   }
 
+  /** Balances {@link lockScroll}; safe when already unlocked. */
   unlockScroll() {
     if (!this.#locked) return
 

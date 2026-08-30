@@ -23,12 +23,24 @@ export default class TreeController extends Controller {
 
   #typeahead = createTypeahead()
 
+  /**
+   * Applies ancestor-expansion visibility and settles the single tab
+   * stop.
+   */
   connect() {
     this.#applyVisibility()
     this.#settleTabstop()
   }
 
-  // keydown, wired as a data-action on the treegrid container.
+  /**
+   * The treegrid container's keydown action (row-origin keys only):
+   * arrows rove the visible rows, the direction-aware expand/collapse
+   * pair runs the four-branch logic (collapse on a leaf focuses the
+   * parent), Home/End jump the edges, Enter toggles expandables, and
+   * printable keys run typeahead.
+   *
+   * @param {KeyboardEvent} event
+   */
   keydown(event) {
     const row = event.target.closest("[data-slot='tree-item']")
 
@@ -52,9 +64,13 @@ export default class TreeController extends Controller {
     }
   }
 
-  // click on a row toggles when expandable (the default press
-  // behavior with no action/link/selection); clicks on inner controls
-  // (links, the chevron) stay their own.
+  /**
+   * Each row's click action: toggles when expandable (the default press
+   * behavior with no action/link/selection); clicks on inner controls
+   * (links, the chevron) stay their own.
+   *
+   * @param {MouseEvent} event
+   */
   press(event) {
     const row = event.target.closest("[data-slot='tree-item']")
 
@@ -65,8 +81,13 @@ export default class TreeController extends Controller {
     this.#toggle(row)
   }
 
-  // click on a chevron (tabindex -1; its pointerdown is preventDefault'd
-  // via the pressStart action so focus never leaves the row).
+  /**
+   * The chevron's click action (the chevron rides tabindex -1; its
+   * pointerdown is preventDefault'd via pressStart so focus never leaves
+   * the row): toggles, then refocuses the row.
+   *
+   * @param {MouseEvent} event
+   */
   toggle(event) {
     event.preventDefault()
     event.stopPropagation()
@@ -78,7 +99,11 @@ export default class TreeController extends Controller {
     this.#focusRow(row)
   }
 
-  // pointerdown on the chevron: never steal focus from the row.
+  /**
+   * The chevron's pointerdown action: never steal focus from the row.
+   *
+   * @param {PointerEvent} event
+   */
   pressStart(event) {
     event.preventDefault()
   }

@@ -19,6 +19,11 @@
 let locks = 0
 let previous = null
 
+/**
+ * Locks body scrolling, paying the measured scrollbar gap back as body
+ * padding-right so the layout never shifts. Refcounted: stacked overlays
+ * lock once; only the first call writes styles.
+ */
 export function lockScroll() {
   locks += 1
   if (locks > 1) return
@@ -40,6 +45,10 @@ export function lockScroll() {
   document.body.style.overflow = "hidden"
 }
 
+/**
+ * Releases one scroll lock; the LAST release restores the body's saved
+ * overflow and padding-right.
+ */
 export function unlockScroll() {
   if (locks === 0) return
 
@@ -51,7 +60,7 @@ export function unlockScroll() {
   previous = null
 }
 
-// Test seam: vitest suites run many overlays in one document.
+/** Test seam: vitest suites run many overlays in one document. */
 export function resetScrollLock() {
   locks = 0
   previous = null

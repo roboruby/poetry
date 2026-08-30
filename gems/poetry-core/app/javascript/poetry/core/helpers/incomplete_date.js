@@ -9,8 +9,16 @@
 
 const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
+/** PageUp/PageDown step per segment type. */
 export const PAGE_STEP = { year: 5, month: 2, day: 7, hour: 2, minute: 15, second: 15 }
 
+/**
+ * Days in a Gregorian month, leap Februaries included.
+ *
+ * @param {number} year
+ * @param {number} month - 1-12 (out-of-range months report 31)
+ * @returns {number}
+ */
 export function daysInMonth(year, month) {
   if (month === 2 && year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) return 29
 
@@ -21,8 +29,15 @@ function pad(number, width = 2) {
   return String(number).padStart(width, "0")
 }
 
+/**
+ * A date/time value whose segments may each be null (the module header
+ * holds the storage rules). One instance backs one date-field.
+ */
 export class IncompleteDate {
-  // hourCycle: "h11" | "h12" | "h23" | "h24" (the field's RESOLVED cycle).
+  /**
+   * @param {"h11" | "h12" | "h23" | "h24"} [hourCycle="h23"] - the
+   *   field's RESOLVED cycle ({@link resolveHourCycle})
+   */
   constructor(hourCycle = "h23") {
     this.hourCycle = hourCycle
     this.year = null
@@ -34,13 +49,20 @@ export class IncompleteDate {
     this.dayPeriod = null // 0 | 1 | null; only meaningful under h11/h12
   }
 
+  /** @returns {boolean} whether the cycle carries a dayPeriod (h11/h12) */
   get twelveHour() {
     return this.hourCycle === "h11" || this.hourCycle === "h12"
   }
 
-  // Segment limits in DISPLAY terms. Day deliberately allows the calendar
-  // maximum (31) regardless of the month segment - editing order must not
-  // trap the user; constrain() clamps at commit.
+  /**
+   * Segment limits in DISPLAY terms. Day deliberately allows the calendar
+   * maximum (31) regardless of the month segment - editing order must not
+   * trap the user; constrain() clamps at commit.
+   *
+   * @param {string} type - "year" | "month" | "day" | "hour" | "minute" |
+   *   "second" | "dayPeriod"
+   * @returns {{ min: number, max: number }}
+   */
   limits(type) {
     switch (type) {
       case "year": return { min: 1, max: 9999 }
@@ -60,9 +82,19 @@ export class IncompleteDate {
     }
   }
 
-  // The first arrow press on an EMPTY segment lands on the placeholder
-  // value, the second one moves it (the cycle contract). round:
-  // PageUp/Down snap to the next multiple of amount instead of adding it.
+  /**
+   * Arrow/page steps a segment. The first press on an EMPTY segment lands
+   * on the placeholder value, the second one moves it (the cycle
+   * contract); values wrap within the segment's limits (the spinbutton
+   * contract).
+   *
+   * @param {string} type - the segment
+   * @param {number} amount - signed step
+   * @param {number} placeholderValue - what an empty segment lands on
+   * @param {Object} [options]
+   * @param {boolean} [options.round=false] - PageUp/Down snap to the next
+   *   multiple of amount instead of adding it
+   */
   cycle(type, amount, placeholderValue, { round = false } = {}) {
     const { min, max } = this.limits(type)
     const current = this[type]
@@ -96,29 +128,54 @@ export class IncompleteDate {
     this[type] = next
   }
 
+  /**
+   * Sets a segment, clamped to its limits.
+   *
+   * @param {string} type
+   * @param {number | null} value - null clears
+   */
   set(type, value) {
     const { min, max } = this.limits(type)
 
     this[type] = value === null ? null : clampToLimits(value, min, max)
   }
 
+  /**
+   * Empties a segment.
+   * @param {string} type
+   */
   clear(type) {
     this[type] = null
   }
 
+  /**
+   * Whether every listed segment holds a value.
+   *
+   * @param {string[]} types
+   * @returns {boolean}
+   */
   isComplete(types) {
     return types.every((type) => this[type] !== null)
   }
 
-  // A complete date can still be invalid (February 31st): valid means the
-  // day exists in the month.
+  /**
+   * A complete date can still be invalid (February 31st): valid means the
+   * day exists in the month.
+   *
+   * @returns {boolean} false while year/month/day are incomplete
+   */
   isValidDate() {
     if (this.year === null || this.month === null || this.day === null) return false
 
     return this.day <= daysInMonth(this.year, this.month)
   }
 
-  // Commit-time clamp (blur): the raw day is pulled into the real month.
+  /**
+   * Commit-time clamp (blur): the raw day is pulled into the real month.
+   *
+   * @param {string[]} types - the field's segments; day is only clamped
+   *   when listed
+   */
   constrain(types) {
     if (types.includes("day") && this.year !== null && this.month !== null && this.day !== null) {
       this.day = Math.min(this.day, daysInMonth(this.year, this.month))
@@ -127,6 +184,12 @@ export class IncompleteDate {
 
   // --- hour-cycle conversion (the ONE place "12 means 0" lives) ---
 
+  /**
+   * The stored hour converted to h23. Under h11/h12 an unset dayPeriod
+   * reads as AM.
+   *
+   * @returns {number | null} null while the hour is unset
+   */
   hourInH23() {
     if (this.hour === null) return null
 
@@ -144,6 +207,10 @@ export class IncompleteDate {
     }
   }
 
+  /**
+   * Sets hour (and dayPeriod under h11/h12) from an h23 hour.
+   * @param {number} h23 - 0-23
+   */
   setFromH23(h23) {
     switch (this.hourCycle) {
       case "h11":
@@ -164,12 +231,18 @@ export class IncompleteDate {
 
   // --- ISO serialization (the native input's value format) ---
 
+  /** @returns {string | null} "YYYY-MM-DD", or null while incomplete */
   toISODate() {
     if (!this.isComplete(["year", "month", "day"])) return null
 
     return `${pad(this.year, 4)}-${pad(this.month)}-${pad(this.day)}`
   }
 
+  /**
+   * @param {boolean} [withSeconds=false]
+   * @returns {string | null} "HH:MM" or "HH:MM:SS" (h23 on the wire), or
+   *   null while incomplete (a twelve-hour cycle needs dayPeriod too)
+   */
   toISOTime(withSeconds = false) {
     const types = withSeconds ? ["hour", "minute", "second"] : ["hour", "minute"]
 
@@ -182,6 +255,12 @@ export class IncompleteDate {
     return withSeconds ? `${base}:${pad(this.second)}` : base
   }
 
+  /**
+   * Fills year/month/day from "YYYY-MM-DD".
+   *
+   * @param {string | null} iso
+   * @returns {boolean} false (nothing touched) on a non-matching string
+   */
   setFromISODate(iso) {
     const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso ?? "")
 
@@ -193,6 +272,12 @@ export class IncompleteDate {
     return true
   }
 
+  /**
+   * Fills hour/minute(/second) from "HH:MM(:SS)" (h23 on the wire).
+   *
+   * @param {string | null} iso
+   * @returns {boolean} false (nothing touched) on a non-matching string
+   */
   setFromISOTime(iso) {
     const match = /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(iso ?? "")
 
@@ -209,11 +294,18 @@ function clampToLimits(value, min, max) {
   return Math.min(max, Math.max(min, value))
 }
 
-// The resolved hour cycle, with two known Intl bug detections
-// built in: Chrome resolves
-// `hour12: false` to the buggy h24 per the ECMA-402 spec bug, and WebKit
-// misreports resolvedOptions().hourCycle in some locales - so the cycle is
-// INFERRED by formatting hour 0 and hour 23 and reading what comes out.
+/**
+ * The resolved hour cycle for a locale, with two known Intl bug
+ * detections built in: Chrome resolves `hour12: false` to the buggy h24
+ * per the ECMA-402 spec bug, and WebKit misreports
+ * resolvedOptions().hourCycle in some locales - so the cycle is INFERRED
+ * by formatting hour 0 and hour 23 and reading what comes out.
+ *
+ * @param {string | undefined} locale
+ * @param {"h11" | "h12" | "h23" | "h24" | null} [override=null] - wins
+ *   outright when present
+ * @returns {"h11" | "h12" | "h23" | "h24"}
+ */
 export function resolveHourCycle(locale, override = null) {
   if (override) return override
 

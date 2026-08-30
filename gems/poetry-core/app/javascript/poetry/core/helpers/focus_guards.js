@@ -4,10 +4,16 @@
 // lands on a guard (which focus-scope yanks back), never on nothing.
 // Refcounted module state: one pair per page no matter how many overlays.
 
+/** Selector matching the two page-edge focus-guard sentinels. */
 export const FOCUS_GUARD_SELECTOR = "[data-poetry-focus-guard]"
 
 let guardCount = 0
 
+/**
+ * Takes a refcount on the page-edge guard pair, creating the two
+ * sentinels on the first acquire. Pair every call with
+ * {@link removeFocusGuards} on teardown.
+ */
 export function ensureFocusGuards() {
   if (guardCount === 0) {
     document.body.insertAdjacentElement("afterbegin", createGuard())
@@ -16,6 +22,10 @@ export function ensureFocusGuards() {
   guardCount += 1
 }
 
+/**
+ * Releases one refcount on the guard pair; the last release removes both
+ * sentinels from the document.
+ */
 export function removeFocusGuards() {
   if (guardCount === 0) return
 

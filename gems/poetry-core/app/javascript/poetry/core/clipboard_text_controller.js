@@ -29,10 +29,19 @@ export default class ClipboardTextController extends Controller {
     message: String
   }
 
+  /** Clears the copied-beat timer. */
   disconnect() {
     clearTimeout(this.#timer)
   }
 
+  /**
+   * The copy action: writes the text (navigator.clipboard first, then the
+   * selection-preserving execCommand fallback), stamps data-copied for a
+   * beat, announces, and dispatches the copied event with the text in the
+   * detail. A failed write changes nothing.
+   *
+   * @returns {Promise<void>}
+   */
   async copy() {
     const text = this.#text
     if (!(await this.#write(text))) return

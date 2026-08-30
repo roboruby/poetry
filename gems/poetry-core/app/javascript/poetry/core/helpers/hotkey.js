@@ -4,6 +4,13 @@
 // modifiers plus one final key token, matched exactly - unlisted modifiers
 // must be UP, so plain typing never triggers. "meta" matches metaKey OR
 // ctrlKey (⌘K on mac, ^K elsewhere - the command-palette convention).
+/**
+ * Whether a keydown satisfies a hotkey descriptor (the grammar above).
+ *
+ * @param {KeyboardEvent} event
+ * @param {string} descriptor - e.g. "meta+k", "ctrl+shift+p", "?"
+ * @returns {boolean}
+ */
 export function matchesHotkey(event, descriptor) {
   const tokens = descriptor.toLowerCase().split("+").map((token) => token.trim())
   const key = tokens.pop()
@@ -20,9 +27,14 @@ export function matchesHotkey(event, descriptor) {
   return meta && ctrl && shift && alt && noStray
 }
 
-// True when the event originates in a text-editing context - unmodified
-// single-key shortcuts ("/", "?") must stay inert while the user types
-// (the standard hotkey ignore list: form fields and contenteditable).
+/**
+ * True when the event originates in a text-editing context - unmodified
+ * single-key shortcuts ("/", "?") must stay inert while the user types
+ * (the standard hotkey ignore list: form fields and contenteditable).
+ *
+ * @param {KeyboardEvent} event
+ * @returns {boolean}
+ */
 export function isEditingTarget(event) {
   const target = event.composedPath?.()[0] ?? event.target
   if (!target || !(target instanceof Element)) return false

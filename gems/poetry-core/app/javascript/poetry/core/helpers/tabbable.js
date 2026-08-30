@@ -14,6 +14,15 @@ const CANDIDATE_SELECTOR = [
   "video[controls]"
 ].join(", ")
 
+/**
+ * The tabbable elements under `container`, in DOM order: candidate
+ * tags/tabindexes minus disabled / hidden / tabindex=-1 / inert-subtree /
+ * type=hidden elements, with each radio group collapsed to its single
+ * real tab stop (see below).
+ *
+ * @param {Element} container
+ * @returns {Element[]}
+ */
 export function tabbableWithin(container) {
   const candidates = Array.from(container.querySelectorAll(CANDIDATE_SELECTOR)).filter(
     (element) =>

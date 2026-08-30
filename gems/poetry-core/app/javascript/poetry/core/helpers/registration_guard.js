@@ -9,7 +9,14 @@
 const PREFIX = "poetry--"
 const warned = new Set()
 
-// The poetry identifiers on the page that `application` has not registered.
+/**
+ * The poetry identifiers on the page that `application` has not
+ * registered.
+ *
+ * @param {import("@hotwired/stimulus").Application} application
+ * @param {ParentNode} [root=document] - the subtree to inspect
+ * @returns {string[]} sorted, deduplicated identifiers
+ */
 export function unregisteredPoetryControllers(application, root = document) {
   const registry = application && application.router && application.router.modulesByIdentifier
   if (!registry || !root || !root.querySelectorAll) return []
@@ -22,7 +29,13 @@ export function unregisteredPoetryControllers(application, root = document) {
   return Array.from(missing).sort()
 }
 
-// One console warning per newly-seen unregistered identifier; returns them.
+/**
+ * Warns once per newly-seen unregistered poetry identifier.
+ *
+ * @param {import("@hotwired/stimulus").Application} application
+ * @param {ParentNode} [root=document]
+ * @returns {string[]} the identifiers warned about in this call
+ */
 export function checkPoetryRegistration(application, root = document) {
   const fresh = unregisteredPoetryControllers(application, root).filter((identifier) => !warned.has(identifier))
   if (fresh.length === 0) return fresh
@@ -37,9 +50,13 @@ export function checkPoetryRegistration(application, root = document) {
 
 let scheduled = false
 
-// Runs the check once the DOM is parsed (registration usually happens
-// while the document is still loading) and after every Turbo navigation.
-// Idempotent: the first registrar to call it wires the listeners.
+/**
+ * Runs the check once the DOM is parsed (registration usually happens
+ * while the document is still loading) and after every Turbo navigation.
+ * Idempotent: the first registrar to call it wires the listeners.
+ *
+ * @param {import("@hotwired/stimulus").Application} application
+ */
 export function guardPoetryRegistration(application) {
   if (scheduled || typeof document === "undefined") return
   scheduled = true
@@ -52,7 +69,7 @@ export function guardPoetryRegistration(application) {
   document.addEventListener("turbo:load", run)
 }
 
-// Test seam: forget what has been warned about and re-arm the scheduler.
+/** Test seam: forget what has been warned about and re-arm the scheduler. */
 export function resetPoetryRegistrationGuard() {
   warned.clear()
   scheduled = false

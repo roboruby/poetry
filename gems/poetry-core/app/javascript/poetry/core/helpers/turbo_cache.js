@@ -6,6 +6,15 @@
 // back frozen - a page that can never scroll, or never be clicked, again
 // (both reproduced live against the docs app). Overlay controllers
 // subscribe their synchronous teardown here; no-op when Turbo is absent.
+/**
+ * Subscribes `callback` to Turbo's before-cache moment - the last
+ * synchronous chance to tear an overlay down before the snapshot is
+ * taken. A page without Turbo simply never fires it.
+ *
+ * @param {(event: Event) => void} callback - must finish synchronously;
+ *   the snapshot is taken right after the event dispatch completes
+ * @returns {() => void} unsubscribe
+ */
 export function onBeforeCache(callback) {
   document.addEventListener("turbo:before-cache", callback)
   return () => document.removeEventListener("turbo:before-cache", callback)

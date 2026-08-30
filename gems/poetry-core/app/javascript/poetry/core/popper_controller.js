@@ -84,21 +84,25 @@ export default class PopperController extends Controller {
   #hidPointerEvents = false
   #pointerEventsBeforeHide = ""
 
+  /** Arms autoUpdate (which fires one immediate position pass). */
   connect() {
     this.#connected = true
     this.#start()
   }
 
+  /** Disarms, stranding any in-flight update (the generation bump). */
   disconnect() {
     this.#connected = false
     this.#generation += 1 // strand any in-flight #update await
     this.#stop()
   }
 
-  // Reactive re-anchor: switching between element and virtual anchoring (or
-  // moving the point) re-arms autoUpdate against the new reference. Fires
-  // during initialization too, before connect - the #connected guard skips
-  // that first call.
+  /**
+   * Stimulus value callback - reactive re-anchor: switching between
+   * element and virtual anchoring (or moving the point) re-arms
+   * autoUpdate against the new reference. Fires during initialization
+   * too, before connect - the connected guard skips that first call.
+   */
   anchorPointValueChanged() {
     if (!this.#connected) return
 
@@ -106,9 +110,11 @@ export default class PopperController extends Controller {
     this.#start()
   }
 
-  // Reactive strategy (the portal seam): a
-  // consumer flips fixed <-> absolute when it portals/restores content;
-  // re-arming repositions in the new coordinate space immediately.
+  /**
+   * Stimulus value callback - reactive strategy (the portal seam): a
+   * consumer flips fixed <-> absolute when it portals/restores content;
+   * re-arming repositions in the new coordinate space immediately.
+   */
   strategyValueChanged() {
     if (!this.#connected) return
 
@@ -116,27 +122,43 @@ export default class PopperController extends Controller {
     this.#start()
   }
 
-  // Manual re-run for consumers whose geometry changed outside autoUpdate's
-  // sensors (e.g. content swapped by a Turbo Stream). Returns the update
-  // promise so callers can await settlement.
+  /**
+   * Manual re-run for consumers whose geometry changed outside
+   * autoUpdate's sensors (e.g. content swapped by a Turbo Stream).
+   *
+   * @returns {Promise<void>} the update promise, so callers can await
+   *   settlement
+   */
   reposition() {
     return this.#update()
   }
 
-  // The ContextMenu entry point: store the pointer coords (the ATTRIBUTE is
-  // canonical - inspectable, server-settable) and reposition immediately;
-  // the value-changed callback then re-arms autoUpdate's tracking.
+  /**
+   * The ContextMenu entry point: stores the pointer coords (the ATTRIBUTE
+   * is canonical - inspectable, server-settable) and repositions
+   * immediately; the value-changed callback then re-arms autoUpdate's
+   * tracking.
+   *
+   * @param {number} x - client coords
+   * @param {number} y
+   * @returns {Promise<void>}
+   */
   setAnchor(x, y) {
     this.anchorPointValue = `${x},${y}`
 
     return this.reposition()
   }
 
-  // The NavigationMenu viewport entry point (D3): float against a caller-
-  // supplied element (the active trigger) instead of a target/selector.
-  // Re-arms autoUpdate so the new reference's ancestors are tracked, then
-  // repositions - the positioner's inset transition turns that write into
-  // the position morph.
+  /**
+   * The NavigationMenu viewport entry point (D3): floats against a
+   * caller-supplied element (the active trigger) instead of a
+   * target/selector. Re-arms autoUpdate so the new reference's ancestors
+   * are tracked, then repositions - the positioner's inset transition
+   * turns that write into the position morph.
+   *
+   * @param {Element} element
+   * @returns {Promise<void>}
+   */
   setAnchorElement(element) {
     this.#anchorElement = element
     this.#stop()

@@ -74,6 +74,12 @@ export default class SelectController extends Controller {
   #placeholder = ""
   #scrollFrame = null
 
+  /**
+   * Captures the placeholder, reconciles silently from the native select
+   * (the serialization truth) or the given Value, wires the content
+   * listeners, and catches a server-open listbox up (layers + the late
+   * portal).
+   */
   connect() {
     const content = this.#content()
 
@@ -121,6 +127,11 @@ export default class SelectController extends Controller {
     })
   }
 
+  /**
+   * Restores portaled content (drop-never-strand), unwires the content
+   * listeners, resets typeahead and the scroll hold, and abandons any
+   * exit.
+   */
   disconnect() {
     this.#connected = false
 
@@ -140,6 +151,11 @@ export default class SelectController extends Controller {
 
   // --- controllable state ---
 
+  /**
+   * Stimulus value callback - controllable open state.
+   *
+   * @param {boolean} value
+   */
   openValueChanged(value) {
     if (!this.#connected) return
 
@@ -147,6 +163,12 @@ export default class SelectController extends Controller {
     else if (!value && this.#isOpen()) this.#hide("none")
   }
 
+  /**
+   * Stimulus value callback - controllable value (no-ops on the applied
+   * echo).
+   *
+   * @param {string} value
+   */
   valueValueChanged(value) {
     if (!this.#connected || value === this.#applied) return
 
@@ -155,15 +177,21 @@ export default class SelectController extends Controller {
 
   // --- trigger actions ---
 
+  /** The trigger's click action: open <-> close. */
   toggle() {
     if (this.#isOpen()) this.#hide("trigger-press")
     else this.#show("trigger-press")
   }
 
-  // Enter / Space / ArrowDown / ArrowUp open and focus the SELECTED option
-  // (Radix: closed arrows never step the value). A printable key on the
-  // CLOSED trigger commits the typeahead match WITHOUT opening (native
-  // <select> parity - the full commit pipeline minus open/close).
+  /**
+   * The trigger's keydown action: Enter / Space / ArrowDown / ArrowUp
+   * open and focus the SELECTED option (Radix: closed arrows never step
+   * the value). A printable key on the CLOSED trigger commits the
+   * typeahead match WITHOUT opening (native <select> parity - the full
+   * commit pipeline minus open/close).
+   *
+   * @param {KeyboardEvent} event
+   */
   triggerKeydown(event) {
     if (this.#isOpen()) return
 
@@ -184,15 +212,36 @@ export default class SelectController extends Controller {
 
   // --- programmatic API ---
 
+  /**
+   * Programmatically opens.
+   *
+   * @param {string | Event} [reason="trigger-press"] - a family reason
+   *   string (an Event, from data-action use, reads as trigger-press)
+   * @param {Object} [options]
+   * @param {"first" | "selected" | null} [options.seed=null] - the
+   *   initial-focus seed stamped onto the content for this open
+   */
   open(reason = "trigger-press", { seed = null } = {}) {
     if (reason instanceof Event) this.#show("trigger-press")
     else this.#show(reason, { seed })
   }
 
+  /**
+   * Programmatically closes.
+   *
+   * @param {string | Event} [reason="none"] - a family reason string; an
+   *   Event reads as "none"
+   */
   close(reason = "none") {
     this.#hide(reason instanceof Event ? "none" : reason)
   }
 
+  /**
+   * The programmatic controllable-state surface: applies a value through
+   * the full sync pipeline.
+   *
+   * @param {string} value - stringified; "" clears to the placeholder
+   */
   setValue(value) {
     if (value === this.#applied) return
 
@@ -201,8 +250,12 @@ export default class SelectController extends Controller {
 
   // --- option activation ---
 
-  // Public action for markup-declared data-action; the delegated content
-  // click claims first, so both paths never double-commit.
+  /**
+   * Each option's click action (markup-declared); the delegated content
+   * click claims first, so both paths never double-commit.
+   *
+   * @param {MouseEvent} event
+   */
   commit(event) {
     if (this.#claim(event)) return
 
@@ -216,6 +269,15 @@ export default class SelectController extends Controller {
 
   // --- content keydown (commit keys, typeahead, the Tab-inert delta) ---
 
+  /**
+   * The content's keydown route (also wired programmatically): Enter and
+   * Space commit the focused option (Space defers to a live typeahead),
+   * Tab is INERT while open (a value picker resolves by commit or Esc -
+   * Radix Select-exact), Left/Right no-op (flat listbox), and printable
+   * keys move focus via typeahead - selection never follows focus.
+   *
+   * @param {KeyboardEvent} event
+   */
   keydown(event) {
     if (this.#claim(event)) return
     if (!this.#isOpen()) return
@@ -257,9 +319,11 @@ export default class SelectController extends Controller {
 
   // --- autofill adoption ---
 
-  // Browser autofill (or any programmatic write) fires change on the hidden
-  // native select: the UI adopts it. fromNative skips re-writing the native
-  // (and re-dispatching its events - no loop).
+  /**
+   * The hidden native select's change action: browser autofill (or any
+   * programmatic write) fires change there - the UI adopts it without
+   * re-writing the native (no loop).
+   */
   nativeChanged() {
     const value = this.#native()?.value ?? ""
 
@@ -270,6 +334,10 @@ export default class SelectController extends Controller {
 
   // --- scroll buttons ---
 
+  /**
+   * The viewport's scroll action (also run on open): shows each scroll
+   * button only while scroll room remains on its side.
+   */
   syncScrollButtons() {
     const content = this.#content()
     const viewport = content?.querySelector(VIEWPORT_SELECTOR)
@@ -283,6 +351,12 @@ export default class SelectController extends Controller {
     if (down) down.hidden = viewport.scrollTop + viewport.clientHeight >= viewport.scrollHeight
   }
 
+  /**
+   * The scroll buttons' pointerenter action: scrolls the viewport a few
+   * px per frame while hovered (the upstream hold-to-scroll).
+   *
+   * @param {PointerEvent} event
+   */
   scrollHoldStart(event) {
     const origin = event.currentTarget instanceof Element ? event.currentTarget : null
     const direction = origin?.matches(SCROLL_UP_SELECTOR) ? -1 : 1
@@ -301,6 +375,7 @@ export default class SelectController extends Controller {
     this.#scrollFrame = window.requestAnimationFrame(step)
   }
 
+  /** The scroll buttons' pointerleave action: stops the held scroll. */
   scrollHoldStop() {
     if (this.#scrollFrame === null) return
 

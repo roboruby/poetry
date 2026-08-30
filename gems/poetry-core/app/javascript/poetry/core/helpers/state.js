@@ -8,6 +8,7 @@
 // Keys are PAIRS (or triples): setting one member writes its attribute and
 // removes its counterparts. The negative popup/panel/pressed/selected keys
 // only remove - Base UI has no data-popup-closed; absence IS the state.
+/** Vocabulary key -> its writes: { add: attribute | null, remove: [attributes] }. */
 export const VOCABULARY = {
   open: { add: "data-open", remove: ["data-closed"] },
   closed: { add: "data-closed", remove: ["data-open"] },
@@ -38,6 +39,15 @@ const DERIVATION = [
   ["data-pressed", "pressed"], ["data-selected", "selected"], ["data-active", "active"]
 ]
 
+/**
+ * The vocabulary key `element` currently wears, per the derivation order
+ * above. Attribute-only negative states (the popup/panel/pressed/selected
+ * negatives) have no positive attribute to find and derive as undefined -
+ * callers that care test the attribute directly.
+ *
+ * @param {Element} element
+ * @returns {string | undefined}
+ */
 export function stateOf(element) {
   for (const [attribute, key] of DERIVATION) {
     if (element.hasAttribute(attribute)) return key
@@ -45,6 +55,16 @@ export function stateOf(element) {
   return undefined
 }
 
+/**
+ * Writes vocabulary key `key` onto `element`: sets its add-attribute (when
+ * the key has one), removes its counterparts, and announces the flip as a
+ * bubbling `poetry:state-change` CustomEvent carrying `{ state: key }`.
+ *
+ * @param {Element} element
+ * @param {string} key - a {@link VOCABULARY} key
+ * @returns {string} the key that was written
+ * @throws {Error} on a key outside the vocabulary
+ */
 export function setState(element, key) {
   const writes = VOCABULARY[key]
   if (!writes) throw new Error(`poetry state: unknown vocabulary key ${key}`)

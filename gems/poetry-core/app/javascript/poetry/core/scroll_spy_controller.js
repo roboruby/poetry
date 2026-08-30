@@ -26,6 +26,10 @@ export default class extends Controller {
   #sections = []
   #activeId = null
 
+  /**
+   * Resolves the sections and wires the rAF-coalesced passive
+   * scroll/resize listeners.
+   */
   connect() {
     this.refresh()
     this.#onScroll = () => {
@@ -40,6 +44,7 @@ export default class extends Controller {
     window.addEventListener("resize", this.#onScroll, { passive: true })
   }
 
+  /** Unwires the listeners and cancels any pending frame. */
   disconnect() {
     window.removeEventListener("scroll", this.#onScroll)
     window.removeEventListener("resize", this.#onScroll)
@@ -47,8 +52,10 @@ export default class extends Controller {
     this.#frame = null
   }
 
-  // Re-resolve sections from the links' hashes (content changed, Turbo
-  // morph, tab switch) and recompute immediately.
+  /**
+   * Re-resolves sections from the links' hashes (content changed, Turbo
+   * morph, tab switch) and recomputes immediately.
+   */
   refresh() {
     this.#sections = this.linkTargets
       .map((link) => {

@@ -14,6 +14,10 @@ export default class ToastTriggerController extends Controller {
     toaster: String
   }
 
+  /**
+   * The click action: stamps the addressed template's toast into the
+   * toaster region (the no-round-trip delivery the header describes).
+   */
   fire() {
     window.dispatchEvent(new CustomEvent("poetry:toaster:stamp", {
       detail: { template: this.templateValue, toaster: this.toasterValue || null }

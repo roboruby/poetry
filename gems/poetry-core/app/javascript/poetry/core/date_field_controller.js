@@ -53,6 +53,12 @@ export default class DateFieldController extends Controller {
   #dayPeriodNames = null // { am, pm }
   #onSelectionChange = () => this.#collapseSelectionInSegment()
 
+  /**
+   * Builds the locale-driven segment row from formatToParts, marks the
+   * field enhanced, retires the native input from the tab order (it stays
+   * the form value and the constraint-validation carrier), and routes
+   * native invalid to the first empty segment.
+   */
   connect() {
     if (!this.hasInputTarget || !this.hasGroupTarget) return
 
@@ -71,6 +77,10 @@ export default class DateFieldController extends Controller {
     document.addEventListener("selectionchange", this.#onSelectionChange)
   }
 
+  /**
+   * Restores the native input's tab order / AT visibility and unwires the
+   * document listeners.
+   */
   disconnect() {
     this.inputTarget?.removeEventListener("invalid", this.#onInvalid)
     document.removeEventListener("selectionchange", this.#onSelectionChange)
@@ -81,9 +91,13 @@ export default class DateFieldController extends Controller {
     this.#segmentDigits = {}
   }
 
-  // Clicking the group's blank space lands on the earliest unfilled
-  // segment (the focusLast heuristic, simplified: segments
-  // themselves stop propagation by matching first).
+  /**
+   * The group's click action: clicking blank space lands on the earliest
+   * unfilled segment (the focusLast heuristic, simplified - segments
+   * themselves stop propagation by matching first).
+   *
+   * @param {MouseEvent} event
+   */
   focusGap(event) {
     if (event.target !== this.groupTarget) return
 
@@ -512,8 +526,12 @@ export default class DateFieldController extends Controller {
 
   // --- commit ---
 
-  // Focusout that leaves the whole group constrains (Feb 31 -> Feb 29)
-  // and commits; wired as a data-action on the group.
+  /**
+   * The group's focusout action: leaving the whole group constrains
+   * (Feb 31 -> Feb 29) and commits.
+   *
+   * @param {FocusEvent} event
+   */
   settle(event) {
     if (this.groupTarget.contains(event.relatedTarget)) return
 

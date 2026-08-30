@@ -27,11 +27,18 @@ export default class FileInputController extends Controller {
 
   #dragDepth = 0
 
+  /** Reflects the input's current FileList (list, clear, data-populated). */
   connect() {
     this.#reflect()
   }
 
   // Actions on the dropzone label: dragenter/dragover/dragleave/drop.
+  /**
+   * File drags flip the zone into its accepting state - depth-counted
+   * (the header explains the counter).
+   *
+   * @param {DragEvent} event
+   */
   dragenter(event) {
     if (!this.#accepting(event)) return
 
@@ -40,17 +47,31 @@ export default class FileInputController extends Controller {
     this.element.setAttribute("data-dragging", "")
   }
 
+  /**
+   * The required preventDefault - without it the browser navigates to
+   * the dropped file.
+   *
+   * @param {DragEvent} event
+   */
   dragover(event) {
     if (!this.#accepting(event)) return
 
     event.preventDefault() // required, or the browser navigates to the file
   }
 
+  /** Nets the depth counter down; at zero the drag styling clears. */
   dragleave() {
     this.#dragDepth = Math.max(0, this.#dragDepth - 1)
     if (this.#dragDepth === 0) this.element.removeAttribute("data-dragging")
   }
 
+  /**
+   * Assigns the dropped files to the native input (single-file zones take
+   * the FIRST - the native picker's rule) and dispatches a real change so
+   * every listener sees a picker-identical selection.
+   *
+   * @param {DragEvent} event
+   */
   drop(event) {
     if (!this.#accepting(event)) return
 
@@ -69,7 +90,10 @@ export default class FileInputController extends Controller {
     this.inputTarget.dispatchEvent(new Event("change", { bubbles: true }))
   }
 
-  // Action: change->...#changed on the native input (picker AND drop land here).
+  /**
+   * The native input's change action (picker AND drop land here):
+   * reflects the selection and reports the file names.
+   */
   changed() {
     this.#reflect()
     this.dispatch("change", {
@@ -78,7 +102,12 @@ export default class FileInputController extends Controller {
     })
   }
 
-  // Action: click->...#clear on the clear button.
+  /**
+   * The clear button's click action: empties the input and dispatches a
+   * real change.
+   *
+   * @param {MouseEvent} event
+   */
   clear(event) {
     // The clear button sits INSIDE the label: without this, the click
     // also re-opens the file picker.

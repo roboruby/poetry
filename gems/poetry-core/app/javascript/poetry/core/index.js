@@ -122,7 +122,14 @@ export * from "@poetry/controllers/helpers/announce"
 export * from "@poetry/controllers/helpers/typeahead"
 export * from "@poetry/controllers/helpers/filter_rank"
 
-// identifier -> controller class, for every sidecar controller poetry ships.
+/**
+ * identifier -> controller class, for every sidecar controller poetry
+ * ships. The manifest (config/controllers_manifest.json) is introspected
+ * from these classes; {@link registerPoetryControllers} registers them
+ * all.
+ *
+ * @type {Object<string, typeof import("@hotwired/stimulus").Controller>}
+ */
 export const controllers = {
   "poetry--core--state": StateController,
   "poetry--core--dialog": DialogController,
@@ -184,9 +191,17 @@ export const controllers = {
 // imports the controllers (no cycle).
 registerBridgeEvents(Object.values(controllers).flatMap((controller) => controller.events ?? []))
 
-// The bundler-host one-liner: registers every poetry controller on the
-// host's Stimulus application (importmap hosts get the same registrations
-// via the engine's pins + this same call in their controllers/index.js).
+/**
+ * The bundler-host one-liner: registers every poetry controller on the
+ * host's Stimulus application (importmap hosts get the same
+ * registrations via the engine's pins + this same call in their
+ * controllers/index.js), arms the portal event bridge, and installs the
+ * unregistered-controller warning.
+ *
+ * @param {import("@hotwired/stimulus").Application} application
+ * @returns {import("@hotwired/stimulus").Application} the application,
+ *   for chaining
+ */
 export function registerPoetryControllers(application) {
   // Belt and braces with the module-scope registration above: any boot
   // path that reaches this call gets the portal bridge list even if it

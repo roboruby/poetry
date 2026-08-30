@@ -10,6 +10,12 @@ import { enterPresence } from "@poetry/controllers/helpers/presence"
 // enterPresence so the data-starting-style hook fires like every other
 // presence consumer.
 export default class SheetController extends DialogController {
+  /**
+   * Opens with the animated entry: showModal(), then the presence enter
+   * so the data-starting-style hook fires like every other presence
+   * consumer (the exit half is inherited - the base close() already holds
+   * through the slide-out).
+   */
   open() {
     this.dialogTarget.showModal()
     enterPresence(this.dialogTarget)

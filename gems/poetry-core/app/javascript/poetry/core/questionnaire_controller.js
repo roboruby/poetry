@@ -34,12 +34,17 @@ export default class QuestionnaireController extends Controller {
     shortcuts: { type: String, default: "" },
   }
 
+  /**
+   * Derives every stamp (checked/filled/status/progress/buttons) from the
+   * server-rendered DOM.
+   */
   connect() {
     this.#sync()
   }
 
   // --- navigation actions -------------------------------------------------
 
+  /** The previous button's click action: back one item (no validation). */
   previous() {
     const items = this.#enabledItems()
     const index = this.#currentIndex(items)
@@ -48,6 +53,10 @@ export default class QuestionnaireController extends Controller {
     this.#setItem(items[index - 1])
   }
 
+  /**
+   * The next button's click action: validate-gated advance - an invalid
+   * active item takes focus instead.
+   */
   next() {
     const items = this.#enabledItems()
     const index = this.#currentIndex(items)
@@ -59,6 +68,10 @@ export default class QuestionnaireController extends Controller {
     this.#setItem(items[index + 1])
   }
 
+  /**
+   * The skip button's click action (optional items only): stamps skipped,
+   * then advances - or submits from the last item.
+   */
   skip() {
     const items = this.#enabledItems()
     const index = this.#currentIndex(items)
@@ -72,8 +85,12 @@ export default class QuestionnaireController extends Controller {
     this.#setItem(items[index + 1])
   }
 
-  // Form submit: every enabled item must validate; the first invalid one
-  // becomes active with its error focused.
+  /**
+   * The form's submit action: every enabled item must validate; the first
+   * invalid one becomes active with its error focused.
+   *
+   * @param {SubmitEvent} event
+   */
   submit(event) {
     const invalid = this.#enabledItems().find((item) => !this.#validate(item))
     if (!invalid) return
@@ -83,8 +100,10 @@ export default class QuestionnaireController extends Controller {
     this.#focusInvalid(invalid)
   }
 
-  // Native reset restores the inputs; re-derive every stamp from the
-  // restored DOM and return to the first item.
+  /**
+   * The form's reset action: native reset restores the inputs; re-derive
+   * every stamp from the restored DOM and return to the first item.
+   */
   reset() {
     requestAnimationFrame(() => {
       this.#items().forEach((item) => {
@@ -101,6 +120,12 @@ export default class QuestionnaireController extends Controller {
 
   // --- answer tracking ----------------------------------------------------
 
+  /**
+   * The choice inputs' change action: re-stamps the item's choices,
+   * status, and validity.
+   *
+   * @param {Event} event
+   */
   change(event) {
     const input = event.target.closest(CHOICE_INPUT)
     if (!input) return
@@ -116,6 +141,11 @@ export default class QuestionnaireController extends Controller {
     this.#syncInvalid(item)
   }
 
+  /**
+   * The text inputs' input action: re-stamps filled/status/validity.
+   *
+   * @param {Event} event
+   */
   input(event) {
     const input = event.target.closest(TEXT_INPUT)
     if (!input) return
@@ -130,6 +160,14 @@ export default class QuestionnaireController extends Controller {
 
   // --- keyboard (the primitive's full map) --------------------------------
 
+  /**
+   * The form's keydown action (the primitive's full map): Cmd/Ctrl+Enter
+   * confirms, ArrowUp/Down move answer focus, ArrowLeft/Right navigate
+   * items (outside text entry and radios), Enter on a filled answer
+   * confirms, and letter/number shortcuts pick choices.
+   *
+   * @param {KeyboardEvent} event
+   */
   keydown(event) {
     if (event.defaultPrevented || event.isComposing || event.keyCode === 229) return
     const active = this.#activeItem()

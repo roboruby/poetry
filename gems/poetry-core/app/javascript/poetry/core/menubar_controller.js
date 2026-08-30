@@ -56,6 +56,10 @@ export default class MenubarController extends Controller {
     if (trigger && this.element.contains(trigger)) event.preventDefault()
   }
 
+  /**
+   * Wires the sibling-trigger interact-outside veto and reconciles one
+   * microtask behind (the per-menu controllers connect after the bar).
+   */
   connect() {
     this.element.addEventListener("poetry--core--dismissable:interact-outside", this.#onInteractOutside)
     this.#connected = true
@@ -69,13 +73,20 @@ export default class MenubarController extends Controller {
     })
   }
 
+  /** Unwires the veto listener. */
   disconnect() {
     this.element.removeEventListener("poetry--core--dismissable:interact-outside", this.#onInteractOutside)
     this.#connected = false
   }
 
-  // A host (outlet / Turbo Stream / URL param) may own the value; flipping
-  // the attribute drives the same machine.
+  /**
+   * Stimulus value callback - controllable state: a host (outlet / Turbo
+   * Stream / URL param) may own the value; flipping the attribute drives
+   * the same machine.
+   *
+   * @param {string} value
+   * @param {string} previous
+   */
   valueValueChanged(value, previous) {
     if (!this.#connected || value === previous) return
 
@@ -84,6 +95,13 @@ export default class MenubarController extends Controller {
 
   // --- the three behaviors ---
 
+  /**
+   * Each trigger's pointerdown action: opens (closing any sibling) or
+   * closes the open menu - left button only, ctrl-click passes (the macOS
+   * context menu); pointer-open leaves focus on the trigger.
+   *
+   * @param {PointerEvent | MouseEvent} event
+   */
   toggle(event) {
     const trigger = event.currentTarget
 
@@ -95,6 +113,12 @@ export default class MenubarController extends Controller {
     else this.#activate(trigger, "trigger-press", { openReason: "trigger-press", focus: false })
   }
 
+  /**
+   * Each trigger's pointerenter action - the gated hover: a no-op from
+   * cold; once ANY menu is open it swaps to the hovered menu.
+   *
+   * @param {PointerEvent} event
+   */
   hoverSlide(event) {
     const trigger = event.currentTarget
 
@@ -104,6 +128,13 @@ export default class MenubarController extends Controller {
     this.#activate(trigger, "trigger-hover", { openReason: "trigger-press", focus: false })
   }
 
+  /**
+   * Each trigger's keydown action: Enter/Space/ArrowDown open with the
+   * FIRST item focused, ArrowUp with the last (the family's open-reason
+   * contract).
+   *
+   * @param {KeyboardEvent} event
+   */
   triggerKeydown(event) {
     const trigger = event.currentTarget
 
@@ -118,12 +149,17 @@ export default class MenubarController extends Controller {
     }
   }
 
-  // poetry:menu:edge-navigate (cancelable, bubbling from the open menu's
-  // ROOT content). direction is the PHYSICAL arrow; RTL maps it here.
-  // ALWAYS consumed once the menu belongs to this bar - an unconsumed edge
-  // would fall through to the bar's roving-focus and move trigger focus
-  // while the menu stays open (bar arrows are inert while open, Radix
-  // parity). At a no-loop boundary that means: consumed, no move.
+  /**
+   * The edge-navigate action (cancelable, bubbling from the open menu's
+   * ROOT content). detail.direction is the PHYSICAL arrow; RTL maps it
+   * here. ALWAYS consumed once the menu belongs to this bar - an
+   * unconsumed edge would fall through to the bar's roving-focus and move
+   * trigger focus while the menu stays open (bar arrows are inert while
+   * open, Radix parity). At a no-loop boundary that means: consumed, no
+   * move.
+   *
+   * @param {CustomEvent} event
+   */
   slideAdjacent(event) {
     const trigger = this.#triggerFrom(event.target)
 
@@ -140,8 +176,12 @@ export default class MenubarController extends Controller {
     this.#activate(destination, "list-navigation", { openReason: "list-navigation", openSeed: "first", focus: true })
   }
 
-  // poetry:menu:closed from any of the bar's menus: null the value unless
-  // the close is one half of an in-flight swap.
+  /**
+   * The family's closed event, from any of the bar's menus: nulls the
+   * value unless the close is one half of an in-flight swap.
+   *
+   * @param {CustomEvent} event
+   */
   onMenuClosed(event) {
     if (this.#swapping) return
 

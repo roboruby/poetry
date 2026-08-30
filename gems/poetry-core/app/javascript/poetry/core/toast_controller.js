@@ -60,6 +60,12 @@ export default class ToastController extends Controller {
   #onWindowBlur = () => this.pause("window")
   #onWindowFocus = () => this.resume("window")
 
+  /**
+   * Assigns an id when missing, adopts the open pair, announces ONCE
+   * through the singleton, wires the pause sources and the toast-local
+   * Escape, and starts the auto-dismiss timer (queued/hidden toasts hold
+   * theirs).
+   */
   connect() {
     if (!this.element.id) this.element.id = `poetry-toast-${(toastSequence += 1).toString(16)}`
     if (!stateOf(this.element)) setState(this.element, "open")
@@ -96,6 +102,7 @@ export default class ToastController extends Controller {
     })
   }
 
+  /** Stops the timer and unwires every listener. */
   disconnect() {
     this.#stopTimer()
 
@@ -109,11 +116,23 @@ export default class ToastController extends Controller {
   //     mouseleave/focusout -> resume; the toaster + window paths call with
   //     string reasons) ---
 
+  /**
+   * Holds the auto-dismiss timer under a reason (hover/focus derive from
+   * events; the toaster and window paths pass strings). Reasons pool in a
+   * set, so overlapping pauses cannot resume early.
+   *
+   * @param {Event | string} [eventOrReason]
+   */
   pause(eventOrReason) {
     this.#pauseReasons.add(this.#reasonFor(eventOrReason))
     this.#stopTimer()
   }
 
+  /**
+   * Releases one pause reason; the timer restarts when none remain.
+   *
+   * @param {Event | string} [eventOrReason]
+   */
   resume(eventOrReason) {
     this.#pauseReasons.delete(this.#reasonFor(eventOrReason))
     this.#startTimer()
@@ -121,10 +140,18 @@ export default class ToastController extends Controller {
 
   // --- dismissal ---
 
-  // Reasons: timeout | close-press | action | swipe(reserved) | manual.
-  // close-press is Base UI vocabulary; timeout/action/queued/manual are
-  // poetry extensions (Base UI has no equivalents). A click on the action
-  // slot reports "action"; the close button "close-press".
+  /**
+   * Dismisses the toast. Reasons: timeout | close-press | action |
+   * swipe(reserved) | manual. close-press is Base UI vocabulary;
+   * timeout/action/queued/manual are poetry extensions (Base UI has no
+   * equivalents). A click on the action slot reports "action"; the close
+   * button "close-press". The dismiss event goes out BEFORE removal (the
+   * toaster's reflow + focus-return seam); presence then holds the node
+   * through its exit animation.
+   *
+   * @param {Event | string} [eventOrReason] - the triggering event (the
+   *   reason derives from its origin) or an explicit reason string
+   */
   dismiss(eventOrReason) {
     if (this.#dismissed) return
 

@@ -29,9 +29,16 @@ export default class CheckboxGroupController extends Controller {
 
   #applying = false
 
-  // The wrapper's data-action route for every bubbling checkbox change.
-  // #applying mutes the echoes our own set() calls dispatch (a fan-out
-  // must not re-derive per row; a parent reflection must not fan out).
+  /**
+   * The wrapper's data-action route for every bubbling checkbox change: a
+   * parent toggle fans out, a row toggle re-derives the parent, and the
+   * group's own change event reports the enabled count/total. The
+   * applying flag mutes the echoes our own set() calls dispatch (a
+   * fan-out must not re-derive per row; a parent reflection must not fan
+   * out).
+   *
+   * @param {CustomEvent} event - the per-checkbox change
+   */
   changed(event) {
     if (this.#applying) return
 

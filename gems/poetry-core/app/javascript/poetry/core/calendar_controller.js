@@ -63,6 +63,7 @@ export default class CalendarController extends Controller {
   #today = null
   #booted = false
 
+  /** Syncs the selected/today vocabulary over the server-rendered grid. */
   connect() {
     // The server rendered the initial month correctly; just sync the
     // selected/today vocabulary in case selected was set programmatically.
@@ -70,15 +71,20 @@ export default class CalendarController extends Controller {
     this.#booted = true
   }
 
+  /** The previous-month button's click action. */
   previousMonth() {
     this.#goTo(this.#shiftMonth(-1))
   }
 
+  /** The next-month button's click action. */
   nextMonth() {
     this.#goTo(this.#shiftMonth(1))
   }
 
-  // Action: change->...#jump on the caption's month/year select wrappers.
+  /**
+   * The dropdown caption's change action (the month/year select
+   * wrappers): navigates to the selects' month.
+   */
   jump() {
     const read = (unit) => this.element.querySelector(`[data-calendar-unit="${unit}"] select`)?.value
     const month = read("month")
@@ -89,7 +95,13 @@ export default class CalendarController extends Controller {
     this.#goTo(`${year}-${String(month).padStart(2, "0")}`)
   }
 
-  // Action: click->poetry--core--calendar#select on each day button.
+  /**
+   * Each day button's click action: single mode writes the selection;
+   * range mode runs the addToRange transcription. The change event
+   * carries value (single) or start/end (range) as ISO strings.
+   *
+   * @param {MouseEvent} event
+   */
   select(event) {
     const button = event.target.closest(DAY_SELECTOR)
     if (!button || button.disabled) return
@@ -141,8 +153,12 @@ export default class CalendarController extends Controller {
     }
   }
 
-  // Action: keydown->poetry--core--calendar#keydown on the grid - arrows
-  // move focus by day/week, PageUp/Down by month, Home/End to week edges.
+  /**
+   * The grid's keydown action: arrows move focus by day/week, PageUp/Down
+   * by month, Home/End to the week edges.
+   *
+   * @param {KeyboardEvent} event
+   */
   keydown(event) {
     const current = event.target.closest(DAY_SELECTOR)
     if (!current) return
@@ -191,17 +207,21 @@ export default class CalendarController extends Controller {
     this.#render()
   }
 
-  // The DOM is the store (the anchor-point precedent): external writes to
-  // selected/month - the DatePicker input variant syncs typed dates this
-  // way - re-render on change. The #booted gate skips the init echo (the
-  // server's own paint - Stimulus fires initial value callbacks BEFORE
-  // connect, and a connect-era render would restamp data-today with the
-  // client clock over the server's pinned one). Internal writes re-render
-  // once more; the in-place cell diff makes that free.
+  /**
+   * Stimulus value callback. The DOM is the store (the anchor-point
+   * precedent): external writes to selected/month - the DatePicker input
+   * variant syncs typed dates this way - re-render on change. The booted
+   * gate skips the init echo (the server's own paint - Stimulus fires
+   * initial value callbacks BEFORE connect, and a connect-era render
+   * would restamp data-today with the client clock over the server's
+   * pinned one). Internal writes re-render once more; the in-place cell
+   * diff makes that free.
+   */
   selectedValueChanged() {
     if (this.#booted) this.#render()
   }
 
+  /** Stimulus value callback: re-renders on external month writes (see above). */
   monthValueChanged() {
     if (this.#booted) this.#render()
   }

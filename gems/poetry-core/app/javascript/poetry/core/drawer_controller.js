@@ -52,6 +52,12 @@ export default class DrawerController extends DialogController {
   #closing = false
   #snapIndex = 0
 
+  /**
+   * Opens per the modal value: showModal() plus the scroll lock, or the
+   * non-modal show() (no top layer - the component pins the panel; the
+   * body comment). The first snap offset lands BEFORE the enter
+   * transition starts, then the animated entry runs.
+   */
   open() {
     if (this.modalValue) {
       this.dialogTarget.showModal()
@@ -69,10 +75,14 @@ export default class DrawerController extends DialogController {
     enterPresence(this.dialogTarget)
   }
 
-  // Action (wired by the component only when modal: false):
-  // keydown->poetry--core--drawer#escapeClose on the <dialog>. A
-  // non-modal dialog never fires cancel, so Esc needs its own exit
-  // while focus is inside; modal drawers ride the native cancel.
+  /**
+   * The non-modal Escape exit (the component wires this keydown action
+   * only when modal is false): a non-modal dialog never fires cancel, so
+   * Esc needs its own path while focus is inside; modal drawers ride the
+   * native cancel.
+   *
+   * @param {KeyboardEvent} event
+   */
   escapeClose(event) {
     if (this.modalValue) return
     // isImeKeydown: an Escape canceling IME composition must never dismiss.
@@ -82,6 +92,13 @@ export default class DrawerController extends DialogController {
     this.close()
   }
 
+  /**
+   * Closes through the animated exit (data-ending-style), then the
+   * native close(), the unlock, and the swipe-var reset. The native
+   * cancel event (Esc) routes through here so state stays in sync.
+   *
+   * @param {Event} [event] - the native cancel event, when Esc drove it
+   */
   close(event) {
     if (event?.type === "cancel") event.preventDefault() // route Esc through the animated path
     if (this.#closing) return
@@ -99,7 +116,13 @@ export default class DrawerController extends DialogController {
 
   // --- the swipe -----------------------------------------------------------
 
-  // Action: pointerdown->poetry--core--drawer#swipeStart on the <dialog>.
+  /**
+   * The <dialog>'s pointerdown action: arms the swipe - always from the
+   * handle; elsewhere only when the press is not on a control and no
+   * scrollable child still scrolls toward the gesture.
+   *
+   * @param {PointerEvent} event
+   */
   swipeStart(event) {
     if (event.button !== 0 && event.pointerType === "mouse") return
     if (this.#closing) return
@@ -123,6 +146,13 @@ export default class DrawerController extends DialogController {
     this.dialogTarget.setPointerCapture(event.pointerId)
   }
 
+  /**
+   * The captured pointermove action: past the slop, tracks the drag -
+   * writing the swipe CSS vars (the finger-following, duration-0 window)
+   * and the release velocity.
+   *
+   * @param {PointerEvent} event
+   */
   swipeMove(event) {
     const swipe = this.#swipe
     if (!swipe || event.pointerId !== swipe.pointerId) return
@@ -152,6 +182,13 @@ export default class DrawerController extends DialogController {
     this.#writeSwipeVars(movement)
   }
 
+  /**
+   * The pointerup action - release physics: dismiss past half the travel
+   * or on a flick (exit duration scaled by the remaining travel), else
+   * snap back; snap-pointed sheets settle between their points instead.
+   *
+   * @param {PointerEvent} event
+   */
   swipeEnd(event) {
     const swipe = this.#swipe
     if (!swipe || event.pointerId !== swipe.pointerId) return
@@ -176,6 +213,11 @@ export default class DrawerController extends DialogController {
     }
   }
 
+  /**
+   * The pointercancel action: abandons the drag and snaps home.
+   *
+   * @param {PointerEvent} event
+   */
   swipeCancel(event) {
     const swipe = this.#swipe
     if (!swipe || event.pointerId !== swipe.pointerId) return

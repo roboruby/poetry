@@ -25,17 +25,20 @@ export default class AutocompleteController extends Controller {
     openOnFocus: { type: Boolean, default: true }
   }
 
+  /** Closes an open popup so its state never outlives the controller. */
   disconnect() {
     if (this.openValue) this.#close()
   }
 
   // --- input events --------------------------------------------------------
 
+  /** The input action: re-filters the list and opens. */
   input() {
     this.#filter()
     if (!this.openValue) this.#open()
   }
 
+  /** The focus action: opens pre-typing when openOnFocus allows. */
   focus() {
     if (this.openOnFocusValue && !this.openValue) {
       this.#filter()
@@ -43,6 +46,12 @@ export default class AutocompleteController extends Controller {
     }
   }
 
+  /**
+   * The focusout action: closes, unless focus moved into the popup (an
+   * item click commits first - the body comment).
+   *
+   * @param {FocusEvent} event
+   */
   blurred(event) {
     // Focus moving into the popup (a click on an item) must not close
     // before the click commits - the item's pointerdown commits first.
@@ -51,6 +60,14 @@ export default class AutocompleteController extends Controller {
     if (this.openValue) this.#close()
   }
 
+  /**
+   * The input's keydown action: arrows open / move the highlight, Enter
+   * commits it, Escape closes (consumed - the next press reaches the
+   * layer above), Tab closes and passes through. IME keydowns are
+   * ignored.
+   *
+   * @param {KeyboardEvent} event
+   */
   keydown(event) {
     if (event.isComposing || event.keyCode === 229) return
 
@@ -86,7 +103,12 @@ export default class AutocompleteController extends Controller {
     }
   }
 
-  // Pointerdown (not click): commit BEFORE the input's blur closes the popup.
+  /**
+   * Each item's pointerdown action (not click): commits BEFORE the
+   * input's blur closes the popup.
+   *
+   * @param {PointerEvent} event
+   */
   itemPress(event) {
     const item = event.target.closest(ITEM_SELECTOR)
     if (!item || item.hasAttribute("data-disabled")) return
@@ -95,6 +117,12 @@ export default class AutocompleteController extends Controller {
     this.#commit(item, "item-press")
   }
 
+  /**
+   * Each item's pointerenter action: moves the highlight under the
+   * pointer.
+   *
+   * @param {PointerEvent} event
+   */
   itemEnter(event) {
     const item = event.target.closest(ITEM_SELECTOR)
     if (!item || item.hasAttribute("data-disabled")) return

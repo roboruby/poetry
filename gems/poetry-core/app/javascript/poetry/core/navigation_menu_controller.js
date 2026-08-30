@@ -46,6 +46,10 @@ export default class NavigationMenuController extends Controller {
   #unsubscribeBeforeCache = null
   #sizeGeneration = 0
 
+  /**
+   * Subscribes the before-cache close (the body comment holds the zombie
+   * rules).
+   */
   connect() {
     // Close before Turbo snapshots: an open panel serialized into the
     // cache restores with data-open (viewport-mode panels also serialize
@@ -60,6 +64,10 @@ export default class NavigationMenuController extends Controller {
     })
   }
 
+  /**
+   * Clears the timer and unwires the outside-press and before-cache
+   * listeners.
+   */
   disconnect() {
     this.#clearTimer()
     this.#unbindOutsidePress()
@@ -67,7 +75,11 @@ export default class NavigationMenuController extends Controller {
     this.#unsubscribeBeforeCache = null
   }
 
-  // Action: click->...#toggle on each trigger - immediate, cancels intent.
+  /**
+   * Each trigger's click action - immediate, cancels hover intent.
+   *
+   * @param {MouseEvent} event
+   */
   toggle(event) {
     const value = this.#valueFrom(event)
     if (value === null) return
@@ -77,9 +89,14 @@ export default class NavigationMenuController extends Controller {
     else this.#open(value)
   }
 
-  // Actions: pointerenter/pointerleave->...#scheduleOpen/#scheduleClose on
-  // each ITEM (the panel lives inside it, so moving into the panel never
-  // schedules a close).
+  /**
+   * Each ITEM's pointerenter action (the panel lives inside its item, so
+   * moving into the panel never schedules a close): arms hover intent -
+   * instant switch while the bar is already open, the open delay on cold
+   * entry. Touch is click's job.
+   *
+   * @param {PointerEvent} event
+   */
   scheduleOpen(event) {
     if (event.pointerType === "touch") return // touch is click's job
 
@@ -95,6 +112,11 @@ export default class NavigationMenuController extends Controller {
     this.#schedule(() => this.#open(value), this.#openValue === null ? this.openDelayValue : 0)
   }
 
+  /**
+   * Each ITEM's pointerleave action: arms the close grace.
+   *
+   * @param {PointerEvent} event
+   */
   scheduleClose(event) {
     if (event.pointerType === "touch") return
     if (this.#openValue === null) return
@@ -102,14 +124,22 @@ export default class NavigationMenuController extends Controller {
     this.#schedule(() => this.#close(), this.closeDelayValue)
   }
 
-  // Action: pointerenter->...#cancelClose on the shared positioner - in
-  // viewport mode the panel no longer lives inside its item, so entering
-  // the popup must cancel a pending close.
+  /**
+   * The shared positioner's pointerenter action - in viewport mode the
+   * panel no longer lives inside its item, so entering the popup must
+   * cancel a pending close.
+   */
   cancelClose() {
     this.#clearTimer()
   }
 
-  // Action: keydown->...#keydown on the root.
+  /**
+   * The root's keydown action: Escape closes and refocuses the trigger;
+   * ArrowLeft/Right move between the bar's stops (triggers and top-level
+   * links).
+   *
+   * @param {KeyboardEvent} event
+   */
   keydown(event) {
     if (event.key === "Escape") {
       if (isImeKeydown(event)) return
@@ -135,8 +165,12 @@ export default class NavigationMenuController extends Controller {
     next.focus()
   }
 
-  // Action: focusout->...#focusLeft on the root - a disclosure closes when
-  // focus leaves it entirely (never traps).
+  /**
+   * The root's focusout action - a disclosure closes when focus leaves it
+   * entirely (never traps).
+   *
+   * @param {FocusEvent} event
+   */
   focusLeft(event) {
     const next = event.relatedTarget
 

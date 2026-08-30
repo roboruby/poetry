@@ -16,19 +16,29 @@ export default class extends Controller {
   static targets = ["trigger", "content"]
   static values = { state: { type: String, default: "closed" } }
 
+  /**
+   * Seeds the pair from the Value default when no other layer wrote it,
+   * then reflects the current state onto the optional targets.
+   */
   connect() {
     if (!stateOf(this.element)) setState(this.element, this.stateValue)
     this.#reflect(stateOf(this.element))
   }
 
+  /** Abandons any exit animation still holding the content. */
   disconnect() {
     this.#cancelExit?.()
   }
 
+  /** The toggle action: open when closed, close when open. */
   toggle() {
     stateOf(this.element) === "open" ? this.close() : this.open()
   }
 
+  /**
+   * Opens: flips the pair, unhides the content target (when present) and
+   * runs its entry presence, mirrors aria-expanded onto the trigger.
+   */
   open() {
     setState(this.element, "open")
     this.#cancelExit?.()
@@ -39,6 +49,10 @@ export default class extends Controller {
     this.#reflect("open")
   }
 
+  /**
+   * Closes: flips the pair and holds the content target through its exit
+   * animation before hiding it (the presence contract).
+   */
   close() {
     setState(this.element, "closed")
     if (this.hasContentTarget) {

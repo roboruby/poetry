@@ -103,6 +103,12 @@ export default class ComboboxController extends Controller {
   #placeholder = ""
   #dismissedEvent = null
 
+  /**
+   * Wires the content (and chips-field) listeners, captures the
+   * placeholder, reconciles silently from the native select / the Value
+   * (multiple parses the JSON-array seam), and catches a server-open
+   * popup up (layers + the late portal).
+   */
   connect() {
     const content = this.#content()
 
@@ -154,6 +160,9 @@ export default class ComboboxController extends Controller {
     })
   }
 
+  /**
+   * Restores portaled content (drop-never-strand) and unwires everything.
+   */
   disconnect() {
     this.#connected = false
 
@@ -171,6 +180,11 @@ export default class ComboboxController extends Controller {
 
   // --- controllable state ---
 
+  /**
+   * Stimulus value callback - controllable open state.
+   *
+   * @param {boolean} value
+   */
   openValueChanged(value) {
     if (!this.#connected) return
 
@@ -178,6 +192,12 @@ export default class ComboboxController extends Controller {
     else if (!value && this.#isOpen()) this.#hide("none")
   }
 
+  /**
+   * Stimulus value callback - controllable value (multiple parses the
+   * JSON-array seam; both modes no-op on the applied echo).
+   *
+   * @param {string} value
+   */
   valueValueChanged(value) {
     if (!this.#connected) return
 
@@ -197,16 +217,22 @@ export default class ComboboxController extends Controller {
 
   // --- trigger actions ---
 
+  /** The trigger's click action: open <-> close. */
   toggle() {
     if (this.#isOpen()) this.#hide("trigger-press")
     else this.#show("trigger-press")
   }
 
-  // Enter / Space / ArrowDown / ArrowUp open (reason: list-navigation). A
-  // PRINTABLE key opens AND seeds the filter input with the char (reason:
-  // keyboard + the char as data-open-seed, a poetry extension - the char is
-  // never lost, the filter pass runs immediately).
-  // There is deliberately NO closed-trigger typeahead-commit here.
+  /**
+   * The trigger's keydown action: Enter / Space / ArrowDown / ArrowUp
+   * open (reason: list-navigation). A PRINTABLE key opens AND seeds the
+   * filter input with the char (reason: keyboard + the char as
+   * data-open-seed, a poetry extension - the char is never lost, the
+   * filter pass runs immediately). There is deliberately NO
+   * closed-trigger typeahead-commit here.
+   *
+   * @param {KeyboardEvent} event
+   */
   triggerKeydown(event) {
     if (this.#isOpen()) return
 
@@ -224,9 +250,14 @@ export default class ComboboxController extends Controller {
 
   // --- the chips field (multiple) ---
 
-  // Mousedown anywhere in the chips FRAME focuses the input and opens the
-  // popup (Base UI: the whole frame is the field) - except a chip-remove
-  // press, which is a removal, never a chips-area press.
+  /**
+   * The chips frame's pointerdown action (multiple): a press anywhere in
+   * the FRAME focuses the input and opens the popup (Base UI: the whole
+   * frame is the field) - except a chip-remove press, which is a removal,
+   * never a chips-area press.
+   *
+   * @param {PointerEvent} event
+   */
   chipsPointerdown(event) {
     const input = this.#input()
 
@@ -242,12 +273,16 @@ export default class ComboboxController extends Controller {
     if (!this.#isOpen()) this.#show("trigger-press")
   }
 
-  // The inline input's OWN keyboard map (multiple; the engine's map rides
-  // the same keydown): Backspace on an empty input removes the LAST chip
-  // (focus stays here), ArrowLeft at caret 0 walks into the chips,
-  // ArrowDown/Up reopen the popup, Enter with no highlight closes, and
-  // Escape on the CLOSED popup clears the query AND wipes the selection
-  // to [] (Base UI-exact; readOnly blocks every mutation).
+  /**
+   * The inline input's OWN keyboard map (multiple; the engine's map rides
+   * the same keydown): Backspace on an empty input removes the LAST chip
+   * (focus stays here), ArrowLeft at caret 0 walks into the chips,
+   * ArrowDown/Up reopen the popup, Enter with no highlight closes, and
+   * Escape on the CLOSED popup clears the query AND wipes the selection
+   * to [] (Base UI-exact; readOnly blocks every mutation).
+   *
+   * @param {KeyboardEvent} event
+   */
   inputKeydown(event) {
     if (!this.multipleValue) return
 
@@ -295,11 +330,15 @@ export default class ComboboxController extends Controller {
     }
   }
 
-  // A focused chip's keyboard map (Base UI): Left/Right walk the chips
-  // (off either end -> back to the input), Backspace/Delete remove (next
-  // highlight: same index, step back at the tail, the input once
-  // emptied), Enter/Space are no-ops returning to the input, ArrowDown/Up
-  // reopen the popup, a printable char resumes the typing session.
+  /**
+   * A focused chip's keyboard map (Base UI): Left/Right walk the chips
+   * (off either end -> back to the input), Backspace/Delete remove (next
+   * highlight: same index, step back at the tail, the input once
+   * emptied), Enter/Space are no-ops returning to the input, ArrowDown/Up
+   * reopen the popup, and a printable char resumes the typing session.
+   *
+   * @param {KeyboardEvent} event
+   */
   chipKeydown(event) {
     const origin = event.currentTarget instanceof Element ? event.currentTarget : event.target
     const chip = origin instanceof Element ? origin.closest(CHIP_SELECTOR) : null
@@ -347,8 +386,12 @@ export default class ComboboxController extends Controller {
     }
   }
 
-  // ChipRemove press (its click action): remove the chip's value; focus
-  // returns to the input WITHOUT opening (not a chips-area press).
+  /**
+   * The chip-remove button's click action: removes the chip's value;
+   * focus returns to the input WITHOUT opening (not a chips-area press).
+   *
+   * @param {MouseEvent} event
+   */
   removeChip(event) {
     if (this.#input()?.readOnly) return
 
@@ -367,11 +410,14 @@ export default class ComboboxController extends Controller {
 
   // --- the show_clear X (its click action) ---
 
-  // The trigger-side deselection surface (Base UI Combobox.Clear): commit
-  // the blank value through the pipeline, then hand focus to the trigger -
-  // the X hides itself once the value empties, and a focused hidden
-  // button would drop focus to body. Single mode only (the component
-  // raises on multiple; the guard here is belt and braces).
+  /**
+   * The show_clear X's click action - the trigger-side deselection
+   * surface (Base UI Combobox.Clear): commits the blank value through the
+   * pipeline, then hands focus to the trigger (the X hides itself once
+   * the value empties, and a focused hidden button would drop focus to
+   * body). Single mode only (the component raises on multiple; the guard
+   * here is belt and braces).
+   */
   clear() {
     if (this.multipleValue) return
 
@@ -381,15 +427,35 @@ export default class ComboboxController extends Controller {
 
   // --- programmatic API ---
 
+  /**
+   * Programmatically opens.
+   *
+   * @param {string | Event} [reason="trigger-press"] - a family reason
+   *   string; an Event reads as trigger-press
+   * @param {Object} [options]
+   * @param {string} [options.seed=""] - a printable char pre-seeding the
+   *   filter input
+   */
   open(reason = "trigger-press", { seed = "" } = {}) {
     if (reason instanceof Event) this.#show("trigger-press")
     else this.#show(reason, { seed })
   }
 
+  /**
+   * Programmatically closes.
+   *
+   * @param {string | Event} [reason="none"]
+   */
   close(reason = "none") {
     this.#hide(reason instanceof Event ? "none" : reason)
   }
 
+  /**
+   * The programmatic controllable-state surface (multiple accepts an
+   * array).
+   *
+   * @param {string | string[] | null} value
+   */
   setValue(value) {
     if (this.multipleValue) {
       const values = this.#listValues(value)
@@ -407,6 +473,11 @@ export default class ComboboxController extends Controller {
 
   // --- autofill adoption (Select's path verbatim) ---
 
+  /**
+   * The hidden native's change action: browser autofill (or any
+   * programmatic write) adopts - multiple compares MEMBERSHIP, not order
+   * (the body comment holds the reorder rule).
+   */
   nativeChanged() {
     if (this.multipleValue) {
       const values = this.#nativeValues()

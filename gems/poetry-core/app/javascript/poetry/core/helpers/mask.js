@@ -1,5 +1,5 @@
-// The mask engine, adapted from Mantine's use-mask hook (MIT, v9.4.1).
-// Adapted from https://github.com/mantinedev/mantine - see THIRD_PARTY_NOTICES.md.
+// The mask engine, adapted from Mantine's use-mask hook (MIT, v9.4.1 -
+// source and license in THIRD_PARTY_NOTICES.md).
 // Pure functions over a parsed slot list, zero DOM. A mask is a sequence of
 // slots: token slots
 // validate ONE character against a pattern, literal slots are fixed chrome
@@ -7,6 +7,7 @@
 // decision lives here so it stays exhaustively unit-testable; the caret
 // math and events live in mask_controller.js.
 
+/** The default token map: mask char -> the pattern one input char must match. */
 export const DEFAULT_TOKENS = {
   "9": /[0-9]/,
   a: /[A-Za-z]/,
@@ -15,11 +16,20 @@ export const DEFAULT_TOKENS = {
   "#": /[-+0-9]/
 }
 
-// String grammar: token chars from the (custom-over-default merged) token
-// map, "\" escapes the next char to a literal, "?" is consumed and makes
-// every LATER slot optional - the flag is STICKY, it never resets, so
-// "(999) 999-9999? x9999" is complete without the extension. Array
-// grammar: RegExp item = token slot, string item = literal.
+/**
+ * Parses a mask into a slot list. String grammar: token chars from the
+ * (custom-over-default merged) token map, "\" escapes the next char to a
+ * literal, "?" is consumed and makes every LATER slot optional - the flag
+ * is STICKY, it never resets, so "(999) 999-9999? x9999" is complete
+ * without the extension. Array grammar: RegExp item = token slot, string
+ * item = literal.
+ *
+ * @param {string | Array<RegExp | string>} mask
+ * @param {Object<string, RegExp>} [tokens={}] - custom tokens, merged
+ *   over {@link DEFAULT_TOKENS}
+ * @returns {Array<Object>} slots: { type: "token" | "literal", char,
+ *   pattern?, optional? }
+ */
 export function parseMask(mask, tokens = {}) {
   if (Array.isArray(mask)) {
     return mask.map((item) =>
@@ -54,11 +64,18 @@ export function parseMask(mask, tokens = {}) {
   return slots
 }
 
-// Raw chars -> masked string. Literals append EAGERLY (raw "12" under
-// "99/99" is "12/" - the separator paints the moment it is reachable); a
-// token slot consumes the next raw char when it matches, else silently
-// DROPS it and retries the SAME slot with the following char; transform
-// (poetry's upcase knob) runs before validation.
+/**
+ * Raw chars -> masked string. Literals append EAGERLY (raw "12" under
+ * "99/99" is "12/" - the separator paints the moment it is reachable); a
+ * token slot consumes the next raw char when it matches, else silently
+ * DROPS it and retries the SAME slot with the following char; transform
+ * (poetry's upcase knob) runs before validation.
+ *
+ * @param {string} raw
+ * @param {Array<Object>} slots - from {@link parseMask}
+ * @param {(char: string) => string} [transform]
+ * @returns {string} the masked value
+ */
 export function applyMaskToRaw(raw, slots, transform) {
   let result = ""
   let rawIndex = 0
@@ -87,10 +104,16 @@ export function applyMaskToRaw(raw, slots, transform) {
   return result
 }
 
-// Re-parse arbitrary display text (autofill, a server-rendered value, IME
-// output): literals self-match or are inserted, token slots scan forward
-// discarding non-matching chars, and the walk stops at the first slot the
-// remaining text cannot fill.
+/**
+ * Re-parses arbitrary display text (autofill, a server-rendered value,
+ * IME output): literals self-match or are inserted, token slots scan
+ * forward discarding non-matching chars, and the walk stops at the first
+ * slot the remaining text cannot fill.
+ *
+ * @param {string} text
+ * @param {Array<Object>} slots
+ * @returns {string} the re-masked value
+ */
 export function processInput(text, slots) {
   let result = ""
   let index = 0
@@ -123,7 +146,13 @@ export function processInput(text, slots) {
   return result
 }
 
-// Chars at token positions - the value the form actually means.
+/**
+ * Chars at token positions - the value the form actually means.
+ *
+ * @param {string} masked
+ * @param {Array<Object>} slots
+ * @returns {string}
+ */
 export function extractRaw(masked, slots) {
   let raw = ""
 
@@ -134,10 +163,18 @@ export function extractRaw(masked, slots) {
   return raw
 }
 
-// Pad the masked value with the mask skeleton. slotChar "_" by default; a
-// multi-char slotChar indexes per position ("dd/mm/yyyy" under a date
-// mask) falling back to "_" past its end; null/"" disables padding (the
-// display stops at the first empty token slot).
+/**
+ * Pads the masked value with the mask skeleton. slotChar "_" by default;
+ * a multi-char slotChar indexes per position ("dd/mm/yyyy" under a date
+ * mask) falling back to "_" past its end; null/"" disables padding (the
+ * display stops at the first empty token slot).
+ *
+ * @param {string} value - the masked value so far
+ * @param {Array<Object>} slots
+ * @param {string | null} [slotChar="_"]
+ * @param {boolean} [showSlots=true] - false returns `value` untouched
+ * @returns {string}
+ */
 export function buildDisplayValue(value, slots, slotChar = "_", showSlots = true) {
   if (!showSlots) return value
 
@@ -167,16 +204,29 @@ function slotCharAt(slotChar, index) {
   return slotChar.length > 1 ? (slotChar[index] ?? "_") : slotChar
 }
 
-// Complete = every non-optional token position is filled and pattern-valid.
+/**
+ * Complete = every non-optional token position is filled and
+ * pattern-valid.
+ *
+ * @param {string} masked
+ * @param {Array<Object>} slots
+ * @returns {boolean}
+ */
 export function checkComplete(masked, slots) {
   return slots.every((slot, i) =>
     slot.type !== "token" || slot.optional || (i < masked.length && slot.pattern.test(masked[i]))
   )
 }
 
-// Regex source for the HTML pattern attribute: "full" wraps each token in
-// a capture group, "full-inexact" doesn't; optional tokens get a trailing
-// "?"; literals are regex-escaped.
+/**
+ * Regex source for the HTML pattern attribute: "full" wraps each token in
+ * a capture group, "full-inexact" doesn't; optional tokens get a trailing
+ * "?"; literals are regex-escaped.
+ *
+ * @param {Array<Object>} slots
+ * @param {"full" | "full-inexact"} [kind="full"]
+ * @returns {string}
+ */
 export function generatePattern(slots, kind = "full") {
   return slots.map((slot) => {
     if (slot.type === "literal") return slot.char.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
@@ -187,15 +237,28 @@ export function generatePattern(slots, kind = "full") {
   }).join("")
 }
 
-// Skip a literal run rightward from pos, bounded by the filled region -
-// the caret never lands inside chrome or out in the skeleton.
+/**
+ * Skips a literal run rightward from `pos`, bounded by the filled region
+ * - the caret never lands inside chrome or out in the skeleton.
+ *
+ * @param {number} pos
+ * @param {Array<Object>} slots
+ * @param {number} filledLength
+ * @returns {number}
+ */
 export function findNextEditablePosition(pos, slots, filledLength) {
   while (pos < slots.length && pos < filledLength && slots[pos].type === "literal") pos++
 
   return pos
 }
 
-// First token position at or after `from` (slots.length when none).
+/**
+ * First token position at or after `from`.
+ *
+ * @param {Array<Object>} slots
+ * @param {number} [from=0]
+ * @returns {number} slots.length when none
+ */
 export function nextTokenPosition(slots, from = 0) {
   for (let i = from; i < slots.length; i++) {
     if (slots[i].type === "token") return i
@@ -204,7 +267,13 @@ export function nextTokenPosition(slots, from = 0) {
   return slots.length
 }
 
-// Last token position at or before `from` (-1 when none).
+/**
+ * Last token position at or before `from`.
+ *
+ * @param {Array<Object>} slots
+ * @param {number} from
+ * @returns {number} -1 when none
+ */
 export function prevTokenPosition(slots, from) {
   for (let i = from; i >= 0; i--) {
     if (slots[i].type === "token") return i

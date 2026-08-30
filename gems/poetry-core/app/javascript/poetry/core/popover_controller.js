@@ -47,6 +47,11 @@ export default class PopoverController extends Controller {
   #suppressRestore = false
   #cancelExit = null
 
+  /**
+   * Wires the content listeners (programmatic - portal-safe) and
+   * reconciles: server-open content adopts the layer stack and re-portals
+   * one frame late (the body comments hold the rules).
+   */
   connect() {
     const content = this.#content()
 
@@ -67,6 +72,10 @@ export default class PopoverController extends Controller {
     }
   }
 
+  /**
+   * Restores portaled content (drop-never-strand) and unwires the
+   * content listeners.
+   */
   disconnect() {
     this.#connected = false
 
@@ -82,8 +91,13 @@ export default class PopoverController extends Controller {
     this.#cancelExit = null
   }
 
-  // Controllable state: a host (outlet / Turbo Stream / URL param) may own
-  // the open value; flipping the attribute drives the same machine.
+  /**
+   * Stimulus value callback - controllable state: a host (outlet / Turbo
+   * Stream / URL param) may own the open value; flipping the attribute
+   * drives the same machine.
+   *
+   * @param {boolean} value
+   */
   openValueChanged(value) {
     if (!this.#connected) return
 
@@ -91,9 +105,11 @@ export default class PopoverController extends Controller {
     else if (!value && this.#isOpen()) this.#hide("none")
   }
 
-  // --- trigger action (native button Enter/Space arrive as click - no
-  //     custom keydown map, the deliberate contrast with the menu trigger) ---
-
+  /**
+   * The trigger's click action (native button Enter/Space arrive as
+   * click - no custom keydown map, the deliberate contrast with the menu
+   * trigger).
+   */
   toggle() {
     if (this.#isOpen()) this.#hide("trigger-press")
     else this.#show()
@@ -101,10 +117,17 @@ export default class PopoverController extends Controller {
 
   // --- programmatic API (the controllable-state surface) ---
 
+  /** Programmatically opens. */
   open() {
     this.#show()
   }
 
+  /**
+   * Programmatically closes.
+   *
+   * @param {string | Event} [reason="none"] - a Base UI reason string; an
+   *   Event (data-action use) reads as "none"
+   */
   close(reason = "none") {
     this.#hide(reason instanceof Event ? "none" : reason)
   }

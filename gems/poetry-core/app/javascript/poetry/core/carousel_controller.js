@@ -26,17 +26,21 @@ export default class CarouselController extends Controller {
 
   #raf = null
 
+  /** Syncs button state to the initial scroll position. */
   connect() {
     this.#sync()
   }
 
+  /** Cancels any pending sync frame. */
   disconnect() {
     if (this.#raf !== null) cancelAnimationFrame(this.#raf)
   }
 
-  // Action: scroll->poetry--core--carousel#scrolled on the viewport -
-  // button state follows the SCROLL (finger, wheel, keyboard PageDown),
-  // not just our own paging. rAF-coalesced: scroll fires in bursts.
+  /**
+   * The viewport's scroll action - button state follows the SCROLL
+   * (finger, wheel, keyboard PageDown), not just our own paging.
+   * rAF-coalesced: scroll fires in bursts.
+   */
   scrolled() {
     if (this.#raf !== null) return
 
@@ -46,16 +50,22 @@ export default class CarouselController extends Controller {
     })
   }
 
+  /** The previous button's click action: pages one slide back. */
   previous() {
     this.#scrollTo(this.#index() - 1)
   }
 
+  /** The next button's click action: pages one slide forward. */
   next() {
     this.#scrollTo(this.#index() + 1)
   }
 
-  // Action: keydown->poetry--core--carousel#keydown on the region root
-  // (the shadcn wrapper contract: arrows page the carousel).
+  /**
+   * The region root's keydown action (the upstream wrapper contract):
+   * arrows page the carousel, orientation-aware.
+   *
+   * @param {KeyboardEvent} event
+   */
   keydown(event) {
     const [prevKey, nextKey] =
       this.orientationValue === "vertical" ? ["ArrowUp", "ArrowDown"] : ["ArrowLeft", "ArrowRight"]
@@ -69,7 +79,11 @@ export default class CarouselController extends Controller {
     }
   }
 
-  // The programmatic surface.
+  /**
+   * The programmatic surface: scrolls to a slide by index (clamped).
+   *
+   * @param {number | string} index - stringified numbers accepted
+   */
   scrollTo(index) {
     this.#scrollTo(Number(index))
   }

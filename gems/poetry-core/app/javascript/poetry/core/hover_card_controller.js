@@ -51,6 +51,10 @@ export default class HoverCardController extends Controller {
   #previousBodyUserSelect = null
   #onPointerup = () => this.#handlePointerup()
 
+  /**
+   * Wires the content listeners (portal-safe) and reconciles a
+   * server-pinned card (layer + tabindex strip catch up; the DOM wins).
+   */
   connect() {
     const content = this.#content()
 
@@ -68,6 +72,10 @@ export default class HoverCardController extends Controller {
     }
   }
 
+  /**
+   * Clears every timer, restores suppressed selection and portaled
+   * content (drop-never-strand), and unwires the listeners.
+   */
   disconnect() {
     this.#connected = false
     this.#clearOpenTimer()
@@ -87,7 +95,12 @@ export default class HoverCardController extends Controller {
     document.removeEventListener("pointerup", this.#onPointerup)
   }
 
-  // Controllable state: pinned previews (Turbo Stream / Outlet ownership).
+  /**
+   * Stimulus value callback - controllable state: pinned previews (Turbo
+   * Stream / Outlet ownership).
+   *
+   * @param {boolean} value
+   */
   openValueChanged(value) {
     if (!this.#connected) return
 
@@ -97,8 +110,13 @@ export default class HoverCardController extends Controller {
 
   // --- trigger actions ---
 
-  // pointerenter arms the open timer; touch pointerType is EXCLUDED
-  // (Radix excludeTouch) - a tap navigates the link instead.
+  /**
+   * The trigger's pointerenter action: arms the open timer; touch
+   * pointerType is EXCLUDED (Radix excludeTouch) - a tap navigates the
+   * link instead.
+   *
+   * @param {PointerEvent} event
+   */
   pointerEnter(event) {
     if (event.pointerType === "touch") return
 
@@ -113,6 +131,13 @@ export default class HoverCardController extends Controller {
     }, this.openDelayValue)
   }
 
+  /**
+   * The trigger's pointerleave action: cancels a pending open; leaving
+   * toward the content keeps the card, anywhere else arms the close
+   * grace.
+   *
+   * @param {PointerEvent} event
+   */
   pointerLeave(event) {
     if (event.pointerType === "touch") return
 
@@ -124,13 +149,17 @@ export default class HoverCardController extends Controller {
     if (this.#isOpen()) this.#scheduleClose()
   }
 
-  // Focus opens IMMEDIATELY (Radix composes onFocus straight to open) - a
-  // keyboard user sees the preview even though they cannot enter it.
+  /**
+   * The trigger's focus action: opens IMMEDIATELY (Radix composes onFocus
+   * straight to open) - a keyboard user sees the preview even though they
+   * cannot enter it.
+   */
   focusOpen() {
     this.#clearCloseTimer()
     this.#show()
   }
 
+  /** The trigger's blur action: closes immediately. */
   blurClose() {
     this.#clearOpenTimer()
 
@@ -139,9 +168,14 @@ export default class HoverCardController extends Controller {
     if (this.#isOpen()) this.#hide("trigger-focus")
   }
 
-  // The touch guard: preventDefault on touchstart so a tap can never
-  // synthesize a focus event (Radix's 'prevent focus event on touch
-  // devices' comment, ported). The tap still navigates the link.
+  /**
+   * The trigger's touchstart action - the touch guard: preventDefault so
+   * a tap can never synthesize a focus event (Radix's 'prevent focus
+   * event on touch devices' comment, ported). The tap still navigates the
+   * link.
+   *
+   * @param {TouchEvent} event
+   */
   touchGuard(event) {
     event.preventDefault()
   }

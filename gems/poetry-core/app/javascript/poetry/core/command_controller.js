@@ -73,6 +73,11 @@ export default class CommandController extends Controller {
   #statusTimer = null
   #delegatedList = null
 
+  /**
+   * Reconciles (a non-empty input re-derives visibility + highlight
+   * silently; an empty one just seats the highlight) and wires the portal
+   * delegation on the list node (the body comments hold the rules).
+   */
   connect() {
     // Reconcile-on-connect (Turbo morph/stream safe): a non-empty input
     // re-derives visibility + highlight silently (no events for state the
@@ -102,6 +107,7 @@ export default class CommandController extends Controller {
     this.#connected = true
   }
 
+  /** Clears the timers and unwires the list delegation. */
   disconnect() {
     this.#connected = false
 
@@ -141,6 +147,10 @@ export default class CommandController extends Controller {
 
   // --- the filter pass (input action) ---
 
+  /**
+   * The input's input action: runs the filter pass (debounced when
+   * configured).
+   */
   filterInput() {
     if (this.debounceValue <= 0) {
       this.#pass()
@@ -156,13 +166,19 @@ export default class CommandController extends Controller {
   }
 
   // --- the activedescendant keyboard map (input action) ---
-  //
-  // Home/End/ArrowLeft/ArrowRight fall through to the input (CARET
-  // movement - APG-correct for an editable field; the upstream Home/End
-  // list-hijack is deliberately not ported; Meta/Ctrl+Arrows cover the
-  // list jump). Space TYPES a space, never activates (a text field - the
-  // family delta vs Select/menus). Esc/Tab are NOT handled - the hosting
-  // layer owns them (Dialog dismiss / Combobox close / natural tab-out).
+
+  /**
+   * The input's keydown action: ArrowUp/Down move the highlight
+   * (Meta/Ctrl jumps first/last), Enter activates it.
+   * Home/End/ArrowLeft/ArrowRight fall through to the input (CARET
+   * movement - APG-correct for an editable field; the upstream Home/End
+   * list-hijack is deliberately not ported). Space TYPES a space, never
+   * activates (a text field - the family delta vs Select/menus). Esc/Tab
+   * are NOT handled - the hosting layer owns them (Dialog dismiss /
+   * Combobox close / natural tab-out).
+   *
+   * @param {KeyboardEvent} event
+   */
   keydown(event) {
     switch (event.key) {
       case "ArrowDown":
@@ -213,6 +229,12 @@ export default class CommandController extends Controller {
 
   // --- activation (item click action) ---
 
+  /**
+   * Each in-scope item's click action: dispatches the cancelable select
+   * event - and nothing further (the engine-purity contract).
+   *
+   * @param {MouseEvent} event
+   */
   activate(event) {
     const origin = event.currentTarget instanceof Element ? event.currentTarget : event.target
     const item = origin instanceof Element ? origin.closest(ITEM_SELECTOR) : null
@@ -224,9 +246,14 @@ export default class CommandController extends Controller {
 
   // --- pointer highlight (item pointermove action) ---
 
-  // Pointer parity with the upstream palette: hovering highlights (no
-  // scroll chasing); pointerleave does NOT clear - the keyboard position
-  // survives mouse exit (upstream-exact).
+  /**
+   * Each in-scope item's pointermove action - pointer parity with the
+   * upstream palette: hovering highlights (no scroll chasing);
+   * pointerleave does NOT clear - the keyboard position survives mouse
+   * exit (upstream-exact).
+   *
+   * @param {PointerEvent} event
+   */
   pointerHighlight(event) {
     const origin = event.currentTarget instanceof Element ? event.currentTarget : event.target
     const item = origin instanceof Element ? origin.closest(ITEM_SELECTOR) : null
@@ -238,15 +265,24 @@ export default class CommandController extends Controller {
 
   // --- the composition surface (engine-generic; Combobox calls these) ---
 
-  // Move the highlight to a given option (visible + enabled required).
+  /**
+   * The composition surface (Combobox calls it): moves the highlight to a
+   * given option (visible + enabled required).
+   *
+   * @param {Element} item
+   * @param {Object} [options]
+   * @param {boolean} [options.scroll=true] - scroll the option into view
+   */
   highlightItem(item, { scroll = true } = {}) {
     if (!item || this.#isDisabled(item) || this.#isHidden(item)) return
 
     this.#highlight(item, { scroll })
   }
 
-  // Clear the query and silently re-derive visibility + highlight (the
-  // clean-reopen reset an overlay host runs on close).
+  /**
+   * Clears the query and silently re-derives visibility + highlight (the
+   * clean-reopen reset an overlay host runs on close).
+   */
   reset() {
     const input = this.#input()
 

@@ -35,6 +35,11 @@ export default class RadioGroupController extends Controller {
 
   #connected = false
 
+  /**
+   * Reconcile-on-connect: adopts the server-checked item into the Value
+   * when none was given, else normalizes the DOM to the Value (the body
+   * comment holds the rules).
+   */
   connect() {
     // Reconcile-on-connect: the server renders the checked state (aria +
     // the checked pair + input checked + the tab stop); adopt it into the Value
@@ -52,7 +57,12 @@ export default class RadioGroupController extends Controller {
 
   // --- actions ---
 
-  // Item click (also Space via native button activation).
+  /**
+   * Each item's click action (Space arrives here too, via native button
+   * activation): checks the pressed item.
+   *
+   * @param {MouseEvent} event
+   */
   check(event) {
     const origin = event.currentTarget instanceof Element ? event.currentTarget : event.target
     const item = origin instanceof Element ? origin.closest(ITEM_SELECTOR) : null
@@ -60,8 +70,13 @@ export default class RadioGroupController extends Controller {
     if (item) this.#check(item)
   }
 
-  // roving-focus:entry - fires ONLY on arrow/Home/End navigation (never on
-  // Tab), so this IS selection-follows-focus.
+  /**
+   * The roving-focus entry action - the entry event fires ONLY on
+   * arrow/Home/End navigation (never on Tab), so this IS
+   * selection-follows-focus (the APG contract).
+   *
+   * @param {CustomEvent} event - detail.item is the entered radio
+   */
   entryCheck(event) {
     const item = event.detail?.item
 
@@ -70,6 +85,12 @@ export default class RadioGroupController extends Controller {
 
   // --- the programmatic controllable-state surface ---
 
+  /**
+   * The programmatic controllable-state surface: checks the item carrying
+   * `value`. Unknown values log a debug line and change nothing.
+   *
+   * @param {string} value - an item's data-value
+   */
   setValue(value) {
     const item = this.#itemFor(value)
 
@@ -81,6 +102,13 @@ export default class RadioGroupController extends Controller {
     this.#check(item)
   }
 
+  /**
+   * Stimulus value callback: re-writes the DOM when the Value changes
+   * after connect (an Outlet or a host writing the attribute directly).
+   *
+   * @param {string} value
+   * @param {string} previous
+   */
   valueValueChanged(value, previous) {
     if (!this.#connected || value === previous) return
 

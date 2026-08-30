@@ -44,6 +44,11 @@ export default class CheckedController extends Controller {
   #form = null
   #initialIndeterminate = false
 
+  /**
+   * Reconcile-on-connect: derives input.checked/indeterminate from the
+   * checked attributes (the server truth), arms the form-reset restore,
+   * and installs the role-keyed Enter suppression.
+   */
   connect() {
     const input = this.#input()
 
@@ -82,6 +87,7 @@ export default class CheckedController extends Controller {
     }
   }
 
+  /** Unwires the keydown and form-reset listeners. */
   disconnect() {
     if (this.#keydown) this.element.removeEventListener("keydown", this.#keydown)
     if (this.#reset && this.#form) this.#form.removeEventListener("reset", this.#reset)
@@ -91,8 +97,10 @@ export default class CheckedController extends Controller {
     this.#form = null
   }
 
-  // Control activation (click / Space / label-for): indeterminate resolves
-  // to checked (Radix-exact), else flip.
+  /**
+   * Control activation (click / Space / label-for): indeterminate
+   * resolves to checked (Radix-exact), else flip.
+   */
   toggle() {
     if (this.#disabled()) return
 
@@ -104,17 +112,23 @@ export default class CheckedController extends Controller {
 
   // --- the programmatic controllable-state surface ---
 
+  /** Programmatically checks (see set). */
   check() {
     this.set(true)
   }
 
+  /** Programmatically unchecks (see set). */
   uncheck() {
     this.set(false)
   }
 
-  // set(true | false | "indeterminate") reaches all three states (the
-  // select-all recipe - checkbox_group_controller - re-enters
-  // indeterminate this way).
+  /**
+   * The programmatic controllable-state surface: set(true | false |
+   * "indeterminate") reaches all three states (the select-all recipe -
+   * checkbox_group_controller - re-enters indeterminate this way).
+   *
+   * @param {boolean | "indeterminate"} state
+   */
   set(state) {
     if (this.#disabled()) return
 

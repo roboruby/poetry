@@ -34,6 +34,12 @@ export default class FocusScopeController extends Controller {
   #onKeydown = (event) => this.#handleKeydown(event)
   #onFocusin = (event) => this.#handleFocusin(event)
 
+  /**
+   * Snapshots the focus-return element BEFORE any focus moves, pauses the
+   * previous scope and takes the top of the stack, takes the guard
+   * refcount when trapped, then runs mount auto-focus (cancelable - a
+   * consumer owns initial focus by vetoing it).
+   */
   connect() {
     // The container is the focus fallback when the scope has no tabbables.
     if (!this.element.hasAttribute("tabindex")) this.element.setAttribute("tabindex", "-1")
@@ -57,6 +63,11 @@ export default class FocusScopeController extends Controller {
     if (!mount.defaultPrevented) this.#focus(tabbableWithin(this.element)[0] ?? this.element)
   }
 
+  /**
+   * Leaves the stack (resuming the scope below when this was the top),
+   * releases the guards, and restores focus to the snapshot (cancelable -
+   * a consumer sends focus elsewhere by vetoing it).
+   */
   disconnect() {
     const wasTop = FocusScopeController.stack.at(-1) === this
     const index = FocusScopeController.stack.indexOf(this)

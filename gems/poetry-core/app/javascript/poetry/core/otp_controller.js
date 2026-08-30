@@ -39,6 +39,10 @@ export default class OtpController extends Controller {
   #completed = false
   #selectionListener = null
 
+  /**
+   * Compiles the pattern, adopts the input's value, and paints the
+   * initial projection (no events dispatched).
+   */
   connect() {
     this.#regex = this.#compile()
     this.#lastValue = this.inputTarget.value
@@ -46,12 +50,18 @@ export default class OtpController extends Controller {
     this.#sync({ dispatch: false })
   }
 
+  /** Unbinds the document-level selectionchange listener. */
   disconnect() {
     this.#unbindSelection()
   }
 
-  // input / focus / blur on the native input (one handler - the projection
-  // is idempotent; blur clears the active cell).
+  /**
+   * The native input's input / focus / blur action (one handler - the
+   * projection is idempotent; blur clears the active cell; focus binds
+   * the selectionchange re-projection).
+   *
+   * @param {Event} [event]
+   */
   sync(event) {
     if (event?.type === "focus") this.#bindSelection()
     if (event?.type === "blur") this.#unbindSelection()
@@ -59,11 +69,16 @@ export default class OtpController extends Controller {
     this.#sync()
   }
 
-  // Paste is the one native path maxlength breaks: the browser truncates
-  // the RAW clipboard text to maxlength before any input event, so
-  // "123-456" loses its tail before #sync can filter the dashes (real
-  // Chrome; jsdom doesn't enforce maxlength, which is why the unit tier
-  // never saw it). Intercept, filter FIRST, splice at the selection.
+  /**
+   * The paste action. Paste is the one native path maxlength breaks: the
+   * browser truncates the RAW clipboard text to maxlength before any
+   * input event, so "123-456" loses its tail before the sync pass could
+   * filter the dashes (real Chrome; jsdom doesn't enforce maxlength,
+   * which is why the unit tier never saw it). Intercept, filter FIRST,
+   * splice at the selection.
+   *
+   * @param {ClipboardEvent} event
+   */
   paste(event) {
     const text = event.clipboardData?.getData("text") ?? ""
 
@@ -84,8 +99,10 @@ export default class OtpController extends Controller {
     this.#sync()
   }
 
-  // Click anywhere on the container (gaps, separators - the input already
-  // covers the cells at z-20): focus the real control.
+  /**
+   * The container's click action (gaps, separators - the input already
+   * covers the cells at z-20): focuses the real control.
+   */
   focusInput() {
     if (this.inputTarget.disabled) return
 

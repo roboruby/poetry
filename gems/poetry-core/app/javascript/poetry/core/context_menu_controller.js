@@ -43,18 +43,29 @@ export default class ContextMenuController extends Controller {
   #suppressNative = null
   #onMenuClosed = null
 
+  /** Clears any armed long-press and stops the native-menu suppression. */
   disconnect() {
     this.#clearLongPress()
     this.#stopSuppressingNative()
   }
 
+  /**
+   * Stimulus value callback: disabling mid-press clears the armed
+   * long-press.
+   *
+   * @param {boolean} disabled
+   */
   disabledValueChanged(disabled) {
     if (disabled) this.#clearLongPress()
   }
 
-  // contextmenu on the trigger surface. Re-invoking on an already-open menu
-  // re-captures the point and repositions (popper's anchorPoint value is
-  // reactive; autoUpdate re-reads the stored point).
+  /**
+   * The trigger surface's contextmenu action. Re-invoking on an
+   * already-open menu re-captures the point and repositions (popper's
+   * anchorPoint value is reactive; autoUpdate re-reads the stored point).
+   *
+   * @param {MouseEvent} event
+   */
   open(event) {
     if (this.disabledValue) return // native menu passthrough - do NOT preventDefault
 
@@ -66,8 +77,13 @@ export default class ContextMenuController extends Controller {
     this.#openAt(point, point ? "pointer" : "keyboard")
   }
 
-  // Touch/pen long-press. While open, a press on the surface closes first
-  // (press-again-to-dismiss), then the timer arms for a fresh open.
+  /**
+   * The surface's pointerdown action - touch/pen long-press. While open,
+   * a press on the surface closes first (press-again-to-dismiss), then
+   * the timer arms for a fresh open.
+   *
+   * @param {PointerEvent} event
+   */
   pressStart(event) {
     if (this.disabledValue || event.pointerType === "mouse") return
 
@@ -85,7 +101,10 @@ export default class ContextMenuController extends Controller {
     }, this.longPressDelayValue)
   }
 
-  // pointermove / pointerup / pointercancel - any of them cancels the press.
+  /**
+   * pointermove / pointerup / pointercancel - any of them cancels the
+   * armed press.
+   */
   pressCancel() {
     this.#clearLongPress()
   }

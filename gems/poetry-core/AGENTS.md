@@ -88,6 +88,12 @@ files against the manifest stamped at last bless.
   `test/javascript/events_declaration.test.js` scans the source and fails on
   any undeclared or non-literal dispatch. The manifest, registry, and
   llms-full all render from the declaration.
+- Doc comments: file/class narration stays `//`; every PUBLIC method (and
+  every exported helper function/constant) carries a JSDoc `/** ... */`
+  block with `@param`/`@returns` - hard-private `#` members stay `//`.
+  Because the events scan reads RAW SOURCE, no comment anywhere in a
+  controller may quote a dispatch call or its option tokens - name events
+  in prose instead ("dispatches poetry:select:change").
 - Subclasses (Drawer extends Dialog) get their statics merged up the class
   chain by the manifest — declare only what the subclass itself adds.
 - Component DOM ids derive through `Poetry::Core::StableId` (`key:` →

@@ -50,6 +50,12 @@ export default class SidebarController extends Controller {
   #closingMobile = false
   #locked = false
 
+  /**
+   * Heals a restored zombie snapshot, reflects the server value once (the
+   * body comment explains why not openValueChanged), starts the
+   * breakpoint watcher, subscribes the before-cache close, and binds the
+   * shortcut.
+   */
   connect() {
     this.#healRestoredSnapshot()
     // Reflect the server value to the DOM once. We do NOT drive reflection
@@ -83,6 +89,10 @@ export default class SidebarController extends Controller {
     window.addEventListener("keydown", this.#onKeydown)
   }
 
+  /**
+   * Unwires the shortcut / watcher / before-cache subscriptions and
+   * balances the scroll lock.
+   */
   disconnect() {
     if (this.#onKeydown) window.removeEventListener("keydown", this.#onKeydown)
     this.#onKeydown = null
@@ -93,8 +103,11 @@ export default class SidebarController extends Controller {
     this.#unlock()
   }
 
-  // Action: click->poetry--core--sidebar#toggle (the trigger + the rail).
-  // On mobile the SAME trigger (and Cmd/Ctrl+B) routes to the sheet.
+  /**
+   * The trigger's (and rail's) click action - also the shortcut's
+   * landing. On mobile the SAME trigger routes to the sheet; on desktop
+   * it flips the collapse (inert when collapsible is "none").
+   */
   toggle() {
     if (this.#isMobile && this.hasMobileDialogTarget) {
       if (this.#mobileOpen) this.closeMobile()
@@ -108,7 +121,12 @@ export default class SidebarController extends Controller {
 
   // -- the mobile sheet -------------------------------------------------
 
-  // Action: cancel->poetry--core--sidebar#closeMobile on the mobile dialog.
+  /**
+   * The mobile dialog's cancel action (and the close affordances): closes
+   * through the sheet exit, then moves the nav children home.
+   *
+   * @param {Event} [event] - the native cancel event, when Esc drove it
+   */
   closeMobile(event) {
     if (event?.type === "cancel") event.preventDefault() // route Esc through the animated path
     if (!this.#mobileOpen || this.#closingMobile) return
@@ -122,9 +140,13 @@ export default class SidebarController extends Controller {
     })
   }
 
-  // Action: click->poetry--core--sidebar#mobileBackdropClose - the
-  // dialog's coordinate discrimination (a backdrop click targets the
-  // <dialog> itself AND lands outside its bounding rect).
+  /**
+   * The mobile dialog's click action - the dialog's coordinate
+   * discrimination (a backdrop click targets the <dialog> itself AND
+   * lands outside its bounding rect).
+   *
+   * @param {MouseEvent} event
+   */
   mobileBackdropClose(event) {
     if (event.target !== this.mobileDialogTarget) return
 
@@ -167,10 +189,12 @@ export default class SidebarController extends Controller {
     }
   }
 
+  /** Programmatically expands the desktop sidebar (persisted). */
   open() {
     this.#set(true)
   }
 
+  /** Programmatically collapses the desktop sidebar (persisted). */
   close() {
     this.#set(false)
   }

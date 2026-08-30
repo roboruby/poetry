@@ -42,13 +42,20 @@ const onVisibilityChange = () => {
   else unmute()
 }
 
-// Refcounted lifecycle: a consumer acquires while it is connected and
-// releases on teardown; the last release removes the regions.
+/**
+ * Takes a refcount on the shared live regions (created on the first
+ * acquire): a consumer acquires while it is connected and releases on
+ * teardown.
+ */
 export function acquire() {
   refCount += 1
   ensureRegions()
 }
 
+/**
+ * Releases one refcount; the last release removes the regions and their
+ * visibility listener.
+ */
 export function release() {
   if (refCount === 0) return
 
@@ -57,7 +64,15 @@ export function release() {
   if (refCount === 0) teardown()
 }
 
-// The announcement surface. politeness: "polite" (default) | "assertive".
+/**
+ * The announcement surface: queues `message` on the shared region for
+ * `politeness`. While the tab is hidden only the LAST message is kept,
+ * flushed on return.
+ *
+ * @param {string} message - stringified; injected as textContent only
+ * @param {"polite" | "assertive"} [politeness="polite"] - unknown values
+ *   fall back to polite
+ */
 export function announce(message, politeness = "polite") {
   ensureRegions()
 

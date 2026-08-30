@@ -28,31 +28,53 @@ const portaled = new Map()
 const bridgeEvents = new Set(["poetry:state-change"])
 let cacheNetInstalled = false
 
-// index.js registers the union of every controller's declared `static
-// events` at boot - the bridge list stays honest against the manifest
-// surface without portal.js importing the controllers (no cycle).
+/**
+ * Adds event names to the bridge list. index.js registers the union of
+ * every controller's declared `static events` at boot - the bridge list
+ * stays honest against the manifest surface without portal.js importing
+ * the controllers (no cycle).
+ *
+ * @param {Iterable<string>} names - full event names as emitted
+ */
 export function registerBridgeEvents(names) {
   for (const name of names) bridgeEvents.add(name)
 }
 
-// D2: the Base UI / Radix `container` prop, attribute-shaped - a host
-// scoping themes to a subtree points its overlays at a container inside
-// that scope. Default: body.
+/**
+ * D2: the Base UI / Radix `container` prop, attribute-shaped - a host
+ * scoping themes to a subtree points its overlays at a container inside
+ * that scope via data-poetry-portal-container="<element id>".
+ *
+ * @param {Element | null} root - the element carrying the attribute
+ * @returns {Element} the named container, or document.body
+ */
 export function resolvePortalContainer(root) {
   const id = root?.getAttribute?.("data-poetry-portal-container")
 
   return (id ? document.getElementById(id) : null) ?? document.body
 }
 
+/**
+ * Whether `content` is currently portaled out (has a live placeholder).
+ *
+ * @param {Element} content
+ * @returns {boolean}
+ */
 export function isPortaled(content) {
   return portaled.has(content)
 }
 
-// Containment that follows portals HOME: a node inside portaled content
-// counts as inside `container` when the content's home position does.
-// Focus-scope's trap keys on this - a portaled sub level is outside the
-// root content's subtree but logically inside its tree (Radix scopes the
-// trap over the React tree, which portals preserve; the DOM one doesn't).
+/**
+ * Containment that follows portals HOME: a node inside portaled content
+ * counts as inside `container` when the content's home position does.
+ * Focus-scope's trap keys on this - a portaled sub level is outside the
+ * root content's subtree but logically inside its tree (Radix scopes the
+ * trap over the React tree, which portals preserve; the DOM one doesn't).
+ *
+ * @param {Element} container
+ * @param {Node | null} node
+ * @returns {boolean}
+ */
 export function logicallyContains(container, node) {
   let current = node
 
@@ -77,6 +99,18 @@ function portaledAncestorOf(node) {
   return null
 }
 
+/**
+ * Moves `content` to `container`, leaving a placeholder comment at home
+ * and wiring the event bridge for the registered list. No-op (false) when
+ * already portaled or parentless. The home-effective `dir` is stamped
+ * onto undeclared content for the trip, so direction-dependent behavior
+ * survives the move (un-stamped on restore).
+ *
+ * @param {Element} content
+ * @param {Object} [options]
+ * @param {Element} [options.container=document.body]
+ * @returns {boolean} true when the move happened
+ */
 export function portalContent(content, { container = document.body } = {}) {
   if (portaled.has(content) || !content.parentNode) return false
 
@@ -116,6 +150,15 @@ export function portalContent(content, { container = document.body } = {}) {
   return true
 }
 
+/**
+ * Returns portaled `content` to its placeholder and unwires the bridge.
+ * When the origin is gone (a morph replaced it) the content is DROPPED,
+ * never stranded at the container.
+ *
+ * @param {Element} content
+ * @returns {boolean} true when the content went home; false when it was
+ *   not portaled, or had to be dropped
+ */
 export function restoreContent(content) {
   const state = portaled.get(content)
 

@@ -33,6 +33,10 @@ export default class TabsController extends Controller {
     activateOnFocus: { type: Boolean, default: true }
   }
 
+  /**
+   * Reconcile-on-connect: derives the full vocabulary from the
+   * server-rendered data-active truth (the body comment holds the rules).
+   */
   connect() {
     // Reconcile-on-connect: the server-rendered data-active trigger is the
     // truth; aria-selected/tabindex/hidden are (re)derived from it, so a
@@ -45,7 +49,11 @@ export default class TabsController extends Controller {
     if (value !== undefined) this.#apply(value, { silent: true })
   }
 
-  // Action: click->poetry--core--tabs#activate on each trigger.
+  /**
+   * Each trigger's click action: activates the pressed trigger's value.
+   *
+   * @param {MouseEvent} event
+   */
   activate(event) {
     const trigger = this.#triggerFrom(event)
 
@@ -54,11 +62,15 @@ export default class TabsController extends Controller {
     this.#apply(trigger.dataset.value)
   }
 
-  // Action: poetry--core--roving-focus:entry->poetry--core--tabs#focusActivate
-  // on the tablist - automatic activation follows the roving focus via the
-  // roving controller's entry event (deterministic: never depends on the
-  // platform firing focusin for a programmatic .focus()). A raw focusin
-  // routes here too, so hand-wired hosts get the same behavior.
+  /**
+   * The tablist's roving-focus entry action - automatic activation
+   * follows the roving focus via the roving controller's entry event
+   * (deterministic: never depends on the platform firing focusin for a
+   * programmatic .focus()). A raw focusin routes here too, so hand-wired
+   * hosts get the same behavior.
+   *
+   * @param {CustomEvent | FocusEvent} event
+   */
   focusActivate(event) {
     if (!this.activateOnFocusValue) return
 
@@ -70,8 +82,12 @@ export default class TabsController extends Controller {
     this.#apply(trigger.dataset.value)
   }
 
-  // The programmatic controllable-state surface: setValue("account").
-  // Unknown values are ignored (the contract's guard).
+  /**
+   * The programmatic controllable-state surface: setValue("account").
+   * Unknown values are ignored (the contract's guard).
+   *
+   * @param {string} value - a trigger's data-value (stringified)
+   */
   setValue(value) {
     const known = this.#triggers().some((trigger) => trigger.dataset.value === String(value))
 

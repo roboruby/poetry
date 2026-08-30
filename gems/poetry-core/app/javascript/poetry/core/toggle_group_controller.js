@@ -30,6 +30,11 @@ export default class ToggleGroupController extends Controller {
     type: { type: String, default: "single" }
   }
 
+  /**
+   * Reconcile-on-connect: re-derives the type-correct aria vocabulary
+   * from the server-rendered data-pressed truth, then prefers the pressed
+   * tab stop.
+   */
   connect() {
     // Reconcile-on-connect: server-rendered data-pressed is the truth; the
     // type-correct aria attribute is (re)derived from it, so a Turbo Stream
@@ -41,6 +46,13 @@ export default class ToggleGroupController extends Controller {
 
   // --- item activation (click / Space / Enter via native button click) ---
 
+  /**
+   * Each item's click action (Space/Enter arrive via native button
+   * activation): single mode is radio semantics with deselect-to-empty;
+   * multiple XORs the value in and out.
+   *
+   * @param {MouseEvent} event
+   */
   toggle(event) {
     const origin = event.currentTarget instanceof Element ? event.currentTarget : event.target
     const item = origin instanceof Element ? origin.closest(ITEM_SELECTOR) : null
@@ -55,9 +67,14 @@ export default class ToggleGroupController extends Controller {
 
   // --- the programmatic controllable-state surface ---
 
-  // setValue("b") in single mode ("" / null clears); setValue(["a", "b"])
-  // in multiple mode. Validated against type; unknown values are ignored
-  // (logged in dev - the contract's guard).
+  /**
+   * The programmatic controllable-state surface: setValue("b") in single
+   * mode ("" / null clears); setValue(["a", "b"]) in multiple mode.
+   * Validated against type; unknown values are ignored (logged in dev -
+   * the contract's guard).
+   *
+   * @param {string | string[] | null} value
+   */
   setValue(value) {
     const values = this.#known(Array.isArray(value) ? value : (value ? [value] : []))
 

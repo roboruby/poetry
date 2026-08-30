@@ -18,16 +18,23 @@ export default class SearchFieldController extends Controller {
 
   static targets = ["input", "clear"]
 
+  /** Reflects the initial emptiness (data-empty + the clear affordance). */
   connect() {
     this.#reflect()
   }
 
-  // input -> keep data-empty and the clear affordance honest.
+  /** The input action: keeps data-empty and the clear affordance honest. */
   changed() {
     this.#reflect()
   }
 
-  // keydown on the input.
+  /**
+   * The input's keydown action: Escape CLEARS a non-empty field and is
+   * consumed; an already-empty field lets it propagate to the dismissal
+   * layer (the seam the header documents).
+   *
+   * @param {KeyboardEvent} event
+   */
   keydown(event) {
     if (event.key !== "Escape" || isImeKeydown(event)) return
     if (this.inputTarget.disabled || this.inputTarget.readOnly) return
@@ -38,13 +45,24 @@ export default class SearchFieldController extends Controller {
     this.#clear()
   }
 
-  // pointerdown on the clear button: keep focus (and the mobile keyboard)
-  // in the input - act on the later click.
+  /**
+   * The clear button's pointerdown action: keeps focus (and the mobile
+   * keyboard) in the input - the later click acts.
+   *
+   * @param {PointerEvent} event
+   */
   holdFocus(event) {
     event.preventDefault()
     this.inputTarget.focus()
   }
 
+  /**
+   * The clear button's click action: empties the field (dispatching a
+   * REAL input event so live-search listeners react) and refocuses it.
+   * No-op while disabled or readonly.
+   *
+   * @param {MouseEvent} event
+   */
   clear(event) {
     event.preventDefault()
     if (this.inputTarget.disabled || this.inputTarget.readOnly) return

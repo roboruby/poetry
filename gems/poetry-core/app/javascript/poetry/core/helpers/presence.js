@@ -27,19 +27,32 @@ const EXIT_TIMEOUT_FALLBACK = 1000
 // regardless of listener order.
 const pendingExits = new Set()
 
+/**
+ * Settles every exit still waiting on its CSS animation, synchronously
+ * (each runs its onRemove). Wired to turbo:before-cache at module load;
+ * the dismissable layer also calls it directly (see above).
+ */
 export function flushPendingExits() {
   for (const flush of [...pendingExits]) flush()
 }
 
 if (typeof document !== "undefined") onBeforeCache(flushPendingExits)
 
-// The measured-entry/exit hook (the Accordion contract's height mechanism):
-// height keyframes cannot animate to auto, so the keyframe chain reads a
-// CSS var instead. This measures the settled box - temporarily unhiding
-// the element and suppressing its animations so scrollHeight reports the
-// real content height - writes "<n>px" to the custom property, then
-// restores exactly what it changed. The property name is overridable
-// because the vendored keyframes read --accordion-panel-height.
+/**
+ * The measured-entry/exit hook (the Accordion contract's height
+ * mechanism): height keyframes cannot animate to auto, so the keyframe
+ * chain reads a CSS var instead. This measures the settled box -
+ * temporarily unhiding the element and suppressing its animations so
+ * scrollHeight reports the real content height - writes "<n>px" to the
+ * custom property, then restores exactly what it changed.
+ *
+ * @param {HTMLElement} element
+ * @param {Object} [options]
+ * @param {string} [options.property="--poetry-presence-height"] -
+ *   overridable because the vendored keyframes read
+ *   --accordion-panel-height
+ * @returns {number} the measured height (px)
+ */
 export function measurePresence(element, { property = "--poetry-presence-height" } = {}) {
   const wasHidden = element.hidden
   const previousAnimation = element.style.animation
@@ -56,15 +69,22 @@ export function measurePresence(element, { property = "--poetry-presence-height"
   return height
 }
 
-// measure: true measures BEFORE the pair flips to data-open, so the entry
-// keyframe can consume the var from its first frame.
-//
-// Base UI transition hooks: the element enters wearing
-// data-starting-style for exactly one painted frame after the pair flips
-// (the Base UI two-frame trick), so CSS transitions can animate FROM the
-// starting declarations. No poetry class consumes it yet - the attribute
-// ships so a future theme layer can adopt the transition idiom
-// without touching JS.
+/**
+ * Runs the entry: flips the pair to data-open (through setState, so the
+ * state-change event fires) wearing data-starting-style for exactly one
+ * painted frame after the flip (the Base UI two-frame trick), so CSS
+ * transitions can animate FROM the starting declarations. No poetry class
+ * consumes the attribute yet - it ships so a future theme layer can adopt
+ * the transition idiom without touching JS.
+ *
+ * @param {HTMLElement} element
+ * @param {Object} [options]
+ * @param {boolean} [options.measure=false] - measure BEFORE the pair
+ *   flips, so the entry keyframe can consume the var from its first frame
+ * @param {string} [options.property] - forwarded to
+ *   {@link measurePresence}
+ * @returns {HTMLElement} the element
+ */
 export function enterPresence(element, { measure = false, property } = {}) {
   if (measure) measurePresence(element, { property })
 
@@ -85,12 +105,24 @@ export function enterPresence(element, { measure = false, property } = {}) {
   return element
 }
 
-// Returns a cancel() that abandons the wait WITHOUT calling onRemove (an
-// exit interrupted by a re-open). onRemove runs at most once, on the first
-// of animationend / transitionend (on the element itself, not a child) or
-// the safety timeout - or synchronously when no exit animation exists.
-// measure: true measures while the element is STILL VISIBLE, before the
-// flip to "closed" starts the exit keyframe.
+/**
+ * Runs the exit: flips the pair to data-closed and HOLDS the node in the
+ * DOM until its CSS exit animation/transition finishes, then hands
+ * removal back to the caller (this module never removes DOM). onRemove
+ * runs at most once, on the first of animationend / transitionend (on the
+ * element itself, not a child) or the safety timeout - or synchronously
+ * when no exit animation exists. data-ending-style rides the whole exit.
+ *
+ * @param {HTMLElement} element
+ * @param {Object} [options]
+ * @param {() => void} [options.onRemove] - the caller's removal step
+ * @param {boolean} [options.measure=false] - measure while the element is
+ *   STILL VISIBLE, before the flip to "closed" starts the exit keyframe
+ * @param {string} [options.property] - forwarded to
+ *   {@link measurePresence}
+ * @returns {() => void} cancel() - abandons the wait WITHOUT calling
+ *   onRemove (an exit interrupted by a re-open)
+ */
 export function exitPresence(element, { onRemove, measure = false, property } = {}) {
   if (measure) measurePresence(element, { property })
 

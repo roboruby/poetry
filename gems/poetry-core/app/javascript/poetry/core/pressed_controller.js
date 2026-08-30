@@ -19,6 +19,11 @@ export default class PressedController extends Controller {
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry:toggle:change"]
 
+  /**
+   * The click action: flips to the opposite pressed state. No-op while
+   * disabled; a listener that vetoes the (cancelable) change event stops
+   * the flip.
+   */
   toggle() {
     if (this.#disabled()) return
 
@@ -28,14 +33,22 @@ export default class PressedController extends Controller {
   // --- the programmatic controllable-state surface (the rollback recipe:
   // hosts revert a failed effect via set(false)) ---
 
+  /** Programmatically presses the toggle (see set). */
   press() {
     this.set(true)
   }
 
+  /** Programmatically releases the toggle (see set). */
   unpress() {
     this.set(false)
   }
 
+  /**
+   * Programmatically writes a pressed state through the same veto path
+   * the click takes. No-op while disabled.
+   *
+   * @param {boolean} pressed
+   */
   set(pressed) {
     if (this.#disabled()) return
 

@@ -33,18 +33,29 @@ export default class TagGroupController extends Controller {
     this.element.setAttribute("aria-live", "off")
   }
 
+  /**
+   * Wires the focus-scoped live-region toggling and reflects emptiness
+   * (role, tab stop, data-empty).
+   */
   connect() {
     this.element.addEventListener("focusin", this.#onFocusin)
     this.element.addEventListener("focusout", this.#onFocusout)
     this.#reflectEmpty()
   }
 
+  /** Unwires the focus listeners. */
   disconnect() {
     this.element.removeEventListener("focusin", this.#onFocusin)
     this.element.removeEventListener("focusout", this.#onFocusout)
   }
 
-  // keydown, wired as a data-action on the container.
+  /**
+   * The container's keydown action: Delete/Backspace on a focused tag ROW
+   * removes it - row-origin keys only (keys from a tag's inner remove
+   * button must not drive the grid).
+   *
+   * @param {KeyboardEvent} event
+   */
   keydown(event) {
     if (event.key !== "Delete" && event.key !== "Backspace") return
 
@@ -58,7 +69,11 @@ export default class TagGroupController extends Controller {
     this.#remove(row)
   }
 
-  // click on a tag's remove button (data-action on the button).
+  /**
+   * The remove button's click action: removes exactly its own tag.
+   *
+   * @param {MouseEvent} event
+   */
   remove(event) {
     event.preventDefault()
     const row = event.target.closest("[data-slot='tag-group-tag']")
