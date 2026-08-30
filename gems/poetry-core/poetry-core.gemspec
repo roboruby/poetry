@@ -8,14 +8,16 @@ Gem::Specification.new do |spec|
   spec.authors = ["Matt Solt"]
   spec.email = ["mattsolt@gmail.com"]
 
-  spec.summary = "Rails engine and component DSL for poetry, the AI-native component library."
-  spec.description = "The Rails engine, component DSL, and primitives of the poetry component library."
-  spec.homepage = "https://github.com/roboruby/poetry-core"
+  spec.summary = "Rails engine and component DSL for Poetry, the AI-native UI component library."
+  spec.description = "The Rails engine, component DSL, and primitives for Poetry, " \
+                     "the AI-native UI component library."
+  spec.homepage = "https://poetryui.com"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.3.0"
 
   # Require MFA for gem pushes (supply-chain protection).
-  spec.metadata["homepage_uri"] = "https://github.com/roboruby/poetry-core"
+  spec.metadata["homepage_uri"] = "https://poetryui.com"
+  spec.metadata["documentation_uri"] = "https://poetryui.com"
   spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry-core"
   spec.metadata["changelog_uri"] = "https://github.com/roboruby/poetry-core/blob/main/CHANGELOG.md"
   spec.metadata["bug_tracker_uri"] = "https://github.com/roboruby/poetry-core/issues"
