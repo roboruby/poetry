@@ -166,10 +166,14 @@
         DateField and TimeField speak the catalogue: segment names and
         placeholders (<code>year</code>, <code>yyyy</code>,
         <code>AM/PM</code>) live under <code>poetry.date_field.*</code>,
-        so a locale file retitles every segment. Calendar's month dropdown
-        (<code>caption_layout: :dropdown</code>) reads Rails' own
-        <code>date.month_names</code> keys and follows your locale files
-        the same way.
+        so a locale file retitles every segment. Calendar follows your
+        locale files end to end: the weekday header derives its
+        two-letter labels from Rails' <code>date.abbr_day_names</code>,
+        the caption and the month dropdown read
+        <code>date.month_names</code> - the localized names also ride a
+        Stimulus value, so client-side month navigation stays localized
+        with no extra wiring - and the dropdown's screen-reader labels
+        live at <code>poetry.calendar.*</code>.
       </p>
       <p>
         The accessible names this page's catalogue ships are part of the
