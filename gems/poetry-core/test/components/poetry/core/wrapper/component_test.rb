@@ -83,7 +83,7 @@ module Poetry
           wrapper = child.wrapped
 
           assert_instance_of Poetry::Core::Wrapper::Component, wrapper
-          assert wrapper.component_instance.equal?(child), "wrapped must wrap the SAME instance"
+          assert_same wrapper.component_instance, child, "wrapped must wrap the SAME instance"
         end
 
         def test_wrapped_renders_end_to_end
