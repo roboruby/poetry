@@ -102,9 +102,16 @@ parity:
   - 'light muted-foreground: oklch(0.545 0 0) vs the source''s 0.556 - darkened to
     clear the locked WCAG AA floor (4.54:1 on muted, 4.96:1 on background; the source
     value is 4.34:1 on muted, sub-AA).'
+  - 'chart-1..5: the source''s legacy blue base-color chart ramp (blue-300/500/600/700/800)
+    in both modes - the neutral base ships a gray ramp (0.87 / 0.556 / 0.439 / 0.371
+    / 0.269) that cannot separate series.'
+  - 'success, warning, info: poetry additions - the source ships no status roles.
+    success and info reuse source hues (a green base chart hue; the blue ramp''s third
+    stop); warning is the orange base''s primary. All three are gated like every other
+    role.'
 ---
 
-# DESIGN.md - the poetry design constitution
+# DESIGN.md - the Poetry design constitution
 
 The front matter above is **generated** from `tokens/tokens.dtcg.json`
 (`bin/rake tokens:generate`) and lists the exact tokens; this body is the

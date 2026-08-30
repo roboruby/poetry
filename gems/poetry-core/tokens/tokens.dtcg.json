@@ -178,7 +178,8 @@
             0.145,
             163.225
           ]
-        }
+        },
+        "$description": "Poetry addition: the source ships no status roles. A green base chart hue; AA-gated like every role."
       },
       "warning": {
         "$type": "color",
@@ -189,7 +190,8 @@
             0.163,
             48.998
           ]
-        }
+        },
+        "$description": "Poetry addition: the source ships no status roles. The orange base's primary; AA-gated like every role."
       },
       "info": {
         "$type": "color",
@@ -200,7 +202,8 @@
             0.245,
             262.881
           ]
-        }
+        },
+        "$description": "Poetry addition: the source ships no status roles. The blue chart ramp's third stop; AA-gated like every role."
       },
       "border": {
         "$type": "color",
@@ -244,7 +247,8 @@
             0.105,
             251.813
           ]
-        }
+        },
+        "$description": "Parity delta: the source's legacy blue base-color chart ramp (chart-1..5 = blue-300/500/600/700/800), not the neutral base's gray ramp - a monochrome ramp cannot separate series."
       },
       "chart-2": {
         "$type": "color",
@@ -554,7 +558,8 @@
             0.177,
             163.223
           ]
-        }
+        },
+        "$description": "Poetry addition: the source ships no status roles. A green base chart hue; AA-gated like every role."
       },
       "warning": {
         "$type": "color",
@@ -565,7 +570,8 @@
             0.189,
             84.429
           ]
-        }
+        },
+        "$description": "Poetry addition: the source ships no status roles. The orange base's primary; AA-gated like every role."
       },
       "info": {
         "$type": "color",
@@ -576,7 +582,8 @@
             0.105,
             251.813
           ]
-        }
+        },
+        "$description": "Poetry addition: the source ships no status roles. The blue chart ramp's third stop; AA-gated like every role."
       },
       "border": {
         "$type": "color",
@@ -622,7 +629,8 @@
             0.105,
             251.813
           ]
-        }
+        },
+        "$description": "Parity delta: the source's legacy blue base-color chart ramp (chart-1..5 = blue-300/500/600/700/800), not the neutral base's gray ramp - a monochrome ramp cannot separate series."
       },
       "chart-2": {
         "$type": "color",
