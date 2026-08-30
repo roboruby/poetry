@@ -1,18 +1,31 @@
 # AGENTS.md — poetry
 
-The meta-gem: the umbrella that versions and depends on the poetry family
-(poetry-core, poetry-ui, poetry-lucide; poetry-charts and poetry-reactive are
-opt-in additions). Almost all real work happens in the sibling gems — check
-their own AGENTS.md files.
+The umbrella gem: one `gem "poetry"` installs the library proper —
+poetry-core (the engine and component DSL), poetry-ui (the components,
+themes, form builder, and agent surface), and poetry-lucide (the default
+icon set) — as hard runtime dependencies, required outright in
+`lib/poetry.rb`. poetry-charts, poetry-agent, poetry-extract, and
+poetry-simple_form are opt-in gems a host adds itself. Almost all real work
+happens in the sibling gems — check their own AGENTS.md files.
 
 ## Gates
 
-- `bundle exec rake test`
-- `bundle exec rubocop`
+- `bundle exec rake` — `test` (the loader test proves all three siblings
+  load through `require "poetry"`) + `rubocop`.
 
 ## Standing rules
 
-- The naming hold: never push, publish, or claim gems — the whole family may
-  still be renamed.
-- Version/dependency changes here must track the siblings; don't bump one
-  side alone.
+Releases: this gem's version and its three `= VERSION` pins move in
+lockstep with the family; bumps happen only on the maintainer's explicit
+go, and the umbrella publishes LAST (core, lucide, and ui must be live on
+RubyGems first). Publishing runs only through the tag-triggered release
+workflow (OIDC trusted publishing) — never `gem push` by hand. The
+CHANGELOG stays bare until 0.1.0; commit messages carry the record.
+Siblings ride local paths in the Gemfile only when checked out beside this
+repo; the lockfile is not committed.
+
+Never add a `rescue LoadError` around a sibling require — the umbrella is
+not a shell; a missing dependency is a real failure.
+
+Naming: "Poetry" is the product in prose; gem names, constants, and
+identifiers stay as they are.
