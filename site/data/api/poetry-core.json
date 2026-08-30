@@ -78,7 +78,7 @@
       "path": "ActiveModel::Type::Symbol",
       "type": "class",
       "superclass": "ActiveModel::Type::String",
-      "docstring": "A symbol option type for the option DSL: casts anything responding\nto #to_sym and reports :symbol to introspection.",
+      "docstring": "A symbol option type for the option DSL: casts anything responding\nto #to_sym and reports :symbol to introspection.\n\nStrict by design: a value that cannot become a Symbol raises at\nassignment - poetry surfaces bad option values where they are\nwritten, not as a validation error nothing reads at render.\nLeniency is List's job, not this type's.",
       "examples": [],
       "file": "lib/active_model/type/symbol.rb",
       "methods": [
@@ -107,7 +107,7 @@
           },
           "examples": [],
           "file": "lib/active_model/type/symbol.rb",
-          "line": 23
+          "line": 28
         },
         {
           "name": "type",
@@ -124,7 +124,7 @@
           },
           "examples": [],
           "file": "lib/active_model/type/symbol.rb",
-          "line": 14
+          "line": 19
         }
       ],
       "constants": []
