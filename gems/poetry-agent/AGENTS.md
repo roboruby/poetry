@@ -39,8 +39,9 @@ component contract. Two ship:
   duplicate names, so instance ids must be stable and unique on the page.
 - `config.origin_trial_tokens` feeds the origin-trial middleware; keep
   tokens out of the repo — they ride host configuration.
-- `poetry check` (in poetry-ui) carries the WebMCP rules ();
-  the docs site's /webmcp page is the browser-verified reference.
+- `poetry check` (poetry-core's Check, run through poetry-ui's `rake poetry:check`)
+  carries the WebMCP rules (`webmcp-autosubmit`, `webmcp-duplicate-name`, `webmcp-name`, `webmcp-without-tools`); the docs
+  site's /webmcp page is the browser-verified reference.
 
 ## Standing rules
 
