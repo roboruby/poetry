@@ -4,7 +4,7 @@ poetry-core adapts or vendors code from the permissively licensed
 projects below (MIT unless an entry says otherwise). Vendored assets keep their license text next to the code
 (`vendor/floating-ui/`, `vendor/shadcn-tailwind/LICENSE`,
 `vendor/tw-animate-css/LICENSE`); the license texts for adapted files
-are reproduced here. Adapted files carry a source URL in their header.
+are reproduced here.
 
 ## shadcn/ui
 

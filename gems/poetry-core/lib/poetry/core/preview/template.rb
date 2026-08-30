@@ -4,6 +4,8 @@ module Poetry
   module Core
     module Preview
       # Provides flexible template resolution for ViewComponent previews.
+      # Adapted from an MIT-licensed source (source and license in
+      # THIRD_PARTY_NOTICES.md).
       #
       # This module extends ViewComponent's preview template system to support multiple
       # template locations and fallback strategies. It allows previews to use:

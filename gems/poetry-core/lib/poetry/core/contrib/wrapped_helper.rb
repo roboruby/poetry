@@ -2,9 +2,11 @@
 
 module Poetry
   module Core
-    # Opt-in helper mixins shipped alongside the core (wrapping, translations).
+    # Opt-in helper mixins shipped alongside the core.
     module Contrib
       # Provides a convenient method to wrap components with custom HTML code.
+      # Adapted from an MIT-licensed source (source and license in
+      # THIRD_PARTY_NOTICES.md).
       #
       # This module adds the `#wrapped` method to components, allowing them to be
       # easily wrapped with a {Poetry::Core::Wrapper::Component}. The wrapper component

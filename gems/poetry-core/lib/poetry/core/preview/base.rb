@@ -3,6 +3,8 @@
 module Poetry
   module Core
     # The preview stack: base class, template resolution, and gallery glue.
+    # Adapted from an MIT-licensed source (source and license in
+    # THIRD_PARTY_NOTICES.md).
     module Preview
       # First, enable abstract classes (if not already extended)
       unless ViewComponent::Preview.singleton_class.is_a?(Preview::Abstract)

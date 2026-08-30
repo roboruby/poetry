@@ -4,6 +4,8 @@ module Poetry
   module Core
     module Preview
       # Provides functionality to mark preview classes as abstract and exclude them from the preview index.
+      # Adapted from an MIT-licensed source (source and license in
+      # THIRD_PARTY_NOTICES.md).
       #
       # This module adds an `abstract_class` accessor to preview classes and automatically filters
       # them out when listing all available previews. This is particularly useful for creating base

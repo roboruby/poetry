@@ -4,6 +4,8 @@ module Poetry
   module Core
     module Preview
       # Provides sidecar file loading and naming utilities for preview classes.
+      # Adapted from an MIT-licensed source (source and license in
+      # THIRD_PARTY_NOTICES.md).
       #
       # This module adds functionality to automatically load preview files from configured paths
       # and derive component names from preview class names. It's designed to support the "sidecar"
