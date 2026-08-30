@@ -3102,7 +3102,7 @@
             }
           ],
           "file": "lib/poetry/core/config.rb",
-          "line": 251
+          "line": 261
         },
         {
           "name": "on_missing_icon",
@@ -3321,7 +3321,13 @@
           "line": 141
         }
       ],
-      "constants": []
+      "constants": [
+        {
+          "name": "SETTINGS",
+          "value": "%i[classname_merger stimulus_merger css_mode icon_library\nraise_on_missing_icon icon_fallback on_missing_icon\nstable_id_mode stable_id_seed].freeze",
+          "docstring": "The declared configuration surface: every key {.defaults} ships.\nEach is a real reader/writer pair (delegated just below); unknown\nkeys still flow through delegate_missing_to, so hosts may stash\ntheir own values."
+        }
+      ]
     },
     {
       "path": "Poetry::Core::Contrib",
