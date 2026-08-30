@@ -42,5 +42,5 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.bindir = "exe"
 
-  spec.add_dependency "poetry-core"
+  spec.add_dependency "poetry-core", "= #{Poetry::Ui::VERSION}"
 end
