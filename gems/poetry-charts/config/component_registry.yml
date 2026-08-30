@@ -1380,6 +1380,7 @@ components:
       differ from series.'
     - 'align: :top pads below (pb-3), :bottom (default) pads above (pt-3) - matching
       the chart edge it sits on.'
+    identity: false
     parts:
     - name: chart-legend-content
       description: The legend row (<div>) - centered swatch + label pairs
@@ -2956,6 +2957,7 @@ components:
       a display string.
     - 'indicator: :dot (default) | :line | :dashed matches the ported variants.'
     - Numeric values render delimited (1,234) in the mono tabular column automatically.
+    identity: false
     parts:
     - name: chart-tooltip-content
       description: The tooltip box (<div>) - the styled chrome the chart's tooltip
@@ -3033,6 +3035,7 @@ components:
       events:
       - poetry--charts--tooltip:hide
       - poetry--charts--tooltip:show
+    identity: false
     stimulus:
     - element: root
       controllers:
