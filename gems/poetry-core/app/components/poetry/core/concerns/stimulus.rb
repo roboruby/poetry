@@ -356,7 +356,7 @@ module Poetry
           condition.is_a?(Proc) ? instance_exec(&condition) : send(condition)
         end
 
-        private :apply_stimulus_entry, :stimulus_value_for, :evaluate_stimulus_condition
+        private :apply_stimulus_entry, :stimulus_value_for, :stimulus_conditions_met?, :evaluate_stimulus_condition
       end
     end
   end
