@@ -8,9 +8,17 @@ gemspec
 # poetry-core is developed as a sibling repo. Until it is published to RubyGems,
 # depend on it by local path for development; it becomes a gemspec dependency
 # once released.
-gem "poetry-core", path: "../poetry-core"
-gem "poetry-ui", path: "../poetry-ui"
-gem "poetry-lucide", path: "../poetry-lucide"
+# The sibling gems ride local paths while the family is checked out side by
+# side (development); anywhere else (CI, a release job, a lone clone) they
+# resolve from RubyGems through the gemspec's exact pins.
+sibling = lambda do |name|
+  path = File.expand_path("../#{name}", __dir__)
+  File.directory?(path) ? { path: path } : {}
+end
+
+gem "poetry-core", **sibling.call("poetry-core")
+gem "poetry-ui", **sibling.call("poetry-ui")
+gem "poetry-lucide", **sibling.call("poetry-lucide")
 
 gem "irb"
 gem "rake", "~> 13.0"

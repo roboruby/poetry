@@ -28,3 +28,4 @@
 
 # Ruby LSP
 /.ruby-lsp/
+Gemfile.lock
