@@ -49,9 +49,9 @@ Gem::Specification.new do |spec|
   # The umbrella installs the library proper: the engine + DSL, the components,
   # and the default icon set. Charts, the agent surfaces, design extraction and
   # the simple_form bridge stay opt-in gems.
-  spec.add_dependency "poetry-core"
-  spec.add_dependency "poetry-lucide"
-  spec.add_dependency "poetry-ui"
+  spec.add_dependency "poetry-core", "= #{Poetry::VERSION}"
+  spec.add_dependency "poetry-lucide", "= #{Poetry::VERSION}"
+  spec.add_dependency "poetry-ui", "= #{Poetry::VERSION}"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://guides.rubygems.org/make-your-own-gem/
