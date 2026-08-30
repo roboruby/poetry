@@ -75,6 +75,24 @@ module Poetry
           assert_operator Poetry::Core::Wrapper::Component::DoubleRenderError, :<, Poetry::Core::Error
           assert_operator Poetry::Core::Wrapper::Component::UnrenderedChildError, :<, Poetry::Core::Error
         end
+
+        # -- the wrapped helper (Contrib::WrappedHelper, included in every component) --
+
+        def test_wrapped_returns_a_wrapper_around_self
+          child = Child.new
+          wrapper = child.wrapped
+
+          assert_instance_of Poetry::Core::Wrapper::Component, wrapper
+          assert wrapper.component_instance.equal?(child), "wrapped must wrap the SAME instance"
+        end
+
+        def test_wrapped_renders_end_to_end
+          html = render_inline(Child.new.wrapped) do |wrapper|
+            wrapper.helpers.content_tag(:div, wrapper.component, class: "shell")
+          end
+
+          assert_equal "child", html.css("div.shell span").first.text
+        end
       end
     end
   end
