@@ -51,15 +51,17 @@ module Poetry
         #
         # @param name [Symbol, String] the icon name
         # @return [String] the icon's inner SVG markup
-        # @raise [ArgumentError] for a malformed name, or an unknown one
-        #   (the message carries a did-you-mean suggestion when one exists)
+        # @raise [Poetry::Core::IconNotFound] for a malformed name, or an
+        #   unknown one (the message carries a did-you-mean suggestion when
+        #   one exists; the error's #name and #suggestion carry the parts)
         def fetch(name)
-          raise ArgumentError, "invalid icon name #{name.inspect}" unless valid_name?(name)
+          raise IconNotFound.new("invalid icon name #{name.inspect}", name: name) unless valid_name?(name)
 
           unless path_for(name).exist?
             suggestion = Icons.suggest(name, names)
             hint = suggestion ? " - did you mean #{suggestion.to_sym.inspect}?" : ""
-            raise ArgumentError, "unknown icon #{name.inspect} (not in this set)#{hint}"
+            raise IconNotFound.new("unknown icon #{name.inspect} (not in this set)#{hint}",
+                                   name: name, suggestion: suggestion)
           end
 
           @mutex.synchronize do
@@ -115,8 +117,11 @@ module Poetry
         # Registers an icon set under a library key - the extension point
         # an icon gem calls on require. A set is any object responding to
         # `#include?(name)`, `#fetch(name)` (returning inner SVG markup),
-        # and `#names`; see the SECURITY note above for the
-        # pre-sanitization requirement on custom sets.
+        # and `#names`. The set contract: `#fetch` raises
+        # {Poetry::Core::IconNotFound} for any name it cannot serve - the
+        # Icon component's missing-icon policy rescues exactly that class.
+        # See the SECURITY note above for the pre-sanitization requirement
+        # on custom sets.
         #
         # @param key [Symbol, String] the library key `config.icon_library`
         #   selects the set by

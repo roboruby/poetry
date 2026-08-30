@@ -27,9 +27,12 @@ module Poetry
           File.write(File.join(dir, "circle-alert.svg"), %(<path d="M0 0"/>))
           set = Icons::FileSet.new(dir: dir)
 
-          error = assert_raises(ArgumentError) { set.fetch(:"alert-circle") }
+          error = assert_raises(IconNotFound) { set.fetch(:"alert-circle") }
 
+          assert_kind_of Poetry::Core::Error, error
           assert_includes error.message, %(did you mean :"circle-alert"?)
+          assert_equal :"alert-circle", error.name
+          assert_equal "circle-alert", error.suggestion
         end
       end
 
@@ -38,9 +41,21 @@ module Poetry
           File.write(File.join(dir, "circle-alert.svg"), "<path/>")
           set = Icons::FileSet.new(dir: dir)
 
-          error = assert_raises(ArgumentError) { set.fetch(:zzzz) }
+          error = assert_raises(IconNotFound) { set.fetch(:zzzz) }
 
           refute_includes error.message, "did you mean"
+          assert_nil error.suggestion
+        end
+      end
+
+      def test_fetch_rejects_malformed_names_with_the_same_error_class
+        Dir.mktmpdir("icons") do |dir|
+          set = Icons::FileSet.new(dir: dir)
+
+          error = assert_raises(IconNotFound) { set.fetch("../secrets") }
+
+          assert_includes error.message, "invalid icon name"
+          assert_equal "../secrets", error.name
         end
       end
     end

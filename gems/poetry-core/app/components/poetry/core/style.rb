@@ -21,44 +21,6 @@ module Poetry
     # component's ActiveModel attributes resolve them before render). A
     # `defaults` call raises to enforce that.
     class Style
-      # The Tailwind palette names, as a reference list -
-      # https://tailwindcss.com/docs/colors
-      COLORS = %i[
-        red
-        orange
-        amber
-        yellow
-        lime
-        green
-        emerald
-        teal
-        cyan
-        sky
-        blue
-        indigo
-        violet
-        purple
-        fuchsia
-        pink
-        rose
-        slate
-        gray
-        zinc
-        neutral
-        stone
-      ].freeze
-
-      # The Tailwind fill keywords, as a reference list -
-      # https://tailwindcss.com/docs/fill
-      FILLS = %i[
-        none
-        inherit
-        current
-        transparent
-        black
-        white
-      ].freeze
-
       class << self
         # Each Style class owns a resolver; subclasses extend a copy of their
         # parent's dictionary.

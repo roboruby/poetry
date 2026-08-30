@@ -34,10 +34,10 @@ module Poetry
         assert_instance_of Poetry::Core::Stimulus::Merger, defaults.stimulus_merger
       end
 
-      def test_defaults_sets_raise_on_asset_not_found_to_true
+      def test_defaults_sets_css_mode_to_tailwind
         defaults = Poetry::Core::Config.defaults
 
-        assert defaults.raise_on_asset_not_found
+        assert_equal :tailwind, defaults.css_mode
       end
 
       def test_defaults_returns_new_instance_each_time
@@ -66,14 +66,16 @@ module Poetry
 
         assert_instance_of Poetry::Core::CSS::Merger, config.classname_merger
         assert_instance_of Poetry::Core::Stimulus::Merger, config.stimulus_merger
-        assert config.raise_on_asset_not_found
+        assert_equal :tailwind, config.css_mode
       end
 
       def test_current_persists_modifications
-        Poetry::Core::Config.current.raise_on_asset_not_found = false
+        Poetry::Core::Config.current.css_mode = :bem
         config = Poetry::Core::Config.current
 
-        refute config.raise_on_asset_not_found
+        assert_equal :bem, config.css_mode
+      ensure
+        Poetry::Core::Config.current.css_mode = :tailwind
       end
 
       # Test instance initialization
@@ -88,7 +90,7 @@ module Poetry
 
         assert_instance_of Poetry::Core::CSS::Merger, config.classname_merger
         assert_instance_of Poetry::Core::Stimulus::Merger, config.stimulus_merger
-        assert config.raise_on_asset_not_found
+        assert_equal :tailwind, config.css_mode
       end
 
       def test_initialize_creates_independent_instances
@@ -125,10 +127,10 @@ module Poetry
         assert_instance_of Poetry::Core::Stimulus::Merger, config.stimulus_merger
       end
 
-      def test_method_style_getter_for_raise_on_asset_not_found
+      def test_method_style_getter_for_css_mode
         config = Poetry::Core::Config.new
 
-        assert config.raise_on_asset_not_found
+        assert_equal :tailwind, config.css_mode
       end
 
       def test_method_style_setter_for_classname_merger
@@ -147,11 +149,11 @@ module Poetry
         assert_same custom_merger, config.stimulus_merger
       end
 
-      def test_method_style_setter_for_raise_on_asset_not_found
+      def test_method_style_setter_for_css_mode
         config = Poetry::Core::Config.new
-        config.raise_on_asset_not_found = false
+        config.css_mode = :bem
 
-        refute config.raise_on_asset_not_found
+        assert_equal :bem, config.css_mode
       end
 
       # Test hash-style access
@@ -167,10 +169,10 @@ module Poetry
         assert_instance_of Poetry::Core::Stimulus::Merger, config[:stimulus_merger]
       end
 
-      def test_hash_style_getter_for_raise_on_asset_not_found
+      def test_hash_style_getter_for_css_mode
         config = Poetry::Core::Config.new
 
-        assert config[:raise_on_asset_not_found]
+        assert_equal :tailwind, config[:css_mode]
       end
 
       def test_hash_style_setter_for_classname_merger
@@ -189,11 +191,11 @@ module Poetry
         assert_same custom_merger, config[:stimulus_merger]
       end
 
-      def test_hash_style_setter_for_raise_on_asset_not_found
+      def test_hash_style_setter_for_css_mode
         config = Poetry::Core::Config.new
-        config[:raise_on_asset_not_found] = false
+        config[:css_mode] = :bem
 
-        refute config[:raise_on_asset_not_found]
+        assert_equal :bem, config[:css_mode]
       end
 
       # Test method and hash style equivalence
@@ -202,7 +204,7 @@ module Poetry
 
         assert_equal config.classname_merger, config[:classname_merger]
         assert_equal config.stimulus_merger, config[:stimulus_merger]
-        assert_equal config.raise_on_asset_not_found, config[:raise_on_asset_not_found]
+        assert_equal config.css_mode, config[:css_mode]
       end
 
       def test_method_and_hash_setters_are_equivalent
@@ -251,10 +253,10 @@ module Poetry
         config1 = Poetry::Core::Config.new
         config2 = Poetry::Core::Config.new
 
-        config1.raise_on_asset_not_found = false
+        config1.css_mode = :bem
 
-        refute config1.raise_on_asset_not_found
-        assert config2.raise_on_asset_not_found
+        assert_equal :bem, config1.css_mode
+        assert_equal :tailwind, config2.css_mode
       end
 
       def test_modifying_one_instance_does_not_affect_another
@@ -282,20 +284,22 @@ module Poetry
         global = Poetry::Core::Config.current
         local = Poetry::Core::Config.new
 
-        global.raise_on_asset_not_found = false
+        global.css_mode = :bem
 
-        refute global.raise_on_asset_not_found
-        assert local.raise_on_asset_not_found
+        assert_equal :bem, global.css_mode
+        assert_equal :tailwind, local.css_mode
+      ensure
+        Poetry::Core::Config.current.css_mode = :tailwind
       end
 
       def test_new_instance_does_not_modify_global_config
         global = Poetry::Core::Config.current
         local = Poetry::Core::Config.new
 
-        local.raise_on_asset_not_found = false
+        local.css_mode = :bem
 
-        assert global.raise_on_asset_not_found
-        refute local.raise_on_asset_not_found
+        assert_equal :tailwind, global.css_mode
+        assert_equal :bem, local.css_mode
       end
 
       def test_new_instance_does_not_share_mergers_with_global
@@ -344,22 +348,24 @@ module Poetry
       # Test real-world usage patterns
       def test_global_config_pattern
         # Access and modify global config
-        Poetry::Core::Config.current.raise_on_asset_not_found = false
+        Poetry::Core::Config.current.css_mode = :bem
 
         # Access from different location
         config = Poetry::Core::Config.current
 
-        refute config.raise_on_asset_not_found
+        assert_equal :bem, config.css_mode
+      ensure
+        Poetry::Core::Config.current.css_mode = :tailwind
       end
 
       def test_scoped_config_pattern
         # Create a scoped config for testing
         test_config = Poetry::Core::Config.new
-        test_config.raise_on_asset_not_found = false
+        test_config.css_mode = :bem
 
         # Global config should be unaffected
-        assert Poetry::Core::Config.current.raise_on_asset_not_found
-        refute test_config.raise_on_asset_not_found
+        assert_equal :tailwind, Poetry::Core::Config.current.css_mode
+        assert_equal :bem, test_config.css_mode
       end
 
       def test_config_initialization_pattern
@@ -415,7 +421,7 @@ module Poetry
 
         assert_respond_to config, :classname_merger
         assert_respond_to config, :stimulus_merger
-        assert_respond_to config, :raise_on_asset_not_found
+        assert_respond_to config, :css_mode
       end
 
       def test_responds_to_custom_options_after_setting

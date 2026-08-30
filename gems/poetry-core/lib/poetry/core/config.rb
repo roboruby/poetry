@@ -17,7 +17,7 @@ module Poetry
     #   # => #<Poetry::Core::CSS::Merger:0x00007f8b1c0a3b40>
     #
     # @example Modifying global configuration
-    #   Poetry::Core::Config.current.raise_on_asset_not_found = false
+    #   Poetry::Core::Config.current.icon_library = :my_icons
     #
     # @example Creating a custom configuration instance
     #   config = Poetry::Core::Config.new
@@ -54,8 +54,6 @@ module Poetry
         # - `stimulus_merger` ({Poetry::Core::Stimulus::Merger}) - combines
         #   Stimulus data attributes without duplicating controllers or
         #   actions.
-        # - `raise_on_asset_not_found` (`true`) - raise when a referenced
-        #   asset cannot be found.
         # - `css_mode` (`:tailwind`) - `:tailwind` emits resolved utility
         #   classes; `:bem` emits the BEM token IR for bring-your-own-CSS
         #   hosts.
@@ -80,12 +78,11 @@ module Poetry
         # @example Getting default values
         #   defaults = Poetry::Core::Config.defaults
         #   defaults.classname_merger # => #<Poetry::Core::CSS::Merger:0x00007f8b1c0a3b40>
-        #   defaults.raise_on_asset_not_found # => true
+        #   defaults.css_mode # => :tailwind
         def defaults
           ActiveSupport::OrderedOptions.new.merge!({
                                                      classname_merger: Poetry::Core::CSS::Merger.new,
                                                      stimulus_merger: Poetry::Core::Stimulus::Merger.new,
-                                                     raise_on_asset_not_found: true,
                                                      # :tailwind emits resolved utility classes (default);
                                                      # :bem emits the BEM token IR for bring-your-own-CSS
                                                      # hosts (no :both, deliberately).
@@ -128,8 +125,8 @@ module Poetry
         # @return [Poetry::Core::Config] The global configuration instance
         #
         # @example Accessing global settings
-        #   Poetry::Core::Config.current.raise_on_asset_not_found
-        #   # => true
+        #   Poetry::Core::Config.current.css_mode
+        #   # => :tailwind
         #
         # @example Modifying global settings
         #   Poetry::Core::Config.current.classname_merger = CustomMerger.new
@@ -160,15 +157,6 @@ module Poetry
       #   Replaces the Stimulus attribute merger.
       #   @param merger [Poetry::Core::Stimulus::Merger] The Stimulus attribute merger instance to use
       #   @return [Poetry::Core::Stimulus::Merger]
-      #
-      # @!method raise_on_asset_not_found
-      #   Whether a missing referenced asset raises.
-      #   @return [Boolean] Whether to raise errors when assets are not found
-      #
-      # @!method raise_on_asset_not_found=(value)
-      #   Sets the missing-asset policy.
-      #   @param value [Boolean] Whether to raise errors when assets are not found
-      #   @return [Boolean]
       #
       # @!method css_mode
       #   The class emission mode: `:tailwind` resolves style values to
@@ -258,8 +246,8 @@ module Poetry
       #
       # @example Creating an isolated configuration
       #   config = Poetry::Core::Config.new
-      #   config.raise_on_asset_not_found = false
-      #   Poetry::Core::Config.current.raise_on_asset_not_found # => true (unchanged)
+      #   config.css_mode = :bem
+      #   Poetry::Core::Config.current.css_mode # => :tailwind (unchanged)
       def initialize
         @config = self.class.defaults.clone
       end
