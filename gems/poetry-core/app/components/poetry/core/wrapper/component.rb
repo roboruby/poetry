@@ -11,6 +11,13 @@ module Poetry
       # so it can conditionally render the outer HTML for a component without
       # conditionals in templates.
       #
+      # Adapted from an MIT-licensed source (source and license in
+      # THIRD_PARTY_NOTICES.md).
+      #
+      # The child's render? is consulted before the child gains a view
+      # context: a render? that calls view helpers works standalone but
+      # not under the wrapper.
+      #
       # @example
       #   render Poetry::Core::Wrapper::Component.new(badge) do |wrapper|
       #     tag.div(class: "mt-2") { wrapper.component }
@@ -18,12 +25,23 @@ module Poetry
       class Component < ViewComponent::Base
         # Raised when the block calls #component more than once - each
         # wrapper renders its child exactly one time.
-        class DoubleRenderError < StandardError
+        class DoubleRenderError < Poetry::Core::Error
           # Names the child in the message.
           #
           # @param component [ViewComponent::Base] the child rendered twice
           def initialize(component)
             super("A child component could only be rendered once within a wrapper: #{component}")
+          end
+        end
+
+        # Raised when the wrapper's block never rendered the child - the
+        # wrap would silently drop it.
+        class UnrenderedChildError < Poetry::Core::Error
+          # Names the dropped child in the message.
+          #
+          # @param component [ViewComponent::Base] the child the block skipped
+          def initialize(component)
+            super("The block never rendered the wrapped child - call #component where it belongs: #{component}")
           end
         end
 
@@ -36,16 +54,23 @@ module Poetry
         #
         # @param component [ViewComponent::Base] the child component to wrap
         def initialize(component) # rubocop:disable Lint/MissingSuper
+          raise ArgumentError, "Wrapper wraps a component instance (got nil)" if component.nil?
+
           @component_instance = component
         end
 
-        # Simply return the contents of the block passed to #render_component.
-        # (Alias couldn't be used here 'cause ViewComponent check for the method presence when
-        # choosing between #call and a template.)
+        # Returns the block's output, which must have rendered the child -
+        # a block that skips {#component} would drop the child silently,
+        # so it teaches instead. (An alias couldn't be used here:
+        # ViewComponent checks method presence when choosing between
+        # #call and a template.)
         #
         # @return [ActiveSupport::SafeBuffer, nil] the block's output
+        # @raise [UnrenderedChildError] when the block never called {#component}
         def call
-          content
+          content.tap do
+            raise UnrenderedChildError, component_instance unless @rendered
+          end
         end
 
         # Returns the rendered child component.

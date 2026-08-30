@@ -31,24 +31,49 @@ module Poetry
           refute_predicate Poetry::Core::Wrapper::Component.new(Child.new(renderable: false)), :render?
         end
 
-        def test_call_returns_the_block_content
-          render_inline(Poetry::Core::Wrapper::Component.new(Child.new)) { "wrapped!" }
-
-          assert_includes rendered_content, "wrapped!"
-        end
-
-        def test_double_render_raises
-          wrapper = Poetry::Core::Wrapper::Component.new(Child.new)
-          # Simulate a first render having already happened.
-          wrapper.instance_variable_set(:@rendered, "already")
-
-          assert_raises(Poetry::Core::Wrapper::Component::DoubleRenderError) do
-            wrapper.component
+        def test_the_child_renders_inside_the_custom_markup
+          html = render_inline(Poetry::Core::Wrapper::Component.new(Child.new)) do |wrapper|
+            wrapper.helpers.content_tag(:div, wrapper.component, class: "custom")
           end
+
+          assert_equal "child", html.css("div.custom span").first.text
         end
 
-        def test_double_render_error_is_a_standard_error
-          assert_operator Poetry::Core::Wrapper::Component::DoubleRenderError, :<, StandardError
+        def test_a_nonrenderable_child_skips_the_whole_wrapper
+          render_inline(Poetry::Core::Wrapper::Component.new(Child.new(renderable: false))) do |wrapper|
+            wrapper.helpers.content_tag(:div, wrapper.component, class: "custom")
+          end
+
+          assert_empty rendered_content
+        end
+
+        def test_rendering_the_child_twice_teaches
+          error = assert_raises(Poetry::Core::Wrapper::Component::DoubleRenderError) do
+            render_inline(Poetry::Core::Wrapper::Component.new(Child.new)) do |wrapper|
+              wrapper.component + wrapper.component
+            end
+          end
+
+          assert_includes error.message, "once"
+        end
+
+        def test_a_block_that_never_renders_the_child_teaches
+          error = assert_raises(Poetry::Core::Wrapper::Component::UnrenderedChildError) do
+            render_inline(Poetry::Core::Wrapper::Component.new(Child.new)) { "custom html only" }
+          end
+
+          assert_includes error.message, "#component"
+        end
+
+        def test_a_nil_child_teaches_at_construction
+          error = assert_raises(ArgumentError) { Poetry::Core::Wrapper::Component.new(nil) }
+
+          assert_includes error.message, "component instance"
+        end
+
+        def test_errors_join_the_family_taxonomy
+          assert_operator Poetry::Core::Wrapper::Component::DoubleRenderError, :<, Poetry::Core::Error
+          assert_operator Poetry::Core::Wrapper::Component::UnrenderedChildError, :<, Poetry::Core::Error
         end
       end
     end

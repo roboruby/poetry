@@ -67,7 +67,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## view_component-contrib
 
 - Source: https://github.com/palkan/view_component-contrib (MIT)
-- Adapted: lib/poetry/core/preview/{abstract,base,template,sidecarable}.rb, lib/poetry/core/contrib/wrapped_helper.rb
+- Adapted: lib/poetry/core/preview/{abstract,base,template,sidecarable}.rb, lib/poetry/core/contrib/wrapped_helper.rb, app/components/poetry/core/wrapper/component.rb
 
 ```
 Copyright (c) 2021 Vladimir Dementyev
