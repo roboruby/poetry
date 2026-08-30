@@ -8,13 +8,14 @@ Gem::Specification.new do |spec|
   spec.authors = ["Matt Solt"]
   spec.email = ["mattsolt@gmail.com"]
 
-  spec.summary = "Lucide icons for poetry, vendored and sanitized at a pinned upstream commit."
-  spec.description = "The default poetry icon set: Lucide's icons vendored at a pinned " \
-                     "commit SHA, sanitized at vendor time, registered with poetry-core's icon registry."
-  spec.homepage = "https://github.com/roboruby/poetry-lucide"
+  spec.summary = "Lucide icons for Poetry, vendored and sanitized at a pinned upstream commit."
+  spec.description = "The default Poetry icon set: Lucide's icons vendored at a pinned commit SHA, sanitized at " \
+                     "vendor time, registered with poetry-core's icon registry."
+  spec.homepage = "https://poetryui.com"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.3.0"
-  spec.metadata["homepage_uri"] = "https://github.com/roboruby/poetry-lucide"
+  spec.metadata["homepage_uri"] = "https://poetryui.com"
+  spec.metadata["documentation_uri"] = "https://poetryui.com/docs"
   spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry-lucide"
   spec.metadata["changelog_uri"] = "https://github.com/roboruby/poetry-lucide/blob/main/CHANGELOG.md"
   spec.metadata["bug_tracker_uri"] = "https://github.com/roboruby/poetry-lucide/issues"
