@@ -36,5 +36,5 @@ Gem::Specification.new do |spec|
   end
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "poetry-core"
+  spec.add_dependency "poetry-core", "= #{Poetry::Lucide::VERSION}"
 end
