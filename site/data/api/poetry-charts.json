@@ -3103,7 +3103,7 @@
       "path": "Poetry::Charts::Geometry::NiceTicks",
       "type": "module",
       "superclass": null,
-      "docstring": "The nice-ticks algorithm on BigDecimal, so the tick values stay\ndecimal-exact. Every operation is decimal, not binary: values\nconstruct from the double's shortest decimal string, remainders\ntruncate with the dividend's sign (#remainder), division carries\n20 significant digits (PRECISION), and digit counts come from\nBigDecimal#exponent (exactly floor(log10) + 1).\n\nOracle: translated spec cases pin the expected tick values.",
+      "docstring": "Adapted from an MIT-licensed source (source and license in\nTHIRD_PARTY_NOTICES.md).\n\nThe nice-ticks algorithm on BigDecimal, so the tick values stay\ndecimal-exact. Every operation is decimal, not binary: values\nconstruct from the double's shortest decimal string, remainders\ntruncate with the dividend's sign (#remainder), division carries\n20 significant digits (PRECISION), and digit counts come from\nBigDecimal#exponent (exactly floor(log10) + 1).\n\nOracle: translated spec cases pin the expected tick values.",
       "examples": [
         {
           "title": "Nice a raw domain into tick values",
@@ -3122,7 +3122,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 60
+          "line": 63
         },
         {
           "name": "calculate_step",
@@ -3134,7 +3134,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 131
+          "line": 134
         },
         {
           "name": "dec",
@@ -3146,7 +3146,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 28
+          "line": 31
         },
         {
           "name": "digit_count",
@@ -3158,7 +3158,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 34
+          "line": 37
         },
         {
           "name": "fixed_domain_ticks",
@@ -3170,7 +3170,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 194
+          "line": 197
         },
         {
           "name": "nice_ticks",
@@ -3182,7 +3182,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 168
+          "line": 171
         },
         {
           "name": "range_step",
@@ -3194,7 +3194,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 41
+          "line": 44
         },
         {
           "name": "snap125_step",
@@ -3206,7 +3206,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 76
+          "line": 79
         },
         {
           "name": "step_function",
@@ -3218,7 +3218,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 102
+          "line": 105
         },
         {
           "name": "ticks_of_single_value",
@@ -3230,7 +3230,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 107
+          "line": 110
         },
         {
           "name": "valid_interval",
@@ -3242,7 +3242,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 54
+          "line": 57
         }
       ],
       "constants": [
