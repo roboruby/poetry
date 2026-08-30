@@ -9,8 +9,16 @@ gemspec
 # the rouge path (hosts without rouge get the plain fallback).
 gem "rouge"
 
-gem "poetry-core", path: "../poetry-core"
-gem "poetry-lucide", path: "../poetry-lucide"
+# The sibling gems ride local paths while the family is checked out side by
+# side (development); anywhere else (CI, a release job, a lone clone) they
+# resolve from RubyGems through the gemspec's exact pins.
+sibling = lambda do |name|
+  path = File.expand_path("../#{name}", __dir__)
+  File.directory?(path) ? { path: path } : {}
+end
+
+gem "poetry-core", **sibling.call("poetry-core")
+gem "poetry-lucide", **sibling.call("poetry-lucide")
 
 gem "irb"
 gem "rake", "~> 13.0"
