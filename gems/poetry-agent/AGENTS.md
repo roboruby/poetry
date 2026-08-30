@@ -59,5 +59,7 @@ Naming: "Poetry" is the product in prose; gem names, constants, the
 Third-party code: adapt only from MIT-compatible sources (MIT/ISC/BSD;
 Apache-2.0 carries its notice). Copyleft (GPL/LGPL/AGPL), restricted-use,
 and commercial sources are patterns-and-ideas only — never code. Every
-adaptation gets a source URL in the file header and a
-THIRD_PARTY_NOTICES.md section.
+adaptation notes "Adapted from an MIT-licensed source (source and
+license in THIRD_PARTY_NOTICES.md)" in its class doc and gets a
+THIRD_PARTY_NOTICES.md section — the source URL lives there, never in
+code.
