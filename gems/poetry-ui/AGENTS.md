@@ -172,7 +172,8 @@ identifiers stay as they are.
 Third-party code: adapt only from MIT-compatible sources (MIT/ISC/BSD;
 Apache-2.0 carries its notice). Copyleft (GPL/LGPL/AGPL), restricted-use,
 and commercial sources are patterns-and-ideas only — never code. Every
-adaptation: source URL in the file/component comment + a
-THIRD_PARTY_NOTICES.md section (upstream, license, adapted files, full
-license text). An adaptation change that doesn't touch
-THIRD_PARTY_NOTICES.md is incomplete.
+adaptation: a THIRD_PARTY_NOTICES.md section (upstream, license, adapted
+files, full license text) — that file is the canonical attribution; the
+source URL lives there, and upstream is never named in code. An
+adaptation change that doesn't touch THIRD_PARTY_NOTICES.md is
+incomplete.
