@@ -79,7 +79,7 @@
       "constants": [
         {
           "name": "VERSION",
-          "value": "\"0.0.1\"",
+          "value": "\"0.0.2\"",
           "docstring": "The gem version (lockstep with the poetry family)."
         }
       ]
@@ -225,6 +225,11 @@
           "name": "SERVER_INFO",
           "value": "{ \"name\" => \"poetry-agent\", \"version\" => Poetry::Agent::VERSION }.freeze",
           "docstring": "The serverInfo payload returned by the initialize handshake."
+        },
+        {
+          "name": "TOOLS",
+          "value": "[\n  {\n    \"name\" => \"compose\",\n    \"description\" => \"CALL THIS FIRST for every brief, before writing any ERB. Give it the task \" \\\n                     \"text; it routes to the right starting point: a ",
+          "docstring": "The tool roster the server advertises (tools/list): MCP Tool-shaped\ndefinitions, read-only by construction."
         }
       ]
     },
@@ -381,7 +386,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 194
+          "line": 196
         },
         {
           "name": "handle",
@@ -407,7 +412,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 245
+          "line": 250
         },
         {
           "name": "initialize",
@@ -424,7 +429,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 211
+          "line": 213
         },
         {
           "name": "serve",
@@ -436,19 +441,34 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 260
+          "line": 265
         }
       ],
       "constants": [
+        {
+          "name": "ARCHETYPE_MATCH",
+          "value": "2",
+          "docstring": "The brief-word -> page-architecture routing table."
+        },
         {
           "name": "STEPS",
           "value": "%w[probe plan direct snippets verify].freeze",
           "docstring": "build_page: the guided workflow's five steps, the themes\nits probe/direct steps sniff for, and the plan step's match floor\n(one curated archetype keyword = 2, so 2 is the weakest real hit)."
         },
         {
+          "name": "STOPWORDS",
+          "value": "%w[\n  the a an and or with for of to in on at from into by over under this that it its as is are\n  be has have should must can will each per when where build create make add show include\n  using use p",
+          "docstring": "Tokens compose ignores when scoring a brief."
+        },
+        {
           "name": "STRONG_MATCH",
           "value": "4",
           "docstring": "compose routing: the strong-match threshold, and the words\ntoo generic to signal a block - connectives, task verbs, and\ncomponent-anatomy words (title/description/action) every brief\nuses regardless of scale."
+        },
+        {
+          "name": "THEMES",
+          "value": "%w[default vega nova mira rhea maia luma lyra sera].freeze",
+          "docstring": "The theme roster build_page's direct step reads."
         }
       ]
     },

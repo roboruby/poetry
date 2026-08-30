@@ -154,7 +154,7 @@
       "path": "Poetry::EditorGenerator",
       "type": "class",
       "superclass": "Rails::Generators::Base",
-      "docstring": "`rails g poetry:editor` - wire the poetry agent surface into the editors a\nRails team actually uses. poetry has no bespoke extension (a possible\nfuture direction); what it DOES have is a standard MCP stdio server and a\nsource-generated component registry, so this generator emits:\n\n  .mcp.json            Claude Code   (mcpServers)\n  .cursor/mcp.json     Cursor        (mcpServers)\n  .vscode/mcp.json     VS Code       (servers + type: stdio)\n  .vscode/poetry.code-snippets   one snippet per poetry_* helper, with the\n                                  real variant/size enums as tab-stop choices\n\nThe MCP writes are upserts: an existing config keeps its other servers and\ngains a `poetry` entry; a config that already has one is left untouched; a\nJSONC file poetry can't parse is reported, never clobbered. Editors whose\nMCP config is global / IDE-managed (Zed, Windsurf, RubyMine) get a\ncopy-paste block printed instead.",
+      "docstring": "`rails g poetry:editor` - wire the poetry agent surface into the editors a\nRails team actually uses. poetry has no bespoke extension (a possible\nfuture direction); what it DOES have is a standard MCP stdio server and a\nsource-generated component registry, so this generator emits:\n\n  .mcp.json            Claude Code   (mcpServers)\n  .cursor/mcp.json     Cursor        (mcpServers)\n  .vscode/mcp.json     VS Code       (servers + type: stdio)\n  .vscode/poetry.code-snippets   one snippet per poetry_* helper, with the\n                                  real variant/size enums as tab-stop choices\n  .herb.yml            Herb (linter / formatter / language server), unless\n                       the app already has one\n  .stimulus-lsp/config.json   poetry's controller identifiers for Stimulus LSP\n                              (upsert: an existing ignore list keeps its entries)\n\nThe MCP writes are upserts: an existing config keeps its other servers and\ngains a `poetry` entry; a config that already has one is left untouched; a\nJSONC file poetry can't parse is reported, never clobbered. Editors whose\nMCP config is global / IDE-managed (Zed, Windsurf, RubyMine) get a\ncopy-paste block printed instead.",
       "examples": [
         {
           "title": "",
@@ -165,9 +165,24 @@
       "methods": [],
       "constants": [
         {
+          "name": "HERB_CONFIG",
+          "value": "<<~YML\n  # Herb toolchain configuration (linter / formatter / language server).\n  # https://herb-tools.dev/configuration - written by `rails g poetry:editor`.\n  version: 0.10.3\n\n  framework: actionvie",
+          "docstring": "The Herb toolchain (HTML+ERB parser, linter, formatter, language server)\nreads one file. Poetry templates are gated to parse AND compile under\nHerb (Rails core's ERB engine since 8.2), so a Poetry app can run the\nwhole toolchain; two linter rules misread ViewComponent slot setters on\nhelper-yielded builders today, so they start off with the upstream\nissues to watch. The version pin keeps a linter upgrade from enabling\nrules silently."
+        },
+        {
+          "name": "HERB_EDITORS",
+          "value": "<<~TEXT\n  VS Code    install the \"Herb LSP\" extension (marcoroth.herb-lsp); Stimulus LSP (marcoroth.stimulus-lsp)\n             understands the same HTML+ERB\n  Zed        ships inside the official Ruby",
+          "docstring": "Where the Herb language server comes from, per editor."
+        },
+        {
           "name": "MANUAL_EDITORS",
           "value": "<<~TEXT\n  Zed        settings.json ->\n             \"context_servers\": { \"poetry\": { \"command\": { \"path\": \"bundle\", \"args\": [\"exec\", \"poetry-agent\"] } } }\n  Windsurf   ~/.codeium/windsurf/mcp_config.js",
           "docstring": "Editors whose MCP config is global or IDE-managed, so poetry prints a\npaste-block instead of writing a project file."
+        },
+        {
+          "name": "STIMULUS_LSP_VERSION",
+          "value": "\"1.1.2\"",
+          "docstring": "Stimulus LSP resolves identifiers from the app's controller directories\nand node_modules; controllers a gem serves through importmap are\ninvisible to it, so every hand-written `poetry--...` descriptor reads\nas an invalid controller with a quick-fix that scaffolds a bogus file.\nThe LSP's one lever is an ignore list of exact identifiers, so poetry\nlists every controller its installed gems ship. Those descriptors are\npoetry:check's to validate (kwargs included); the LSP keeps yours."
         }
       ]
     },
@@ -494,7 +509,7 @@
         },
         {
           "name": "VERSION",
-          "value": "\"0.0.1\"",
+          "value": "\"0.0.2\"",
           "docstring": "The gem version."
         }
       ]
@@ -513,7 +528,7 @@
       "path": "Poetry::Ui::Accordion::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "An expand/collapse list of sections keyed by value. type: :single\n(the default) keeps one section open at a time; type: :multiple\nallows several. Pass open: to server-render the expanded sections.\n\nTriggers are real buttons inside headings, so every section stays\nreachable by Tab; arrow keys also move focus between triggers.\nPanels are labelled regions. A single non-collapsible accordion\nmarks the locked-open trigger disabled to assistive tech.\n\n**Anatomy** (`data-slot` parts):\n\n- `accordion` - The list root - both controllers (the open-set machine and roving focus) ride here\n- `accordion-item` - One value-keyed section wrapping its header and panel\n- `accordion-header` - The heading element (heading_level:, h3 default) hosting the trigger button\n- `accordion-trigger` - The toggle button inside the header - the chevron rotation rides aria-expanded, not a data attribute\n- `accordion-content` - The role=region panel - the presence animation and the measured height var ride here",
+      "docstring": "An expand/collapse list of sections keyed by value. type: :single\n(the default) keeps one section open at a time; type: :multiple\nallows several. Pass open: to server-render the expanded sections.\n\nTriggers are real buttons inside headings, so every section stays\nreachable by Tab; arrow keys also move focus between triggers.\nPanels are labelled regions. A single non-collapsible accordion\nmarks the locked-open trigger disabled to assistive tech.\n\n**Anatomy** (`data-slot` parts):\n\n- `accordion` - The list root - both controllers (the open-set machine and roving focus) ride here\n- `accordion-item` - One value-keyed section wrapping its header and panel\n- `accordion-header` - The heading element (heading_level:, h3 default) hosting the trigger button\n- `accordion-trigger` - The toggle button inside the header - the chevron rotation rides aria-expanded, not a data attribute\n- `accordion-trigger-icon` - The chevron svg inside the trigger (aria-hidden) - rotates with the item\n- `accordion-content` - The role=region panel - the presence animation and the measured height var ride here",
       "examples": [
         {
           "title": "Single-open accordion with the first item expanded",
@@ -838,7 +853,7 @@
       "path": "Poetry::Ui::AlertDialog::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "A modal confirmation that must be answered before anything else.\nBuilt on the native <dialog> element: clicking the backdrop never\ndismisses it, though Esc still cancels. Use it for destructive or\nirreversible actions; for anything needing input, use Dialog.\n\nTitle and description are both required, as are the action and\ncancel buttons - both close the dialog when activated, and cancel\n(the least-destructive choice) takes initial focus. There is no\ncorner close button.\n\n**Anatomy** (`data-slot` parts):\n\n- `alert-dialog` - Root wrapper around the trigger and the <dialog> element\n- `alert-dialog-content` - The role=alertdialog <dialog> panel - sizing, animation, and the open state ride here\n- `alert-dialog-header` - Title block - holds the optional media well, the title, and the description\n- `alert-dialog-title` - The heading - the alertdialog's accessible name (required slot)\n- `alert-dialog-description` - The explanation, wired to aria-describedby (required slot)\n- `alert-dialog-footer` - The choice row - cancel then action",
+      "docstring": "A modal confirmation that must be answered before anything else.\nBuilt on the native <dialog> element: clicking the backdrop never\ndismisses it, though Esc still cancels. Use it for destructive or\nirreversible actions; for anything needing input, use Dialog.\n\nTitle and description are both required, as are the action and\ncancel buttons - both close the dialog when activated, and cancel\n(the least-destructive choice) takes initial focus. There is no\ncorner close button.\n\n**Anatomy** (`data-slot` parts):\n\n- `alert-dialog` - Root wrapper around the trigger and the <dialog> element\n- `alert-dialog-content` - The role=alertdialog <dialog> panel - sizing, animation, and the open state ride here\n- `alert-dialog-header` - Title block - holds the optional media well, the title, and the description\n- `alert-dialog-media` - The optional media well above the title (an icon or illustration) - the header's first row; absent unless with_media is used\n- `alert-dialog-title` - The heading - the alertdialog's accessible name (required slot)\n- `alert-dialog-description` - The explanation, wired to aria-describedby (required slot)\n- `alert-dialog-footer` - The choice row - cancel then action",
       "examples": [
         {
           "title": "Destructive confirmation",
@@ -4357,7 +4372,7 @@
       "path": "Poetry::Ui::Combobox::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "A searchable select: a button that opens a popup holding a filter\ninput and a listbox of options, committing the chosen value to a\nvisually hidden native <select> that is the form's source of\ntruth. Options are server-rendered and filtered client-side as\nyou type; the selected option's label shows in the trigger.\n\nOpening focuses the filter input (the selected option is\nhighlighted and scrolled into view, not focused); Tab while open\ncloses WITHOUT committing; a printable key on the closed trigger\nopens the popup and seeds the filter.\n\nWith multiple: true, value: takes a LIST, a chips field (chips in\nvalue order plus the filter input inline) replaces the trigger,\nthe native <select multiple> posts name[], the listbox turns\naria-multiselectable, and selection TOGGLES with the popup\nstaying open.\n\n**Anatomy** (`data-slot` parts):\n\n- `combobox` - Root wrapper carrying both controllers (combobox + popper) and the optional dir attribute\n- `combobox-native` - The visually-hidden native <select> - the serialization truth (Select's decision verbatim); plumbing, never styled or targeted\n- `combobox-trigger` - The role=combobox button (the demo's outline Button) the field label reaches - value display and chevrons ride inside\n- `combobox-value` - The value display span - the selected option's label, or the placeholder\n- `combobox-content` - The popper-positioned popup housing the embedded Command anatomy - open/closed and the resolved placement ride here\n- `combobox-clear` - The show_clear: deselection X - a trigger sibling seated over the chevron slot; pressing it commits the blank value and returns focus to the trigger. Wears the html hidden attribute while no value is committed (the controller flips it on every commit; the chevron swap derives from that one flip in CSS)\n- `command` - The embedded engine root - Command's anatomy rendered here against its own controller (composition at the markup contract)\n- `command-input-wrapper` - The input row - search icon + filter input above the list\n- `command-search-icon` - Decorative search glyph beside the input\n- `command-input` - The filter input (role=combobox) - the typing session and aria-activedescendant live here. Single: in the popup with its own accessible name; multiple: INLINE in the chips frame (the input-inside layout), where the field label reaches it\n- `command-list` - THE role=listbox - the aria-controls target of both combobox roles\n- `command-empty` - Zero-matches message - rendered hidden; the engine unhides it when the filter pass leaves no visible items\n- `command-group` - role=group labelled by its heading - hidden by the engine when every member item is filtered out\n- `command-group-heading` - The group heading - styled, no ARIA role (the group points at it via aria-labelledby)\n- `command-item` - One role=option div wearing BOTH meanings - a Command item (filtering + highlight) AND Select's committed-value surface\n- `command-item-text` - The option's label span - the filter/typematch text source\n- `combobox-item-indicator` - The trailing committed-value check (ms-auto per the demo) - the parent item's data-selected absence hides it\n- `command-separator` - Decorative divider (aria-hidden) - hidden by the engine whenever the query is non-empty\n- `command-loading` - Pending affordance (role=status) - rendered hidden; the HOST unhides it around async refills\n- `command-status` - The engine's sr-only polite result-count live region\n- `combobox-chips` - The chips FIELD frame (multiple: only) - the popper anchor replacing the trigger; chips + the inline input flex-wrap inside, and role=toolbar rides it only while it holds >=1 chip\n- `combobox-chip` - One committed value (multiple: only) - a div taking REAL focus (tabindex=-1, styled by :focus-visible; chips NEVER wear data-highlighted), named by its value text, holding the remove button\n- `combobox-chip-remove` - The chip's native remove button (tabindex=-1, labelled 'Remove <label>') - a press removes the value and is never a chips-area press",
+      "docstring": "A searchable select: a button that opens a popup holding a filter\ninput and a listbox of options, committing the chosen value to a\nvisually hidden native <select> that is the form's source of\ntruth. Options are server-rendered and filtered client-side as\nyou type; the selected option's label shows in the trigger.\n\nOpening focuses the filter input (the selected option is\nhighlighted and scrolled into view, not focused); Tab while open\ncloses WITHOUT committing; a printable key on the closed trigger\nopens the popup and seeds the filter.\n\nWith multiple: true, value: takes a LIST, a chips field (chips in\nvalue order plus the filter input inline) replaces the trigger,\nthe native <select multiple> posts name[], the listbox turns\naria-multiselectable, and selection TOGGLES with the popup\nstaying open.\n\n**Anatomy** (`data-slot` parts):\n\n- `combobox` - Root wrapper carrying both controllers (combobox + popper) and the optional dir attribute\n- `combobox-native` - The visually-hidden native <select> - the serialization truth (Select's decision verbatim); plumbing, never styled or targeted\n- `combobox-trigger` - The role=combobox button (the demo's outline Button) the field label reaches - value display and chevrons ride inside\n- `combobox-value` - The value display span - the selected option's label, or the placeholder\n- `combobox-chip-input` - The inline filter input beside the chips (multiple: only) - the one typing surface; the source's chip input\n- `combobox-content` - The popper-positioned popup housing the embedded Command anatomy - open/closed and the resolved placement ride here\n- `combobox-clear` - The show_clear: deselection X - a trigger sibling seated over the chevron slot; pressing it commits the blank value and returns focus to the trigger. Wears the html hidden attribute while no value is committed (the controller flips it on every commit; the chevron swap derives from that one flip in CSS)\n- `combobox-command` - The embedded engine root - Command's anatomy rendered here against its own controller (composition at the markup contract)\n- `combobox-input-wrapper` - The input row - search icon + filter input above the list\n- `combobox-search-icon` - Decorative search glyph beside the input\n- `combobox-input` - The filter input (role=combobox) - the typing session and aria-activedescendant live here. Single: in the popup with its own accessible name; multiple: INLINE in the chips frame (the input-inside layout), where the field label reaches it\n- `combobox-list` - THE role=listbox - the aria-controls target of both combobox roles\n- `combobox-empty` - Zero-matches message - rendered hidden; the engine unhides it when the filter pass leaves no visible items\n- `combobox-group` - role=group labelled by its heading - hidden by the engine when every member item is filtered out\n- `combobox-label` - The group heading - styled, no ARIA role (the group points at it via aria-labelledby)\n- `combobox-item` - One role=option div wearing BOTH meanings - a Command item (filtering + highlight) AND Select's committed-value surface\n- `combobox-item-text` - The option's label span - the filter/typematch text source\n- `combobox-item-indicator` - The trailing committed-value check (ms-auto per the demo) - the parent item's data-selected absence hides it\n- `combobox-separator` - Decorative divider (aria-hidden) - hidden by the engine whenever the query is non-empty\n- `combobox-loading` - Pending affordance (role=status) - rendered hidden; the HOST unhides it around async refills\n- `combobox-status` - The engine's sr-only polite result-count live region\n- `combobox-chips` - The chips FIELD frame (multiple: only) - the popper anchor replacing the trigger; chips + the inline input flex-wrap inside, and role=toolbar rides it only while it holds >=1 chip\n- `combobox-chip` - One committed value (multiple: only) - a div taking REAL focus (tabindex=-1, styled by :focus-visible; chips NEVER wear data-highlighted), named by its value text, holding the remove button\n- `combobox-chip-remove` - The chip's native remove button (tabindex=-1, labelled 'Remove <label>') - a press removes the value and is never a chips-area press",
       "examples": [
         {
           "title": "",
@@ -4381,7 +4396,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 445
+          "line": 448
         },
         {
           "name": "align_offset",
@@ -4398,7 +4413,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 447
+          "line": 450
         },
         {
           "name": "avoid_collisions",
@@ -4415,7 +4430,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 448
+          "line": 451
         },
         {
           "name": "dir",
@@ -4432,7 +4447,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 449
+          "line": 452
         },
         {
           "name": "disabled",
@@ -4449,7 +4464,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 426
+          "line": 429
         },
         {
           "name": "empty",
@@ -4466,7 +4481,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 304
+          "line": 307
         },
         {
           "name": "filter",
@@ -4483,7 +4498,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 439
+          "line": 442
         },
         {
           "name": "id",
@@ -4500,7 +4515,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 423
+          "line": 426
         },
         {
           "name": "items",
@@ -4517,7 +4532,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 312
+          "line": 315
         },
         {
           "name": "loading",
@@ -4534,7 +4549,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 307
+          "line": 310
         },
         {
           "name": "loop",
@@ -4551,7 +4566,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 442
+          "line": 445
         },
         {
           "name": "modal",
@@ -4568,7 +4583,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 432
+          "line": 435
         },
         {
           "name": "multiple",
@@ -4585,7 +4600,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 428
+          "line": 431
         },
         {
           "name": "name",
@@ -4602,7 +4617,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 419
+          "line": 422
         },
         {
           "name": "open",
@@ -4619,7 +4634,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 424
+          "line": 427
         },
         {
           "name": "placeholder",
@@ -4636,7 +4651,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 420
+          "line": 423
         },
         {
           "name": "required",
@@ -4653,7 +4668,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 425
+          "line": 428
         },
         {
           "name": "search_placeholder",
@@ -4670,7 +4685,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 422
+          "line": 425
         },
         {
           "name": "show_clear",
@@ -4687,7 +4702,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 435
+          "line": 438
         },
         {
           "name": "side",
@@ -4704,7 +4719,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 443
+          "line": 446
         },
         {
           "name": "side_offset",
@@ -4721,7 +4736,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 446
+          "line": 449
         },
         {
           "name": "trigger",
@@ -4738,7 +4753,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 301
+          "line": 304
         },
         {
           "name": "value",
@@ -4755,7 +4770,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 418
+          "line": 421
         },
         {
           "name": "width",
@@ -4772,7 +4787,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 450
+          "line": 453
         },
         {
           "name": "with_empty",
@@ -4789,7 +4804,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 304
+          "line": 307
         },
         {
           "name": "with_group",
@@ -4806,7 +4821,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 312
+          "line": 315
         },
         {
           "name": "with_item",
@@ -4823,7 +4838,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 312
+          "line": 315
         },
         {
           "name": "with_loading",
@@ -4840,7 +4855,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 307
+          "line": 310
         },
         {
           "name": "with_separator",
@@ -4857,7 +4872,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 312
+          "line": 315
         },
         {
           "name": "with_trigger",
@@ -4874,7 +4889,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 301
+          "line": 304
         }
       ],
       "constants": [
@@ -4899,7 +4914,7 @@
       "path": "Poetry::Ui::Combobox::Style",
       "type": "class",
       "superclass": "Poetry::Core::Style",
-      "docstring": "Re-expressed through the cn-* theme layer. The embedded\nCommand parts still reuse Command::Style verbatim. The demo's\nh-9 input retune stays INLINE (a utilities-layer override that\nbeats the themed cn-command-input h-10 - the cn() behavior). The\nthemed demo width still loses to the width: knob (caller\nutilities beat the base layer).",
+      "docstring": "Re-expressed through the cn-* theme layer. The embedded\nCommand parts still reuse Command::Style verbatim; the popup's\nlist and label are the combobox's own hooks. The input fills its\nwell (h-full, mechanics) rather than carrying the classic demo's\nh-9 - every theme's well sizes it. The themed demo width still\nloses to the width: knob (caller utilities beat the base layer).",
       "examples": [],
       "file": "app/components/poetry/ui/combobox/style.rb",
       "methods": [],
@@ -5230,7 +5245,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 71
+          "line": 74
         },
         {
           "name": "dismissible",
@@ -5247,7 +5262,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 77
+          "line": 79
         },
         {
           "name": "filter",
@@ -5264,7 +5279,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 78
+          "line": 85
         },
         {
           "name": "hotkey",
@@ -5281,7 +5296,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 73
+          "line": 76
         },
         {
           "name": "id",
@@ -5298,7 +5313,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 83
+          "line": 90
         },
         {
           "name": "list_label",
@@ -5315,7 +5330,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 81
+          "line": 88
         },
         {
           "name": "loop",
@@ -5332,7 +5347,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 79
+          "line": 86
         },
         {
           "name": "placeholder",
@@ -5349,24 +5364,24 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 80
+          "line": 87
         },
         {
           "name": "show_close_button",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Renders the corner X (Esc always closes regardless).\n\nConstructor option `show_close_button:`.",
+          "docstring": "The close X, seated in the input row. Off by default while backdrop clicks close the palette (Esc, the backdrop, or picking an item all close it); on when dismissible: false so a pointer has a way out. Pass true to always show it.\n\nConstructor option `show_close_button:`.",
           "params": [],
           "return": {
             "types": [
               "Boolean"
             ],
-            "text": "defaults to `true`"
+            "text": "defaults to `-> { !dismissible }`"
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 76
+          "line": 80
         },
         {
           "name": "title",
@@ -5383,7 +5398,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 68
+          "line": 71
         },
         {
           "name": "trigger",
@@ -5400,7 +5415,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 39
+          "line": 42
         },
         {
           "name": "value",
@@ -5417,7 +5432,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 82
+          "line": 89
         },
         {
           "name": "with_trigger",
@@ -5434,7 +5449,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 39
+          "line": 42
         }
       ],
       "constants": [
@@ -5449,7 +5464,7 @@
       "path": "Poetry::Ui::Command::Style",
       "type": "class",
       "superclass": "Poetry::Core::Style",
-      "docstring": "Re-expressed through the cn-* theme layer. The two deliberate\nsource deltas (data-[highlighted] over data-[selected=true]; the\nms-auto RTL shortcut) now live in the theme rules. The\nCommandDialog p-0/h-12 retunes stay INLINE deliberately: they are\ncross-component overrides whose utilities-layer position is what\nlets them beat the themed Dialog/Command rules (dialog_content's\npanel retune rides the cross-component theme section instead).",
+      "docstring": "Re-expressed through the cn-* theme layer. The two deliberate\nsource deltas (data-[highlighted] over data-[selected=true]; the\nms-auto RTL shortcut) now live in the theme rules. The\nCommandDialog's overflow-hidden/p-0 stays INLINE (the source's\nstructural pair, carried on the component in every style); its\nclassic h-12 sizing chain is the DEFAULT theme's .cn-command-dialog\nrule - the styled sources carry no chain, so the dictionary must\nnot either (an inline utility would override all nine themes).",
       "examples": [],
       "file": "app/components/poetry/ui/command/style.rb",
       "methods": [],
@@ -7607,7 +7622,7 @@
       "path": "Poetry::Ui::ContextMenu::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "A context menu: the same menu anatomy as DropdownMenu, opened by\nright-click or long-press on a SURFACE instead of a button. The\nsurface is NOT a widget - no role, no aria-haspopup, not in the\ntab order (unless focusable_surface: opts in) - and with no JS\nthe browser-native context menu appears untouched. The menu\nanchors at the pointer position; side: picks which side of the\npointer it opens toward (default right), and collisions can\nstill flip it.\n\n**Anatomy** (`data-slot` parts):\n\n- `context-menu` - Root wrapper hosting the context-menu + menu + popper controllers around the surface and content\n- `context-menu-trigger` - The right-click/long-press SURFACE wrapping the logical object - not a widget: no role, no aria-haspopup\n- `context-menu-content` - The role=menu popup panel - anchored at the pointer via popper's virtual-anchor mode; open state and animation ride here\n- `context-menu-group` - role=group semantic grouping between separators\n- `context-menu-label` - Non-interactive heading for a run of items\n- `context-menu-item` - One role=menuitem action row\n- `context-menu-checkbox-item` - A role=menuitemcheckbox toggle row\n- `context-menu-radio-group` - role=group scoping one single-select value\n- `context-menu-radio-item` - A role=menuitemradio row inside a radio group\n- `context-menu-item-indicator` - The check/circle glyph slot inside checkbox and radio items - state rides the parent item; the glyph stays decorative\n- `context-menu-separator` - role=separator rule between groups\n- `context-menu-shortcut` - The trailing keybinding HINT - aria-hidden, never binds the key\n- `context-menu-sub` - A submenu scope - hosts its own popper around the sub trigger/content pair\n- `context-menu-sub-trigger` - The role=menuitem row opening its submenu\n- `context-menu-sub-content` - The nested role=menu panel - its own popper content on the same presence machinery",
+      "docstring": "A context menu: the same menu anatomy as DropdownMenu, opened by\nright-click or long-press on a SURFACE instead of a button. The\nsurface is NOT a widget - no role, no aria-haspopup, not in the\ntab order (unless focusable_surface: opts in) - and with no JS\nthe browser-native context menu appears untouched. The menu\nanchors at the pointer position; side: picks which side of the\npointer it opens toward (default right), and collisions can\nstill flip it.\n\n**Anatomy** (`data-slot` parts):\n\n- `context-menu` - Root wrapper hosting the context-menu + menu + popper controllers around the surface and content\n- `context-menu-trigger` - The right-click/long-press SURFACE wrapping the logical object - not a widget: no role, no aria-haspopup\n- `context-menu-content` - The role=menu popup panel - anchored at the pointer via popper's virtual-anchor mode; open state and animation ride here\n- `context-menu-group` - role=group semantic grouping between separators\n- `context-menu-label` - Non-interactive heading for a run of items\n- `context-menu-item` - One role=menuitem action row\n- `context-menu-checkbox-item` - A role=menuitemcheckbox toggle row\n- `context-menu-radio-group` - role=group scoping one single-select value\n- `context-menu-radio-item` - A role=menuitemradio row inside a radio group\n- `context-menu-checkbox-item-indicator` - The check glyph inside checkbox items (aria-hidden; the item carries the checked state)\n- `context-menu-radio-item-indicator` - The circle glyph inside radio items (aria-hidden; the item carries the checked state)\n- `context-menu-separator` - role=separator rule between groups\n- `context-menu-shortcut` - The trailing keybinding HINT - aria-hidden, never binds the key\n- `context-menu-sub` - A submenu scope - hosts its own popper around the sub trigger/content pair\n- `context-menu-sub-trigger` - The role=menuitem row opening its submenu\n- `context-menu-sub-content` - The nested role=menu panel - its own popper content on the same presence machinery",
       "examples": [
         {
           "title": "Right-click surface with actions",
@@ -9096,6 +9111,293 @@
       "constants": []
     },
     {
+      "path": "Poetry::Ui::DictionaryFidelity",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The dictionary half of the fidelity ledger: the structural utilities\na Style dictionary puts on each part, held against the classNames the\nsource puts on the same data-slot at the pin.\n\nThe theme ledger (ThemeFidelity) proves the cn-* rules; nothing proved\nthe Ruby strings that ride the same elements - a token there wins\nover every theme's rule at once, which is how a classic-only sizing\nchain and a demo width overrode nine themes without a failing gate.\n\nTwo sources are snapshotted per slot: the styled registry\n(bases/base/ui, hooks plus structural utilities) is the contract the\ndictionaries must match; the classic registry (new-york-v4/ui, every\nvisual utility inline) tells a classic-only token apart from a\npoetry-only one. Hooks (cn-*) are the theme ledger's concern and are\nleft out of both sides.\n\nRendered previews supply poetry's side: for every element a component\nowns (PartContract's ownership rule), the class tokens that belong to\nthe dictionary. Reconciliation against deviations.yml is exact and\ntwo-way, like the theme ledger: an unrecorded difference fails, a\nrecorded one that no longer exists fails as stale.",
+      "examples": [],
+      "file": "lib/poetry/ui/dictionary_fidelity.rb",
+      "methods": [
+        {
+          "name": "current_diffs",
+          "scope": "class",
+          "group": null,
+          "signature": "current_diffs(root, rendered)",
+          "docstring": "Every component's diff against the committed snapshot.",
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "String"
+              ],
+              "text": "the gem root"
+            },
+            {
+              "name": "rendered",
+              "types": [
+                "Hash"
+              ],
+              "text": "component key => rendered slots (see #diff)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "component key => diff, plus the two component lists"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/dictionary_fidelity.rb",
+          "line": 243
+        },
+        {
+          "name": "diff",
+          "scope": "class",
+          "group": null,
+          "signature": "diff(source, rendered)",
+          "docstring": "The per-component diff between the source's slots and poetry's\nrendered, owned slots. Rendered values are { \"tag\" => String,\n\"tokens\" => Set } or COMPOSED (another component's root wearing the\nslot - present, but its tokens are that component's ledger).",
+          "params": [
+            {
+              "name": "source",
+              "types": [
+                "Hash"
+              ],
+              "text": "slot => { \"tag\", \"styled\", \"classic\" }"
+            },
+            {
+              "name": "rendered",
+              "types": [
+                "Hash"
+              ],
+              "text": "slot => { \"tag\", \"tokens\" } | COMPOSED"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "\"missing_slots\", \"poetry_slots\", \"slots\" => { slot => diff }"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/dictionary_fidelity.rb",
+          "line": 204
+        },
+        {
+          "name": "extract",
+          "scope": "class",
+          "group": null,
+          "signature": "extract(text)",
+          "docstring": "Every element carrying data-slot in one source file, with the\nstructural tokens its className resolves to (string literals, cva\nbase and variant strings, render-prop classNames) and its tag.\nRoots rendered through useRender are read from their props object.",
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "String"
+              ],
+              "text": "a registry .tsx file"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash{String => Hash}"
+            ],
+            "text": "slot => { \"tag\" => String, \"tokens\" => Array<String> }"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/dictionary_fidelity.rb",
+          "line": 67
+        },
+        {
+          "name": "snapshot",
+          "scope": "class",
+          "group": null,
+          "signature": "snapshot(root)",
+          "docstring": "The committed snapshot.",
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "String"
+              ],
+              "text": "the gem root"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/dictionary_fidelity.rb",
+          "line": 346
+        },
+        {
+          "name": "snapshot_path",
+          "scope": "class",
+          "group": null,
+          "signature": "snapshot_path(root)",
+          "docstring": "The committed snapshot's path - exactly one may exist.",
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "String"
+              ],
+              "text": "the gem root"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/dictionary_fidelity.rb",
+          "line": 354
+        },
+        {
+          "name": "verify",
+          "scope": "class",
+          "group": null,
+          "signature": "verify(root, rendered)",
+          "docstring": "Exact two-way reconciliation against deviations.yml. Returns a list\nof finding strings; empty means the contract holds.",
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "String"
+              ],
+              "text": "the gem root"
+            },
+            {
+              "name": "rendered",
+              "types": [
+                "Hash"
+              ],
+              "text": "component key => rendered slots (see #diff)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/dictionary_fidelity.rb",
+          "line": 259
+        },
+        {
+          "name": "write_snapshot",
+          "scope": "class",
+          "group": null,
+          "signature": "write_snapshot(root, checkout:, pin:)",
+          "docstring": "Writes the frozen source snapshot from a pinned checkout: every\nstyled registry file's slots, with the classic registry's tokens for\nthe same slots beside them.",
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "String"
+              ],
+              "text": "the gem root"
+            },
+            {
+              "name": "checkout",
+              "types": [
+                "String"
+              ],
+              "text": "path to the source checkout"
+            },
+            {
+              "name": "pin",
+              "types": [
+                "String"
+              ],
+              "text": "the commit to read"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the snapshot path"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/dictionary_fidelity.rb",
+          "line": 322
+        }
+      ],
+      "constants": [
+        {
+          "name": "CLASSIC",
+          "value": "\"apps/v4/registry/new-york-v4/ui\"",
+          "docstring": "The classic registry (every visual utility inline) - tells classic-only tokens apart."
+        },
+        {
+          "name": "CLOSERS",
+          "value": "\")}]\"",
+          "docstring": "Their closing counterparts."
+        },
+        {
+          "name": "COMPONENT_LISTS",
+          "value": "%w[missing_components poetry_components].freeze",
+          "docstring": "Top-level presence lists: source files without a poetry component and vice versa."
+        },
+        {
+          "name": "COMPOSED",
+          "value": "\"composed\"",
+          "docstring": "A composed part: rendered by another component (a Button), whose\nown ledger covers its tokens."
+        },
+        {
+          "name": "DIFF_KINDS",
+          "value": "%w[dropped added classic].freeze",
+          "docstring": "Per-slot token diff kinds the ledger records."
+        },
+        {
+          "name": "DIR",
+          "value": "\"config/dictionary_fidelity\"",
+          "docstring": "The ledger's home: the snapshot and deviations.yml."
+        },
+        {
+          "name": "HOOK",
+          "value": "/\\Acn-/",
+          "docstring": "A theme hook (the theme ledger's concern; excluded from both sides)."
+        },
+        {
+          "name": "LIST_KINDS",
+          "value": "%w[missing_slots poetry_slots].freeze",
+          "docstring": "Per-file presence lists the ledger records with a reason."
+        },
+        {
+          "name": "OPENERS",
+          "value": "\"({[\"",
+          "docstring": "Bracket characters the useRender walker balances."
+        },
+        {
+          "name": "QUOTES",
+          "value": "['\"', \"'\", \"`\"].freeze",
+          "docstring": "String delimiters the tag scanner steps over."
+        },
+        {
+          "name": "STYLED",
+          "value": "\"apps/v4/registry/bases/base/ui\"",
+          "docstring": "The styled registry (hooks plus structural utilities) - the contract."
+        },
+        {
+          "name": "TAG_START",
+          "value": "%r{<([A-Z][\\w.]*|[a-z][\\w-]*)[\\s/>]}",
+          "docstring": "A JSX opening tag: a component or a native element name."
+        },
+        {
+          "name": "USE_RENDER",
+          "value": "\"useRender(\"",
+          "docstring": "The call whose balanced body carries a useRender root's props and state."
+        }
+      ]
+    },
+    {
       "path": "Poetry::Ui::Drawer",
       "type": "module",
       "superclass": null,
@@ -9258,7 +9560,7 @@
       "path": "Poetry::Ui::DropdownMenu::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "A dropdown menu: a button that opens a popup list of actions\n(role=menu), composed from items, checkbox items, radio groups,\nlabels, separators, groups, and nested submenus. Reach for it\nwhen one control offers several actions; choosing a form VALUE\nbelongs to Select or Combobox instead.\n\nRequires with_trigger (the menu button) and at least one item.\nArrow-key navigation, typeahead, and focus containment activate\nwhen the menu opens; the closed menu renders inert and hidden.\n\n**Anatomy** (`data-slot` parts):\n\n- `dropdown-menu` - Root wrapper hosting the menu + popper controllers around the trigger and content\n- `dropdown-menu-content` - The role=menu popup panel - positioning, animation, and the open state ride here\n- `dropdown-menu-group` - role=group semantic grouping between separators\n- `dropdown-menu-label` - Non-interactive heading for a run of items\n- `dropdown-menu-item` - One role=menuitem action row\n- `dropdown-menu-checkbox-item` - A role=menuitemcheckbox toggle row\n- `dropdown-menu-radio-group` - role=group scoping one single-select value\n- `dropdown-menu-radio-item` - A role=menuitemradio row inside a radio group\n- `dropdown-menu-item-indicator` - The check/circle glyph slot inside checkbox and radio items - state rides the parent item; the glyph stays decorative\n- `dropdown-menu-separator` - role=separator rule between groups\n- `dropdown-menu-shortcut` - The trailing keybinding HINT - aria-hidden, never binds the key\n- `dropdown-menu-sub` - A submenu scope - hosts its own popper around the sub trigger/content pair\n- `dropdown-menu-sub-trigger` - The role=menuitem row opening its submenu\n- `dropdown-menu-sub-content` - The nested role=menu panel - its own popper content on the same presence machinery",
+      "docstring": "A dropdown menu: a button that opens a popup list of actions\n(role=menu), composed from items, checkbox items, radio groups,\nlabels, separators, groups, and nested submenus. Reach for it\nwhen one control offers several actions; choosing a form VALUE\nbelongs to Select or Combobox instead.\n\nRequires with_trigger (the menu button) and at least one item.\nArrow-key navigation, typeahead, and focus containment activate\nwhen the menu opens; the closed menu renders inert and hidden.\n\n**Anatomy** (`data-slot` parts):\n\n- `dropdown-menu` - Root wrapper hosting the menu + popper controllers around the trigger and content\n- `dropdown-menu-content` - The role=menu popup panel - positioning, animation, and the open state ride here\n- `dropdown-menu-group` - role=group semantic grouping between separators\n- `dropdown-menu-label` - Non-interactive heading for a run of items\n- `dropdown-menu-item` - One role=menuitem action row\n- `dropdown-menu-checkbox-item` - A role=menuitemcheckbox toggle row\n- `dropdown-menu-radio-group` - role=group scoping one single-select value\n- `dropdown-menu-radio-item` - A role=menuitemradio row inside a radio group\n- `dropdown-menu-checkbox-item-indicator` - The check glyph inside checkbox items (aria-hidden; the item carries the checked state)\n- `dropdown-menu-radio-item-indicator` - The circle glyph inside radio items (aria-hidden; the item carries the checked state)\n- `dropdown-menu-separator` - role=separator rule between groups\n- `dropdown-menu-shortcut` - The trailing keybinding HINT - aria-hidden, never binds the key\n- `dropdown-menu-sub` - A submenu scope - hosts its own popper around the sub trigger/content pair\n- `dropdown-menu-sub-trigger` - The role=menuitem row opening its submenu\n- `dropdown-menu-sub-content` - The nested role=menu panel - its own popper content on the same presence machinery",
       "examples": [
         {
           "title": "A menu button with actions",
@@ -9738,7 +10040,7 @@
       "path": "Poetry::Ui::Field::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "The Field wrapper - label, control, hint, and error as one unit\nwith the aria wiring done for you: the control (the content\nblock) receives its id from the field, and control_attributes\ncarries aria-invalid + aria-describedby pointing at the hint and\nerror ids. The FormBuilder composes this from model truth; Field\nitself is model-agnostic.\n\n**Anatomy** (`data-slot` parts):\n\n- `field` - The quartet's grid root - label, control, hint, and error stack inside\n- `field-hint` - The hint <p> - its id lands in the control's aria-describedby\n- `field-error` - The error <p> - present only when error: is set; its id leads the control's aria-describedby\n- `checkbox-input` - A nested Checkbox's hidden native input - the toggle renders as a wrapper-free fragment, so its sibling form store sits directly in the field's DOM (the horizontal boolean-control layout)\n- `switch-input` - A nested Switch's hidden native input - the same wrapper-free fragment escape as checkbox-input (the setting-row layout)",
+      "docstring": "The Field wrapper - label, control, hint, and error as one unit\nwith the aria wiring done for you: the control (the content\nblock) receives its id from the field, and control_attributes\ncarries aria-invalid + aria-describedby pointing at the hint and\nerror ids. The FormBuilder composes this from model truth; Field\nitself is model-agnostic.\n\n**Anatomy** (`data-slot` parts):\n\n- `field` - The quartet's grid root - label, control, hint, and error stack inside\n- `field-label` - The Label (composed) wearing the source's field-label slot - names the control\n- `field-description` - The hint <p> (the source's description) - its id lands in the control's aria-describedby\n- `field-error` - The error <p> - present only when error: is set; its id leads the control's aria-describedby\n- `checkbox-input` - A nested Checkbox's hidden native input - the toggle renders as a wrapper-free fragment, so its sibling form store sits directly in the field's DOM (the horizontal boolean-control layout)\n- `switch-input` - A nested Switch's hidden native input - the same wrapper-free fragment escape as checkbox-input (the setting-row layout)",
       "examples": [
         {
           "title": "",
@@ -9757,7 +10059,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/field/component.rb",
-          "line": 153
+          "line": 155
         },
         {
           "name": "error",
@@ -9927,7 +10229,7 @@
             }
           ],
           "file": "app/components/poetry/ui/field/component.rb",
-          "line": 125
+          "line": 127
         }
       ],
       "constants": [
@@ -12629,7 +12931,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menus.rb",
-          "line": 93
+          "line": 94
         },
         {
           "name": "with_checkbox_item",
@@ -12646,7 +12948,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menus.rb",
-          "line": 93
+          "line": 94
         },
         {
           "name": "with_group",
@@ -12663,7 +12965,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menus.rb",
-          "line": 93
+          "line": 94
         },
         {
           "name": "with_item",
@@ -12680,7 +12982,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menus.rb",
-          "line": 93
+          "line": 94
         },
         {
           "name": "with_label",
@@ -12697,7 +12999,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menus.rb",
-          "line": 93
+          "line": 94
         },
         {
           "name": "with_radio_group",
@@ -12714,7 +13016,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menus.rb",
-          "line": 93
+          "line": 94
         },
         {
           "name": "with_separator",
@@ -12731,7 +13033,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menus.rb",
-          "line": 93
+          "line": 94
         },
         {
           "name": "with_sub",
@@ -12748,7 +13050,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menus.rb",
-          "line": 93
+          "line": 94
         }
       ],
       "constants": []
@@ -13609,7 +13911,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/navigation_menu/component.rb",
-          "line": 167
+          "line": 170
         }
       ],
       "constants": [
@@ -16921,7 +17223,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/sidebar/style.rb",
-          "line": 132
+          "line": 133
         },
         {
           "name": "mobile_side",
@@ -18114,6 +18416,39 @@
       "file": "lib/poetry/ui/testing.rb",
       "methods": [
         {
+          "name": "assert_poetry_controllers_registered",
+          "scope": "instance",
+          "group": null,
+          "signature": "assert_poetry_controllers_registered(session: nil, application: \"window.Stimulus\")",
+          "docstring": "Asserts that every poetry controller on the page is registered.\nFlunks under Minitest, raises {RegistrationError} elsewhere, with\nthe identifiers and the two causes to check first.",
+          "params": [
+            {
+              "name": "session",
+              "types": [
+                "Capybara::Session",
+                "nil"
+              ],
+              "text": "defaults to the test's\n`page` (or Capybara.current_session)"
+            },
+            {
+              "name": "application",
+              "types": [
+                "String"
+              ],
+              "text": "JS expression naming the Stimulus\napplication (default window.Stimulus)"
+            }
+          ],
+          "return": {
+            "types": [
+              "true"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/testing.rb",
+          "line": 115
+        },
+        {
           "name": "poetry_combobox",
           "scope": "instance",
           "group": null,
@@ -18145,7 +18480,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing.rb",
-          "line": 59
+          "line": 60
         },
         {
           "name": "poetry_dialog",
@@ -18179,7 +18514,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing.rb",
-          "line": 80
+          "line": 81
         },
         {
           "name": "poetry_dropdown_menu",
@@ -18213,7 +18548,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing.rb",
-          "line": 69
+          "line": 70
         },
         {
           "name": "poetry_select",
@@ -18247,7 +18582,40 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing.rb",
-          "line": 49
+          "line": 50
+        },
+        {
+          "name": "poetry_unregistered_controllers",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_unregistered_controllers(session: nil, application: \"window.Stimulus\")",
+          "docstring": "Every poetry controller identifier on the current page that the\nhost's Stimulus application has NOT registered - empty when the\nwiring is healthy. Stimulus never errors on an unknown identifier\n(the element just stays inert), and one failed import in the\ncontrollers graph silently takes every poetry controller with it,\nso nothing else surfaces this.",
+          "params": [
+            {
+              "name": "session",
+              "types": [
+                "Capybara::Session",
+                "nil"
+              ],
+              "text": "defaults to the test's\n`page` (or Capybara.current_session)"
+            },
+            {
+              "name": "application",
+              "types": [
+                "String"
+              ],
+              "text": "JS expression naming the Stimulus\napplication (Rails' default controllers/application.js exposes\nwindow.Stimulus)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": "the unregistered identifiers, sorted"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/testing.rb",
+          "line": 99
         }
       ],
       "constants": []
@@ -18588,6 +18956,16 @@
           "line": 24
         }
       ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Ui::Testing::RegistrationError",
+      "type": "class",
+      "superclass": "StandardError",
+      "docstring": "Raised by assert_poetry_controllers_registered outside Minitest.",
+      "examples": [],
+      "file": "lib/poetry/ui/testing/registration.rb",
+      "methods": [],
       "constants": []
     },
     {
@@ -19121,7 +19499,7 @@
         },
         {
           "name": "PORTED",
-          "value": "\"ported from the source style-%s.css at pin d0fae528\"",
+          "value": "\"ported from the source style-%s.css at pin shadcn@4.19.0 (1773ecfe)\"",
           "docstring": "The provenance line template for ported treatments,\nformat-interpolated with the upstream style name."
         },
         {

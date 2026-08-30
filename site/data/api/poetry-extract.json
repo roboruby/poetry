@@ -22,7 +22,7 @@
       "constants": [
         {
           "name": "VERSION",
-          "value": "\"0.0.1\"",
+          "value": "\"0.0.2\"",
           "docstring": "The gem version."
         }
       ]
