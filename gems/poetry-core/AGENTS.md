@@ -97,8 +97,7 @@ files against the manifest stamped at last bless.
 - Comments carry poetry's rules, never other libraries' names or
   anonymous "upstream" comparisons - attribution lives in
   THIRD_PARTY_NOTICES.md alone, and adapted files carry the generic
-  pointer sentence. test/javascript/comment_scrub.test.js enforces the
-  names ban over comment text.
+  pointer sentence.
 - Subclasses (Drawer extends Dialog) get their statics merged up the class
   chain by the manifest — declare only what the subclass itself adds.
 - Component DOM ids derive through `Poetry::Core::StableId` (`key:` →
