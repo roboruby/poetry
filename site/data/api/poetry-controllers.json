@@ -47,7 +47,7 @@
       "path": "@poetry/controllers/helpers/announce",
       "type": "module",
       "superclass": null,
-      "docstring": "The announce SINGLETON (P5): shared screen-reader live regions - a plain\nmodule, not a controller. Injecting a node that IS a live region is\nunreliably announced across SR/browser pairs (the Radix Toast insight),\nso consumers keep their own nodes aria-live=off and route announcements\nthrough here: TWO lazily-created sr-only regions on body (polite +\nassertive), refcounted via acquire()/release() (regions removed when the\nlast consumer releases; consumers: Toast, async form status, Combobox\nresult counts - API changes after Toast ships are breaking, so the\nsurface stays exactly this).\n\nAnnouncement mechanics: clear-then-set on a microtask (identical\nconsecutive messages re-announce), a per-region message queue with a\nsmall gap between messages, textContent ONLY (live-region injection is a\nreal sink - never innerHTML).\n\nTab-visibility muting: while the tab is hidden both regions flip\naria-live=off (muted); announcements made while hidden keep at most the\nLAST message, flushed on return (no backlog flood).",
+      "docstring": "The announce SINGLETON: shared screen-reader live regions - a plain\nmodule, not a controller. Injecting a node that IS a live region is\nunreliably announced across SR/browser pairs (the region must exist\nBEFORE its text changes), so consumers keep their own nodes\naria-live=off and route announcements\nthrough here: TWO lazily-created sr-only regions on body (polite +\nassertive), refcounted via acquire()/release() (regions removed when the\nlast consumer releases; consumers: Toast, async form status, Combobox\nresult counts - API changes after Toast ships are breaking, so the\nsurface stays exactly this).\n\nAnnouncement mechanics: clear-then-set on a microtask (identical\nconsecutive messages re-announce), a per-region message queue with a\nsmall gap between messages, textContent ONLY (live-region injection is a\nreal sink - never innerHTML).\n\nTab-visibility muting: while the tab is hidden both regions flip\naria-live=off (muted); announcements made while hidden keep at most the\nLAST message, flushed on return (no backlog flood).",
       "examples": [],
       "file": "app/javascript/poetry/core/helpers/announce.js",
       "methods": [
@@ -61,7 +61,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/announce.js",
-          "line": 50
+          "line": 51
         },
         {
           "name": "release",
@@ -73,7 +73,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/announce.js",
-          "line": 59
+          "line": 60
         },
         {
           "name": "announce",
@@ -100,7 +100,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/announce.js",
-          "line": 76
+          "line": 77
         }
       ],
       "constants": []
@@ -109,7 +109,7 @@
       "path": "@poetry/controllers/helpers/breakpoint",
       "type": "module",
       "superclass": null,
-      "docstring": "The mobile breakpoint: shadcn's use-mobile hook as a helper -\nmatchMedia below Tailwind's md (768px), with a change listener. The\nfirst poetry consumer is the Sidebar's mobile-Sheet mode. Environments\nwithout matchMedia (the dommy QuickJS engine, bare jsdom) report\nDESKTOP - the server-rendered desktop shell is the safe default.",
+      "docstring": "The mobile breakpoint: matchMedia below Tailwind's md (768px), with a\nchange listener. The\nfirst poetry consumer is the Sidebar's mobile-Sheet mode. Environments\nwithout matchMedia (the dommy QuickJS engine, bare jsdom) report\nDESKTOP - the server-rendered desktop shell is the safe default.",
       "examples": [],
       "file": "app/javascript/poetry/core/helpers/breakpoint.js",
       "methods": [
@@ -151,7 +151,7 @@
       "path": "@poetry/controllers/helpers/collection",
       "type": "module",
       "superclass": null,
-      "docstring": "The DOM is the registry (Tier 1): collection items are read from the\ndocument in DOM order - no client-side bookkeeping (the Radix\n`collection` primitive collapses to a query).",
+      "docstring": "The DOM is the registry: collection items are read from the document\nin DOM order - no client-side bookkeeping, no registration step; a\nmembership question is always a fresh query.",
       "examples": [],
       "file": "app/javascript/poetry/core/helpers/collection.js",
       "methods": [
@@ -200,7 +200,7 @@
       "path": "@poetry/controllers/helpers/direction",
       "type": "module",
       "superclass": null,
-      "docstring": "Reading direction (Tier 1): the platform mechanism - the closest [dir]\nancestor - consumed by roving-focus (Left/Right flip) and popper (side flip).",
+      "docstring": "Reading direction: the platform mechanism - the closest [dir]\nancestor - consumed by roving-focus (Left/Right flip) and popper (side flip).",
       "examples": [],
       "file": "app/javascript/poetry/core/helpers/direction.js",
       "methods": [
@@ -236,7 +236,7 @@
       "path": "@poetry/controllers/helpers/escape",
       "type": "module",
       "superclass": null,
-      "docstring": "Capture-phase Escape handling (Tier 1): the primitive under dismissable's\ntopmost-only Esc behavior.",
+      "docstring": "Capture-phase Escape handling: the primitive under dismissable's\ntopmost-only Esc behavior.",
       "examples": [],
       "file": "app/javascript/poetry/core/helpers/escape.js",
       "methods": [
@@ -416,7 +416,7 @@
           "scope": "class",
           "group": null,
           "signature": "filterKeywords(item)",
-          "docstring": "data-keywords: whitespace-separated extra filter terms (the upstream\nkeywords prop as a data attribute).",
+          "docstring": "data-keywords: whitespace-separated extra filter terms an item may\ncarry beyond its visible label.",
           "params": [
             {
               "name": "item",
@@ -506,7 +506,7 @@
       "path": "@poetry/controllers/helpers/focus_guards",
       "type": "module",
       "superclass": null,
-      "docstring": "Focus guards (Tier 3): two visually-hidden tabindex=0 sentinels at the\nbody edges so focusin/focusout fire predictably at the document boundary\nwhile any trapped overlay is open - a Tab out of the last real element\nlands on a guard (which focus-scope yanks back), never on nothing.\nRefcounted module state: one pair per page no matter how many overlays.",
+      "docstring": "Focus guards: two visually-hidden tabindex=0 sentinels at the\nbody edges so focusin/focusout fire predictably at the document boundary\nwhile any trapped overlay is open - a Tab out of the last real element\nlands on a guard (which focus-scope yanks back), never on nothing.\nRefcounted module state: one pair per page no matter how many overlays.",
       "examples": [],
       "file": "app/javascript/poetry/core/helpers/focus_guards.js",
       "methods": [
@@ -683,7 +683,7 @@
       "path": "@poetry/controllers/helpers/incomplete_date",
       "type": "module",
       "superclass": null,
-      "docstring": "The nullable-segment date/time value (the IncompleteDate model, adapted\nfrom react-aria - Apache-2.0, see THIRD_PARTY_NOTICES.md): segments\nare stored RAW so a user can edit day before\nmonth - the object can hold February 31st and only commit constrains.\nHour is stored in the LOCALE'S HOUR CYCLE with a separate dayPeriod bit\n(0 = AM, 1 = PM), so am/pm edits are independent and \"12 means 0\" lives\nin exactly one place. Gregorian-only by design (the calendar seam is\nclean if that ever changes - limits() is the only calendar knowledge).",
+      "docstring": "The nullable-segment date/time value (the IncompleteDate model, adapted\nfrom an Apache-2.0-licensed source - source and license in\nTHIRD_PARTY_NOTICES.md): segments\nare stored RAW so a user can edit day before\nmonth - the object can hold February 31st and only commit constrains.\nHour is stored in the LOCALE'S HOUR CYCLE with a separate dayPeriod bit\n(0 = AM, 1 = PM), so am/pm edits are independent and \"12 means 0\" lives\nin exactly one place. Gregorian-only by design (the calendar seam is\nclean if that ever changes - limits() is the only calendar knowledge).",
       "examples": [],
       "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
       "methods": [
@@ -717,7 +717,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
-          "line": 22
+          "line": 23
         },
         {
           "name": "resolveHourCycle",
@@ -749,7 +749,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
-          "line": 309
+          "line": 310
         }
       ],
       "constants": [
@@ -764,7 +764,7 @@
       "path": "@poetry/controllers/helpers/mask",
       "type": "module",
       "superclass": null,
-      "docstring": "The mask engine, adapted from Mantine's use-mask hook (MIT, v9.4.1 -\nsource and license in THIRD_PARTY_NOTICES.md).\nPure functions over a parsed slot list, zero DOM. A mask is a sequence of\nslots: token slots\nvalidate ONE character against a pattern, literal slots are fixed chrome\n(\"/\", \"-\", \" \") the engine inserts and the user never types. Every value\ndecision lives here so it stays exhaustively unit-testable; the caret\nmath and events live in mask_controller.js.",
+      "docstring": "The mask engine, adapted from an MIT-licensed source (source and\nlicense in THIRD_PARTY_NOTICES.md).\nPure functions over a parsed slot list, zero DOM. A mask is a sequence of\nslots: token slots\nvalidate ONE character against a pattern, literal slots are fixed chrome\n(\"/\", \"-\", \" \") the engine inserts and the user never types. Every value\ndecision lives here so it stays exhaustively unit-testable; the caret\nmath and events live in mask_controller.js.",
       "examples": [],
       "file": "app/javascript/poetry/core/helpers/mask.js",
       "methods": [
@@ -1129,7 +1129,7 @@
       "path": "@poetry/controllers/helpers/portal",
       "type": "module",
       "superclass": null,
-      "docstring": "The portal-on-open mechanism: move popper\ncontent to a stable container (body by default) while open so it can\nposition `absolute` - static under compositor scroll, immune to\ntransformed ancestors - and return it HOME on close, exactly where a\nplaceholder comment marks the origin.\n\nTHE EVENT BRIDGE (D5 - the React-vs-DOM trap): React portals bubble\nthrough the component tree; DOM portals do not. A host's data-action on\nthe component ROOT would go deaf to events rising out of portaled\ncontent. The bridge restores React-portal semantics for poetry's OWN\nCustomEvents (the registered list below - NEVER native events, which\nthe dismissal/hotkey layers listen for at document and must see on the\nreal path): propagation is CUT at the content boundary and a clone is\nre-dispatched from the home position, so above the content the event\nexists on exactly ONE path - the home one. Cancellation transfers back\n(the re-dispatch is synchronous, inside the original dispatch), and the\nreal origin element rides the clone as `portalTarget` (the clone's own\n`target` is the home-side parent - a re-dispatched event cannot keep\nthe original).\n\nRestore is guarded: if a Turbo morph replaced the origin while the\npopup was out, the content is DROPPED, never stranded at body. A lazy\nturbo:before-cache net force-restores everything still portaled so a\nsnapshot never caches body-level popups (the zombie-popup class).",
+      "docstring": "The portal-on-open mechanism: move popper\ncontent to a stable container (body by default) while open so it can\nposition `absolute` - static under compositor scroll, immune to\ntransformed ancestors - and return it HOME on close, exactly where a\nplaceholder comment marks the origin.\n\nTHE EVENT BRIDGE (the logical-tree trap): a component-tree portal\nre-bubbles events from its logical position; a DOM portal does not. A\nhost's data-action on the component ROOT would go deaf to events\nrising out of portaled content. The bridge restores logical-tree\nbubbling for poetry's OWN",
       "examples": [],
       "file": "app/javascript/poetry/core/helpers/portal.js",
       "methods": [
@@ -1151,14 +1151,14 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/portal.js",
-          "line": 39
+          "line": 41
         },
         {
           "name": "resolvePortalContainer",
           "scope": "class",
           "group": null,
           "signature": "resolvePortalContainer(root)",
-          "docstring": "D2: the Base UI / Radix `container` prop, attribute-shaped - a host\nscoping themes to a subtree points its overlays at a container inside\nthat scope via data-poetry-portal-container=\"<element id>\".",
+          "docstring": "The portal-container seam, attribute-shaped: a host scoping themes to\na subtree points its overlays at a container inside that scope via\ndata-poetry-portal-container=\"<element id>\".",
           "params": [
             {
               "name": "root",
@@ -1176,7 +1176,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/portal.js",
-          "line": 51
+          "line": 53
         },
         {
           "name": "isPortaled",
@@ -1201,14 +1201,14 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/portal.js",
-          "line": 63
+          "line": 65
         },
         {
           "name": "logicallyContains",
           "scope": "class",
           "group": null,
           "signature": "logicallyContains(container, node)",
-          "docstring": "Containment that follows portals HOME: a node inside portaled content\ncounts as inside `container` when the content's home position does.\nFocus-scope's trap keys on this - a portaled sub level is outside the\nroot content's subtree but logically inside its tree (Radix scopes the\ntrap over the React tree, which portals preserve; the DOM one doesn't).",
+          "docstring": "Containment that follows portals HOME: a node inside portaled content\ncounts as inside `container` when the content's home position does.\nFocus-scope's trap keys on this - a portaled sub level is outside the\nroot content's subtree but logically inside its tree, and the trap\nmust follow the logical tree or every portaled level reads as outside.",
           "params": [
             {
               "name": "container",
@@ -1233,7 +1233,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/portal.js",
-          "line": 78
+          "line": 80
         },
         {
           "name": "portalContent",
@@ -1272,7 +1272,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/portal.js",
-          "line": 114
+          "line": 116
         },
         {
           "name": "restoreContent",
@@ -1297,7 +1297,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/portal.js",
-          "line": 162
+          "line": 164
         }
       ],
       "constants": []
@@ -1306,7 +1306,7 @@
       "path": "@poetry/controllers/helpers/presence",
       "type": "module",
       "superclass": null,
-      "docstring": "Presence (P3): the mount/unmount animation convention - a helper, not a\ncontroller (per the primitive catalogue). Exit flips the pair to\ndata-closed and HOLDS the node in the DOM until its CSS exit animation /\ntransition finishes, then hands removal back to the caller via onRemove\n(this module never removes DOM); enter just flips the pair to data-open\nso the data-open: animation runs. State writes go through setState so\npoetry:state-change fires like every other state flip.",
+      "docstring": "Presence: the mount/unmount animation convention - a helper, not a\ncontroller (no element ownership here). Exit flips the pair to\ndata-closed and HOLDS the node in the DOM until its CSS exit animation /\ntransition finishes, then hands removal back to the caller via onRemove\n(this module never removes DOM); enter just flips the pair to data-open\nso the data-open: animation runs. State writes go through setState so\npoetry:state-change fires like every other state flip.",
       "examples": [],
       "file": "app/javascript/poetry/core/helpers/presence.js",
       "methods": [
@@ -1366,7 +1366,7 @@
           "scope": "class",
           "group": null,
           "signature": "enterPresence(element, { measure = false, property } = {})",
-          "docstring": "Runs the entry: flips the pair to data-open (through setState, so the\nstate-change event fires) wearing data-starting-style for exactly one\npainted frame after the flip (the Base UI two-frame trick), so CSS\ntransitions can animate FROM the starting declarations. No poetry class\nconsumes the attribute yet - it ships so a future theme layer can adopt\nthe transition idiom without touching JS.",
+          "docstring": "Runs the entry: flips the pair to data-open (through setState, so the\nstate-change event fires) wearing data-starting-style for exactly one\npainted frame after the flip (the two-frame trick below), so CSS\ntransitions can animate FROM the starting declarations. No poetry class\nconsumes the attribute yet - it ships so a future theme layer can adopt\nthe transition idiom without touching JS.",
           "params": [
             {
               "name": "element",
@@ -1574,7 +1574,7 @@
       "path": "@poetry/controllers/helpers/scroll_lock",
       "type": "module",
       "superclass": null,
-      "docstring": "Body scroll-lock with scrollbar-width compensation: bare\n`overflow: hidden` shifts the whole layout by the scrollbar width the\nmoment an overlay opens on a scrollable page.\nThe gap is measured BEFORE locking and paid back as body padding-right.\nRefcounted so stacked overlays (a dialog opened from a sheet) lock once\nand restore only when the LAST one closes - per-instance saved values\nbreak on out-of-order closes.\n\nWhy not scrollbar-gutter: stable (this helper's original primary)?\nMeasured 2026-08-01 with classic\nscrollbars: Chrome drops the viewport's rail AND its reserved gutter\nthe moment the viewport's used overflow computes to hidden - whether\nthe pair sits on the root, propagates from body, or the gutter was set\npermanently - so the page shifted by the scrollbar width anyway (the\nexact wiggle the strategy existed to stop). The body-padding payback\nis the only compensation the viewport honors; its known cost\n(position:fixed elements aren't compensated) matches the source's\nRemoveScroll behavior.",
+      "docstring": "Body scroll-lock with scrollbar-width compensation: bare\n`overflow: hidden` shifts the whole layout by the scrollbar width the\nmoment an overlay opens on a scrollable page.\nThe gap is measured BEFORE locking and paid back as body padding-right.\nRefcounted so stacked overlays (a dialog opened from a sheet) lock once\nand restore only when the LAST one closes - per-instance saved values\nbreak on out-of-order closes.\n\nWhy not scrollbar-gutter: stable (this helper's original primary)?\nMeasured live with classic\nscrollbars: Chrome drops the viewport's rail AND its reserved gutter\nthe moment the viewport's used overflow computes to hidden - whether\nthe pair sits on the root, propagates from body, or the gutter was set\npermanently - so the page shifted by the scrollbar width anyway (the\nexact wiggle the strategy existed to stop). The body-padding payback\nis the only compensation the viewport honors; its known cost is that\nposition:fixed elements aren't compensated - accepted deliberately,\nnot an oversight.",
       "examples": [],
       "file": "app/javascript/poetry/core/helpers/scroll_lock.js",
       "methods": [
@@ -1621,7 +1621,7 @@
       "path": "@poetry/controllers/helpers/scroller_geometry",
       "type": "module",
       "superclass": null,
-      "docstring": "Scroll geometry for the message-scroller (ported 1:1 from shadcn's\nmessage-scroller geometry.ts): pure functions of {viewport, content,\nspacer, rects} - no Stimulus, no state. This is the jsdom-testable half;\nthe controller owns the policy that decides when to call these. The\nconstants encode fixed upstream bugs - change them only against source.",
+      "docstring": "Scroll geometry for the message-scroller, adapted from an MIT-licensed\nsource (source and license in THIRD_PARTY_NOTICES.md): pure functions\nof {viewport, content, spacer, rects} - no Stimulus, no state. This is\nthe jsdom-testable half; the controller owns the policy that decides\nwhen to call these. The constants encode deliberate fixes - treat them\nas pinned values, not tunables.",
       "examples": [],
       "file": "app/javascript/poetry/core/helpers/scroller_geometry.js",
       "methods": [
@@ -1676,7 +1676,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/scroller_geometry.js",
-          "line": 37
+          "line": 38
         },
         {
           "name": "getMessageScrollerVisibilityState",
@@ -1743,14 +1743,14 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/scroller_geometry.js",
-          "line": 63
+          "line": 64
         },
         {
           "name": "getMessageScrollerItems",
           "scope": "class",
           "group": null,
           "signature": "getMessageScrollerItems(content, spacer)",
-          "docstring": "The collection is DOM order: rows are content's element children minus\nthe tail spacer (the Radix collection primitive collapsed to a filter).",
+          "docstring": "The collection is DOM order: rows are content's element children minus\nthe tail spacer - membership is a filter over live children, never a\nregistration step.",
           "params": [
             {
               "name": "content",
@@ -1775,7 +1775,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/scroller_geometry.js",
-          "line": 124
+          "line": 126
         },
         {
           "name": "getNewScrollAnchor",
@@ -1807,7 +1807,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/scroller_geometry.js",
-          "line": 137
+          "line": 139
         },
         {
           "name": "getUnanchoredScrollAnchor",
@@ -1839,7 +1839,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/scroller_geometry.js",
-          "line": 152
+          "line": 154
         },
         {
           "name": "hasMultipleNewScrollAnchors",
@@ -1871,7 +1871,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/scroller_geometry.js",
-          "line": 167
+          "line": 169
         },
         {
           "name": "getLastScrollAnchor",
@@ -1896,7 +1896,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/scroller_geometry.js",
-          "line": 187
+          "line": 189
         },
         {
           "name": "getFirstVisibleMessageItem",
@@ -1942,7 +1942,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/scroller_geometry.js",
-          "line": 204
+          "line": 206
         },
         {
           "name": "getElementScrollTop",
@@ -2002,7 +2002,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/scroller_geometry.js",
-          "line": 229
+          "line": 231
         },
         {
           "name": "getElementTop",
@@ -2034,7 +2034,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/scroller_geometry.js",
-          "line": 274
+          "line": 276
         },
         {
           "name": "getElementViewportTop",
@@ -2066,7 +2066,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/scroller_geometry.js",
-          "line": 288
+          "line": 290
         },
         {
           "name": "getTailSpacerHeight",
@@ -2119,7 +2119,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/scroller_geometry.js",
-          "line": 304
+          "line": 306
         },
         {
           "name": "getContentBottom",
@@ -2165,7 +2165,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/scroller_geometry.js",
-          "line": 320
+          "line": 322
         },
         {
           "name": "getMaxScrollTop",
@@ -2190,7 +2190,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/scroller_geometry.js",
-          "line": 345
+          "line": 347
         },
         {
           "name": "getContentBlockPadding",
@@ -2215,7 +2215,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/scroller_geometry.js",
-          "line": 365
+          "line": 367
         },
         {
           "name": "getFlexGap",
@@ -2240,7 +2240,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/scroller_geometry.js",
-          "line": 378
+          "line": 380
         },
         {
           "name": "areScrollStatesEqual",
@@ -2272,7 +2272,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/scroller_geometry.js",
-          "line": 402
+          "line": 404
         },
         {
           "name": "areVisibilityStatesEqual",
@@ -2304,7 +2304,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/scroller_geometry.js",
-          "line": 413
+          "line": 415
         }
       ],
       "constants": [
@@ -2329,7 +2329,7 @@
       "path": "@poetry/controllers/helpers/state",
       "type": "module",
       "superclass": null,
-      "docstring": "The Tier-0 controllable-state convention (the DOM is the store): runtime\nstate is a set of presence-boolean data attributes (the Base UI\nvocabulary) - written here, styled by CSS variants\n(data-open:..., via the vendored bridge variants that also match the\nlegacy Radix data-state values), owned by whichever layer set it (a\nStimulus Value default, the DOM, the URL, or a server re-render).\n\nKeys are PAIRS (or triples): setting one member writes its attribute and\nremoves its counterparts. The negative popup/panel/pressed/selected keys\nonly remove - Base UI has no data-popup-closed; absence IS the state.",
+      "docstring": "The controllable-state convention (the DOM is the store): runtime\nstate is a set of presence-boolean data attributes - written here,\nstyled by CSS variants (data-open:..., via the vendored bridge\nvariants that also match the older data-state=\"open|closed\" value\nform), owned by whichever layer set it (a Stimulus Value default, the\nDOM, the URL, or a server re-render).\n\nKeys are PAIRS (or triples): setting one member writes its attribute\nand removes its counterparts. The negative popup/panel/pressed/selected\nkeys only remove, deliberately: there is no data-popup-closed -\nabsence IS the state.",
       "examples": [],
       "file": "app/javascript/poetry/core/helpers/state.js",
       "methods": [
@@ -2356,7 +2356,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/state.js",
-          "line": 51
+          "line": 52
         },
         {
           "name": "setState",
@@ -2388,7 +2388,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/state.js",
-          "line": 68
+          "line": 69
         }
       ],
       "constants": [
@@ -2403,7 +2403,7 @@
       "path": "@poetry/controllers/helpers/tabbable",
       "type": "module",
       "superclass": null,
-      "docstring": "Tabbable-candidate walk (Tier 1): the shared filter behind focus-scope and\nthe Dialog trap. Candidates in DOM order, minus disabled / hidden /\ntabindex=-1 / inert-subtree elements.",
+      "docstring": "Tabbable-candidate walk: the shared filter behind focus-scope and\nthe Dialog trap. Candidates in DOM order, minus disabled / hidden /\ntabindex=-1 / inert-subtree elements.",
       "examples": [],
       "file": "app/javascript/poetry/core/helpers/tabbable.js",
       "methods": [
@@ -2475,7 +2475,7 @@
       "path": "@poetry/controllers/helpers/typeahead",
       "type": "module",
       "superclass": null,
-      "docstring": "The APG typeahead buffer (P2), shared: printable keys accumulate into a\nsearch buffer that resets after a timeout (1s default), matching wraps\nfrom the current item, and a repeated same-letter buffer cycles matches.\nExtracted VERBATIM from menu_controller.js (the Select contract's gated\nextraction) so the menu family and the Select listbox run the identical\nalgorithm - the buffer/timer state lives in the instance this factory\nreturns, one per consuming controller.",
+      "docstring": "The APG typeahead buffer, shared: printable keys accumulate into a\nsearch buffer that resets after a timeout (1s default), matching wraps\nfrom the current item, and a repeated same-letter buffer cycles matches.\nExtracted VERBATIM from menu_controller.js so the menu family and the\nSelect listbox run the identical algorithm - the buffer/timer state\nlives in the instance this factory returns, one per consuming\ncontroller.",
       "examples": [],
       "file": "app/javascript/poetry/core/helpers/typeahead.js",
       "methods": [
@@ -2484,7 +2484,7 @@
           "scope": "class",
           "group": null,
           "signature": "typeaheadLabel(item)",
-          "docstring": "The label an item types against: data-text-value overrides textContent\n(icon-rich content, the Radix textValue prop).",
+          "docstring": "The label an item types against: data-text-value overrides textContent\n(icon-rich content declares its typed label explicitly).",
           "params": [
             {
               "name": "item",
@@ -2550,7 +2550,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
-          "line": 41
+          "line": 42
         },
         {
           "name": "twelveHour",
@@ -2567,7 +2567,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
-          "line": 53
+          "line": 54
         },
         {
           "name": "limits",
@@ -2592,7 +2592,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
-          "line": 66
+          "line": 67
         },
         {
           "name": "cycle",
@@ -2640,7 +2640,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
-          "line": 98
+          "line": 99
         },
         {
           "name": "set",
@@ -2667,7 +2667,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
-          "line": 137
+          "line": 138
         },
         {
           "name": "clear",
@@ -2687,7 +2687,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
-          "line": 147
+          "line": 148
         },
         {
           "name": "isComplete",
@@ -2712,7 +2712,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
-          "line": 157
+          "line": 158
         },
         {
           "name": "isValidDate",
@@ -2729,7 +2729,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
-          "line": 167
+          "line": 168
         },
         {
           "name": "constrain",
@@ -2749,7 +2749,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
-          "line": 179
+          "line": 180
         },
         {
           "name": "hourInH23",
@@ -2766,7 +2766,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
-          "line": 193
+          "line": 194
         },
         {
           "name": "setFromH23",
@@ -2786,7 +2786,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
-          "line": 214
+          "line": 215
         },
         {
           "name": "toISODate",
@@ -2803,7 +2803,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
-          "line": 235
+          "line": 236
         },
         {
           "name": "toISOTime",
@@ -2828,7 +2828,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
-          "line": 246
+          "line": 247
         },
         {
           "name": "setFromISODate",
@@ -2853,7 +2853,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
-          "line": 264
+          "line": 265
         },
         {
           "name": "setFromISOTime",
@@ -2878,7 +2878,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
-          "line": 281
+          "line": 282
         }
       ],
       "constants": []
@@ -3009,7 +3009,7 @@
       "path": "poetry--core--autocomplete",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Autocomplete (Base UI's Autocomplete, poetry-shaped): a REAL text\ninput that IS the form value, suggesting from a server-rendered list\nthat filters as you type. This is the input-is-the-value semantic -\nthe sibling of Combobox, whose value is a SELECTED ITEM behind a\nnative <select>. Selecting a suggestion writes the input and closes;\nthe text always submits as ordinary params.\n\nBase UI behaviors kept (the v1.7 spec sheet): locale-aware filtering\n(toLocaleLowerCase), list scroll reset on every filter pass, and\nchange-reason details on the commit event (item-press | enter-key).\nPositioning rides the shared popper controller (input = anchor).\n\n**Targets**: `content`, `empty`, `input`, `list`\n\n**Values**: `open` (Boolean, default: false); `openOnFocus` (Boolean, default: true)\n\n**Events**: `poetry:autocomplete:closed`, `poetry:autocomplete:commit`, `poetry:autocomplete:open`",
+      "docstring": "The Autocomplete: a REAL text\ninput that IS the form value, suggesting from a server-rendered list\nthat filters as you type. This is the input-is-the-value semantic -\nthe sibling of Combobox, whose value is a SELECTED ITEM behind a\nnative <select>. Selecting a suggestion writes the input and closes;\nthe text always submits as ordinary params.\n\nThe contract's fixed behaviors: locale-aware filtering\n(toLocaleLowerCase), list scroll reset on every filter pass, and\nchange-reason details on the commit event (item-press | enter-key).\nPositioning rides the shared popper controller (input = anchor).\n\n**Targets**: `content`, `empty`, `input`, `list`\n\n**Values**: `open` (Boolean, default: false); `openOnFocus` (Boolean, default: true)\n\n**Events**: `poetry:autocomplete:closed`, `poetry:autocomplete:commit`, `poetry:autocomplete:open`",
       "examples": [],
       "file": "app/javascript/poetry/core/autocomplete_controller.js",
       "methods": [
@@ -3136,7 +3136,7 @@
       "path": "poetry--core--calendar",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Calendar engine, decided OWN-THE-ENGINE: no date-picker library\n(a heavy JS dep). The month grid is SERVER-RENDERED (Ruby Date math) so a\nno-JS page shows a valid calendar; this controller adds month navigation\n(regenerating the 42-cell grid from plain Date math - reusing the day\nbutton DOM, no innerHTML churn), single-date selection (writing the\nhidden input + the data-selected/aria vocabulary), and roving arrow-key\nfocus over the days. Selection is a real form value; the DatePicker\ncomposes this inside a Popover.\n\nRange mode: mode=\"range\" swaps the click path for a\ntranscription of react-day-picker's addToRange algorithm (MIT; see\nTHIRD_PARTY_NOTICES.md) and the reflection\nfor the range vocabulary (data-range-start/middle/end - dictionary\nclasses that shipped inert until range mode). The form value is TWO\nhidden inputs (name[start]/name[end] - upstream has no form story; the\nwire shape is poetry's). Upstream semantics kept exactly: an incomplete\nstart-only pick renders as a plain selected single day; the range\nvocabulary appears only once the range completes.\n\nDropdown caption (caption_layout: :dropdown), the upstream overlay\npattern: each [data-calendar-unit=month|year] wrapper holds a visible\ntext label (calendar-dropdown-value) with the real select stretched\ninvisibly over it - #jump reads the selects, #render reflects\nnavigation back into both select values AND label text (no caption\ntarget in that mode). Week numbers: one role=rowheader per week; each\nrow's Thursday decides the ISO number (matches Ruby Date#cweek under\nany week_start).\n\nStill deferred: multiple months.\n\n**Targets**: `caption`, `day`, `endInput`, `grid`, `input`, `startInput`\n\n**Values**: `month` (String); `selected` (String); `mode` (String, default: \"single\"); `rangeStart` (String); `rangeEnd` (String); `weekStart` (Number, default: 0); `min` (String); `max` (String); `monthNames` (Array, default: [\"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\", \"August\", \"September\", \"October\", \"November\", \"December\"])\n\n**Events**: `poetry:calendar:change`",
+      "docstring": "The Calendar engine, decided OWN-THE-ENGINE: no date-picker library\n(a heavy JS dep). The month grid is SERVER-RENDERED (Ruby Date math) so a\nno-JS page shows a valid calendar; this controller adds month navigation\n(regenerating the 42-cell grid from plain Date math - reusing the day\nbutton DOM, no innerHTML churn), single-date selection (writing the\nhidden input + the data-selected/aria vocabulary), and roving arrow-key\nfocus over the days. Selection is a real form value; the DatePicker\ncomposes this inside a Popover.\n\nRange mode: mode=\"range\" swaps the click path for a\ntranscription of an MIT-licensed range-selection algorithm (source and\nlicense in THIRD_PARTY_NOTICES.md) and the reflection\nfor the range vocabulary (data-range-start/middle/end - dictionary\nclasses that shipped inert until range mode). The form value is TWO\nhidden inputs (name[start]/name[end] - the wire shape is poetry's).\nThe transcribed semantics hold exactly: an incomplete\nstart-only pick renders as a plain selected single day; the range\nvocabulary appears only once the range completes.\n\nDropdown caption (caption_layout: :dropdown), the invisible-select overlay\npattern: each [data-calendar-unit=month|year] wrapper holds a visible\ntext label (calendar-dropdown-value) with the real select stretched\ninvisibly over it - #jump reads the selects, #render reflects\nnavigation back into both select values AND label text (no caption\ntarget in that mode). Week numbers: one role=rowheader per week; each\nrow's Thursday decides the ISO number (matches Ruby Date#cweek under\nany week_start).\n\nStill deferred: multiple months.\n\n**Targets**: `caption`, `day`, `endInput`, `grid`, `input`, `startInput`\n\n**Values**: `month` (String); `selected` (String); `mode` (String, default: \"single\"); `rangeStart` (String); `rangeEnd` (String); `weekStart` (Number, default: 0); `min` (String); `max` (String); `monthNames` (Array, default: [\"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\", \"August\", \"September\", \"October\", \"November\", \"December\"])\n\n**Events**: `poetry:calendar:change`",
       "examples": [],
       "file": "app/javascript/poetry/core/calendar_controller.js",
       "methods": [
@@ -3328,7 +3328,7 @@
           "scope": "instance",
           "group": null,
           "signature": "keydown(event)",
-          "docstring": "The region root's keydown action (the upstream wrapper contract):\narrows page the carousel, orientation-aware.",
+          "docstring": "The region root's keydown action:\narrows page the carousel, orientation-aware.",
           "params": [
             {
               "name": "event",
@@ -3370,7 +3370,7 @@
       "path": "poetry--core--checkbox-group",
       "type": "controller",
       "superclass": null,
-      "docstring": "The select-all recipe (Base UI CheckboxGroup's parent checkbox, the APG\nmixed-state pattern) over the checked family. Wrap the parent and its\nrows, route the bubbling per-checkbox observe event at #changed, and\nmark the parent (target: all) plus each row (target: item):\n\n  <div data-controller=\"poetry--core--checkbox-group\"\n       data-action=\"poetry:checkbox:change->poetry--core--checkbox-group#changed\">\n\nA parent toggle fans its new state out to every enabled row; a row\ntoggle re-derives the parent (all -> checked, none -> unchecked, some ->\nindeterminate, re-entered via the checked controller's set() - the only\npath back to mixed). Every state write goes THROUGH each box's checked\ncontroller (input first, real change event, aria-checked + the checked\ntriple together) - this controller never touches attributes itself.\nDisabled rows are skipped by fan-out and excluded from the derivation\n(the DataTable disabledBehavior 'selection' doctrine;\ntable_selection_controller is this same recipe for NATIVE checkboxes).\n\n**Targets**: `all`, `item`\n\n**Events**: `poetry:checkbox-group:change`",
+      "docstring": "The select-all recipe (a parent checkbox running the APG\nmixed-state pattern) over the checked family. Wrap the parent and its\nrows, route the bubbling per-checkbox observe event at #changed, and\nmark the parent (target: all) plus each row (target: item):\n\n  <div data-controller=\"poetry--core--checkbox-group\"\n       data-action=\"poetry:checkbox:change->poetry--core--checkbox-group#changed\">\n\nA parent toggle fans its new state out to every enabled row; a row\ntoggle re-derives the parent (all -> checked, none -> unchecked, some ->\nindeterminate, re-entered via the checked controller's set() - the only\npath back to mixed). Every state write goes THROUGH each box's checked\ncontroller (input first, real change event, aria-checked + the checked\ntriple together) - this controller never touches attributes itself.\nDisabled rows are skipped by fan-out and excluded from the derivation\n(the DataTable disabledBehavior 'selection' doctrine;\ntable_selection_controller is this same recipe for NATIVE checkboxes).\n\n**Targets**: `all`, `item`\n\n**Events**: `poetry:checkbox-group:change`",
       "examples": [],
       "file": "app/javascript/poetry/core/checkbox_group_controller.js",
       "methods": [
@@ -3401,7 +3401,7 @@
       "path": "poetry--core--checked",
       "type": "controller",
       "superclass": null,
-      "docstring": "The toggle family's checked-state owner (Checkbox introduces it; Switch\nreuses it VERBATIM - zero fork, CI-asserted). The architecture is the\nSTORE INVERSION: the hidden native <input type=checkbox> is the form\nparticipant AND the store - the visual button[role=checkbox|switch] only\nREFLECTS it (aria-checked incl. \"mixed\" + the data-checked/data-unchecked/\ndata-indeterminate attributes on the control and every part that carries\nthem: the checkbox indicator, the switch thumb). Every transition writes the input FIRST, dispatches a REAL\nbubbling change event (no synthetic prototype-setter dance - Radix's\nBubbleInput direction inverted), then reflects attributes.\n\nThe three states: checked / unchecked / indeterminate. Indeterminate is\nserver/programmatic only (aria-checked=mixed, input.indeterminate - a\nJS-only property re-derived from the checked attributes on connect); the first user\ntoggle resolves it to CHECKED (Radix-exact). A Switch never renders it\n(ArgumentError upstream), so that branch is simply dormant there.\n\nEnter is suppressed on role=checkbox ONLY (WAI-ARIA: checkboxes activate\non Space alone - Radix's onKeyDown guard); role=switch has no keydown\nhandler, so Enter toggles via the native button click (Radix-exact\nasymmetry, keyed off the role - no controller fork).\n\nNo inputId value -> pure visual mode: state lives on the button's\nchecked attributes alone (controlled-UI cases like DataTable row selection).\nThe component-flavored prefixes the dynamic dispatch below emits under\n(data-component on the host: checkbox / switch, with the bare fallback) -\nthe events declaration, the portal bridge, and the manifest enumerate\nthese REAL names; the identifier-default name never fires here.\n\n**Values**: `inputId` (String, default: \"\")\n\n**Events**: `poetry:checkbox:change`, `poetry:checked:change`, `poetry:switch:change`",
+      "docstring": "The toggle family's checked-state owner (Checkbox introduces it; Switch\nreuses it VERBATIM - zero fork, CI-asserted). The architecture is the\nSTORE INVERSION: the hidden native <input type=checkbox> is the form\nparticipant AND the store - the visual button[role=checkbox|switch] only\nREFLECTS it (aria-checked incl. \"mixed\" + the data-checked/data-unchecked/\ndata-indeterminate attributes on the control and every part that carries\nthem: the checkbox indicator, the switch thumb). Every transition writes the input FIRST, dispatches a REAL\nbubbling change event (no synthetic prototype-setter dance - the\ninput LEADS and the visual follows), then reflects attributes.\n\nThe three states: checked / unchecked / indeterminate. Indeterminate is\nserver/programmatic only (aria-checked=mixed, input.indeterminate - a\nJS-only property re-derived from the checked attributes on connect); the first user\ntoggle resolves it to CHECKED - contractual, do not loosen. A Switch\nnever renders it (the Ruby component raises), so that branch is\nsimply dormant there.\n\nEnter is suppressed on role=checkbox ONLY (WAI-ARIA: checkboxes activate\non Space alone); role=switch has no keydown\nhandler, so Enter toggles via the native button click (a deliberate\nasymmetry, keyed off the role - no controller fork).\n\nNo inputId value -> pure visual mode: state lives on the button's\nchecked attributes alone (controlled-UI cases like DataTable row selection).\nThe component-flavored prefixes the dynamic dispatch below emits under\n(data-component on the host: checkbox / switch, with the bare fallback) -\nthe events declaration, the portal bridge, and the manifest enumerate\nthese REAL names; the identifier-default name never fires here.\n\n**Values**: `inputId` (String, default: \"\")\n\n**Events**: `poetry:checkbox:change`, `poetry:checked:change`, `poetry:switch:change`",
       "examples": [],
       "file": "app/javascript/poetry/core/checked_controller.js",
       "methods": [
@@ -3415,7 +3415,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/checked_controller.js",
-          "line": 52
+          "line": 53
         },
         {
           "name": "disconnect",
@@ -3427,19 +3427,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/checked_controller.js",
-          "line": 91
+          "line": 92
         },
         {
           "name": "toggle",
           "scope": "instance",
           "group": null,
           "signature": "toggle()",
-          "docstring": "Control activation (click / Space / label-for): indeterminate\nresolves to checked (Radix-exact), else flip.",
+          "docstring": "Control activation (click / Space / label-for): indeterminate\nresolves to checked (contractual), else flip.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/checked_controller.js",
-          "line": 104
+          "line": 105
         },
         {
           "name": "check",
@@ -3451,7 +3451,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/checked_controller.js",
-          "line": 116
+          "line": 117
         },
         {
           "name": "uncheck",
@@ -3463,7 +3463,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/checked_controller.js",
-          "line": 121
+          "line": 122
         },
         {
           "name": "set",
@@ -3483,7 +3483,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/checked_controller.js",
-          "line": 132
+          "line": 133
         }
       ],
       "constants": []
@@ -3492,7 +3492,7 @@
       "path": "poetry--core--clipboard-text",
       "type": "controller",
       "superclass": null,
-      "docstring": "ClipboardText (the kumo contract): a read-only value with one\ncopy affordance. navigator.clipboard is the primary path; the\nexecCommand fallback SAVES AND RESTORES the user's own selection and\nfocus (copying a field must never eat a selection made elsewhere on the\npage - the guard kumo's version carries). Success stamps data-copied on\nthe root for a beat (CSS swaps the copy/check glyphs off it), announces\nthrough the live-region singleton, and dispatches the copied event.\n\n**Targets**: `input`, `source`\n\n**Values**: `text` (String); `message` (String)\n\n**Events**: `poetry:clipboard-text:copied`",
+      "docstring": "ClipboardText, adapted from an MIT-licensed source (source and license\nin THIRD_PARTY_NOTICES.md): a read-only value with one\ncopy affordance. navigator.clipboard is the primary path; the\nexecCommand fallback SAVES AND RESTORES the user's own selection and\nfocus (copying a field must never eat a selection made elsewhere on the\npage). Success stamps data-copied on\nthe root for a beat (CSS swaps the copy/check glyphs off it), announces\nthrough the live-region singleton, and dispatches the copied event.\n\n**Targets**: `input`, `source`\n\n**Values**: `text` (String); `message` (String)\n\n**Events**: `poetry:clipboard-text:copied`",
       "examples": [],
       "file": "app/javascript/poetry/core/clipboard_text_controller.js",
       "methods": [
@@ -3506,7 +3506,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/clipboard_text_controller.js",
-          "line": 33
+          "line": 34
         },
         {
           "name": "copy",
@@ -3523,7 +3523,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/clipboard_text_controller.js",
-          "line": 45
+          "line": 46
         }
       ],
       "constants": []
@@ -3532,7 +3532,7 @@
       "path": "poetry--core--combobox",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Combobox ORCHESTRATOR: Select's shell\nx Command's engine, composed VIA THE EVENT CONTRACT ONLY - this thin\ncontroller owns open/close + the commit pipeline + autofill adoption and\nlistens for the embedded engine's poetry:command:select; it contains NO\nfilter/highlight/scoring code (Command owns those) and Command gained no\ncombobox code (engine purity, fenced both directions by the conformance\ngreps). Zero code is shared with SelectController - the PATTERNS are\n(the layer mechanism, the native-first 5-step pipeline, the adoption\npath), re-instantiated here because a facade extraction was explicitly\ndeclined (the Select contract's open question, answered by this build).\n\nTHE THREE DELIBERATE DELTAS vs Select, each pinned by tests so neither\nsibling's rules leak:\n- open focuses the COMMAND INPUT for every reason (a combobox session is\n  a TYPING session - APG editable combobox); the selected option gets the\n  HIGHLIGHT (activedescendant, via the Command controller) + scroll, not\n  DOM focus;\n- Tab while open CLOSES WITHOUT COMMIT and lets focus proceed (Popover\n  semantics, modal:false default; modal:true restores the trap) - Select\n  is Tab-inert;\n- a printable key on the CLOSED trigger OPENS and SEEDS the filter\n  (typing filters, never blind-commits) - Select's closed-trigger\n  typeahead-commit does NOT port.\n\nTWO MEANINGS, TWO ATTRIBUTES, ONE LIST: data-highlighted +\naria-activedescendant = position (Command's, never aria-selected);\naria-selected + data-selected + the indicator = the COMMITTED value\n(Select's twin-write, written only here, in the pipeline).\n\nTHE SYNC INVARIANT (Select's, inherited): native_select.value, the value\nValue, the twin-write, and the display never diverge - every write path\nfunnels through #apply, NATIVE FIRST (serialization truth is never\nbehind the facade), with real bubbling change/input on the native so\nTurbo auto-submit and form listeners work unmodified.\n\nMULTIPLE (Base UI's multiple + input-inside layout): the value is a\nLIST (the value Value carries a JSON array over the same String seam),\nthe native is a <select multiple> posting name[], and the trigger is\nreplaced by the chips FIELD - one chip per committed value IN VALUE\nORDER with the filter input inline after them (data-slot=combobox-chip-input,\nwhich the engine resolves too; the engine itself rides the ROOT).\nSelection TOGGLES and the popup STAYS OPEN; chips take REAL DOM focus\n(:focus-visible styles it - never data-highlighted) and focusing a chip\ncloses the popup; Backspace on the empty input removes the last chip;\nEscape on the CLOSED popup clears the query and wipes the selection.\nThe input NEVER mirrors selection text; single-mode paths are\nbehavior-identical.\n\n**Values**: `open` (Boolean, default: false); `value` (String, default: \"\"); `modal` (Boolean, default: false); `multiple` (Boolean, default: false)\n\n**Events**: `poetry:combobox:change`, `poetry:combobox:closed`, `poetry:combobox:open`, `poetry:combobox:select`",
+      "docstring": "The Combobox ORCHESTRATOR: Select's shell\nx Command's engine, composed VIA THE EVENT CONTRACT ONLY - this thin\ncontroller owns open/close + the commit pipeline + autofill adoption and\nlistens for the embedded engine's poetry:command:select; it contains NO\nfilter/highlight/scoring code (Command owns those) and Command gained no\ncombobox code (engine purity, fenced both directions by the conformance\ngreps). Zero code is shared with SelectController - the PATTERNS are\n(the layer mechanism, the native-first 5-step pipeline, the adoption\npath), re-instantiated here because a facade extraction was explicitly\ndeclined (the Select contract's open question, answered by this build).\n\nTHE THREE DELIBERATE DELTAS vs Select, each pinned by tests so neither\nsibling's rules leak:\n- open focuses the COMMAND INPUT for every reason (a combobox session is\n  a TYPING session - APG editable combobox); the selected option gets the\n  HIGHLIGHT (activedescendant, via the Command controller) + scroll, not\n  DOM focus;\n- Tab while open CLOSES WITHOUT COMMIT and lets focus proceed (Popover\n  semantics, modal:false default; modal:true restores the trap) - Select\n  is Tab-inert;\n- a printable key on the CLOSED trigger OPENS and SEEDS the filter\n  (typing filters, never blind-commits) - Select's closed-trigger\n  typeahead-commit does NOT port.\n\nTWO MEANINGS, TWO ATTRIBUTES, ONE LIST: data-highlighted +\naria-activedescendant = position (Command's, never aria-selected);\naria-selected + data-selected + the indicator = the COMMITTED value\n(Select's twin-write, written only here, in the pipeline).\n\nTHE SYNC INVARIANT (Select's, inherited): native_select.value, the value\nValue, the twin-write, and the display never diverge - every write path\nfunnels through #apply, NATIVE FIRST (serialization truth is never\nbehind the facade), with real bubbling change/input on the native so\nTurbo auto-submit and form listeners work unmodified.\n\nMULTIPLE (the input-inside layout): the value is a\nLIST (the value Value carries a JSON array over the same String seam),\nthe native is a <select multiple> posting name[], and the trigger is\nreplaced by the chips FIELD - one chip per committed value IN VALUE\nORDER with the filter input inline after them (data-slot=combobox-chip-input,\nwhich the engine resolves too; the engine itself rides the ROOT).\nSelection TOGGLES and the popup STAYS OPEN; chips take REAL DOM focus\n(:focus-visible styles it - never data-highlighted) and focusing a chip\ncloses the popup; Backspace on the empty input removes the last chip;\nEscape on the CLOSED popup clears the query and wipes the selection.\nThe input NEVER mirrors selection text; single-mode paths are\nbehavior-identical.\n\n**Values**: `open` (Boolean, default: false); `value` (String, default: \"\"); `modal` (Boolean, default: false); `multiple` (Boolean, default: false)\n\n**Events**: `poetry:combobox:change`, `poetry:combobox:closed`, `poetry:combobox:open`, `poetry:combobox:select`",
       "examples": [],
       "file": "app/javascript/poetry/core/combobox_controller.js",
       "methods": [
@@ -3637,7 +3637,7 @@
           "scope": "instance",
           "group": null,
           "signature": "chipsPointerdown(event)",
-          "docstring": "The chips frame's pointerdown action (multiple): a press anywhere in\nthe FRAME focuses the input and opens the popup (Base UI: the whole\nframe is the field) - except a chip-remove press, which is a removal,\nnever a chips-area press.",
+          "docstring": "The chips frame's pointerdown action (multiple): a press anywhere in\nthe FRAME focuses the input and opens the popup (the whole frame IS\nthe field) - except a chip-remove press, which is a removal,\nnever a chips-area press.",
           "params": [
             {
               "name": "event",
@@ -3657,7 +3657,7 @@
           "scope": "instance",
           "group": null,
           "signature": "inputKeydown(event)",
-          "docstring": "The inline input's OWN keyboard map (multiple; the engine's map rides\nthe same keydown): Backspace on an empty input removes the LAST chip\n(focus stays here), ArrowLeft at caret 0 walks into the chips,\nArrowDown/Up reopen the popup, Enter with no highlight closes, and\nEscape on the CLOSED popup clears the query AND wipes the selection\nto [] (Base UI-exact; readOnly blocks every mutation).",
+          "docstring": "The inline input's OWN keyboard map (multiple; the engine's map rides\nthe same keydown): Backspace on an empty input removes the LAST chip\n(focus stays here), ArrowLeft at caret 0 walks into the chips,\nArrowDown/Up reopen the popup, Enter with no highlight closes, and\nEscape on the CLOSED popup clears the query AND wipes the selection\nto [] (contractual; readOnly blocks every mutation).",
           "params": [
             {
               "name": "event",
@@ -3677,7 +3677,7 @@
           "scope": "instance",
           "group": null,
           "signature": "chipKeydown(event)",
-          "docstring": "A focused chip's keyboard map (Base UI): Left/Right walk the chips\n(off either end -> back to the input), Backspace/Delete remove (next\nhighlight: same index, step back at the tail, the input once\nemptied), Enter/Space are no-ops returning to the input, ArrowDown/Up\nreopen the popup, and a printable char resumes the typing session.",
+          "docstring": "A focused chip's keyboard map: Left/Right walk the chips\n(off either end -> back to the input), Backspace/Delete remove (next\nhighlight: same index, step back at the tail, the input once\nemptied), Enter/Space are no-ops returning to the input, ArrowDown/Up\nreopen the popup, and a printable char resumes the typing session.",
           "params": [
             {
               "name": "event",
@@ -3717,7 +3717,7 @@
           "scope": "instance",
           "group": null,
           "signature": "clear()",
-          "docstring": "The show_clear X's click action - the trigger-side deselection\nsurface (Base UI Combobox.Clear): commits the blank value through the\npipeline, then hands focus to the trigger (the X hides itself once\nthe value empties, and a focused hidden button would drop focus to\nbody). Single mode only (the component raises on multiple; the guard\nhere is belt and braces).",
+          "docstring": "The show_clear X's click action - the trigger-side deselection\nsurface: commits the blank value through the\npipeline, then hands focus to the trigger (the X hides itself once\nthe value empties, and a focused hidden button would drop focus to\nbody). Single mode only (the component raises on multiple; the guard\nhere is belt and braces).",
           "params": [],
           "return": null,
           "examples": [],
@@ -3817,7 +3817,7 @@
       "path": "poetry--core--command",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Command palette engine - the suite's\nfirst ACTIVEDESCENDANT component (the APG editable-combobox pattern, the\ndeliberate delta vs the menus/Select family's roving focus): real DOM\nfocus stays pinned to the input for the whole session; the highlighted\noption carries data-highlighted + its server-stable id in the input's\naria-activedescendant (the twin-write, activedescendant-flavored).\nOptions never get tabindex; roving-focus is NOT attached; aria-selected\nis NEVER written here (reserved for committed values - Combobox's\ntwin-write; a bare palette has no committed value).\n\nTHE FILTER is the deterministic helpers/filter_rank spec (prefix 4 >\nword-boundary 3 > substring 2 > keyword 1 > hidden 0, diacritic-folded)\nand it is HIDE-ONLY: score-0 items get hidden + data-hidden, matches get\nboth removed, and children are NEVER reordered - DOM order is the\nranking authority within a band; the score's only job is seating the\nauto-highlight. filter:false is the server-driven mode (upstream\nshouldFilter parity): steps 1-2 (hiding) are skipped entirely and only\nhighlight/activation/announcement run over whatever the server rendered\n- the Turbo-frame async seam Combobox's recipe plugs into.\n\nACTIVATION IS AN EVENT, NOT AN ACTION: Enter/click dispatches cancelable\npoetry:command:select and this controller does nothing further - no\nnavigation, no close, no value write. The listener (host data-action,\nCombobox's commit pipeline) owns the consequences - the engine-purity\nCombobox's composition depends on (no popper/commit/native-select code\nlives here, fenced by the conformance greps).\n\nThe DOM is the store, filtering included: query in the input, visibility\nas hidden + data-hidden, highlight as data-highlighted +\naria-activedescendant, group visibility derived - a Turbo Stream can\nappend items mid-session and the next keystroke ranks them.\nEach part matches both families' vocabularies: Command's own names and the\ncombobox's (the source's names for the same parts; the engine rides both).\n\n**Values**: `filter` (Boolean, default: true); `loop` (Boolean, default: false); `debounce` (Number, default: 0)\n\n**Events**: `poetry:command:filter`, `poetry:command:highlight`, `poetry:command:select`",
+      "docstring": "The Command palette engine - the suite's\nfirst ACTIVEDESCENDANT component (the APG editable-combobox pattern, the\ndeliberate delta vs the menus/Select family's roving focus): real DOM\nfocus stays pinned to the input for the whole session; the highlighted\noption carries data-highlighted + its server-stable id in the input's\naria-activedescendant (the twin-write, activedescendant-flavored).\nOptions never get tabindex; roving-focus is NOT attached; aria-selected\nis NEVER written here (reserved for committed values - Combobox's\ntwin-write; a bare palette has no committed value).\n\nTHE FILTER is the deterministic helpers/filter_rank spec (prefix 4 >\nword-boundary 3 > substring 2 > keyword 1 > hidden 0, diacritic-folded)\nand it is HIDE-ONLY: score-0 items get hidden + data-hidden, matches get\nboth removed, and children are NEVER reordered - DOM order is the\nranking authority within a band; the score's only job is seating the\nauto-highlight. filter:false is the server-driven mode: steps 1-2\n(hiding) are skipped entirely and only\nhighlight/activation/announcement run over whatever the server rendered\n- the Turbo-frame async seam Combobox's recipe plugs into.\n\nACTIVATION IS AN EVENT, NOT AN ACTION: Enter/click dispatches cancelable\npoetry:command:select and this controller does nothing further - no\nnavigation, no close, no value write. The listener (host data-action,\nCombobox's commit pipeline) owns the consequences - the engine-purity\nCombobox's composition depends on (no popper/commit/native-select code\nlives here, fenced by the conformance greps).\n\nThe DOM is the store, filtering included: query in the input, visibility\nas hidden + data-hidden, highlight as data-highlighted +\naria-activedescendant, group visibility derived - a Turbo Stream can\nappend items mid-session and the next keystroke ranks them.\nEach part matches both families' vocabularies: Command's own names and the\ncombobox's (two names for the same parts; the engine rides both).\n\n**Values**: `filter` (Boolean, default: true); `loop` (Boolean, default: false); `debounce` (Number, default: 0)\n\n**Events**: `poetry:command:filter`, `poetry:command:highlight`, `poetry:command:select`",
       "examples": [],
       "file": "app/javascript/poetry/core/command_controller.js",
       "methods": [
@@ -3862,7 +3862,7 @@
           "scope": "instance",
           "group": null,
           "signature": "keydown(event)",
-          "docstring": "The input's keydown action: ArrowUp/Down move the highlight\n(Meta/Ctrl jumps first/last), Enter activates it.\nHome/End/ArrowLeft/ArrowRight fall through to the input (CARET\nmovement - APG-correct for an editable field; the upstream Home/End\nlist-hijack is deliberately not ported). Space TYPES a space, never\nactivates (a text field - the family delta vs Select/menus). Esc/Tab\nare NOT handled - the hosting layer owns them (Dialog dismiss /\nCombobox close / natural tab-out).",
+          "docstring": "The input's keydown action: ArrowUp/Down move the highlight\n(Meta/Ctrl jumps first/last), Enter activates it.\nHome/End/ArrowLeft/ArrowRight fall through to the input (CARET\nmovement - APG-correct for an editable field; a Home/End list-jump\nis deliberately not offered). Space TYPES a space, never\nactivates (a text field - the family delta vs Select/menus). Esc/Tab\nare NOT handled - the hosting layer owns them (Dialog dismiss /\nCombobox close / natural tab-out).",
           "params": [
             {
               "name": "event",
@@ -3902,7 +3902,7 @@
           "scope": "instance",
           "group": null,
           "signature": "pointerHighlight(event)",
-          "docstring": "Each in-scope item's pointermove action - pointer parity with the\nupstream palette: hovering highlights (no scroll chasing);\npointerleave does NOT clear - the keyboard position survives mouse\nexit (upstream-exact).",
+          "docstring": "Each in-scope item's pointermove action: hovering highlights (no\nscroll chasing); pointerleave does NOT clear - the keyboard position\nsurvives mouse exit (contractual).",
           "params": [
             {
               "name": "event",
@@ -3915,7 +3915,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
-          "line": 257
+          "line": 256
         },
         {
           "name": "highlightItem",
@@ -3949,7 +3949,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
-          "line": 276
+          "line": 275
         },
         {
           "name": "reset",
@@ -3961,7 +3961,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
-          "line": 286
+          "line": 285
         }
       ],
       "constants": []
@@ -3970,7 +3970,7 @@
       "path": "poetry--core--context-menu",
       "type": "controller",
       "superclass": null,
-      "docstring": "The ContextMenu DELTA layer: trigger\nacquisition + pointer-point capture ONLY. Everything menu-shaped (open\nstate machine, items, typeahead, submenus, dismissal, the layer stack)\nstays with poetry--core--menu on the same root; positioning stays with\npoetry--core--popper, driven here through its VIRTUAL-ANCHOR attribute\n(data-poetry--core--popper-anchor-point-value=\"x,y\" - the DOM is the\nstore, so the write works whether or not popper has connected yet).\n\nInput paths (Radix parity):\n- contextmenu (mouse right-click, or Shift+F10 / the ContextMenu key on a\n  focused surface): preventDefault, capture the point, open. A\n  keyboard-synthesized event carries no usable point (0,0) - the anchor\n  attribute is CLEARED so popper falls back to the trigger surface rect\n  (a deliberate improvement over Radix's 0,0 + dev-warning).\n- long-press (touch/pen ONLY - mouse never long-presses): pointerdown\n  starts a longPressDelay timer (Radix's 700ms constant, exposed as a\n  Value); ANY pointermove/pointerup/pointercancel cancels (no slop radius\n  - the platform's own touch slop absorbs jitter); a second pointerdown\n  restarts (multi-touch guard); the contextmenu handler itself clears the\n  timer (Android synthesizes contextmenu from long-press - clearing there\n  prevents double-open). data-pressing on the surface is the styleable\n  long-press feedback window (poetry addition).\n- disabled STANDS THE HANDLERS DOWN (no preventDefault): the\n  browser-native context menu returns - never a dead right-click.\n\n**Values**: `longPressDelay` (Number, default: 700); `disabled` (Boolean, default: false)\n\n**Events**: `poetry:context-menu:open`",
+      "docstring": "The ContextMenu DELTA layer: trigger\nacquisition + pointer-point capture ONLY. Everything menu-shaped (open\nstate machine, items, typeahead, submenus, dismissal, the layer stack)\nstays with poetry--core--menu on the same root; positioning stays with\npoetry--core--popper, driven here through its VIRTUAL-ANCHOR attribute\n(data-poetry--core--popper-anchor-point-value=\"x,y\" - the DOM is the\nstore, so the write works whether or not popper has connected yet).\n\nInput paths (all contractual):\n- contextmenu (mouse right-click, or Shift+F10 / the ContextMenu key on a\n  focused surface): preventDefault, capture the point, open. A\n  keyboard-synthesized event carries no usable point (0,0) - the anchor\n  attribute is CLEARED so popper falls back to the trigger surface rect\n  (deliberately better than a 0,0 fallback).\n- long-press (touch/pen ONLY - mouse never long-presses): pointerdown\n  starts a longPressDelay timer (700ms default, exposed as a\n  Value); ANY pointermove/pointerup/pointercancel cancels (no slop radius\n  - the platform's own touch slop absorbs jitter); a second pointerdown\n  restarts (multi-touch guard); the contextmenu handler itself clears the\n  timer (Android synthesizes contextmenu from long-press - clearing there\n  prevents double-open). data-pressing on the surface is the styleable\n  long-press feedback window (poetry addition).\n- disabled STANDS THE HANDLERS DOWN (no preventDefault): the\n  browser-native context menu returns - never a dead right-click.\n\n**Values**: `longPressDelay` (Number, default: 700); `disabled` (Boolean, default: false)\n\n**Events**: `poetry:context-menu:open`",
       "examples": [],
       "file": "app/javascript/poetry/core/context_menu_controller.js",
       "methods": [
@@ -4149,7 +4149,7 @@
           "scope": "instance",
           "group": null,
           "signature": "picked(event)",
-          "docstring": "The calendar-change action on the wrapper: writes the formatted date\ninto the trigger label (and input, when present) and closes the\npopover so the pick feels complete. Range mode: the label joins the\npair, a start-only pick shows one date, and the popover closes only\nonce the range COMPLETES (the upstream convention - never mid-range).",
+          "docstring": "The calendar-change action on the wrapper: writes the formatted date\ninto the trigger label (and input, when present) and closes the\npopover so the pick feels complete. Range mode: the label joins the\npair, a start-only pick shows one date, and the popover closes only\nonce the range COMPLETES - never mid-range.",
           "params": [
             {
               "name": "event",
@@ -4169,7 +4169,7 @@
           "scope": "instance",
           "group": null,
           "signature": "inputChanged()",
-          "docstring": "The input's change action: a parseable date re-selects and re-months\nthe calendar through its reactive values (the DOM is the store), and\nthe calendar's own render refreshes the hidden ISO form value.\nUnparseable text changes nothing - exactly upstream's isValidDate.",
+          "docstring": "The input's change action: a parseable date re-selects and re-months\nthe calendar through its reactive values (the DOM is the store), and\nthe calendar's own render refreshes the hidden ISO form value.\nUnparseable text changes nothing.",
           "params": [],
           "return": null,
           "examples": [],
@@ -4181,7 +4181,7 @@
           "scope": "instance",
           "group": null,
           "signature": "inputKeydown(event)",
-          "docstring": "The input's keydown action: ArrowDown opens the calendar (upstream's\naffordance).",
+          "docstring": "The input's keydown action: ArrowDown opens the calendar.",
           "params": [
             {
               "name": "event",
@@ -4194,7 +4194,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/date_picker_controller.js",
-          "line": 79
+          "line": 78
         }
       ],
       "constants": []
@@ -4264,7 +4264,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 37
+          "line": 36
         },
         {
           "name": "disconnect",
@@ -4276,7 +4276,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 68
+          "line": 67
         },
         {
           "name": "toggle",
@@ -4288,7 +4288,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 110
+          "line": 109
         },
         {
           "name": "open",
@@ -4300,7 +4300,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 119
+          "line": 118
         },
         {
           "name": "close",
@@ -4320,14 +4320,14 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 134
+          "line": 133
         },
         {
           "name": "backdropClose",
           "scope": "instance",
           "group": null,
           "signature": "backdropClose(event)",
-          "docstring": "The click action discriminating backdrop presses: a backdrop click\ntargets the <dialog> element itself AND lands outside its bounding\nrect (the backdrop is rendered by the dialog). The target check alone\nis not enough: clicks on the dialog's own padding / grid gaps also\ntarget the element (2026-07-01 browser pass - they were incorrectly\ndismissing).",
+          "docstring": "The click action discriminating backdrop presses: a backdrop click\ntargets the <dialog> element itself AND lands outside its bounding\nrect (the backdrop is rendered by the dialog). The target check alone\nis not enough: clicks on the dialog's own padding / grid gaps also\ntarget the element (found in a live browser pass - they were\nincorrectly dismissing).",
           "params": [
             {
               "name": "event",
@@ -4340,7 +4340,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 158
+          "line": 157
         },
         {
           "name": "lockScroll",
@@ -4352,7 +4352,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 180
+          "line": 179
         },
         {
           "name": "unlockScroll",
@@ -4364,7 +4364,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 188
+          "line": 187
         }
       ],
       "constants": []
@@ -4373,7 +4373,7 @@
       "path": "poetry--core--dismissable",
       "type": "controller",
       "superclass": null,
-      "docstring": "The dismissal layer (Tier 2, P2): Escape + pointerdown-outside for every\noverlay. This controller NEVER removes DOM - it dispatches \"dismiss\" and\nthe consumer closes itself (removes the node, collapses a disclosure,\nnavigates a frame). The class-level stack makes Esc topmost-only, so\nstacked overlays peel one at a time.\n\n**Values**: `disableOutsidePointerEvents` (Boolean, default: false)\n\n**Events**: `poetry--core--dismissable:dismiss`, `poetry--core--dismissable:interact-outside`",
+      "docstring": "The dismissal layer: Escape + pointerdown-outside for every\noverlay. This controller NEVER removes DOM - it dispatches \"dismiss\" and\nthe consumer closes itself (removes the node, collapses a disclosure,\nnavigates a frame). The class-level stack makes Esc topmost-only, so\nstacked overlays peel one at a time.\n\n**Values**: `disableOutsidePointerEvents` (Boolean, default: false)\n\n**Events**: `poetry--core--dismissable:dismiss`, `poetry--core--dismissable:interact-outside`",
       "examples": [],
       "file": "app/javascript/poetry/core/dismissable_controller.js",
       "methods": [
@@ -4408,7 +4408,7 @@
       "path": "poetry--core--drawer",
       "type": "controller",
       "superclass": "poetry--core--dialog",
-      "docstring": "The Drawer: the dialog machinery + the swipe-to-dismiss gesture.\nEverything hard about the OVERLAY is inherited (native <dialog> platform\ntrap, backdrop-click discrimination, scroll lock, hotkey); this subclass\nadds the two things a drawer is:\n\n  * ANIMATED presence - the first consumer of the presence helpers:\n    enter rides the data-starting-style two-frame trick (a transition\n    from --closed-transform), exit HOLDS the dialog through the\n    data-ending-style transition before the native close() (the\n    presence-hold close the Sheet dictionary was waiting on).\n  * The SWIPE - pointer-captured drag along the dismiss direction,\n    writing the Base UI CSS-var contract onto the <dialog> (::backdrop\n    inherits from its originating element, so the overlay fade rides the\n    same vars): --drawer-swipe-movement-x/y (px toward dismissal),\n    --drawer-swipe-progress (0..1), data-swiping while tracking\n    (duration-0 - the drawer follows the finger), and on release either\n    a snap-back or a dismissal whose exit duration scales with\n    --drawer-swipe-strength (mostly-swiped closes fast).\n\nDeferred with the rest of the stack machinery (see the Drawer style):\nsnap points, nested-drawer stacking, and bleed.\n\n**Targets**: `dialog`\n\n**Values**: `dismissible` (Boolean, default: true); `hotkey` (String, default: \"\"); `direction` (String, default: \"down\"); `modal` (Boolean, default: true); `snapPoints` (Array, default: [])",
+      "docstring": "The Drawer: the dialog machinery + the swipe-to-dismiss gesture.\nEverything hard about the OVERLAY is inherited (native <dialog> platform\ntrap, backdrop-click discrimination, scroll lock, hotkey); this subclass\nadds the two things a drawer is:\n\n  * ANIMATED presence - the first consumer of the presence helpers:\n    enter rides the data-starting-style two-frame trick (a transition\n    from --closed-transform), exit HOLDS the dialog through the\n    data-ending-style transition before the native close() (the\n    presence-hold close the sheet styling depends on).\n  * The SWIPE - pointer-captured drag along the dismiss direction,\n    writing the swipe CSS-var contract onto the <dialog> (::backdrop\n    inherits from its originating element, so the overlay fade rides the\n    same vars): --drawer-swipe-movement-x/y (px toward dismissal),\n    --drawer-swipe-progress (0..1), data-swiping while tracking\n    (duration-0 - the drawer follows the finger), and on release either\n    a snap-back or a dismissal whose exit duration scales with\n    --drawer-swipe-strength (mostly-swiped closes fast).\n\nDeferred with the rest of the stack machinery (see the Drawer style):\nsnap points, nested-drawer stacking, and bleed.\n\n**Targets**: `dialog`\n\n**Values**: `dismissible` (Boolean, default: true); `hotkey` (String, default: \"\"); `direction` (String, default: \"down\"); `modal` (Boolean, default: true); `snapPoints` (Array, default: [])",
       "examples": [],
       "file": "app/javascript/poetry/core/drawer_controller.js",
       "methods": [
@@ -4678,7 +4678,7 @@
       "path": "poetry--core--focus-scope",
       "type": "controller",
       "superclass": null,
-      "docstring": "The overlay focus scope (Tier 2, P2): traps Tab/Shift+Tab within the\nsubtree, loops at the edges, and - the part to get exact - snapshots\ndocument.activeElement on connect and RESTORES it on disconnect (focus\nreturn). Backs Dialog-family overlays, Popover, Menus, Select, Command.\n\nListeners are wired here, not as data-actions: pause/resume must attach\nand detach them dynamically as scopes stack, which data-action cannot do.\n\n**Values**: `trapped` (Boolean, default: true); `loop` (Boolean, default: true)\n\n**Events**: `poetry--core--focus-scope:mount-auto-focus`, `poetry--core--focus-scope:unmount-auto-focus`",
+      "docstring": "The overlay focus scope: traps Tab/Shift+Tab within the\nsubtree, loops at the edges, and - the part to get exact - snapshots\ndocument.activeElement on connect and RESTORES it on disconnect (focus\nreturn). Backs Dialog-family overlays, Popover, Menus, Select, Command.\n\nListeners are wired here, not as data-actions: pause/resume must attach\nand detach them dynamically as scopes stack, which data-action cannot do.\n\n**Values**: `trapped` (Boolean, default: true); `loop` (Boolean, default: true)\n\n**Events**: `poetry--core--focus-scope:mount-auto-focus`, `poetry--core--focus-scope:unmount-auto-focus`",
       "examples": [],
       "file": "app/javascript/poetry/core/focus_scope_controller.js",
       "methods": [
@@ -4748,7 +4748,7 @@
       "path": "poetry--core--hover-card",
       "type": "controller",
       "superclass": null,
-      "docstring": "The HoverCard controller (the popper-consumer trio's thinnest machine):\npointer-only enrichment behind a LINK. Two timers (open 600 / close 300,\nBase UI PreviewCard's OPEN_DELAY/CLOSE_DELAY, over the trigger+content\npair, re-enter cancels - the grace window, no polygon), the touch double-guard\n(pointerType 'touch' no-ops AND touchstart preventDefaults so a tap can\nnever synthesize a focus-open - a tap just navigates the link), the focus\nmirror (trigger focus opens immediately / blur closes - a keyboard user\nSEES the card), the per-open TABINDEX STRIP (every tabbable inside is\nforced tabindex=-1: keyboard and touch users never reach inside,\nRadix-exact and intentional - the reachable-elsewhere rule), and the\nSELECTION HOLD (text selection started in the card keeps it open and\nsuppresses body user-select while dragging, so previews are copyable).\n\nNO focus-scope anywhere in the lifecycle: focus never moves in, so there\nis nothing to trap or restore - the trio's simplest teardown. The\ntoken-activated dismissable delivers Esc (topmost-only) + outside press\nwhile open. No aria surface is added (no haspopup/expanded/describedby):\nadvertising a keyboard-unreachable surface to AT is worse than silence.\n\n**Values**: `open` (Boolean, default: false); `openDelay` (Number, default: 600); `closeDelay` (Number, default: 300)\n\n**Events**: `poetry:hover-card:closed`, `poetry:hover-card:open`",
+      "docstring": "The HoverCard controller (the popper-consumer trio's thinnest machine):\npointer-only enrichment behind a LINK. Two timers (open 600 / close\n300, over the trigger+content\npair, re-enter cancels - the grace window, no polygon), the touch double-guard\n(pointerType 'touch' no-ops AND touchstart preventDefaults so a tap can\nnever synthesize a focus-open - a tap just navigates the link), the focus\nmirror (trigger focus opens immediately / blur closes - a keyboard user\nSEES the card), the per-open TABINDEX STRIP (every tabbable inside is\nforced tabindex=-1: keyboard and touch users never reach inside,\nintentional and contractual - the reachable-elsewhere rule), and the\nSELECTION HOLD (text selection started in the card keeps it open and\nsuppresses body user-select while dragging, so previews are copyable).\n\nNO focus-scope anywhere in the lifecycle: focus never moves in, so there\nis nothing to trap or restore - the trio's simplest teardown. The\ntoken-activated dismissable delivers Esc (topmost-only) + outside press\nwhile open. No aria surface is added (no haspopup/expanded/describedby):\nadvertising a keyboard-unreachable surface to AT is worse than silence.\n\n**Values**: `open` (Boolean, default: false); `openDelay` (Number, default: 600); `closeDelay` (Number, default: 300)\n\n**Events**: `poetry:hover-card:closed`, `poetry:hover-card:open`",
       "examples": [],
       "file": "app/javascript/poetry/core/hover_card_controller.js",
       "methods": [
@@ -4801,7 +4801,7 @@
           "scope": "instance",
           "group": null,
           "signature": "pointerEnter(event)",
-          "docstring": "The trigger's pointerenter action: arms the open timer; touch\npointerType is EXCLUDED (Radix excludeTouch) - a tap navigates the\nlink instead.",
+          "docstring": "The trigger's pointerenter action: arms the open timer; touch\npointerType is EXCLUDED - a tap navigates the\nlink instead.",
           "params": [
             {
               "name": "event",
@@ -4841,7 +4841,7 @@
           "scope": "instance",
           "group": null,
           "signature": "focusOpen()",
-          "docstring": "The trigger's focus action: opens IMMEDIATELY (Radix composes onFocus\nstraight to open) - a keyboard user sees the preview even though they\ncannot enter it.",
+          "docstring": "The trigger's focus action: opens IMMEDIATELY, skipping the timers -\na keyboard user sees the preview even though they\ncannot enter it.",
           "params": [],
           "return": null,
           "examples": [],
@@ -4865,7 +4865,7 @@
           "scope": "instance",
           "group": null,
           "signature": "touchGuard(event)",
-          "docstring": "The trigger's touchstart action - the touch guard: preventDefault so\na tap can never synthesize a focus event (Radix's 'prevent focus\nevent on touch devices' comment, ported). The tap still navigates the\nlink.",
+          "docstring": "The trigger's touchstart action - the touch guard: preventDefault so\na tap can never synthesize a focus event (a focus-opened card on\ntouch would be unreachable). The tap still navigates the\nlink.",
           "params": [
             {
               "name": "event",
@@ -4887,7 +4887,7 @@
       "path": "poetry--core--mask",
       "type": "controller",
       "superclass": null,
-      "docstring": "The input-mask machine (the mask engine adapted from Mantine's use-mask -\nsee THIRD_PARTY_NOTICES.md) on a bare native\n<input> - this.element IS the input. Three layers:\n\n1. THE PRIMARY PATH is keydown with preventDefault: a printable char\n   skips forward over literals from the caret and pattern-tests (a\n   failing char is a NO-OP, it never reaches the field), a selection is\n   replaced via a raw rebuild, and the caret lands past the next literal\n   run. Backspace scans BACKWARD over literals (the caret lands at the\n   deleted token), Delete scans FORWARD (the caret stays),\n   Cmd/Ctrl+Backspace kills to start, arrows hop literal runs. Because\n   preventDefault kills the native undo stack, a custom\n   {raw, selectionStart} history (max 100, deduped) backs\n   Cmd/Ctrl+Z / Shift+Cmd/Ctrl+Z / Ctrl+Y.\n\n2. THE FALLBACK is the input-event diff (IME, mobile keyboards,\n   autofill, password managers - paths that never emit clean keydowns):\n   the longest common prefix+suffix against the previous display\n   isolates the inserted text and the removed span, the value is rebuilt\n   from raw pieces, re-masked, and the caret lands after the insertion.\n\n3. THE DISPLAY: skeleton padding (\"__/__\") shows on focus\n   (showMaskOnFocus, default) or permanently (alwaysShowMask); blur\n   strips it back to the filled region - or clears the field entirely\n   when autoClear is set and the mask is incomplete. A COLLAPSED caret\n   is clamped into [first token, end of filled region] on focus (rAF),\n   mousedown (rAF) and mouseup; selections are never touched.\n\nPort caveat: unlike the upstream engine, every programmatic value write dispatches a\nnative bubbling `input` event (#painting guards the controller against\nits own echo) so Rails/Turbo listeners stay live. The raw value mirrors\nto data-raw after every change; `pattern` is set on connect from\ngeneratePattern(\"full-inexact\") unless the input already carries one.\n\n**Values**: `mask` (String); `slotChar` (String, default: \"_\"); `alwaysShowMask` (Boolean); `showMaskOnFocus` (Boolean, default: true); `autoClear` (Boolean); `upcase` (Boolean)\n\n**Events**: `poetry:mask:change`, `poetry:mask:complete`",
+      "docstring": "The input-mask machine (the engine is adapted from an MIT-licensed\nsource - source and license in THIRD_PARTY_NOTICES.md) on a bare native\n<input> - this.element IS the input. Three layers:\n\n1. THE PRIMARY PATH is keydown with preventDefault: a printable char\n   skips forward over literals from the caret and pattern-tests (a\n   failing char is a NO-OP, it never reaches the field), a selection is\n   replaced via a raw rebuild, and the caret lands past the next literal\n   run. Backspace scans BACKWARD over literals (the caret lands at the\n   deleted token), Delete scans FORWARD (the caret stays),\n   Cmd/Ctrl+Backspace kills to start, arrows hop literal runs. Because\n   preventDefault kills the native undo stack, a custom\n   {raw, selectionStart} history (max 100, deduped) backs\n   Cmd/Ctrl+Z / Shift+Cmd/Ctrl+Z / Ctrl+Y.\n\n2. THE FALLBACK is the input-event diff (IME, mobile keyboards,\n   autofill, password managers - paths that never emit clean keydowns):\n   the longest common prefix+suffix against the previous display\n   isolates the inserted text and the removed span, the value is rebuilt\n   from raw pieces, re-masked, and the caret lands after the insertion.\n\n3. THE DISPLAY: skeleton padding (\"__/__\") shows on focus\n   (showMaskOnFocus, default) or permanently (alwaysShowMask); blur\n   strips it back to the filled region - or clears the field entirely\n   when autoClear is set and the mask is incomplete. A COLLAPSED caret\n   is clamped into [first token, end of filled region] on focus (rAF),\n   mousedown (rAF) and mouseup; selections are never touched.\n\nA deliberate divergence from the adapted source: every programmatic value write dispatches a\nnative bubbling `input` event (#painting guards the controller against\nits own echo) so Rails/Turbo listeners stay live. The raw value mirrors\nto data-raw after every change; `pattern` is set on connect from\ngeneratePattern(\"full-inexact\") unless the input already carries one.\n\n**Values**: `mask` (String); `slotChar` (String, default: \"_\"); `alwaysShowMask` (Boolean); `showMaskOnFocus` (Boolean, default: true); `autoClear` (Boolean); `upcase` (Boolean)\n\n**Events**: `poetry:mask:change`, `poetry:mask:complete`",
       "examples": [],
       "file": "app/javascript/poetry/core/mask_controller.js",
       "methods": [
@@ -4922,7 +4922,7 @@
       "path": "poetry--core--menu",
       "type": "controller",
       "superclass": null,
-      "docstring": "The menus-family controller (the DropdownMenu contract's ANCHOR - Radix's\none @radix-ui/react-menu behind DropdownMenu / ContextMenu / Menubar).\nThis owns ONLY what is menu-specific: open/close with the data-open-reason\ninitial-focus contract, item activation (the cancelable poetry:menu:select),\ncheckbox/radio state (poetry:menu:change), the APG typeahead buffer,\nsubmenu open/close with hover intent + sibling exclusivity, and the\ncancelable poetry:menu:edge-navigate seam a Menubar coordinator consumes.\nEverything else is composed BY REFERENCE: focus-scope (trap + focus return\nto the trigger), dismissable (topmost-only Esc + outside press, arriving\nhere as its \"dismiss\" event), roving-focus (arrows/Home/End per menu\nlevel), popper (positioning - markup-owned, untouched here), presence\n(data-open/data-closed flip -> animationend -> hidden).\n\nSTRUCTURAL RESOLUTION, no targets: the content is found via the trigger's\naria-controls id (portal-safe - a Stimulus target cannot cross a portal\nmove), items via the collection helper over the family's data-slot suffix\nselectors ([data-slot$=menu-item] etc., so dropdown-menu-*, context-menu-*\nand menubar-* anatomies all resolve), subs via their own aria-controls\npairs. Content-level listeners are wired programmatically in connect for\nthe same portal-safety reason.\n\nThe layer stack is ACTIVATED on open: the focus-scope / dismissable /\nroving-focus identifiers are appended to the content's data-controller (a\nstatically-connected trap or dismiss layer on a hidden menu would steal\nfocus at page load and swallow topmost-Esc). Close reverses: presence exit\n-> hidden -> tokens removed -> focus-scope's disconnect restores focus to\nthe trigger. Each open sub level adds its own dismissable layer (the\nclose-one-level-at-a-time Esc chain for free) + its own roving group; subs\njoin the ROOT focus scope (no nested traps - Radix-exact).\nBoth family spellings resolve: dropdown-menu-* / context-menu-* share the\n\"menu-\" suffix; menubar-* is its own word (menubar-item does NOT end with\n\"menu-item\"), so every part selector carries the pair.\n\n**Values**: `open` (Boolean, default: false); `modal` (Boolean, default: true); `loop` (Boolean, default: false); `typeaheadTimeout` (Number, default: 1000); `closeOnSelect` (Boolean, default: true)\n\n**Events**: `poetry:menu:change`, `poetry:menu:closed`, `poetry:menu:edge-navigate`, `poetry:menu:open`, `poetry:menu:select`",
+      "docstring": "The menus-family controller (the DropdownMenu contract's ANCHOR - ONE\nmenu engine behind DropdownMenu / ContextMenu / Menubar).\nThis owns ONLY what is menu-specific: open/close with the data-open-reason\ninitial-focus contract, item activation (the cancelable poetry:menu:select),\ncheckbox/radio state (poetry:menu:change), the APG typeahead buffer,\nsubmenu open/close with hover intent + sibling exclusivity, and the\ncancelable poetry:menu:edge-navigate seam a Menubar coordinator consumes.\nEverything else is composed BY REFERENCE: focus-scope (trap + focus return\nto the trigger), dismissable (topmost-only Esc + outside press, arriving\nhere as its \"dismiss\" event), roving-focus (arrows/Home/End per menu\nlevel), popper (positioning - markup-owned, untouched here), presence\n(data-open/data-closed flip -> animationend -> hidden).\n\nSTRUCTURAL RESOLUTION, no targets: the content is found via the trigger's\naria-controls id (portal-safe - a Stimulus target cannot cross a portal\nmove), items via the collection helper over the family's data-slot suffix\nselectors ([data-slot$=menu-item] etc., so dropdown-menu-*, context-menu-*\nand menubar-* anatomies all resolve), subs via their own aria-controls\npairs. Content-level listeners are wired programmatically in connect for\nthe same portal-safety reason.\n\nThe layer stack is ACTIVATED on open: the focus-scope / dismissable /\nroving-focus identifiers are appended to the content's data-controller (a\nstatically-connected trap or dismiss layer on a hidden menu would steal\nfocus at page load and swallow topmost-Esc). Close reverses: presence exit\n-> hidden -> tokens removed -> focus-scope's disconnect restores focus to\nthe trigger. Each open sub level adds its own dismissable layer (the\nclose-one-level-at-a-time Esc chain for free) + its own roving group; subs\njoin the ROOT focus scope (no nested traps, contractual).\nBoth family spellings resolve: dropdown-menu-* / context-menu-* share the\n\"menu-\" suffix; menubar-* is its own word (menubar-item does NOT end with\n\"menu-item\"), so every part selector carries the pair.\n\n**Values**: `open` (Boolean, default: false); `modal` (Boolean, default: true); `loop` (Boolean, default: false); `typeaheadTimeout` (Number, default: 1000); `closeOnSelect` (Boolean, default: true)\n\n**Events**: `poetry:menu:change`, `poetry:menu:closed`, `poetry:menu:edge-navigate`, `poetry:menu:open`, `poetry:menu:select`",
       "examples": [],
       "file": "app/javascript/poetry/core/menu_controller.js",
       "methods": [
@@ -5204,7 +5204,7 @@
       "path": "poetry--core--menubar",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Menubar cross-menu COORDINATOR - kept\ndeliberately anorexic: ONE piece of state (`value`, which menu is open)\nplus the three behaviors no other layer can own. The ownership split:\n- roving-focus (horizontal, manageTabindex TRUE) owns which trigger is\n  tabbable/focused on the bar - it knows nothing about menus.\n- poetry--core--menu (one instance per menu, modal: false) owns\n  everything inside an open menu - it knows nothing about siblings.\n- this controller owns:\n  1. TOGGLE - pointerdown opens (closing any sibling) / closes the open\n     menu. Keyboard open (ArrowDown/Enter/Space -> first item; ArrowUp ->\n     last item) rides the family's open-reason contract; pointer-open\n     leaves focus on the trigger (Radix parity).\n  2. HOVER-SLIDE - pointerenter on a sibling trigger is a no-op from cold;\n     once ANY menu is open it swaps to the hovered menu (the gated-hover\n     rule) and focus moves to the new trigger.\n  3. EDGE-NAVIGATE - the family menu controller fires a cancelable\n     poetry:menu:edge-navigate when ArrowLeft/Right has no submenu\n     meaning; this coordinator consumes it (loop-aware, RTL-aware,\n     disabled-skipping) and opens the adjacent menu with its FIRST item\n     focused (both directions - APG menubar). Standalone DropdownMenu\n     leaves the event unconsumed.\nDismiss (Esc/outside) and select arrive as the family's poetry:menu:closed\n- the coordinator nulls value; focus return to the trigger is the family\nfocus-scope's job (its connect snapshot IS the trigger, because every\nopen path here puts focus there first).\n\nA press on a sibling trigger must be TOGGLE's, not the open menu's\ndismissable layer's: the coordinator vetoes interact-outside for presses\nlanding on this bar's triggers (otherwise dismiss-then-toggle would\nclose-and-reopen in the same pointerdown).\n\n**Values**: `value` (String, default: \"\"); `loop` (Boolean, default: false)\n\n**Events**: `poetry:menubar:value-changed`",
+      "docstring": "The Menubar cross-menu COORDINATOR - kept\ndeliberately anorexic: ONE piece of state (`value`, which menu is open)\nplus the three behaviors no other layer can own. The ownership split:\n- roving-focus (horizontal, manageTabindex TRUE) owns which trigger is\n  tabbable/focused on the bar - it knows nothing about menus.\n- poetry--core--menu (one instance per menu, modal: false) owns\n  everything inside an open menu - it knows nothing about siblings.\n- this controller owns:\n  1. TOGGLE - pointerdown opens (closing any sibling) / closes the open\n     menu. Keyboard open (ArrowDown/Enter/Space -> first item; ArrowUp ->\n     last item) rides the family's open-reason contract; pointer-open\n     leaves focus on the trigger (pointer users keep their context).\n  2. HOVER-SLIDE - pointerenter on a sibling trigger is a no-op from cold;\n     once ANY menu is open it swaps to the hovered menu (the gated-hover\n     rule) and focus moves to the new trigger.\n  3. EDGE-NAVIGATE - the family menu controller fires a cancelable\n     poetry:menu:edge-navigate when ArrowLeft/Right has no submenu\n     meaning; this coordinator consumes it (loop-aware, RTL-aware,\n     disabled-skipping) and opens the adjacent menu with its FIRST item\n     focused (both directions - APG menubar). Standalone DropdownMenu\n     leaves the event unconsumed.\nDismiss (Esc/outside) and select arrive as the family's poetry:menu:closed\n- the coordinator nulls value; focus return to the trigger is the family\nfocus-scope's job (its connect snapshot IS the trigger, because every\nopen path here puts focus there first).\n\nA press on a sibling trigger must be TOGGLE's, not the open menu's\ndismissable layer's: the coordinator vetoes interact-outside for presses\nlanding on this bar's triggers (otherwise dismiss-then-toggle would\nclose-and-reopen in the same pointerdown).\n\n**Values**: `value` (String, default: \"\"); `loop` (Boolean, default: false)\n\n**Events**: `poetry:menubar:value-changed`",
       "examples": [],
       "file": "app/javascript/poetry/core/menubar_controller.js",
       "methods": [
@@ -5324,7 +5324,7 @@
           "scope": "instance",
           "group": null,
           "signature": "slideAdjacent(event)",
-          "docstring": "The edge-navigate action (cancelable, bubbling from the open menu's\nROOT content). detail.direction is the PHYSICAL arrow; RTL maps it\nhere. ALWAYS consumed once the menu belongs to this bar - an\nunconsumed edge would fall through to the bar's roving-focus and move\ntrigger focus while the menu stays open (bar arrows are inert while\nopen, Radix parity). At a no-loop boundary that means: consumed, no\nmove.",
+          "docstring": "The edge-navigate action (cancelable, bubbling from the open menu's\nROOT content). detail.direction is the PHYSICAL arrow; RTL maps it\nhere. ALWAYS consumed once the menu belongs to this bar - an\nunconsumed edge would fall through to the bar's roving-focus and move\ntrigger focus while the menu stays open (bar arrows are inert while\nopen, by rule). At a no-loop boundary that means: consumed, no\nmove.",
           "params": [
             {
               "name": "event",
@@ -5380,7 +5380,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 90
+          "line": 91
         },
         {
           "name": "disconnect",
@@ -5392,26 +5392,26 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 161
+          "line": 162
         },
         {
           "name": "defaultScrollPositionValueChanged",
           "scope": "instance",
           "group": null,
           "signature": "defaultScrollPositionValueChanged()",
-          "docstring": "Stimulus value callback (source: a defaultScrollPosition prop change\nre-arms the one-shot apply).",
+          "docstring": "Stimulus value callback: a defaultScrollPosition change re-arms the\none-shot apply.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 205
+          "line": 206
         },
         {
           "name": "autoScrollValueChanged",
           "scope": "instance",
           "group": null,
           "signature": "autoScrollValueChanged()",
-          "docstring": "Stimulus value callback (source: the autoScroll layout effect) -\nre-pin if we were following.",
+          "docstring": "Stimulus value callback: re-pin if we were following.",
           "params": [],
           "return": null,
           "examples": [],
@@ -5571,7 +5571,7 @@
       "path": "poetry--core--navigation-menu",
       "type": "controller",
       "superclass": null,
-      "docstring": "The NavigationMenu coordinator (the viewport=false mode): a\nDISCLOSURE BAR, not a menu - Tab moves through triggers and links\nnormally, arrows are convenience navigation, nothing traps. Each item's\npanel is its own popup positioned under the item; this controller owns\nwhat per-item popovers can't: ONE panel open at a time, hover intent\n(open/close delays so diagonal travel into a panel doesn't flicker),\nEsc + focus-out + outside-press closing, and the vocabulary writes\n(data-popup-open on the trigger - the chevron's rotation hook - and the\npresence-driven open/closed pair on the panel).\n\nTHE VIEWPORT MODE: when the markup ships the shared\npositioner > popup > viewport shell (viewport: true), panels are\nlazily ADOPTED into the viewport on first activation (the Rails\nstand-in for Base UI's portal - server-rendered content stays in\nplace until JS activates) and the composite MORPHS: the popper\nre-anchors to the active trigger (full floating-ui) while CSS\ntransitions the positioner's insets, the popup's --popup-width/height\npin old -> new across two frames so width/height transition, panels\nslide by data-activation-direction (new trigger vs old, recharts'\ntravel semantics), and data-instant suppresses transitions on cold\nopens. Vars reset to auto after the animations finish (the Base UI\nauto-size reset via getAnimations().finished).\n\n**Values**: `openDelay` (Number, default: 50); `closeDelay` (Number, default: 150)",
+      "docstring": "The NavigationMenu coordinator (the viewport=false mode): a\nDISCLOSURE BAR, not a menu - Tab moves through triggers and links\nnormally, arrows are convenience navigation, nothing traps. Each item's\npanel is its own popup positioned under the item; this controller owns\nwhat per-item popovers can't: ONE panel open at a time, hover intent\n(open/close delays so diagonal travel into a panel doesn't flicker),\nEsc + focus-out + outside-press closing, and the vocabulary writes\n(data-popup-open on the trigger - the chevron's rotation hook - and the\npresence-driven open/closed pair on the panel).\n\nTHE VIEWPORT MODE: when the markup ships the shared\npositioner > popup > viewport shell (viewport: true), panels are\nlazily ADOPTED into the viewport on first activation (the Rails\nstand-in for a portal - server-rendered content stays in\nplace until JS activates) and the composite MORPHS: the popper\nre-anchors to the active trigger (full floating-ui) while CSS\ntransitions the positioner's insets, the popup's --popup-width/height\npin old -> new across two frames so width/height transition, panels\nslide by data-activation-direction (new trigger vs old - travel\ndirection drives the slide), and data-instant suppresses transitions\non cold opens. Vars reset to auto after the animations finish (the\nauto-size reset via getAnimations().finished).\n\n**Values**: `openDelay` (Number, default: 50); `closeDelay` (Number, default: 150)",
       "examples": [],
       "file": "app/javascript/poetry/core/navigation_menu_controller.js",
       "methods": [
@@ -5718,7 +5718,7 @@
       "path": "poetry--core--number-field",
       "type": "controller",
       "superclass": null,
-      "docstring": "NumberField (Wave 1, the Base UI number-field contract): a formatted\nvisible <input type=text> over a hidden <input type=number> that is the\nform/validation truth - Base UI dropped the spinbutton pattern and so\ndoes poetry. The controller owns stepping (arrows, steppers with\npress-and-hold, opt-in wheel), parse/clamp/format, and the two-input\nsync. Number | null value model: empty is null, never NaN.\n\nDeliberate v1 divergences from Base UI (documented in the component):\nno scrub area, Latin-digit parsing only (locale separators and\ncurrency/percent symbols ARE handled via Intl.formatToParts), and the\nserver renders the raw number - the display formats on connect.\n\n**Targets**: `decrement`, `hidden`, `increment`, `input`\n\n**Values**: `min` (Number); `max` (Number); `step` (Number, default: 1); `largeStep` (Number, default: 10); `smallStep` (Number, default: 0.1); `snap` (Boolean); `wheel` (Boolean); `format` (Object); `locale` (String)\n\n**Events**: `poetry:number-field:change`, `poetry:number-field:commit`",
+      "docstring": "NumberField: a formatted\nvisible <input type=text> over a hidden <input type=number> that is the\nform/validation truth - the spinbutton ARIA pattern is deliberately\nnot used. The controller owns stepping (arrows, steppers with\npress-and-hold, opt-in wheel), parse/clamp/format, and the two-input\nsync. Number | null value model: empty is null, never NaN.\n\nDeliberate v1 boundaries (documented in the component):\nno scrub area, Latin-digit parsing only (locale separators and\ncurrency/percent symbols ARE handled via Intl.formatToParts), and the\nserver renders the raw number - the display formats on connect.\n\n**Targets**: `decrement`, `hidden`, `increment`, `input`\n\n**Values**: `min` (Number); `max` (Number); `step` (Number, default: 1); `largeStep` (Number, default: 10); `smallStep` (Number, default: 0.1); `snap` (Boolean); `wheel` (Boolean); `format` (Object); `locale` (String)\n\n**Events**: `poetry:number-field:change`, `poetry:number-field:commit`",
       "examples": [],
       "file": "app/javascript/poetry/core/number_field_controller.js",
       "methods": [
@@ -5795,7 +5795,7 @@
           "scope": "instance",
           "group": null,
           "signature": "blur()",
-          "docstring": "The blur action - the text commit point: empty clears, unparseable\ntext is left as typed with no commit, parseable text clamps and\nnormalizes to the canonical formatted display (never snapped to step\n- Base UI).",
+          "docstring": "The blur action - the text commit point: empty clears, unparseable\ntext is left as typed with no commit, parseable text clamps and\nnormalizes to the canonical formatted display (never snapped to\nstep - blur is not a correction gesture).",
           "params": [],
           "return": null,
           "examples": [],
@@ -5873,7 +5873,7 @@
       "path": "poetry--core--optimistic-form",
       "type": "controller",
       "superclass": null,
-      "docstring": "Optimistic UI for Turbo forms (the hotwire_club-toolbox port).\nThe optimistic update is AUTHORED AS A TURBO STREAM inside a <template>\ntarget - the same vocabulary the server answers in, so prediction and\ntruth share one mental model and there is no bespoke DOM patching. On\nturbo:submit-start the template contents are cloned into the document\nand Turbo paints the predicted state immediately; on turbo:submit-end\nthe controller reconciles ONLY when the submission failed, by\nappending <turbo-stream action=\"refresh\"> - which must morph (the\nhelper documents the turbo-refresh-method=morph meta) so the\ncorrection is seamless.\n\nTHE SERVER CONTRACT (enforced nowhere, so stated everywhere): success\nanswers 204 (or a targeted stream for authoritative correction under\ncontention) - NEVER a redirect, because a redirect under morph\nrefreshes is itself a full reload and defeats the optimism. Failure\nanswers 4xx so event.detail.success is false and the refresh restores\nauthoritative truth. Full story: the Optimistic Forms guide on the poetry docs site.\n\n**Targets**: `template`",
+      "docstring": "Optimistic UI for Turbo forms, adapted from an MIT-licensed source\n(source and license in THIRD_PARTY_NOTICES.md).\nThe optimistic update is AUTHORED AS A TURBO STREAM inside a <template>\ntarget - the same vocabulary the server answers in, so prediction and\ntruth share one mental model and there is no bespoke DOM patching. On\nturbo:submit-start the template contents are cloned into the document\nand Turbo paints the predicted state immediately; on turbo:submit-end\nthe controller reconciles ONLY when the submission failed, by\nappending <turbo-stream action=\"refresh\"> - which must morph (the\nhelper documents the turbo-refresh-method=morph meta) so the\ncorrection is seamless.\n\nTHE SERVER CONTRACT (enforced nowhere, so stated everywhere): success\nanswers 204 (or a targeted stream for authoritative correction under\ncontention) - NEVER a redirect, because a redirect under morph\nrefreshes is itself a full reload and defeats the optimism. Failure\nanswers 4xx so event.detail.success is false and the refresh restores\nauthoritative truth. Full story: the Optimistic Forms guide on the poetry docs site.\n\n**Targets**: `template`",
       "examples": [],
       "file": "app/javascript/poetry/core/optimistic_form_controller.js",
       "methods": [
@@ -5887,7 +5887,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/optimistic_form_controller.js",
-          "line": 28
+          "line": 29
         },
         {
           "name": "reconcile",
@@ -5907,7 +5907,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/optimistic_form_controller.js",
-          "line": 44
+          "line": 45
         }
       ],
       "constants": []
@@ -6003,7 +6003,7 @@
       "path": "poetry--core--popover",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Popover controller (the popper-consumer trio's click-open member):\nthe menu controller's #show/#hide + token-activated layer skeleton with\nALL item machinery deleted - no typeahead, no roving, no subs, no\ncollection. What remains is exactly the APG dialog-pattern-lite: the\ntrigger toggles a role=dialog panel, focus MOVES INTO the content on open\n(focus-scope's mount default - deliberately NOT vetoed, the contrast with\nthe menu family's data-open-reason contract) and RETURNS to the trigger on\nclose; the trap is enforced only when modal (Radix Popover defaults\nmodal: FALSE - the deliberate contrast with the menu family's true).\n\nSTRUCTURAL RESOLUTION, no targets: the content is found via the trigger's\naria-controls id (portal-safe - the menu-controller pattern verbatim);\ncontent-level listeners are wired programmatically in connect for the same\nreason.\n\nThe layer stack is ACTIVATED on open: focus-scope + dismissable are\nappended to the content's data-controller (a statically-connected trap on\nhidden content would steal focus at page load; a static dismissable would\nswallow topmost-Esc), with trapped / disable-outside-pointer-events both\nset from modal. Close reverses: presence exit -> hidden -> tokens removed\n-> focus-scope's disconnect restores focus to the trigger (suppressed for\noutside-press when non-modal: focus follows the click, Radix semantics).\n\n**Values**: `open` (Boolean, default: false); `modal` (Boolean, default: false)\n\n**Events**: `poetry:popover:closed`, `poetry:popover:open`",
+      "docstring": "The Popover controller (the popper-consumer trio's click-open member):\nthe menu controller's #show/#hide + token-activated layer skeleton with\nALL item machinery deleted - no typeahead, no roving, no subs, no\ncollection. What remains is exactly the APG dialog-pattern-lite: the\ntrigger toggles a role=dialog panel, focus MOVES INTO the content on open\n(focus-scope's mount default - deliberately NOT vetoed, the contrast with\nthe menu family's data-open-reason contract) and RETURNS to the trigger on\nclose; the trap is enforced only when modal (the default is\nmodal: FALSE - the deliberate contrast with the menu family's true).\n\nSTRUCTURAL RESOLUTION, no targets: the content is found via the trigger's\naria-controls id (portal-safe - the menu-controller pattern verbatim);\ncontent-level listeners are wired programmatically in connect for the same\nreason.\n\nThe layer stack is ACTIVATED on open: focus-scope + dismissable are\nappended to the content's data-controller (a statically-connected trap on\nhidden content would steal focus at page load; a static dismissable would\nswallow topmost-Esc), with trapped / disable-outside-pointer-events both\nset from modal. Close reverses: presence exit -> hidden -> tokens removed\n-> focus-scope's disconnect restores focus to the trigger (suppressed for\noutside-press when non-modal: focus follows the click).\n\n**Values**: `open` (Boolean, default: false); `modal` (Boolean, default: false)\n\n**Events**: `poetry:popover:closed`, `poetry:popover:open`",
       "examples": [],
       "file": "app/javascript/poetry/core/popover_controller.js",
       "methods": [
@@ -6087,7 +6087,7 @@
               "types": [
                 "string | Event"
               ],
-              "text": "a Base UI reason string; an Event (data-action use) reads as \"none\""
+              "text": "a family reason string; an Event (data-action use) reads as \"none\""
             }
           ],
           "return": null,
@@ -6102,7 +6102,7 @@
       "path": "poetry--core--popper",
       "type": "controller",
       "superclass": null,
-      "docstring": "The anchored-positioning primitive (Tier 2, P4): Radix's popper as one\ncontroller over the VENDORED @floating-ui/dom. Same middleware pipeline in\nRadix's order - offset -> shift -> flip (both gated on avoidCollisions, as\nin Radix) -> size -> arrow (when an arrow target exists) -> hide - and the\nsame output contract: data-side / data-align mirror the RESOLVED placement\n(after flip), and the content gets the Base UI CSS vars\n(--transform-origin / -available-width / -available-height /\n-anchor-width / -anchor-height) so ported Tailwind classes like\ndata-[side=top]:slide-in-from-bottom-2 and\nmax-h-[var(--available-height)] work unchanged.\n\nThe Arrow stays a markup primitive (Tier 4): any [data-slot=popper-arrow]\nmarked as the arrow target is positioned + given data-side here; the SVG\nitself is poetry-ui's business.\n\nVIRTUAL-ANCHOR mode (the ContextMenu contract): a non-empty anchorPoint\nvalue - canonically the data-poetry--core--popper-anchor-point=\"x,y\"\nattribute on the controller root (the DOM is the store) - floats against a\nfloating-ui VirtualElement: a zero-size rect at (x,y) client coords,\nRadix's virtualRef verbatim. The resolved ELEMENT anchor rides along as\ncontextElement so autoUpdate still tracks ancestor scroll/resize.\nsetAnchor(x, y) is the ergonomics wrapper ContextMenu calls from its\ncontextmenu / long-press handlers; clearing the value returns to plain\nelement anchoring.\n\nConsumers: Popover, Dropdown/Context Menu, Tooltip, HoverCard, Select,\nCombobox, Menubar.\n\n**Targets**: `anchor`, `arrow`, `content`\n\n**Values**: `anchor` (String, default: \"\"); `anchorPoint` (String, default: \"\"); `side` (String, default: \"bottom\"); `align` (String, default: \"center\"); `sideOffset` (Number, default: 0); `alignOffset` (Number, default: 0); `avoidCollisions` (Boolean, default: true); `strategy` (String, default: \"fixed\")",
+      "docstring": "The anchored-positioning primitive: one\ncontroller over the VENDORED @floating-ui/dom. A fixed middleware\npipeline - offset -> shift -> flip (both gated on avoidCollisions)\n-> size -> arrow (when an arrow target exists) -> hide - and a fixed\noutput contract: data-side / data-align mirror the RESOLVED placement\n(after flip), and the content gets the sizing CSS vars\n(--transform-origin / -available-width / -available-height /\n-anchor-width / -anchor-height) so ported Tailwind classes like\ndata-[side=top]:slide-in-from-bottom-2 and\nmax-h-[var(--available-height)] work unchanged.\n\nThe Arrow stays a markup primitive: any [data-slot=popper-arrow]\nmarked as the arrow target is positioned + given data-side here; the SVG\nitself is poetry-ui's business.\n\nVIRTUAL-ANCHOR mode (the ContextMenu contract): a non-empty anchorPoint\nvalue - canonically the data-poetry--core--popper-anchor-point=\"x,y\"\nattribute on the controller root (the DOM is the store) - floats against a\nfloating-ui VirtualElement: a zero-size rect at (x,y) client coords.\nThe resolved ELEMENT anchor rides along as\ncontextElement so autoUpdate still tracks ancestor scroll/resize.\nsetAnchor(x, y) is the ergonomics wrapper ContextMenu calls from its\ncontextmenu / long-press handlers; clearing the value returns to plain\nelement anchoring.\n\nConsumers: Popover, Dropdown/Context Menu, Tooltip, HoverCard, Select,\nCombobox, Menubar.\n\n**Targets**: `anchor`, `arrow`, `content`\n\n**Values**: `anchor` (String, default: \"\"); `anchorPoint` (String, default: \"\"); `side` (String, default: \"bottom\"); `align` (String, default: \"center\"); `sideOffset` (Number, default: 0); `alignOffset` (Number, default: 0); `avoidCollisions` (Boolean, default: true); `strategy` (String, default: \"fixed\")",
       "examples": [],
       "file": "app/javascript/poetry/core/popper_controller.js",
       "methods": [
@@ -6208,7 +6208,7 @@
           "scope": "instance",
           "group": null,
           "signature": "setAnchorElement(element)",
-          "docstring": "The NavigationMenu viewport entry point (D3): floats against a\ncaller-supplied element (the active trigger) instead of a\ntarget/selector. Re-arms autoUpdate so the new reference's ancestors\nare tracked, then repositions - the positioner's inset transition\nturns that write into the position morph.",
+          "docstring": "The NavigationMenu viewport entry point: floats against a\ncaller-supplied element (the active trigger) instead of a\ntarget/selector. Re-arms autoUpdate so the new reference's ancestors\nare tracked, then repositions - the positioner's inset transition\nturns that write into the position morph.",
           "params": [
             {
               "name": "element",
@@ -6235,7 +6235,7 @@
       "path": "poetry--core--pressed",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Toggle micro-machine (the smallest controller in the suite): flip\naria-pressed and mirror the bare data-pressed presence boolean (Base UI\nvocabulary) - WRITTEN TOGETHER, never separately. The DOM is the store: no Values, no internal state. This is\ndeliberately NOT poetry--core--checked (different ARIA vocabulary, no\ninput to sync) and not poetry--core--state (that owns aria-expanded\ndisclosure) - three micro-controllers, three vocabularies.\n\nNo keydown code: Space AND Enter both activate a native button (click) -\nRadix-exact (its Toggle has no keyboard handlers at all).\n\npoetry:toggle:change is CANCELABLE and fires BEFORE the flip renders:\npreventDefault vetoes it (hosts that must confirm). The pressed value in\nthe detail is the state the toggle is ABOUT to enter.\n\n**Events**: `poetry:toggle:change`",
+      "docstring": "The Toggle micro-machine (the smallest controller in the suite): flip\naria-pressed and mirror the bare data-pressed presence boolean -\nWRITTEN TOGETHER, never separately. The DOM is the store: no Values, no internal state. This is\ndeliberately NOT poetry--core--checked (different ARIA vocabulary, no\ninput to sync) and not poetry--core--state (that owns aria-expanded\ndisclosure) - three micro-controllers, three vocabularies.\n\nNo keydown code: Space AND Enter both activate a native button\n(click) - the platform already implements the keyboard.\n\npoetry:toggle:change is CANCELABLE and fires BEFORE the flip renders:\npreventDefault vetoes it (hosts that must confirm). The pressed value in\nthe detail is the state the toggle is ABOUT to enter.\n\n**Events**: `poetry:toggle:change`",
       "examples": [],
       "file": "app/javascript/poetry/core/pressed_controller.js",
       "methods": [
@@ -6302,7 +6302,7 @@
       "path": "poetry--core--questionnaire",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Questionnaire machine (shadcn's @shadcn/react questionnaire\nprimitive, ported): a native <form> of fieldset items shown ONE at a\ntime. The server renders the complete initial state (active item,\nstatuses, shortcuts, button visibility); this controller owns the\nruntime transitions - navigation (validate-gated Next, Skip for\noptional items, submit validates every item and jumps to the first\ninvalid), answer tracking (choice change / text input -> status), the\nkeyboard map (Cmd/Ctrl+Enter confirm, ArrowUp/Down answer focus,\nArrowLeft/Right item navigation, Enter-on-filled-answer confirm,\nletter/number shortcuts), and the data-attribute stamps the styling\ncontract reads. Answers are native radio/checkbox/text inputs - the\nform serializes with zero JS.\n\n**Targets**: `next`, `previous`, `progress`, `skip`, `submit`\n\n**Values**: `shortcuts` (String, default: \"\")\n\n**Events**: `poetry:questionnaire:item-change`, `poetry:questionnaire:status-change`",
+      "docstring": "The Questionnaire machine, adapted from an MIT-licensed source (source\nand license in THIRD_PARTY_NOTICES.md): a native <form> of fieldset\nitems shown ONE at a\ntime. The server renders the complete initial state (active item,\nstatuses, shortcuts, button visibility); this controller owns the\nruntime transitions - navigation (validate-gated Next, Skip for\noptional items, submit validates every item and jumps to the first\ninvalid), answer tracking (choice change / text input -> status), the\nkeyboard map (Cmd/Ctrl+Enter confirm, ArrowUp/Down answer focus,\nArrowLeft/Right item navigation, Enter-on-filled-answer confirm,\nletter/number shortcuts), and the data-attribute stamps the styling\ncontract reads. Answers are native radio/checkbox/text inputs - the\nform serializes with zero JS.\n\n**Targets**: `next`, `previous`, `progress`, `skip`, `submit`\n\n**Values**: `shortcuts` (String, default: \"\")\n\n**Events**: `poetry:questionnaire:item-change`, `poetry:questionnaire:status-change`",
       "examples": [],
       "file": "app/javascript/poetry/core/questionnaire_controller.js",
       "methods": [
@@ -6316,7 +6316,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/questionnaire_controller.js",
-          "line": 41
+          "line": 42
         },
         {
           "name": "previous",
@@ -6328,7 +6328,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/questionnaire_controller.js",
-          "line": 48
+          "line": 49
         },
         {
           "name": "next",
@@ -6340,7 +6340,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/questionnaire_controller.js",
-          "line": 60
+          "line": 61
         },
         {
           "name": "skip",
@@ -6352,7 +6352,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/questionnaire_controller.js",
-          "line": 75
+          "line": 76
         },
         {
           "name": "submit",
@@ -6372,7 +6372,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/questionnaire_controller.js",
-          "line": 94
+          "line": 95
         },
         {
           "name": "reset",
@@ -6384,7 +6384,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/questionnaire_controller.js",
-          "line": 107
+          "line": 108
         },
         {
           "name": "change",
@@ -6404,7 +6404,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/questionnaire_controller.js",
-          "line": 129
+          "line": 130
         },
         {
           "name": "input",
@@ -6424,7 +6424,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/questionnaire_controller.js",
-          "line": 149
+          "line": 150
         },
         {
           "name": "keydown",
@@ -6444,7 +6444,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/questionnaire_controller.js",
-          "line": 171
+          "line": 172
         }
       ],
       "constants": []
@@ -6453,7 +6453,7 @@
       "path": "poetry--core--radio-group",
       "type": "controller",
       "superclass": null,
-      "docstring": "The RadioGroup checked-value machine (the Accordion composition shape):\nthis controller owns ONLY the value + attribute/input writes - ZERO\nkeyboard code. The shared poetry--core--roving-focus runs on the same\nroot in its DEFAULT tabindex-managing mode (one Tab stop) with the\norientation: \"both\" extension (all four arrows, APG radio), and this\ncontroller consumes its cancelable entry event to implement SELECTION\nFOLLOWS FOCUS: entry fires only on arrow/Home/End navigation - never on\nTab or click-focus - so checking on entry is exactly the APG contract\n(Tab into the group never changes the value; Radix-exact).\n\nThe form story is the hidden-native-input rule: one <input type=radio>\nper item, shared name (aria-hidden, tabindex=-1) - native radio\nserialization, byte-identical to collection_radio_buttons. check() writes\nevery item's aria-checked/checked pair/indicator, sets the hidden input's\n.checked (the native group unchecks siblings; written explicitly anyway -\nbelt and braces), moves the roving tab stop to the checked item, and\ndispatches poetry:radio-group:change + native input/change on the newly\nchecked hidden input (Rails autosave/change-tracking listeners fire).\n\n**Targets**: `input`\n\n**Values**: `value` (String, default: \"\")\n\n**Events**: `poetry:radio-group:change`",
+      "docstring": "The RadioGroup checked-value machine (the Accordion composition shape):\nthis controller owns ONLY the value + attribute/input writes - ZERO\nkeyboard code. The shared poetry--core--roving-focus runs on the same\nroot in its DEFAULT tabindex-managing mode (one Tab stop) with the\norientation: \"both\" extension (all four arrows, APG radio), and this\ncontroller consumes its cancelable entry event to implement SELECTION\nFOLLOWS FOCUS: entry fires only on arrow/Home/End navigation - never on\nTab or click-focus - so checking on entry is exactly the APG contract\n(Tab into the group never changes the value; contractual).\n\nThe form story is the hidden-native-input rule: one <input type=radio>\nper item, shared name (aria-hidden, tabindex=-1) - native radio\nserialization, byte-identical to collection_radio_buttons. check() writes\nevery item's aria-checked/checked pair/indicator, sets the hidden input's\n.checked (the native group unchecks siblings; written explicitly anyway -\nbelt and braces), moves the roving tab stop to the checked item, and\ndispatches poetry:radio-group:change + native input/change on the newly\nchecked hidden input (Rails autosave/change-tracking listeners fire).\n\n**Targets**: `input`\n\n**Values**: `value` (String, default: \"\")\n\n**Events**: `poetry:radio-group:change`",
       "examples": [],
       "file": "app/javascript/poetry/core/radio_group_controller.js",
       "methods": [
@@ -6563,7 +6563,7 @@
       "path": "poetry--core--resizable",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Resizable engine, decided NATIVE: no panel library -\npanels are flex children whose flex-grow IS the percentage, and this\ncontroller implements the APG window-splitter on the handles: pointer\ndrag redistributes the two adjacent panels (clamped to each panel's\nmin/max), arrows step, Home/End jump the range, and every move writes\naria-valuenow (the preceding panel's size - the upstream convention).\nDeferred with the library's machinery: persistence (autoSaveId),\ncollapsible panels, and the imperative API.\n\n**Values**: `orientation` (String, default: \"horizontal\")\n\n**Events**: `poetry:resizable:resize`",
+      "docstring": "The Resizable engine, decided NATIVE: no panel library -\npanels are flex children whose flex-grow IS the percentage, and this\ncontroller implements the APG window-splitter on the handles: pointer\ndrag redistributes the two adjacent panels (clamped to each panel's\nmin/max), arrows step, Home/End jump the range, and every move writes\naria-valuenow (the preceding panel's size).\nDeferred with the library's machinery: persistence (autoSaveId),\ncollapsible panels, and the imperative API.\n\n**Values**: `orientation` (String, default: \"horizontal\")\n\n**Events**: `poetry:resizable:resize`",
       "examples": [],
       "file": "app/javascript/poetry/core/resizable_controller.js",
       "methods": [
@@ -6666,7 +6666,7 @@
       "path": "poetry--core--roving-focus",
       "type": "controller",
       "superclass": null,
-      "docstring": "The roving-tabindex engine (Tier 2, P1): the group is ONE Tab stop -\nexactly one item holds tabindex=0, the rest -1, and arrow keys move focus\namong the collection items in DOM order. Orientation gates which arrows\nare live (horizontal flips Left/Right under RTL via the direction\nhelper); Home/End jump to the edges; loop wraps. Backs Tabs, Toolbar,\nRadioGroup, Menus, ToggleGroup, and the Select/Command list.\n\nDynamic items: NAVIGATION recomputes the collection on every keydown (the\nDOM is the registry - always fresh, zero bookkeeping), but that alone is\nnot correct: an item appended between keystrokes would sit at its natural\ntabindex and grow the group a SECOND Tab stop before any arrow is\npressed. The MutationObserver exists for that one job - re-stamping the\nroving tabindex the moment items enter or leave.\n\n**Values**: `orientation` (String, default: \"vertical\"); `loop` (Boolean, default: true); `manageTabindex` (Boolean, default: true)\n\n**Events**: `poetry--core--roving-focus:entry`",
+      "docstring": "The roving-tabindex engine: the group is ONE Tab stop -\nexactly one item holds tabindex=0, the rest -1, and arrow keys move focus\namong the collection items in DOM order. Orientation gates which arrows\nare live (horizontal flips Left/Right under RTL via the direction\nhelper); Home/End jump to the edges; loop wraps. Backs Tabs, Toolbar,\nRadioGroup, Menus, ToggleGroup, and the Select/Command list.\n\nDynamic items: NAVIGATION recomputes the collection on every keydown (the\nDOM is the registry - always fresh, zero bookkeeping), but that alone is\nnot correct: an item appended between keystrokes would sit at its natural\ntabindex and grow the group a SECOND Tab stop before any arrow is\npressed. The MutationObserver exists for that one job - re-stamping the\nroving tabindex the moment items enter or leave.\n\n**Values**: `orientation` (String, default: \"vertical\"); `loop` (Boolean, default: true); `manageTabindex` (Boolean, default: true)\n\n**Events**: `poetry--core--roving-focus:entry`",
       "examples": [],
       "file": "app/javascript/poetry/core/roving_focus_controller.js",
       "methods": [
@@ -6863,7 +6863,7 @@
       "path": "poetry--core--select",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Select listbox controller - the APG select-only combobox on the menus\nMACHINERY (popper markup-owned + focus-scope/dismissable/roving-focus\nactivated as layers + the shared typeahead helper) but deliberately NOT a\nmode of poetry--core--menu: everything menu-specific (submenus,\nclose_on_select, checkbox/radio aria-checked, edge-navigate, Tab-closes,\npointer-open-no-focus) is wrong for a listbox, and everything here is\ndead weight for menus.\n\nTHE SYNC INVARIANT (the component): native_select.value, the value Value,\naria-selected/data-selected on options, and the display text never diverge -\nevery write path (commit, closed-trigger typeahead, autofill adoption,\nprogrammatic setValue) funnels through #apply, which writes the NATIVE\nSELECT FIRST (serialization truth is never behind the facade), dispatches\nreal bubbling change/input on it (Turbo auto-submit and friends work\nunmodified), flips aria-selected + data-selected TOGETHER on every option,\nsyncs the value display from the option's item-text (data-text-value\noverride), toggles trigger[data-placeholder], then fires\npoetry:select:change.\n\nThe three Radix-parity deltas vs the menu family, all deliberate:\n- Tab while open is INERT (a value picker resolves by commit or Esc);\n- open focuses the SELECTED option for EVERY reason, pointer included;\n- typeahead on the CLOSED trigger COMMITS the match without opening\n  (native <select> parity), while open typeahead only moves focus.\n\n**Values**: `open` (Boolean, default: false); `value` (String, default: \"\"); `modal` (Boolean, default: true); `loop` (Boolean, default: false); `typeaheadTimeout` (Number, default: 1000); `alignItemWithTrigger` (Boolean, default: false)\n\n**Events**: `poetry:select:change`, `poetry:select:closed`, `poetry:select:open`, `poetry:select:select`",
+      "docstring": "The Select listbox controller - the APG select-only combobox on the menus\nMACHINERY (popper markup-owned + focus-scope/dismissable/roving-focus\nactivated as layers + the shared typeahead helper) but deliberately NOT a\nmode of poetry--core--menu: everything menu-specific (submenus,\nclose_on_select, checkbox/radio aria-checked, edge-navigate, Tab-closes,\npointer-open-no-focus) is wrong for a listbox, and everything here is\ndead weight for menus.\n\nTHE SYNC INVARIANT (the component): native_select.value, the value Value,\naria-selected/data-selected on options, and the display text never diverge -\nevery write path (commit, closed-trigger typeahead, autofill adoption,\nprogrammatic setValue) funnels through #apply, which writes the NATIVE\nSELECT FIRST (serialization truth is never behind the facade), dispatches\nreal bubbling change/input on it (Turbo auto-submit and friends work\nunmodified), flips aria-selected + data-selected TOGETHER on every option,\nsyncs the value display from the option's item-text (data-text-value\noverride), toggles trigger[data-placeholder], then fires\npoetry:select:change.\n\nThree deltas vs the menu family, all deliberate and contractual:\n- Tab while open is INERT (a value picker resolves by commit or Esc);\n- open focuses the SELECTED option for EVERY reason, pointer included;\n- typeahead on the CLOSED trigger COMMITS the match without opening\n  (native <select> behavior), while open typeahead only moves focus.\n\n**Values**: `open` (Boolean, default: false); `value` (String, default: \"\"); `modal` (Boolean, default: true); `loop` (Boolean, default: false); `typeaheadTimeout` (Number, default: 1000); `alignItemWithTrigger` (Boolean, default: false)\n\n**Events**: `poetry:select:change`, `poetry:select:closed`, `poetry:select:open`, `poetry:select:select`",
       "examples": [],
       "file": "app/javascript/poetry/core/select_controller.js",
       "methods": [
@@ -6948,7 +6948,7 @@
           "scope": "instance",
           "group": null,
           "signature": "triggerKeydown(event)",
-          "docstring": "The trigger's keydown action: Enter / Space / ArrowDown / ArrowUp\nopen and focus the SELECTED option (Radix: closed arrows never step\nthe value). A printable key on the CLOSED trigger commits the\ntypeahead match WITHOUT opening (native <select> parity - the full\ncommit pipeline minus open/close).",
+          "docstring": "The trigger's keydown action: Enter / Space / ArrowDown / ArrowUp\nopen and focus the SELECTED option (closed arrows never step\nthe value). A printable key on the CLOSED trigger commits the\ntypeahead match WITHOUT opening (native <select> behavior - the full\ncommit pipeline minus open/close).",
           "params": [
             {
               "name": "event",
@@ -7062,7 +7062,7 @@
           "scope": "instance",
           "group": null,
           "signature": "keydown(event)",
-          "docstring": "The content's keydown route (also wired programmatically): Enter and\nSpace commit the focused option (Space defers to a live typeahead),\nTab is INERT while open (a value picker resolves by commit or Esc -\nRadix Select-exact), Left/Right no-op (flat listbox), and printable\nkeys move focus via typeahead - selection never follows focus.",
+          "docstring": "The content's keydown route (also wired programmatically): Enter and\nSpace commit the focused option (Space defers to a live typeahead),\nTab is INERT while open (a value picker resolves by commit or Esc -\ncontractual), Left/Right no-op (flat listbox), and printable\nkeys move focus via typeahead - selection never follows focus.",
           "params": [
             {
               "name": "event",
@@ -7106,7 +7106,7 @@
           "scope": "instance",
           "group": null,
           "signature": "scrollHoldStart(event)",
-          "docstring": "The scroll buttons' pointerenter action: scrolls the viewport a few\npx per frame while hovered (the upstream hold-to-scroll).",
+          "docstring": "The scroll buttons' pointerenter action: scrolls the viewport a few\npx per frame while hovered (hold-to-scroll).",
           "params": [
             {
               "name": "event",
@@ -7140,7 +7140,7 @@
       "path": "poetry--core--sensitive-input",
       "type": "controller",
       "superclass": null,
-      "docstring": "The SensitiveInput machine (the kumo contract): a secret field in\nthree states - masked | revealed | empty - where data-state on the root\ncarries the truth and CSS renders it. Masked-with-value turns the MASK\nOVERLAY into the reveal affordance (role=button + label + sr-hint; only\ntext spans inside - a role on the surrounding group would trip axe\nnested-interactive around the inert input, the bug kumo ships unseen)\nwhile the real input stays rendered for layout but goes inert\n(aria-hidden, tabindex -1, readonly, transparent). Reveal: click\nanywhere on the group (mask clicks bubble) or Enter/Space on the mask,\nfocus moves into the input. Re-mask: Escape (focus returns to the mask\n- the input just lost its tab stop), leaving the component, or the eye.\nTyping into an empty field auto-reveals so composition happens in\ntype=text. The no-JS story is a plain password input.\n\n**Targets**: `hint`, `input`, `mask`, `toggle`\n\n**Values**: `maskedLabel` (String); `hiddenMessage` (String); `readOnly` (Boolean)\n\n**Events**: `poetry:sensitive-input:mask`, `poetry:sensitive-input:reveal`",
+      "docstring": "The SensitiveInput machine, adapted from an MIT-licensed source\n(source and license in THIRD_PARTY_NOTICES.md): a secret field in\nthree states - masked | revealed | empty - where data-state on the root\ncarries the truth and CSS renders it. Masked-with-value turns the MASK\nOVERLAY into the reveal affordance (role=button + label + sr-hint; only\ntext spans inside - a role on the surrounding group would trip axe\nnested-interactive around the inert input)\nwhile the real input stays rendered for layout but goes inert\n(aria-hidden, tabindex -1, readonly, transparent). Reveal: click\nanywhere on the group (mask clicks bubble) or Enter/Space on the mask,\nfocus moves into the input. Re-mask: Escape (focus returns to the mask\n- the input just lost its tab stop), leaving the component, or the eye.\nTyping into an empty field auto-reveals so composition happens in\ntype=text. The no-JS story is a plain password input.\n\n**Targets**: `hint`, `input`, `mask`, `toggle`\n\n**Values**: `maskedLabel` (String); `hiddenMessage` (String); `readOnly` (Boolean)\n\n**Events**: `poetry:sensitive-input:mask`, `poetry:sensitive-input:reveal`",
       "examples": [],
       "file": "app/javascript/poetry/core/sensitive_input_controller.js",
       "methods": [
@@ -7154,7 +7154,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/sensitive_input_controller.js",
-          "line": 38
+          "line": 39
         },
         {
           "name": "reveal",
@@ -7174,7 +7174,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/sensitive_input_controller.js",
-          "line": 50
+          "line": 51
         },
         {
           "name": "maskKeydown",
@@ -7194,7 +7194,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/sensitive_input_controller.js",
-          "line": 68
+          "line": 69
         },
         {
           "name": "inputKeydown",
@@ -7214,7 +7214,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/sensitive_input_controller.js",
-          "line": 83
+          "line": 84
         },
         {
           "name": "blurred",
@@ -7234,7 +7234,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/sensitive_input_controller.js",
-          "line": 99
+          "line": 100
         },
         {
           "name": "changed",
@@ -7246,7 +7246,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/sensitive_input_controller.js",
-          "line": 110
+          "line": 111
         },
         {
           "name": "toggle",
@@ -7266,7 +7266,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/sensitive_input_controller.js",
-          "line": 122
+          "line": 123
         }
       ],
       "constants": []
@@ -7298,7 +7298,7 @@
       "path": "poetry--core--sidebar",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Sidebar state machine (desktop plus the mobile mode): expand/collapse\ncoordination for the app shell. The COLLAPSE itself is pure CSS - the\npeer sidebar carries data-state=expanded|collapsed and the dictionary's\ngroup-data-[state=collapsed] classes do all the width/transform work;\nthis controller only flips that attribute (plus data-collapsible, which\nthe source sets to the mode WHILE collapsed and \"\" while expanded),\npersists the choice to a cookie (so the SERVER can read it and render\nthe right initial state - poetry's server-first angle), and binds the\nCmd/Ctrl+B shortcut.\n\nMOBILE (DOM-move): below md the trigger routes to a separate\nnever-persisted openMobile state (upstream parity - only desktop\ntoggles write the cookie). Opening ADOPTS the server-rendered nav\nchildren from the desktop inner into the mobile <dialog> (one render,\nno duplicate ids - the render-twice rejection) and shows it through the\nsheet presence path; closing holds through the slide-out, then moves\nthe children back. Crossing to desktop while open restores INSTANTLY.\nThe component-facing event namespace (the poetry:<component> rule).\n\n**Targets**: `inner`, `mobileDialog`, `mobileInner`, `sidebar`\n\n**Values**: `open` (Boolean, default: true); `collapsible` (String, default: \"offcanvas\"); `cookieName` (String, default: \"sidebar_state\"); `cookieMaxAge` (Number, default: 604800); `shortcut` (String, default: \"b\")\n\n**Events**: `poetry:sidebar:mobile-toggle`, `poetry:sidebar:toggle`",
+      "docstring": "The Sidebar state machine (desktop plus the mobile mode): expand/collapse\ncoordination for the app shell. The COLLAPSE itself is pure CSS - the\npeer sidebar carries data-state=expanded|collapsed and the dictionary's\ngroup-data-[state=collapsed] classes do all the width/transform work;\nthis controller only flips that attribute (plus data-collapsible, which\nthe source sets to the mode WHILE collapsed and \"\" while expanded),\npersists the choice to a cookie (so the SERVER can read it and render\nthe right initial state - poetry's server-first angle), and binds the\nCmd/Ctrl+B shortcut.\n\nMOBILE (DOM-move): below md the trigger routes to a separate\nnever-persisted openMobile state (only desktop\ntoggles write the cookie). Opening ADOPTS the server-rendered nav\nchildren from the desktop inner into the mobile <dialog> (one render,\nno duplicate ids - the render-twice rejection) and shows it through the\nsheet presence path; closing holds through the slide-out, then moves\nthe children back. Crossing to desktop while open restores INSTANTLY.\nThe component-facing event namespace (the poetry:<component> rule).\n\n**Targets**: `inner`, `mobileDialog`, `mobileInner`, `sidebar`\n\n**Values**: `open` (Boolean, default: true); `collapsible` (String, default: \"offcanvas\"); `cookieName` (String, default: \"sidebar_state\"); `cookieMaxAge` (Number, default: 604800); `shortcut` (String, default: \"b\")\n\n**Events**: `poetry:sidebar:mobile-toggle`, `poetry:sidebar:toggle`",
       "examples": [],
       "file": "app/javascript/poetry/core/sidebar_controller.js",
       "methods": [
@@ -7409,7 +7409,7 @@
       "path": "poetry--core--slider",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Slider machine - the only form control with real math. Three concerns,\nnothing else:\n\n1. THE VALUE MATH (the pure core, unit-tested exhaustively): snap to the\n   step grid with decimal-precision rounding (Radix's getDecimalCount\n   trick - a 0.1 grid lands on 0.3, never 0.30000000000000004), clamp to\n   [min, max], and clamp against neighbor thumbs +- the min gap\n   (minStepsBetweenThumbs * step) so range thumbs can never cross.\n\n2. TWO INPUT PATHS feeding it: the APG keyboard map per thumb (arrows\n   +-step, Shift+Arrow / PageUp / PageDown +-step*10, Home/End to the\n   thumb's EFFECTIVE min/max) with the orientation x RTL x inverted\n   resolution - horizontal RTL swaps Left/Right only, inverted flips the\n   whole axis, both compose (rtl + inverted = ltr math); and pointer\n   capture on the root - pointerdown jumps the NEAREST thumb (ties to the\n   later index, Radix-exact, so stacked thumbs stay separable), the track\n   box is read ONCE at pointerdown (no per-frame layout), pointermove\n   projects the value ABSOLUTELY from the pointer position (overshoot\n   past a neighbor clamps, never swaps), pointerup commits.\n\n3. THE DOM PROJECTION: aria-valuemin/max/now per role=slider thumb - the\n   range bounds are DYNAMIC (neighbor-clamped, rewritten on every\n   neighbor move: APG multithumb), the --slider-start/--slider-end\n   geometry vars consumed by the calc() rules, and one hidden native\n   input per thumb. poetry:slider:change fires per mutation; commit\n   (pointerup / each keydown - Radix onValueCommit parity) syncs the\n   hidden inputs + dispatches native input/change so Rails listeners get\n   one event per gesture, not per frame.\n\n**Targets**: `input`, `range`, `thumb`, `track`\n\n**Values**: `min` (Number, default: 0); `max` (Number, default: 100); `step` (Number, default: 1); `value` (Array, default: []); `minStepsBetweenThumbs` (Number, default: 0); `orientation` (String, default: \"horizontal\"); `inverted` (Boolean, default: false)\n\n**Events**: `poetry:slider:change`, `poetry:slider:commit`",
+      "docstring": "The Slider machine - the only form control with real math. Three concerns,\nnothing else:\n\n1. THE VALUE MATH (the pure core, unit-tested exhaustively): snap to the\n   step grid with decimal-precision rounding (a 0.1 grid lands on\n   0.3, never 0.30000000000000004), clamp to\n   [min, max], and clamp against neighbor thumbs +- the min gap\n   (minStepsBetweenThumbs * step) so range thumbs can never cross.\n\n2. TWO INPUT PATHS feeding it: the APG keyboard map per thumb (arrows\n   +-step, Shift+Arrow / PageUp / PageDown +-step*10, Home/End to the\n   thumb's EFFECTIVE min/max) with the orientation x RTL x inverted\n   resolution - horizontal RTL swaps Left/Right only, inverted flips the\n   whole axis, both compose (rtl + inverted = ltr math); and pointer\n   capture on the root - pointerdown jumps the NEAREST thumb (ties to\n   the later index, so stacked thumbs stay separable), the track\n   box is read ONCE at pointerdown (no per-frame layout), pointermove\n   projects the value ABSOLUTELY from the pointer position (overshoot\n   past a neighbor clamps, never swaps), pointerup commits.\n\n3. THE DOM PROJECTION: aria-valuemin/max/now per role=slider thumb - the\n   range bounds are DYNAMIC (neighbor-clamped, rewritten on every\n   neighbor move: APG multithumb), the --slider-start/--slider-end\n   geometry vars consumed by the calc() rules, and one hidden native\n   input per thumb. poetry:slider:change fires per mutation; commit\n   (pointerup / each keydown) syncs the\n   hidden inputs + dispatches native input/change so Rails listeners get\n   one event per gesture, not per frame.\n\n**Targets**: `input`, `range`, `thumb`, `track`\n\n**Values**: `min` (Number, default: 0); `max` (Number, default: 100); `step` (Number, default: 1); `value` (Array, default: []); `minStepsBetweenThumbs` (Number, default: 0); `orientation` (String, default: \"horizontal\"); `inverted` (Boolean, default: false)\n\n**Events**: `poetry:slider:change`, `poetry:slider:commit`",
       "examples": [],
       "file": "app/javascript/poetry/core/slider_controller.js",
       "methods": [
@@ -7462,7 +7462,7 @@
           "scope": "instance",
           "group": null,
           "signature": "keydown(event)",
-          "docstring": "Each thumb's keydown action: the APG map (arrows step, Shift/Page =\nlarge step, Home/End to the thumb's EFFECTIVE bounds) under the\norientation x RTL x inverted resolution; every change commits (Radix\nparity).",
+          "docstring": "Each thumb's keydown action: the APG map (arrows step, Shift/Page =\nlarge step, Home/End to the thumb's EFFECTIVE bounds) under the\norientation x RTL x inverted resolution; every keyboard change\ncommits.",
           "params": [
             {
               "name": "event",
@@ -7524,7 +7524,7 @@
       "path": "poetry--core--state",
       "type": "controller",
       "superclass": null,
-      "docstring": "The controllable-state controller (Tier 0): seeds the data-open/\ndata-closed pair from a Value default when no other layer owns it, and\nexposes toggle/open/close actions. \"Controlled vs uncontrolled\" is just which layer wrote the\nattribute - a server re-render, the URL, an Outlet, or this default -\nthe controller code is identical either way.\n\nOptional reflection targets (the Collapsible contract): a trigger\ntarget mirrors aria-expanded; a content target rides the presence\nhelper (the pair flip deferred through animationend, hidden applied\nonly after the exit animation finishes).\n\n**Targets**: `content`, `trigger`\n\n**Values**: `state` (String, default: \"closed\")",
+      "docstring": "The controllable-state controller: seeds the data-open/\ndata-closed pair from a Value default when no other layer owns it, and\nexposes toggle/open/close actions. \"Controlled vs uncontrolled\" is just which layer wrote the\nattribute - a server re-render, the URL, an Outlet, or this default -\nthe controller code is identical either way.\n\nOptional reflection targets (the Collapsible contract): a trigger\ntarget mirrors aria-expanded; a content target rides the presence\nhelper (the pair flip deferred through animationend, hidden applied\nonly after the exit animation finishes).\n\n**Targets**: `content`, `trigger`\n\n**Values**: `state` (String, default: \"closed\")",
       "examples": [],
       "file": "app/javascript/poetry/core/state_controller.js",
       "methods": [
@@ -7690,7 +7690,7 @@
       "path": "poetry--core--tabs",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Tabs activation machine: this controller owns ONLY the\nactive-value state + attribute writes; the shared poetry--core--roving-focus\non the tablist owns the keyboard (default tabindex-managing mode - one Tab\nstop). Triggers are DUMB buttons (click -> tabs#activate; with automatic\nactivation - the APG default for tabs - focusin activates too, so arrow\nkeys both move focus AND switch panels).\n\nThe Base UI vocabulary: the active trigger carries data-active\n(the styled token) + aria-selected; inactive panels carry the hidden\nproperty + data-hidden. data-activation-direction is deliberately NOT\nemitted - no shipped class consumes it (add it with the animated\nindicator, when something does).\n\nPanels are scoped to THIS root (a nested Tabs inside a panel owns its own\ntriggers/panels - the DOM is the registry, same rule as roving-focus).\n\n**Values**: `activateOnFocus` (Boolean, default: true)\n\n**Events**: `poetry:tabs:change`",
+      "docstring": "The Tabs activation machine: this controller owns ONLY the\nactive-value state + attribute writes; the shared poetry--core--roving-focus\non the tablist owns the keyboard (default tabindex-managing mode - one Tab\nstop). Triggers are DUMB buttons (click -> tabs#activate; with automatic\nactivation - the APG default for tabs - focusin activates too, so arrow\nkeys both move focus AND switch panels).\n\nThe state vocabulary: the active trigger carries data-active\n(the styled token) + aria-selected; inactive panels carry the hidden\nproperty + data-hidden. data-activation-direction is deliberately NOT\nemitted - no shipped class consumes it (add it with the animated\nindicator, when something does).\n\nPanels are scoped to THIS root (a nested Tabs inside a panel owns its own\ntriggers/panels - the DOM is the registry, same rule as roving-focus).\n\n**Values**: `activateOnFocus` (Boolean, default: true)\n\n**Events**: `poetry:tabs:change`",
       "examples": [],
       "file": "app/javascript/poetry/core/tabs_controller.js",
       "methods": [
@@ -7848,7 +7848,7 @@
       "path": "poetry--core--toast",
       "type": "controller",
       "superclass": null,
-      "docstring": "One toast item (poetry's own Toast - the stacked-toaster genre on\nRadix-Toast a11y semantics). The item is role=status aria-live=off: it\nnever announces itself - on connect it speaks ONCE through the\nannounce singleton at its politeness (destructive -> assertive,\nwired server-side via the\npoliteness value). The auto-dismiss timer follows APG/WCAG 2.2.1 timing:\nit PAUSES on hover, focus-within, window blur and tab-hidden (reasons are\nrefcounted so overlapping pauses cannot resume early), and duration <= 0\nmeans persistent (required for undo/action toasts). Dismiss flips\ndata-open -> data-closed, dispatches poetry:toast:dismiss {id, reason} (the\ntoaster's reflow + focus-return seam), then presence holds the node until\nits exit animation finishes before removal.\n\nSwipe-to-dismiss is a browser-verification-GATED enhancement (contract) -\nit does not ship in this pass; the swipe reason is reserved.\n\n**Targets**: `action`, `close`\n\n**Values**: `duration` (Number, default: 5000); `politeness` (String, default: \"polite\")\n\n**Events**: `poetry:toast:dismiss`, `poetry:toast:show`",
+      "docstring": "One toast item (poetry's own Toast - the stacked-toaster genre with\nstrict a11y semantics). The item is role=status aria-live=off: it\nnever announces itself - on connect it speaks ONCE through the\nannounce singleton at its politeness (destructive -> assertive,\nwired server-side via the\npoliteness value). The auto-dismiss timer follows APG/WCAG 2.2.1 timing:\nit PAUSES on hover, focus-within, window blur and tab-hidden (reasons are\nrefcounted so overlapping pauses cannot resume early), and duration <= 0\nmeans persistent (required for undo/action toasts). Dismiss flips\ndata-open -> data-closed, dispatches poetry:toast:dismiss {id, reason} (the\ntoaster's reflow + focus-return seam), then presence holds the node until\nits exit animation finishes before removal.\n\nSwipe-to-dismiss is a browser-verification-GATED enhancement (contract) -\nit does not ship in this pass; the swipe reason is reserved.\n\n**Targets**: `action`, `close`\n\n**Values**: `duration` (Number, default: 5000); `politeness` (String, default: \"polite\")\n\n**Events**: `poetry:toast:dismiss`, `poetry:toast:show`",
       "examples": [],
       "file": "app/javascript/poetry/core/toast_controller.js",
       "methods": [
@@ -7921,7 +7921,7 @@
           "scope": "instance",
           "group": null,
           "signature": "dismiss(eventOrReason)",
-          "docstring": "Dismisses the toast. Reasons: timeout | close-press | action |\nswipe(reserved) | manual. close-press is Base UI vocabulary;\ntimeout/action/queued/manual are poetry extensions (Base UI has no\nequivalents). A click on the action slot reports \"action\"; the close\nbutton \"close-press\". The dismiss event goes out BEFORE removal (the\ntoaster's reflow + focus-return seam); presence then holds the node\nthrough its exit animation.",
+          "docstring": "Dismisses the toast. Reasons: timeout | close-press | action |\nswipe(reserved) | manual - the family reason vocabulary plus\npoetry's own timeout/action/queued/manual extensions. A click on the\naction slot reports \"action\"; the close\nbutton \"close-press\". The dismiss event goes out BEFORE removal (the\ntoaster's reflow + focus-return seam); presence then holds the node\nthrough its exit animation.",
           "params": [
             {
               "name": "[eventOrReason]",
@@ -8033,7 +8033,7 @@
       "path": "poetry--core--toggle-group",
       "type": "controller",
       "superclass": null,
-      "docstring": "The ToggleGroup value-set machine (the Accordion composition, second\nconsumer): this controller owns ONLY the pressed-values set + attribute\nwrites; the shared poetry--core--roving-focus on the same root owns the\nkeyboard (default tabindex-managing mode - one Tab stop). Items are DUMB\nbuttons (data-action -> group#toggle; poetry--core--pressed is NOT\nattached in group context - one owner, no event soup).\n\nThe source-verified role/vocabulary split, enforced here: type=single is\nRADIO semantics - items carry aria-checked (aria-pressed stripped) and\nre-pressing the sole pressed item deselects to EMPTY (Radix setValue(''));\ntype=multiple is toolbar semantics - independent aria-pressed items. The\ncontroller reads type once and never mixes vocabularies; the bare\ndata-pressed presence boolean styles both types identically (Toggle's\nclasses just work).\n\nAfter every transition the PRESSED item becomes the roving tab stop\n(Radix active=pressed: re-entering the group lands on the selection) -\nwritten directly as the tabindex stamp roving-focus adopts.\n\n**Values**: `type` (String, default: \"single\")\n\n**Events**: `poetry:toggle-group:change`",
+      "docstring": "The ToggleGroup value-set machine (the Accordion composition, second\nconsumer): this controller owns ONLY the pressed-values set + attribute\nwrites; the shared poetry--core--roving-focus on the same root owns the\nkeyboard (default tabindex-managing mode - one Tab stop). Items are DUMB\nbuttons (data-action -> group#toggle; poetry--core--pressed is NOT\nattached in group context - one owner, no event soup).\n\nThe role/vocabulary split, enforced here: type=single is\nRADIO semantics - items carry aria-checked (aria-pressed stripped) and\nre-pressing the sole pressed item deselects to EMPTY;\ntype=multiple is toolbar semantics - independent aria-pressed items. The\ncontroller reads type once and never mixes vocabularies; the bare\ndata-pressed presence boolean styles both types identically (Toggle's\nclasses just work).\n\nAfter every transition the PRESSED item becomes the roving tab stop\n(re-entering the group lands on the selection) -\nwritten directly as the tabindex stamp roving-focus adopts.\n\n**Values**: `type` (String, default: \"single\")\n\n**Events**: `poetry:toggle-group:change`",
       "examples": [],
       "file": "app/javascript/poetry/core/toggle_group_controller.js",
       "methods": [
@@ -8096,7 +8096,7 @@
       "path": "poetry--core--tooltip",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Tooltip controller (the popper-consumer trio's timing machine): open\nDELAYS (provider delay_duration, shadcn default 0), the provider-scoped\nWARM grace (one tooltip open - or closed less than skip_delay_duration ms\nago - lets siblings in the same provider scope open instantly), ONE OPEN\nGLOBALLY (the document-level will-open event, Radix's tooltip.open port),\nclose-on-scroll, and the pointer-vs-focus open paths with their latches.\n\nA11y is the strictest of the trio: the content is role=tooltip and the\ntrigger's aria-describedby is set on open and REMOVED on close\n(describedby must never reference hidden content); focus-scope is NOT\ncomposed at all - focus never enters a tooltip; touch NEVER opens one\n(no long-press path, Radix-exact). Esc rides a token-activated\ndismissable layer while open, so a tooltip above a Dialog peels first.\n\nTHE WARM REGISTRY (the provider mechanism): a module-level WeakMap keyed\nby the [data-slot=tooltip-provider] ancestor (document fallback) holding\n{openCount, warmUntil}. The DOM ancestor IS Radix's React context; the\nWeakMap lets morphed/replaced providers garbage-collect (no Turbo leaks).\n\n**Values**: `open` (Boolean, default: false); `delayDuration` (Number, default: -1); `disableHoverableContent` (Boolean, default: false)\n\n**Events**: `poetry:tooltip:closed`, `poetry:tooltip:open`",
+      "docstring": "The Tooltip controller (the popper-consumer trio's timing machine): open\nDELAYS (provider delay_duration, default 0), the provider-scoped\nWARM grace (one tooltip open - or closed less than skip_delay_duration ms\nago - lets siblings in the same provider scope open instantly), ONE OPEN\nGLOBALLY (the document-level will-open event),\nclose-on-scroll, and the pointer-vs-focus open paths with their latches.\n\nA11y is the strictest of the trio: the content is role=tooltip and the\ntrigger's aria-describedby is set on open and REMOVED on close\n(describedby must never reference hidden content); focus-scope is NOT\ncomposed at all - focus never enters a tooltip; touch NEVER opens one\n(no long-press path, deliberately). Esc rides a token-activated\ndismissable layer while open, so a tooltip above a Dialog peels first.\n\nTHE WARM REGISTRY (the provider mechanism): a module-level WeakMap keyed\nby the [data-slot=tooltip-provider] ancestor (document fallback) holding\n{openCount, warmUntil}. The DOM ancestor IS the provider scope; the\nWeakMap lets morphed/replaced providers garbage-collect (no Turbo leaks).\n\n**Values**: `open` (Boolean, default: false); `delayDuration` (Number, default: -1); `disableHoverableContent` (Boolean, default: false)\n\n**Events**: `poetry:tooltip:closed`, `poetry:tooltip:open`",
       "examples": [],
       "file": "app/javascript/poetry/core/tooltip_controller.js",
       "methods": [
@@ -8149,7 +8149,7 @@
           "scope": "instance",
           "group": null,
           "signature": "pointerMove(event)",
-          "docstring": "The trigger's pointermove action (not pointerenter - Radix): opens\nonce per hover via the latch - instantly when the provider scope is\nwarm, else after the delay; touch pointerType is EXCLUDED entirely.",
+          "docstring": "The trigger's pointermove action (not pointerenter, deliberately):\nopens\nonce per hover via the latch - instantly when the provider scope is\nwarm, else after the delay; touch pointerType is EXCLUDED entirely.",
           "params": [
             {
               "name": "event",
@@ -8162,7 +8162,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tooltip_controller.js",
-          "line": 158
+          "line": 159
         },
         {
           "name": "pointerLeave",
@@ -8182,19 +8182,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tooltip_controller.js",
-          "line": 193
+          "line": 194
         },
         {
           "name": "pointerDown",
           "scope": "instance",
           "group": null,
           "signature": "pointerDown()",
-          "docstring": "The trigger's pointerdown action: activating the control dismisses\nits hint; the latch also suppresses the focus-open until pointerup\n(pointer users never get a focus-opened tooltip - Radix-exact).",
+          "docstring": "The trigger's pointerdown action: activating the control dismisses\nits hint; the latch also suppresses the focus-open until pointerup\n(pointer users never get a focus-opened tooltip - contractual).",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tooltip_controller.js",
-          "line": 212
+          "line": 213
         },
         {
           "name": "clickClose",
@@ -8206,7 +8206,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tooltip_controller.js",
-          "line": 221
+          "line": 222
         },
         {
           "name": "focusOpen",
@@ -8218,7 +8218,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tooltip_controller.js",
-          "line": 233
+          "line": 234
         },
         {
           "name": "blurClose",
@@ -8230,7 +8230,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tooltip_controller.js",
-          "line": 241
+          "line": 242
         }
       ],
       "constants": []
