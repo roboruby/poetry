@@ -3,7 +3,7 @@ import { tabbableWithin } from "@poetry/controllers/helpers/tabbable"
 import { ensureFocusGuards, removeFocusGuards } from "@poetry/controllers/helpers/focus_guards"
 import { logicallyContains } from "@poetry/controllers/helpers/portal"
 
-// The overlay focus scope (Tier 2, P2): traps Tab/Shift+Tab within the
+// The overlay focus scope: traps Tab/Shift+Tab within the
 // subtree, loops at the edges, and - the part to get exact - snapshots
 // document.activeElement on connect and RESTORES it on disconnect (focus
 // return). Backs Dialog-family overlays, Popover, Menus, Select, Command.
@@ -18,8 +18,8 @@ export default class FocusScopeController extends Controller {
   ]
 
   // Nested scopes: only the TOP scope has live listeners. Opening a child
-  // pauses the parent; closing it resumes the parent (Radix's module-level
-  // stack, verbatim - class-level here so it is shared and inspectable).
+  // pauses the parent; closing it resumes the parent (one shared stack -
+  // class-level so it is inspectable).
   static stack = []
 
   static values = {
@@ -115,7 +115,7 @@ export default class FocusScopeController extends Controller {
   }
 
   // Tab at the EDGES only: wrap under loop, hard-stop under trapped. A
-  // mid-list Tab is the browser's job (Radix intervenes the same way).
+  // mid-list Tab is the browser's job - only the edges need help.
   #handleKeydown(event) {
     if (event.key !== "Tab") return
     // A Tab mid-IME-composition commits the candidate text, it does not

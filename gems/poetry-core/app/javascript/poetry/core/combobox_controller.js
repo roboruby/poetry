@@ -41,7 +41,7 @@ import { tabbableWithin } from "@poetry/controllers/helpers/tabbable"
 // behind the facade), with real bubbling change/input on the native so
 // Turbo auto-submit and form listeners work unmodified.
 //
-// MULTIPLE (Base UI's multiple + input-inside layout): the value is a
+// MULTIPLE (the input-inside layout): the value is a
 // LIST (the value Value carries a JSON array over the same String seam),
 // the native is a <select multiple> posting name[], and the trigger is
 // replaced by the chips FIELD - one chip per committed value IN VALUE
@@ -90,7 +90,7 @@ export default class ComboboxController extends Controller {
     // DEFAULT FALSE - Popover semantics (Tab-out closes, no scrim); true
     // restores the focus-scope trap for dialog-critical pickers.
     modal: { type: Boolean, default: false },
-    // Base UI multiple: the value is a LIST, the trigger is the chips
+    // multiple: the value is a LIST, the trigger is the chips
     // field, selection toggles, the popup stays open on select.
     multiple: { type: Boolean, default: false }
   }
@@ -252,8 +252,8 @@ export default class ComboboxController extends Controller {
 
   /**
    * The chips frame's pointerdown action (multiple): a press anywhere in
-   * the FRAME focuses the input and opens the popup (Base UI: the whole
-   * frame is the field) - except a chip-remove press, which is a removal,
+   * the FRAME focuses the input and opens the popup (the whole frame IS
+   * the field) - except a chip-remove press, which is a removal,
    * never a chips-area press.
    *
    * @param {PointerEvent} event
@@ -279,7 +279,7 @@ export default class ComboboxController extends Controller {
    * (focus stays here), ArrowLeft at caret 0 walks into the chips,
    * ArrowDown/Up reopen the popup, Enter with no highlight closes, and
    * Escape on the CLOSED popup clears the query AND wipes the selection
-   * to [] (Base UI-exact; readOnly blocks every mutation).
+   * to [] (contractual; readOnly blocks every mutation).
    *
    * @param {KeyboardEvent} event
    */
@@ -331,7 +331,7 @@ export default class ComboboxController extends Controller {
   }
 
   /**
-   * A focused chip's keyboard map (Base UI): Left/Right walk the chips
+   * A focused chip's keyboard map: Left/Right walk the chips
    * (off either end -> back to the input), Backspace/Delete remove (next
    * highlight: same index, step back at the tail, the input once
    * emptied), Enter/Space are no-ops returning to the input, ArrowDown/Up
@@ -412,7 +412,7 @@ export default class ComboboxController extends Controller {
 
   /**
    * The show_clear X's click action - the trigger-side deselection
-   * surface (Base UI Combobox.Clear): commits the blank value through the
+   * surface: commits the blank value through the
    * pipeline, then hands focus to the trigger (the X hides itself once
    * the value empties, and a focused hidden button would drop focus to
    * body). Single mode only (the component raises on multiple; the guard
@@ -579,13 +579,13 @@ export default class ComboboxController extends Controller {
       onRemove: () => {
         this.#cancelExit = null
         content.hidden = true
-        // Home AFTER the exit finished and hidden landed (D4); focus
+        // Home AFTER the exit finished and hidden landed; focus
         // return is focus-scope's ref-based job, indifferent to the move.
         restoreContent(content)
         this.element.setAttribute(POPPER_STRATEGY, "fixed")
         this.#removeControllers(content, CONTENT_LAYER_CONTROLLERS)
-        // Reset the query so reopen starts clean (the React demo got this
-        // from remounting; persistent DOM does it deliberately).
+        // Reset the query so reopen starts clean (a remount would get
+        // this for free; persistent DOM does it deliberately).
         this.#command()?.reset()
         this.dispatch("closed", { prefix: EVENT_PREFIX, detail: { reason } })
       }
@@ -599,7 +599,7 @@ export default class ComboboxController extends Controller {
   // vetoing keeps the popup open. Committing the already-selected value is
   // IDEMPOTENT: close, value unchanged, no change events (deselection is a
   // form affordance - include_blank - not a hidden toggle gesture).
-  // multiple INVERTS both rules (Base UI): selection TOGGLES membership
+  // multiple INVERTS both rules: selection TOGGLES membership
   // (appended at the array END) and the popup STAYS OPEN; a typed query
   // clears immediately so the full list is restored for the next pick.
   #onCommandSelect = (event) => {
@@ -774,7 +774,7 @@ export default class ComboboxController extends Controller {
       }
     }
 
-    // role=toolbar rides the frame ONLY while it holds chips (Base UI);
+    // role=toolbar rides the frame ONLY while it holds chips;
     // an empty selection wears the data-placeholder styling hook instead.
     if (values.length > 0) chips.setAttribute("role", "toolbar")
     else chips.removeAttribute("role")
@@ -844,7 +844,7 @@ export default class ComboboxController extends Controller {
   // popup would proceed from body's end, not from the combobox - close
   // (unchanged) and place focus where the un-portaled DOM would have
   // landed it: the trigger on Shift+Tab, the next tabbable after it on
-  // Tab (the reference combobox rule). Multiple mode's typing surface is the
+  // Tab (the un-portaled tab-order rule). Multiple mode's typing surface is the
   // chips input at HOME, so its Tab-out proceeds naturally, untouched.
   #onKeydown = (event) => {
     if (event.key !== "Tab" || this.modalValue || !this.#isOpen()) return
@@ -980,7 +980,7 @@ export default class ComboboxController extends Controller {
   }
 
   #input() {
-    // multiple: the ONE input lives inline in the chips frame (Base UI's
+    // multiple: the ONE input lives inline in the chips frame (the
     // input-inside layout); single keeps it in the popup.
     return this.#content()?.querySelector(INPUT_SELECTOR) ??
       this.#chips()?.querySelector(INPUT_SELECTOR) ?? null
@@ -995,7 +995,7 @@ export default class ComboboxController extends Controller {
   }
 
   // The open-state carrier: the trigger button (single) or the inline
-  // input (multiple - Base UI stamps aria-expanded/data-popup-open there).
+  // input (multiple stamps aria-expanded/data-popup-open there).
   #expander() {
     return this.#trigger() ?? (this.multipleValue ? this.#input() : null)
   }

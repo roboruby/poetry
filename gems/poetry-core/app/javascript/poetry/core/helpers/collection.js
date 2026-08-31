@@ -1,6 +1,6 @@
-// The DOM is the registry (Tier 1): collection items are read from the
-// document in DOM order - no client-side bookkeeping (the Radix
-// `collection` primitive collapses to a query).
+// The DOM is the registry: collection items are read from the document
+// in DOM order - no client-side bookkeeping, no registration step; a
+// membership question is always a fresh query.
 
 /** The attribute marking an element as a collection item. */
 export const COLLECTION_ITEM_SELECTOR = "[data-poetry-collection-item]"

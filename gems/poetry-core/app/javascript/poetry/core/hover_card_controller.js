@@ -5,15 +5,15 @@ import { setState, stateOf } from "@poetry/controllers/helpers/state"
 import { tabbableWithin } from "@poetry/controllers/helpers/tabbable"
 
 // The HoverCard controller (the popper-consumer trio's thinnest machine):
-// pointer-only enrichment behind a LINK. Two timers (open 600 / close 300,
-// Base UI PreviewCard's OPEN_DELAY/CLOSE_DELAY, over the trigger+content
+// pointer-only enrichment behind a LINK. Two timers (open 600 / close
+// 300, over the trigger+content
 // pair, re-enter cancels - the grace window, no polygon), the touch double-guard
 // (pointerType 'touch' no-ops AND touchstart preventDefaults so a tap can
 // never synthesize a focus-open - a tap just navigates the link), the focus
 // mirror (trigger focus opens immediately / blur closes - a keyboard user
 // SEES the card), the per-open TABINDEX STRIP (every tabbable inside is
 // forced tabindex=-1: keyboard and touch users never reach inside,
-// Radix-exact and intentional - the reachable-elsewhere rule), and the
+// intentional and contractual - the reachable-elsewhere rule), and the
 // SELECTION HOLD (text selection started in the card keeps it open and
 // suppresses body user-select while dragging, so previews are copyable).
 //
@@ -112,7 +112,7 @@ export default class HoverCardController extends Controller {
 
   /**
    * The trigger's pointerenter action: arms the open timer; touch
-   * pointerType is EXCLUDED (Radix excludeTouch) - a tap navigates the
+   * pointerType is EXCLUDED - a tap navigates the
    * link instead.
    *
    * @param {PointerEvent} event
@@ -150,8 +150,8 @@ export default class HoverCardController extends Controller {
   }
 
   /**
-   * The trigger's focus action: opens IMMEDIATELY (Radix composes onFocus
-   * straight to open) - a keyboard user sees the preview even though they
+   * The trigger's focus action: opens IMMEDIATELY, skipping the timers -
+   * a keyboard user sees the preview even though they
    * cannot enter it.
    */
   focusOpen() {
@@ -164,14 +164,14 @@ export default class HoverCardController extends Controller {
     this.#clearOpenTimer()
 
     // Blur closes immediately - the selection hold defers only the
-    // pointer-leave path. Base UI's blur-close reason: trigger-focus.
+    // pointer-leave path. The close reason for the focus path: trigger-focus.
     if (this.#isOpen()) this.#hide("trigger-focus")
   }
 
   /**
    * The trigger's touchstart action - the touch guard: preventDefault so
-   * a tap can never synthesize a focus event (Radix's 'prevent focus
-   * event on touch devices' comment, ported). The tap still navigates the
+   * a tap can never synthesize a focus event (a focus-opened card on
+   * touch would be unreachable). The tap still navigates the
    * link.
    *
    * @param {TouchEvent} event
@@ -232,7 +232,7 @@ export default class HoverCardController extends Controller {
       onRemove: () => {
         this.#cancelExit = null
         content.hidden = true
-        // Home AFTER the exit finished and hidden landed (D4).
+        // Home AFTER the exit finished and hidden landed.
         restoreContent(content)
         this.element.setAttribute(POPPER_STRATEGY, "fixed")
         this.#removeControllers(content, [DISMISSABLE])
@@ -264,7 +264,7 @@ export default class HoverCardController extends Controller {
     this.#addControllers(content, [DISMISSABLE])
   }
 
-  // The tabindex strip (Radix-exact, per-open so stream-appended content
+  // The tabindex strip (contractual; per-open so stream-appended content
   // re-strips on the next open): the card is sighted-pointer-only BY
   // DESIGN - Tab passes straight over its contents. The shared tabbable
   // walk already skips disabled/hidden/-1 elements.
@@ -338,7 +338,8 @@ export default class HoverCardController extends Controller {
     this.#hide(escaped ? "escape-key" : "outside-press")
   }
 
-  // --- the selection hold (Radix's containSelection/hasSelection, ported) ---
+  // --- the selection hold (adapted - source and license in
+  //     THIRD_PARTY_NOTICES.md) ---
 
   // pointerdown ON the content: suppress body user-select (webkit prefix
   // included) so the drag selects only card text; pointerup restores it

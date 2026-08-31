@@ -81,8 +81,8 @@ export function filterLabel(item) {
 }
 
 /**
- * data-keywords: whitespace-separated extra filter terms (the upstream
- * keywords prop as a data attribute).
+ * data-keywords: whitespace-separated extra filter terms an item may
+ * carry beyond its visible label.
  *
  * @param {Element} item
  * @returns {string[]}

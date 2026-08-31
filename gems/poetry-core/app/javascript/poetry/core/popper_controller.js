@@ -11,26 +11,26 @@ import {
   size
 } from "@poetry/controllers/vendor/floating_ui_dom"
 
-// The anchored-positioning primitive (Tier 2, P4): Radix's popper as one
-// controller over the VENDORED @floating-ui/dom. Same middleware pipeline in
-// Radix's order - offset -> shift -> flip (both gated on avoidCollisions, as
-// in Radix) -> size -> arrow (when an arrow target exists) -> hide - and the
-// same output contract: data-side / data-align mirror the RESOLVED placement
-// (after flip), and the content gets the Base UI CSS vars
+// The anchored-positioning primitive: one
+// controller over the VENDORED @floating-ui/dom. A fixed middleware
+// pipeline - offset -> shift -> flip (both gated on avoidCollisions)
+// -> size -> arrow (when an arrow target exists) -> hide - and a fixed
+// output contract: data-side / data-align mirror the RESOLVED placement
+// (after flip), and the content gets the sizing CSS vars
 // (--transform-origin / -available-width / -available-height /
 // -anchor-width / -anchor-height) so ported Tailwind classes like
 // data-[side=top]:slide-in-from-bottom-2 and
 // max-h-[var(--available-height)] work unchanged.
 //
-// The Arrow stays a markup primitive (Tier 4): any [data-slot=popper-arrow]
+// The Arrow stays a markup primitive: any [data-slot=popper-arrow]
 // marked as the arrow target is positioned + given data-side here; the SVG
 // itself is poetry-ui's business.
 //
 // VIRTUAL-ANCHOR mode (the ContextMenu contract): a non-empty anchorPoint
 // value - canonically the data-poetry--core--popper-anchor-point="x,y"
 // attribute on the controller root (the DOM is the store) - floats against a
-// floating-ui VirtualElement: a zero-size rect at (x,y) client coords,
-// Radix's virtualRef verbatim. The resolved ELEMENT anchor rides along as
+// floating-ui VirtualElement: a zero-size rect at (x,y) client coords.
+// The resolved ELEMENT anchor rides along as
 // contextElement so autoUpdate still tracks ancestor scroll/resize.
 // setAnchor(x, y) is the ergonomics wrapper ContextMenu calls from its
 // contextmenu / long-press handlers; clearing the value returns to plain
@@ -45,7 +45,7 @@ const ALIGNS = ["start", "center", "end"]
 // where the content was placed.
 const OPPOSITE_SIDE = { top: "bottom", right: "left", bottom: "top", left: "right" }
 
-// Radix's arrow rotation table: the arrow component points down by default;
+// The arrow rotation table: the arrow component points down by default;
 // these transforms swing it toward the anchor for each resolved side.
 const ARROW_TRANSFORM = {
   top: "translateY(100%)",
@@ -150,7 +150,7 @@ export default class PopperController extends Controller {
   }
 
   /**
-   * The NavigationMenu viewport entry point (D3): floats against a
+   * The NavigationMenu viewport entry point: floats against a
    * caller-supplied element (the active trigger) instead of a
    * target/selector. Re-arms autoUpdate so the new reference's ancestors
    * are tracked, then repositions - the positioner's inset transition
@@ -259,8 +259,8 @@ export default class PopperController extends Controller {
     if (arrowElement) this.#positionArrow(arrowElement, side, middlewareData)
   }
 
-  // Radix PopperContent's pipeline, verbatim order. offset folds the arrow's
-  // height into the main axis exactly as Radix does, so the gap accounts for
+  // The pipeline order is contractual. offset folds the arrow's
+  // height into the main axis, so the gap accounts for
   // the arrow between anchor and content.
   #middleware(arrowElement) {
     const { height: arrowHeight } = this.#arrowSize(arrowElement)
@@ -276,8 +276,8 @@ export default class PopperController extends Controller {
     middleware.push(
       size({
         apply: ({ elements, rects, availableWidth, availableHeight }) => {
-          // The Base UI sizing vars, written from inside the pipeline so
-          // they reflect post-flip geometry (as in Radix's size.apply).
+          // The sizing vars, written from inside the pipeline so
+          // they reflect post-flip geometry.
           const style = elements.floating.style
 
           style.setProperty("--available-width", `${availableWidth}px`)
@@ -302,7 +302,7 @@ export default class PopperController extends Controller {
     return align === "center" ? side : `${side}-${align}`
   }
 
-  // Radix's transformOrigin middleware, applied post-compute: the origin sits
+  // The transform-origin rule, applied post-compute: the origin sits
   // on the anchor-facing edge, at the arrow's center when there is an arrow,
   // else at the resolved align fraction.
   #transformOrigin({ side, align, content, arrowElement, middlewareData }) {
@@ -339,7 +339,7 @@ export default class PopperController extends Controller {
     arrowElement.style.left = x != null ? `${x}px` : ""
     arrowElement.style.top = y != null ? `${y}px` : ""
     // Pin the arrow to the content's anchor-facing edge, then rotate it to
-    // point at the anchor (Radix's table); data-side is ALSO written so
+    // point at the anchor (the table above); data-side is ALSO written so
     // ported CSS can restyle per side.
     arrowElement.style[OPPOSITE_SIDE[side]] = "0"
     arrowElement.style.transformOrigin = ARROW_TRANSFORM_ORIGIN[side]

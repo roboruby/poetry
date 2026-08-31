@@ -69,7 +69,7 @@ export default class extends Controller {
     for (const clear of [...this.#transitions.values()]) clear()
   }
 
-  // Base UI trigger parity for the server-rendered state (the #open/#close
+  // Trigger reflection for the server-rendered state (the #open/#close
   // paths carry it during interaction; this seeds it at connect so an
   // already-open item's trigger isn't missing data-panel-open until first
   // toggled).
@@ -85,7 +85,7 @@ export default class extends Controller {
     const trigger = this.#triggerOf(item)
     setState(item, "open")
     trigger?.setAttribute("aria-expanded", "true")
-    if (trigger) setState(trigger, "panel-open") // Base UI trigger parity (data-panel-open)
+    if (trigger) setState(trigger, "panel-open") // the trigger wears its panel's state (data-panel-open)
     if (!panel) return
     panel.hidden = false
     measurePresence(panel, { property: "--accordion-panel-height" })

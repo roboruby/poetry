@@ -10,7 +10,7 @@ import { setState, stateOf } from "@poetry/controllers/helpers/state"
 // trigger toggles a role=dialog panel, focus MOVES INTO the content on open
 // (focus-scope's mount default - deliberately NOT vetoed, the contrast with
 // the menu family's data-open-reason contract) and RETURNS to the trigger on
-// close; the trap is enforced only when modal (Radix Popover defaults
+// close; the trap is enforced only when modal (the default is
 // modal: FALSE - the deliberate contrast with the menu family's true).
 //
 // STRUCTURAL RESOLUTION, no targets: the content is found via the trigger's
@@ -24,7 +24,7 @@ import { setState, stateOf } from "@poetry/controllers/helpers/state"
 // swallow topmost-Esc), with trapped / disable-outside-pointer-events both
 // set from modal. Close reverses: presence exit -> hidden -> tokens removed
 // -> focus-scope's disconnect restores focus to the trigger (suppressed for
-// outside-press when non-modal: focus follows the click, Radix semantics).
+// outside-press when non-modal: focus follows the click).
 const TRIGGER_SELECTOR = '[data-slot="popover-trigger"]'
 
 const EVENT_PREFIX = "poetry:popover"
@@ -125,7 +125,7 @@ export default class PopoverController extends Controller {
   /**
    * Programmatically closes.
    *
-   * @param {string | Event} [reason="none"] - a Base UI reason string; an
+   * @param {string | Event} [reason="none"] - a family reason string; an
    *   Event (data-action use) reads as "none"
    */
   close(reason = "none") {
@@ -175,7 +175,7 @@ export default class PopoverController extends Controller {
     if (!content || !this.#isOpen()) return
 
     // Focus return to the trigger is focus-scope's disconnect job - vetoed
-    // for outside interaction on a non-modal popover (Radix's non-modal
+    // for outside interaction on a non-modal popover (non-modal
     // semantics: focus follows the click).
     this.#suppressRestore = reason === "outside-press" && !this.modalValue
 
@@ -189,7 +189,7 @@ export default class PopoverController extends Controller {
       onRemove: () => {
         this.#cancelExit = null
         content.hidden = true
-        // Home AFTER the exit finished and hidden landed (D4); the
+        // Home AFTER the exit finished and hidden landed; the
         // focus-scope teardown below restores focus by element ref,
         // indifferent to where the node sits.
         restoreContent(content)
@@ -228,7 +228,7 @@ export default class PopoverController extends Controller {
   // A press on the popover's OWN trigger is the toggle's job, not an
   // outside dismissal: without this veto the pointerdown closes and the
   // trailing click re-opens, so the popover appears to never close on
-  // trigger press (Radix's targetIsTrigger rule; iOS light-dismiss
+  // trigger press (the trigger-is-not-outside rule; iOS light-dismiss
   // double-fires arrive through the same seam and are covered by it).
   #onInteractOutside = (event) => {
     if (event.target !== this.#content()) return

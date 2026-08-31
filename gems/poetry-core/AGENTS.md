@@ -94,6 +94,11 @@ files against the manifest stamped at last bless.
   Because the events scan reads RAW SOURCE, no comment anywhere in a
   controller may quote a dispatch call or its option tokens - name events
   in prose instead ("dispatches poetry:select:change").
+- Comments carry poetry's rules, never other libraries' names or
+  anonymous "upstream" comparisons - attribution lives in
+  THIRD_PARTY_NOTICES.md alone, and adapted files carry the generic
+  pointer sentence. test/javascript/comment_scrub.test.js enforces the
+  names ban over comment text.
 - Subclasses (Drawer extends Dialog) get their statics merged up the class
   chain by the manifest — declare only what the subclass itself adds.
 - Component DOM ids derive through `Poetry::Core::StableId` (`key:` →

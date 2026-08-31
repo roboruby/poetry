@@ -2,12 +2,13 @@ import { Controller } from "@hotwired/stimulus"
 import { announce } from "@poetry/controllers/helpers/announce"
 import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 
-// The SensitiveInput machine (the kumo contract): a secret field in
+// The SensitiveInput machine, adapted from an MIT-licensed source
+// (source and license in THIRD_PARTY_NOTICES.md): a secret field in
 // three states - masked | revealed | empty - where data-state on the root
 // carries the truth and CSS renders it. Masked-with-value turns the MASK
 // OVERLAY into the reveal affordance (role=button + label + sr-hint; only
 // text spans inside - a role on the surrounding group would trip axe
-// nested-interactive around the inert input, the bug kumo ships unseen)
+// nested-interactive around the inert input)
 // while the real input stays rendered for layout but goes inert
 // (aria-hidden, tabindex -1, readonly, transparent). Reveal: click
 // anywhere on the group (mask clicks bubble) or Enter/Space on the mask,
@@ -52,7 +53,7 @@ export default class SensitiveInputController extends Controller {
     // The addon cell holds its own actions (copy/eye) - their clicks
     // bubble here and must never reveal.
     if (event.target instanceof Element && event.target.closest("[data-slot=input-group-addon]")) return
-    // Synthetic label-click guard (kumo's coordinate check): a <label for=>
+    // Synthetic label-click guard (the coordinate check): a <label for=>
     // click re-dispatches on the input with no gesture behind it.
     if (event.detail === 0 && event.clientX === 0 && event.clientY === 0) return
 

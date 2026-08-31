@@ -6,8 +6,8 @@ import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presenc
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 import { createTypeahead } from "@poetry/controllers/helpers/typeahead"
 
-// The menus-family controller (the DropdownMenu contract's ANCHOR - Radix's
-// one @radix-ui/react-menu behind DropdownMenu / ContextMenu / Menubar).
+// The menus-family controller (the DropdownMenu contract's ANCHOR - ONE
+// menu engine behind DropdownMenu / ContextMenu / Menubar).
 // This owns ONLY what is menu-specific: open/close with the data-open-reason
 // initial-focus contract, item activation (the cancelable poetry:menu:select),
 // checkbox/radio state (poetry:menu:change), the APG typeahead buffer,
@@ -34,7 +34,7 @@ import { createTypeahead } from "@poetry/controllers/helpers/typeahead"
 // -> hidden -> tokens removed -> focus-scope's disconnect restores focus to
 // the trigger. Each open sub level adds its own dismissable layer (the
 // close-one-level-at-a-time Esc chain for free) + its own roving group; subs
-// join the ROOT focus scope (no nested traps - Radix-exact).
+// join the ROOT focus scope (no nested traps, contractual).
 // Both family spellings resolve: dropdown-menu-* / context-menu-* share the
 // "menu-" suffix; menubar-* is its own word (menubar-item does NOT end with
 // "menu-item"), so every part selector carries the pair.
@@ -428,8 +428,8 @@ export default class MenuController extends Controller {
 
     this.#typeahead.reset()
     // Focus return to the trigger is focus-scope's disconnect job - vetoed
-    // for Tab-out and for outside interaction on a non-modal menu (Radix's
-    // non-modal semantics: focus follows the click).
+    // for Tab-out and for outside interaction on a non-modal menu
+    // (non-modal semantics: focus follows the click).
     this.#suppressRestore = !restoreFocus || (reason === "outside-press" && !this.modalValue)
 
     const trigger = this.#trigger()
@@ -444,7 +444,7 @@ export default class MenuController extends Controller {
       onRemove: () => {
         this.#cancelExit = null
         content.hidden = true
-        // Home AFTER the exit finished and hidden landed (D4); focus
+        // Home AFTER the exit finished and hidden landed; focus
         // return is focus-scope's ref-based job, indifferent to the move.
         restoreContent(content)
         this.#setStrategy(content, "fixed")
@@ -465,7 +465,7 @@ export default class MenuController extends Controller {
   }
 
   // Initial focus per the family data-open-reason contract: trigger-press ->
-  // the content itself (roving arms on the first arrow - Radix parity);
+  // the content itself (roving arms on the first arrow);
   // list-navigation seeds via data-open-seed: "first" / "last" -> first /
   // last enabled item.
   #applyInitialFocus(content, seed) {
@@ -503,7 +503,7 @@ export default class MenuController extends Controller {
       })
     }
 
-    // The cancelable select (Radix's onSelect + preventDefault as an event):
+    // The cancelable select (veto by preventDefault):
     // a canceled select keeps the menu open.
     const select = this.dispatch("select", {
       prefix: EVENT_PREFIX,
@@ -625,8 +625,8 @@ export default class MenuController extends Controller {
 
       // Portal the sub level like the root: left
       // absolute INSIDE the content it is clipped by the menu's own
-      // overflow-y-auto scroller - the flyout opens invisible (upstream
-      // portals every sub level for the same reason). Native events no
+      // overflow-y-auto scroller - the flyout opens invisible (every sub
+      // level must escape that clip). Native events no
       // longer bubble through the root content from the container, so the
       // delegated listeners ride the portaled node too - the bridge
       // carries only poetry events home.
@@ -675,7 +675,7 @@ export default class MenuController extends Controller {
       exitPresence(subContent, {
         onRemove: () => {
           subContent.hidden = true
-          // Home AFTER the exit finished and hidden landed (D4).
+          // Home AFTER the exit finished and hidden landed.
           restoreContent(subContent)
           subContent.style.pointerEvents = ""
           this.#portaledSubs.delete(subContent)
@@ -867,7 +867,7 @@ export default class MenuController extends Controller {
     this.#pointerHighlight(item, event, menu)
   }
 
-  // Focus follows the pointer (Base UI/Radix menu semantics): the themes
+  // Focus follows the pointer (menu semantics): the themes
   // style item highlight through focus: alone - no :hover rule - so hover
   // highlight IS this focus move. A disabled item clears the highlight
   // instead (the menu takes focus back), and touch pointers never
@@ -902,7 +902,7 @@ export default class MenuController extends Controller {
     }
 
     // Leaving a plain item for blank space hands focus back to its menu so
-    // the hover highlight clears (Radix parity). Item-to-item travel skips
+    // the hover highlight clears. Item-to-item travel skips
     // this - the entering item's pointerover refocuses anyway - and an open
     // sub-trigger keeps its data-popup-open styling regardless.
     const item = target.closest(ITEM_SELECTOR)
@@ -927,7 +927,7 @@ export default class MenuController extends Controller {
   // Menus are roving-focus's DEFAULT mode: vertical, manageTabindex TRUE
   // (items tabindex=-1, real focus roves - the mode Accordion's
   // focus-nav-only flag contrasted against). loop forwards the menu value
-  // (Radix Menu default false).
+  // (default false).
   #wireRoving(element) {
     element.setAttribute(`data-${ROVING}-orientation-value`, "vertical")
     element.setAttribute(`data-${ROVING}-manage-tabindex-value`, "true")

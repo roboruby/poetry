@@ -17,8 +17,8 @@ import { scoreItem } from "@poetry/controllers/helpers/filter_rank"
 // and it is HIDE-ONLY: score-0 items get hidden + data-hidden, matches get
 // both removed, and children are NEVER reordered - DOM order is the
 // ranking authority within a band; the score's only job is seating the
-// auto-highlight. filter:false is the server-driven mode (upstream
-// shouldFilter parity): steps 1-2 (hiding) are skipped entirely and only
+// auto-highlight. filter:false is the server-driven mode: steps 1-2
+// (hiding) are skipped entirely and only
 // highlight/activation/announcement run over whatever the server rendered
 // - the Turbo-frame async seam Combobox's recipe plugs into.
 //
@@ -34,7 +34,7 @@ import { scoreItem } from "@poetry/controllers/helpers/filter_rank"
 // aria-activedescendant, group visibility derived - a Turbo Stream can
 // append items mid-session and the next keystroke ranks them.
 // Each part matches both families' vocabularies: Command's own names and the
-// combobox's (the source's names for the same parts; the engine rides both).
+// combobox's (two names for the same parts; the engine rides both).
 const INPUT_SELECTOR = '[data-slot="command-input"], [data-slot="combobox-input"], [data-slot="combobox-chip-input"]'
 const LIST_SELECTOR = '[data-slot="command-list"], [data-slot="combobox-list"]'
 const ITEM_SELECTOR = '[data-slot="command-item"], [data-slot="combobox-item"]'
@@ -48,7 +48,7 @@ const EVENT_PREFIX = "poetry:command"
 
 // The status live region is ALWAYS debounced (keystroke bursts announce
 // once) - activedescendant says WHERE you are, the count says HOW MANY
-// remain (the upstream a11y gap this component closes).
+// remain (the count is the piece filter UIs usually leave silent).
 const STATUS_DEBOUNCE = 100
 
 export default class CommandController extends Controller {
@@ -57,11 +57,11 @@ export default class CommandController extends Controller {
   static events = ["poetry:command:filter", "poetry:command:highlight", "poetry:command:select"]
 
   static values = {
-    // false = SERVER-DRIVEN mode (upstream shouldFilter=false): never hide -
+    // false = SERVER-DRIVEN mode: never hide -
     // the host re-renders the list (Turbo frame) and Command only runs
     // highlight/activation/announcement over what is rendered.
     filter: { type: Boolean, default: true },
-    // Arrow-key wrap over visible enabled items (upstream parity: false).
+    // Arrow-key wrap over visible enabled items.
     loop: { type: Boolean, default: false },
     // Filter-pass debounce in ms (0 = synchronous - client filtering is
     // cheap string work; the status announcement is debounced separately).
@@ -171,8 +171,8 @@ export default class CommandController extends Controller {
    * The input's keydown action: ArrowUp/Down move the highlight
    * (Meta/Ctrl jumps first/last), Enter activates it.
    * Home/End/ArrowLeft/ArrowRight fall through to the input (CARET
-   * movement - APG-correct for an editable field; the upstream Home/End
-   * list-hijack is deliberately not ported). Space TYPES a space, never
+   * movement - APG-correct for an editable field; a Home/End list-jump
+   * is deliberately not offered). Space TYPES a space, never
    * activates (a text field - the family delta vs Select/menus). Esc/Tab
    * are NOT handled - the hosting layer owns them (Dialog dismiss /
    * Combobox close / natural tab-out).
@@ -192,7 +192,7 @@ export default class CommandController extends Controller {
         const down = event.key === "ArrowDown"
 
         if (event.metaKey || event.ctrlKey) {
-          // Meta/Ctrl+ArrowDown/Up jump last / first (upstream parity).
+          // Meta/Ctrl+ArrowDown/Up jump last / first.
           this.#highlight(items[down ? items.length - 1 : 0])
           return
         }
@@ -247,10 +247,9 @@ export default class CommandController extends Controller {
   // --- pointer highlight (item pointermove action) ---
 
   /**
-   * Each in-scope item's pointermove action - pointer parity with the
-   * upstream palette: hovering highlights (no scroll chasing);
-   * pointerleave does NOT clear - the keyboard position survives mouse
-   * exit (upstream-exact).
+   * Each in-scope item's pointermove action: hovering highlights (no
+   * scroll chasing); pointerleave does NOT clear - the keyboard position
+   * survives mouse exit (contractual).
    *
    * @param {PointerEvent} event
    */
@@ -298,7 +297,7 @@ export default class CommandController extends Controller {
   // 1. score every collection item; client mode hides score-0 (unless
   //    data-always-render) via hidden + data-hidden - NEVER reorders.
   // 2. groups hide when ALL their items hide; separators hide whenever
-  //    the query is non-empty (upstream parity). Skipped in filter:false.
+  //    the query is non-empty. Skipped in filter:false.
   // 3. re-seat the highlight: highest score among visible ∩ enabled,
   //    first-in-DOM tiebreak; zero visible clears both twin-writes and
   //    unhides the empty part.

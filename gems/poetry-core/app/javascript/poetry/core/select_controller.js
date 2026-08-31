@@ -24,11 +24,11 @@ import { createTypeahead, typeaheadLabel } from "@poetry/controllers/helpers/typ
 // override), toggles trigger[data-placeholder], then fires
 // poetry:select:change.
 //
-// The three Radix-parity deltas vs the menu family, all deliberate:
+// Three deltas vs the menu family, all deliberate and contractual:
 // - Tab while open is INERT (a value picker resolves by commit or Esc);
 // - open focuses the SELECTED option for EVERY reason, pointer included;
 // - typeahead on the CLOSED trigger COMMITS the match without opening
-//   (native <select> parity), while open typeahead only moves focus.
+//   (native <select> behavior), while open typeahead only moves focus.
 const TRIGGER_SELECTOR = '[data-slot="select-trigger"]'
 const ITEM_SELECTOR = '[data-slot="select-item"]'
 const ITEM_TEXT_SELECTOR = '[data-slot="select-item-text"]'
@@ -185,9 +185,9 @@ export default class SelectController extends Controller {
 
   /**
    * The trigger's keydown action: Enter / Space / ArrowDown / ArrowUp
-   * open and focus the SELECTED option (Radix: closed arrows never step
+   * open and focus the SELECTED option (closed arrows never step
    * the value). A printable key on the CLOSED trigger commits the
-   * typeahead match WITHOUT opening (native <select> parity - the full
+   * typeahead match WITHOUT opening (native <select> behavior - the full
    * commit pipeline minus open/close).
    *
    * @param {KeyboardEvent} event
@@ -273,7 +273,7 @@ export default class SelectController extends Controller {
    * The content's keydown route (also wired programmatically): Enter and
    * Space commit the focused option (Space defers to a live typeahead),
    * Tab is INERT while open (a value picker resolves by commit or Esc -
-   * Radix Select-exact), Left/Right no-op (flat listbox), and printable
+   * contractual), Left/Right no-op (flat listbox), and printable
    * keys move focus via typeahead - selection never follows focus.
    *
    * @param {KeyboardEvent} event
@@ -288,7 +288,7 @@ export default class SelectController extends Controller {
     switch (event.key) {
       case "Tab":
         // THE delta vs the menu family: Tab is INERT while open - a value
-        // picker resolves by commit or Esc (Radix Select-exact).
+        // picker resolves by commit or Esc (contractual).
         event.preventDefault()
         event.stopImmediatePropagation()
         return
@@ -353,7 +353,7 @@ export default class SelectController extends Controller {
 
   /**
    * The scroll buttons' pointerenter action: scrolls the viewport a few
-   * px per frame while hovered (the upstream hold-to-scroll).
+   * px per frame while hovered (hold-to-scroll).
    *
    * @param {PointerEvent} event
    */
@@ -400,8 +400,8 @@ export default class SelectController extends Controller {
     // enter presence (reparenting mid-animation restarts it), re-anchor
     // absolute - static under compositor scroll, transform-immune. In
     // aligned mode the content fixed-positions ITSELF (viewport coords,
-    // location-independent - the math was already written to Base UI's
-    // body-portal frame) and popper's writes stay bailed either way.
+    // location-independent - the math is written in viewport
+    // coordinates) and popper's writes stay bailed either way.
     portalContent(content, { container: resolvePortalContainer(this.element) })
     this.element.setAttribute(POPPER_STRATEGY, "absolute")
 
@@ -430,8 +430,7 @@ export default class SelectController extends Controller {
     })
   }
 
-  // --- alignItemWithTrigger (the Base UI SelectPopup algorithm,
-  // ported from SelectPositioner/SelectPopup) ---
+  // --- alignItemWithTrigger (the native-select-feel placement) ---
   //
   // The popup opens OVER the trigger with the selected item's TEXT center
   // aligned to the trigger's value-text center (native <select> feel): the
@@ -439,9 +438,9 @@ export default class SelectController extends Controller {
   // when the selection sits deep in a long list) and the LIST SCROLLS so
   // the item lands on the trigger. Not a popper placement: the content is
   // fixed-positioned by this routine and popper's writes are suppressed by
-  // the data-align-item-with-trigger attribute (its #update bails). Base UI
-  // deltas kept: touch environments fall back (openMethod!=='touch'
-  // approximated by pointer:coarse), trigger within 20px of a viewport
+  // the data-align-item-with-trigger attribute (its #update bails). The
+  // fallback rules: touch environments fall back (approximated by
+  // pointer:coarse), trigger within 20px of a viewport
   // edge falls back, a popup squeezed under min(scrollHeight, 100px) falls
   // back - all to plain popper positioning for THAT open. Skipped
   // deliberately: WebKit pinch-zoom detection and scale normalization.
@@ -477,7 +476,7 @@ export default class SelectController extends Controller {
 
     if (!selected) return false
 
-    // Aligned mode ships NO entrance (Base UI renderedSide "none"), and
+    // Aligned mode ships NO entrance animation, and
     // measuring demands it: the presence starting-style is a STATIC
     // transform (scale) that animation/transition suppression cannot
     // remove - it distorts every rect read this routine makes (caught
@@ -537,8 +536,9 @@ export default class SelectController extends Controller {
       return false
     }
 
-    // The dictionary's cn-select-viewport consumes these (shadcn/Radix
-    // parity vars) - aligned mode is what they exist for.
+    // The dictionary's cn-select-viewport consumes these (the --radix-*
+    // names are a compatibility surface for ported CSS) - aligned mode
+    // is what they exist for.
     content.style.setProperty("--radix-select-trigger-height", `${triggerRect.height}px`)
     content.style.setProperty("--radix-select-trigger-width", `${triggerRect.width}px`)
 
@@ -550,7 +550,7 @@ export default class SelectController extends Controller {
 
     if (scrollTop >= maxScrollTop - 1) {
       // Selection deep in the list: anchor to the top edge instead and pin
-      // the list at its end (Base UI's top-positioned branch).
+      // the list at its end (the top-anchored branch).
       const topOffset = Math.max(0, viewportHeight - idealHeight)
       height = Math.min(viewportHeight, contentRect.height) - (scrollTop - maxScrollTop)
       content.style.top = `${contentRect.height >= viewportHeight - marginTop ? 0 : topOffset}px`
@@ -564,8 +564,8 @@ export default class SelectController extends Controller {
       scroller.scrollTop = scrollTop
     }
 
-    // Second pass: Base UI portals its positioner to <body>, so fixed
-    // coordinates ARE viewport coordinates. poetry keeps the content in
+    // Second pass: the placement math assumes fixed coordinates ARE
+    // viewport coordinates. poetry keeps the content in
     // place, so a transformed/filtered ancestor becomes the fixed
     // containing block and every coordinate above lands shifted by that
     // box's offset (caught live: a docs example frame put the item 112px
@@ -627,7 +627,7 @@ export default class SelectController extends Controller {
       onRemove: () => {
         this.#cancelExit = null
         content.hidden = true
-        // Home AFTER the exit finished and hidden landed (D4); focus
+        // Home AFTER the exit finished and hidden landed; focus
         // return is focus-scope's ref-based job, indifferent to the move.
         restoreContent(content)
         this.element.setAttribute(POPPER_STRATEGY, "fixed")
@@ -638,7 +638,7 @@ export default class SelectController extends Controller {
   }
 
   // Initial focus: the SELECTED option for EVERY reason, pointer included
-  // (Radix Select parity - the listbox exists to show you where you are);
+  // (the listbox exists to show you where you are);
   // first enabled option when the value is empty.
   #focusSelected(content) {
     const items = this.#enabledItems(content)
@@ -761,8 +761,8 @@ export default class SelectController extends Controller {
     this.#listen(content, "poetry--core--focus-scope:unmount-auto-focus", this.#onUnmountAutoFocus)
   }
 
-  // Focus follows the pointer (the menu family's hover-highlight rule,
-  // Radix Select-exact): themes style option highlight through focus:
+  // Focus follows the pointer (the menu family's hover-highlight rule):
+  // themes style option highlight through focus:
   // alone, so hover highlight IS this focus move. Disabled options clear
   // it; touch pointers never hover-highlight.
   #onPointerover = (event) => {

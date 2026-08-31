@@ -1,8 +1,8 @@
 import { setState } from "@poetry/controllers/helpers/state"
 import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
 
-// Presence (P3): the mount/unmount animation convention - a helper, not a
-// controller (per the primitive catalogue). Exit flips the pair to
+// Presence: the mount/unmount animation convention - a helper, not a
+// controller (no element ownership here). Exit flips the pair to
 // data-closed and HOLDS the node in the DOM until its CSS exit animation /
 // transition finishes, then hands removal back to the caller via onRemove
 // (this module never removes DOM); enter just flips the pair to data-open
@@ -72,7 +72,7 @@ export function measurePresence(element, { property = "--poetry-presence-height"
 /**
  * Runs the entry: flips the pair to data-open (through setState, so the
  * state-change event fires) wearing data-starting-style for exactly one
- * painted frame after the flip (the Base UI two-frame trick), so CSS
+ * painted frame after the flip (the two-frame trick below), so CSS
  * transitions can animate FROM the starting declarations. No poetry class
  * consumes the attribute yet - it ships so a future theme layer can adopt
  * the transition idiom without touching JS.
@@ -126,7 +126,7 @@ export function enterPresence(element, { measure = false, property } = {}) {
 export function exitPresence(element, { onRemove, measure = false, property } = {}) {
   if (measure) measurePresence(element, { property })
 
-  // The Base UI exit hook: data-ending-style rides the whole exit
+  // The exit-window hook: data-ending-style rides the whole exit
   // and leaves with the node's removal (or an interrupting re-open).
   element.setAttribute("data-ending-style", "")
   setState(element, "closed")
@@ -164,7 +164,7 @@ export function exitPresence(element, { onRemove, measure = false, property } = 
   timeout = window.setTimeout(settle, exitTimeoutFor(element))
   pendingExits.add(flush)
 
-  // getAnimations().finished is the Base UI end-detection: it resolves for
+  // getAnimations().finished is the robust end-detection: it resolves for
   // transitions AND keyframes symmetrically and needs no duration math.
   // Kept ALONGSIDE the listener+timeout paths - jsdom and the dommy tier
   // don't implement getAnimations, and settle() is idempotent.

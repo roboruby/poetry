@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
 
-// The controllable-state controller (Tier 0): seeds the data-open/
+// The controllable-state controller: seeds the data-open/
 // data-closed pair from a Value default when no other layer owns it, and
 // exposes toggle/open/close actions. "Controlled vs uncontrolled" is just which layer wrote the
 // attribute - a server re-render, the URL, an Outlet, or this default -
@@ -72,7 +72,7 @@ export default class extends Controller {
     const open = state === "open"
     if (this.hasTriggerTarget) {
       this.triggerTarget.setAttribute("aria-expanded", String(open))
-      // Base UI disclosure-trigger parity: the trigger wears bare
+      // Disclosure-trigger reflection: the trigger wears bare
       // data-panel-open while its panel is open (no CSS consumes it yet -
       // the aria-expanded selector styles the chevron).
       setState(this.triggerTarget, open ? "panel-open" : "panel-closed")

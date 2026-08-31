@@ -3,7 +3,7 @@ import { onEscapeKeydown } from "@poetry/controllers/helpers/escape"
 import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
 import { flushPendingExits } from "@poetry/controllers/helpers/presence"
 
-// The dismissal layer (Tier 2, P2): Escape + pointerdown-outside for every
+// The dismissal layer: Escape + pointerdown-outside for every
 // overlay. This controller NEVER removes DOM - it dispatches "dismiss" and
 // the consumer closes itself (removes the node, collapses a disclosure,
 // navigates a frame). The class-level stack makes Esc topmost-only, so
@@ -100,7 +100,7 @@ export default class DismissableController extends Controller {
     this.#dismiss(event)
   }
 
-  // pointerdown, not click: dismissal happens on press (Radix), so a drag
+  // pointerdown, not click: dismissal happens on press, so a drag
   // that starts inside can never end up counting as outside.
   #handlePointerdown(event) {
     // A target already unhooked from the document (a Turbo morph or an

@@ -38,9 +38,10 @@ const USER_SCROLL_KEYS = new Set([
   " " // Space key.
 ])
 
-// The chat-transcript scroller (the centerpiece of the Gen-UI surface): a
-// verbatim port of shadcn's message-scroller 4-mode machine - the React
-// context tree collapsed into ONE controller, refs become instance fields,
+// The chat-transcript scroller (the centerpiece of the Gen-UI surface),
+// adapted from an MIT-licensed source (source and license in
+// THIRD_PARTY_NOTICES.md) - a component-tree state machine collapsed
+// into ONE controller: refs become instance fields,
 // useSyncExternalStore stores become data-* attributes + dispatched events
 // (the DOM is the store), and registerMessage is DELETED: the
 // MutationObserver + data-message-id in DOM order IS registration. Rows are
@@ -48,7 +49,7 @@ const USER_SCROLL_KEYS = new Set([
 // difference). Geometry lives in helpers/scroller_geometry - pure, tested.
 //
 // Modes (mirrored to data-mode on the root, a poetry addition - a
-// value-carrying attribute like Base UI's data-swipe-direction; the mode
+// value-carrying attribute (like data-swipe-direction); the mode
 // set is not part of the presence-pair vocabulary):
 //   following-bottom    autoScroll pinned to the latest message
 //   free-scrolling      reader scrolled away; position left alone
@@ -145,7 +146,7 @@ export default class extends Controller {
       }
     }
 
-    // Mount pass (the source's layout effect): counts rows, applies
+    // Mount pass: counts rows, applies
     // defaultScrollPosition once, commits scrollable state.
     this.#handleContentChange()
 
@@ -161,8 +162,8 @@ export default class extends Controller {
   disconnect() {
     // Cancel and NULL every frame/timer id - a stale non-null id after a
     // Turbo cache restore / morph reconnect makes the scheduler think a
-    // frame is still pending and never reschedule (the source's StrictMode
-    // cleanup, verbatim).
+    // frame is still pending and never reschedule - so teardown nulls,
+    // never merely cancels.
     this.started = false
 
     if (this.stateFrame !== null) {
@@ -199,8 +200,8 @@ export default class extends Controller {
   }
 
   /**
-   * Stimulus value callback (source: a defaultScrollPosition prop change
-   * re-arms the one-shot apply).
+   * Stimulus value callback: a defaultScrollPosition change re-arms the
+   * one-shot apply.
    */
   defaultScrollPositionValueChanged() {
     if (!this.started) return
@@ -208,8 +209,7 @@ export default class extends Controller {
   }
 
   /**
-   * Stimulus value callback (source: the autoScroll layout effect) -
-   * re-pin if we were following.
+   * Stimulus value callback: re-pin if we were following.
    */
   autoScrollValueChanged() {
     if (!this.started) return

@@ -61,7 +61,7 @@ export default class CarouselController extends Controller {
   }
 
   /**
-   * The region root's keydown action (the upstream wrapper contract):
+   * The region root's keydown action:
    * arrows page the carousel, orientation-aware.
    *
    * @param {KeyboardEvent} event
@@ -146,8 +146,8 @@ export default class CarouselController extends Controller {
     this.dispatch("select", { prefix: EVENT_PREFIX, detail: { index } })
   }
 
-  // Embla trims snap points the scroller cannot reach (containScroll);
-  // native scroll keeps them, so next must ALSO disable at max scroll -
+  // Snap points the scroller cannot reach still exist under native
+  // scroll, so next must ALSO disable at max scroll -
   // otherwise trailing slides that cannot start-align (multi-visible
   // layouts) leave a live button that does nothing. Math.abs keeps the
   // check RTL-safe (scrollLeft runs negative there).

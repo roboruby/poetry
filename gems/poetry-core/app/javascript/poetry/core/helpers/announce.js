@@ -1,7 +1,8 @@
-// The announce SINGLETON (P5): shared screen-reader live regions - a plain
+// The announce SINGLETON: shared screen-reader live regions - a plain
 // module, not a controller. Injecting a node that IS a live region is
-// unreliably announced across SR/browser pairs (the Radix Toast insight),
-// so consumers keep their own nodes aria-live=off and route announcements
+// unreliably announced across SR/browser pairs (the region must exist
+// BEFORE its text changes), so consumers keep their own nodes
+// aria-live=off and route announcements
 // through here: TWO lazily-created sr-only regions on body (polite +
 // assertive), refcounted via acquire()/release() (regions removed when the
 // last consumer releases; consumers: Toast, async form status, Combobox
@@ -22,7 +23,7 @@
 const QUEUE_GAP = 150
 
 // Safari drops messages announced right after a live region is INSERTED
-// (reference implementations wait ~100ms post-creation; a WebKit
+// (~100ms of post-creation warmup is required in practice; a WebKit
 // behavior, not a spec timing) - a fresh region holds its queue until
 // this warmup elapses. The clear-then-set rAF alone (~one frame) is
 // shorter than Safari needs.

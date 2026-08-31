@@ -5,8 +5,8 @@ import { directionOf } from "@poetry/controllers/helpers/direction"
 // nothing else:
 //
 // 1. THE VALUE MATH (the pure core, unit-tested exhaustively): snap to the
-//    step grid with decimal-precision rounding (Radix's getDecimalCount
-//    trick - a 0.1 grid lands on 0.3, never 0.30000000000000004), clamp to
+//    step grid with decimal-precision rounding (a 0.1 grid lands on
+//    0.3, never 0.30000000000000004), clamp to
 //    [min, max], and clamp against neighbor thumbs +- the min gap
 //    (minStepsBetweenThumbs * step) so range thumbs can never cross.
 //
@@ -15,8 +15,8 @@ import { directionOf } from "@poetry/controllers/helpers/direction"
 //    thumb's EFFECTIVE min/max) with the orientation x RTL x inverted
 //    resolution - horizontal RTL swaps Left/Right only, inverted flips the
 //    whole axis, both compose (rtl + inverted = ltr math); and pointer
-//    capture on the root - pointerdown jumps the NEAREST thumb (ties to the
-//    later index, Radix-exact, so stacked thumbs stay separable), the track
+//    capture on the root - pointerdown jumps the NEAREST thumb (ties to
+//    the later index, so stacked thumbs stay separable), the track
 //    box is read ONCE at pointerdown (no per-frame layout), pointermove
 //    projects the value ABSOLUTELY from the pointer position (overshoot
 //    past a neighbor clamps, never swaps), pointerup commits.
@@ -26,7 +26,7 @@ import { directionOf } from "@poetry/controllers/helpers/direction"
 //    neighbor move: APG multithumb), the --slider-start/--slider-end
 //    geometry vars consumed by the calc() rules, and one hidden native
 //    input per thumb. poetry:slider:change fires per mutation; commit
-//    (pointerup / each keydown - Radix onValueCommit parity) syncs the
+//    (pointerup / each keydown) syncs the
 //    hidden inputs + dispatches native input/change so Rails listeners get
 //    one event per gesture, not per frame.
 const LARGE_STEP_MULTIPLIER = 10
@@ -93,8 +93,8 @@ export default class SliderController extends Controller {
   /**
    * Each thumb's keydown action: the APG map (arrows step, Shift/Page =
    * large step, Home/End to the thumb's EFFECTIVE bounds) under the
-   * orientation x RTL x inverted resolution; every change commits (Radix
-   * parity).
+   * orientation x RTL x inverted resolution; every keyboard change
+   * commits.
    *
    * @param {KeyboardEvent} event
    */
@@ -113,7 +113,7 @@ export default class SliderController extends Controller {
 
     const changed = this.#update(index, candidate)
 
-    if (changed) this.#commit() // Radix-exact: keyboard commits per keydown
+    if (changed) this.#commit() // keyboard commits per keydown, contractual
   }
 
   // The APG map with the orientation x RTL x inverted resolution.
@@ -241,7 +241,7 @@ export default class SliderController extends Controller {
     return this.minValue + ratio * (this.maxValue - this.minValue)
   }
 
-  // Nearest thumb; ties resolve to the LATER index (Radix-exact - two
+  // Nearest thumb; ties resolve to the LATER index (contractual - two
   // thumbs stacked at min can both be picked up).
   #nearestThumb(value) {
     let nearest = 0
@@ -293,8 +293,8 @@ export default class SliderController extends Controller {
     return true
   }
 
-  // Snap to the step grid anchored at min, with decimal-precision rounding
-  // (Radix getDecimalCount/roundValue): count the step's decimals, round to
+  // Snap to the step grid anchored at min, with decimal-precision
+  // rounding: count the step's decimals, round to
   // that precision - floating-point accumulation never reaches the DOM.
   #snap(value) {
     const steps = Math.round((value - this.minValue) / this.stepValue)

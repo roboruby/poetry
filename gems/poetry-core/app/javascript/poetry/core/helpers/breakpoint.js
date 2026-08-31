@@ -1,5 +1,5 @@
-// The mobile breakpoint: shadcn's use-mobile hook as a helper -
-// matchMedia below Tailwind's md (768px), with a change listener. The
+// The mobile breakpoint: matchMedia below Tailwind's md (768px), with a
+// change listener. The
 // first poetry consumer is the Sidebar's mobile-Sheet mode. Environments
 // without matchMedia (the dommy QuickJS engine, bare jsdom) report
 // DESKTOP - the server-rendered desktop shell is the safe default.

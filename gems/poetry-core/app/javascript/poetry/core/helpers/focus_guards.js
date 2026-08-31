@@ -1,4 +1,4 @@
-// Focus guards (Tier 3): two visually-hidden tabindex=0 sentinels at the
+// Focus guards: two visually-hidden tabindex=0 sentinels at the
 // body edges so focusin/focusout fire predictably at the document boundary
 // while any trapped overlay is open - a Tab out of the last real element
 // lands on a guard (which focus-scope yanks back), never on nothing.

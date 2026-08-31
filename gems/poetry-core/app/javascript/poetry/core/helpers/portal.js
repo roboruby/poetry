@@ -6,10 +6,12 @@ import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
 // transformed ancestors - and return it HOME on close, exactly where a
 // placeholder comment marks the origin.
 //
-// THE EVENT BRIDGE (D5 - the React-vs-DOM trap): React portals bubble
-// through the component tree; DOM portals do not. A host's data-action on
-// the component ROOT would go deaf to events rising out of portaled
-// content. The bridge restores React-portal semantics for poetry's OWN
+// THE EVENT BRIDGE (the logical-tree trap): a component-tree portal
+// re-bubbles events from its logical position; a DOM portal does not. A
+// host's data-action on the component ROOT would go deaf to events
+// rising out of portaled content. The bridge restores logical-tree
+// bubbling for poetry's OWN
+
 // CustomEvents (the registered list below - NEVER native events, which
 // the dismissal/hotkey layers listen for at document and must see on the
 // real path): propagation is CUT at the content boundary and a clone is
@@ -41,9 +43,9 @@ export function registerBridgeEvents(names) {
 }
 
 /**
- * D2: the Base UI / Radix `container` prop, attribute-shaped - a host
- * scoping themes to a subtree points its overlays at a container inside
- * that scope via data-poetry-portal-container="<element id>".
+ * The portal-container seam, attribute-shaped: a host scoping themes to
+ * a subtree points its overlays at a container inside that scope via
+ * data-poetry-portal-container="<element id>".
  *
  * @param {Element | null} root - the element carrying the attribute
  * @returns {Element} the named container, or document.body
@@ -68,8 +70,8 @@ export function isPortaled(content) {
  * Containment that follows portals HOME: a node inside portaled content
  * counts as inside `container` when the content's home position does.
  * Focus-scope's trap keys on this - a portaled sub level is outside the
- * root content's subtree but logically inside its tree (Radix scopes the
- * trap over the React tree, which portals preserve; the DOM one doesn't).
+ * root content's subtree but logically inside its tree, and the trap
+ * must follow the logical tree or every portaled level reads as outside.
  *
  * @param {Element} container
  * @param {Node | null} node

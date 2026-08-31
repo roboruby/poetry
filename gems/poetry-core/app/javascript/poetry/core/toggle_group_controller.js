@@ -8,16 +8,16 @@ import { setState, stateOf } from "@poetry/controllers/helpers/state"
 // buttons (data-action -> group#toggle; poetry--core--pressed is NOT
 // attached in group context - one owner, no event soup).
 //
-// The source-verified role/vocabulary split, enforced here: type=single is
+// The role/vocabulary split, enforced here: type=single is
 // RADIO semantics - items carry aria-checked (aria-pressed stripped) and
-// re-pressing the sole pressed item deselects to EMPTY (Radix setValue(''));
+// re-pressing the sole pressed item deselects to EMPTY;
 // type=multiple is toolbar semantics - independent aria-pressed items. The
 // controller reads type once and never mixes vocabularies; the bare
 // data-pressed presence boolean styles both types identically (Toggle's
 // classes just work).
 //
 // After every transition the PRESSED item becomes the roving tab stop
-// (Radix active=pressed: re-entering the group lands on the selection) -
+// (re-entering the group lands on the selection) -
 // written directly as the tabindex stamp roving-focus adopts.
 const ITEM_SELECTOR = '[data-slot="toggle-group-item"]'
 
@@ -97,7 +97,7 @@ export default class ToggleGroupController extends Controller {
 
   // --- the set machine ---
 
-  // single: S == {v} -> {} (deselect-to-empty, Radix-exact), else -> {v}.
+  // single: S == {v} -> {} (deselect-to-empty, contractual), else -> {v}.
   #toggleSingle(value) {
     const pressed = this.#pressedValues()
 
@@ -146,8 +146,8 @@ export default class ToggleGroupController extends Controller {
   }
 
   // data-pressed and the TYPE-CORRECT aria attribute, written together:
-  // single items are radios (aria-checked, aria-pressed stripped - the Radix
-  // {'aria-pressed': undefined} strip); multiple items are toggle buttons.
+  // single items are radios (aria-checked only - a stale aria-pressed
+  // would double-voice the state); multiple items are toggle buttons.
   #write(item, on) {
     setState(item, on ? "pressed" : "unpressed")
 
@@ -160,7 +160,7 @@ export default class ToggleGroupController extends Controller {
     }
   }
 
-  // active=pressed (Radix): the pressed item is the preferred tab stop.
+  // The pressed item is the preferred tab stop.
   // Written as the tabindex stamp the roving-focus controller adopts (its
   // current-stop scan reads tabindex="0"); only when roving already manages
   // tabindex here (the stamp exists), so a manage-tabindex:false host is

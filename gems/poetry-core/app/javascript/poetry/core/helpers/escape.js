@@ -1,4 +1,4 @@
-// Capture-phase Escape handling (Tier 1): the primitive under dismissable's
+// Capture-phase Escape handling: the primitive under dismissable's
 // topmost-only Esc behavior.
 
 /**

@@ -1,13 +1,13 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The Autocomplete (Base UI's Autocomplete, poetry-shaped): a REAL text
+// The Autocomplete: a REAL text
 // input that IS the form value, suggesting from a server-rendered list
 // that filters as you type. This is the input-is-the-value semantic -
 // the sibling of Combobox, whose value is a SELECTED ITEM behind a
 // native <select>. Selecting a suggestion writes the input and closes;
 // the text always submits as ordinary params.
 //
-// Base UI behaviors kept (the v1.7 spec sheet): locale-aware filtering
+// The contract's fixed behaviors: locale-aware filtering
 // (toLocaleLowerCase), list scroll reset on every filter pass, and
 // change-reason details on the commit event (item-press | enter-key).
 // Positioning rides the shared popper controller (input = anchor).
@@ -21,7 +21,7 @@ export default class AutocompleteController extends Controller {
 
   static values = {
     open: { type: Boolean, default: false },
-    // Open the popup on focus even before any typing (Base UI openOnInputClick).
+    // Open the popup on focus even before any typing.
     openOnFocus: { type: Boolean, default: true }
   }
 
@@ -155,7 +155,8 @@ export default class AutocompleteController extends Controller {
       any ||= match
     })
 
-    // Base UI resets the list scroll on every filter pass.
+    // The list scroll resets on every filter pass - a stale scroll
+    // position over fresh results misleads.
     this.listTarget.scrollTop = 0
     this.#syncEmpty(any)
     this.#clearHighlight()

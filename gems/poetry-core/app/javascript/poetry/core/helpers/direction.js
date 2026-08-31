@@ -1,4 +1,4 @@
-// Reading direction (Tier 1): the platform mechanism - the closest [dir]
+// Reading direction: the platform mechanism - the closest [dir]
 // ancestor - consumed by roving-focus (Left/Right flip) and popper (side flip).
 
 /**

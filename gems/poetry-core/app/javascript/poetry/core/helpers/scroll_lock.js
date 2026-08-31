@@ -7,15 +7,15 @@
 // break on out-of-order closes.
 //
 // Why not scrollbar-gutter: stable (this helper's original primary)?
-// Measured 2026-08-01 with classic
+// Measured live with classic
 // scrollbars: Chrome drops the viewport's rail AND its reserved gutter
 // the moment the viewport's used overflow computes to hidden - whether
 // the pair sits on the root, propagates from body, or the gutter was set
 // permanently - so the page shifted by the scrollbar width anyway (the
 // exact wiggle the strategy existed to stop). The body-padding payback
-// is the only compensation the viewport honors; its known cost
-// (position:fixed elements aren't compensated) matches the source's
-// RemoveScroll behavior.
+// is the only compensation the viewport honors; its known cost is that
+// position:fixed elements aren't compensated - accepted deliberately,
+// not an oversight.
 let locks = 0
 let previous = null
 

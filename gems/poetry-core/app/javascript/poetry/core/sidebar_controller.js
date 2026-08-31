@@ -17,7 +17,7 @@ import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
 // Cmd/Ctrl+B shortcut.
 //
 // MOBILE (DOM-move): below md the trigger routes to a separate
-// never-persisted openMobile state (upstream parity - only desktop
+// never-persisted openMobile state (only desktop
 // toggles write the cookie). Opening ADOPTS the server-rendered nav
 // children from the desktop inner into the mobile <dialog> (one render,
 // no duplicate ids - the render-twice rejection) and shows it through the

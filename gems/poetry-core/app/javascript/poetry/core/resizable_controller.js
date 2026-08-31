@@ -5,7 +5,7 @@ import { Controller } from "@hotwired/stimulus"
 // controller implements the APG window-splitter on the handles: pointer
 // drag redistributes the two adjacent panels (clamped to each panel's
 // min/max), arrows step, Home/End jump the range, and every move writes
-// aria-valuenow (the preceding panel's size - the upstream convention).
+// aria-valuenow (the preceding panel's size).
 // Deferred with the library's machinery: persistence (autoSaveId),
 // collapsible panels, and the imperative API.
 const PANEL_SELECTOR = '[data-slot="resizable-panel"]'
@@ -134,7 +134,7 @@ export default class ResizableController extends Controller {
     panel.style.flexBasis = "0px"
   }
 
-  // aria-valuenow = the PRECEDING panel's size (the upstream convention).
+  // aria-valuenow = the PRECEDING panel's size.
   #reflect(handle) {
     const [before] = this.#panelsAround(handle)
     if (!before) return

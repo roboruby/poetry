@@ -1,13 +1,14 @@
-// The Tier-0 controllable-state convention (the DOM is the store): runtime
-// state is a set of presence-boolean data attributes (the Base UI
-// vocabulary) - written here, styled by CSS variants
-// (data-open:..., via the vendored bridge variants that also match the
-// legacy Radix data-state values), owned by whichever layer set it (a
-// Stimulus Value default, the DOM, the URL, or a server re-render).
+// The controllable-state convention (the DOM is the store): runtime
+// state is a set of presence-boolean data attributes - written here,
+// styled by CSS variants (data-open:..., via the vendored bridge
+// variants that also match the older data-state="open|closed" value
+// form), owned by whichever layer set it (a Stimulus Value default, the
+// DOM, the URL, or a server re-render).
 //
-// Keys are PAIRS (or triples): setting one member writes its attribute and
-// removes its counterparts. The negative popup/panel/pressed/selected keys
-// only remove - Base UI has no data-popup-closed; absence IS the state.
+// Keys are PAIRS (or triples): setting one member writes its attribute
+// and removes its counterparts. The negative popup/panel/pressed/selected
+// keys only remove, deliberately: there is no data-popup-closed -
+// absence IS the state.
 /** Vocabulary key -> its writes: { add: attribute | null, remove: [attributes] }. */
 export const VOCABULARY = {
   open: { add: "data-open", remove: ["data-closed"] },

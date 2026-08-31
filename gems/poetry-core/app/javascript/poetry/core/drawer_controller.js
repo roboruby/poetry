@@ -11,9 +11,9 @@ import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presenc
 //     enter rides the data-starting-style two-frame trick (a transition
 //     from --closed-transform), exit HOLDS the dialog through the
 //     data-ending-style transition before the native close() (the
-//     presence-hold close the Sheet dictionary was waiting on).
+//     presence-hold close the sheet styling depends on).
 //   * The SWIPE - pointer-captured drag along the dismiss direction,
-//     writing the Base UI CSS-var contract onto the <dialog> (::backdrop
+//     writing the swipe CSS-var contract onto the <dialog> (::backdrop
 //     inherits from its originating element, so the overlay fade rides the
 //     same vars): --drawer-swipe-movement-x/y (px toward dismissal),
 //     --drawer-swipe-progress (0..1), data-swiping while tracking
@@ -33,13 +33,13 @@ const HANDLE = '[data-slot="drawer-swipe-handle"]'
 
 export default class DrawerController extends DialogController {
   static values = {
-    // The dismissal direction (matches the Base UI swipeDirection).
+    // The dismissal direction.
     direction: { type: String, default: "down" },
-    // Source parity: modal={false} opens with show() instead of
+    // modal: false opens with show() instead of
     // showModal() - no top layer, no ::backdrop, no focus trap, no
     // scroll lock. The page behind stays fully interactive.
     modal: { type: Boolean, default: true },
-    // Source parity: snapPoints - preset resting heights for a bottom
+    // snapPoints: preset resting heights for a bottom
     // sheet (direction down only), ascending: fractions of the full
     // height (0..1] or CSS lengths ("31rem", "400px"). The popup runs
     // full-height (the dictionary's data-snap-points sizing) and
@@ -201,7 +201,7 @@ export default class DrawerController extends DialogController {
 
     if (progress >= DISMISS_PROGRESS || swipe.velocity >= DISMISS_VELOCITY) {
       // The exit transition covers the REMAINING travel - scale it so a
-      // mostly-swiped drawer closes fast (the source's strength contract).
+      // mostly-swiped drawer closes fast (the strength contract).
       const strength = Math.max(MIN_STRENGTH, Math.min(1, 1 - progress))
       this.dialogTarget.style.setProperty("--drawer-swipe-strength", String(strength))
       this.dialogTarget.removeAttribute("data-swiping")
@@ -234,7 +234,7 @@ export default class DrawerController extends DialogController {
   }
 
   // A point is a fraction of the full (100dvh) height, or a CSS length
-  // in px/rem (the source's ["31rem", 1] vocabulary).
+  // in px/rem (e.g. ["31rem", 1]).
   #snapVisible(point, height) {
     if (typeof point === "number") return point * height
 

@@ -8,18 +8,19 @@ import { setState, stateOf } from "@poetry/controllers/helpers/state"
 // REFLECTS it (aria-checked incl. "mixed" + the data-checked/data-unchecked/
 // data-indeterminate attributes on the control and every part that carries
 // them: the checkbox indicator, the switch thumb). Every transition writes the input FIRST, dispatches a REAL
-// bubbling change event (no synthetic prototype-setter dance - Radix's
-// BubbleInput direction inverted), then reflects attributes.
+// bubbling change event (no synthetic prototype-setter dance - the
+// input LEADS and the visual follows), then reflects attributes.
 //
 // The three states: checked / unchecked / indeterminate. Indeterminate is
 // server/programmatic only (aria-checked=mixed, input.indeterminate - a
 // JS-only property re-derived from the checked attributes on connect); the first user
-// toggle resolves it to CHECKED (Radix-exact). A Switch never renders it
-// (ArgumentError upstream), so that branch is simply dormant there.
+// toggle resolves it to CHECKED - contractual, do not loosen. A Switch
+// never renders it (the Ruby component raises), so that branch is
+// simply dormant there.
 //
 // Enter is suppressed on role=checkbox ONLY (WAI-ARIA: checkboxes activate
-// on Space alone - Radix's onKeyDown guard); role=switch has no keydown
-// handler, so Enter toggles via the native button click (Radix-exact
+// on Space alone); role=switch has no keydown
+// handler, so Enter toggles via the native button click (a deliberate
 // asymmetry, keyed off the role - no controller fork).
 //
 // No inputId value -> pure visual mode: state lives on the button's
@@ -63,7 +64,7 @@ export default class CheckedController extends Controller {
       input.indeterminate = this.#initialIndeterminate
 
       // Native form reset restores the server-rendered checked attribute -
-      // initial-state restore for free (vs Radix's manual ref); rAF because
+      // initial-state restore for free; rAF because
       // reset fires BEFORE the browser restores input values.
       this.#form = input.form
 
@@ -99,7 +100,7 @@ export default class CheckedController extends Controller {
 
   /**
    * Control activation (click / Space / label-for): indeterminate
-   * resolves to checked (Radix-exact), else flip.
+   * resolves to checked (contractual), else flip.
    */
   toggle() {
     if (this.#disabled()) return

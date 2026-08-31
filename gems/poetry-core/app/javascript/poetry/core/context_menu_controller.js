@@ -8,14 +8,14 @@ import { Controller } from "@hotwired/stimulus"
 // (data-poetry--core--popper-anchor-point-value="x,y" - the DOM is the
 // store, so the write works whether or not popper has connected yet).
 //
-// Input paths (Radix parity):
+// Input paths (all contractual):
 // - contextmenu (mouse right-click, or Shift+F10 / the ContextMenu key on a
 //   focused surface): preventDefault, capture the point, open. A
 //   keyboard-synthesized event carries no usable point (0,0) - the anchor
 //   attribute is CLEARED so popper falls back to the trigger surface rect
-//   (a deliberate improvement over Radix's 0,0 + dev-warning).
+//   (deliberately better than a 0,0 fallback).
 // - long-press (touch/pen ONLY - mouse never long-presses): pointerdown
-//   starts a longPressDelay timer (Radix's 700ms constant, exposed as a
+//   starts a longPressDelay timer (700ms default, exposed as a
 //   Value); ANY pointermove/pointerup/pointercancel cancels (no slop radius
 //   - the platform's own touch slop absorbs jitter); a second pointerdown
 //   restarts (multi-touch guard); the contextmenu handler itself clears the
@@ -128,11 +128,10 @@ export default class ContextMenuController extends Controller {
 
   // --- native-menu suppression while open ---
 
-  // Base UI parity: ContextMenuTrigger keeps a document-level contextmenu
-  // listener while open - its viewport-covering backdrop swallows the
-  // native menu everywhere outside the popup. poetry renders no backdrop
-  // element, so the document listener IS the backdrop here; it deliberately
-  // covers the popup itself too (upstream's measured gap: right-clicking an
+  // While open, a document-level contextmenu listener suppresses the
+  // native menu everywhere - poetry renders no viewport-covering backdrop
+  // element, so the document listener IS the backdrop; it deliberately
+  // covers the popup itself too (without it, right-clicking an
   // item of the OPEN menu still spawns the native menu over it). Second
   // right-clicks on the surface stay live - the trigger's own handler runs
   // first and re-captures the point.

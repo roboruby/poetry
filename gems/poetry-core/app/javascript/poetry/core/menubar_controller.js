@@ -13,7 +13,7 @@ import { setState } from "@poetry/controllers/helpers/state"
 //   1. TOGGLE - pointerdown opens (closing any sibling) / closes the open
 //      menu. Keyboard open (ArrowDown/Enter/Space -> first item; ArrowUp ->
 //      last item) rides the family's open-reason contract; pointer-open
-//      leaves focus on the trigger (Radix parity).
+//      leaves focus on the trigger (pointer users keep their context).
 //   2. HOVER-SLIDE - pointerenter on a sibling trigger is a no-op from cold;
 //      once ANY menu is open it swaps to the hovered menu (the gated-hover
 //      rule) and focus moves to the new trigger.
@@ -106,7 +106,7 @@ export default class MenubarController extends Controller {
     const trigger = event.currentTarget
 
     if (this.#isDisabled(trigger)) return
-    if (event.button !== undefined && event.button !== 0) return // left button only (Radix)
+    if (event.button !== undefined && event.button !== 0) return // left button only
     if (event.ctrlKey) return // macOS ctrl-click is a context menu, not a toggle
 
     if (trigger.hasAttribute("data-popup-open")) this.#menuFor(trigger)?.close("trigger-press")
@@ -155,7 +155,7 @@ export default class MenubarController extends Controller {
    * here. ALWAYS consumed once the menu belongs to this bar - an
    * unconsumed edge would fall through to the bar's roving-focus and move
    * trigger focus while the menu stays open (bar arrows are inert while
-   * open, Radix parity). At a no-loop boundary that means: consumed, no
+   * open, by rule). At a no-loop boundary that means: consumed, no
    * move.
    *
    * @param {CustomEvent} event
@@ -194,7 +194,7 @@ export default class MenubarController extends Controller {
 
     this.valueValue = ""
     setState(this.element, "closed")
-    // The menu's close reason passes through verbatim (Base UI vocabulary:
+    // The menu's close reason passes through verbatim (the family vocabulary:
     // escape-key / outside-press / item-press / trigger-press / none).
     this.dispatch("value-changed", {
       prefix: EVENT_PREFIX,

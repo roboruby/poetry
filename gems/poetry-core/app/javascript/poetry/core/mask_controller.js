@@ -12,8 +12,8 @@ import {
   processInput
 } from "@poetry/controllers/helpers/mask"
 
-// The input-mask machine (the mask engine adapted from Mantine's use-mask -
-// see THIRD_PARTY_NOTICES.md) on a bare native
+// The input-mask machine (the engine is adapted from an MIT-licensed
+// source - source and license in THIRD_PARTY_NOTICES.md) on a bare native
 // <input> - this.element IS the input. Three layers:
 //
 // 1. THE PRIMARY PATH is keydown with preventDefault: a printable char
@@ -40,7 +40,7 @@ import {
 //    is clamped into [first token, end of filled region] on focus (rAF),
 //    mousedown (rAF) and mouseup; selections are never touched.
 //
-// Port caveat: unlike the upstream engine, every programmatic value write dispatches a
+// A deliberate divergence from the adapted source: every programmatic value write dispatches a
 // native bubbling `input` event (#painting guards the controller against
 // its own echo) so Rails/Turbo listeners stay live. The raw value mirrors
 // to data-raw after every change; `pattern` is set on connect from
@@ -492,7 +492,7 @@ export default class MaskController extends Controller {
     return applyMaskToRaw(raw, this.#slots, this.#transform())
   }
 
-  // The upstream transform generalizes to any fn; poetry keeps ONE
+  // A transform could generalize to any fn; poetry keeps ONE
   // declarative knob - uppercase before validation.
   #transform() {
     return this.upcaseValue ? (char) => char.toUpperCase() : undefined

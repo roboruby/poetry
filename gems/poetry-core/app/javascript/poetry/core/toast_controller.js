@@ -4,8 +4,8 @@ import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 import { exitPresence } from "@poetry/controllers/helpers/presence"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 
-// One toast item (poetry's own Toast - the stacked-toaster genre on
-// Radix-Toast a11y semantics). The item is role=status aria-live=off: it
+// One toast item (poetry's own Toast - the stacked-toaster genre with
+// strict a11y semantics). The item is role=status aria-live=off: it
 // never announces itself - on connect it speaks ONCE through the
 // announce singleton at its politeness (destructive -> assertive,
 // wired server-side via the
@@ -142,9 +142,9 @@ export default class ToastController extends Controller {
 
   /**
    * Dismisses the toast. Reasons: timeout | close-press | action |
-   * swipe(reserved) | manual. close-press is Base UI vocabulary;
-   * timeout/action/queued/manual are poetry extensions (Base UI has no
-   * equivalents). A click on the action slot reports "action"; the close
+   * swipe(reserved) | manual - the family reason vocabulary plus
+   * poetry's own timeout/action/queued/manual extensions. A click on the
+   * action slot reports "action"; the close
    * button "close-press". The dismiss event goes out BEFORE removal (the
    * toaster's reflow + focus-return seam); presence then holds the node
    * through its exit animation.

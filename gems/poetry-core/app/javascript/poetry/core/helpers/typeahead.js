@@ -1,14 +1,14 @@
-// The APG typeahead buffer (P2), shared: printable keys accumulate into a
+// The APG typeahead buffer, shared: printable keys accumulate into a
 // search buffer that resets after a timeout (1s default), matching wraps
 // from the current item, and a repeated same-letter buffer cycles matches.
-// Extracted VERBATIM from menu_controller.js (the Select contract's gated
-// extraction) so the menu family and the Select listbox run the identical
-// algorithm - the buffer/timer state lives in the instance this factory
-// returns, one per consuming controller.
+// Extracted VERBATIM from menu_controller.js so the menu family and the
+// Select listbox run the identical algorithm - the buffer/timer state
+// lives in the instance this factory returns, one per consuming
+// controller.
 
 /**
  * The label an item types against: data-text-value overrides textContent
- * (icon-rich content, the Radix textValue prop).
+ * (icon-rich content declares its typed label explicitly).
  *
  * @param {Element} item
  * @returns {string} the trimmed label ("" when neither source exists)
@@ -46,7 +46,7 @@ export function createTypeahead() {
     },
 
     /**
-     * Radix's getNextMatch: a repeated same-letter buffer cycles matches;
+     * The match walk: a repeated same-letter buffer cycles matches;
      * a growing buffer keeps the current item first so continued typing
      * stays put while it still matches; single-letter search excludes the
      * current item so it always advances. The consumer decides what a

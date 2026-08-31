@@ -1,13 +1,13 @@
 import { Controller } from "@hotwired/stimulus"
 
-// NumberField (Wave 1, the Base UI number-field contract): a formatted
+// NumberField: a formatted
 // visible <input type=text> over a hidden <input type=number> that is the
-// form/validation truth - Base UI dropped the spinbutton pattern and so
-// does poetry. The controller owns stepping (arrows, steppers with
+// form/validation truth - the spinbutton ARIA pattern is deliberately
+// not used. The controller owns stepping (arrows, steppers with
 // press-and-hold, opt-in wheel), parse/clamp/format, and the two-input
 // sync. Number | null value model: empty is null, never NaN.
 //
-// Deliberate v1 divergences from Base UI (documented in the component):
+// Deliberate v1 boundaries (documented in the component):
 // no scrub area, Latin-digit parsing only (locale separators and
 // currency/percent symbols ARE handled via Intl.formatToParts), and the
 // server renders the raw number - the display formats on connect.
@@ -131,8 +131,8 @@ export default class extends Controller {
   /**
    * The blur action - the text commit point: empty clears, unparseable
    * text is left as typed with no commit, parseable text clamps and
-   * normalizes to the canonical formatted display (never snapped to step
-   * - Base UI).
+   * normalizes to the canonical formatted display (never snapped to
+   * step - blur is not a correction gesture).
    */
   blur() {
     const text = this.inputTarget.value
@@ -232,7 +232,7 @@ export default class extends Controller {
     const amount = event.shiftKey ? this.largeStepValue : (event.altKey ? this.smallStepValue : this.stepValue)
     // Stepping starts from the dirty typed text when parseable (what the
     // user sees), else the committed value, else seeds 0 clamped in range
-    // (an all-negative range seeds at max - Base UI).
+    // (an all-negative range seeds at max - the nearest representable).
     const base = this.#parse(this.inputTarget.value) ?? this.#value
     const candidate = base === null
       ? this.#clamp(0)
@@ -251,7 +251,7 @@ export default class extends Controller {
   }
 
   // Snap to step multiples from base min (or 0): directional for normal /
-  // large steps, nearest for the Alt small step (Base UI snapOnStep).
+  // large steps, nearest for the Alt small step.
   #maybeSnap(value, direction, event) {
     if (!this.snapValue) return value
 
@@ -271,8 +271,8 @@ export default class extends Controller {
   }
 
   // Binary float noise cleanup (0.1 + 0.2 -> 0.3), bounded so genuine
-  // digits in large values are never rewritten (Base UI toPrecision(15)
-  // with an absolute 1e-10 delta cap).
+  // digits in large values are never rewritten (toPrecision(15) plus an
+  // absolute 1e-10 delta cap).
   #clean(value) {
     const cleaned = Number(value.toPrecision(15))
     return Math.abs(cleaned - value) < 1e-10 ? cleaned : value
@@ -294,7 +294,7 @@ export default class extends Controller {
   }
 
   // Boundary + filled reflection: steppers disable at their bound (native
-  // disabled + data-disabled, the Base UI pair); the root mirrors filled.
+  // disabled + data-disabled, written together); the root mirrors filled.
   #reflect() {
     const filled = this.#value !== null
     this.element.toggleAttribute("data-filled", filled)

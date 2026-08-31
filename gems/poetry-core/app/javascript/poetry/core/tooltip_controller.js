@@ -4,22 +4,22 @@ import { exitPresence } from "@poetry/controllers/helpers/presence"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 
 // The Tooltip controller (the popper-consumer trio's timing machine): open
-// DELAYS (provider delay_duration, shadcn default 0), the provider-scoped
+// DELAYS (provider delay_duration, default 0), the provider-scoped
 // WARM grace (one tooltip open - or closed less than skip_delay_duration ms
 // ago - lets siblings in the same provider scope open instantly), ONE OPEN
-// GLOBALLY (the document-level will-open event, Radix's tooltip.open port),
+// GLOBALLY (the document-level will-open event),
 // close-on-scroll, and the pointer-vs-focus open paths with their latches.
 //
 // A11y is the strictest of the trio: the content is role=tooltip and the
 // trigger's aria-describedby is set on open and REMOVED on close
 // (describedby must never reference hidden content); focus-scope is NOT
 // composed at all - focus never enters a tooltip; touch NEVER opens one
-// (no long-press path, Radix-exact). Esc rides a token-activated
+// (no long-press path, deliberately). Esc rides a token-activated
 // dismissable layer while open, so a tooltip above a Dialog peels first.
 //
 // THE WARM REGISTRY (the provider mechanism): a module-level WeakMap keyed
 // by the [data-slot=tooltip-provider] ancestor (document fallback) holding
-// {openCount, warmUntil}. The DOM ancestor IS Radix's React context; the
+// {openCount, warmUntil}. The DOM ancestor IS the provider scope; the
 // WeakMap lets morphed/replaced providers garbage-collect (no Turbo leaks).
 const PROVIDER_SELECTOR = '[data-slot="tooltip-provider"]'
 const CONTENT_SELECTOR = '[data-slot="tooltip-content"]'
@@ -31,14 +31,14 @@ const WILL_OPEN_EVENT = "poetry:tooltip:will-open"
 const DISMISSABLE = "poetry--core--dismissable"
 const POPPER_STRATEGY = "data-poetry--core--popper-strategy-value"
 
-// Provider defaults: delayDuration 0 is the shadcn provider override of
-// Radix's 700 (kept, source-exact); skipDelayDuration 300 is Radix's.
+// Provider defaults: delayDuration 0 (instant tooltips are the design
+// call); skipDelayDuration 300.
 const DEFAULT_DELAY_DURATION = 0
 const DEFAULT_SKIP_DELAY_DURATION = 300
 
 // Hoverable-content grace: the close-intent timer (entering the content
 // cancels it) - the DropdownMenu grace-area reconciliation applied
-// trio-wide; Radix's pointer-transit polygon is the shared fast-follow.
+// trio-wide; a pointer-transit polygon is the shared fast-follow.
 const HOVERABLE_CLOSE_DELAY = 300
 
 // scope element -> { openCount, warmUntil } (module-level, shared by every
@@ -146,10 +146,11 @@ export default class TooltipController extends Controller {
     else if (!value && this.#isOpen()) this.#close("none")
   }
 
-  // --- trigger actions: the pointer path (Radix's handlers, ported) ---
+  // --- trigger actions: the pointer path ---
 
   /**
-   * The trigger's pointermove action (not pointerenter - Radix): opens
+   * The trigger's pointermove action (not pointerenter, deliberately):
+   * opens
    * once per hover via the latch - instantly when the provider scope is
    * warm, else after the delay; touch pointerType is EXCLUDED entirely.
    *
@@ -207,7 +208,7 @@ export default class TooltipController extends Controller {
   /**
    * The trigger's pointerdown action: activating the control dismisses
    * its hint; the latch also suppresses the focus-open until pointerup
-   * (pointer users never get a focus-opened tooltip - Radix-exact).
+   * (pointer users never get a focus-opened tooltip - contractual).
    */
   pointerDown() {
     this.#isPointerDown = true
@@ -241,7 +242,7 @@ export default class TooltipController extends Controller {
   blurClose() {
     this.#clearOpenTimer()
 
-    // Base UI's blur-close reason: trigger-focus (the focus interaction).
+    // The close reason for the focus path: trigger-focus.
     if (this.#isOpen()) this.#close("trigger-focus")
   }
 
@@ -249,7 +250,7 @@ export default class TooltipController extends Controller {
 
   // instant: null (a delayed pointer open) | "delay" (warm registry /
   // programmatic - the provider delay was skipped) | "focus" (keyboard) -
-  // the Base UI data-instant reason vocabulary (contract §2).
+  // the data-instant reason vocabulary.
   #open({ instant = null } = {}) {
     const content = this.#content()
 
@@ -282,9 +283,9 @@ export default class TooltipController extends Controller {
       setState(trigger, "popup-open")
       trigger.setAttribute("aria-describedby", content.id)
     }
-    // The Radix triple becomes the pair + a reason: data-open via setState,
-    // plus data-instant="delay|focus" on the content when the open skipped
-    // the delay (absent on a delayed open) - Base UI vocabulary.
+    // The pair plus a reason: data-open via setState, and
+    // data-instant="delay|focus" on the content when the open skipped
+    // the delay (absent on a delayed open).
     setState(content, "open")
     if (instant) content.setAttribute("data-instant", instant)
     else content.removeAttribute("data-instant")
@@ -328,7 +329,7 @@ export default class TooltipController extends Controller {
         this.#cancelExit = null
         content.hidden = true
         // Home AFTER the exit finished and hidden landed - never
-        // mid-animation, never a visible flash (D4).
+        // mid-animation, never a visible flash.
         restoreContent(content)
         this.element.setAttribute(POPPER_STRATEGY, "fixed")
         trigger?.removeAttribute("aria-describedby")
@@ -424,11 +425,11 @@ export default class TooltipController extends Controller {
 
     this.#clearOpenTimer()
 
-    // A sibling tooltip opening closes this one (Base UI: sibling-open).
+    // A sibling tooltip opening closes this one (reason: sibling-open).
     if (this.#isOpen()) this.#close("sibling-open")
   }
 
-  // --- close-on-scroll (capture-phase, armed only while open - Radix-exact) ---
+  // --- close-on-scroll (capture-phase, armed only while open) ---
 
   #armScrollListener() {
     if (this.#scrollListening) return

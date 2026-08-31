@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { stateOf } from "@poetry/controllers/helpers/state"
 
-// The select-all recipe (Base UI CheckboxGroup's parent checkbox, the APG
+// The select-all recipe (a parent checkbox running the APG
 // mixed-state pattern) over the checked family. Wrap the parent and its
 // rows, route the bubbling per-checkbox observe event at #changed, and
 // mark the parent (target: all) plus each row (target: item):

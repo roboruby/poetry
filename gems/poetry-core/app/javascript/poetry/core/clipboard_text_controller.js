@@ -1,11 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
 import { announce } from "@poetry/controllers/helpers/announce"
 
-// ClipboardText (the kumo contract): a read-only value with one
+// ClipboardText, adapted from an MIT-licensed source (source and license
+// in THIRD_PARTY_NOTICES.md): a read-only value with one
 // copy affordance. navigator.clipboard is the primary path; the
 // execCommand fallback SAVES AND RESTORES the user's own selection and
 // focus (copying a field must never eat a selection made elsewhere on the
-// page - the guard kumo's version carries). Success stamps data-copied on
+// page). Success stamps data-copied on
 // the root for a beat (CSS swaps the copy/check glyphs off it), announces
 // through the live-region singleton, and dispatches the copied event.
 const EVENT_PREFIX = "poetry:clipboard-text"
@@ -22,8 +23,8 @@ export default class ClipboardTextController extends Controller {
   static targets = ["input", "source"]
 
   static values = {
-    // Copy override: the full value when the display truncates (kumo's
-    // textToCopy). Empty means "copy what the input/source shows".
+    // Copy override: the full value when the display truncates.
+    // Empty means "copy what the input/source shows".
     text: String,
     // The announcement, localized server-side.
     message: String

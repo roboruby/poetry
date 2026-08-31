@@ -1,7 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The Questionnaire machine (shadcn's @shadcn/react questionnaire
-// primitive, ported): a native <form> of fieldset items shown ONE at a
+// The Questionnaire machine, adapted from an MIT-licensed source (source
+// and license in THIRD_PARTY_NOTICES.md): a native <form> of fieldset
+// items shown ONE at a
 // time. The server renders the complete initial state (active item,
 // statuses, shortcuts, button visibility); this controller owns the
 // runtime transitions - navigation (validate-gated Next, Skip for

@@ -1,5 +1,5 @@
-// The mask engine, adapted from Mantine's use-mask hook (MIT, v9.4.1 -
-// source and license in THIRD_PARTY_NOTICES.md).
+// The mask engine, adapted from an MIT-licensed source (source and
+// license in THIRD_PARTY_NOTICES.md).
 // Pure functions over a parsed slot list, zero DOM. A mask is a sequence of
 // slots: token slots
 // validate ONE character against a pattern, literal slots are fixed chrome

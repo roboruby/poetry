@@ -20,9 +20,8 @@ export default class extends Controller {
     // Set false for AlertDialog-style confirmations: backdrop clicks stop dismissing.
     dismissible: { type: Boolean, default: true },
     // OPT-IN global shortcut ("meta+k") toggling the dialog - the
-    // CommandDialog ⌘K affordance; shadcn
-    // leaves it to a caller useEffect, poetry ships it because every
-    // consumer writes the same ten lines. "meta" matches metaKey OR
+    // command-palette ⌘K affordance, shipped here because every
+    // consumer would otherwise write the same ten lines. "meta" matches metaKey OR
     // ctrlKey (⌘K on mac, ^K elsewhere - the command-palette convention).
     hotkey: { type: String, default: "" }
   }
@@ -150,8 +149,8 @@ export default class extends Controller {
    * targets the <dialog> element itself AND lands outside its bounding
    * rect (the backdrop is rendered by the dialog). The target check alone
    * is not enough: clicks on the dialog's own padding / grid gaps also
-   * target the element (2026-07-01 browser pass - they were incorrectly
-   * dismissing).
+   * target the element (found in a live browser pass - they were
+   * incorrectly dismissing).
    *
    * @param {MouseEvent} event
    */

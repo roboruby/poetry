@@ -8,7 +8,7 @@ import { setState } from "@poetry/controllers/helpers/state"
 // activation - the APG default for tabs - focusin activates too, so arrow
 // keys both move focus AND switch panels).
 //
-// The Base UI vocabulary: the active trigger carries data-active
+// The state vocabulary: the active trigger carries data-active
 // (the styled token) + aria-selected; inactive panels carry the hidden
 // property + data-hidden. data-activation-direction is deliberately NOT
 // emitted - no shipped class consumes it (add it with the animated

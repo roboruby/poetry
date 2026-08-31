@@ -170,7 +170,7 @@ export default class OtpController extends Controller {
   // Exactly one data-active cell while focused: the caret's cell, clamped
   // to the last slot when the value is complete. The fake caret is visible
   // only when the active cell is EMPTY (a filled active cell shows the
-  // ring alone - the source's hasFakeCaret).
+  // ring alone).
   #projectCaret(value) {
     const focused = document.activeElement === this.inputTarget
     const active = focused

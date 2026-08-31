@@ -1,5 +1,6 @@
 // The nullable-segment date/time value (the IncompleteDate model, adapted
-// from react-aria - Apache-2.0, see THIRD_PARTY_NOTICES.md): segments
+// from an Apache-2.0-licensed source - source and license in
+// THIRD_PARTY_NOTICES.md): segments
 // are stored RAW so a user can edit day before
 // month - the object can hold February 31st and only commit constrains.
 // Hour is stored in the LOCALE'S HOUR CYCLE with a separate dayPeriod bit

@@ -1,8 +1,9 @@
-// Scroll geometry for the message-scroller (ported 1:1 from shadcn's
-// message-scroller geometry.ts): pure functions of {viewport, content,
-// spacer, rects} - no Stimulus, no state. This is the jsdom-testable half;
-// the controller owns the policy that decides when to call these. The
-// constants encode fixed upstream bugs - change them only against source.
+// Scroll geometry for the message-scroller, adapted from an MIT-licensed
+// source (source and license in THIRD_PARTY_NOTICES.md): pure functions
+// of {viewport, content, spacer, rects} - no Stimulus, no state. This is
+// the jsdom-testable half; the controller owns the policy that decides
+// when to call these. The constants encode deliberate fixes - treat them
+// as pinned values, not tunables.
 
 /**
  * Two fractional scrollTop values within this range are treated as equal,
@@ -115,7 +116,8 @@ export function getMessageScrollerVisibilityState({
 
 /**
  * The collection is DOM order: rows are content's element children minus
- * the tail spacer (the Radix collection primitive collapsed to a filter).
+ * the tail spacer - membership is a filter over live children, never a
+ * registration step.
  *
  * @param {HTMLElement} content
  * @param {HTMLElement | null} spacer

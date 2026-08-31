@@ -17,14 +17,14 @@ import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
 // THE VIEWPORT MODE: when the markup ships the shared
 // positioner > popup > viewport shell (viewport: true), panels are
 // lazily ADOPTED into the viewport on first activation (the Rails
-// stand-in for Base UI's portal - server-rendered content stays in
+// stand-in for a portal - server-rendered content stays in
 // place until JS activates) and the composite MORPHS: the popper
 // re-anchors to the active trigger (full floating-ui) while CSS
 // transitions the positioner's insets, the popup's --popup-width/height
 // pin old -> new across two frames so width/height transition, panels
-// slide by data-activation-direction (new trigger vs old, recharts'
-// travel semantics), and data-instant suppresses transitions on cold
-// opens. Vars reset to auto after the animations finish (the Base UI
+// slide by data-activation-direction (new trigger vs old - travel
+// direction drives the slide), and data-instant suppresses transitions
+// on cold opens. Vars reset to auto after the animations finish (the
 // auto-size reset via getAnimations().finished).
 const TRIGGER_SELECTOR = '[data-slot="navigation-menu-trigger"]'
 const PANEL_SELECTOR = '[data-slot="navigation-menu-content"]'
@@ -240,7 +240,7 @@ export default class NavigationMenuController extends Controller {
       viewport.appendChild(panel)
     }
 
-    // The size choreography (Base UI setSharedFixedSize): pin the popup
+    // The size choreography: pin the popup
     // to the OLD size, reveal the new panel, measure its natural size
     // (panels are absolutely stacked, so they size intrinsically), then
     // pin the NEW size a frame later so width/height transition.
@@ -310,7 +310,7 @@ export default class NavigationMenuController extends Controller {
     }
   }
 
-  // Pin the shared size vars (popup + positioner, Base UI's pairing).
+  // Pin the shared size vars (popup + positioner move together).
   #pinSize(positioner, popup, width, height) {
     popup.style.setProperty("--popup-width", `${width}px`)
     popup.style.setProperty("--popup-height", `${height}px`)
@@ -318,7 +318,7 @@ export default class NavigationMenuController extends Controller {
     positioner.style.setProperty("--positioner-height", `${height}px`)
   }
 
-  // The Base UI auto-size reset: once the morph settles the vars return
+  // The auto-size reset: once the morph settles the vars return
   // to auto, so later content growth isn't clipped. A newer activation
   // cancels a stale reset (the generation counter).
   #scheduleSizeReset(positioner, popup) {
@@ -347,7 +347,7 @@ export default class NavigationMenuController extends Controller {
   }
 
   // data-instant suppresses the positioner/popup transitions for one
-  // painted frame (cold opens - a Base UI instant reason).
+  // painted frame (cold opens must not animate from nothing).
   #stampInstant(positioner, popup) {
     positioner.setAttribute("data-instant", "")
     popup.setAttribute("data-instant", "")

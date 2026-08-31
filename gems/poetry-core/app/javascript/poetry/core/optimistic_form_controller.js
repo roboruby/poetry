@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Optimistic UI for Turbo forms (the hotwire_club-toolbox port).
+// Optimistic UI for Turbo forms, adapted from an MIT-licensed source
+// (source and license in THIRD_PARTY_NOTICES.md).
 // The optimistic update is AUTHORED AS A TURBO STREAM inside a <template>
 // target - the same vocabulary the server answers in, so prediction and
 // truth share one mental model and there is no bespoke DOM patching. On

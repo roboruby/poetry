@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import { COLLECTION_ITEM_SELECTOR, collectionItems } from "@poetry/controllers/helpers/collection"
 import { directionOf } from "@poetry/controllers/helpers/direction"
 
-// The roving-tabindex engine (Tier 2, P1): the group is ONE Tab stop -
+// The roving-tabindex engine: the group is ONE Tab stop -
 // exactly one item holds tabindex=0, the rest -1, and arrow keys move focus
 // among the collection items in DOM order. Orientation gates which arrows
 // are live (horizontal flips Left/Right under RTL via the direction
@@ -160,8 +160,7 @@ export default class RovingFocusController extends Controller {
 
   // Orientation gates the axis; the cross-axis arrows fall through untouched
   // (a vertical menu must not swallow Left/Right). "both" activates all four
-  // arrows (the APG radio contract - Radix RadioGroup passes orientation
-  // undefined so RovingFocusGroup lives on both axes): Down/Right advance,
+  // arrows (the APG radio contract): Down/Right advance,
   // Up/Left retreat, with ONLY the horizontal pair RTL-flipped. RTL is read
   // per keystroke from the closest [dir] ancestor, so a dir flip needs no
   // reconnect.
@@ -184,8 +183,8 @@ export default class RovingFocusController extends Controller {
     return null
   }
 
-  // Cancelable entry: a consumer preventDefault()s to keep focus where it is
-  // (Radix's onEntryFocus). The tab stop only moves when focus actually does.
+  // Cancelable entry: a consumer preventDefault()s to keep focus where it
+  // is. The tab stop only moves when focus actually does.
   #focusItem(item, items = this.#items()) {
     const entry = this.dispatch("entry", { detail: { item }, cancelable: true })
 

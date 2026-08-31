@@ -10,7 +10,7 @@ are reproduced here.
 
 - Source: https://github.com/shadcn-ui/ui (MIT)
 - Vendored: vendor/shadcn-tailwind/tailwind.css (the bridge variants from packages/shadcn/src/tailwind.css, at the commit in vendor/shadcn-tailwind/VENDORED_COMMIT; license beside it)
-- Adapted: tokens/tokens.dtcg.json (the semantic role token set follows shadcn/ui v4's neutral theme variables, with the AA contrast deltas noted inline), tokens/aliases.css (the Radix-namespaced content variable names the source's class strings read); lib/poetry/core/registry_items.rb targets the shadcn registry-item JSON schema
+- Adapted: tokens/tokens.dtcg.json (the semantic role token set follows shadcn/ui v4's neutral theme variables, with the AA contrast deltas noted inline), tokens/aliases.css (the Radix-namespaced content variable names the source's class strings read); lib/poetry/core/registry_items.rb targets the shadcn registry-item JSON schema; app/javascript/poetry/core/message_scroller_controller.js and app/javascript/poetry/core/helpers/scroller_geometry.js (the message-scroller state machine and its geometry module, ported); app/javascript/poetry/core/questionnaire_controller.js (the questionnaire primitive, ported)
 
 ```
 MIT License

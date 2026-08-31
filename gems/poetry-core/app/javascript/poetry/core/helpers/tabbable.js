@@ -1,4 +1,4 @@
-// Tabbable-candidate walk (Tier 1): the shared filter behind focus-scope and
+// Tabbable-candidate walk: the shared filter behind focus-scope and
 // the Dialog trap. Candidates in DOM order, minus disabled / hidden /
 // tabindex=-1 / inert-subtree elements.
 
@@ -36,8 +36,8 @@ export function tabbableWithin(container) {
   return candidates.filter((element) => isRadioTabStop(element, candidates))
 }
 
-// A radio GROUP is one tab stop, not one per radio (the reference
-// walker rule): the checked radio represents the group; an all-unchecked group is
+// A radio GROUP is one tab stop, not one per radio - the platform's own
+// Tab rule: the checked radio represents the group; an all-unchecked group is
 // represented by its first radio. Without this, a dialog trap treats every
 // radio as an edge candidate and Shift+Tab at the "first" tabbable is
 // wrong whenever a radio group sits at either end of the scope.

@@ -9,7 +9,7 @@ import { setState } from "@poetry/controllers/helpers/state"
 // controller consumes its cancelable entry event to implement SELECTION
 // FOLLOWS FOCUS: entry fires only on arrow/Home/End navigation - never on
 // Tab or click-focus - so checking on entry is exactly the APG contract
-// (Tab into the group never changes the value; Radix-exact).
+// (Tab into the group never changes the value; contractual).
 //
 // The form story is the hidden-native-input rule: one <input type=radio>
 // per item, shared name (aria-hidden, tabindex=-1) - native radio
