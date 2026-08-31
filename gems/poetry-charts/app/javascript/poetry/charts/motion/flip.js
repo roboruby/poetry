@@ -18,14 +18,20 @@ const MORPH_SLOTS = [
   "chart-radial-bar",
   "chart-dot",
 ]
+/** Selector matching every animatable mark the FLIP machinery drives. */
 export const MORPH_SELECTOR = MORPH_SLOTS.map((slot) => `[data-slot="${slot}"]`).join(", ")
 
 const NUMBER = /-?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?/gi
 
-// d -> { skeleton, numbers }: the non-numeric shape (command letters and
-// separators) plus the numbers in order. Equal skeletons morph; arc flags
-// are structural constants inside the skeleton's A-segments and stay put
-// under lerp because equal skeletons imply equal flags.
+/**
+ * d -> { skeleton, numbers }: the non-numeric shape (command letters
+ * and separators) plus the numbers in order. Equal skeletons morph; arc
+ * flags are structural constants inside the skeleton's A-segments and
+ * stay put under lerp because equal skeletons imply equal flags.
+ *
+ * @param {string} d
+ * @returns {{ skeleton: string, numbers: number[] }}
+ */
 export function parsePath(d) {
   const numbers = []
   const skeleton = d.replace(NUMBER, (match) => {
@@ -35,13 +41,26 @@ export function parsePath(d) {
   return { skeleton, numbers }
 }
 
+/**
+ * Rebuilds a d string from a skeleton and numbers (2-decimal rounding).
+ *
+ * @param {string} skeleton
+ * @param {number[]} numbers
+ * @returns {string}
+ */
 export function buildPath(skeleton, numbers) {
   let i = 0
   return skeleton.replace(/#/g, () => String(Math.round(numbers[i++] * 100) / 100))
 }
 
-// Animatable elements keyed by slot + series key + per-bucket sequence
-// (dots carry no index; document order is stable).
+/**
+ * Yields [key, element] for every animatable element, keyed by slot +
+ * series key + per-bucket sequence (dots carry no index; document order
+ * is stable).
+ *
+ * @param {SVGElement} svg
+ * @returns {Generator<[string, Element]>}
+ */
 export function* keyedElements(svg) {
   const counters = new Map()
   for (const el of svg.querySelectorAll(MORPH_SELECTOR)) {
@@ -52,6 +71,13 @@ export function* keyedElements(svg) {
   }
 }
 
+/**
+ * Snapshots the animatable geometry (sector params, path d, or dot
+ * cx/cy), keyed for pairing.
+ *
+ * @param {SVGElement} svg
+ * @returns {Map<string, Object>}
+ */
 export function captureGeometry(svg) {
   const entries = new Map()
   for (const [key, el] of keyedElements(svg)) {
@@ -66,9 +92,15 @@ export function captureGeometry(svg) {
   return entries
 }
 
-// Pair every animatable element with its captured predecessor. Null =
-// structure changed (missing key, skeleton mismatch, kind mismatch) ->
-// the caller falls back to its non-morph path.
+/**
+ * Pairs every animatable element with its captured predecessor. Null =
+ * structure changed (missing key, skeleton mismatch, kind mismatch) -
+ * the caller falls back to its non-morph path.
+ *
+ * @param {SVGElement} svg
+ * @param {Map<string, Object>} previous - from `captureGeometry`
+ * @returns {Array<Object> | null} tween jobs, or null
+ */
 export function matchJobs(svg, previous) {
   const jobs = []
   for (const [key, el] of keyedElements(svg)) {
@@ -99,6 +131,12 @@ export function matchJobs(svg, previous) {
   return jobs.length ? jobs : null
 }
 
+/**
+ * Writes one interpolated frame of every job onto the DOM.
+ *
+ * @param {Array<Object>} jobs
+ * @param {number} eased - 0..1
+ */
 export function applyJobs(jobs, eased) {
   for (const job of jobs) {
     if (job.sector) {
@@ -114,8 +152,12 @@ export function applyJobs(jobs, eased) {
   }
 }
 
-// The final frame restores the exact target strings (server- or
-// kernel-rendered), never a lerp artifact.
+/**
+ * The final frame restores the exact target strings (server- or
+ * kernel-rendered), never a lerp artifact.
+ *
+ * @param {Array<Object>} jobs
+ */
 export function finishJobs(jobs) {
   for (const job of jobs) {
     if (job.final != null) job.el.setAttribute("d", job.final)

@@ -23,6 +23,14 @@ export {
   createChartJsAdapter,
 }
 
+/**
+ * The bundler-host one-liner: registers the five chart controllers on
+ * the host's Stimulus application (importmap hosts get the same
+ * registrations via the engine's pins) and installs the morph guard
+ * below.
+ *
+ * @param {import("@hotwired/stimulus").Application} application
+ */
 export function registerPoetryChartsControllers(application) {
   application.register("poetry--charts--tooltip", ChartTooltipController)
   application.register("poetry--charts--adapter", ChartAdapterController)

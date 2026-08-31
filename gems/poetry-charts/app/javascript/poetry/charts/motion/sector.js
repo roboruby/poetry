@@ -11,10 +11,31 @@ const RADIAN = Math.PI / 180
 const sign = (value) => (value === 0 ? 0 : value < 0 ? -1 : 1)
 const fmt = (value) => String(Math.round(value * 1e4) / 1e4)
 
+/**
+ * Degrees-and-radius to SVG coordinates (the y-down plane).
+ *
+ * @param {number} cx
+ * @param {number} cy
+ * @param {number} radius
+ * @param {number} angle - degrees counterclockwise from 3 o'clock
+ * @returns {[number, number]} [x, y]
+ */
 export function polarToCartesian(cx, cy, radius, angle) {
   return [cx + Math.cos(-RADIAN * angle) * radius, cy + Math.sin(-RADIAN * angle) * radius]
 }
 
+/**
+ * The annular-sector path for a pie/radial slice; inner radius 0 closes
+ * to the center instead of an inner arc.
+ *
+ * @param {number} cx
+ * @param {number} cy
+ * @param {number} innerRadius
+ * @param {number} outerRadius
+ * @param {number} startAngle - degrees
+ * @param {number} endAngle
+ * @returns {string} the d attribute
+ */
 export function sectorPath(cx, cy, innerRadius, outerRadius, startAngle, endAngle) {
   const delta = sign(endAngle - startAngle) * Math.min(Math.abs(endAngle - startAngle), 359.999)
   const tempEnd = startAngle + delta

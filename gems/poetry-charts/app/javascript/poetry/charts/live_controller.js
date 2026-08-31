@@ -28,6 +28,10 @@ export default class ChartLiveController extends Controller {
 
   static targets = ["payload"]
 
+  /**
+   * Finds the SVG and starts the payload observer (the
+   * script-replacement channel).
+   */
   connect() {
     this.svg = this.element.querySelector('[data-slot="chart-svg"]')
     if (!this.svg || !this.hasPayloadTarget) return
@@ -36,6 +40,7 @@ export default class ChartLiveController extends Controller {
     this.observer.observe(this.element, { subtree: true, childList: true, characterData: true })
   }
 
+  /** Stops the observer and abandons any in-flight tween. */
   disconnect() {
     this.observer?.disconnect()
     this.observer = null
@@ -43,14 +48,23 @@ export default class ChartLiveController extends Controller {
     this.cancel = null
   }
 
-  // Action channel: poetry-chart:update->poetry--charts--live#receive.
+  /**
+   * The event channel's action: a poetry-chart:update event's
+   * detail.data re-renders.
+   *
+   * @param {CustomEvent} event
+   */
   receive(event) {
     this.update(event.detail.data)
   }
 
-  // The window: [start, end] inclusive indices into the FULL data;
-  // the renderer slices before computing. Instant renders - a drag should
-  // track the pointer, not tween behind it.
+  /**
+   * Applies a window: [start, end] inclusive indices into the FULL
+   * data; the renderer slices before computing. Instant renders - a
+   * drag should track the pointer, not tween behind it.
+   *
+   * @param {[number, number]} window
+   */
   setWindow(window) {
     const payload = this.#payload()
     payload.frame.window = window
@@ -63,10 +77,13 @@ export default class ChartLiveController extends Controller {
     this.#render(payload, { animate: false })
   }
 
-  // The interactive legend: click->poetry--charts--live#toggleSeries
-  // with the series key as an action param. Hidden series leave the
-  // domain (the chart rescales on hide), their marks hide, their legend
-  // item dims.
+  /**
+   * The interactive legend's click action (the series key rides an
+   * action param): hidden series leave the domain (the chart rescales
+   * on hide), their marks hide, their legend item dims.
+   *
+   * @param {Event} event - params.key names the series
+   */
   toggleSeries(event) {
     const key = event.params.key
     if (!key) return
@@ -89,8 +106,13 @@ export default class ChartLiveController extends Controller {
     this.#render(payload)
   }
 
-  // The JS API: hosts hand over the new data rows; the payload script is
-  // rewritten first (the DOM always holds current state), then rendered.
+  /**
+   * The JS API: hosts hand over the new data rows; the payload script
+   * is rewritten first (the DOM always holds current state), then
+   * rendered.
+   *
+   * @param {Array<Object>} data - the full replacement rows
+   */
   update(data) {
     const payload = this.#payload()
     payload.spec.data = data

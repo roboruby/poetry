@@ -42,6 +42,13 @@ the swappability door.
 - `static events` declarations follow the poetry-core rule
   (events_declaration.test.js enforces); Ruby-side wiring is declared via
   `use_stimulus`, gated by the StimulusContract like poetry-ui.
+- Doc comments follow the poetry-core rule: file/class narration stays
+  `//`; every PUBLIC method and exported function/constant carries a
+  JSDoc `/** ... */` block with `@param`/`@returns`. No comment may
+  quote a dispatch call or its option tokens (the events scan reads raw
+  source), and comments carry poetry's rules - never other libraries'
+  names or anonymous "upstream" comparisons; attribution lives in
+  THIRD_PARTY_NOTICES.md alone.
 - Scope edges are declared, not implied: streaming trio only for live,
   references/errors vertical-only, brush + streaming undefined together.
 

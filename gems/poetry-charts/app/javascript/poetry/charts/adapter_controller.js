@@ -15,6 +15,12 @@ export default class ChartAdapterController extends Controller {
   static targets = ["mount", "spec"]
   static values = { engine: String }
 
+  /**
+   * Mounts the declared engine: parses the embedded spec, validates the
+   * adapter and its type support (console errors, never throws - a
+   * chart must not take the page down), renders, and arms the dark-mode
+   * observer.
+   */
   connect() {
     const adapter = chartAdapter(this.engineValue)
     if (!adapter) {
@@ -37,6 +43,7 @@ export default class ChartAdapterController extends Controller {
     this.dispatch("rendered", { detail: { engine: this.engineValue, degradations: adapter.degradations ?? [] } })
   }
 
+  /** Destroys the engine instance and stops the theme observer. */
   disconnect() {
     this.observer?.disconnect()
     if (this.instance != null) this.adapter?.destroy(this.instance, this.mountTarget)

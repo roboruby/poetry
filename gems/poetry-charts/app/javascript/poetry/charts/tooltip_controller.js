@@ -16,6 +16,11 @@ export default class ChartTooltipController extends Controller {
   static targets = ["svg", "tooltip", "data"]
   static values = { sync: String }
 
+  /**
+   * Parses the embedded coordinates payload and (once) wires the sync
+   * listener. refresh() re-enters here when the live renderer rewrites
+   * the payload.
+   */
   connect() {
     const payload = JSON.parse(this.dataTarget.textContent)
     this.layout = payload.layout
@@ -40,6 +45,7 @@ export default class ChartTooltipController extends Controller {
     }
   }
 
+  /** Unwires the sync listener. */
   disconnect() {
     if (this.onSync) {
       window.removeEventListener("poetry-chart:sync", this.onSync)
@@ -47,11 +53,17 @@ export default class ChartTooltipController extends Controller {
     }
   }
 
+  /** @returns {number} the category (or slice) count */
   get count() {
     return this.anchors ? this.anchors.length : this.centers.length
   }
 
-  // Action: pointermove->...#move on the SVG (cartesian bisect).
+  /**
+   * The SVG's pointermove action (cartesian): converts the pointer to
+   * viewBox units and shows the nearest category.
+   *
+   * @param {PointerEvent} event
+   */
   move(event) {
     if (this.layout === "polar") return
 
@@ -64,14 +76,23 @@ export default class ChartTooltipController extends Controller {
     this.show(this.#nearest(this.layout === "horizontal" ? y : x))
   }
 
-  // Action: pointerover->...#enter on the SVG (polar: the hovered slice
-  // carries its index - no geometry at all).
+  /**
+   * The SVG's pointerover action (polar): the hovered slice carries its
+   * index - no geometry at all.
+   *
+   * @param {PointerEvent} event
+   */
   enter(event) {
     const marked = event.target.closest?.("[data-index]")
     if (marked) this.show(Number(marked.dataset.index))
   }
 
-  // Action: keydown->...#keydown on the SVG - the accessibilityLayer floor.
+  /**
+   * The SVG's keydown action - the accessibility floor: arrows walk the
+   * categories, Home/End jump, Escape dismisses.
+   *
+   * @param {KeyboardEvent} event
+   */
   keydown(event) {
     const max = this.count - 1
     let index = this.activeIndex ?? -1
@@ -102,9 +123,11 @@ export default class ChartTooltipController extends Controller {
     this.show(index)
   }
 
-  // Action: poetry--charts--live:updated->...#refresh - the live renderer
-  // rewrote the embedded coordinates; re-read them and keep serving the
-  // active index if it still exists (the tooltip follows the stream).
+  /**
+   * The live-updated action: the live renderer rewrote the embedded
+   * coordinates; re-read them and keep serving the active index if it
+   * still exists (the tooltip follows the stream).
+   */
   refresh() {
     const index = this.activeIndex
     this.connect()
@@ -112,14 +135,20 @@ export default class ChartTooltipController extends Controller {
     else if (index != null) this.leave()
   }
 
+  /** The SVG's focus action: entering by keyboard shows the first category. */
   focus() {
     if (this.activeIndex == null) this.show(0)
   }
 
+  /** The SVG's blur action: dismisses. */
   blur() {
     this.leave()
   }
 
+  /**
+   * Hides the tooltip and clears every active reflection (the
+   * pointerleave action and Escape's landing).
+   */
   leave() {
     this.activeIndex = null
     this.tooltipTarget.hidden = true
@@ -129,6 +158,13 @@ export default class ChartTooltipController extends Controller {
     this.#broadcastSync(null)
   }
 
+  /**
+   * Shows the tooltip for a category/slice index: swaps the
+   * pre-formatted strings into the server-rendered chrome, positions
+   * the box, reflects data-active, and broadcasts to synced charts.
+   *
+   * @param {number} index
+   */
   show(index) {
     if (index == null || index < 0 || index >= this.count) return
 

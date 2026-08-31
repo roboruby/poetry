@@ -12,6 +12,13 @@
 // cannot overlay per-point without the engine's hit data), CSS variables
 // resolve to frozen pixels at paint (dark-mode flips repaint the whole
 // chart), and per-part data-slot styling does not exist on a bitmap.
+/**
+ * Builds the Chart.js adapter around a host-supplied constructor
+ * (poetry ships NO Chart.js - the header shows the wiring).
+ *
+ * @param {Function} Chart - the Chart.js constructor (chart.js/auto)
+ * @returns {Object} the adapter, ready for registerChartAdapter
+ */
 export function createChartJsAdapter(Chart) {
   const TYPES = { area: "line", line: "line", bar: "bar", pie: "pie", radar: "radar" }
 

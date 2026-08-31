@@ -3,8 +3,16 @@
 // doctrine - the client only interpolates between server-computed
 // states, so the whole kernel is eased time.
 
-// Newton-Raphson with a bisection fallback - the standard CSS timing
-// function solver (the same approach WebKit ships).
+/**
+ * A CSS cubic-bezier timing function: Newton-Raphson with a bisection
+ * fallback - the standard solver (the same approach WebKit ships).
+ *
+ * @param {number} x1
+ * @param {number} y1
+ * @param {number} x2
+ * @param {number} y2
+ * @returns {(x: number) => number} eased progress for linear progress
+ */
 export function cubicBezier(x1, y1, x2, y2) {
   const ax = 3 * x1 - 3 * x2 + 1
   const bx = 3 * x2 - 6 * x1
@@ -46,6 +54,7 @@ export function cubicBezier(x1, y1, x2, y2) {
   }
 }
 
+/** The CSS-named easing functions. */
 export const EASINGS = {
   linear: (t) => t,
   ease: cubicBezier(0.25, 0.1, 0.25, 1),
@@ -54,8 +63,20 @@ export const EASINGS = {
   "ease-in-out": cubicBezier(0.42, 0, 0.58, 1),
 }
 
-// tween({ duration, delay, easing, onFrame, onFinish }) -> cancel().
-// onFrame receives (eased, linear); the final frame is exactly (1, 1).
+/**
+ * Runs one rAF tween. onFrame receives (eased, linear); the final frame
+ * is exactly (1, 1). A non-positive duration fires the final frame
+ * synchronously.
+ *
+ * @param {Object} options
+ * @param {number} options.duration - ms
+ * @param {number} [options.delay=0] - ms before the first eased frame
+ * @param {string | Function} [options.easing="ease"] - an EASINGS name
+ *   or a timing function
+ * @param {(eased: number, linear: number) => void} options.onFrame
+ * @param {() => void} [options.onFinish]
+ * @returns {() => void} cancel()
+ */
 export function tween({ duration, delay = 0, easing = "ease", onFrame, onFinish }) {
   const fn = typeof easing === "function" ? easing : (EASINGS[easing] ?? EASINGS.ease)
 

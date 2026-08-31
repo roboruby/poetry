@@ -47,8 +47,14 @@ const fnum = (v) => {
 
 const round2 = (v) => (Math.sign(v) * Math.round(Math.abs(v) * 100)) / 100
 
-// ActiveSupport number_to_delimited, byte-for-byte for numerics: integer
-// part grouped with commas, decimal part verbatim, strings untouched.
+/**
+ * ActiveSupport number_to_delimited, byte-for-byte for numerics:
+ * integer part grouped with commas, decimal part verbatim, strings
+ * untouched.
+ *
+ * @param {*} value
+ * @returns {string | null}
+ */
 export function displayValue(value) {
   if (value == null) return null
   if (typeof value === "number") {
@@ -61,6 +67,14 @@ export function displayValue(value) {
 
 // -- the pipeline (Cartesian, transcribed) ------------------------------
 
+/**
+ * {spec, frame} -> geometry: the window slice, the hidden-series
+ * filter, scales, stacks, nice ticks, and the per-series point accessor
+ * (the transcribed pipeline the header pins).
+ *
+ * @param {Object} payload - { spec, frame }
+ * @returns {Object} the geometry bag (scales, ticks, points(entry), ...)
+ */
 export function computeCartesian(payload) {
   const { spec, frame } = payload
   // The window (brush/zoom): [start, end] inclusive indices slice
@@ -245,9 +259,16 @@ function barCells(geometry, entry, slot) {
   return cells
 }
 
-// Apply a payload (whose spec.data is the CURRENT data) to the frame
-// element (the div wrapping svg + chrome + scripts). Returns the geometry
-// so callers (the live controller) can chain.
+/**
+ * Applies a payload (whose spec.data is the CURRENT data) to the frame
+ * element (the div wrapping svg + chrome + scripts) as in-place
+ * attribute updates.
+ *
+ * @param {Element} frame
+ * @param {Object} payload - { spec, frame }
+ * @returns {Object} the geometry, so callers (the live controller) can
+ *   chain
+ */
 export function applyCartesian(frame, payload) {
   const svg = frame.querySelector('[data-slot="chart-svg"]')
   const geometry = computeCartesian(payload)

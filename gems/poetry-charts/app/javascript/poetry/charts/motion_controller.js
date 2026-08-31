@@ -47,6 +47,11 @@ export default class ChartMotionController extends Controller {
   #onBeforeRender = null
   #onTurboMorph = null
 
+  /**
+   * Resolves the SVG, wires the Turbo page-morph hooks (the body
+   * comment holds the blank-entrance rule), and starts the entrance or
+   * morph.
+   */
   connect() {
     this.svg = this.element.querySelector('[data-slot="chart-svg"]')
     if (!this.svg) return
@@ -92,6 +97,10 @@ export default class ChartMotionController extends Controller {
     this.#start()
   }
 
+  /**
+   * Unwires the Turbo hooks, abandons any tween, and parks the current
+   * geometry in the registry for a same-id successor.
+   */
   disconnect() {
     document.removeEventListener("turbo:before-render", this.#onBeforeRender)
     document.removeEventListener("turbo:morph", this.#onTurboMorph)

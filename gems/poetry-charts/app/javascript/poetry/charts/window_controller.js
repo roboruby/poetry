@@ -16,19 +16,26 @@ export default class ChartWindowController extends Controller {
     brush: Array, // [x, y, width, height] in viewBox units
   }
 
+  /** Resolves the SVG/selection nodes and paints the initial brush. */
   connect() {
     this.svg = this.element.querySelector('[data-slot="chart-svg"]')
     this.selection = this.element.querySelector('[data-slot="chart-zoom-selection"]')
     this.#paintBrush()
   }
 
+  /** Unbinds any in-flight drag listeners. */
   disconnect() {
     this.#unbind()
   }
 
   // -- the brush ------------------------------------------------------------
 
-  // Action: pointerdown->poetry--charts--window#startBrush on the strip.
+  /**
+   * The strip's pointerdown action: begins a brush drag - a handle
+   * resizes its edge, the body shifts the whole window.
+   *
+   * @param {PointerEvent} event
+   */
   startBrush(event) {
     if (!this.hasBrushValue) return
     event.preventDefault()
@@ -43,7 +50,12 @@ export default class ChartWindowController extends Controller {
 
   // -- zoom -----------------------------------------------------------------
 
-  // Action: pointerdown->...#startZoom on the SVG (skips brush drags).
+  /**
+   * The SVG's pointerdown action (skips brush drags): begins a
+   * drag-select zoom on the plot.
+   *
+   * @param {PointerEvent} event
+   */
   startZoom(event) {
     if (!this.zoomValue || event.target.closest('[data-slot="chart-brush"]')) return
     const x = this.#viewBoxX(event)
@@ -53,7 +65,7 @@ export default class ChartWindowController extends Controller {
     this.#bind()
   }
 
-  // Action: dblclick->...#reset on the SVG.
+  /** The SVG's dblclick action: restores the full window. */
   reset() {
     this.#apply([0, this.#fullLength() - 1])
   }
