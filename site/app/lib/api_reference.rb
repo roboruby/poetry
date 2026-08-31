@@ -16,6 +16,21 @@ class ApiReference
                    Poetry::Core::Stimulus::Declarations Poetry::Core::Tokens
                    Poetry::Core::Icons Poetry::Core::Registry]
     },
+    "poetry-controllers" => {
+      "title" => "@poetry/controllers",
+      "description" => "The JavaScript surface: the 53 Stimulus controllers and the DOM " \
+                       "helper modules, one source over two channels (the engine's importmap " \
+                       "pins and the npm package) - generated from the source JSDoc and the " \
+                       "controllers manifest.",
+      "note" => "Generated from the source JSDoc plus the introspected controllers " \
+                "manifest. What each component wires is on its gallery page - this page " \
+                "documents the JS surface itself: identifiers, values, events, actions, " \
+                "and the helper modules.",
+      "pins" => %w[@poetry/controllers poetry--core--state poetry--core--dialog
+                   poetry--core--popper poetry--core--dismissable poetry--core--focus-scope
+                   poetry--core--roving-focus @poetry/controllers/helpers/state
+                   @poetry/controllers/helpers/presence @poetry/controllers/helpers/portal]
+    },
     "poetry-ui" => {
       "title" => "poetry-ui",
       "description" => "The component suite's Ruby surface beyond the gallery: the poetry_* " \

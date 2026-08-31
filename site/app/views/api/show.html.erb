@@ -12,8 +12,12 @@
     <h1 class="text-3xl font-semibold tracking-tight"><%= @meta["title"] %> API</h1>
     <p class="max-w-2xl text-muted-foreground"><%= @meta["description"] %></p>
     <p class="max-w-2xl text-sm text-muted-foreground">
-      Generated from the gem's source documentation. Component classes are documented on their
-      own <%= poetry_link(href: "/") { "gallery pages" } %> — this page carries the framework surface.
+      <% if @meta["note"] %>
+        <%= @meta["note"] %>
+      <% else %>
+        Generated from the gem's source documentation. Component classes are documented on their
+        own <%= poetry_link(href: "/") { "gallery pages" } %> — this page carries the framework surface.
+      <% end %>
     </p>
   </header>
 

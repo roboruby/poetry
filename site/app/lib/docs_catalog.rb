@@ -89,9 +89,10 @@ class DocsCatalog
                            "Zed, RubyMine): safe MCP-config upserts, a per-editor matrix, a .herb.yml " \
                            "for the Herb toolchain, and the Figma / Paper design-tool token bridges."),
     Entry.new(slug: "api", title: "API Reference", section: "docs", icon: :braces,
-              description: "The Ruby surface, generated from the gems' source documentation: " \
-                           "component options, slots, and style axes on each gallery page, plus " \
-                           "per-gem pages for the base classes, DSLs, helpers, and supporting gems."),
+              description: "The Ruby and JS surface, generated from the gems' source " \
+                           "documentation: component options, slots, and style axes on each " \
+                           "gallery page, plus per-gem pages for the base classes, DSLs, " \
+                           "helpers, supporting gems, and the Stimulus controller suite."),
     Entry.new(slug: "data-table", title: "Data Table", section: "docs", icon: :"table-2",
               description: "The server-driven table: DataTable::State.from_params with a " \
                        "sortable: whitelist, URL-state sorting, filtering and pagination, " \

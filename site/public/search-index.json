@@ -6018,6 +6018,18 @@
     "path": "/api/poetry-core#poetry"
   },
   {
+    "title": "@poetry/controllers",
+    "page": "@poetry/controllers",
+    "section": "api",
+    "path": "/api/poetry-controllers"
+  },
+  {
+    "title": "IncompleteDate",
+    "page": "@poetry/controllers",
+    "section": "api",
+    "path": "/api/poetry-controllers#incompletedate"
+  },
+  {
     "title": "poetry-ui",
     "page": "poetry-ui",
     "section": "api",

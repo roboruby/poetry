@@ -25,5 +25,18 @@ namespace :docs do
       end
       abort "docs:api_reference failed for #{gem}" unless ok
     end
+
+    # The JS sibling: @poetry/controllers from poetry-core's JSDoc + the
+    # controllers manifest (pure file parsing - no bundle switch needed).
+    core_root = root.join("..", "poetry-core").expand_path
+    if core_root.exist?
+      ok = system(
+        RbConfig.ruby, root.join("script/export_jsdoc.rb").to_s,
+        core_root.to_s, out_dir.join("poetry-controllers.json").to_s
+      )
+      abort "docs:api_reference failed for @poetry/controllers" unless ok
+    else
+      warn "skip @poetry/controllers: poetry-core not found"
+    end
   end
 end
