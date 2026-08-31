@@ -247,7 +247,7 @@ class DocsCatalog
     def apis
       @apis ||= ApiReference.slugs.map do |slug|
         Entry.new(slug: slug, title: ApiReference.meta(slug)["title"], section: "api",
-                  icon: :braces, description: ApiReference.meta(slug)["description"])
+                  description: ApiReference.meta(slug)["description"])
       end
     end
 
@@ -304,7 +304,7 @@ class DocsCatalog
 
     # The icon-set pages at /icons/<slug> - one per icon library.
     ICONS = [
-      Entry.new(slug: "lucide", title: "Lucide", section: "icons", icon: :feather,
+      Entry.new(slug: "lucide", title: "Lucide", section: "icons",
                 description: "The vendored icon set: 1,745 icons served from the gem, rendered " \
                              "through poetry_icon with literal-name validation.")
     ].freeze
