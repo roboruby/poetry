@@ -49,6 +49,19 @@ class ApiReference
       "pins" => %w[Poetry::Charts::ComponentsHelper Poetry::Charts::Config Poetry::Charts::Spec],
       "skip" => /\A(Poetry::Charts::[A-Z]\w*Chart::|Poetry::Charts::Container::|Poetry::Charts::LegendContent::|Poetry::Charts::TooltipContent::|Poetry::Charts::TooltipLayer::)/
     },
+    "poetry-charts-controllers" => {
+      "title" => "@poetry/charts",
+      "description" => "The charts JavaScript surface: the five Stimulus chrome controllers " \
+                       "(tooltip, motion, live, window, adapter), the BYO-engine adapter " \
+                       "seam, and the motion/live modules - generated from the source JSDoc " \
+                       "and the controllers manifest.",
+      "note" => "Generated from the source JSDoc plus the introspected controllers " \
+                "manifest. Chart anatomy and the Ruby surface live on the chart pages and " \
+                "the poetry-charts API page - this page documents the JS itself.",
+      "pins" => %w[@poetry/charts poetry--charts--tooltip poetry--charts--live
+                   poetry--charts--motion poetry--charts--window poetry--charts--adapter
+                   @poetry/charts/adapter_registry @poetry/charts/motion/flip]
+    },
     "poetry-agent" => {
       "title" => "poetry-agent",
       "description" => "The agent-interop gem: the MCP server (stdio exe and the Rack HTTP " \

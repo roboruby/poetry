@@ -6054,6 +6054,12 @@
     "path": "/api/poetry-charts#poetry"
   },
   {
+    "title": "@poetry/charts",
+    "page": "@poetry/charts",
+    "section": "api",
+    "path": "/api/poetry-charts-controllers"
+  },
+  {
     "title": "poetry-agent",
     "page": "poetry-agent",
     "section": "api",

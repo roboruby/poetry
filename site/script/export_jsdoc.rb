@@ -23,14 +23,31 @@
 require "json"
 
 gem_root, out_path = ARGV
-abort "usage: export_jsdoc.rb <poetry-core_root> <out.json>" unless gem_root && out_path
+abort "usage: export_jsdoc.rb <gem_root> <out.json>" unless gem_root && out_path
 
-JS_ROOT = File.join(gem_root, "app/javascript/poetry/core")
+# Per-gem shape: where the JS lives, the npm package it ships as, the
+# Stimulus identifier prefix, files/dirs that are vendored bundles rather
+# than source, and superclasses among the controllers themselves
+# (extends Controller is the Stimulus base and renders as no superclass).
+CONFIGS = {
+  "poetry-core" => {
+    subpath: "poetry/core", package: "@poetry/controllers",
+    prefix: "poetry--core--", skip: ["vendor/"],
+    superclasses: { "DialogController" => "poetry--core--dialog" }
+  },
+  "poetry-charts" => {
+    subpath: "poetry/charts", package: "@poetry/charts",
+    prefix: "poetry--charts--", skip: ["d3.js"],
+    superclasses: {}
+  }
+}.freeze
+
+CONFIG = CONFIGS[File.basename(File.expand_path(gem_root))] or
+  abort "export_jsdoc.rb: no config for #{File.basename(File.expand_path(gem_root))}"
+
+JS_ROOT = File.join(gem_root, "app/javascript", CONFIG[:subpath])
 MANIFEST = JSON.parse(File.read(File.join(gem_root, "config/controllers_manifest.json")))
-
-# Superclasses among the controllers themselves (extends Controller is the
-# Stimulus base and renders as no superclass).
-SUPERCLASS_IDENTIFIERS = { "DialogController" => "poetry--core--dialog" }.freeze
+SUPERCLASS_IDENTIFIERS = CONFIG[:superclasses]
 
 @errors = []
 
@@ -92,7 +109,7 @@ end
 
 def clean_signature(raw)
   raw.sub(/\Aexport\s+(default\s+)?/, "").sub(/\A(async|get|static)\s+/, "")
-     .sub(/\Afunction\s+/, "")
+     .sub(/\Afunction\*?\s*/, "")
 end
 
 # The first contiguous // block in the file - every file's narration header.
@@ -117,7 +134,7 @@ EXPORT_SKIP = /\Aexport (\{|\*)/ # re-exports document nothing themselves
 
 def scan(path)
   lines = File.readlines(path, chomp: true)
-  file = "app/javascript/poetry/core/#{path.delete_prefix("#{JS_ROOT}/")}"
+  file = "app/javascript/#{CONFIG[:subpath]}/#{path.delete_prefix("#{JS_ROOT}/")}"
   result = { file: file, header: header_narration(lines),
              functions: [], constants: [], classes: [], controller_methods: [],
              extends: nil }
@@ -146,7 +163,7 @@ def scan(path)
       result[:extends] = Regexp.last_match(2)
     when /\Aexport class (\w+)/
       @errors << "#{file}:#{i + 1}: export class #{Regexp.last_match(1)} lacks JSDoc"
-    when /\Aexport (function|const) (\w+)/
+    when /\Aexport (function\*?|const) (\w+)/
       @errors << "#{file}:#{i + 1}: export #{Regexp.last_match(2)} lacks JSDoc" unless line.match?(EXPORT_SKIP)
     when METHOD_DEF
       # A public method with no preceding JSDoc - but only inside a class
@@ -166,7 +183,7 @@ end
 def handle_decl(result, klass, parsed, decl, lines, index, indent, file)
   line_number = index + 1
   case decl
-  when /\Aexport function (\w+)/
+  when /\Aexport function\*?\s?(\w+)/
     result[:functions] << method_entry(parsed, Regexp.last_match(1),
                                        clean_signature(signature_at(lines, index)), "class", file, line_number)
   when /\Aexport const (\w+)\s*=\s*(.*)\z/
@@ -196,19 +213,24 @@ end
 
 def facts_for(identifier)
   entry = MANIFEST[identifier] or return nil
+  targets = entry["targets"] || []
+  values = entry["values"] || {}
+  classes = entry["classes"] || []
+  events = entry["events"] || []
   parts = []
-  if entry["targets"].any?
-    parts << "**Targets**: #{entry["targets"].map { |t| "`#{t}`" }.join(", ")}"
+  if targets.any?
+    parts << "**Targets**: #{targets.map { |t| "`#{t}`" }.join(", ")}"
   end
-  if entry["values"].any?
-    values = entry["values"].map do |name, definition|
+  if values.any?
+    rendered = values.map do |name, definition|
       default = definition.key?("default") ? ", default: #{definition["default"].inspect}" : ""
       "`#{name}` (#{definition["type"]}#{default})"
     end
-    parts << "**Values**: #{values.join("; ")}"
+    parts << "**Values**: #{rendered.join("; ")}"
   end
-  parts << "**Classes**: #{entry["classes"].map { |c| "`#{c}`" }.join(", ")}" if entry["classes"].any?
-  parts << "**Events**: #{entry["events"].map { |e| "`#{e}`" }.join(", ")}" if entry["events"].any?
+  parts << "**Classes**: #{classes.map { |c| "`#{c}`" }.join(", ")}" if classes.any?
+  parts << "**Events**: #{events.map { |e| "`#{e}`" }.join(", ")}" if events.any?
+
   parts.join("\n\n")
 end
 
@@ -217,29 +239,18 @@ end
 objects = []
 
 Dir[File.join(JS_ROOT, "**/*.js")].sort.each do |path|
-  next if path.include?("/vendor/")
+  rel = path.delete_prefix("#{JS_ROOT}/")
+  next if CONFIG[:skip].any? { |skip| rel == skip || rel.start_with?(skip) }
 
   scanned = scan(path)
   basename = File.basename(path, ".js")
 
-  if basename == "index"
-    objects << { "path" => "@poetry/controllers", "type" => "module", "superclass" => nil,
+  if rel == "index.js"
+    objects << { "path" => CONFIG[:package], "type" => "module", "superclass" => nil,
                  "docstring" => scanned[:header], "examples" => [], "file" => scanned[:file],
                  "methods" => scanned[:functions], "constants" => scanned[:constants] }
-  elsif path.include?("/helpers/")
-    objects << { "path" => "@poetry/controllers/helpers/#{basename}", "type" => "module",
-                 "superclass" => nil, "docstring" => scanned[:header], "examples" => [],
-                 "file" => scanned[:file], "methods" => scanned[:functions],
-                 "constants" => scanned[:constants] }
-    scanned[:classes].each do |klass|
-      objects << { "path" => klass[:name], "type" => "class", "superclass" => nil,
-                   "docstring" => "#{klass[:docstring]}\n\nExported from " \
-                                  "`@poetry/controllers/helpers/#{basename}`.",
-                   "examples" => [], "file" => scanned[:file],
-                   "methods" => klass[:methods], "constants" => [] }
-    end
-  else
-    identifier = "poetry--core--#{basename.delete_suffix("_controller").tr("_", "-")}"
+  elsif rel.end_with?("_controller.js") && !rel.include?("/")
+    identifier = "#{CONFIG[:prefix]}#{basename.delete_suffix("_controller").tr("_", "-")}"
     unless MANIFEST.key?(identifier)
       warn "export_jsdoc: #{identifier} has no manifest entry (not in the registered " \
            "controllers map) - exported without the facts section"
@@ -250,6 +261,18 @@ Dir[File.join(JS_ROOT, "**/*.js")].sort.each do |path|
                  "superclass" => SUPERCLASS_IDENTIFIERS[scanned[:extends]],
                  "docstring" => docstring, "examples" => [], "file" => scanned[:file],
                  "methods" => scanned[:controller_methods], "constants" => [] }
+  else
+    module_path = "#{CONFIG[:package]}/#{rel.delete_suffix(".js")}"
+    objects << { "path" => module_path, "type" => "module",
+                 "superclass" => nil, "docstring" => scanned[:header], "examples" => [],
+                 "file" => scanned[:file], "methods" => scanned[:functions],
+                 "constants" => scanned[:constants] }
+    scanned[:classes].each do |klass|
+      objects << { "path" => klass[:name], "type" => "class", "superclass" => nil,
+                   "docstring" => "#{klass[:docstring]}\n\nExported from `#{module_path}`.",
+                   "examples" => [], "file" => scanned[:file],
+                   "methods" => klass[:methods], "constants" => [] }
+    end
   end
 end
 
@@ -260,5 +283,5 @@ if @errors.any?
 end
 
 objects.sort_by! { |o| o["path"] }
-File.write(out_path, JSON.pretty_generate("gem" => "@poetry/controllers", "objects" => objects))
+File.write(out_path, JSON.pretty_generate("gem" => CONFIG[:package], "objects" => objects))
 puts "#{out_path}: #{objects.length} objects"

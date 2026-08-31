@@ -1,0 +1,1140 @@
+{
+  "gem": "@poetry/charts",
+  "objects": [
+    {
+      "path": "@poetry/charts",
+      "type": "module",
+      "superclass": null,
+      "docstring": "@poetry/charts - poetry-charts' Stimulus chrome controllers + the\nBYO-engine adapter seam, one source shipped over two channels:\nimportmap-first (the engine pins this tree; zero build) and this same\ntree as the npm package for bundler hosts.",
+      "examples": [],
+      "file": "app/javascript/poetry/charts/index.js",
+      "methods": [
+        {
+          "name": "registerPoetryChartsControllers",
+          "scope": "class",
+          "group": null,
+          "signature": "registerPoetryChartsControllers(application)",
+          "docstring": "The bundler-host one-liner: registers the five chart controllers on\nthe host's Stimulus application (importmap hosts get the same\nregistrations via the engine's pins) and installs the morph guard\nbelow.",
+          "params": [
+            {
+              "name": "application",
+              "types": [
+                "import(\"@hotwired/stimulus\").Application"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/index.js",
+          "line": 34
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/charts/adapter_registry",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The BYO-engine seam: adapters register by name and\nimplement the duck-typed protocol over the FROZEN chart-spec v1 -\n\n  {\n    render(el, spec, helpers)  -> instance   (required)\n    destroy(instance, el)                    (required)\n    update(instance, spec)                   (optional - live updates)\n    themeChanged(instance, spec, helpers)    (optional - dark-mode repaint)\n    degradations: [\"...\"]                    (declared, never discovered)\n    supports: [\"area\", \"bar\", ...]           (optional type allowlist)\n  }\n\nThe spec is closed: no engine-specific key ever enters it - a\npass-through options bag would leak engine keys into every call site.\nEngine-specific styling lives INSIDE the adapter.",
+      "examples": [],
+      "file": "app/javascript/poetry/charts/adapter_registry.js",
+      "methods": [
+        {
+          "name": "registerChartAdapter",
+          "scope": "class",
+          "group": null,
+          "signature": "registerChartAdapter(name, adapter)",
+          "docstring": "Registers an engine adapter under a name. The adapter must implement\nthe duck-typed protocol above; a missing render/destroy throws at\nregistration, never at first chart.\n\nRaises `Error` - when render or destroy is missing",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "string"
+              ],
+              "text": "the engine value charts declare"
+            },
+            {
+              "name": "adapter",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/adapter_registry.js",
+          "line": 28
+        },
+        {
+          "name": "chartAdapter",
+          "scope": "class",
+          "group": null,
+          "signature": "chartAdapter(name)",
+          "docstring": "The registered adapter for a name.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "string"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Object | undefined"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/charts/adapter_registry.js",
+          "line": 41
+        },
+        {
+          "name": "registeredAdapters",
+          "scope": "class",
+          "group": null,
+          "signature": "registeredAdapters()",
+          "docstring": "The registered adapter names, in registration order.",
+          "params": [],
+          "return": {
+            "types": [
+              "string[]"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/charts/adapter_registry.js",
+          "line": 50
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/charts/adapters/chartjs",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The Chart.js reference adapter: the proof of the seam,\nand the documented escape valve for the one case the SVG default is\nweak on (huge point counts - canvas draws one bitmap). poetry ships NO\nChart.js: the host imports it and passes the constructor in -\n\n  import Chart from \"chart.js/auto\"\n  import { registerChartAdapter, createChartJsAdapter } from \"@poetry/charts\"\n  registerChartAdapter(\"chartjs\", createChartJsAdapter(Chart))\n\nDeclared degradations (the canvas tax, stated instead of discovered):\ntooltips/legends fall back to Chart.js's built-ins (poetry's HTML chrome\ncannot overlay per-point without the engine's hit data), CSS variables\nresolve to frozen pixels at paint (dark-mode flips repaint the whole\nchart), and per-part data-slot styling does not exist on a bitmap.",
+      "examples": [],
+      "file": "app/javascript/poetry/charts/adapters/chartjs.js",
+      "methods": [
+        {
+          "name": "createChartJsAdapter",
+          "scope": "class",
+          "group": null,
+          "signature": "createChartJsAdapter(Chart)",
+          "docstring": "Builds the Chart.js adapter around a host-supplied constructor\n(poetry ships NO Chart.js - the header shows the wiring).",
+          "params": [
+            {
+              "name": "Chart",
+              "types": [
+                "Function"
+              ],
+              "text": "the Chart.js constructor (chart.js/auto)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the adapter, ready for registerChartAdapter"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/charts/adapters/chartjs.js",
+          "line": 22
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/charts/live/renderer",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The live cartesian renderer: {spec, frame} + data ->\ngeometry via the vendored kernel, applied to the server-rendered SVG as\nIN-PLACE attribute updates - never innerHTML - so the tooltip's targets,\nfocus state, and host listeners survive every tick.\n\nThis is lib/poetry/charts/cartesian.rb (+ the bar component's slot and\npath math) transcribed conventions-and-formatting exact: the vendored\nkernel generated the Ruby port's oracle fixtures, nice ticks are the\nsame getNiceTickValues the server ports, fnum mirrors Ruby's 2-decimal\nhalf-away-from-zero rounding with native JS stringification, and paths\nkeep the kernel's default 3-digit output - so a kernel render of\ndataset X is byte-equal to the server rendering dataset X (proven by\nthe live_fixtures parity suite).\n\nScope (declared): the streaming trio (area / line / bar), dense data,\nno labels, no tick formatters (the Ruby side raises on both at render).\nCount changes (sliding-window warm-up) reconcile group children by\ncloning the last sibling - still attribute-channel: engine-owned\nsubtrees outside the group are never touched.",
+      "examples": [],
+      "file": "app/javascript/poetry/charts/live/renderer.js",
+      "methods": [
+        {
+          "name": "displayValue",
+          "scope": "class",
+          "group": null,
+          "signature": "displayValue(value)",
+          "docstring": "ActiveSupport number_to_delimited, byte-for-byte for numerics:\ninteger part grouped with commas, decimal part verbatim, strings\nuntouched.",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "*"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "string | null"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/charts/live/renderer.js",
+          "line": 58
+        },
+        {
+          "name": "computeCartesian",
+          "scope": "class",
+          "group": null,
+          "signature": "computeCartesian(payload)",
+          "docstring": "{spec, frame} -> geometry: the window slice, the hidden-series\nfilter, scales, stacks, nice ticks, and the per-series point accessor\n(the transcribed pipeline the header pins).",
+          "params": [
+            {
+              "name": "payload",
+              "types": [
+                "Object"
+              ],
+              "text": "{ spec, frame }"
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the geometry bag (scales, ticks, points(entry), ...)"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/charts/live/renderer.js",
+          "line": 78
+        },
+        {
+          "name": "applyCartesian",
+          "scope": "class",
+          "group": null,
+          "signature": "applyCartesian(frame, payload)",
+          "docstring": "Applies a payload (whose spec.data is the CURRENT data) to the frame\nelement (the div wrapping svg + chrome + scripts) as in-place\nattribute updates.",
+          "params": [
+            {
+              "name": "frame",
+              "types": [
+                "Element"
+              ],
+              "text": ""
+            },
+            {
+              "name": "payload",
+              "types": [
+                "Object"
+              ],
+              "text": "{ spec, frame }"
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the geometry, so callers (the live controller) can chain"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/charts/live/renderer.js",
+          "line": 272
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/charts/motion/flip",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The FLIP geometry machinery (shared by the motion and live tiers):\nsnapshot a chart's animatable geometry, pair it against the\ncurrent DOM, and tween old -> new. Paths morph by pairwise numeric lerp\nbehind a structure fingerprint, sectors by param lerp through the same\nsectorPath port, dots by cx/cy. Both endpoints are always\nserver-computed (or kernel-computed) states - the only math here is\na + (b - a) * t.",
+      "examples": [],
+      "file": "app/javascript/poetry/charts/motion/flip.js",
+      "methods": [
+        {
+          "name": "parsePath",
+          "scope": "class",
+          "group": null,
+          "signature": "parsePath(d)",
+          "docstring": "d -> { skeleton, numbers }: the non-numeric shape (command letters\nand separators) plus the numbers in order. Equal skeletons morph; arc\nflags are structural constants inside the skeleton's A-segments and\nstay put under lerp because equal skeletons imply equal flags.",
+          "params": [
+            {
+              "name": "d",
+              "types": [
+                "string"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "{ skeleton: string, numbers: number[] "
+            ],
+            "text": "}"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/charts/motion/flip.js",
+          "line": 35
+        },
+        {
+          "name": "buildPath",
+          "scope": "class",
+          "group": null,
+          "signature": "buildPath(skeleton, numbers)",
+          "docstring": "Rebuilds a d string from a skeleton and numbers (2-decimal rounding).",
+          "params": [
+            {
+              "name": "skeleton",
+              "types": [
+                "string"
+              ],
+              "text": ""
+            },
+            {
+              "name": "numbers",
+              "types": [
+                "number[]"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "string"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/charts/motion/flip.js",
+          "line": 51
+        },
+        {
+          "name": "keyedElements",
+          "scope": "class",
+          "group": null,
+          "signature": "keyedElements(svg)",
+          "docstring": "Yields [key, element] for every animatable element, keyed by slot +\nseries key + per-bucket sequence (dots carry no index; document order\nis stable).",
+          "params": [
+            {
+              "name": "svg",
+              "types": [
+                "SVGElement"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Generator<[string, Element]>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/charts/motion/flip.js",
+          "line": 64
+        },
+        {
+          "name": "captureGeometry",
+          "scope": "class",
+          "group": null,
+          "signature": "captureGeometry(svg)",
+          "docstring": "Snapshots the animatable geometry (sector params, path d, or dot\ncx/cy), keyed for pairing.",
+          "params": [
+            {
+              "name": "svg",
+              "types": [
+                "SVGElement"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Map<string, Object>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/charts/motion/flip.js",
+          "line": 81
+        },
+        {
+          "name": "matchJobs",
+          "scope": "class",
+          "group": null,
+          "signature": "matchJobs(svg, previous)",
+          "docstring": "Pairs every animatable element with its captured predecessor. Null =\nstructure changed (missing key, skeleton mismatch, kind mismatch) -\nthe caller falls back to its non-morph path.",
+          "params": [
+            {
+              "name": "svg",
+              "types": [
+                "SVGElement"
+              ],
+              "text": ""
+            },
+            {
+              "name": "previous",
+              "types": [
+                "Map<string, Object>"
+              ],
+              "text": "from `captureGeometry`"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Object> | null"
+            ],
+            "text": "tween jobs, or null"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/charts/motion/flip.js",
+          "line": 104
+        },
+        {
+          "name": "applyJobs",
+          "scope": "class",
+          "group": null,
+          "signature": "applyJobs(jobs, eased)",
+          "docstring": "Writes one interpolated frame of every job onto the DOM.",
+          "params": [
+            {
+              "name": "jobs",
+              "types": [
+                "Array<Object>"
+              ],
+              "text": ""
+            },
+            {
+              "name": "eased",
+              "types": [
+                "number"
+              ],
+              "text": "0..1"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/motion/flip.js",
+          "line": 140
+        },
+        {
+          "name": "finishJobs",
+          "scope": "class",
+          "group": null,
+          "signature": "finishJobs(jobs)",
+          "docstring": "The final frame restores the exact target strings (server- or\nkernel-rendered), never a lerp artifact.",
+          "params": [
+            {
+              "name": "jobs",
+              "types": [
+                "Array<Object>"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/motion/flip.js",
+          "line": 161
+        }
+      ],
+      "constants": [
+        {
+          "name": "MORPH_SELECTOR",
+          "value": "MORPH_SLOTS.map((slot) => `[data-slot=\"${slot}\"]`).join(\", \")",
+          "docstring": "Selector matching every animatable mark the FLIP machinery drives."
+        }
+      ]
+    },
+    {
+      "path": "@poetry/charts/motion/sector",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The sector path, ported from lib/poetry/charts/polar.rb so both\nsides emit identical path strings. Angles are degrees\ncounterclockwise from 3 o'clock, negated into SVG's y-down plane; the\ndelta clamps at 359.999 so a full circle's endpoints never coincide.\n4-decimal formatting matches the Ruby fmt (native JS stringification IS\nthe reference Geometry.js_number emulates), so mid-sweep paths and the\nserver's plain paths are byte-compatible.",
+      "examples": [],
+      "file": "app/javascript/poetry/charts/motion/sector.js",
+      "methods": [
+        {
+          "name": "polarToCartesian",
+          "scope": "class",
+          "group": null,
+          "signature": "polarToCartesian(cx, cy, radius, angle)",
+          "docstring": "Degrees-and-radius to SVG coordinates (the y-down plane).",
+          "params": [
+            {
+              "name": "cx",
+              "types": [
+                "number"
+              ],
+              "text": ""
+            },
+            {
+              "name": "cy",
+              "types": [
+                "number"
+              ],
+              "text": ""
+            },
+            {
+              "name": "radius",
+              "types": [
+                "number"
+              ],
+              "text": ""
+            },
+            {
+              "name": "angle",
+              "types": [
+                "number"
+              ],
+              "text": "degrees counterclockwise from 3 o'clock"
+            }
+          ],
+          "return": {
+            "types": [
+              "[number, number]"
+            ],
+            "text": "[x, y]"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/charts/motion/sector.js",
+          "line": 23
+        },
+        {
+          "name": "sectorPath",
+          "scope": "class",
+          "group": null,
+          "signature": "sectorPath(cx, cy, innerRadius, outerRadius, startAngle, endAngle)",
+          "docstring": "The annular-sector path for a pie/radial slice; inner radius 0 closes\nto the center instead of an inner arc.",
+          "params": [
+            {
+              "name": "cx",
+              "types": [
+                "number"
+              ],
+              "text": ""
+            },
+            {
+              "name": "cy",
+              "types": [
+                "number"
+              ],
+              "text": ""
+            },
+            {
+              "name": "innerRadius",
+              "types": [
+                "number"
+              ],
+              "text": ""
+            },
+            {
+              "name": "outerRadius",
+              "types": [
+                "number"
+              ],
+              "text": ""
+            },
+            {
+              "name": "startAngle",
+              "types": [
+                "number"
+              ],
+              "text": "degrees"
+            },
+            {
+              "name": "endAngle",
+              "types": [
+                "number"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "string"
+            ],
+            "text": "the d attribute"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/charts/motion/sector.js",
+          "line": 39
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/charts/motion/tween",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The tween kernel: one rAF loop, the CSS-named cubic-bezier\neasings, cancelable. An animation runtime scoped to poetry's\ndoctrine - the client only interpolates between server-computed\nstates, so the whole kernel is eased time.",
+      "examples": [],
+      "file": "app/javascript/poetry/charts/motion/tween.js",
+      "methods": [
+        {
+          "name": "cubicBezier",
+          "scope": "class",
+          "group": null,
+          "signature": "cubicBezier(x1, y1, x2, y2)",
+          "docstring": "A CSS cubic-bezier timing function: Newton-Raphson with a bisection\nfallback - the standard solver (the same approach WebKit ships).",
+          "params": [
+            {
+              "name": "x1",
+              "types": [
+                "number"
+              ],
+              "text": ""
+            },
+            {
+              "name": "y1",
+              "types": [
+                "number"
+              ],
+              "text": ""
+            },
+            {
+              "name": "x2",
+              "types": [
+                "number"
+              ],
+              "text": ""
+            },
+            {
+              "name": "y2",
+              "types": [
+                "number"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "(x: number) => number"
+            ],
+            "text": "eased progress for linear progress"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/charts/motion/tween.js",
+          "line": 16
+        },
+        {
+          "name": "tween",
+          "scope": "class",
+          "group": null,
+          "signature": "tween({ duration, delay = 0, easing = \"ease\", onFrame, onFinish })",
+          "docstring": "Runs one rAF tween. onFrame receives (eased, linear); the final frame\nis exactly (1, 1). A non-positive duration fires the final frame\nsynchronously.",
+          "params": [
+            {
+              "name": "options",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            },
+            {
+              "name": "options.duration",
+              "types": [
+                "number"
+              ],
+              "text": "ms"
+            },
+            {
+              "name": "[options.delay=0]",
+              "types": [
+                "number"
+              ],
+              "text": "ms before the first eased frame"
+            },
+            {
+              "name": "[options.easing=\"ease\"]",
+              "types": [
+                "string | Function"
+              ],
+              "text": "an EASINGS name or a timing function"
+            },
+            {
+              "name": "options.onFrame",
+              "types": [
+                "(eased: number, linear: number) => void"
+              ],
+              "text": ""
+            },
+            {
+              "name": "[options.onFinish]",
+              "types": [
+                "() => void"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "() => void"
+            ],
+            "text": "cancel()"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/charts/motion/tween.js",
+          "line": 80
+        }
+      ],
+      "constants": [
+        {
+          "name": "EASINGS",
+          "value": "{",
+          "docstring": "The CSS-named easing functions."
+        }
+      ]
+    },
+    {
+      "path": "poetry--charts--adapter",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "The adapter mount: reads the FROZEN chart-spec v1 the\nserver embedded, hands it to the registered engine adapter, and owns\nthe lifecycle - render on connect, destroy on disconnect (Turbo-safe),\nthemeChanged on dark-mode flips. The helpers close the canvas gap:\nresolveColor turns var(--color-key)/var(--chart-N) into concrete\nvalues at paint time (CSS variables cannot reach a canvas).\n\n**Targets**: `mount`, `spec`\n\n**Values**: `engine` (String)\n\n**Events**: `poetry--charts--adapter:rendered`",
+      "examples": [],
+      "file": "app/javascript/poetry/charts/adapter_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Mounts the declared engine: parses the embedded spec, validates the\nadapter and its type support (console errors, never throws - a\nchart must not take the page down), renders, and arms the dark-mode\nobserver.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/adapter_controller.js",
+          "line": 24
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Destroys the engine instance and stops the theme observer.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/adapter_controller.js",
+          "line": 47
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--charts--live",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "The live channel: a chart rendered with live: true carries\nits {spec, frame} payload in the DOM; this controller re-renders\nclient-side (the kernel renderer, in-place attribute updates) whenever\nnew data arrives - no server round trip. Two channels feed one path:\n\n  1. Replace the payload script's JSON - exactly what a\n     turbo_stream.replace/update does. A MutationObserver picks it up.\n  2. The JS/event API: dispatch `poetry-chart:update` with\n     { detail: { data } } on the frame, or call update(data) on the\n     controller instance.\n\nUpdates animate through the shared FLIP machinery (old geometry ->\nnew, the same cross-render morph); a structure change (window growth, series\nchange) snaps instead of morphing. The tooltip's\nembedded coordinates are regenerated by the renderer and a\nlive:updated dispatch tells the tooltip controller to re-read them,\nso it serves fresh values mid-stream. prefers-reduced-motion snaps\nevery update.\n\n**Targets**: `payload`\n\n**Events**: `poetry--charts--live:settled`, `poetry--charts--live:updated`",
+      "examples": [],
+      "file": "app/javascript/poetry/charts/live_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Finds the SVG and starts the payload observer (the\nscript-replacement channel).",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/live_controller.js",
+          "line": 35
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Stops the observer and abandons any in-flight tween.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/live_controller.js",
+          "line": 44
+        },
+        {
+          "name": "receive",
+          "scope": "instance",
+          "group": null,
+          "signature": "receive(event)",
+          "docstring": "The event channel's action: a poetry-chart:update event's\ndetail.data re-renders.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "CustomEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/live_controller.js",
+          "line": 57
+        },
+        {
+          "name": "setWindow",
+          "scope": "instance",
+          "group": null,
+          "signature": "setWindow(window)",
+          "docstring": "Applies a window: [start, end] inclusive indices into the FULL\ndata; the renderer slices before computing. Instant renders - a\ndrag should track the pointer, not tween behind it.",
+          "params": [
+            {
+              "name": "window",
+              "types": [
+                "[number, number]"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/live_controller.js",
+          "line": 68
+        },
+        {
+          "name": "toggleSeries",
+          "scope": "instance",
+          "group": null,
+          "signature": "toggleSeries(event)",
+          "docstring": "The interactive legend's click action (the series key rides an\naction param): hidden series leave the domain (the chart rescales\non hide), their marks hide, their legend item dims.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "Event"
+              ],
+              "text": "params.key names the series"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/live_controller.js",
+          "line": 87
+        },
+        {
+          "name": "update",
+          "scope": "instance",
+          "group": null,
+          "signature": "update(data)",
+          "docstring": "The JS API: hosts hand over the new data rows; the payload script\nis rewritten first (the DOM always holds current state), then\nrendered.",
+          "params": [
+            {
+              "name": "data",
+              "types": [
+                "Array<Object>"
+              ],
+              "text": "the full replacement rows"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/live_controller.js",
+          "line": 116
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--charts--motion",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "The chart motion engine: the JS half of the entrance tier plus\nthe cross-render morph. Cartesian + radar entrances are pure CSS (the\nmotion stylesheet); this controller adds what CSS cannot do - the polar\nfan-out and the FLIP morph between server renders - and stamps a\ndata-motion lifecycle attribute (\"entrance\" / \"morph\" -> \"settled\") on\nthe SVG so tests and hosts can observe the engine.\n\nENTRANCE. The fan-out is a step accumulator: every sector's\nangular width interpolates 0 -> final\nsimultaneously, re-accumulated end-to-end each frame from the group's\nfirst startAngle, with the FINAL-geometry gaps preserved as constant\npadding. Sectors carry their server-computed params in\ndata-motion-sector and their sweep group in data-motion-group (pie: one\ngroup per ring; radial: one per band). Mid-sweep paths are plain\nsectors; the exact server d (corner rounding included) is restored on\nthe final frame.\n\nMORPH. Charts with a stable id keep their last geometry in a\nmodule registry when they disconnect; when a same-id chart connects\nwithin the freshness window (any same-context DOM swap - Turbo Drive /\nFrames / Streams / morph), the new render starts FROM the old geometry\nand tweens to its own via the shared FLIP machinery (motion/flip.js -\nthe live tier rides the same module). Any structure change\naborts the morph and the normal entrance replays instead - added or\nremoved data never morphs.\n\nprefers-reduced-motion (or animate: false) settles immediately - the\nserver-rendered chart is already the finished state.\n\n**Events**: `poetry--charts--motion:settled`",
+      "examples": [],
+      "file": "app/javascript/poetry/charts/motion_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Resolves the SVG, wires the Turbo page-morph hooks (the body\ncomment holds the blank-entrance rule), and starts the entrance or\nmorph.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/motion_controller.js",
+          "line": 55
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Unwires the Turbo hooks, abandons any tween, and parks the current\ngeometry in the registry for a same-id successor.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/motion_controller.js",
+          "line": 104
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--charts--tooltip",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "The chart tooltip engine: ZERO chart math in the\nbrowser. The server embeds per-category pixel centers, per-series pixel\nextents, and PRE-FORMATTED value strings in a JSON script; this\ncontroller bisects the pointer against those numbers, swaps text into\nthe server-rendered TooltipContent chrome, positions the box, and\nreflects data-active onto the marked cells/dots. Keyboard access is\nthe accessibility-layer floor: the SVG is focusable, arrows walk the\ncategories, Escape dismisses.\n\n**Targets**: `data`, `svg`, `tooltip`\n\n**Values**: `sync` (String)\n\n**Events**: `poetry--charts--tooltip:hide`, `poetry--charts--tooltip:show`",
+      "examples": [],
+      "file": "app/javascript/poetry/charts/tooltip_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Parses the embedded coordinates payload and (once) wires the sync\nlistener. refresh() re-enters here when the live renderer rewrites\nthe payload.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/tooltip_controller.js",
+          "line": 24
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Unwires the sync listener.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/tooltip_controller.js",
+          "line": 49
+        },
+        {
+          "name": "count",
+          "scope": "instance",
+          "group": null,
+          "signature": "count()",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "number"
+            ],
+            "text": "the category (or slice) count"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/charts/tooltip_controller.js",
+          "line": 57
+        },
+        {
+          "name": "move",
+          "scope": "instance",
+          "group": null,
+          "signature": "move(event)",
+          "docstring": "The SVG's pointermove action (cartesian): converts the pointer to\nviewBox units and shows the nearest category.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "PointerEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/tooltip_controller.js",
+          "line": 67
+        },
+        {
+          "name": "enter",
+          "scope": "instance",
+          "group": null,
+          "signature": "enter(event)",
+          "docstring": "The SVG's pointerover action (polar): the hovered slice carries its\nindex - no geometry at all.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "PointerEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/tooltip_controller.js",
+          "line": 85
+        },
+        {
+          "name": "keydown",
+          "scope": "instance",
+          "group": null,
+          "signature": "keydown(event)",
+          "docstring": "The SVG's keydown action - the accessibility floor: arrows walk the\ncategories, Home/End jump, Escape dismisses.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "KeyboardEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/tooltip_controller.js",
+          "line": 96
+        },
+        {
+          "name": "refresh",
+          "scope": "instance",
+          "group": null,
+          "signature": "refresh()",
+          "docstring": "The live-updated action: the live renderer rewrote the embedded\ncoordinates; re-read them and keep serving the active index if it\nstill exists (the tooltip follows the stream).",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/tooltip_controller.js",
+          "line": 131
+        },
+        {
+          "name": "focus",
+          "scope": "instance",
+          "group": null,
+          "signature": "focus()",
+          "docstring": "The SVG's focus action: entering by keyboard shows the first category.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/tooltip_controller.js",
+          "line": 139
+        },
+        {
+          "name": "blur",
+          "scope": "instance",
+          "group": null,
+          "signature": "blur()",
+          "docstring": "The SVG's blur action: dismisses.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/tooltip_controller.js",
+          "line": 144
+        },
+        {
+          "name": "leave",
+          "scope": "instance",
+          "group": null,
+          "signature": "leave()",
+          "docstring": "Hides the tooltip and clears every active reflection (the\npointerleave action and Escape's landing).",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/tooltip_controller.js",
+          "line": 152
+        },
+        {
+          "name": "show",
+          "scope": "instance",
+          "group": null,
+          "signature": "show(index)",
+          "docstring": "Shows the tooltip for a category/slice index: swaps the\npre-formatted strings into the server-rendered chrome, positions\nthe box, reflects data-active, and broadcasts to synced charts.",
+          "params": [
+            {
+              "name": "index",
+              "types": [
+                "number"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/tooltip_controller.js",
+          "line": 168
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--charts--window",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "The window controller: brush + zoom over the live\nrenderer. One concept drives both - frame.window = [start, end]\n(inclusive indices into the FULL data) slices the data before the\nkernel computes. The brush drags the window (handles resize it, the\nbody shifts it); zoom drag-selects a range on the plot; double-click\nresets. Window changes go through the live controller's setWindow\n(instant renders - no tween mid-drag), and this controller repaints\nthe strip visuals from index fractions of the server-computed rects\n(its Stimulus values) - no chart math.\n\n**Values**: `zoom` (Boolean); `plot` (Array); `brush` (Array)",
+      "examples": [],
+      "file": "app/javascript/poetry/charts/window_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Resolves the SVG/selection nodes and paints the initial brush.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/window_controller.js",
+          "line": 20
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Unbinds any in-flight drag listeners.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/window_controller.js",
+          "line": 27
+        },
+        {
+          "name": "startBrush",
+          "scope": "instance",
+          "group": null,
+          "signature": "startBrush(event)",
+          "docstring": "The strip's pointerdown action: begins a brush drag - a handle\nresizes its edge, the body shifts the whole window.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "PointerEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/window_controller.js",
+          "line": 39
+        },
+        {
+          "name": "startZoom",
+          "scope": "instance",
+          "group": null,
+          "signature": "startZoom(event)",
+          "docstring": "The SVG's pointerdown action (skips brush drags): begins a\ndrag-select zoom on the plot.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "PointerEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/window_controller.js",
+          "line": 59
+        },
+        {
+          "name": "reset",
+          "scope": "instance",
+          "group": null,
+          "signature": "reset()",
+          "docstring": "The SVG's dblclick action: restores the full window.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/charts/window_controller.js",
+          "line": 69
+        }
+      ],
+      "constants": []
+    }
+  ]
+}
