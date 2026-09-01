@@ -10,9 +10,11 @@ module Poetry
     # unknown components/options/variants (did-you-mean), and unknown
     # Stimulus controllers/actions/targets/values (the Ruby<->JS seam, now at
     # consumer-markup level - hand-written attributes and `data:` keywords
-    # alike, values checked against their declared type), plus raw-color classes (the off-system color
-    # path, extended from CSS to markup). The mechanical gate an agent
-    # self-corrects against before any deeper review runs.
+    # alike, values checked against their declared type), plus the style
+    # exits that bypass the tokens - raw and arbitrary color classes,
+    # inline style colors, and the important modifier - in class=""/style=""
+    # attributes and class:/style: keywords alike. The mechanical gate an
+    # agent self-corrects against before any deeper review runs.
     #
     # @example Lint one template string
     #   findings = Poetry::Core::Check.lint(erb_source, catalog: catalog)
@@ -52,7 +54,21 @@ module Poetry
         COLOR_UTILITIES = %w[
           bg text border ring fill stroke from to via outline decoration divide accent caret shadow
         ].freeze
+        # The palette exit: a color-scale utility (bg-red-500) where a
+        # semantic token belongs.
         RAW_COLOR = /\b(?:#{COLOR_UTILITIES.join("|")})-(?:#{COLOR_FAMILIES.join("|")})-\d{2,3}\b/
+        COLOR_FUNCTIONS = %w[rgb rgba hsl hsla oklch oklab lab lch hwb color].freeze
+        # The arbitrary exit: a color literal typed straight into a utility
+        # (bg-[#6366f1], text-[oklch(0.7_0.1_250)]). Unanchored, so it reads
+        # one class token and a whole rendered document alike - the eval's
+        # universal gate shares it, and one pattern defines the exit.
+        ARBITRARY_COLOR = /\b(?:#{COLOR_UTILITIES.join("|")})-\[(?:#|(?:#{COLOR_FUNCTIONS.join("|")})\()/
+        # The cascade exit: the important modifier on one class token,
+        # trailing (pl-2!) or the legacy leading form (!pl-2).
+        IMPORTANT_MODIFIER = /\A!.|.!\z/
+        # A color literal in an inline style (color: #333; background:
+        # rgb(...)) - a url(#fragment) is not a color.
+        STYLE_COLOR = /(?<!url\()#\h{3,8}\b|\b(?:#{COLOR_FUNCTIONS.join("|")})\([^)]*\)/i
 
         def self.from_registry(root, helpers: nil, icon_names: nil)
           from_registries([root], helpers: helpers, icon_names: icon_names)
@@ -243,8 +259,20 @@ module Poetry
           names + (slot["types"] || [])
         end
 
-        def raw_color(class_string)
-          class_string.scan(RAW_COLOR)
+        # Class tokens painting a color outside the tokens: palette
+        # utilities and arbitrary literals, variant prefixes included.
+        def raw_colors(class_string)
+          class_string.split.select { |token| token.match?(RAW_COLOR) || token.match?(ARBITRARY_COLOR) }
+        end
+
+        # Class tokens carrying the important modifier.
+        def important_tokens(class_string)
+          class_string.split.grep(IMPORTANT_MODIFIER)
+        end
+
+        # Color literals in an inline style string.
+        def style_colors(style_string)
+          style_string.scan(STYLE_COLOR)
         end
       end
 
@@ -365,7 +393,7 @@ module Poetry
           unless path
             return helper_findings(helper, call, base_line) + yieldless_findings(helper, call, line) +
                    helper_arity_findings(helper, call, line) + webmcp_form_findings(helper, call, line) +
-                   data_findings(call, base_line)
+                   passthrough_findings(keyword_pairs(call), base_line) + data_findings(call, base_line)
           end
 
           record_binding(call, path, bindings, line)
@@ -379,7 +407,7 @@ module Poetry
             content_findings(path, helper, call, line, content_fed) +
             blockless_slot_findings(path, helper, call, pairs, line) +
             requires_any_findings(path, call, pairs, line, content_fed) +
-            data_findings(call, base_line)
+            passthrough_findings(pairs, base_line) + data_findings(call, base_line)
         end
 
         # The requires_content tier: a component that raises without a
@@ -604,7 +632,7 @@ module Poetry
           findings = arity_findings(entry, slot_name, call, line) +
                      setter_block_findings(entry, slot_name, call, line) +
                      setter_keyword_findings(entry, slot_name, call, base_line) +
-                     data_findings(call, base_line)
+                     passthrough_findings(keyword_pairs(call), base_line) + data_findings(call, base_line)
           component = entry["component"]
           return findings unless component
 
@@ -879,16 +907,18 @@ module Poetry
           node.unescaped if node.is_a?(Prism::SymbolNode) || node.is_a?(Prism::StringNode)
         end
 
-        # --- Markup rules (Stimulus wiring / raw color) ---
+        # --- Markup rules (Stimulus wiring / the style exits) ---
 
         def attribute_findings(node)
           name = attribute_name(node)
           value = attribute_value(node)
           return [] unless name && value
 
-          return color_findings(value, node) if name == "class"
-
-          stimulus_findings(name, value, line_of(node))
+          case name
+          when "class" then class_findings(value, line_of(node))
+          when "style" then style_findings(value, line_of(node))
+          else stimulus_findings(name, value, line_of(node))
+          end
         end
 
         # The Stimulus wiring rules on one rendered attribute, whether it
@@ -1016,12 +1046,47 @@ module Poetry
           nil
         end
 
-        def color_findings(value, node)
-          @catalog.raw_color(value).uniq.map do |match|
+        # A literal class string wherever it appears (a class="" attribute,
+        # a class: keyword on a component, wrapper, or slot call): color
+        # utilities off the tokens, and the important modifier forcing a
+        # cascade the class merge already resolves.
+        def class_findings(value, line)
+          colors = @catalog.raw_colors(value).uniq.map do |token|
             Finding.new(rule: "raw-color", severity: :warning,
-                        message: "raw color class #{match.inspect} - use a semantic token " \
-                                 "(bg-primary, text-destructive, ...)",
-                        line: line_of(node))
+                        message: "raw color class #{token.inspect} - use a semantic token " \
+                                 "(bg-primary, text-destructive, ...) or add one to the theme", line: line)
+          end
+          important = @catalog.important_tokens(value).uniq.map do |token|
+            Finding.new(rule: "important-modifier", severity: :warning,
+                        message: "#{token.inspect} forces the cascade with ! - on a component, class: wins " \
+                                 "over the dictionary without it; against a rule from another element, " \
+                                 "theme the surface", line: line)
+          end
+          colors + important
+        end
+
+        # A literal style string: a color literal here is the one exit no
+        # dictionary or theme rule reaches.
+        def style_findings(value, line)
+          @catalog.style_colors(value).uniq.map do |literal|
+            Finding.new(rule: "raw-color", severity: :warning,
+                        message: "inline style paints #{literal.inspect} - use a token (var(--primary)) " \
+                                 "or a theme rule", line: line)
+          end
+        end
+
+        # The passthrough keywords that are markup in disguise: a literal
+        # class:/style: string lints like the attribute it becomes.
+        def passthrough_findings(pairs, base_line)
+          pairs.flat_map do |key, value, kw_line|
+            next [] unless value.is_a?(String)
+
+            line = base_line + kw_line - 1
+            case key
+            when "class" then class_findings(value, line)
+            when "style" then style_findings(value, line)
+            else []
+            end
           end
         end
 

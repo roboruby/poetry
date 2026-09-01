@@ -1012,6 +1012,79 @@ module Poetry
                         "raw-color"
       end
 
+      def test_arbitrary_color_values_warn
+        findings = lint(%(<div class="hover:bg-[#6366f1] text-[oklch(0.7_0.1_250)] ring-[rgb(99,102,241)]"></div>))
+                   .select { |finding| finding.rule == "raw-color" }
+
+        assert_equal 3, findings.size
+        assert_includes findings.first.message, "hover:bg-[#6366f1]"
+      end
+
+      def test_token_references_and_shadows_are_not_raw_colors
+        clean = %(<div class="bg-[var(--brand)] text-(--fg) fill-[url(#grad)] shadow-[0_1px_0_rgba(0,0,0,.1)]"></div>)
+
+        refute_includes rules(clean), "raw-color"
+      end
+
+      def test_class_keyword_on_a_component_call_is_scanned
+        findings = lint(%(<%= poetry_button(class: "bg-red-500 hover:bg-[#dc2626]") { "Delete" } %>))
+                   .select { |finding| finding.rule == "raw-color" }
+
+        assert_equal(%w[bg-red-500 hover:bg-[#dc2626]], findings.map { |finding| finding.message[/"([^"]+)"/, 1] })
+        assert_equal [1, 1], findings.map(&:line)
+      end
+
+      def test_class_keyword_on_wrapper_helpers_and_slot_calls_is_scanned
+        wrapper = %(<%= poetry_sidebar_group(class: "bg-[#fff]") do %>x<% end %>)
+        slot = <<~ERB
+          <%= poetry_alert(variant: :default) do |alert| %>
+            <% alert.with_icon(name: "circle-alert", class: "text-[#f00]") %>
+            <% alert.with_title(class: "text-rose-500") { "Heads up" } %>
+          <% end %>
+        ERB
+
+        assert_includes rules(wrapper), "raw-color"
+        assert_equal 2, rules(slot).count("raw-color")
+      end
+
+      def test_important_modifier_warns_in_both_spellings
+        findings = lint(%(<div class="pl-0.5! !mt-0 hover:flex! p-4"></div>))
+                   .select { |finding| finding.rule == "important-modifier" }
+
+        assert_equal(%w[pl-0.5! !mt-0 hover:flex!], findings.map { |finding| finding.message[/"([^"]+)"/, 1] })
+        assert_equal :warning, findings.first.severity
+      end
+
+      def test_important_modifier_reads_class_keywords_too
+        assert_includes rules(%(<%= poetry_button(class: "px-2!") { "Go" } %>)), "important-modifier"
+      end
+
+      def test_a_bang_inside_an_arbitrary_value_is_not_the_modifier
+        refute_includes rules(%(<div class="before:content-['!'] not-first:mt-2 [&:not(:last-child)]:mb-1"></div>)),
+                        "important-modifier"
+      end
+
+      def test_inline_style_colors_warn
+        attribute = lint(%(<div style="color: #333; background: rgb(1, 2, 3)"></div>))
+                    .select { |finding| finding.rule == "raw-color" }
+        keyword = lint(%(<%= poetry_button(style: "background: oklch(0.5 0.2 30)") { "Go" } %>))
+
+        assert_equal(["#333", "rgb(1, 2, 3)"], attribute.map { |finding| finding.message[/"([^"]+)"/, 1] })
+        assert_includes attribute.first.message, "inline style"
+        assert_includes keyword.map(&:rule), "raw-color"
+      end
+
+      def test_inline_style_tokens_and_fragments_are_clean
+        clean = %(<div style="--chart-1: var(--primary); background: var(--muted); mask: url(#abc)"></div>)
+
+        assert_empty rules(clean)
+      end
+
+      def test_dynamic_class_and_style_are_left_alone
+        assert_empty rules(%(<div class="<%= classes %>" style="<%= styles %>"></div>))
+        assert_empty rules(%(<%= poetry_button(class: "bg-red-500 \#{extra}") { "Go" } %>))
+      end
+
       # --- output ---
 
       def test_json_output_is_structured
