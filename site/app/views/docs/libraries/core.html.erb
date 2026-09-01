@@ -450,7 +450,9 @@
         exits that bypass the tokens: raw and arbitrary color classes,
         inline style colors, and the <code>!</code> important modifier, in
         <code>class=""</code> attributes and <code>class:</code> keywords
-        alike.
+        alike, and the fake button: a <code>div</code> or <code>span</code>
+        carrying <code>onclick</code> or <code>role="button"</code> where a
+        real <code>button</code> belongs.
       </p>
     <% end %>
     <%= poetry_code_block(code: check_source, language: "shell", label: "Run it") %>
