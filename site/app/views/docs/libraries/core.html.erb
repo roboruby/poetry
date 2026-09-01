@@ -27,8 +27,7 @@
           option :count, :integer,
                  doc: "Optional trailing count, rendered after the text."
 
-          slot_doc :icon, "Optional leading visual."
-          renders_one :icon
+          renders_one :icon, doc: "Optional leading visual."
 
           part "pill", "The root span - the component's styling surface"
 
@@ -265,8 +264,10 @@
       <ul>
         <li>
           Slots are declared with <code>renders_one</code> /
-          <code>renders_many</code>; <code>slot_doc</code> gives each one a
-          reference sentence that projects into the registry.
+          <code>renders_many</code>; <code>doc:</code> gives each one a
+          reference sentence that projects into the registry, and
+          <code>renders:</code> passes a slot's lambda as a keyword so the
+          doc reads first.
         </li>
         <li>
           <code>part</code> declares the component's rendered anatomy: the

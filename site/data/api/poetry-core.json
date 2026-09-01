@@ -1530,7 +1530,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 318
+          "line": 386
         },
         {
           "name": "prop_definitions",
@@ -1547,7 +1547,101 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 60
+          "line": 106
+        },
+        {
+          "name": "renders_many",
+          "scope": "class",
+          "group": null,
+          "signature": "renders_many(slot_name, callable = nil, **opts)",
+          "docstring": "ViewComponent's renders_many with the same keyword surface as\n{renders_one}; doc: describes the collection contract and is\nkeyed by the plural declared name, exactly like {slot_doc}.",
+          "params": [
+            {
+              "name": "slot_name",
+              "types": [
+                "Symbol"
+              ],
+              "text": "the plural slot name"
+            },
+            {
+              "name": "callable",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": "ViewComponent's positional\ncallable (a component class, class-name string, or lambda)"
+            },
+            {
+              "name": "opts",
+              "types": [
+                "Hash"
+              ],
+              "text": "doc:, renders:, and/or types:"
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [
+            {
+              "title": "A documented collection slot",
+              "text": "renders_many :items,\n             doc: \"The rows, rendered in call order.\",\n             renders: lambda { |label:, **options| ... }"
+            }
+          ],
+          "file": "app/components/poetry/core/concerns/introspection.rb",
+          "line": 96
+        },
+        {
+          "name": "renders_one",
+          "scope": "class",
+          "group": null,
+          "signature": "renders_one(slot_name, callable = nil, **opts)",
+          "docstring": "ViewComponent's renders_one, with the doc riding the\ndeclaration: doc: is lifted into {slot_doc}, renders: passes\nthe callable as a keyword so the doc can come first, and the\npolymorphic types: form is re-formed into the positional hash\nViewComponent expects - the ViewComponent surface underneath\nis unchanged. Unknown keywords raise at class load, and a\npositional callable cannot be combined with renders:/types:.",
+          "params": [
+            {
+              "name": "slot_name",
+              "types": [
+                "Symbol"
+              ],
+              "text": "the slot name"
+            },
+            {
+              "name": "callable",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": "ViewComponent's positional\ncallable (a component class, class-name string, or lambda)"
+            },
+            {
+              "name": "opts",
+              "types": [
+                "Hash"
+              ],
+              "text": "doc:, renders:, and/or types:"
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [
+            {
+              "title": "A documented slot",
+              "text": "renders_one :leading, doc: \"Optional leading visual.\""
+            },
+            {
+              "title": "A documented lambda slot, doc first",
+              "text": "renders_one :trigger,\n            doc: \"The button that opens the dialog.\",\n            renders: lambda { |**options, &block| ... }"
+            }
+          ],
+          "file": "app/components/poetry/core/concerns/introspection.rb",
+          "line": 77
         },
         {
           "name": "required_slots_surface",
@@ -1579,7 +1673,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 264
+          "line": 332
         },
         {
           "name": "requires_any_surface",
@@ -1611,14 +1705,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 286
+          "line": 354
         },
         {
           "name": "slot_doc",
           "scope": "class",
           "group": null,
           "signature": "slot_doc(name, text)",
-          "docstring": "The component's full prop surface.\n\nDocuments a slot declared with renders_one/renders_many. The\nstring travels the same road as option/style doc: params - the\nregistry, the agent surface, and the generated API docs. Write\nit directly above the renders_* declaration it describes.",
+          "docstring": "The component's full prop surface.\n\nDocuments a slot declared with renders_one/renders_many. The\nstring travels the same road as option/style doc: params - the\nregistry, the agent surface, and the generated API docs.\nPrefer the doc: keyword on the declaration itself (it lands\nhere); call slot_doc directly only when the doc and the\ndeclaration live in different modules.",
           "params": [
             {
               "name": "name",
@@ -1644,11 +1738,11 @@
           "examples": [
             {
               "title": "",
-              "text": "slot_doc :trigger, \"The button that opens the dialog.\"\nrenders_one :trigger, lambda { |**options, &block| ... }"
+              "text": "slot_doc :trigger, \"The button that opens the dialog.\""
             }
           ],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 44
+          "line": 45
         },
         {
           "name": "slot_docs",
@@ -1665,7 +1759,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 51
+          "line": 52
         },
         {
           "name": "slot_surface",
@@ -1697,7 +1791,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 214
+          "line": 282
         }
       ],
       "constants": [

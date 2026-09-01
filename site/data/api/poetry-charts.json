@@ -319,7 +319,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/area_chart/component.rb",
-          "line": 113
+          "line": 111
         },
         {
           "name": "config",
@@ -472,7 +472,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/area_chart/component.rb",
-          "line": 113
+          "line": 111
         }
       ],
       "constants": [
@@ -743,7 +743,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
-          "line": 137
+          "line": 138
         },
         {
           "name": "bar_category_gap",
@@ -794,7 +794,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
-          "line": 124
+          "line": 121
         },
         {
           "name": "config",
@@ -964,7 +964,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
-          "line": 124
+          "line": 121
         }
       ],
       "constants": [
@@ -1969,7 +1969,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 130
+          "line": 128
         },
         {
           "name": "bar_category_gap",
@@ -2020,7 +2020,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 138
+          "line": 137
         },
         {
           "name": "config",
@@ -2122,7 +2122,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 143
+          "line": 144
         },
         {
           "name": "margin",
@@ -2173,7 +2173,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 130
+          "line": 128
         },
         {
           "name": "with_bar",
@@ -2190,7 +2190,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 138
+          "line": 137
         },
         {
           "name": "with_line",
@@ -2207,7 +2207,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 143
+          "line": 144
         }
       ],
       "constants": [
@@ -4371,7 +4371,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/line_chart/component.rb",
-          "line": 114
+          "line": 111
         },
         {
           "name": "margin",
@@ -4422,7 +4422,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/line_chart/component.rb",
-          "line": 114
+          "line": 111
         }
       ],
       "constants": [
@@ -4819,7 +4819,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 113
+          "line": 114
         },
         {
           "name": "config",
@@ -4921,7 +4921,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 119
+          "line": 121
         },
         {
           "name": "margin",
@@ -4955,7 +4955,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 98
+          "line": 95
         },
         {
           "name": "tooltip",
@@ -4972,7 +4972,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 125
+          "line": 128
         },
         {
           "name": "width",
@@ -5006,7 +5006,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 113
+          "line": 114
         },
         {
           "name": "with_legend",
@@ -5023,7 +5023,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 119
+          "line": 121
         },
         {
           "name": "with_pie",
@@ -5040,7 +5040,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 110
+          "line": 112
         },
         {
           "name": "with_py",
@@ -5057,7 +5057,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 98
+          "line": 95
         },
         {
           "name": "with_tooltip",
@@ -5074,7 +5074,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 125
+          "line": 128
         }
       ],
       "constants": [
@@ -5343,7 +5343,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 164
+          "line": 169
         },
         {
           "name": "fill",
@@ -5360,7 +5360,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 164
+          "line": 169
         },
         {
           "name": "index",
@@ -5377,7 +5377,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 164
+          "line": 169
         },
         {
           "name": "inner",
@@ -5394,7 +5394,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 164
+          "line": 169
         },
         {
           "name": "label_point",
@@ -5411,7 +5411,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 164
+          "line": 169
         },
         {
           "name": "mid_angle",
@@ -5428,7 +5428,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 164
+          "line": 169
         },
         {
           "name": "middle_radius",
@@ -5445,7 +5445,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 164
+          "line": 169
         },
         {
           "name": "name",
@@ -5462,7 +5462,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 164
+          "line": 169
         },
         {
           "name": "outer",
@@ -5479,7 +5479,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 164
+          "line": 169
         },
         {
           "name": "path",
@@ -5496,7 +5496,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 164
+          "line": 169
         },
         {
           "name": "start_angle",
@@ -5513,7 +5513,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 164
+          "line": 169
         },
         {
           "name": "value",
@@ -5530,7 +5530,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 164
+          "line": 169
         }
       ],
       "constants": []
@@ -5745,7 +5745,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 114
+          "line": 113
         },
         {
           "name": "config",
@@ -5864,7 +5864,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 127
+          "line": 129
         },
         {
           "name": "margin",
@@ -5915,7 +5915,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 106
+          "line": 104
         },
         {
           "name": "tooltip",
@@ -5932,7 +5932,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 133
+          "line": 136
         },
         {
           "name": "width",
@@ -5966,7 +5966,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 114
+          "line": 113
         },
         {
           "name": "with_grid",
@@ -6000,7 +6000,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 127
+          "line": 129
         },
         {
           "name": "with_radar",
@@ -6017,7 +6017,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 106
+          "line": 104
         },
         {
           "name": "with_tooltip",
@@ -6034,7 +6034,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 133
+          "line": 136
         }
       ],
       "constants": [
@@ -6300,7 +6300,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 136
+          "line": 135
         },
         {
           "name": "config",
@@ -6436,7 +6436,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 142
+          "line": 144
         },
         {
           "name": "margin",
@@ -6521,7 +6521,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 128
+          "line": 126
         },
         {
           "name": "radial_bars",
@@ -6538,7 +6538,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 117
+          "line": 114
         },
         {
           "name": "start_angle",
@@ -6572,7 +6572,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 148
+          "line": 151
         },
         {
           "name": "width",
@@ -6606,7 +6606,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 136
+          "line": 135
         },
         {
           "name": "with_legend",
@@ -6623,7 +6623,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 142
+          "line": 144
         },
         {
           "name": "with_polar_grid",
@@ -6640,7 +6640,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 128
+          "line": 126
         },
         {
           "name": "with_radial_bar",
@@ -6657,7 +6657,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 117
+          "line": 114
         },
         {
           "name": "with_tooltip",
@@ -6674,7 +6674,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 148
+          "line": 151
         }
       ],
       "constants": [
@@ -6743,7 +6743,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 255
+          "line": 260
         },
         {
           "name": "index",
@@ -6760,7 +6760,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 255
+          "line": 260
         },
         {
           "name": "name",
@@ -6777,7 +6777,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 255
+          "line": 260
         },
         {
           "name": "path",
@@ -6794,7 +6794,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 255
+          "line": 260
         },
         {
           "name": "ring_inner",
@@ -6811,7 +6811,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 255
+          "line": 260
         },
         {
           "name": "ring_outer",
@@ -6828,7 +6828,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 255
+          "line": 260
         },
         {
           "name": "seg_end",
@@ -6845,7 +6845,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 255
+          "line": 260
         },
         {
           "name": "seg_start",
@@ -6862,7 +6862,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 255
+          "line": 260
         },
         {
           "name": "value",
@@ -6879,7 +6879,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 255
+          "line": 260
         }
       ],
       "constants": []
@@ -7119,7 +7119,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 128
+          "line": 131
         },
         {
           "name": "height",
@@ -7187,7 +7187,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 134
+          "line": 138
         },
         {
           "name": "margin",
@@ -7221,7 +7221,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 102
+          "line": 100
         },
         {
           "name": "tooltip",
@@ -7238,7 +7238,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 140
+          "line": 145
         },
         {
           "name": "width",
@@ -7272,7 +7272,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 128
+          "line": 131
         },
         {
           "name": "with_legend",
@@ -7289,7 +7289,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 134
+          "line": 138
         },
         {
           "name": "with_scatter",
@@ -7306,7 +7306,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 102
+          "line": 100
         },
         {
           "name": "with_tooltip",
@@ -7323,7 +7323,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 140
+          "line": 145
         },
         {
           "name": "with_x_axis",
@@ -7357,7 +7357,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 115
+          "line": 116
         },
         {
           "name": "with_z_axis",
@@ -7374,7 +7374,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 122
+          "line": 123
         },
         {
           "name": "x_axis",
@@ -7408,7 +7408,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 115
+          "line": 116
         },
         {
           "name": "z_axis",
@@ -7425,7 +7425,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 122
+          "line": 123
         }
       ],
       "constants": [
@@ -7563,7 +7563,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 285
+          "line": 292
         },
         {
           "name": "cy",
@@ -7580,7 +7580,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 285
+          "line": 292
         },
         {
           "name": "index",
@@ -7597,7 +7597,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 285
+          "line": 292
         },
         {
           "name": "key",
@@ -7614,7 +7614,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 285
+          "line": 292
         },
         {
           "name": "r",
@@ -7631,7 +7631,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 285
+          "line": 292
         },
         {
           "name": "row",
@@ -7648,7 +7648,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 285
+          "line": 292
         }
       ],
       "constants": []

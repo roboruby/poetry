@@ -552,7 +552,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/accordion/component.rb",
-          "line": 75
+          "line": 77
         },
         {
           "name": "heading_level",
@@ -569,7 +569,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/accordion/component.rb",
-          "line": 78
+          "line": 80
         },
         {
           "name": "items",
@@ -586,7 +586,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/accordion/component.rb",
-          "line": 42
+          "line": 40
         },
         {
           "name": "open",
@@ -603,7 +603,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/accordion/component.rb",
-          "line": 77
+          "line": 79
         },
         {
           "name": "type",
@@ -620,7 +620,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/accordion/component.rb",
-          "line": 73
+          "line": 75
         },
         {
           "name": "with_item",
@@ -637,7 +637,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/accordion/component.rb",
-          "line": 42
+          "line": 40
         }
       ],
       "constants": [
@@ -711,7 +711,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert/component.rb",
-          "line": 32
+          "line": 30
         },
         {
           "name": "icon",
@@ -728,7 +728,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert/component.rb",
-          "line": 28
+          "line": 27
         },
         {
           "name": "title",
@@ -745,7 +745,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert/component.rb",
-          "line": 30
+          "line": 29
         },
         {
           "name": "variant",
@@ -762,7 +762,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert/component.rb",
-          "line": 34
+          "line": 32
         },
         {
           "name": "with_action",
@@ -779,7 +779,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert/component.rb",
-          "line": 32
+          "line": 30
         },
         {
           "name": "with_icon",
@@ -796,7 +796,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert/component.rb",
-          "line": 28
+          "line": 27
         },
         {
           "name": "with_title",
@@ -813,7 +813,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert/component.rb",
-          "line": 30
+          "line": 29
         }
       ],
       "constants": [
@@ -877,7 +877,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 69
+          "line": 67
         },
         {
           "name": "cancel",
@@ -911,7 +911,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 114
+          "line": 118
         },
         {
           "name": "description",
@@ -928,7 +928,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 64
+          "line": 65
         },
         {
           "name": "media",
@@ -962,7 +962,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 111
+          "line": 115
         },
         {
           "name": "title",
@@ -979,7 +979,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 62
+          "line": 64
         },
         {
           "name": "trigger",
@@ -996,7 +996,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 53
+          "line": 52
         },
         {
           "name": "with_action",
@@ -1013,7 +1013,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 69
+          "line": 67
         },
         {
           "name": "with_cancel",
@@ -1047,7 +1047,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 64
+          "line": 65
         },
         {
           "name": "with_media",
@@ -1081,7 +1081,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 62
+          "line": 64
         },
         {
           "name": "with_trigger",
@@ -1098,7 +1098,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 53
+          "line": 52
         }
       ],
       "constants": [
@@ -1258,7 +1258,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
-          "line": 58
+          "line": 59
         },
         {
           "name": "media",
@@ -1275,7 +1275,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
-          "line": 46
+          "line": 45
         },
         {
           "name": "orientation",
@@ -1292,7 +1292,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
-          "line": 81
+          "line": 85
         },
         {
           "name": "size",
@@ -1309,7 +1309,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
-          "line": 80
+          "line": 84
         },
         {
           "name": "state",
@@ -1326,7 +1326,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
-          "line": 84
+          "line": 88
         },
         {
           "name": "title",
@@ -1343,7 +1343,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
-          "line": 55
+          "line": 58
         },
         {
           "name": "trigger",
@@ -1360,7 +1360,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
-          "line": 71
+          "line": 72
         },
         {
           "name": "with_action",
@@ -1394,7 +1394,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
-          "line": 58
+          "line": 59
         },
         {
           "name": "with_media",
@@ -1411,7 +1411,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
-          "line": 46
+          "line": 45
         },
         {
           "name": "with_title",
@@ -1428,7 +1428,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
-          "line": 55
+          "line": 58
         },
         {
           "name": "with_trigger",
@@ -1445,7 +1445,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
-          "line": 71
+          "line": 72
         }
       ],
       "constants": [
@@ -1749,7 +1749,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/avatar/component.rb",
-          "line": 32
+          "line": 31
         },
         {
           "name": "label",
@@ -1766,7 +1766,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/avatar/component.rb",
-          "line": 35
+          "line": 34
         },
         {
           "name": "size",
@@ -1783,7 +1783,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/avatar/component.rb",
-          "line": 38
+          "line": 37
         },
         {
           "name": "src",
@@ -1800,7 +1800,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/avatar/component.rb",
-          "line": 34
+          "line": 33
         },
         {
           "name": "with_badge",
@@ -1817,7 +1817,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/avatar/component.rb",
-          "line": 32
+          "line": 31
         }
       ],
       "constants": [
@@ -1962,7 +1962,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/breadcrumb/component.rb",
-          "line": 42
+          "line": 39
         },
         {
           "name": "separator",
@@ -1979,7 +1979,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/breadcrumb/component.rb",
-          "line": 50
+          "line": 48
         },
         {
           "name": "with_ellipsis",
@@ -1991,7 +1991,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/breadcrumb/component.rb",
-          "line": 75
+          "line": 77
         },
         {
           "name": "with_item",
@@ -2008,7 +2008,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/breadcrumb/component.rb",
-          "line": 42
+          "line": 39
         },
         {
           "name": "with_separator",
@@ -2025,7 +2025,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/breadcrumb/component.rb",
-          "line": 50
+          "line": 48
         }
       ],
       "constants": [
@@ -2089,7 +2089,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/bubble/component.rb",
-          "line": 48
+          "line": 49
         },
         {
           "name": "href",
@@ -2106,7 +2106,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/bubble/component.rb",
-          "line": 52
+          "line": 53
         },
         {
           "name": "reactions",
@@ -2123,7 +2123,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/bubble/component.rb",
-          "line": 35
+          "line": 33
         },
         {
           "name": "tag",
@@ -2140,7 +2140,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/bubble/component.rb",
-          "line": 50
+          "line": 51
         },
         {
           "name": "variant",
@@ -2157,7 +2157,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/bubble/component.rb",
-          "line": 45
+          "line": 46
         },
         {
           "name": "with_reactions",
@@ -2174,7 +2174,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/bubble/component.rb",
-          "line": 35
+          "line": 33
         }
       ],
       "constants": [
@@ -2248,7 +2248,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/button/component.rb",
-          "line": 60
+          "line": 58
         },
         {
           "name": "href",
@@ -2265,7 +2265,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/button/component.rb",
-          "line": 65
+          "line": 63
         },
         {
           "name": "label",
@@ -2282,7 +2282,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/button/component.rb",
-          "line": 64
+          "line": 62
         },
         {
           "name": "leading",
@@ -2299,7 +2299,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/button/component.rb",
-          "line": 47
+          "line": 46
         },
         {
           "name": "loading",
@@ -2316,7 +2316,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/button/component.rb",
-          "line": 62
+          "line": 60
         },
         {
           "name": "size",
@@ -2333,7 +2333,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/button/component.rb",
-          "line": 53
+          "line": 51
         },
         {
           "name": "tag",
@@ -2350,7 +2350,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/button/component.rb",
-          "line": 58
+          "line": 56
         },
         {
           "name": "trailing",
@@ -2367,7 +2367,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/button/component.rb",
-          "line": 49
+          "line": 47
         },
         {
           "name": "type",
@@ -2384,7 +2384,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/button/component.rb",
-          "line": 56
+          "line": 54
         },
         {
           "name": "variant",
@@ -2401,7 +2401,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/button/component.rb",
-          "line": 51
+          "line": 49
         },
         {
           "name": "with_leading",
@@ -2418,7 +2418,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/button/component.rb",
-          "line": 47
+          "line": 46
         },
         {
           "name": "with_trailing",
@@ -2435,7 +2435,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/button/component.rb",
-          "line": 49
+          "line": 47
         }
       ],
       "constants": [
@@ -2715,7 +2715,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/card/component.rb",
-          "line": 33
+          "line": 30
         },
         {
           "name": "content_class",
@@ -2732,7 +2732,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/card/component.rb",
-          "line": 46
+          "line": 44
         },
         {
           "name": "description",
@@ -2749,7 +2749,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/card/component.rb",
-          "line": 31
+          "line": 29
         },
         {
           "name": "footer",
@@ -2766,7 +2766,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/card/component.rb",
-          "line": 37
+          "line": 31
         },
         {
           "name": "header_class",
@@ -2783,7 +2783,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/card/component.rb",
-          "line": 50
+          "line": 48
         },
         {
           "name": "title",
@@ -2800,7 +2800,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/card/component.rb",
-          "line": 29
+          "line": 28
         },
         {
           "name": "title_tag",
@@ -2817,7 +2817,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/card/component.rb",
-          "line": 43
+          "line": 41
         },
         {
           "name": "with_action",
@@ -2834,7 +2834,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/card/component.rb",
-          "line": 33
+          "line": 30
         },
         {
           "name": "with_description",
@@ -2851,7 +2851,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/card/component.rb",
-          "line": 31
+          "line": 29
         },
         {
           "name": "with_footer",
@@ -2868,7 +2868,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/card/component.rb",
-          "line": 37
+          "line": 31
         },
         {
           "name": "with_title",
@@ -2885,7 +2885,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/card/component.rb",
-          "line": 29
+          "line": 28
         }
       ],
       "constants": [
@@ -2944,7 +2944,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/carousel/component.rb",
-          "line": 46
+          "line": 44
         },
         {
           "name": "label",
@@ -2961,7 +2961,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/carousel/component.rb",
-          "line": 83
+          "line": 84
         },
         {
           "name": "orientation",
@@ -2978,7 +2978,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/carousel/component.rb",
-          "line": 85
+          "line": 86
         },
         {
           "name": "show_controls",
@@ -2995,7 +2995,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/carousel/component.rb",
-          "line": 87
+          "line": 88
         },
         {
           "name": "track_classes",
@@ -3012,7 +3012,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/carousel/component.rb",
-          "line": 90
+          "line": 91
         },
         {
           "name": "with_item",
@@ -3029,7 +3029,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/carousel/component.rb",
-          "line": 46
+          "line": 44
         }
       ],
       "constants": [
@@ -4287,7 +4287,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/collapsible/component.rb",
-          "line": 60
+          "line": 61
         },
         {
           "name": "trigger",
@@ -4304,7 +4304,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/collapsible/component.rb",
-          "line": 36
+          "line": 34
         },
         {
           "name": "with_trigger",
@@ -4321,7 +4321,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/collapsible/component.rb",
-          "line": 36
+          "line": 34
         }
       ],
       "constants": [
@@ -4396,7 +4396,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 448
+          "line": 447
         },
         {
           "name": "align_offset",
@@ -4413,7 +4413,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 450
+          "line": 449
         },
         {
           "name": "avoid_collisions",
@@ -4430,7 +4430,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 451
+          "line": 450
         },
         {
           "name": "dir",
@@ -4447,7 +4447,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 452
+          "line": 451
         },
         {
           "name": "disabled",
@@ -4464,7 +4464,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 429
+          "line": 428
         },
         {
           "name": "empty",
@@ -4481,7 +4481,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 307
+          "line": 306
         },
         {
           "name": "filter",
@@ -4498,7 +4498,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 442
+          "line": 441
         },
         {
           "name": "id",
@@ -4515,7 +4515,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 426
+          "line": 425
         },
         {
           "name": "items",
@@ -4532,7 +4532,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 315
+          "line": 310
         },
         {
           "name": "loading",
@@ -4549,7 +4549,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 310
+          "line": 307
         },
         {
           "name": "loop",
@@ -4566,7 +4566,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 445
+          "line": 444
         },
         {
           "name": "modal",
@@ -4583,7 +4583,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 435
+          "line": 434
         },
         {
           "name": "multiple",
@@ -4600,7 +4600,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 431
+          "line": 430
         },
         {
           "name": "name",
@@ -4617,7 +4617,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 422
+          "line": 421
         },
         {
           "name": "open",
@@ -4634,7 +4634,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 427
+          "line": 426
         },
         {
           "name": "placeholder",
@@ -4651,7 +4651,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 423
+          "line": 422
         },
         {
           "name": "required",
@@ -4668,7 +4668,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 428
+          "line": 427
         },
         {
           "name": "search_placeholder",
@@ -4685,7 +4685,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 425
+          "line": 424
         },
         {
           "name": "show_clear",
@@ -4702,7 +4702,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 438
+          "line": 437
         },
         {
           "name": "side",
@@ -4719,7 +4719,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 446
+          "line": 445
         },
         {
           "name": "side_offset",
@@ -4736,7 +4736,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 449
+          "line": 448
         },
         {
           "name": "trigger",
@@ -4753,7 +4753,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 304
+          "line": 302
         },
         {
           "name": "value",
@@ -4770,7 +4770,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 421
+          "line": 420
         },
         {
           "name": "width",
@@ -4787,7 +4787,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 453
+          "line": 452
         },
         {
           "name": "with_empty",
@@ -4804,7 +4804,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 307
+          "line": 306
         },
         {
           "name": "with_group",
@@ -4821,7 +4821,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 315
+          "line": 310
         },
         {
           "name": "with_item",
@@ -4838,7 +4838,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 315
+          "line": 310
         },
         {
           "name": "with_loading",
@@ -4855,7 +4855,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 310
+          "line": 307
         },
         {
           "name": "with_separator",
@@ -4872,7 +4872,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 315
+          "line": 310
         },
         {
           "name": "with_trigger",
@@ -4889,7 +4889,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 304
+          "line": 302
         }
       ],
       "constants": [
@@ -5026,7 +5026,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 276
+          "line": 272
         },
         {
           "name": "list_label",
@@ -5060,7 +5060,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 271
+          "line": 269
         },
         {
           "name": "loop",
@@ -5145,7 +5145,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 276
+          "line": 272
         },
         {
           "name": "with_item",
@@ -5162,7 +5162,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 276
+          "line": 272
         },
         {
           "name": "with_loading",
@@ -5179,7 +5179,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 271
+          "line": 269
         },
         {
           "name": "with_separator",
@@ -5196,7 +5196,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 276
+          "line": 272
         }
       ],
       "constants": [
@@ -5245,7 +5245,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 74
+          "line": 75
         },
         {
           "name": "dismissible",
@@ -5262,7 +5262,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 79
+          "line": 80
         },
         {
           "name": "filter",
@@ -5279,7 +5279,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 85
+          "line": 86
         },
         {
           "name": "hotkey",
@@ -5296,7 +5296,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 76
+          "line": 77
         },
         {
           "name": "id",
@@ -5313,7 +5313,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 90
+          "line": 91
         },
         {
           "name": "list_label",
@@ -5330,7 +5330,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 88
+          "line": 89
         },
         {
           "name": "loop",
@@ -5347,7 +5347,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 86
+          "line": 87
         },
         {
           "name": "placeholder",
@@ -5364,7 +5364,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 87
+          "line": 88
         },
         {
           "name": "show_close_button",
@@ -5381,7 +5381,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 80
+          "line": 81
         },
         {
           "name": "title",
@@ -5398,7 +5398,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 71
+          "line": 72
         },
         {
           "name": "trigger",
@@ -5415,7 +5415,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 42
+          "line": 40
         },
         {
           "name": "value",
@@ -5432,7 +5432,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 89
+          "line": 90
         },
         {
           "name": "with_trigger",
@@ -5449,7 +5449,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
-          "line": 42
+          "line": 40
         }
       ],
       "constants": [
@@ -7646,7 +7646,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/context_menu/component.rb",
-          "line": 140
+          "line": 141
         },
         {
           "name": "disabled",
@@ -7663,7 +7663,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/context_menu/component.rb",
-          "line": 136
+          "line": 137
         },
         {
           "name": "focusable_surface",
@@ -7680,7 +7680,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/context_menu/component.rb",
-          "line": 138
+          "line": 139
         },
         {
           "name": "label",
@@ -7697,7 +7697,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/context_menu/component.rb",
-          "line": 137
+          "line": 138
         },
         {
           "name": "long_press_delay",
@@ -7714,7 +7714,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/context_menu/component.rb",
-          "line": 135
+          "line": 136
         },
         {
           "name": "loop",
@@ -7731,7 +7731,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/context_menu/component.rb",
-          "line": 134
+          "line": 135
         },
         {
           "name": "modal",
@@ -7748,7 +7748,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/context_menu/component.rb",
-          "line": 133
+          "line": 134
         },
         {
           "name": "open",
@@ -7765,7 +7765,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/context_menu/component.rb",
-          "line": 130
+          "line": 131
         },
         {
           "name": "side",
@@ -7782,7 +7782,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/context_menu/component.rb",
-          "line": 141
+          "line": 142
         },
         {
           "name": "trigger",
@@ -7799,7 +7799,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/context_menu/component.rb",
-          "line": 62
+          "line": 57
         },
         {
           "name": "with_trigger",
@@ -7816,7 +7816,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/context_menu/component.rb",
-          "line": 62
+          "line": 57
         }
       ],
       "constants": [
@@ -7901,7 +7901,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/data_table/component.rb",
-          "line": 83
+          "line": 88
         },
         {
           "name": "columns",
@@ -7918,7 +7918,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/data_table/component.rb",
-          "line": 48
+          "line": 45
         },
         {
           "name": "container_class",
@@ -7935,7 +7935,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/data_table/component.rb",
-          "line": 98
+          "line": 103
         },
         {
           "name": "empty_text",
@@ -7952,7 +7952,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/data_table/component.rb",
-          "line": 84
+          "line": 89
         },
         {
           "name": "filter",
@@ -7969,7 +7969,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/data_table/component.rb",
-          "line": 85
+          "line": 90
         },
         {
           "name": "filter_label",
@@ -7986,7 +7986,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/data_table/component.rb",
-          "line": 86
+          "line": 91
         },
         {
           "name": "filter_name",
@@ -8003,7 +8003,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/data_table/component.rb",
-          "line": 88
+          "line": 93
         },
         {
           "name": "filter_placeholder",
@@ -8020,7 +8020,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/data_table/component.rb",
-          "line": 87
+          "line": 92
         },
         {
           "name": "frame",
@@ -8037,7 +8037,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/data_table/component.rb",
-          "line": 89
+          "line": 94
         },
         {
           "name": "scroll_label",
@@ -8054,7 +8054,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/data_table/component.rb",
-          "line": 101
+          "line": 106
         },
         {
           "name": "selectable",
@@ -8071,7 +8071,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/data_table/component.rb",
-          "line": 102
+          "line": 107
         },
         {
           "name": "selection_name",
@@ -8088,7 +8088,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/data_table/component.rb",
-          "line": 107
+          "line": 112
         },
         {
           "name": "sticky_header",
@@ -8105,7 +8105,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/data_table/component.rb",
-          "line": 92
+          "line": 97
         },
         {
           "name": "with_column",
@@ -8122,7 +8122,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/data_table/component.rb",
-          "line": 48
+          "line": 45
         }
       ],
       "constants": [
@@ -8926,7 +8926,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/dialog/component.rb",
-          "line": 54
+          "line": 55
         },
         {
           "name": "dismissible",
@@ -8994,7 +8994,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/dialog/component.rb",
-          "line": 52
+          "line": 54
         },
         {
           "name": "trigger",
@@ -9011,7 +9011,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/dialog/component.rb",
-          "line": 43
+          "line": 41
         },
         {
           "name": "with_description",
@@ -9028,7 +9028,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/dialog/component.rb",
-          "line": 54
+          "line": 55
         },
         {
           "name": "with_footer",
@@ -9062,7 +9062,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/dialog/component.rb",
-          "line": 52
+          "line": 54
         },
         {
           "name": "with_trigger",
@@ -9079,7 +9079,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/dialog/component.rb",
-          "line": 43
+          "line": 41
         }
       ],
       "constants": [
@@ -9589,7 +9589,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/dropdown_menu/component.rb",
-          "line": 137
+          "line": 138
         },
         {
           "name": "align_offset",
@@ -9606,7 +9606,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/dropdown_menu/component.rb",
-          "line": 139
+          "line": 140
         },
         {
           "name": "avoid_collisions",
@@ -9623,7 +9623,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/dropdown_menu/component.rb",
-          "line": 140
+          "line": 141
         },
         {
           "name": "dir",
@@ -9640,7 +9640,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/dropdown_menu/component.rb",
-          "line": 143
+          "line": 144
         },
         {
           "name": "disabled",
@@ -9657,7 +9657,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/dropdown_menu/component.rb",
-          "line": 144
+          "line": 145
         },
         {
           "name": "loop",
@@ -9674,7 +9674,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/dropdown_menu/component.rb",
-          "line": 142
+          "line": 143
         },
         {
           "name": "modal",
@@ -9691,7 +9691,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/dropdown_menu/component.rb",
-          "line": 132
+          "line": 133
         },
         {
           "name": "open",
@@ -9708,7 +9708,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/dropdown_menu/component.rb",
-          "line": 131
+          "line": 132
         },
         {
           "name": "side",
@@ -9725,7 +9725,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/dropdown_menu/component.rb",
-          "line": 135
+          "line": 136
         },
         {
           "name": "side_offset",
@@ -9742,7 +9742,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/dropdown_menu/component.rb",
-          "line": 138
+          "line": 139
         },
         {
           "name": "trigger",
@@ -9759,7 +9759,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/dropdown_menu/component.rb",
-          "line": 70
+          "line": 67
         },
         {
           "name": "with_trigger",
@@ -9776,7 +9776,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/dropdown_menu/component.rb",
-          "line": 70
+          "line": 67
         }
       ],
       "constants": [
@@ -9871,7 +9871,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/empty/component.rb",
-          "line": 32
+          "line": 29
         },
         {
           "name": "media",
@@ -9888,7 +9888,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/empty/component.rb",
-          "line": 28
+          "line": 27
         },
         {
           "name": "media_variant",
@@ -9905,7 +9905,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/empty/component.rb",
-          "line": 37
+          "line": 34
         },
         {
           "name": "title",
@@ -9922,7 +9922,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/empty/component.rb",
-          "line": 30
+          "line": 28
         },
         {
           "name": "title_tag",
@@ -9939,7 +9939,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/empty/component.rb",
-          "line": 34
+          "line": 31
         },
         {
           "name": "with_description",
@@ -9956,7 +9956,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/empty/component.rb",
-          "line": 32
+          "line": 29
         },
         {
           "name": "with_media",
@@ -9973,7 +9973,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/empty/component.rb",
-          "line": 28
+          "line": 27
         },
         {
           "name": "with_title",
@@ -9990,7 +9990,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/empty/component.rb",
-          "line": 30
+          "line": 28
         }
       ],
       "constants": [
@@ -11368,7 +11368,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/hover_card/component.rb",
-          "line": 118
+          "line": 119
         },
         {
           "name": "content_class",
@@ -11385,7 +11385,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/hover_card/component.rb",
-          "line": 122
+          "line": 123
         },
         {
           "name": "defer",
@@ -11402,7 +11402,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/hover_card/component.rb",
-          "line": 114
+          "line": 115
         },
         {
           "name": "open",
@@ -11419,7 +11419,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/hover_card/component.rb",
-          "line": 113
+          "line": 114
         },
         {
           "name": "open_delay",
@@ -11436,7 +11436,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/hover_card/component.rb",
-          "line": 117
+          "line": 118
         },
         {
           "name": "trigger",
@@ -11453,7 +11453,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/hover_card/component.rb",
-          "line": 61
+          "line": 54
         },
         {
           "name": "with_trigger",
@@ -11470,7 +11470,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/hover_card/component.rb",
-          "line": 61
+          "line": 54
         }
       ],
       "constants": [
@@ -12059,7 +12059,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/item/component.rb",
-          "line": 45
+          "line": 41
         },
         {
           "name": "description",
@@ -12076,7 +12076,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/item/component.rb",
-          "line": 43
+          "line": 40
         },
         {
           "name": "footer",
@@ -12093,7 +12093,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/item/component.rb",
-          "line": 49
+          "line": 43
         },
         {
           "name": "header",
@@ -12110,7 +12110,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/item/component.rb",
-          "line": 47
+          "line": 42
         },
         {
           "name": "media",
@@ -12127,7 +12127,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/item/component.rb",
-          "line": 39
+          "line": 38
         },
         {
           "name": "media_variant",
@@ -12144,7 +12144,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/item/component.rb",
-          "line": 57
+          "line": 51
         },
         {
           "name": "size",
@@ -12161,7 +12161,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/item/component.rb",
-          "line": 53
+          "line": 47
         },
         {
           "name": "tag",
@@ -12178,7 +12178,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/item/component.rb",
-          "line": 55
+          "line": 49
         },
         {
           "name": "title",
@@ -12195,7 +12195,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/item/component.rb",
-          "line": 41
+          "line": 39
         },
         {
           "name": "variant",
@@ -12212,7 +12212,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/item/component.rb",
-          "line": 51
+          "line": 45
         },
         {
           "name": "with_actions",
@@ -12229,7 +12229,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/item/component.rb",
-          "line": 45
+          "line": 41
         },
         {
           "name": "with_description",
@@ -12246,7 +12246,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/item/component.rb",
-          "line": 43
+          "line": 40
         },
         {
           "name": "with_footer",
@@ -12263,7 +12263,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/item/component.rb",
-          "line": 49
+          "line": 43
         },
         {
           "name": "with_header",
@@ -12280,7 +12280,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/item/component.rb",
-          "line": 47
+          "line": 42
         },
         {
           "name": "with_media",
@@ -12297,7 +12297,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/item/component.rb",
-          "line": 39
+          "line": 38
         },
         {
           "name": "with_title",
@@ -12314,7 +12314,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/item/component.rb",
-          "line": 41
+          "line": 39
         }
       ],
       "constants": [
@@ -12633,7 +12633,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/marker/component.rb",
-          "line": 45
+          "line": 46
         },
         {
           "name": "icon",
@@ -12650,7 +12650,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/marker/component.rb",
-          "line": 34
+          "line": 31
         },
         {
           "name": "tag",
@@ -12667,7 +12667,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/marker/component.rb",
-          "line": 44
+          "line": 45
         },
         {
           "name": "variant",
@@ -12684,7 +12684,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/marker/component.rb",
-          "line": 40
+          "line": 41
         },
         {
           "name": "with_icon",
@@ -12701,7 +12701,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/marker/component.rb",
-          "line": 34
+          "line": 31
         }
       ],
       "constants": [
@@ -12771,7 +12771,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menubar/component.rb",
-          "line": 146
+          "line": 147
         },
         {
           "name": "label",
@@ -12788,7 +12788,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menubar/component.rb",
-          "line": 141
+          "line": 142
         },
         {
           "name": "loop",
@@ -12805,7 +12805,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menubar/component.rb",
-          "line": 143
+          "line": 144
         },
         {
           "name": "menus",
@@ -12822,7 +12822,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menubar/component.rb",
-          "line": 76
+          "line": 73
         },
         {
           "name": "value",
@@ -12839,7 +12839,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menubar/component.rb",
-          "line": 144
+          "line": 145
         },
         {
           "name": "with_menu",
@@ -12856,7 +12856,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menubar/component.rb",
-          "line": 76
+          "line": 73
         }
       ],
       "constants": [
@@ -12936,7 +12936,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menus.rb",
-          "line": 94
+          "line": 87
         },
         {
           "name": "with_checkbox_item",
@@ -12953,7 +12953,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menus.rb",
-          "line": 94
+          "line": 87
         },
         {
           "name": "with_group",
@@ -12970,7 +12970,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menus.rb",
-          "line": 94
+          "line": 87
         },
         {
           "name": "with_item",
@@ -12987,7 +12987,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menus.rb",
-          "line": 94
+          "line": 87
         },
         {
           "name": "with_label",
@@ -13004,7 +13004,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menus.rb",
-          "line": 94
+          "line": 87
         },
         {
           "name": "with_radio_group",
@@ -13021,7 +13021,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menus.rb",
-          "line": 94
+          "line": 87
         },
         {
           "name": "with_separator",
@@ -13038,7 +13038,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menus.rb",
-          "line": 94
+          "line": 87
         },
         {
           "name": "with_sub",
@@ -13055,7 +13055,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menus.rb",
-          "line": 94
+          "line": 87
         }
       ],
       "constants": []
@@ -13098,7 +13098,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/message/component.rb",
-          "line": 38
+          "line": 35
         },
         {
           "name": "avatar",
@@ -13115,7 +13115,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/message/component.rb",
-          "line": 32
+          "line": 30
         },
         {
           "name": "footer",
@@ -13132,7 +13132,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/message/component.rb",
-          "line": 36
+          "line": 33
         },
         {
           "name": "header",
@@ -13149,7 +13149,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/message/component.rb",
-          "line": 34
+          "line": 32
         },
         {
           "name": "with_avatar",
@@ -13166,7 +13166,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/message/component.rb",
-          "line": 32
+          "line": 30
         },
         {
           "name": "with_footer",
@@ -13183,7 +13183,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/message/component.rb",
-          "line": 36
+          "line": 33
         },
         {
           "name": "with_header",
@@ -13200,7 +13200,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/message/component.rb",
-          "line": 34
+          "line": 32
         }
       ],
       "constants": [
@@ -13413,7 +13413,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/metadata_list/component.rb",
-          "line": 49
+          "line": 51
         },
         {
           "name": "items",
@@ -13430,7 +13430,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/metadata_list/component.rb",
-          "line": 35
+          "line": 33
         },
         {
           "name": "orientation",
@@ -13447,7 +13447,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/metadata_list/component.rb",
-          "line": 47
+          "line": 49
         },
         {
           "name": "with_item",
@@ -13464,7 +13464,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/metadata_list/component.rb",
-          "line": 35
+          "line": 33
         }
       ],
       "constants": [
@@ -13838,7 +13838,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/navigation_menu/component.rb",
-          "line": 45
+          "line": 43
         },
         {
           "name": "label",
@@ -13855,7 +13855,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/navigation_menu/component.rb",
-          "line": 95
+          "line": 97
         },
         {
           "name": "viewport",
@@ -13872,7 +13872,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/navigation_menu/component.rb",
-          "line": 97
+          "line": 99
         },
         {
           "name": "with_item",
@@ -13889,7 +13889,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/navigation_menu/component.rb",
-          "line": 45
+          "line": 43
         },
         {
           "name": "with_link",
@@ -13916,7 +13916,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/navigation_menu/component.rb",
-          "line": 170
+          "line": 172
         }
       ],
       "constants": [
@@ -14614,7 +14614,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/popover/component.rb",
-          "line": 76
+          "line": 75
         },
         {
           "name": "content_class",
@@ -14631,7 +14631,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/popover/component.rb",
-          "line": 127
+          "line": 128
         },
         {
           "name": "description",
@@ -14648,7 +14648,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/popover/component.rb",
-          "line": 86
+          "line": 87
         },
         {
           "name": "label",
@@ -14665,7 +14665,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/popover/component.rb",
-          "line": 126
+          "line": 127
         },
         {
           "name": "modal",
@@ -14682,7 +14682,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/popover/component.rb",
-          "line": 121
+          "line": 122
         },
         {
           "name": "open",
@@ -14699,7 +14699,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/popover/component.rb",
-          "line": 120
+          "line": 121
         },
         {
           "name": "title",
@@ -14716,7 +14716,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/popover/component.rb",
-          "line": 83
+          "line": 84
         },
         {
           "name": "trigger",
@@ -14733,7 +14733,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/popover/component.rb",
-          "line": 62
+          "line": 58
         },
         {
           "name": "with_anchor",
@@ -14750,7 +14750,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/popover/component.rb",
-          "line": 76
+          "line": 75
         },
         {
           "name": "with_description",
@@ -14767,7 +14767,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/popover/component.rb",
-          "line": 86
+          "line": 87
         },
         {
           "name": "with_title",
@@ -14784,7 +14784,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/popover/component.rb",
-          "line": 83
+          "line": 84
         },
         {
           "name": "with_trigger",
@@ -14801,7 +14801,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/popover/component.rb",
-          "line": 62
+          "line": 58
         }
       ],
       "constants": [
@@ -15041,7 +15041,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 57
+          "line": 56
         },
         {
           "name": "default_item",
@@ -15058,7 +15058,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 116
+          "line": 115
         },
         {
           "name": "http_method",
@@ -15075,7 +15075,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 109
+          "line": 108
         },
         {
           "name": "id",
@@ -15092,7 +15092,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 112
+          "line": 111
         },
         {
           "name": "next_label",
@@ -15109,7 +15109,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 120
+          "line": 119
         },
         {
           "name": "previous_label",
@@ -15126,7 +15126,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 117
+          "line": 116
         },
         {
           "name": "progress",
@@ -15143,7 +15143,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 56
+          "line": 52
         },
         {
           "name": "shortcuts",
@@ -15160,7 +15160,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 113
+          "line": 112
         },
         {
           "name": "skip_label",
@@ -15177,7 +15177,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 118
+          "line": 117
         },
         {
           "name": "submit_label",
@@ -15194,7 +15194,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 121
+          "line": 120
         },
         {
           "name": "url",
@@ -15211,7 +15211,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 108
+          "line": 107
         },
         {
           "name": "with_item",
@@ -15223,7 +15223,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 206
+          "line": 205
         },
         {
           "name": "with_progress",
@@ -15235,7 +15235,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 62
+          "line": 61
         }
       ],
       "constants": [
@@ -15274,7 +15274,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 336
+          "line": 335
         },
         {
           "name": "class_name",
@@ -15286,7 +15286,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 336
+          "line": 335
         },
         {
           "name": "description",
@@ -15298,7 +15298,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 336
+          "line": 335
         },
         {
           "name": "disabled",
@@ -15310,7 +15310,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 336
+          "line": 335
         },
         {
           "name": "error",
@@ -15322,7 +15322,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 336
+          "line": 335
         },
         {
           "name": "input",
@@ -15334,7 +15334,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 336
+          "line": 335
         },
         {
           "name": "multiple",
@@ -15346,7 +15346,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 336
+          "line": 335
         },
         {
           "name": "name",
@@ -15358,7 +15358,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 336
+          "line": 335
         },
         {
           "name": "required",
@@ -15370,7 +15370,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 336
+          "line": 335
         },
         {
           "name": "title",
@@ -15382,7 +15382,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 336
+          "line": 335
         },
         {
           "name": "with_choice",
@@ -15431,7 +15431,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 359
+          "line": 358
         },
         {
           "name": "with_input",
@@ -15467,7 +15467,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 369
+          "line": 368
         }
       ],
       "constants": []
@@ -15520,7 +15520,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/radio_group/component.rb",
-          "line": 124
+          "line": 125
         },
         {
           "name": "invalid",
@@ -15537,7 +15537,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/radio_group/component.rb",
-          "line": 129
+          "line": 130
         },
         {
           "name": "items",
@@ -15554,7 +15554,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/radio_group/component.rb",
-          "line": 62
+          "line": 58
         },
         {
           "name": "label",
@@ -15571,7 +15571,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/radio_group/component.rb",
-          "line": 132
+          "line": 133
         },
         {
           "name": "loop",
@@ -15588,7 +15588,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/radio_group/component.rb",
-          "line": 125
+          "line": 126
         },
         {
           "name": "name",
@@ -15605,7 +15605,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/radio_group/component.rb",
-          "line": 118
+          "line": 119
         },
         {
           "name": "orientation",
@@ -15622,7 +15622,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/radio_group/component.rb",
-          "line": 126
+          "line": 127
         },
         {
           "name": "required",
@@ -15639,7 +15639,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/radio_group/component.rb",
-          "line": 121
+          "line": 122
         },
         {
           "name": "value",
@@ -15656,7 +15656,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/radio_group/component.rb",
-          "line": 120
+          "line": 121
         },
         {
           "name": "with_item",
@@ -15673,7 +15673,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/radio_group/component.rb",
-          "line": 62
+          "line": 58
         }
       ],
       "constants": [
@@ -15786,7 +15786,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/resizable/component.rb",
-          "line": 71
+          "line": 75
         },
         {
           "name": "grip",
@@ -15803,7 +15803,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/resizable/component.rb",
-          "line": 73
+          "line": 77
         },
         {
           "name": "panels",
@@ -15820,7 +15820,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/resizable/component.rb",
-          "line": 44
+          "line": 42
         },
         {
           "name": "with_panel",
@@ -15837,7 +15837,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/resizable/component.rb",
-          "line": 44
+          "line": 42
         }
       ],
       "constants": [
@@ -16322,7 +16322,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 204
+          "line": 199
         },
         {
           "name": "loop",
@@ -16492,7 +16492,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 198
+          "line": 195
         },
         {
           "name": "trigger_class",
@@ -16543,7 +16543,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 204
+          "line": 199
         },
         {
           "name": "with_item",
@@ -16560,7 +16560,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 204
+          "line": 199
         },
         {
           "name": "with_separator",
@@ -16577,7 +16577,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 204
+          "line": 199
         },
         {
           "name": "with_trigger",
@@ -16594,7 +16594,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 198
+          "line": 195
         }
       ],
       "constants": [
@@ -17045,7 +17045,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/sidebar/component.rb",
-          "line": 102
+          "line": 100
         },
         {
           "name": "inset",
@@ -17062,7 +17062,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/sidebar/component.rb",
-          "line": 60
+          "line": 58
         },
         {
           "name": "nav",
@@ -17079,7 +17079,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/sidebar/component.rb",
-          "line": 58
+          "line": 57
         },
         {
           "name": "open",
@@ -17096,7 +17096,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/sidebar/component.rb",
-          "line": 96
+          "line": 94
         },
         {
           "name": "side",
@@ -17113,7 +17113,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/sidebar/component.rb",
-          "line": 99
+          "line": 97
         },
         {
           "name": "variant",
@@ -17130,7 +17130,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/sidebar/component.rb",
-          "line": 100
+          "line": 98
         },
         {
           "name": "with_inset",
@@ -17147,7 +17147,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/sidebar/component.rb",
-          "line": 60
+          "line": 58
         },
         {
           "name": "with_nav",
@@ -17164,7 +17164,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/sidebar/component.rb",
-          "line": 58
+          "line": 57
         }
       ],
       "constants": [
@@ -17678,7 +17678,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/stat/component.rb",
-          "line": 49
+          "line": 47
         },
         {
           "name": "description",
@@ -17695,7 +17695,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/stat/component.rb",
-          "line": 44
+          "line": 43
         },
         {
           "name": "label",
@@ -17712,7 +17712,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/stat/component.rb",
-          "line": 48
+          "line": 46
         },
         {
           "name": "media",
@@ -17729,7 +17729,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/stat/component.rb",
-          "line": 46
+          "line": 44
         },
         {
           "name": "sentiment",
@@ -17746,7 +17746,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/stat/component.rb",
-          "line": 51
+          "line": 49
         },
         {
           "name": "trend",
@@ -17763,7 +17763,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/stat/component.rb",
-          "line": 50
+          "line": 48
         },
         {
           "name": "with_description",
@@ -17780,7 +17780,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/stat/component.rb",
-          "line": 44
+          "line": 43
         },
         {
           "name": "with_media",
@@ -17797,7 +17797,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/stat/component.rb",
-          "line": 46
+          "line": 44
         }
       ],
       "constants": [
@@ -18152,7 +18152,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tabs/component.rb",
-          "line": 103
+          "line": 106
         },
         {
           "name": "label",
@@ -18169,7 +18169,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tabs/component.rb",
-          "line": 106
+          "line": 109
         },
         {
           "name": "orientation",
@@ -18186,7 +18186,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tabs/component.rb",
-          "line": 107
+          "line": 110
         },
         {
           "name": "tabs",
@@ -18203,7 +18203,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tabs/component.rb",
-          "line": 47
+          "line": 45
         },
         {
           "name": "variant",
@@ -18220,7 +18220,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tabs/component.rb",
-          "line": 109
+          "line": 112
         },
         {
           "name": "webmcp_tool_definition",
@@ -18232,7 +18232,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/tabs/component.rb",
-          "line": 92
+          "line": 95
         },
         {
           "name": "with_tab",
@@ -18249,7 +18249,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tabs/component.rb",
-          "line": 47
+          "line": 45
         }
       ],
       "constants": [
@@ -18323,7 +18323,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tag_group/component.rb",
-          "line": 68
+          "line": 70
         },
         {
           "name": "label",
@@ -18340,7 +18340,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tag_group/component.rb",
-          "line": 67
+          "line": 69
         },
         {
           "name": "name",
@@ -18357,7 +18357,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tag_group/component.rb",
-          "line": 66
+          "line": 68
         },
         {
           "name": "tags",
@@ -18374,7 +18374,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tag_group/component.rb",
-          "line": 41
+          "line": 39
         },
         {
           "name": "with_tag",
@@ -18391,7 +18391,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tag_group/component.rb",
-          "line": 41
+          "line": 39
         }
       ],
       "constants": [
@@ -19633,7 +19633,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/timeline/component.rb",
-          "line": 45
+          "line": 43
         },
         {
           "name": "orientation",
@@ -19650,7 +19650,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/timeline/component.rb",
-          "line": 61
+          "line": 62
         },
         {
           "name": "with_item",
@@ -19667,7 +19667,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/timeline/component.rb",
-          "line": 45
+          "line": 43
         }
       ],
       "constants": [
@@ -19742,7 +19742,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toast/component.rb",
-          "line": 64
+          "line": 60
         },
         {
           "name": "description",
@@ -19759,7 +19759,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toast/component.rb",
-          "line": 60
+          "line": 58
         },
         {
           "name": "duration",
@@ -19776,7 +19776,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toast/component.rb",
-          "line": 105
+          "line": 104
         },
         {
           "name": "politeness",
@@ -19793,7 +19793,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toast/component.rb",
-          "line": 108
+          "line": 107
         },
         {
           "name": "show_close_button",
@@ -19810,7 +19810,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toast/component.rb",
-          "line": 110
+          "line": 109
         },
         {
           "name": "title",
@@ -19827,7 +19827,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toast/component.rb",
-          "line": 57
+          "line": 56
         },
         {
           "name": "variant",
@@ -19844,7 +19844,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toast/component.rb",
-          "line": 101
+          "line": 100
         },
         {
           "name": "with_action",
@@ -19861,7 +19861,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toast/component.rb",
-          "line": 64
+          "line": 60
         },
         {
           "name": "with_description",
@@ -19878,7 +19878,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toast/component.rb",
-          "line": 60
+          "line": 58
         },
         {
           "name": "with_title",
@@ -19895,7 +19895,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toast/component.rb",
-          "line": 57
+          "line": 56
         }
       ],
       "constants": [
@@ -20333,7 +20333,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toggle_group/component.rb",
-          "line": 122
+          "line": 123
         },
         {
           "name": "items",
@@ -20350,7 +20350,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toggle_group/component.rb",
-          "line": 53
+          "line": 51
         },
         {
           "name": "label",
@@ -20367,7 +20367,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toggle_group/component.rb",
-          "line": 123
+          "line": 124
         },
         {
           "name": "orientation",
@@ -20384,7 +20384,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toggle_group/component.rb",
-          "line": 120
+          "line": 121
         },
         {
           "name": "size",
@@ -20401,7 +20401,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toggle_group/component.rb",
-          "line": 109
+          "line": 110
         },
         {
           "name": "spacing",
@@ -20418,7 +20418,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toggle_group/component.rb",
-          "line": 117
+          "line": 118
         },
         {
           "name": "type",
@@ -20435,7 +20435,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toggle_group/component.rb",
-          "line": 112
+          "line": 113
         },
         {
           "name": "value",
@@ -20452,7 +20452,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toggle_group/component.rb",
-          "line": 114
+          "line": 115
         },
         {
           "name": "values",
@@ -20469,7 +20469,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toggle_group/component.rb",
-          "line": 115
+          "line": 116
         },
         {
           "name": "variant",
@@ -20486,7 +20486,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toggle_group/component.rb",
-          "line": 107
+          "line": 108
         },
         {
           "name": "with_item",
@@ -20503,7 +20503,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toggle_group/component.rb",
-          "line": 53
+          "line": 51
         }
       ],
       "constants": [
@@ -20577,7 +20577,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toolbar/component.rb",
-          "line": 46
+          "line": 44
         },
         {
           "name": "label",
@@ -20594,7 +20594,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toolbar/component.rb",
-          "line": 69
+          "line": 70
         },
         {
           "name": "loop",
@@ -20611,7 +20611,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toolbar/component.rb",
-          "line": 70
+          "line": 71
         },
         {
           "name": "orientation",
@@ -20628,7 +20628,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toolbar/component.rb",
-          "line": 66
+          "line": 67
         },
         {
           "name": "with_button",
@@ -20645,7 +20645,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toolbar/component.rb",
-          "line": 46
+          "line": 44
         },
         {
           "name": "with_input",
@@ -20662,7 +20662,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toolbar/component.rb",
-          "line": 46
+          "line": 44
         },
         {
           "name": "with_separator",
@@ -20679,7 +20679,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/toolbar/component.rb",
-          "line": 46
+          "line": 44
         }
       ],
       "constants": [
@@ -20759,7 +20759,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tooltip/component.rb",
-          "line": 132
+          "line": 133
         },
         {
           "name": "delay_duration",
@@ -20776,7 +20776,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tooltip/component.rb",
-          "line": 123
+          "line": 124
         },
         {
           "name": "disable_hoverable_content",
@@ -20793,7 +20793,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tooltip/component.rb",
-          "line": 124
+          "line": 125
         },
         {
           "name": "label",
@@ -20810,7 +20810,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tooltip/component.rb",
-          "line": 129
+          "line": 130
         },
         {
           "name": "open",
@@ -20827,7 +20827,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tooltip/component.rb",
-          "line": 122
+          "line": 123
         },
         {
           "name": "trigger",
@@ -20844,7 +20844,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tooltip/component.rb",
-          "line": 65
+          "line": 60
         },
         {
           "name": "with_trigger",
@@ -20861,7 +20861,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tooltip/component.rb",
-          "line": 65
+          "line": 60
         }
       ],
       "constants": [
