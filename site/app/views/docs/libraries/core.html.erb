@@ -446,8 +446,11 @@
         It parses templates without rendering and validates every Poetry
         surface: unknown components, options, and variants with
         did-you-mean suggestions, Stimulus wiring against the controllers
-        manifest, icon names against the active set, and raw color
-        classes that bypass the tokens.
+        manifest, icon names against the active set, and the three style
+        exits that bypass the tokens: raw and arbitrary color classes,
+        inline style colors, and the <code>!</code> important modifier, in
+        <code>class=""</code> attributes and <code>class:</code> keywords
+        alike.
       </p>
     <% end %>
     <%= poetry_code_block(code: check_source, language: "shell", label: "Run it") %>
