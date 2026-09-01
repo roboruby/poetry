@@ -19,7 +19,16 @@ import { supported, registerTool, validToolName } from "@poetry/agent/adapter"
 // - A per-document budget caps registrations (each tool costs the agent
 //   context; overlap confuses tool choice).
 // - Errors come back as descriptive result strings (granular exceptions
-//   are still open spec issues; a string lets the agent self-correct).
+//   are still open spec issues; a string lets the agent self-correct):
+//   a missing or unknown parameter, a value of the wrong type or outside
+//   the enum, a missing action, a throwing action.
+// - A result is the action's return value when it is JSON-serializable
+//   (the contract's actions return their resulting state, so an answer
+//   says what happened rather than "done"); the done marker covers
+//   actions that return nothing.
+// - Parameters map positionally onto the action in declared order; the
+//   execute callback's {signal} is not forwarded (the actions are
+//   synchronous UI operations).
 
 // element -> { hash, controller: AbortController, names: string[] }
 const registrations = new Map()
@@ -74,6 +83,7 @@ export default class extends Controller {
     const controller = new AbortController()
     const entry = { hash, controller, names: [] }
     registrations.set(this.element, entry)
+    const pending = []
 
     for (const tool of this.toolsValue) {
       const name = `poetry.${this.nameValue}.${tool.name}`
@@ -90,19 +100,25 @@ export default class extends Controller {
         name,
         description: tool.description,
         annotations: tool.annotations,
-        execute: (args, options) => this.#execute(tool, args ?? {}, options)
+        execute: (args) => this.#execute(tool, args ?? {})
       }
       if (tool.title) definition.title = tool.title
       if (tool.inputSchema) definition.inputSchema = tool.inputSchema
 
       entry.names.push(name)
-      registerTool(definition, { signal: controller.signal }).catch((error) => {
+      pending.push(registerTool(definition, { signal: controller.signal }).catch((error) => {
         entry.names = entry.names.filter((registered) => registered !== name)
         console.warn(`[poetry-agent] webmcp: could not register ${name}: ${error?.message ?? error}`)
-      })
+      }))
     }
 
-    this.dispatch("registered", { prefix: "poetry:webmcp", detail: { name: this.nameValue, tools: [...entry.names] } })
+    // The registered event carries what the browser ACCEPTED, so it fires
+    // once every registration settled (and not at all if this instance
+    // unregistered meanwhile).
+    Promise.allSettled(pending).then(() => {
+      if (registrations.get(this.element) !== entry) return
+      this.dispatch("registered", { prefix: "poetry:webmcp", detail: { name: this.nameValue, tools: [...entry.names] } })
+    })
   }
 
   // Aborts every registration of this instance.
@@ -115,25 +131,19 @@ export default class extends Controller {
     this.dispatch("unregistered", { prefix: "poetry:webmcp", detail: { name: this.nameValue, tools: entry.names } })
   }
 
-  async #execute(tool, args, options) {
+  async #execute(tool, args) {
     const [identifier, method] = String(tool.executes).split("#")
     const target = this.application.getControllerForElementAndIdentifier(this.element, identifier)
     if (!target || typeof target[method] !== "function") {
       return `Error: ${tool.name} cannot run - no ${identifier}#${method} on this element`
     }
 
-    const properties = tool.inputSchema?.properties ?? {}
-    const missing = (tool.inputSchema?.required ?? []).filter((key) => args[key] === undefined)
-    if (missing.length > 0) return `Error: missing required parameter(s) ${missing.join(", ")}`
-    for (const [key, schema] of Object.entries(properties)) {
-      if (schema.enum && args[key] !== undefined && !schema.enum.includes(args[key])) {
-        return `Error: ${key} must be one of ${schema.enum.join(", ")}`
-      }
-    }
+    const problem = validate(tool, args)
+    if (problem) return problem
 
     try {
-      const positional = Object.keys(properties).map((key) => args[key])
-      const result = await target[method](...positional, options)
+      const positional = Object.keys(tool.inputSchema?.properties ?? {}).map((key) => args[key])
+      const result = await target[method](...positional)
       const value = serializable(result) ? result : `${tool.name}: done`
       this.dispatch("executed", { prefix: "poetry:webmcp", detail: { tool: tool.name, args, result: value } })
       return value ?? `${tool.name}: done`
@@ -144,6 +154,51 @@ export default class extends Controller {
 
   #connected = false
 }
+
+// Strict validation in code, loose in schema (Chrome's rule): the schema
+// is a hint the agent may miss, so every call is checked here and answered
+// with a string it can act on - which parameter, what it takes.
+const validate = (tool, args) => {
+  const schema = tool.inputSchema ?? {}
+  const properties = schema.properties ?? {}
+  const missing = (schema.required ?? []).filter((key) => args[key] === undefined)
+  if (missing.length > 0) return `Error: missing required parameter(s) ${missing.join(", ")}`
+
+  if (schema.additionalProperties === false) {
+    const unknown = Object.keys(args).filter((key) => !(key in properties))
+    if (unknown.length > 0) {
+      const takes = Object.keys(properties).join(", ") || "no parameters"
+      return `Error: unknown parameter(s) ${unknown.join(", ")} - ${tool.name} takes ${takes}`
+    }
+  }
+
+  for (const [key, spec] of Object.entries(properties)) {
+    const value = args[key]
+    if (value === undefined) continue
+    if (!matchesType(value, spec.type)) return `Error: ${key} must be ${describeType(spec.type)}`
+    if (spec.enum && !spec.enum.includes(value)) return `Error: ${key} must be one of ${spec.enum.join(", ")}`
+  }
+  return null
+}
+
+const matchesType = (value, type) => {
+  if (!type) return true
+  const types = Array.isArray(type) ? type : [type]
+  return types.some((expected) => {
+    switch (expected) {
+      case "string": return typeof value === "string"
+      case "number": return typeof value === "number" && Number.isFinite(value)
+      case "integer": return Number.isInteger(value)
+      case "boolean": return typeof value === "boolean"
+      case "array": return Array.isArray(value)
+      case "object": return value !== null && typeof value === "object" && !Array.isArray(value)
+      case "null": return value === null
+      default: return true
+    }
+  })
+}
+
+const describeType = (type) => (Array.isArray(type) ? type.join(" or ") : `${/^[aeiou]/.test(type) ? "an" : "a"} ${type}`)
 
 // A tool result must survive JSON serialization (the spec stringifies it);
 // DOM objects and undefined collapse to a done-marker instead.

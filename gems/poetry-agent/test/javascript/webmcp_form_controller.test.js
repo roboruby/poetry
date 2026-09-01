@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
 import { Application } from "@hotwired/stimulus"
 import { registerPoetryAgent } from "@poetry/agent"
+import { stripToolAttributes } from "@poetry/agent/webmcp_form_controller"
 
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0))
 
@@ -21,6 +22,7 @@ describe("poetry--agent--webmcp-form", () => {
   afterEach(async () => {
     application.stop()
     document.body.innerHTML = ""
+    delete window.Turbo
     vi.restoreAllMocks()
     await flush()
   })
@@ -60,6 +62,70 @@ describe("poetry--agent--webmcp-form", () => {
     const { promise } = agentSubmit()
 
     expect(await promise).toBe("find_contact failed (422): Email can't be blank")
+  })
+
+  it("catches the page up after a GET answer: a Turbo visit to the result URL, one beat after the answer", async () => {
+    window.Turbo = { visit: vi.fn(), renderStreamMessage: vi.fn() }
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("<p>3 results</p>", { status: 200 }))
+    const { promise } = agentSubmit()
+
+    await promise
+    expect(window.Turbo.visit).not.toHaveBeenCalled() // the answer is handed to the browser first
+    await flush()
+
+    expect(window.Turbo.visit).toHaveBeenCalledWith(expect.stringMatching(/\/search\?q=ada$/), { action: "replace" })
+    expect(window.Turbo.renderStreamMessage).not.toHaveBeenCalled()
+  })
+
+  it("renders a Turbo-Stream answer in place", async () => {
+    window.Turbo = { visit: vi.fn(), renderStreamMessage: vi.fn() }
+    const stream = '<turbo-stream action="replace" target="results"><template>ok</template></turbo-stream>'
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(stream, { status: 200, headers: { "content-type": "text/vnd.turbo-stream.html" } }))
+    const { promise } = agentSubmit()
+
+    await promise
+    await flush()
+
+    expect(window.Turbo.renderStreamMessage).toHaveBeenCalledWith(stream)
+    expect(window.Turbo.visit).not.toHaveBeenCalled()
+  })
+
+  it("visits where a POST redirected, and stays put on a re-rendered failure", async () => {
+    window.Turbo = { visit: vi.fn(), renderStreamMessage: vi.fn() }
+    document.getElementById("f").setAttribute("method", "post")
+    const redirected = new Response("<main>Created</main>", { status: 200, headers: { "content-type": "text/html" } })
+    Object.defineProperty(redirected, "redirected", { value: true })
+    Object.defineProperty(redirected, "url", { value: "http://localhost/contacts/7" })
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(redirected)
+    let { promise } = agentSubmit()
+
+    await promise
+    await flush()
+    expect(window.Turbo.visit).toHaveBeenCalledWith("http://localhost/contacts/7")
+
+    window.Turbo.visit.mockClear()
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("<main>Email can't be blank</main>", { status: 422, headers: { "content-type": "text/html" } }))
+    ;({ promise } = agentSubmit())
+
+    expect(await promise).toBe("find_contact failed (422): Email can't be blank")
+    await flush()
+    expect(window.Turbo.visit).not.toHaveBeenCalled()
+  })
+
+  it("never parses declarative tool attributes into an inert document (the Chrome 151 renderer crash)", async () => {
+    const page = `<html><body><form toolname="search_docs" tooldescription="Search." toolautosubmit>
+      <input name="q" toolparamdescription="Words."></form>
+      <ul data-webmcp-result><li>Combobox - components</li></ul></body></html>`
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(page, { status: 200, headers: { "content-type": "text/html" } }))
+    const parsed = []
+    const parse = DOMParser.prototype.parseFromString
+    vi.spyOn(DOMParser.prototype, "parseFromString").mockImplementation(function (text, type) { parsed.push(text); return parse.call(this, text, type) })
+    const { promise } = agentSubmit()
+
+    expect(await promise).toBe("find_contact succeeded (200): Combobox - components")
+    expect(parsed.join("\n")).not.toMatch(/tool(name|description|autosubmit|paramdescription)/i)
+    expect(stripToolAttributes(`<form toolname="a" tooldescription='b c' toolautosubmit><input toolparamdescription=z>`))
+      .toBe("<form><input>")
   })
 
   it("leaves a human submit untouched", () => {

@@ -14,17 +14,28 @@ module Poetry
       # @return [Array<String>]
       attr_accessor :origin_trial_tokens
 
+      def initialize
+        @origin_trial_tokens = []
+      end
+
       # The per-page registration budget the registrar enforces: past
       # this many registered tools on one document, further registrations
       # are dropped with a console warning (each tool costs the agent
-      # context; overlap confuses tool choice).
+      # context; overlap confuses tool choice). Stored on poetry-core's
+      # configuration, where the component contract reads it to put the
+      # budget on every opted-in root - this accessor writes through.
       #
       # @return [Integer]
-      attr_accessor :registration_budget
+      def registration_budget
+        Poetry::Core::Config.current.webmcp_registration_budget
+      end
 
-      def initialize
-        @origin_trial_tokens = []
-        @registration_budget = 20
+      # Sets the per-page registration budget.
+      #
+      # @param count [Integer]
+      # @return [Integer]
+      def registration_budget=(count)
+        Poetry::Core::Config.current.webmcp_registration_budget = Integer(count)
       end
 
       # The process-wide configuration instance.

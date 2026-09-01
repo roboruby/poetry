@@ -33,7 +33,7 @@ end
 
 ## Safety by construction
 
-Nothing registers until a rendered instance opts in. Tools are read-only unless declared `mutating: true`. `autosubmit` is GET-only. Registrations are budgeted per document, never repeated for an unchanged payload, never made under Turbo's cache preview, and errors return as descriptive strings so an agent corrects its call.
+Nothing registers until a rendered instance opts in. Tools are read-only unless declared `mutating: true`. `autosubmit` is GET-only. Registrations are budgeted per document, never repeated for an unchanged payload, never made under Turbo's cache preview. Every call is validated in code (required, unknown, and mistyped parameters, enum membership) and problems return as descriptive strings so an agent corrects its call; results carry the resulting state. An agent-invoked form answers through `respondWith`, then the page catches up with the answer (a Turbo visit for a GET, a rendered stream, the redirect target of a POST).
 
 ## Development
 

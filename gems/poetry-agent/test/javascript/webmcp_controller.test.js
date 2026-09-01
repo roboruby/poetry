@@ -22,7 +22,8 @@ const fakeContext = () => {
 // components expose: setValue(value), clear(), open().
 class FakeComponent extends Controller {
   static values = { value: String, opened: Boolean }
-  setValue(value) { this.valueValue = String(value); return { value: this.valueValue } }
+  setValue(value) { this.valueValue = String(value); this.lastArity = arguments.length; return { value: this.valueValue } }
+  setCount(count) { return { count } }
   clear() { this.valueValue = "" }
   open() { this.openedValue = true }
   fail() { throw new Error("boom") }
@@ -30,8 +31,10 @@ class FakeComponent extends Controller {
 }
 
 const TOOLS = [
-  { name: "set_value", description: "Select.", inputSchema: { type: "object", properties: { value: { type: "string", enum: ["a", "b"] } }, required: ["value"] },
+  { name: "set_value", description: "Select.", inputSchema: { type: "object", properties: { value: { type: "string", enum: ["a", "b"] } }, required: ["value"], additionalProperties: false },
     annotations: { readOnlyHint: false, untrustedContentHint: false }, executes: "poetry--core--fake#setValue" },
+  { name: "set_count", description: "Count.", inputSchema: { type: "object", properties: { count: { type: "integer" } }, additionalProperties: false },
+    annotations: { readOnlyHint: false, untrustedContentHint: false }, executes: "poetry--core--fake#setCount" },
   { name: "clear", description: "Clear.", annotations: { readOnlyHint: false, untrustedContentHint: false }, executes: "poetry--core--fake#clear" },
   { name: "open", description: "Open.", annotations: { readOnlyHint: false, untrustedContentHint: false }, executes: "poetry--core--fake#open" },
   { name: "fail", description: "Fail.", annotations: { readOnlyHint: true, untrustedContentHint: false }, executes: "poetry--core--fake#fail" },
@@ -74,7 +77,7 @@ describe("poetry--agent--webmcp", () => {
     mount("country")
     await flush()
 
-    expect([...context.tools.keys()]).toEqual(["poetry.country.set_value", "poetry.country.clear", "poetry.country.open", "poetry.country.fail", "poetry.country.node", "poetry.country.ghost"])
+    expect([...context.tools.keys()]).toEqual(["poetry.country.set_value", "poetry.country.set_count", "poetry.country.clear", "poetry.country.open", "poetry.country.fail", "poetry.country.node", "poetry.country.ghost"])
     const tool = context.tools.get("poetry.country.set_value")
     expect(tool.description).toBe("Select.")
     expect(tool.inputSchema.required).toEqual(["value"])
@@ -91,6 +94,8 @@ describe("poetry--agent--webmcp", () => {
 
     expect(result).toEqual({ value: "b" })
     expect(root.getAttribute("data-poetry--core--fake-value-value")).toBe("b")
+    // Parameters only, in declared order - no trailing options object.
+    expect(application.getControllerForElementAndIdentifier(root, "poetry--core--fake").lastArity).toBe(1)
     expect(executed).toHaveBeenCalledWith(expect.objectContaining({ tool: "set_value", args: { value: "b" } }))
   })
 
@@ -100,6 +105,10 @@ describe("poetry--agent--webmcp", () => {
 
     expect(await context.executeTool({ name: "poetry.country.set_value" }, {})).toMatch(/missing required parameter\(s\) value/)
     expect(await context.executeTool({ name: "poetry.country.set_value" }, { value: "z" })).toMatch(/must be one of a, b/)
+    expect(await context.executeTool({ name: "poetry.country.set_value" }, { value: 1 })).toBe("Error: value must be a string")
+    expect(await context.executeTool({ name: "poetry.country.set_value" }, { value: "a", bogus: 1 })).toBe("Error: unknown parameter(s) bogus - set_value takes value")
+    expect(await context.executeTool({ name: "poetry.country.set_count" }, { count: "3" })).toBe("Error: count must be an integer")
+    expect(await context.executeTool({ name: "poetry.country.set_count" }, { count: 3 })).toEqual({ count: 3 })
     expect(await context.executeTool({ name: "poetry.country.fail" }, {})).toMatch(/fail failed - boom/)
     expect(await context.executeTool({ name: "poetry.country.ghost" }, {})).toMatch(/no poetry--core--fake#nope/)
   })
@@ -115,7 +124,7 @@ describe("poetry--agent--webmcp", () => {
   it("unregisters through the AbortSignal on disconnect", async () => {
     const root = mount("country")
     await flush()
-    expect(context.tools.size).toBe(6)
+    expect(context.tools.size).toBe(7)
 
     root.remove()
     await flush()
@@ -157,11 +166,18 @@ describe("poetry--agent--webmcp", () => {
   it("warns and skips a name the browser rejects as a duplicate", async () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
     context.tools.set("poetry.country.open", { name: "poetry.country.open", execute: async () => "taken" })
+    const registered = vi.fn()
+    document.addEventListener("poetry:webmcp:registered", (event) => registered(event.detail))
     mount("country")
     await flush()
 
     expect(warn).toHaveBeenCalledWith(expect.stringMatching(/could not register poetry\.country\.open/))
     expect(_registrations.get(document.getElementById("root")).names).not.toContain("poetry.country.open")
+    // The registered event fires once the browser settled every registration,
+    // and lists only what it accepted.
+    expect(registered).toHaveBeenCalledTimes(1)
+    expect(registered.mock.calls[0][0].tools).not.toContain("poetry.country.open")
+    expect(registered.mock.calls[0][0].tools).toContain("poetry.country.set_value")
     warn.mockRestore()
   })
 

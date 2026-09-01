@@ -32,8 +32,17 @@ component contract. Two ship:
   Stimulus action.
 - Registration is opt-in per rendered instance (the `webmcp:` payload); the
   registrar guards at runtime and `Poetry::Agent.config.registration_budget`
-  (default 20) caps how many tools one page registers. Mutating tools carry
+  (default 20; it writes through to poetry-core's
+  `webmcp_registration_budget`, which the contract puts on each opted-in
+  root) caps how many tools one page registers. Mutating tools carry
   their safety annotation; the MCP server is read-only.
+- The registrar validates every call in code (required, unknown, type,
+  enum) and answers problems as `Error: ...` strings; a result is the
+  action's returned state (core's tool-bound actions return it) or a
+  done marker. `adapter.js` is the only file that knows the browser's
+  shape: Chrome 151 serializes `inputSchema` and parses only JSON-string
+  arguments (spec issue #278) - the adapter normalizes both, so never call
+  `document.modelContext` directly elsewhere.
 - Tool names follow the WebMCP spec grammar (1–128 chars of
   `[A-Za-z0-9_.-]`; `poetry.{instance}.{action}`); `registerTool` rejects
   duplicate names, so instance ids must be stable and unique on the page.
