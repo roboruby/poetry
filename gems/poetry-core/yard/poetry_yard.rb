@@ -34,8 +34,9 @@ module PoetryYard
   # Namespaces that already carry the Anatomy heading this run.
   ANATOMY_SEEN = Set.new
 
-  # slot_doc strings recorded ahead of their renders_* declarations,
-  # keyed [namespace path, slot name].
+  # slot_doc strings recorded ahead of their renders_* declarations
+  # (the away-from-declaration form; the common form is the doc: keyword
+  # on the declaration itself), keyed [namespace path, slot name].
   SLOT_DOCS = {} # rubocop:disable Style/MutableConstant -- build-time registry, handler-mutated
 
   module_function
@@ -272,7 +273,9 @@ class PoetryValidatesHandler < YARD::Handlers::Ruby::Base
   end
 end
 
-# `renders_one :name` / `renders_many :names[, types: { key: { as: :writer } }]`
+# `renders_one :name` / `renders_many :names` with the declaration
+# keywords - doc: (the docstring), renders: (ignored here; the callable),
+# and the polymorphic `types: { key: { as: :writer } }`.
 class PoetrySlotHandler < YARD::Handlers::Ruby::Base
   handles method_call(:renders_one), method_call(:renders_many)
   namespace_only
@@ -284,7 +287,9 @@ class PoetrySlotHandler < YARD::Handlers::Ruby::Base
     return unless name
 
     many = statement.method_name(true) == :renders_many
-    comment = PoetryYard::SLOT_DOCS[[namespace.path, name]] || PoetryYard.comment_text(statement)
+    comment = PoetryYard::SLOT_DOCS[[namespace.path, name]] ||
+              PoetryYard.string_text(PoetryYard.kwargs(statement)["doc"]) ||
+              PoetryYard.comment_text(statement)
 
     reader_text = [comment,
                    many ? "Slot collection: the rendered `#{name}` set." : "Slot: the rendered `#{name}` content.",

@@ -43,9 +43,11 @@ files against the manifest stamped at last bless.
   heredoc samples escape `<%` openers as well as closers.
 - Every public object is documented; the YARD floors are 0 and
   `yard:verify` fails on any warning. Declarations carry their own docs
-  (`doc:` on `option`/`style`, `slot_doc` on slots) and the registry projects
-  them. Template-facing methods are `@api private`; the handler kit in
-  `yard/poetry_yard.rb` parses the declarative surfaces.
+  (`doc:` on `option`/`style` and on `renders_one`/`renders_many` - the
+  `renders:` keyword takes the slot lambda so the doc reads first;
+  `slot_doc` only for docs declared away from the declaration) and the
+  registry projects them. Template-facing methods are `@api private`; the
+  handler kit in `yard/poetry_yard.rb` parses the declarative surfaces.
 
 ## Design interop + slop rules
 
