@@ -30,6 +30,8 @@ module Poetry
   # @example
   #   bin/rails g poetry:editor
   class EditorGenerator < Rails::Generators::Base
+    source_root File.expand_path("templates", __dir__)
+
     # Editors whose MCP config is global or IDE-managed, so poetry prints a
     # paste-block instead of writing a project file.
     MANUAL_EDITORS = <<~TEXT
@@ -91,9 +93,30 @@ module Poetry
     # poetry:check's to validate (kwargs included); the LSP keeps yours.
     STIMULUS_LSP_VERSION = "1.1.2" # the schema's writer version; the LSP rewrites it on its own saves
 
-    desc "Wire poetry's MCP server + component snippets + Herb and Stimulus LSP config into your editors " \
-         "(.mcp.json / .cursor/mcp.json / .vscode/mcp.json + .vscode/poetry.code-snippets + .herb.yml + " \
-         ".stimulus-lsp/config.json)"
+    # The check hook: stdlib Ruby that runs `poetry check` on the one app
+    # template an agent just edited and feeds the findings back (errors as a
+    # blocking report, warnings as context). Registered for Claude Code and
+    # Cursor; the script filters to app templates itself, since neither
+    # hook's matcher can see a file path.
+    HOOK_SCRIPT = "bin/poetry-check-hook"
+    # The Claude Code entry: PostToolUse on the file-editing tools.
+    CLAUDE_HOOK = { "matcher" => "Edit|Write|MultiEdit",
+                    "hooks" => [{ "type" => "command", "command" => HOOK_SCRIPT, "timeout" => 120 }] }.freeze
+    # Cursor's Write is its file-edit tool type; the payload is read
+    # leniently and the hook stays silent when it finds no path.
+    CURSOR_HOOK = { "command" => HOOK_SCRIPT, "matcher" => "Write", "timeout" => 120 }.freeze
+    # What the generator says about the hook once it is written.
+    HOOK_NOTE = <<~TEXT
+      bin/poetry-check-hook runs poetry check on every app template an agent edits and feeds the
+      findings back: registered in .claude/settings.json (Claude Code, PostToolUse on Edit/Write) and
+      .cursor/hooks.json (Cursor, postToolUse on Write). Claude Code reads hooks at session start -
+      start a new session (or check /hooks) before expecting feedback.
+    TEXT
+
+    desc "Wire poetry's MCP server + component snippets + Herb and Stimulus LSP config + the check hook into " \
+         "your editors (.mcp.json / .cursor/mcp.json / .vscode/mcp.json + .vscode/poetry.code-snippets + " \
+         ".herb.yml + .stimulus-lsp/config.json + bin/poetry-check-hook wired into .claude/settings.json and " \
+         ".cursor/hooks.json)"
 
     # Step: upserts the poetry server into .mcp.json.
     # @api private
@@ -136,6 +159,32 @@ module Poetry
       upsert_stimulus_lsp ".stimulus-lsp/config.json"
     end
 
+    # Step: writes the check hook script.
+    # @api private
+    def write_check_hook
+      copy_file "poetry-check-hook", HOOK_SCRIPT
+      chmod HOOK_SCRIPT, 0o755
+    end
+
+    # Step: registers the hook for Claude Code (upsert into .claude/settings.json).
+    # @api private
+    def write_claude_code_hook
+      upsert_hook ".claude/settings.json", "PostToolUse", CLAUDE_HOOK
+    end
+
+    # Step: registers the hook for Cursor (upsert into .cursor/hooks.json).
+    # @api private
+    def write_cursor_hook
+      upsert_hook ".cursor/hooks.json", "postToolUse", CURSOR_HOOK, seed: { "version" => 1 }
+    end
+
+    # Step: explains the check hook and when each editor picks it up.
+    # @api private
+    def announce_check_hook
+      say "\npoetry:editor - the check hook:", :green
+      say HOOK_NOTE
+    end
+
     # Step: prints the paste-blocks for IDE-managed MCP configs.
     # @api private
     def announce_manual_editors
@@ -173,6 +222,34 @@ module Poetry
       servers["poetry"] = server_entry(stdio: stdio)
       File.write(path, "#{JSON.pretty_generate(data)}\n")
       say_status :update, "#{relative} (added the poetry server)", :green
+    end
+
+    # Upserts one hook entry under hooks.<event>: a file already naming the
+    # script anywhere in that list is identical, other hooks and keys are
+    # kept, a JSONC file is reported and never clobbered.
+    def upsert_hook(relative, event, entry, seed: {})
+      path = File.join(destination_root, relative)
+      unless File.exist?(path)
+        create_file relative, "#{JSON.pretty_generate(seed.merge("hooks" => { event => [entry] }))}\n"
+        return
+      end
+
+      data = parse_json(File.read(path))
+      if data.nil?
+        return say_status(:skip, "#{relative} isn't plain JSON (JSONC?) - add the poetry hook by hand",
+                          :yellow)
+      end
+
+      hooks = (data["hooks"] ||= {})
+      entries = hooks.is_a?(Hash) ? (hooks[event] ||= []) : nil
+      unless entries.is_a?(Array)
+        return say_status(:skip, "#{relative} has an unexpected hooks shape - add the poetry hook by hand", :yellow)
+      end
+      return say_status(:identical, relative, :blue) if JSON.generate(entries).include?(HOOK_SCRIPT)
+
+      entries << entry
+      File.write(path, "#{JSON.pretty_generate(data)}\n")
+      say_status :update, "#{relative} (added the poetry check hook)", :green
     end
 
     # Every poetry-owned identifier the installed gems ship (core + any
