@@ -606,6 +606,12 @@
     "path": "/editors#mcp"
   },
   {
+    "title": "The check hook",
+    "page": "Editors",
+    "section": "docs",
+    "path": "/editors#hook"
+  },
+  {
     "title": "Snippets",
     "page": "Editors",
     "section": "docs",

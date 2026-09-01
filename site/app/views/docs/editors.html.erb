@@ -21,6 +21,14 @@
     // Zed settings.json
     "context_servers": { "poetry": { "command": { "path": "bundle", "args": ["exec", "poetry-agent"] } } }
   CODE
+  hook_source = <<~CODE
+    // .claude/settings.json (Claude Code) - written by poetry:editor
+    { "hooks": { "PostToolUse": [ { "matcher": "Edit|Write|MultiEdit",
+        "hooks": [ { "type": "command", "command": "bin/poetry-check-hook", "timeout": 120 } ] } ] } }
+
+    // .cursor/hooks.json (Cursor)
+    { "version": 1, "hooks": { "postToolUse": [ { "command": "bin/poetry-check-hook", "matcher": "Write" } ] } }
+  CODE
 herb_source = <<~CODE
   # .herb.yml - written by poetry:editor (kept if you already have one)
   version: 0.10.3
@@ -55,9 +63,10 @@ CODE
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <h2 id="generate">One generator</h2>
       <p>
-        <code>poetry:editor</code> writes an MCP config for each editor and a
-        snippet file generated from the component registry. The MCP writes are
-        upserts: a config keeps its other servers, a config that already has
+        <code>poetry:editor</code> writes an MCP config for each editor, a
+        snippet file generated from the component registry, and a check hook
+        that lints every template an agent edits. The config writes are
+        upserts: a file keeps its other servers and hooks, one that already has
         Poetry is left alone, and a JSONC file Poetry cannot parse is reported,
         never clobbered.
       </p>
@@ -69,8 +78,8 @@ CODE
           <tr><th>Editor</th><th>What it writes</th><th>Gets</th></tr>
         </thead>
         <tbody>
-          <tr><td>Claude Code</td><td><code>.mcp.json</code></td><td>MCP</td></tr>
-          <tr><td>Cursor</td><td><code>.cursor/mcp.json</code></td><td>MCP + snippets</td></tr>
+          <tr><td>Claude Code</td><td><code>.mcp.json</code> + <code>.claude/settings.json</code> + <code>bin/poetry-check-hook</code></td><td>MCP + check hook</td></tr>
+          <tr><td>Cursor</td><td><code>.cursor/mcp.json</code> + <code>.cursor/hooks.json</code></td><td>MCP + snippets + check hook</td></tr>
           <tr><td>VS Code</td><td><code>.vscode/mcp.json</code> + <code>.vscode/poetry.code-snippets</code></td><td>MCP + snippets</td></tr>
           <tr><td>Windsurf</td><td>reads the <code>.vscode</code> snippets</td><td>MCP (paste) + snippets</td></tr>
           <tr><td>Zed / RubyMine / Neovim</td><td>a printed paste-block</td><td>MCP</td></tr>
@@ -101,6 +110,34 @@ CODE
         <code>.mcp.json</code>.
       </p>
     <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="hook">The check hook</h2>
+      <p>
+        A rule in a skill file competes with everything else the agent is
+        holding; a hook does not. <code>poetry:editor</code> writes
+        <code>bin/poetry-check-hook</code> and registers it so that every
+        template an agent edits under <code>app/</code> is linted the moment
+        the edit lands: Claude Code's <code>PostToolUse</code> hook on Edit and
+        Write, Cursor's <code>postToolUse</code> on Write. Errors go straight
+        back to the agent as feedback it has to act on, warnings arrive as
+        context, and a clean template costs one Rails boot and says nothing.
+        The script is plain Ruby with no dependencies and runs
+        <code>bin/rails poetry:check</code> on the one file, so it sees exactly
+        what the rake task sees. Anything that is not an app template is
+        ignored without booting Rails, and a check that cannot run at all fails
+        open.
+      </p>
+      <p>
+        Claude Code reads hooks at session start: after generating, start a new
+        session (or check <code>/hooks</code>) before expecting feedback. The
+        Cursor entry is best-effort; its edit payload is read leniently and the
+        hook stays silent when it finds no path.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: hook_source, language: "json", label: "Hook config") %>
   </section>
 
   <section class="flex flex-col gap-4">

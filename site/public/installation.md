@@ -72,7 +72,7 @@ Restart the server after `poetry:add` so the local copies take precedence.
 ## 5. Wire the agent surface
 
 ```bash
-bin/rails g poetry:editor               # MCP configs + snippets for your editors (see /editors)
+bin/rails g poetry:editor               # MCP configs + snippets + the check hook for your editors (see /editors)
 ```
 
 Or add the MCP server by hand:

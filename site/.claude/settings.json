@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bin/poetry-check-hook",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}
