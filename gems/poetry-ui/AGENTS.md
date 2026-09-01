@@ -130,8 +130,10 @@ all nine themes).
   output in an attribute NAME, no bare output in attribute position,
   `<%= tag.attributes(...) %>` only as the last thing before `>`.
 - Every public object is documented (YARD floors at 0, `yard:verify` fails
-  on warnings); declarations carry their docs (`doc:` on `option`/`style`,
-  `slot_doc` on slots); template-facing methods are `@api private`.
+  on warnings); declarations carry their docs (`doc:` on `option`/`style`
+  and on `renders_one`/`renders_many`, whose `renders:` keyword takes the
+  slot lambda so the doc reads first; `slot_doc` only for docs declared
+  away from the declaration); template-facing methods are `@api private`.
 
 ## Known traps
 

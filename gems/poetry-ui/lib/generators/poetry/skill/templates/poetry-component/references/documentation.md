@@ -49,8 +49,10 @@ class Component < Poetry::Core::Component
 ## Declaration docs
 
 Every `option` and `style` carries a `doc:` string, and every
-`renders_one`/`renders_many` a `slot_doc` declaration directly above
-it. That string is the declared surface's documentation everywhere at
+`renders_one`/`renders_many` carries one too - with `renders:` passing
+the slot's lambda as a keyword so the doc reads first. (`slot_doc` is
+the fallback for a doc declared away from its declaration, e.g. in a
+different module.) That string is the declared surface's documentation everywhere at
 once - the registry (option/style/slot descriptions), llms.txt and the
 agent surface, the component page's API section, and the generated API
 reference - with the machine facts (type, default, variants)
@@ -66,8 +68,11 @@ auto-appended, so the prose adds MEANING only:
 option :loading, :boolean, default: false,
        doc: "The no-JS loading state: aria-busy, a spinner, and the control disabled."
 
-slot_doc :trigger, "The button that opens the dialog."
-renders_one :trigger, lambda { |**options, &block| ... }
+renders_one :leading, doc: "Optional leading visual, rendered inside the icon span."
+
+renders_one :trigger,
+            doc: "The button that opens the dialog.",
+            renders: lambda { |**options, &block| ... }
 ```
 
 Constants that define the surface get one-liners too: vocabulary arrays
