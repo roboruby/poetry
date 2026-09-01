@@ -30,8 +30,10 @@ module Poetry
           # @return [Hash] { styles: [...], options: [...], slots: [...] }
           # Documents a slot declared with renders_one/renders_many. The
           # string travels the same road as option/style doc: params - the
-          # registry, the agent surface, and the generated API docs. Write
-          # it directly above the renders_* declaration it describes.
+          # registry, the agent surface, and the generated API docs.
+          # Prefer the doc: keyword on the declaration itself (it lands
+          # here); call slot_doc directly only when the doc and the
+          # declaration live in different modules.
           #
           # @param name [Symbol] the slot name as declared (plural for
           #   renders_many)
@@ -40,7 +42,6 @@ module Poetry
           #
           # @example
           #   slot_doc :trigger, "The button that opens the dialog."
-          #   renders_one :trigger, lambda { |**options, &block| ... }
           def slot_doc(name, text)
             declared_ivar_hash(:@_slot_docs)[name.to_sym] = text
           end
@@ -50,6 +51,51 @@ module Poetry
           # @return [Hash{Symbol => String}]
           def slot_docs
             collect_declared_map(:@_slot_docs)
+          end
+
+          # ViewComponent's renders_one, with the doc riding the
+          # declaration: doc: is lifted into {slot_doc}, renders: passes
+          # the callable as a keyword so the doc can come first, and the
+          # polymorphic types: form is re-formed into the positional hash
+          # ViewComponent expects - the ViewComponent surface underneath
+          # is unchanged. Unknown keywords raise at class load, and a
+          # positional callable cannot be combined with renders:/types:.
+          #
+          # @param slot_name [Symbol] the slot name
+          # @param callable [Object, nil] ViewComponent's positional
+          #   callable (a component class, class-name string, or lambda)
+          # @param opts [Hash] doc:, renders:, and/or types:
+          # @return [void]
+          #
+          # @example A documented slot
+          #   renders_one :leading, doc: "Optional leading visual."
+          #
+          # @example A documented lambda slot, doc first
+          #   renders_one :trigger,
+          #               doc: "The button that opens the dialog.",
+          #               renders: lambda { |**options, &block| ... }
+          def renders_one(slot_name, callable = nil, **opts)
+            callable = declared_slot_callable(slot_name, callable, opts)
+            callable.nil? ? super(slot_name) : super(slot_name, callable)
+          end
+
+          # ViewComponent's renders_many with the same keyword surface as
+          # {renders_one}; doc: describes the collection contract and is
+          # keyed by the plural declared name, exactly like {slot_doc}.
+          #
+          # @param slot_name [Symbol] the plural slot name
+          # @param callable [Object, nil] ViewComponent's positional
+          #   callable (a component class, class-name string, or lambda)
+          # @param opts [Hash] doc:, renders:, and/or types:
+          # @return [void]
+          #
+          # @example A documented collection slot
+          #   renders_many :items,
+          #                doc: "The rows, rendered in call order.",
+          #                renders: lambda { |label:, **options| ... }
+          def renders_many(slot_name, callable = nil, **opts)
+            callable = declared_slot_callable(slot_name, callable, opts)
+            callable.nil? ? super(slot_name) : super(slot_name, callable)
           end
 
           # The component's full declared surface - styles, options, slots
@@ -70,6 +116,28 @@ module Poetry
           end
 
           private
+
+          # Resolves a renders_one/renders_many declaration's keyword
+          # surface back to the positional callable ViewComponent expects.
+          # Everything but doc:/renders: must be the polymorphic types:
+          # hash - anything else is a typo caught at class load.
+          def declared_slot_callable(slot_name, callable, opts)
+            doc = opts.delete(:doc)
+            slot_doc(slot_name, doc) if doc
+            renders = opts.delete(:renders)
+            unknown = opts.keys - [:types]
+            if unknown.any?
+              raise Poetry::Core::Error,
+                    "#{self}##{slot_name}: unknown slot option(s) #{unknown.join(", ")} - " \
+                    "a slot declaration takes doc:, renders:, and types:"
+            end
+            if callable && (renders || opts.any?)
+              raise Poetry::Core::Error,
+                    "#{self}##{slot_name}: pass the callable positionally OR as renders:/types:, not both"
+            end
+
+            callable || renders || (opts unless opts.empty?)
+          end
 
           def style_definition(name)
             definition = { name: name, type: attribute_types[name.to_s].type }

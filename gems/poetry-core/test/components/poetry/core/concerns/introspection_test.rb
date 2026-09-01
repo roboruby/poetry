@@ -313,6 +313,86 @@ module Poetry
           error = assert_raises(Poetry::Core::Error) { Introspection.slot_surface(liar) }
           assert_includes error.message, "must be a poetry component class"
         end
+
+        # A component declaring every slot shape through the keyword
+        # surface: doc: alone, doc: + renders:, doc: + types:, and doc:
+        # alongside a positional class renderable.
+        module KeywordProbe
+          class Component < Poetry::Core::Component
+            renders_one :leading, doc: "Optional leading visual."
+            renders_many :lines,
+                         doc: "The lines, in call order.",
+                         renders: ->(label:) { { label: label } }
+            renders_many :entries,
+                         doc: "The entry union: row or divider.",
+                         types: {
+                           row: { renders: ->(**) { "row" }, as: :row },
+                           divider: { renders: ->(**) { "divider" }, as: :divider }
+                         }
+            renders_one :badge, Probe::Glyph, doc: "The status glyph."
+
+            def call
+              content_tag(:span, "probe")
+            end
+          end
+        end
+
+        def keyword_slots
+          KeywordProbe::Component.prop_definitions[:slots]
+        end
+
+        def test_the_doc_keyword_lands_in_the_slot_docs_map
+          assert_equal "Optional leading visual.", KeywordProbe::Component.slot_docs[:leading]
+        end
+
+        def test_the_doc_keyword_travels_to_the_slot_definition_description
+          leading = keyword_slots.find { |slot| slot[:name] == :leading }
+
+          assert_equal "Optional leading visual.", leading[:description]
+        end
+
+        def test_the_renders_keyword_passes_the_callable_and_keys_the_doc_by_plural_name
+          lines = keyword_slots.find { |slot| slot[:name] == :lines }
+
+          assert lines[:many]
+          assert_equal "The lines, in call order.", lines[:description]
+          assert_equal({ line: ["label"] }, lines[:setter_kwargs],
+                       "the keyword-passed lambda reaches ViewComponent and introspects")
+        end
+
+        def test_the_types_keyword_still_registers_the_polymorphic_slot
+          entries = keyword_slots.find { |slot| slot[:name] == :entries }
+
+          assert_equal %i[row divider], entries[:types]
+          assert_equal "The entry union: row or divider.", entries[:description]
+        end
+
+        def test_a_positional_renderable_composes_with_the_doc_keyword
+          badge = keyword_slots.find { |slot| slot[:name] == :badge }
+
+          assert_equal Probe::Glyph.component_path, badge[:component]
+          assert_equal "The status glyph.", badge[:description]
+        end
+
+        def test_an_unknown_slot_keyword_fails_at_class_load
+          error = assert_raises(Poetry::Core::Error) do
+            Class.new(Poetry::Core::Component) do
+              renders_one :header, docs: "a typo of doc:"
+            end
+          end
+
+          assert_includes error.message, "unknown slot option"
+        end
+
+        def test_a_positional_callable_cannot_be_combined_with_renders
+          error = assert_raises(Poetry::Core::Error) do
+            Class.new(Poetry::Core::Component) do
+              renders_one :header, ->(**options) { options }, renders: ->(**options) { options }
+            end
+          end
+
+          assert_includes error.message, "not both"
+        end
       end
     end
   end
