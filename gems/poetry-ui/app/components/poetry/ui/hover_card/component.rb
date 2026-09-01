@@ -51,29 +51,30 @@ module Poetry
         # The slots before_render enforces, stated statically for render-free checks.
         REQUIRED_SLOTS = { trigger: "the enriched link" }.freeze
 
-        slot_doc :trigger, "The enriched LINK: a real navigable <a> - THE no-JS fallback. tag: passthrough exists " \
-                           "but change it knowingly (an <a> is the contract's fallback story). NO " \
-                           "aria-haspopup/expanded/describedby - the card is invisible to the accessibility tree on " \
-                           "purpose. Built as a lazy anatomy part (rendered at render time, not at with_trigger " \
-                           "time). variant:/size: route through Button::Component - Button's href-implies-anchor " \
-                           "keeps the trigger a REAL <a> wearing button styling, so the reachable-elsewhere contract " \
-                           "holds."
-        renders_one :trigger, lambda { |href: nil, tag: :a, **options, &block|
-          @trigger_href = href
-          attrs = {
-            "id" => trigger_id, "data-slot" => "hover-card-trigger"
-          }.merge(stimulus_attributes_for(:trigger))
-          # Trigger state: bare data-popup-open while open, NO attribute
-          # while closed (absence IS the state).
-          attrs["data-popup-open"] = "" if open
-          next composed_trigger(attrs, options, &block) if options[:compose]
-          if options.key?(:variant) || options.key?(:size)
-            next Button::Component.new(href: href, **attrs, **options, &block)
-          end
+        renders_one :trigger,
+                    doc: "The enriched LINK: a real navigable <a> - THE no-JS fallback. tag: passthrough exists but " \
+                         "change it knowingly (an <a> is the contract's fallback story). NO " \
+                         "aria-haspopup/expanded/describedby - the card is invisible to the accessibility tree on " \
+                         "purpose. Built as a lazy anatomy part (rendered at render time, not at with_trigger " \
+                         "time). variant:/size: route through Button::Component - Button's href-implies-anchor " \
+                         "keeps the trigger a REAL <a> wearing button styling, so the reachable-elsewhere contract " \
+                         "holds.",
+                    renders: lambda { |href: nil, tag: :a, **options, &block|
+                      @trigger_href = href
+                      attrs = {
+                        "id" => trigger_id, "data-slot" => "hover-card-trigger"
+                      }.merge(stimulus_attributes_for(:trigger))
+                      # Trigger state: bare data-popup-open while open, NO attribute
+                      # while closed (absence IS the state).
+                      attrs["data-popup-open"] = "" if open
+                      next composed_trigger(attrs, options, &block) if options[:compose]
+                      if options.key?(:variant) || options.key?(:size)
+                        next Button::Component.new(href: href, **attrs, **options, &block)
+                      end
 
-          attrs["href"] = href if href.present?
-          Trigger.new(tag_name: tag, attributes: Poetry::Core::HTML::Attributes.merged(attrs, options))
-        }
+                      attrs["href"] = href if href.present?
+                      Trigger.new(tag_name: tag, attributes: Poetry::Core::HTML::Attributes.merged(attrs, options))
+                    }
 
         use_stimulus do
           on :root do

@@ -53,24 +53,23 @@ module Poetry
         # The component behind the forwarding slot: with_action renders a Button.
         SLOT_RENDERS = { action: Button::Component }.freeze
 
-        slot_doc :title, "The message (REQUIRED - the announced payload's first line)."
-        renders_one :title
+        renders_one :title, doc: "The message (REQUIRED - the announced payload's first line)."
 
-        slot_doc :description, "Supporting copy under the title."
-        renders_one :description
+        renders_one :description, doc: "Supporting copy under the title."
 
-        slot_doc :action, "Typed Button slot (undo / view / retry): clicking it dismisses the toast with reason " \
-                          "\"action\". Its presence makes the toast persistent by default."
-        renders_one :action, lambda { |**options, &block|
-          wiring = { "data-slot" => "toast-action" }.merge(stimulus_attributes_for(:action))
-          # Caller attribute keys merge WITH the wiring (stimulus concat)
-          # instead of replacing it at the kwargs splat; component options
-          # (variant: etc.) stay plain kwargs.
-          attr_keys = options.keys.select { |k| k == :data || k.to_s.start_with?("data-", "aria-") }
-          caller_attrs = attr_keys.to_h { |k| [k, options.delete(k)] }
-          merged = Poetry::Core::HTML::Attributes.merged(wiring, caller_attrs)
-          Button::Component.new(variant: :outline, size: :sm, **merged.symbolize_keys, **options, &block)
-        }
+        renders_one :action,
+                    doc: "Typed Button slot (undo / view / retry): clicking it dismisses the toast with reason " \
+                         "\"action\". Its presence makes the toast persistent by default.",
+                    renders: lambda { |**options, &block|
+                      wiring = { "data-slot" => "toast-action" }.merge(stimulus_attributes_for(:action))
+                      # Caller attribute keys merge WITH the wiring (stimulus concat)
+                      # instead of replacing it at the kwargs splat; component options
+                      # (variant: etc.) stay plain kwargs.
+                      attr_keys = options.keys.select { |k| k == :data || k.to_s.start_with?("data-", "aria-") }
+                      caller_attrs = attr_keys.to_h { |k| [k, options.delete(k)] }
+                      merged = Poetry::Core::HTML::Attributes.merged(wiring, caller_attrs)
+                      Button::Component.new(variant: :outline, size: :sm, **merged.symbolize_keys, **options, &block)
+                    }
 
         # APG timing wiring: hover and focus-within hold the timer (the
         # window-blur / tab-hidden holds are wired by the controller).

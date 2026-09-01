@@ -192,26 +192,26 @@ module Poetry
         # so static checks can flag a missing item without rendering.
         REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
-        slot_doc :trigger, "Optional custom trigger content rendered BEFORE the value span (rare); the component " \
-                           "owns role=combobox + the aria wiring + the chevron regardless, so composition cannot " \
-                           "drop the contract."
-        renders_one :trigger
+        renders_one :trigger, doc: "Optional custom trigger content rendered BEFORE the value span (rare); the " \
+                                   "component owns role=combobox + the aria wiring + the chevron regardless, so " \
+                                   "composition cannot drop the contract."
 
-        slot_doc :items, "The option UNION: item | group (label + items) | separator - one ordered collection " \
-                         "(interleaving preserved; items and groups are part COMPONENTS so option registration " \
-                         "follows render/DOM order). Scroll buttons, the viewport, and the native select are " \
-                         "component-owned anatomy, never caller-placed."
-        renders_many :items, types: {
-          item: { renders: ->(**options) { item_component(**options) }, as: :item },
-          group: {
-            renders: lambda { |**options|
-              Group.new(option_set: option_set, selected_value: selected_value,
-                        item_wiring: item_wiring, **options)
-            },
-            as: :group
-          },
-          separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
-        }
+        renders_many :items,
+                     doc: "The option UNION: item | group (label + items) | separator - one ordered collection " \
+                          "(interleaving preserved; items and groups are part COMPONENTS so option registration " \
+                          "follows render/DOM order). Scroll buttons, the viewport, and the native select are " \
+                          "component-owned anatomy, never caller-placed.",
+                     types: {
+                       item: { renders: ->(**options) { item_component(**options) }, as: :item },
+                       group: {
+                         renders: lambda { |**options|
+                           Group.new(option_set: option_set, selected_value: selected_value,
+                                     item_wiring: item_wiring, **options)
+                         },
+                         as: :group
+                       },
+                       separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
+                     }
 
         use_stimulus do
           on :root do
@@ -587,11 +587,12 @@ module Poetry
 
         attr_reader :option_set, :selected_value, :item_wiring
 
-        slot_doc :items, "The same item | separator union as the root, one level down."
-        renders_many :items, types: {
-          item: { renders: ->(**options) { item_component(**options) }, as: :item },
-          separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
-        }
+        renders_many :items,
+                     doc: "The same item | separator union as the root, one level down.",
+                     types: {
+                       item: { renders: ->(**options) { item_component(**options) }, as: :item },
+                       separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
+                     }
 
         # heading: is the canonical keyword; label: is accepted as an alias.
         def initialize(option_set:, selected_value:, heading: nil, label: nil, item_wiring: {}, **extra_attributes)

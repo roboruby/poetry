@@ -55,37 +55,38 @@ module Poetry
         # so static checks can flag a missing item without rendering.
         REQUIRED_SLOTS = { item: "at least one radio item" }.freeze
 
-        slot_doc :items, "One item per option: a real button[role=radio] carrying its own hidden native radio; " \
-                         "label: renders the dot beside a paired Label. variant: :card renders the choice-card row " \
-                         "instead - title (+ optional description:) inside a selectable bordered label, the radio " \
-                         "pinned to the right."
-        renders_many :items, lambda { |value:, label: nil, id: nil, disabled: false,
+        renders_many :items,
+                     doc: "One item per option: a real button[role=radio] carrying its own hidden native radio; " \
+                          "label: renders the dot beside a paired Label. variant: :card renders the choice-card row " \
+                          "instead - title (+ optional description:) inside a selectable bordered label, the radio " \
+                          "pinned to the right.",
+                     renders: lambda { |value:, label: nil, id: nil, disabled: false,
                                        description: nil, variant: :default, **options|
-          unless ITEM_VARIANTS.include?(variant)
-            raise ArgumentError,
-                  "unknown RadioGroup item variant #{variant.inspect} - known: #{ITEM_VARIANTS.join(", ")}"
-          end
+                       unless ITEM_VARIANTS.include?(variant)
+                         raise ArgumentError,
+                               "unknown RadioGroup item variant #{variant.inspect} - known: #{ITEM_VARIANTS.join(", ")}"
+                       end
 
-          item_value = register_item_value!(value)
-          item_id = id.presence || "#{control_id}-#{slug(item_value)}"
-          item_disabled = disabled || self.disabled
-          item = radio_item(item_value, item_id, item_disabled, options)
+                       item_value = register_item_value!(value)
+                       item_id = id.presence || "#{control_id}-#{slug(item_value)}"
+                       item_disabled = disabled || self.disabled
+                       item = radio_item(item_value, item_id, item_disabled, options)
 
-          next card_row(item, item_id, label, description) if variant == :card
+                       next card_row(item, item_id, label, description) if variant == :card
 
-          if description.present?
-            raise ArgumentError, "RadioGroup description: rides the choice-card form - pass variant: :card"
-          end
+                       if description.present?
+                         raise ArgumentError, "RadioGroup description: rides the choice-card form - pass variant: :card"
+                       end
 
-          next item if label.blank?
+                       next item if label.blank?
 
-          # The item + Label pairing row. The for= targets the BUTTON id -
-          # label clicks check via the controller (native label->button
-          # activation).
-          content_tag(:div, class: css(:row)) do
-            safe_join([item, render(Label::Component.new(for_id: item_id).with_content(label))])
-          end
-        }
+                       # The item + Label pairing row. The for= targets the BUTTON id -
+                       # label clicks check via the controller (native label->button
+                       # activation).
+                       content_tag(:div, class: css(:row)) do
+                         safe_join([item, render(Label::Component.new(for_id: item_id).with_content(label))])
+                       end
+                     }
 
         use_stimulus do
           on :root do

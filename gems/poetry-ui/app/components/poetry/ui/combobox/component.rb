@@ -192,12 +192,13 @@ module Poetry
 
         attr_reader :option_set, :selected_value
 
-        slot_doc :items, "The group's members: with_item options and with_separator dividers, interleaved in " \
-                         "declaration order."
-        renders_many :items, types: {
-          item: { renders: ->(**options) { item_component(**options) }, as: :item },
-          separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
-        }
+        renders_many :items,
+                     doc: "The group's members: with_item options and with_separator dividers, interleaved in " \
+                          "declaration order.",
+                     types: {
+                       item: { renders: ->(**options) { item_component(**options) }, as: :item },
+                       separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
+                     }
 
         def initialize(option_set:, selected_value:, heading:, always_render: false, **extra_attributes)
           raise ArgumentError, "Combobox group requires heading: (the group's accessible name)" if heading.blank?
@@ -298,30 +299,28 @@ module Poetry
         # a missing item without rendering.
         REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
-        slot_doc :trigger, "Optional custom trigger content rendered BEFORE the value span (rare); the component " \
-                           "owns role=combobox + the aria wiring + the chevrons regardless, so composition cannot " \
-                           "drop the contract."
-        renders_one :trigger
+        renders_one :trigger, doc: "Optional custom trigger content rendered BEFORE the value span (rare); the " \
+                                   "component owns role=combobox + the aria wiring + the chevrons regardless, so " \
+                                   "composition cannot drop the contract."
 
-        slot_doc :empty, "Custom zero-results content (defaults to t('poetry.combobox.empty'))."
-        renders_one :empty
-        slot_doc :loading, "Custom pending content (a spinner); the HOST toggles visibility (Turbo frame events) - " \
-                           "the part renders hidden (Command parity)."
-        renders_one :loading
+        renders_one :empty, doc: "Custom zero-results content (defaults to t('poetry.combobox.empty'))."
+        renders_one :loading, doc: "Custom pending content (a spinner); the HOST toggles visibility (Turbo frame " \
+                                   "events) - the part renders hidden (Command parity)."
 
-        slot_doc :items, "The option UNION forwarded to the embedded command list: item | group (heading + items) | " \
-                         "separator - one ordered collection (interleaving preserved; items and groups are part " \
-                         "COMPONENTS so option registration follows render/DOM order)."
-        renders_many :items, types: {
-          item: { renders: ->(**options) { item_component(**options) }, as: :item },
-          group: {
-            renders: lambda { |**options|
-              Group.new(option_set: option_set, selected_value: selected_value, **options)
-            },
-            as: :group
-          },
-          separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
-        }
+        renders_many :items,
+                     doc: "The option UNION forwarded to the embedded command list: item | group (heading + items) " \
+                          "| separator - one ordered collection (interleaving preserved; items and groups are part " \
+                          "COMPONENTS so option registration follows render/DOM order).",
+                     types: {
+                       item: { renders: ->(**options) { item_component(**options) }, as: :item },
+                       group: {
+                         renders: lambda { |**options|
+                           Group.new(option_set: option_set, selected_value: selected_value, **options)
+                         },
+                         as: :group
+                       },
+                       separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
+                     }
 
         use_stimulus do
           on :root do

@@ -28,14 +28,15 @@ module Poetry
           "Use variant: :separator for date/section breaks; :border under pinned headers."
         ].freeze
 
-        slot_doc :icon, "Optional leading visual: name: renders an icon glyph; a block carries other media (a " \
-                        "Spinner mid-run). Either way it sits in an aria-hidden cell and stays decorative - the " \
-                        "marker root does the announcing."
-        renders_one :icon, lambda { |name: nil, **options, &block|
-          next Poetry::Ui::Icon::Component.new(name: name, **options) if name
+        renders_one :icon,
+                    doc: "Optional leading visual: name: renders an icon glyph; a block carries other media (a " \
+                         "Spinner mid-run). Either way it sits in an aria-hidden cell and stays decorative - the " \
+                         "marker root does the announcing.",
+                    renders: lambda { |name: nil, **options, &block|
+                      next Poetry::Ui::Icon::Component.new(name: name, **options) if name
 
-          content_tag(:span, &block)
-        }
+                      content_tag(:span, &block)
+                    }
 
         style :variant, default: :default, required: true, variants: VARIANTS,
                         doc: "The divider treatment - :separator for date/section breaks, :border for a full-width " \

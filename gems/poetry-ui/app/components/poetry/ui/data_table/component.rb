@@ -42,21 +42,26 @@ module Poetry
         # a missing column without rendering.
         REQUIRED_SLOTS = { column: "at least one column" }.freeze
 
-        slot_doc :columns, "Columns are DECLARED here and rendered per row by the template. A sortable column's key " \
-                           "must be in the state's whitelist - catching drift between the view's columns and the " \
-                           "controller's sortable: list at render, not as a silently unsortable header."
-        renders_many :columns, lambda { |label, key: nil, sortable: false, classes: nil, &cell|
-          raise ArgumentError, "DataTable column #{label.inspect}: sortable: true requires a key:" if sortable && !key
-          if sortable && !state.sortable?(key)
-            raise ArgumentError,
-                  "DataTable column #{key.inspect} is sortable in the view but missing from the " \
-                  "controller's State sortable: whitelist (#{state.sortable.inspect}) - add it there"
-          end
-          raise ArgumentError, "DataTable column #{label.inspect} requires a cell block" unless cell
+        renders_many :columns,
+                     doc: "Columns are DECLARED here and rendered per row by the template. A sortable column's key " \
+                          "must be in the state's whitelist - catching drift between the view's columns and the " \
+                          "controller's sortable: list at render, not as a silently unsortable header.",
+                     renders: lambda { |label, key: nil, sortable: false, classes: nil, &cell|
+                       if sortable && !key
+                         raise ArgumentError,
+                               "DataTable column #{label.inspect}: sortable: true requires a key:"
+                       end
+                       if sortable && !state.sortable?(key)
+                         raise ArgumentError,
+                               "DataTable column #{key.inspect} is sortable in the view but missing from the " \
+                               "controller's State sortable: whitelist (#{state.sortable.inspect}) - add it there"
+                       end
+                       raise ArgumentError, "DataTable column #{label.inspect} requires a cell block" unless cell
 
-          column_defs << Column.new(label: label, key: key&.to_s, sortable: sortable, classes: classes, cell: cell)
-          nil
-        }
+                       column_defs << Column.new(label: label, key: key&.to_s, sortable: sortable, classes: classes,
+                                                 cell: cell)
+                       nil
+                     }
 
         # The whole selection surface is selectable?-gated.
         use_stimulus do

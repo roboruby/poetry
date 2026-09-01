@@ -54,10 +54,8 @@ module Poetry
         # so static checks can flag a missing nav without rendering.
         REQUIRED_SLOTS = { nav: "the sidebar column" }.freeze
 
-        slot_doc :nav, "The sidebar column's content (required) - groups, menus, header/footer."
-        renders_one :nav
-        slot_doc :inset, "The page area beside the column - rendered as the <main> inset."
-        renders_one :inset
+        renders_one :nav, doc: "The sidebar column's content (required) - groups, menus, header/footer."
+        renders_one :inset, doc: "The page area beside the column - rendered as the <main> inset."
 
         use_stimulus do
           on :root do

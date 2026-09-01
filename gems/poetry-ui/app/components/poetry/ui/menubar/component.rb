@@ -70,10 +70,11 @@ module Poetry
           "family contract."
         ].freeze
 
-        slot_doc :menus, "The top-level menus. Each takes with_trigger (the menu button) plus the family item slots " \
-                         "(with_item, with_checkbox_item, with_radio_group, with_sub, with_separator, ...); value: " \
-                         "defaults to the menu's position."
-        renders_many :menus, ->(**options) { Menu.new(bar: self, dir: dir, **options) }
+        renders_many :menus,
+                     doc: "The top-level menus. Each takes with_trigger (the menu button) plus the family item " \
+                          "slots (with_item, with_checkbox_item, with_radio_group, with_sub, with_separator, ...); " \
+                          "value: defaults to the menu's position.",
+                     renders: ->(**options) { Menu.new(bar: self, dir: dir, **options) }
 
         use_stimulus do
           on :root do
@@ -318,26 +319,27 @@ module Poetry
 
         attr_reader :value, :disabled
 
-        slot_doc :trigger, "The top-level menu button: a real button that is role=menuitem INSIDE role=menubar, " \
-                           "wired to the bar coordinator (toggle / gated hover-slide / keyboard open)."
-        renders_one :trigger, lambda { |**options, &block|
-          attrs = {
-            "type" => "button", "id" => trigger_id, "data-slot" => "menubar-trigger",
-            "role" => "menuitem", "tabindex" => @bar.tab_stop?(self) ? "0" : "-1",
-            "data-poetry-collection-item" => "",
-            "aria-haspopup" => "menu", "aria-expanded" => open?.to_s, "aria-controls" => content_id,
-            "data-value" => value,
-            "class" => Style.css(:trigger, class: options.delete(:class))
-          }.merge(trigger_stimulus_attributes)
-          # Trigger open state: bare data-popup-open while open, NO
-          # attribute while closed (absence IS the state).
-          attrs["data-popup-open"] = "" if open?
-          if disabled
-            attrs["disabled"] = true
-            attrs["data-disabled"] = ""
-          end
-          content_tag(:button, Poetry::Core::HTML::Attributes.merged(attrs, options)) { capture(&block) }
-        }
+        renders_one :trigger,
+                    doc: "The top-level menu button: a real button that is role=menuitem INSIDE role=menubar, wired " \
+                         "to the bar coordinator (toggle / gated hover-slide / keyboard open).",
+                    renders: lambda { |**options, &block|
+                      attrs = {
+                        "type" => "button", "id" => trigger_id, "data-slot" => "menubar-trigger",
+                        "role" => "menuitem", "tabindex" => @bar.tab_stop?(self) ? "0" : "-1",
+                        "data-poetry-collection-item" => "",
+                        "aria-haspopup" => "menu", "aria-expanded" => open?.to_s, "aria-controls" => content_id,
+                        "data-value" => value,
+                        "class" => Style.css(:trigger, class: options.delete(:class))
+                      }.merge(trigger_stimulus_attributes)
+                      # Trigger open state: bare data-popup-open while open, NO
+                      # attribute while closed (absence IS the state).
+                      attrs["data-popup-open"] = "" if open?
+                      if disabled
+                        attrs["disabled"] = true
+                        attrs["data-disabled"] = ""
+                      end
+                      content_tag(:button, Poetry::Core::HTML::Attributes.merged(attrs, options)) { capture(&block) }
+                    }
 
         def initialize(bar:, value: nil, disabled: false, dir: nil, **extra_attributes)
           super(extra_attributes)

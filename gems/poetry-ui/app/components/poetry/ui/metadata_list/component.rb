@@ -30,19 +30,21 @@ module Poetry
         # Slots the component cannot render without; static checks read this without rendering.
         REQUIRED_SLOTS = { item: "at least one item (label: plus the value block)" }.freeze
 
-        slot_doc :items, "The facts. Each takes label: (the fact's name, the <dt>) and the value as its block (the " \
-                         "<dd>)."
-        renders_many :items, lambda { |label:, **options, &block|
-          # class: merges through the dictionary (caller classes win on
-          # conflicts) - a plain hash merge would REPLACE css(:item).
-          item_class = css(:item, class: options.delete(:class))
-          content_tag(:div, { "data-slot" => "metadata-list-item", class: item_class }.merge(options)) do
-            safe_join([
-                        content_tag(:dt, label, "data-slot" => "metadata-list-label", class: css(:label)),
-                        content_tag(:dd, { "data-slot" => "metadata-list-value", class: css(:value) }, &block)
-                      ])
-          end
-        }
+        renders_many :items,
+                     doc: "The facts. Each takes label: (the fact's name, the <dt>) and the value as its block (the " \
+                          "<dd>).",
+                     renders: lambda { |label:, **options, &block|
+                       # class: merges through the dictionary (caller classes win on
+                       # conflicts) - a plain hash merge would REPLACE css(:item).
+                       item_class = css(:item, class: options.delete(:class))
+                       content_tag(:div, { "data-slot" => "metadata-list-item", class: item_class }.merge(options)) do
+                         safe_join([
+                                     content_tag(:dt, label, "data-slot" => "metadata-list-label", class: css(:label)),
+                                     content_tag(:dd, { "data-slot" => "metadata-list-value", class: css(:value) },
+                                                 &block)
+                                   ])
+                       end
+                     }
 
         style :orientation, default: :vertical, variants: %i[vertical horizontal],
                             doc: "Label placement - above the value, or beside it for the classic key/value sheet."

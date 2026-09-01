@@ -37,12 +37,13 @@ module Poetry
           "row, never over it."
         ].freeze
 
-        slot_doc :trigger, "The trigger is a poetry Button wired to open - the Dialog pattern: with_trigger(variant: " \
-                           ":outline) { \"Open palette\" }."
-        renders_one :trigger, lambda { |**options, &block|
-          options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {})
-          Button::Component.new(**options, &block)
-        }
+        renders_one :trigger,
+                    doc: "The trigger is a poetry Button wired to open - the Dialog pattern: with_trigger(variant: " \
+                         ":outline) { \"Open palette\" }.",
+                    renders: lambda { |**options, &block|
+                      options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {})
+                      Button::Component.new(**options, &block)
+                    }
 
         # The SHARED dialog controller (zero new JS) - hotkey included.
         use_stimulus do

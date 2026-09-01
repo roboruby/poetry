@@ -28,8 +28,7 @@ module Poetry
           "Stack avatars with poetry_avatar_group; the overflow count is poetry_avatar_group_count."
         ].freeze
 
-        slot_doc :badge, "Decorative presence dot, bottom-right; keep the status meaning in label:."
-        renders_one :badge
+        renders_one :badge, doc: "Decorative presence dot, bottom-right; keep the status meaning in label:."
 
         option :src, :string, doc: "The image URL; without it only the initials fallback shows."
         option :label, :string, required: true,

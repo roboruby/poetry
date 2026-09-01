@@ -41,27 +41,28 @@ module Poetry
         # statically: poetry check flags the omission without rendering.
         REQUIRED_SLOTS = { button: "at least one control (with_button / with_input)" }.freeze
 
-        slot_doc :items, "The control slots: with_button (a real Button - tag: :a makes it a link), with_input " \
-                         "(search/filter), with_separator (its orientation flips automatically)."
-        renders_many :items, types: {
-          button: {
-            renders: ->(**options) { Poetry::Ui::Button::Component.new(**item_options(options)) },
-            as: :button
-          },
-          input: {
-            renders: ->(**options) { Poetry::Ui::Input::Component.new(**item_options(options)) },
-            as: :input
-          },
-          separator: {
-            renders: lambda { |**options|
-              Poetry::Ui::Separator::Component.new(
-                orientation: orientation == :horizontal ? :vertical : :horizontal,
-                class: "self-stretch", **options
-              )
-            },
-            as: :separator
-          }
-        }
+        renders_many :items,
+                     doc: "The control slots: with_button (a real Button - tag: :a makes it a link), with_input " \
+                          "(search/filter), with_separator (its orientation flips automatically).",
+                     types: {
+                       button: {
+                         renders: ->(**options) { Poetry::Ui::Button::Component.new(**item_options(options)) },
+                         as: :button
+                       },
+                       input: {
+                         renders: ->(**options) { Poetry::Ui::Input::Component.new(**item_options(options)) },
+                         as: :input
+                       },
+                       separator: {
+                         renders: lambda { |**options|
+                           Poetry::Ui::Separator::Component.new(
+                             orientation: orientation == :horizontal ? :vertical : :horizontal,
+                             class: "self-stretch", **options
+                           )
+                         },
+                         as: :separator
+                       }
+                     }
 
         style :orientation, default: :horizontal, variants: %i[horizontal vertical],
                             doc: "The strip's axis; :vertical stacks the controls and flips the arrow keys."

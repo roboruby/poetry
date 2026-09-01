@@ -25,20 +25,18 @@ module Poetry
           "The title renders as a real heading (h3 default) - set title_tag: to fit the page outline."
         ].freeze
 
-        slot_doc :title, "The heading line, rendered as a real heading element (title_tag:)."
-        renders_one :title
-        slot_doc :description, "Muted one-liner under the title."
-        renders_one :description
-        slot_doc :action, "The header's trailing corner control (a button, menu, or link)."
-        renders_one :action
-        slot_doc :footer, "The bottom row (actions/meta). class: merges into the footer div (a border-t divider is " \
-                          "the canonical use); every other option (id:, data:, ...) rides onto the footer div " \
-                          "verbatim."
-        renders_one :footer, lambda { |**options, &block|
-          @footer_options = options
-          @footer_block = block
-          nil
-        }
+        renders_one :title, doc: "The heading line, rendered as a real heading element (title_tag:)."
+        renders_one :description, doc: "Muted one-liner under the title."
+        renders_one :action, doc: "The header's trailing corner control (a button, menu, or link)."
+        renders_one :footer,
+                    doc: "The bottom row (actions/meta). class: merges into the footer div (a border-t divider is " \
+                         "the canonical use); every other option (id:, data:, ...) rides onto the footer div " \
+                         "verbatim.",
+                    renders: lambda { |**options, &block|
+                      @footer_options = options
+                      @footer_block = block
+                      nil
+                    }
 
         option :title_tag, :symbol, default: :h3,
                                     doc: "The heading element for the title - pick it to fit the page outline."

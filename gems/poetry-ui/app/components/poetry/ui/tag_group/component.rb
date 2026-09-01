@@ -36,11 +36,13 @@ module Poetry
           "a TagGroup holds items that exist until removed."
         ].freeze
 
-        slot_doc :tags, "Declares one chip. value: is its identity (and form value); label: is the accessible name " \
-                        "and the visible text when no block is given; removable: false drops the remove button."
-        renders_many :tags, lambda { |value:, label: nil, disabled: false, removable: true, **options, &block|
-          tag_row(value: value, label: label, disabled: disabled, removable: removable, **options, &block)
-        }
+        renders_many :tags,
+                     doc: "Declares one chip. value: is its identity (and form value); label: is the accessible " \
+                          "name and the visible text when no block is given; removable: false drops the remove " \
+                          "button.",
+                     renders: lambda { |value:, label: nil, disabled: false, removable: true, **options, &block|
+                       tag_row(value: value, label: label, disabled: disabled, removable: removable, **options, &block)
+                     }
 
         # Both controllers declare on the grid element: roving-focus owns
         # the arrow keys, with the group's own keydown (removal keys)

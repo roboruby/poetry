@@ -163,12 +163,13 @@ module Poetry
 
         attr_reader :item_set, :item_wiring
 
-        slot_doc :items, "The group's members: with_item actions and with_separator dividers, interleaved in " \
-                         "declaration order."
-        renders_many :items, types: {
-          item: { renders: ->(**options) { item_component(**options) }, as: :item },
-          separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
-        }
+        renders_many :items,
+                     doc: "The group's members: with_item actions and with_separator dividers, interleaved in " \
+                          "declaration order.",
+                     types: {
+                       item: { renders: ->(**options) { item_component(**options) }, as: :item },
+                       separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
+                     }
 
         def initialize(item_set:, heading:, item_wiring: {}, always_render: false, **extra_attributes)
           raise ArgumentError, "Command group requires heading: (the group's accessible name)" if heading.blank?
@@ -264,22 +265,21 @@ module Poetry
             options: %w[id aria-label aria-labelledby aria] }
         ].freeze
 
-        slot_doc :empty, "Custom zero-results content (defaults to t('poetry.command.empty'))."
-        renders_one :empty
-        slot_doc :loading, "Custom pending content (a spinner); the HOST toggles visibility (Turbo frame events) - " \
-                           "Command renders the part, never sets it."
-        renders_one :loading
+        renders_one :empty, doc: "Custom zero-results content (defaults to t('poetry.command.empty'))."
+        renders_one :loading, doc: "Custom pending content (a spinner); the HOST toggles visibility (Turbo frame " \
+                                   "events) - Command renders the part, never sets it."
 
-        slot_doc :items, "The item UNION: item | group (heading + items) | separator - one ordered collection " \
-                         "(interleaving preserved; items and groups are part COMPONENTS so id assignment follows " \
-                         "render/DOM order)."
-        renders_many :items, types: {
-          item: { renders: ->(**options) { item_component(**options) }, as: :item },
-          group: { renders: lambda { |**options|
-            Group.new(item_set: item_set, item_wiring: item_wiring, **options)
-          }, as: :group },
-          separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
-        }
+        renders_many :items,
+                     doc: "The item UNION: item | group (heading + items) | separator - one ordered collection " \
+                          "(interleaving preserved; items and groups are part COMPONENTS so id assignment follows " \
+                          "render/DOM order).",
+                     types: {
+                       item: { renders: ->(**options) { item_component(**options) }, as: :item },
+                       group: { renders: lambda { |**options|
+                         Group.new(item_set: item_set, item_wiring: item_wiring, **options)
+                       }, as: :group },
+                       separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
+                     }
 
         use_stimulus do
           on :root do

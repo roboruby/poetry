@@ -30,14 +30,15 @@ module Poetry
           "Inside a Message, alignment follows the Message's align - do not set both."
         ].freeze
 
-        slot_doc :reactions, "The reactions pill overlaid on an edge; label: names the cluster for assistive tech, " \
-                             "side:/align: place it (default bottom end)."
-        renders_one :reactions, lambda { |label:, side: :bottom, align: :end, &block|
-          content_tag(:div,
-                      class: css(:reactions), "data-slot" => "bubble-reactions",
-                      "data-side" => side, "data-align" => align,
-                      role: "group", "aria-label" => label, &block)
-        }
+        renders_one :reactions,
+                    doc: "The reactions pill overlaid on an edge; label: names the cluster for assistive tech, " \
+                         "side:/align: place it (default bottom end).",
+                    renders: lambda { |label:, side: :bottom, align: :end, &block|
+                      content_tag(:div,
+                                  class: css(:reactions), "data-slot" => "bubble-reactions",
+                                  "data-side" => side, "data-align" => align,
+                                  role: "group", "aria-label" => label, &block)
+                    }
 
         # The content block IS the message; an empty bubble is an empty pill.
         requires_content "the message content"

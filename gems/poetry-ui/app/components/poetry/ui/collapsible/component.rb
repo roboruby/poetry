@@ -31,16 +31,17 @@ module Poetry
         # a missing trigger without rendering.
         REQUIRED_SLOTS = { trigger: "the disclosure control" }.freeze
 
-        slot_doc :trigger, "The disclosure control - a real button, wired for you (aria-expanded, aria-controls); " \
-                           "options merge onto it."
-        renders_one :trigger, lambda { |**options, &block|
-          attrs = {
-            type: "button", "data-slot" => "collapsible-trigger",
-            "aria-expanded" => open.to_s, "aria-controls" => content_id
-          }.merge(stimulus_attributes_for(:trigger))
-          composed_trigger(attrs, options, &block) ||
-            content_tag(:button, Poetry::Core::HTML::Attributes.merged(attrs, options), &block)
-        }
+        renders_one :trigger,
+                    doc: "The disclosure control - a real button, wired for you (aria-expanded, aria-controls); " \
+                         "options merge onto it.",
+                    renders: lambda { |**options, &block|
+                      attrs = {
+                        type: "button", "data-slot" => "collapsible-trigger",
+                        "aria-expanded" => open.to_s, "aria-controls" => content_id
+                      }.merge(stimulus_attributes_for(:trigger))
+                      composed_trigger(attrs, options, &block) ||
+                        content_tag(:button, Poetry::Core::HTML::Attributes.merged(attrs, options), &block)
+                    }
 
         use_stimulus do
           on :root do

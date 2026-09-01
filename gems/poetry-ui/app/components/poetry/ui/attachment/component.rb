@@ -42,40 +42,44 @@ module Poetry
           "error state needs a with_description explaining the failure - the tint alone is not the message."
         ].freeze
 
-        slot_doc :media, "Leading visual: :icon (default) boxes an icon tile, :image wraps the caller's <img>."
-        renders_one :media, lambda { |variant: :icon, &block|
-          raise ArgumentError, "media variant must be :icon or :image" unless MEDIA_VARIANTS.include?(variant)
+        renders_one :media,
+                    doc: "Leading visual: :icon (default) boxes an icon tile, :image wraps the caller's <img>.",
+                    renders: lambda { |variant: :icon, &block|
+                      unless MEDIA_VARIANTS.include?(variant)
+                        raise ArgumentError,
+                              "media variant must be :icon or :image"
+                      end
 
-          content_tag(:div, "data-slot" => "attachment-media", "data-variant" => variant,
-                            class: css(:media, class: (if variant == :image
-                                                         "cn-attachment-media-variant-image"
-                                                       end)), &block)
-        }
-        slot_doc :title, "The file name line. User content - never mark it html_safe."
-        renders_one :title
-        slot_doc :description, "Muted metadata under the title (size, type); in the error state, the failure " \
-                               "explanation."
-        renders_one :description
-        slot_doc :actions, "Trailing icon actions - each renders a Button (ghost, icon-xs defaults) and requires " \
-                           "label:."
-        renders_many :actions, lambda { |label:, **options, &block|
-          # Caller data: augments the slot marker instead of replacing it
-          # at the kwargs splat.
-          data = { slot: "attachment-action" }.merge(options.delete(:data) || {})
-          Button::Component.new(variant: options.delete(:variant) || :ghost,
-                                size: options.delete(:size) || :"icon-xs",
-                                label: label, data: data, **options, &block)
-        }
-        slot_doc :trigger, "Makes the whole chip the control - a stretched button (or anchor via tag: :a, href:) " \
-                           "layered under the actions. Don't also wrap the chip in a link."
-        renders_one :trigger, lambda { |tag: :button, href: nil, **options, &block|
-          attrs = Poetry::Core::HTML::Attributes.merged(
-            { class: css(:trigger), "data-slot" => "attachment-trigger" }, options
-          )
-          attrs[:type] = "button" if tag == :button
-          attrs[:href] = href if tag == :a
-          content_tag(tag, attrs, &block)
-        }
+                      content_tag(:div, "data-slot" => "attachment-media", "data-variant" => variant,
+                                        class: css(:media, class: (if variant == :image
+                                                                     "cn-attachment-media-variant-image"
+                                                                   end)), &block)
+                    }
+        renders_one :title, doc: "The file name line. User content - never mark it html_safe."
+        renders_one :description, doc: "Muted metadata under the title (size, type); in the error state, the " \
+                                       "failure explanation."
+        renders_many :actions,
+                     doc: "Trailing icon actions - each renders a Button (ghost, icon-xs defaults) and requires " \
+                          "label:.",
+                     renders: lambda { |label:, **options, &block|
+                       # Caller data: augments the slot marker instead of replacing it
+                       # at the kwargs splat.
+                       data = { slot: "attachment-action" }.merge(options.delete(:data) || {})
+                       Button::Component.new(variant: options.delete(:variant) || :ghost,
+                                             size: options.delete(:size) || :"icon-xs",
+                                             label: label, data: data, **options, &block)
+                     }
+        renders_one :trigger,
+                    doc: "Makes the whole chip the control - a stretched button (or anchor via tag: :a, href:) " \
+                         "layered under the actions. Don't also wrap the chip in a link.",
+                    renders: lambda { |tag: :button, href: nil, **options, &block|
+                      attrs = Poetry::Core::HTML::Attributes.merged(
+                        { class: css(:trigger), "data-slot" => "attachment-trigger" }, options
+                      )
+                      attrs[:type] = "button" if tag == :button
+                      attrs[:href] = href if tag == :a
+                      content_tag(tag, attrs, &block)
+                    }
 
         style :size, default: :default, required: true, variants: SIZES, doc: "The chip density axis."
         style :orientation, default: :horizontal, required: true, variants: ORIENTATIONS,

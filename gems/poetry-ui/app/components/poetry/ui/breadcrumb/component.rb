@@ -36,21 +36,23 @@ module Poetry
         # Slots the component cannot render without; static checks read this without rendering.
         REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
-        slot_doc :items, "The crumbs, in declaration order. A label with href: renders a link; without one, the " \
-                         "current page. A block makes the <li>'s content caller-owned (a dropdown crumb, a " \
-                         "custom-rendered link)."
-        renders_many :items, lambda { |label = nil, href: nil, ellipsis: false, &block|
-          entries << Entry.new(label: label, href: href, ellipsis: ellipsis, block: block)
-          nil
-        }
+        renders_many :items,
+                     doc: "The crumbs, in declaration order. A label with href: renders a link; without one, the " \
+                          "current page. A block makes the <li>'s content caller-owned (a dropdown crumb, a " \
+                          "custom-rendered link).",
+                     renders: lambda { |label = nil, href: nil, ellipsis: false, &block|
+                       entries << Entry.new(label: label, href: href, ellipsis: ellipsis, block: block)
+                       nil
+                     }
 
-        slot_doc :separator, "Replaces the separator glyph in EVERY gap: an icon name, or a block for arbitrary " \
-                             "content. Absent, the default chevron renders (with its RTL flip - a custom glyph is " \
-                             "used as given)."
-        renders_one :separator, lambda { |icon: nil, &block|
-          @separator_block = icon ? proc { render Icon::Component.new(name: icon) } : block
-          nil
-        }
+        renders_one :separator,
+                    doc: "Replaces the separator glyph in EVERY gap: an icon name, or a block for arbitrary " \
+                         "content. Absent, the default chevron renders (with its RTL flip - a custom glyph is used " \
+                         "as given).",
+                    renders: lambda { |icon: nil, &block|
+                      @separator_block = icon ? proc { render Icon::Component.new(name: icon) } : block
+                      nil
+                    }
 
         part "breadcrumb", "The <nav> landmark (aria-label=breadcrumb) around the trail"
         part "breadcrumb-list", "The <ol> laying crumbs and separators out as one wrapping row"

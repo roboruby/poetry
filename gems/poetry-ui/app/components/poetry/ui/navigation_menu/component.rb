@@ -40,17 +40,19 @@ module Poetry
         # @api private
         Entry = Data.define(:title, :value, :href, :panel)
 
-        slot_doc :items, "The bar entries. with_item(title, value:) { panel } declares a trigger + panel; " \
-                         "with_item(title, href:) a top-level link (with_link is the shorthand)."
-        renders_many :items, lambda { |title, value: nil, href: nil, &panel|
-          if href.nil? && panel.nil?
-            raise ArgumentError, "NavigationMenu item #{title.inspect} needs href: (a link) or a panel block"
-          end
+        renders_many :items,
+                     doc: "The bar entries. with_item(title, value:) { panel } declares a trigger + panel; " \
+                          "with_item(title, href:) a top-level link (with_link is the shorthand).",
+                     renders: lambda { |title, value: nil, href: nil, &panel|
+                       if href.nil? && panel.nil?
+                         raise ArgumentError,
+                               "NavigationMenu item #{title.inspect} needs href: (a link) or a panel block"
+                       end
 
-          entries << Entry.new(title: title, value: value&.to_s || title.to_s.parameterize, href: href,
-                               panel: panel)
-          nil
-        }
+                       entries << Entry.new(title: title, value: value&.to_s || title.to_s.parameterize, href: href,
+                                            panel: panel)
+                       nil
+                     }
 
         use_stimulus do
           on :root do

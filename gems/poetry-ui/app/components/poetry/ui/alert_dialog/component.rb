@@ -49,36 +49,40 @@ module Poetry
         # Slots that render a Button; slot keywords are forwarded as Button props.
         SLOT_RENDERS = { trigger: Button::Component, action: Button::Component, cancel: Button::Component }.freeze
 
-        slot_doc :trigger, "The button that opens the dialog; keywords are forwarded as Button props."
-        renders_one :trigger, lambda { |**options, &block|
-          composed_trigger({ "data-action" => stimulus_action(:open) }, options, &block) || begin
-            options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {}) do |key, wired, caller|
-              key == :action ? Poetry::Core::Config.current.stimulus_merger.merge_actions(wired, caller) : caller
-            end
-            Button::Component.new(**options, &block)
-          end
-        }
-        slot_doc :title, "The heading - the dialog's accessible name (required)."
-        renders_one :title
-        slot_doc :description, "The explanation read alongside the title by assistive tech (required)."
-        renders_one :description
-        slot_doc :media, "Optional icon/illustration well above the title."
-        renders_one :media
-        slot_doc :action, "The confirming choice (required) - a Button; pass variant: :destructive for deletes. " \
-                          "Activating it also closes the dialog (a caller-supplied data-action opts out)."
-        renders_one :action, lambda { |**options, &block|
-          options[:data] = { slot: "alert-dialog-action", action: stimulus_action(:close) }.merge(options[:data] || {})
-          Button::Component.new(**options, &block)
-        }
-        slot_doc :cancel, "The safe way out (required) - an outline Button that takes initial focus and closes the " \
-                          "dialog on activation."
-        renders_one :cancel, lambda { |**options, &block|
-          wired_data = { slot: "alert-dialog-cancel", action: stimulus_action(:close) }
-          options[:data] = wired_data.merge(options[:data] || {}) do |key, wired, caller|
-            key == :action ? Poetry::Core::Config.current.stimulus_merger.merge_actions(wired, caller) : caller
-          end
-          Button::Component.new(variant: :outline, autofocus: true, **options, &block)
-        }
+        renders_one :trigger,
+                    doc: "The button that opens the dialog; keywords are forwarded as Button props.",
+                    renders: lambda { |**options, &block|
+                      composed_trigger({ "data-action" => stimulus_action(:open) }, options, &block) || begin
+                        merger = Poetry::Core::Config.current.stimulus_merger
+                        wired_data = { action: stimulus_action(:open) }
+                        options[:data] = wired_data.merge(options[:data] || {}) do |key, wired, caller|
+                          key == :action ? merger.merge_actions(wired, caller) : caller
+                        end
+                        Button::Component.new(**options, &block)
+                      end
+                    }
+        renders_one :title, doc: "The heading - the dialog's accessible name (required)."
+        renders_one :description, doc: "The explanation read alongside the title by assistive tech (required)."
+        renders_one :media, doc: "Optional icon/illustration well above the title."
+        renders_one :action,
+                    doc: "The confirming choice (required) - a Button; pass variant: :destructive for deletes. " \
+                         "Activating it also closes the dialog (a caller-supplied data-action opts out).",
+                    renders: lambda { |**options, &block|
+                      options[:data] =
+                        { slot: "alert-dialog-action", action: stimulus_action(:close) }.merge(options[:data] || {})
+                      Button::Component.new(**options, &block)
+                    }
+        renders_one :cancel,
+                    doc: "The safe way out (required) - an outline Button that takes initial focus and closes the " \
+                         "dialog on activation.",
+                    renders: lambda { |**options, &block|
+                      merger = Poetry::Core::Config.current.stimulus_merger
+                      wired_data = { slot: "alert-dialog-cancel", action: stimulus_action(:close) }
+                      options[:data] = wired_data.merge(options[:data] || {}) do |key, wired, caller|
+                        key == :action ? merger.merge_actions(wired, caller) : caller
+                      end
+                      Button::Component.new(variant: :outline, autofocus: true, **options, &block)
+                    }
 
         # The SHARED dialog controller (zero new JS) under AlertDialog's
         # own declarations - dismissible is the hard-coded false posture.

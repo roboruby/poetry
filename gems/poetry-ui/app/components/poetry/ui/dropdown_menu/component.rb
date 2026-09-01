@@ -64,22 +64,23 @@ module Poetry
         # get Button's full option and slot contract on the trigger.
         SLOT_RENDERS = { trigger: Button::Component }.freeze
 
-        slot_doc :trigger, "The menu button - a poetry Button (options forward to it, e.g. variant: :outline). The " \
-                           "slot owns the aria-haspopup/expanded/ controls wiring regardless of the composed " \
-                           "content, so composition cannot drop the aria."
-        renders_one :trigger, lambda { |**options, &block|
-          wiring = {
-            "id" => trigger_id, "data-slot" => "dropdown-menu-trigger",
-            "aria-haspopup" => "menu", "aria-expanded" => open.to_s, "aria-controls" => content_id
-          }.merge(stimulus_attributes_for(:trigger))
-          # Trigger state: bare data-popup-open while open, NO attribute
-          # while closed (absence IS the state).
-          wiring["data-popup-open"] = "" if open
-          composed_trigger(wiring, options, &block) || begin
-            options[:disabled] = true if disabled && !options.key?(:disabled)
-            Button::Component.new(**wiring, **options, &block)
-          end
-        }
+        renders_one :trigger,
+                    doc: "The menu button - a poetry Button (options forward to it, e.g. variant: :outline). The " \
+                         "slot owns the aria-haspopup/expanded/ controls wiring regardless of the composed content, " \
+                         "so composition cannot drop the aria.",
+                    renders: lambda { |**options, &block|
+                      wiring = {
+                        "id" => trigger_id, "data-slot" => "dropdown-menu-trigger",
+                        "aria-haspopup" => "menu", "aria-expanded" => open.to_s, "aria-controls" => content_id
+                      }.merge(stimulus_attributes_for(:trigger))
+                      # Trigger state: bare data-popup-open while open, NO attribute
+                      # while closed (absence IS the state).
+                      wiring["data-popup-open"] = "" if open
+                      composed_trigger(wiring, options, &block) || begin
+                        options[:disabled] = true if disabled && !options.key?(:disabled)
+                        Button::Component.new(**wiring, **options, &block)
+                      end
+                    }
 
         # The content's layer behaviors (focus containment, dismissal,
         # roving focus) are attached by the menu controller on open rather

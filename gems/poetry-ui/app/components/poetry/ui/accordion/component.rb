@@ -37,19 +37,21 @@ module Poetry
         # Slots the component cannot render without; static checks read this without rendering.
         REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
-        slot_doc :items, "The accordion sections. Each takes value: (its open-state key), title:, and a block of " \
-                         "panel content; disabled: true locks the section closed."
-        renders_many :items, lambda { |value:, title:, disabled: false, **options, &block|
-          open_item = open_values.include?(value.to_s)
-          item_id = "#{instance_id}-#{value}"
-          item_attrs = { class: css(:item, class: options.delete(:class)), "data-slot" => "accordion-item",
-                         "data-value" => value, (open_item ? "data-open" : "data-closed") => "", **options }
-          item_attrs["data-disabled"] = "" if disabled
-          content_tag(:div, **item_attrs) do
-            safe_join([accordion_header(item_id, title, open_item, disabled: disabled),
-                       accordion_panel(item_id, open_item, &block)])
-          end
-        }
+        renders_many :items,
+                     doc: "The accordion sections. Each takes value: (its open-state key), title:, and a block of " \
+                          "panel content; disabled: true locks the section closed.",
+                     renders: lambda { |value:, title:, disabled: false, **options, &block|
+                       open_item = open_values.include?(value.to_s)
+                       item_id = "#{instance_id}-#{value}"
+                       item_attrs = { class: css(:item, class: options.delete(:class)),
+                                      "data-slot" => "accordion-item", "data-value" => value,
+                                      (open_item ? "data-open" : "data-closed") => "", **options }
+                       item_attrs["data-disabled"] = "" if disabled
+                       content_tag(:div, **item_attrs) do
+                         safe_join([accordion_header(item_id, title, open_item, disabled: disabled),
+                                    accordion_panel(item_id, open_item, &block)])
+                       end
+                     }
 
         use_stimulus do
           on :root do

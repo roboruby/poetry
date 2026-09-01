@@ -57,22 +57,23 @@ module Poetry
         # The component behind the forwarding slot: with_trigger renders a Button.
         SLOT_RENDERS = { trigger: Button::Component }.freeze
 
-        slot_doc :trigger, "The described control - commonly a poetry Button (with_trigger(variant: :outline) { " \
-                           "\"Hover\" }). The slot owns the state + timing wiring regardless of the composed " \
-                           "content. NO aria-haspopup/expanded/controls - the tooltip is invisible as a popup; " \
-                           "aria-describedby is written by the controller on open (and server-rendered only when " \
-                           "open: true)."
-        renders_one :trigger, lambda { |**options, &block|
-          wiring = {
-            "id" => trigger_id, "data-slot" => "tooltip-trigger"
-          }.merge(stimulus_attributes_for(:trigger))
-          # Open state is a bare data-popup-open presence attribute -
-          # absent while closed (absence IS the state).
-          wiring["data-popup-open"] = "" if open
-          wiring["aria-describedby"] = content_id if open
-          composed_trigger(wiring, options, &block) ||
-            Button::Component.new(**wiring, **options, &block)
-        }
+        renders_one :trigger,
+                    doc: "The described control - commonly a poetry Button (with_trigger(variant: :outline) { " \
+                         "\"Hover\" }). The slot owns the state + timing wiring regardless of the composed content. " \
+                         "NO aria-haspopup/expanded/controls - the tooltip is invisible as a popup; " \
+                         "aria-describedby is written by the controller on open (and server-rendered only when " \
+                         "open: true).",
+                    renders: lambda { |**options, &block|
+                      wiring = {
+                        "id" => trigger_id, "data-slot" => "tooltip-trigger"
+                      }.merge(stimulus_attributes_for(:trigger))
+                      # Open state is a bare data-popup-open presence attribute -
+                      # absent while closed (absence IS the state).
+                      wiring["data-popup-open"] = "" if open
+                      wiring["aria-describedby"] = content_id if open
+                      composed_trigger(wiring, options, &block) ||
+                        Button::Component.new(**wiring, **options, &block)
+                    }
 
         use_stimulus do
           on :root do

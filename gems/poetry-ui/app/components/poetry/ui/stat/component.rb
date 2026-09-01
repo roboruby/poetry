@@ -40,10 +40,8 @@ module Poetry
           "A Stat is not a chart: a trend over time goes in the media slot (or use poetry-charts)."
         ].freeze
 
-        slot_doc :description, "Muted supporting copy rendered under the value."
-        renders_one :description
-        slot_doc :media, "The trend-visual slot (sparkline, chart, glyph) below the text stack."
-        renders_one :media
+        renders_one :description, doc: "Muted supporting copy rendered under the value."
+        renders_one :media, doc: "The trend-visual slot (sparkline, chart, glyph) below the text stack."
 
         option :label, :string, required: true, doc: "The metric's name, shown muted above the value."
         option :delta, :string, doc: "The change text shown in the pill beside the value (\"+12.5%\")."

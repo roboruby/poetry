@@ -49,11 +49,10 @@ module Poetry
           "and counters."
         ].freeze
 
-        slot_doc :progress, "with_progress (bare) renders the auto \"Question X of Y\" text; with_progress { custom " \
-                            "} replaces it (marked data-custom so the controller leaves it alone). class: merges " \
-                            "onto the progress element (e.g. w-full for a full-width segment bar over the base " \
-                            "w-fit)."
-        renders_one :progress
+        renders_one :progress, doc: "with_progress (bare) renders the auto \"Question X of Y\" text; with_progress " \
+                                    "{ custom } replaces it (marked data-custom so the controller leaves it alone). " \
+                                    "class: merges onto the progress element (e.g. w-full for a full-width segment " \
+                                    "bar over the base w-fit)."
         alias __vc_with_progress with_progress
 
         # Opts the progress readout in. Bare, it renders the live

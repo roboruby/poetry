@@ -48,41 +48,42 @@ module Poetry
         # poetry check flags the omission without rendering.
         REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
-        slot_doc :items, "Declares one item: value: (unique - duplicates raise), label: (required when icon-only), " \
-                         "disabled:; the block is the content. Pressed state comes from value:/values:."
-        renders_many :items, lambda { |value:, label: nil, disabled: false, **options, &block|
-          item_value = register_item_value!(value)
-          content = capture(&block)
-          ensure_item_name!(content, label, item_value)
-          on = pressed_values.include?(item_value)
-          item_disabled = disabled || self.disabled
+        renders_many :items,
+                     doc: "Declares one item: value: (unique - duplicates raise), label: (required when icon-only), " \
+                          "disabled:; the block is the content. Pressed state comes from value:/values:.",
+                     renders: lambda { |value:, label: nil, disabled: false, **options, &block|
+                       item_value = register_item_value!(value)
+                       content = capture(&block)
+                       ensure_item_name!(content, label, item_value)
+                       on = pressed_values.include?(item_value)
+                       item_disabled = disabled || self.disabled
 
-          attrs = {
-            type: "button", class: item_classes(options.delete(:class)),
-            "data-slot" => "toggle-group-item", "data-poetry-collection-item" => "",
-            "data-value" => item_value,
-            "data-variant" => variant, "data-size" => size, "data-spacing" => spacing
-          }
-          # Pressed is a bare presence attribute: data-pressed when on,
-          # absent when off (never data-pressed=false).
-          attrs["data-pressed"] = "" if on
-          # The role/vocabulary split: single wears the radio vocabulary
-          # (aria-checked), never aria-pressed.
-          if single?
-            attrs["role"] = "radio"
-            attrs["aria-checked"] = on.to_s
-          else
-            attrs["aria-pressed"] = on.to_s
-          end
-          if item_disabled
-            attrs[:disabled] = true
-            attrs["data-disabled"] = "" # the roving-focus collection filter
-          end
-          attrs["aria-label"] = label if label.present?
-          attrs.merge!(stimulus_attributes_for(:item))
+                       attrs = {
+                         type: "button", class: item_classes(options.delete(:class)),
+                         "data-slot" => "toggle-group-item", "data-poetry-collection-item" => "",
+                         "data-value" => item_value,
+                         "data-variant" => variant, "data-size" => size, "data-spacing" => spacing
+                       }
+                       # Pressed is a bare presence attribute: data-pressed when on,
+                       # absent when off (never data-pressed=false).
+                       attrs["data-pressed"] = "" if on
+                       # The role/vocabulary split: single wears the radio vocabulary
+                       # (aria-checked), never aria-pressed.
+                       if single?
+                         attrs["role"] = "radio"
+                         attrs["aria-checked"] = on.to_s
+                       else
+                         attrs["aria-pressed"] = on.to_s
+                       end
+                       if item_disabled
+                         attrs[:disabled] = true
+                         attrs["data-disabled"] = "" # the roving-focus collection filter
+                       end
+                       attrs["aria-label"] = label if label.present?
+                       attrs.merge!(stimulus_attributes_for(:item))
 
-          content_tag(:button, content, Poetry::Core::HTML::Attributes.merged(attrs, options))
-        }
+                       content_tag(:button, content, Poetry::Core::HTML::Attributes.merged(attrs, options))
+                     }
 
         use_stimulus do
           on :root do

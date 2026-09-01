@@ -41,14 +41,15 @@ module Poetry
         # a missing slide without rendering.
         REQUIRED_SLOTS = { item: "at least one slide" }.freeze
 
-        slot_doc :items, "Declares one slide. The content block is required; classes: sizes the slide (basis-full " \
-                         "default)."
-        renders_many :items, lambda { |classes: nil, &block|
-          raise ArgumentError, "Carousel with_item requires a content block (the slide)" unless block
+        renders_many :items,
+                     doc: "Declares one slide. The content block is required; classes: sizes the slide (basis-full " \
+                          "default).",
+                     renders: lambda { |classes: nil, &block|
+                       raise ArgumentError, "Carousel with_item requires a content block (the slide)" unless block
 
-          slides << Slide.new(classes: classes, block: block)
-          nil
-        }
+                       slides << Slide.new(classes: classes, block: block)
+                       nil
+                     }
 
         use_stimulus do
           on :root do

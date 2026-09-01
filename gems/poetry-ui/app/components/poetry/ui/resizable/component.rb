@@ -39,15 +39,19 @@ module Poetry
         # so static checks can flag too few panels without rendering.
         REQUIRED_SLOTS = { panel: "at least two panels" }.freeze
 
-        slot_doc :panels, "One panel per call: default_size/min_size/max_size are percentages of the group; the " \
-                          "content block is required."
-        renders_many :panels, lambda { |default_size: nil, min_size: nil, max_size: nil, classes: nil, &block|
-          raise ArgumentError, "Resizable with_panel requires a content block (the panel content)" unless block
+        renders_many :panels,
+                     doc: "One panel per call: default_size/min_size/max_size are percentages of the group; the " \
+                          "content block is required.",
+                     renders: lambda { |default_size: nil, min_size: nil, max_size: nil, classes: nil, &block|
+                       unless block
+                         raise ArgumentError,
+                               "Resizable with_panel requires a content block (the panel content)"
+                       end
 
-          panel_defs << Panel.new(default_size: default_size, min_size: min_size,
-                                  max_size: max_size, classes: classes, block: block)
-          nil
-        }
+                       panel_defs << Panel.new(default_size: default_size, min_size: min_size,
+                                               max_size: max_size, classes: classes, block: block)
+                       nil
+                     }
 
         use_stimulus do
           on :root do

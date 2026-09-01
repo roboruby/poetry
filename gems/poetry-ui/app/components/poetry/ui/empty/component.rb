@@ -24,12 +24,9 @@ module Poetry
           "media_variant: :icon gives the rounded muted icon tile; wrap a poetry_icon in with_media."
         ].freeze
 
-        slot_doc :media, "Optional leading visual above the title - an icon or illustration."
-        renders_one :media
-        slot_doc :title, "The headline, rendered as a real heading (see title_tag)."
-        renders_one :title
-        slot_doc :description, "Muted copy under the title."
-        renders_one :description
+        renders_one :media, doc: "Optional leading visual above the title - an icon or illustration."
+        renders_one :title, doc: "The headline, rendered as a real heading (see title_tag)."
+        renders_one :description, doc: "Muted copy under the title."
 
         option :title_tag, :symbol, default: :h3,
                                     doc: "The title's heading level - a real heading element, so set it to fit the " \

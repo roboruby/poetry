@@ -35,18 +35,12 @@ module Poetry
           "A clickable row is tag: :a with href: - never wrap an Item in a bare <a>."
         ].freeze
 
-        slot_doc :media, "The leading media cell - a glyph or thumbnail (see media_variant)."
-        renders_one :media
-        slot_doc :title, "The title row."
-        renders_one :title
-        slot_doc :description, "The muted description line (clamps to two lines)."
-        renders_one :description
-        slot_doc :actions, "The trailing actions cell - buttons, a menu, a switch."
-        renders_one :actions
-        slot_doc :header, "Full-width row above the media/content columns."
-        renders_one :header
-        slot_doc :footer, "Full-width row below the media/content columns."
-        renders_one :footer
+        renders_one :media, doc: "The leading media cell - a glyph or thumbnail (see media_variant)."
+        renders_one :title, doc: "The title row."
+        renders_one :description, doc: "The muted description line (clamps to two lines)."
+        renders_one :actions, doc: "The trailing actions cell - buttons, a menu, a switch."
+        renders_one :header, doc: "Full-width row above the media/content columns."
+        renders_one :footer, doc: "Full-width row below the media/content columns."
 
         style :variant, default: :default, required: true, variants: VARIANTS,
                         doc: "The row's visual treatment - :outline boxes it, :muted recedes."

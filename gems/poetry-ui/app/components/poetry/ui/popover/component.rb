@@ -55,35 +55,36 @@ module Poetry
         # Button, so callers get Button's full option contract.
         SLOT_RENDERS = { trigger: Button::Component }.freeze
 
-        slot_doc :trigger, "The control that opens the panel - a composed Button. The slot owns the " \
-                           "aria-haspopup/expanded/controls wiring regardless of the composed content, so " \
-                           "composition cannot drop the aria; aria-controls renders even while closed (the stable id " \
-                           "is the wiring's resolution seam)."
-        renders_one :trigger, lambda { |**options, &block|
-          wiring = {
-            "id" => trigger_id, "data-slot" => "popover-trigger",
-            "aria-haspopup" => "dialog", "aria-expanded" => open.to_s, "aria-controls" => content_id
-          }.merge(stimulus_attributes_for(:trigger))
-          # Trigger open state: bare data-popup-open while open, NO
-          # attribute while closed (absence IS the state).
-          wiring["data-popup-open"] = "" if open
-          composed_trigger(wiring, options, &block) ||
-            Button::Component.new(**wiring, **options, &block)
-        }
+        renders_one :trigger,
+                    doc: "The control that opens the panel - a composed Button. The slot owns the " \
+                         "aria-haspopup/expanded/controls wiring regardless of the composed content, so composition " \
+                         "cannot drop the aria; aria-controls renders even while closed (the stable id is the " \
+                         "wiring's resolution seam).",
+                    renders: lambda { |**options, &block|
+                      wiring = {
+                        "id" => trigger_id, "data-slot" => "popover-trigger",
+                        "aria-haspopup" => "dialog", "aria-expanded" => open.to_s, "aria-controls" => content_id
+                      }.merge(stimulus_attributes_for(:trigger))
+                      # Trigger open state: bare data-popup-open while open, NO
+                      # attribute while closed (absence IS the state).
+                      wiring["data-popup-open"] = "" if open
+                      composed_trigger(wiring, options, &block) ||
+                        Button::Component.new(**wiring, **options, &block)
+                    }
 
-        slot_doc :anchor, "Optional alternate anchor: when present, the panel positions against IT instead of the " \
-                          "trigger (targets beat selectors in the positioning fallback chain)."
-        renders_one :anchor, lambda { |**options, &block|
-          attrs = { "data-slot" => "popover-anchor" }
-                  .merge(stimulus_attributes_for(:anchor_part))
-          content_tag(:div, attrs.merge(options)) { capture(&block) }
-        }
+        renders_one :anchor,
+                    doc: "Optional alternate anchor: when present, the panel positions against IT instead of the " \
+                         "trigger (targets beat selectors in the positioning fallback chain).",
+                    renders: lambda { |**options, &block|
+                      attrs = { "data-slot" => "popover-anchor" }
+                              .merge(stimulus_attributes_for(:anchor_part))
+                      content_tag(:div, attrs.merge(options)) { capture(&block) }
+                    }
 
-        slot_doc :title, "Panel heading - presence wires the content's aria-labelledby, so the title names the dialog."
-        renders_one :title
+        renders_one :title, doc: "Panel heading - presence wires the content's aria-labelledby, so the title names " \
+                                 "the dialog."
 
-        slot_doc :description, "Supporting text - presence wires the content's aria-describedby."
-        renders_one :description
+        renders_one :description, doc: "Supporting text - presence wires the content's aria-describedby."
 
         use_stimulus do
           on :root do

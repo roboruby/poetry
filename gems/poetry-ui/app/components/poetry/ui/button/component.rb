@@ -43,10 +43,8 @@ module Poetry
             content: true, slots: %w[leading trailing], options: %w[loading] }
         ].freeze
 
-        slot_doc :leading, "Optional leading visual, rendered inside the icon span."
-        renders_one :leading
-        slot_doc :trailing, "Optional trailing visual, rendered inside the icon span."
-        renders_one :trailing
+        renders_one :leading, doc: "Optional leading visual, rendered inside the icon span."
+        renders_one :trailing, doc: "Optional trailing visual, rendered inside the icon span."
 
         style :variant, default: :default, required: true, variants: VARIANTS,
                         doc: "The visual intent axis; :destructive marks irreversible actions."

@@ -42,17 +42,20 @@ module Poetry
         # statically: poetry check flags the omission without rendering.
         REQUIRED_SLOTS = { tab: "at least one tab" }.freeze
 
-        slot_doc :tabs, "Declares one tab: the title, its value:, and the panel as the block (defer: swaps in a lazy " \
-                        "turbo-frame panel; panel: false declares a list-only tab). Omitting all three raises."
-        renders_many :tabs, lambda { |title, value:, disabled: false, defer: nil, panel: true, &block|
-          unless block || defer || panel == false
-            raise ArgumentError, "Tabs tab #{title.inspect} requires a panel block, defer:, or panel: false"
-          end
+        renders_many :tabs,
+                     doc: "Declares one tab: the title, its value:, and the panel as the block (defer: swaps in a " \
+                          "lazy turbo-frame panel; panel: false declares a list-only tab). Omitting all three " \
+                          "raises.",
+                     renders: lambda { |title, value:, disabled: false, defer: nil, panel: true, &block|
+                       unless block || defer || panel == false
+                         raise ArgumentError,
+                               "Tabs tab #{title.inspect} requires a panel block, defer:, or panel: false"
+                       end
 
-          tab_defs << Tab.new(title: title, value: value.to_s, disabled: disabled, panel: block,
-                              defer: defer, panel_less: panel == false)
-          nil
-        }
+                       tab_defs << Tab.new(title: title, value: value.to_s, disabled: disabled, panel: block,
+                                           defer: defer, panel_less: panel == false)
+                       nil
+                     }
 
         use_stimulus do
           on :root do

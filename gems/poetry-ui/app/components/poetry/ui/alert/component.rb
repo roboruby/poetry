@@ -24,12 +24,10 @@ module Poetry
           "destructive announces assertively (role=alert) - reserve it for errors, not emphasis."
         ].freeze
 
-        slot_doc :icon, "Optional leading icon; pass icon props (e.g. name: :\"triangle-alert\"), not a block."
-        renders_one :icon, Poetry::Ui::Icon::Component
-        slot_doc :title, "The heading line of the callout."
-        renders_one :title
-        slot_doc :action, "Optional corner action (a dismiss button or link), pinned to the top-right."
-        renders_one :action
+        renders_one :icon, Poetry::Ui::Icon::Component, doc: "Optional leading icon; pass icon props (e.g. name: " \
+                                                             ":\"triangle-alert\"), not a block."
+        renders_one :title, doc: "The heading line of the callout."
+        renders_one :action, doc: "Optional corner action (a dismiss button or link), pinned to the top-right."
 
         style :variant, default: :default, required: true, variants: VARIANTS,
                         doc: "The intent axis; :destructive marks errors and announces assertively."

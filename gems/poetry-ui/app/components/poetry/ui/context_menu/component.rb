@@ -54,28 +54,29 @@ module Poetry
           "Do not nest a ContextMenu trigger surface inside another ContextMenu trigger surface."
         ].freeze
 
-        slot_doc :trigger, "The right-click/long-press SURFACE: wraps arbitrary content (a card, a row, a region); " \
-                           "polymorphic tag: (default :span, set tag: :div to wrap block content). NOT a button: no " \
-                           "role, no aria-haspopup, no tabindex by default. The inline -webkit-touch-callout " \
-                           "suppresses the iOS callout so long-press can run (iOS never fires contextmenu; the timer " \
-                           "is the only touch path there)."
-        renders_one :trigger, lambda { |**options, &block|
-          tag_name = options.delete(:tag) || :span
-          attrs = {
-            "id" => trigger_id, "data-slot" => "context-menu-trigger",
-            "aria-controls" => content_id,
-            "style" => ["-webkit-touch-callout: none", options.delete(:style)].compact.join("; ")
-          }.merge(stimulus_attributes_for(:trigger))
-          # The surface state: bare data-popup-open while open, NO
-          # attribute while closed (absence IS the state).
-          attrs["data-popup-open"] = "" if open
-          attrs["data-disabled"] = "" if disabled
-          if focusable_surface
-            attrs["tabindex"] = "0"
-            attrs["aria-keyshortcuts"] = "Shift+F10"
-          end
-          content_tag(tag_name, Poetry::Core::HTML::Attributes.merged(attrs, options)) { capture(&block) }
-        }
+        renders_one :trigger,
+                    doc: "The right-click/long-press SURFACE: wraps arbitrary content (a card, a row, a region); " \
+                         "polymorphic tag: (default :span, set tag: :div to wrap block content). NOT a button: no " \
+                         "role, no aria-haspopup, no tabindex by default. The inline -webkit-touch-callout " \
+                         "suppresses the iOS callout so long-press can run (iOS never fires contextmenu; the timer " \
+                         "is the only touch path there).",
+                    renders: lambda { |**options, &block|
+                      tag_name = options.delete(:tag) || :span
+                      attrs = {
+                        "id" => trigger_id, "data-slot" => "context-menu-trigger",
+                        "aria-controls" => content_id,
+                        "style" => ["-webkit-touch-callout: none", options.delete(:style)].compact.join("; ")
+                      }.merge(stimulus_attributes_for(:trigger))
+                      # The surface state: bare data-popup-open while open, NO
+                      # attribute while closed (absence IS the state).
+                      attrs["data-popup-open"] = "" if open
+                      attrs["data-disabled"] = "" if disabled
+                      if focusable_surface
+                        attrs["tabindex"] = "0"
+                        attrs["aria-keyshortcuts"] = "Shift+F10"
+                      end
+                      content_tag(tag_name, Poetry::Core::HTML::Attributes.merged(attrs, options)) { capture(&block) }
+                    }
 
         use_stimulus do
           on :root do

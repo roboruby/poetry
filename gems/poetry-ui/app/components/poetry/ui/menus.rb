@@ -84,24 +84,31 @@ module Poetry
         include Helpers
 
         included do
-          slot_doc :items, "The menu composition API: one ordered items collection accepting seven kinds, " \
-                           "interleaved in call order - with_item an action row (href: renders it as a real link; " \
-                           "submit: as a real submit button) with_checkbox_item a toggleable checked/unchecked row " \
-                           "with_radio_group a single-select scope; add rows inside it via with_radio_item(value:) " \
-                           "with_label a non-interactive heading for a run of items with_separator a horizontal rule " \
-                           "between runs with_group semantic grouping around the same union, one level down with_sub " \
-                           "a nested submenu: its own with_trigger plus the same union, recursively"
-          renders_many :items, types: {
-            item: { renders: ->(**options, &block) { item_part(**options, &block) }, as: :item },
-            checkbox_item: {
-              renders: ->(**options, &block) { checkbox_item_part(**options, &block) }, as: :checkbox_item
-            },
-            radio_group: { renders: ->(**options) { family_namespace::RadioGroup.new(**options) }, as: :radio_group },
-            label: { renders: ->(**options, &block) { label_part(**options, &block) }, as: :label },
-            separator: { renders: ->(**options) { separator_part(**options) }, as: :separator },
-            group: { renders: ->(**options) { family_namespace::Group.new(dir: menu_dir, **options) }, as: :group },
-            sub: { renders: ->(**options) { family_namespace::Sub.new(dir: menu_dir, **options) }, as: :sub }
-          }
+          renders_many :items,
+                       doc: "The menu composition API: one ordered items collection accepting seven kinds, " \
+                            "interleaved in call order - with_item an action row (href: renders it as a real link; " \
+                            "submit: as a real submit button) with_checkbox_item a toggleable checked/unchecked row " \
+                            "with_radio_group a single-select scope; add rows inside it via with_radio_item(value:) " \
+                            "with_label a non-interactive heading for a run of items with_separator a horizontal " \
+                            "rule between runs with_group semantic grouping around the same union, one level down " \
+                            "with_sub a nested submenu: its own with_trigger plus the same union, recursively",
+                       types: {
+                         item: { renders: ->(**options, &block) { item_part(**options, &block) }, as: :item },
+                         checkbox_item: {
+                           renders: ->(**options, &block) { checkbox_item_part(**options, &block) }, as: :checkbox_item
+                         },
+                         radio_group: { renders: lambda { |**options|
+                           family_namespace::RadioGroup.new(**options)
+                         }, as: :radio_group },
+                         label: { renders: ->(**options, &block) { label_part(**options, &block) }, as: :label },
+                         separator: { renders: ->(**options) { separator_part(**options) }, as: :separator },
+                         group: { renders: lambda { |**options|
+                           family_namespace::Group.new(dir: menu_dir, **options)
+                         }, as: :group },
+                         sub: { renders: lambda { |**options|
+                           family_namespace::Sub.new(dir: menu_dir, **options)
+                         }, as: :sub }
+                       }
         end
 
         private
@@ -239,28 +246,29 @@ module Poetry
 
         attr_reader :group_value
 
-        slot_doc :radio_items, "One role=menuitemradio row; value: must be unique within the group."
-        renders_many :radio_items, lambda { |value:, disabled: false, text_value: nil,
+        renders_many :radio_items,
+                     doc: "One role=menuitemradio row; value: must be unique within the group.",
+                     renders: lambda { |value:, disabled: false, text_value: nil,
                                             close_on_select: nil, shortcut: nil, **options, &block|
-          key = value.to_s
-          unless @seen_values.add?(key)
-            raise ArgumentError, "duplicate #{family_name} radio value #{key.inspect} - values must be " \
-                                 "unique within their radio group"
-          end
+                       key = value.to_s
+                       unless @seen_values.add?(key)
+                         raise ArgumentError, "duplicate #{family_name} radio value #{key.inspect} - values must be " \
+                                              "unique within their radio group"
+                       end
 
-          checked = !group_value.nil? && key == group_value
-          attrs = {
-            "data-slot" => "#{family_slot_prefix}-radio-item", "role" => "menuitemradio", "tabindex" => "-1",
-            "data-poetry-collection-item" => "", "data-value" => key,
-            "aria-checked" => checked.to_s, (checked ? "data-checked" : "data-unchecked") => "",
-            "class" => family_style.css(:radio_item, class: options.delete(:class))
-          }.merge(item_action_attributes)
-          apply_item_flags(attrs, disabled:, text_value:, close_on_select:)
-          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, options)) do
-            safe_join([item_indicator(:circle, family_style.css(:indicator_circle), :radio),
-                       capture(&block), shortcut_span(shortcut)].compact)
-          end
-        }
+                       checked = !group_value.nil? && key == group_value
+                       attrs = {
+                         "data-slot" => "#{family_slot_prefix}-radio-item", "role" => "menuitemradio",
+                         "tabindex" => "-1", "data-poetry-collection-item" => "", "data-value" => key,
+                         "aria-checked" => checked.to_s, (checked ? "data-checked" : "data-unchecked") => "",
+                         "class" => family_style.css(:radio_item, class: options.delete(:class))
+                       }.merge(item_action_attributes)
+                       apply_item_flags(attrs, disabled:, text_value:, close_on_select:)
+                       content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, options)) do
+                         safe_join([item_indicator(:circle, family_style.css(:indicator_circle), :radio),
+                                    capture(&block), shortcut_span(shortcut)].compact)
+                       end
+                     }
 
         def initialize(value: nil, **extra_attributes)
           super(extra_attributes)
@@ -287,20 +295,21 @@ module Poetry
         internal_component!
         include ItemSlots
 
-        slot_doc :trigger, "role=menuitem in the PARENT's collection + aria wiring to its own sub-content; the " \
-                           "trailing chevron ships built in (flips via logical ml-auto under RTL)."
-        renders_one :trigger, lambda { |inset: false, disabled: false, text_value: nil, **options, &block|
-          attrs = {
-            "id" => trigger_id, "data-slot" => "#{family_slot_prefix}-sub-trigger", "role" => "menuitem",
-            "tabindex" => "-1", "data-poetry-collection-item" => "",
-            "aria-haspopup" => "menu", "aria-expanded" => "false", "aria-controls" => content_id,
-            "class" => family_style.css(:sub_trigger, class: options.delete(:class))
-          }.merge(sub_trigger_stimulus_attributes)
-          apply_item_flags(attrs, inset:, disabled:, text_value:)
-          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, options)) do
-            safe_join([capture(&block), chevron])
-          end
-        }
+        renders_one :trigger,
+                    doc: "role=menuitem in the PARENT's collection + aria wiring to its own sub-content; the " \
+                         "trailing chevron ships built in (flips via logical ml-auto under RTL).",
+                    renders: lambda { |inset: false, disabled: false, text_value: nil, **options, &block|
+                      attrs = {
+                        "id" => trigger_id, "data-slot" => "#{family_slot_prefix}-sub-trigger", "role" => "menuitem",
+                        "tabindex" => "-1", "data-poetry-collection-item" => "",
+                        "aria-haspopup" => "menu", "aria-expanded" => "false", "aria-controls" => content_id,
+                        "class" => family_style.css(:sub_trigger, class: options.delete(:class))
+                      }.merge(sub_trigger_stimulus_attributes)
+                      apply_item_flags(attrs, inset:, disabled:, text_value:)
+                      content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, options)) do
+                        safe_join([capture(&block), chevron])
+                      end
+                    }
 
         def initialize(dir: nil, **extra_attributes)
           super(extra_attributes)

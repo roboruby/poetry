@@ -40,23 +40,24 @@ module Poetry
         # statically: poetry check flags the omission without rendering.
         REQUIRED_SLOTS = { item: "at least one item (title:, with the description as its block)" }.freeze
 
-        slot_doc :items, "Declares one event: title:, optional time: (renders a <time>), optional icon: (replaces " \
-                         "the dot), completed: for progress - the description is the block."
-        renders_many :items, lambda { |title:, time: nil, icon: nil, completed: false,
+        renders_many :items,
+                     doc: "Declares one event: title:, optional time: (renders a <time>), optional icon: (replaces " \
+                          "the dot), completed: for progress - the description is the block.",
+                     renders: lambda { |title:, time: nil, icon: nil, completed: false,
                                        **options, &block|
-          # class: merges through the dictionary (caller classes win on
-          # conflicts) - a plain hash merge would REPLACE css(:item).
-          attrs = { "data-slot" => "timeline-item", class: css(:item, class: options.delete(:class)) }
-          attrs["data-completed"] = "" if completed
-          content_tag(:li, attrs.merge(options)) do
-            body = [item_indicator(icon), item_separator, item_header(title, time)]
-            if block
-              body << content_tag(:div, { "data-slot" => "timeline-content",
-                                          class: css(:content) }, &block)
-            end
-            safe_join(body)
-          end
-        }
+                       # class: merges through the dictionary (caller classes win on
+                       # conflicts) - a plain hash merge would REPLACE css(:item).
+                       attrs = { "data-slot" => "timeline-item", class: css(:item, class: options.delete(:class)) }
+                       attrs["data-completed"] = "" if completed
+                       content_tag(:li, attrs.merge(options)) do
+                         body = [item_indicator(icon), item_separator, item_header(title, time)]
+                         if block
+                           body << content_tag(:div, { "data-slot" => "timeline-content",
+                                                       class: css(:content) }, &block)
+                         end
+                         safe_join(body)
+                       end
+                     }
 
         style :orientation, default: :vertical, variants: %i[vertical horizontal],
                             doc: "The layout axis: :vertical reads as a feed, :horizontal as a step tracker."

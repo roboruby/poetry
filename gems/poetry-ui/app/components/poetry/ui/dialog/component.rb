@@ -38,22 +38,22 @@ module Poetry
         # callers get Button's full typed-slot contract statically.
         SLOT_RENDERS = { trigger: Button::Component }.freeze
 
-        slot_doc :trigger, "The trigger is a poetry Button wired to open the dialog - agents pass Button props: " \
-                           "with_trigger(variant: :outline) { \"Open\" }."
-        renders_one :trigger, lambda { |**options, &block|
-          composed_trigger({ "data-action" => stimulus_action(:open) }, options, &block) || begin
-            options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {}) do |key, wired, caller|
-              key == :action ? Poetry::Core::Config.current.stimulus_merger.merge_actions(wired, caller) : caller
-            end
-            Button::Component.new(**options, &block)
-          end
-        }
-        slot_doc :title, "The heading - the dialog's accessible name; required."
-        renders_one :title
-        slot_doc :description, "Muted copy under the title, wired to aria-describedby."
-        renders_one :description
-        slot_doc :footer, "The action row at the bottom of the panel."
-        renders_one :footer
+        renders_one :trigger,
+                    doc: "The trigger is a poetry Button wired to open the dialog - agents pass Button props: " \
+                         "with_trigger(variant: :outline) { \"Open\" }.",
+                    renders: lambda { |**options, &block|
+                      composed_trigger({ "data-action" => stimulus_action(:open) }, options, &block) || begin
+                        merger = Poetry::Core::Config.current.stimulus_merger
+                        wired_data = { action: stimulus_action(:open) }
+                        options[:data] = wired_data.merge(options[:data] || {}) do |key, wired, caller|
+                          key == :action ? merger.merge_actions(wired, caller) : caller
+                        end
+                        Button::Component.new(**options, &block)
+                      end
+                    }
+        renders_one :title, doc: "The heading - the dialog's accessible name; required."
+        renders_one :description, doc: "Muted copy under the title, wired to aria-describedby."
+        renders_one :footer, doc: "The action row at the bottom of the panel."
 
         # Sheet and Drawer subclass this and REDECLARE both elements with
         # their own controllers (replace-on-redeclare); the trigger lambda
