@@ -1085,6 +1085,32 @@ module Poetry
         assert_empty rules(%(<%= poetry_button(class: "bg-red-500 \#{extra}") { "Go" } %>))
       end
 
+      # --- fake buttons ---
+
+      def test_a_div_with_onclick_or_role_button_is_a_fake_button
+        onclick = first(%(<div class="cursor-pointer" onclick="save()">Save</div>), "fake-button")
+        role = first(%(<span role="button" tabindex="0">Print</span>), "fake-button")
+
+        assert_equal :warning, onclick.severity
+        assert_includes onclick.message, "<div> with onclick"
+        assert_includes role.message, %(<span> with role="button")
+        assert_includes role.message, "poetry_button"
+      end
+
+      def test_real_controls_and_inert_roles_are_not_fake_buttons
+        clean = <<~ERB
+          <button type="button" onclick="save()">Save</button><a role="button" href="#">Go</a>
+          <div role="presentation" class="p-4">x</div><div data-action="click->modal#open">x</div>
+        ERB
+
+        refute_includes rules(clean), "fake-button"
+      end
+
+      def test_a_dynamic_role_is_left_alone_but_a_dynamic_onclick_still_counts
+        refute_includes rules(%(<div role="<%= role %>">x</div>)), "fake-button"
+        assert_includes rules(%(<div onclick="<%= handler %>">x</div>)), "fake-button"
+      end
+
       # --- output ---
 
       def test_json_output_is_structured

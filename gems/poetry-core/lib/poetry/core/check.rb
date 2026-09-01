@@ -13,7 +13,8 @@ module Poetry
     # alike, values checked against their declared type), plus the style
     # exits that bypass the tokens - raw and arbitrary color classes,
     # inline style colors, and the important modifier - in class=""/style=""
-    # attributes and class:/style: keywords alike. The mechanical gate an
+    # attributes and class:/style: keywords alike, and the fake button (an
+    # inert element wearing onclick or role=button). The mechanical gate an
     # agent self-corrects against before any deeper review runs.
     #
     # @example Lint one template string
@@ -286,6 +287,9 @@ module Poetry
         # A webmcp: instance name (snake_case, at most 64 characters).
         WEBMCP_NAME = /\A[a-z][a-z0-9_-]{0,63}\z/
         POETRY_PREFIX = Stimulus::Manifest::POETRY_PREFIX
+        # Elements with no interactive semantics of their own: a click
+        # handler or role=button on one of these is a button in costume.
+        INERT_TAGS = %w[div span p li tr td th section article header footer nav main aside figure img svg].freeze
         # A literal `nil` argument, distinct from "no literal to check"
         # (dynamic values return plain nil and are left alone).
         NIL_LITERAL = Object.new.tap { |sentinel| sentinel.define_singleton_method(:inspect) { "nil" } }.freeze
@@ -319,6 +323,7 @@ module Poetry
             findings.concat(ruby_findings(node, bindings)) if erb?(node)
             findings.concat(attribute_findings(node)) if node.is_a?(Herb::AST::HTMLAttributeNode)
             findings.concat(form_autosubmit_findings(node)) if open_tag?(node, "form")
+            findings.concat(fake_button_findings(node)) if INERT_TAGS.include?(open_tag_name(node))
           end
           findings.concat(missing_slot_findings)
           findings.sort_by { |finding| [finding.line || 0, finding.rule] }
@@ -1158,10 +1163,36 @@ module Poetry
                                 "lookup by itself, never a mutating form", line: line_of(node))]
         end
 
-        def open_tag?(node, name)
-          node.class.name.to_s.end_with?("HTMLOpenTagNode") && node.respond_to?(:tag_name) &&
-            node.tag_name.respond_to?(:value) && node.tag_name.value.to_s.casecmp?(name)
+        # A click target that is not a button: an inert element carrying
+        # onclick or wearing role=button. A real <button> brings focus,
+        # keyboard activation, and the role for free, which is the first
+        # rule of ARIA. Anchors stay out (a role=button link is an accepted
+        # pattern), and so does a Stimulus click on a bare div - a backdrop
+        # or a row is a legitimate click target without a role.
+        def fake_button_findings(node)
+          tag = open_tag_name(node)
+          attributes = node.child_nodes.compact.grep(Herb::AST::HTMLAttributeNode)
+          names = attributes.to_h { |attribute| [attribute_name(attribute)&.downcase, attribute_value(attribute)] }
+          tell = if names.key?("onclick") then "onclick"
+                 elsif names["role"]&.casecmp?("button") then %(role="button")
+                 end
+          return [] unless tell
+
+          [Finding.new(rule: "fake-button", severity: :warning,
+                       message: "<#{tag}> with #{tell} acts as a button without a button's focus, keyboard " \
+                                "activation, and accessible role - render a <button type=\"button\"> " \
+                                "(poetry_button) instead", line: line_of(node))]
         end
+
+        # The lowercase tag name of an open tag, nil for any other node.
+        def open_tag_name(node)
+          return unless node.class.name.to_s.end_with?("HTMLOpenTagNode") && node.respond_to?(:tag_name) &&
+                        node.tag_name.respond_to?(:value)
+
+          node.tag_name.value.to_s.downcase
+        end
+
+        def open_tag?(node, name) = open_tag_name(node) == name.downcase
 
         # The Prism::HashNode passed as a keyword argument, or nil.
         def hash_argument(call, key)
