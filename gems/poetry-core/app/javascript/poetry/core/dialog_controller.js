@@ -113,12 +113,19 @@ export default class extends Controller {
 
   /**
    * Opens modally: showModal() (the platform trap, top-layer and focus
-   * return), the pair flip, and the body scroll lock.
+   * return), the pair flip, and the body scroll lock. Returns the
+   * resulting state (what an agent tool reports back).
+   *
+   * @returns {{ open: boolean, changed: boolean }}
    */
   open() {
+    if (this.dialogTarget.open) return { open: true, changed: false }
+
     this.dialogTarget.showModal()
     setState(this.dialogTarget, "open")
     this.lockScroll()
+
+    return { open: true, changed: true }
   }
 
   /**
@@ -129,10 +136,11 @@ export default class extends Controller {
    * sync.
    *
    * @param {Event} [event] - the native cancel event, when Esc drove it
+   * @returns {{ open: boolean, changed: boolean }} the resulting state (what an agent tool reports back)
    */
   close(event) {
     if (event?.type === "cancel") event.preventDefault() // route Esc through close() so state stays in sync
-    if (this.#closing || !this.dialogTarget.open) return
+    if (this.#closing || !this.dialogTarget.open) return { open: false, changed: false }
 
     this.#closing = true
     exitPresence(this.dialogTarget, {
@@ -142,6 +150,8 @@ export default class extends Controller {
         this.unlockScroll()
       }
     })
+
+    return { open: false, changed: true }
   }
 
   /**

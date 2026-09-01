@@ -60,7 +60,8 @@ module Poetry
                   "value" => { "type" => "string", "description" => "The section value." },
                   "animate" => { "type" => "boolean", "enum" => [true, false] }
                 },
-                "required" => ["value"]
+                "required" => ["value"],
+                "additionalProperties" => false
               },
               "annotations" => { "readOnlyHint" => false, "untrustedContentHint" => false },
               "executes" => "poetry--core--accordion#toggle"
@@ -70,6 +71,7 @@ module Poetry
           assert_equal(
             {
               "name" => "clear_selection",
+              "title" => "Clear selection",
               "description" => "Clear the current selection.",
               "annotations" => { "readOnlyHint" => true, "untrustedContentHint" => false },
               "executes" => "poetry--core--action-bar#clear"
@@ -145,6 +147,17 @@ module Poetry
           assert_raises(AgentTools::ToolError) do
             Class.new(ToolComponent) { tool :long, description: "x" * 501, executes: :toggle }
           end
+        end
+
+        def test_param_descriptions_have_a_budget
+          error = assert_raises(AgentTools::ToolError) do
+            Class.new(ToolComponent) do
+              tool :verbose, description: "Verbose.", executes: :toggle,
+                             params: { value: { type: "string", description: "x" * 151 } }
+            end
+          end
+
+          assert_match(/param "value" description must be present and at most 150 characters/, error.message)
         end
 
         def test_params_require_a_typed_hash_spec
@@ -239,6 +252,22 @@ module Poetry
           end
         end
 
+        def test_webmcp_budget_rides_the_root_only_when_configured_away_from_the_default
+          with_registrar_manifest do
+            config = Poetry::Core::Config.current
+            attrs = ToolComponent.new(webmcp: "sections").stimulus_attributes_for(:root)
+
+            refute attrs.key?("data-poetry--agent--webmcp-budget-value")
+
+            config.webmcp_registration_budget = 12
+            attrs = ToolComponent.new(webmcp: "sections").stimulus_attributes_for(:root)
+
+            assert_equal "12", attrs["data-poetry--agent--webmcp-budget-value"]
+          ensure
+            config.webmcp_registration_budget = AgentTools::WEBMCP_DEFAULT_BUDGET
+          end
+        end
+
         def test_webmcp_true_names_the_instance_after_the_component
           with_registrar_manifest do
             component = ToolComponent.new(webmcp: true)
@@ -306,7 +335,9 @@ module Poetry
           catalog = Poetry::Core::Stimulus::Manifest.catalog
           had = catalog.key?(AgentTools::WEBMCP_CONTROLLER)
           catalog[AgentTools::WEBMCP_CONTROLLER] ||= {
-            "targets" => [], "values" => { "name" => { "type" => "String" }, "tools" => { "type" => "Array" } },
+            "targets" => [],
+            "values" => { "name" => { "type" => "String" }, "tools" => { "type" => "Array" },
+                          "budget" => { "type" => "Number", "default" => 20 } },
             "classes" => [], "methods" => %w[connect disconnect register unregister], "events" => []
           }
           yield

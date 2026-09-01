@@ -84,14 +84,25 @@ export default class TabsController extends Controller {
 
   /**
    * The programmatic controllable-state surface: setValue("account").
-   * Unknown values are ignored (the contract's guard).
+   * Unknown values are ignored (the contract's guard). Returns the
+   * resulting state - what an agent tool reports back - so a no-op is
+   * visible as changed: false.
    *
    * @param {string} value - a trigger's data-value (stringified)
+   * @returns {{ value: string, changed: boolean }} the active value after the call
    */
   setValue(value) {
-    const known = this.#triggers().some((trigger) => trigger.dataset.value === String(value))
+    const next = String(value)
+    const known = this.#triggers().some((trigger) => trigger.dataset.value === next)
+    const before = this.#activeValue()
 
-    if (known) this.#apply(String(value))
+    if (known) this.#apply(next)
+
+    return { value: known ? next : before, changed: known && next !== before }
+  }
+
+  #activeValue() {
+    return this.#triggers().find((trigger) => trigger.getAttribute("aria-selected") === "true")?.dataset.value ?? ""
   }
 
   #apply(value, { silent = false } = {}) {

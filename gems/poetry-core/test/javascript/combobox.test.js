@@ -428,11 +428,23 @@ describe("poetry--core--combobox", () => {
     })
 
     it("setValue / the value Value funnel through the pipeline", async () => {
-      controller(application).setValue("remix")
+      expect(controller(application).setValue("remix")).toEqual({ value: "remix", changed: true })
 
       expect(el("native").value).toBe("remix")
       expect(el("display").textContent).toBe("Remix")
       expect(dataSelected()).toEqual([false, false, false, true, false])
+    })
+
+    it("setValue reports the resulting state: unknown values are not committed, clear reports the wipe", () => {
+      controller(application).setValue("remix")
+
+      // An unknown value is a visible no-op (what an agent tool reports back).
+      expect(controller(application).setValue("nope")).toEqual({ value: "remix", changed: false })
+      expect(el("native").value).toBe("remix")
+      expect(controller(application).setValue("remix")).toEqual({ value: "remix", changed: false })
+      expect(controller(application).clear()).toEqual({ value: "", changed: true })
+      expect(el("native").value).toBe("")
+      expect(controller(application).clear()).toEqual({ value: "", changed: false })
     })
   })
 

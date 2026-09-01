@@ -67,6 +67,9 @@ module Poetry
         #   of a missing icon when not raising; nil re-raises.
         # - `on_missing_icon` (`nil`) - an optional callable
         #   `(name:, library:, error:)` fired before the fallback renders.
+        # - `webmcp_registration_budget` (`20`) - the per-document cap on
+        #   WebMCP tool registrations a page's opted-in instances may make;
+        #   poetry-agent's `registration_budget` setting writes through.
         # - `stable_id_mode` (`:off`) - the opt-in `:sequence` mode seeds a
         #   per-request deterministic id sequence (read the hazards in
         #   StableId before enabling).
@@ -112,7 +115,13 @@ module Poetry
                                                      # Optional callable(name:, library:, error:) fired
                                                      # before the fallback renders - the instrumentation
                                                      # seam (log, notify, count). Fires per render.
-                                                     on_missing_icon: nil
+                                                     on_missing_icon: nil,
+                                                     # The per-document WebMCP registration budget
+                                                     # (Concerns::AgentTools::WEBMCP_DEFAULT_BUDGET):
+                                                     # the registrar drops registrations past it with
+                                                     # a console warning. Rides the opted-in root only
+                                                     # when it differs from the runtime's default.
+                                                     webmcp_registration_budget: 20
                                                    })
         end
 
@@ -198,6 +207,16 @@ module Poetry
       #   @param name [Symbol, nil]
       #   @return [Symbol, nil]
       #
+      # @!method webmcp_registration_budget
+      #   The per-document WebMCP registration budget the registrar
+      #   enforces (default 20).
+      #   @return [Integer]
+      #
+      # @!method webmcp_registration_budget=(count)
+      #   Sets the per-document WebMCP registration budget.
+      #   @param count [Integer]
+      #   @return [Integer]
+      #
       # @!method on_missing_icon
       #   The instrumentation hook fired before a fallback icon renders,
       #   called with `name:`, `library:`, and `error:`.
@@ -233,7 +252,8 @@ module Poetry
       # their own values.
       SETTINGS = %i[classname_merger stimulus_merger css_mode icon_library
                     raise_on_missing_icon icon_fallback on_missing_icon
-                    stable_id_mode stable_id_seed].freeze
+                    stable_id_mode stable_id_seed
+                    webmcp_registration_budget].freeze
 
       delegate(*SETTINGS, *SETTINGS.map { |key| :"#{key}=" }, to: :@config)
 

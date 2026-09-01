@@ -284,6 +284,9 @@ module Poetry
       # @api private
       class Linter
         ACTION_TOKEN = /(?:[\w.:@-]+->)?(?<identifier>poetry--[\w-]+)#(?<method>\w+)/
+        # Chrome's guidance for a registered tool name is 30 characters;
+        # the composed poetry.{instance}.{tool} name is what an agent reads.
+        WEBMCP_NAME_BUDGET = 30
         # A webmcp: instance name (snake_case, at most 64 characters).
         WEBMCP_NAME = /\A[a-z][a-z0-9_-]{0,63}\z/
         POETRY_PREFIX = Stimulus::Manifest::POETRY_PREFIX
@@ -1126,7 +1129,19 @@ module Poetry
           else
             @webmcp_names[value] = at
           end
-          findings
+          findings + webmcp_name_budget_findings(path, value, at)
+        end
+
+        # The composed poetry.{instance}.{tool} names an agent reads
+        # should stay inside Chrome's 30-character guidance.
+        def webmcp_name_budget_findings(path, instance, at)
+          longest = @catalog.tools_of(path).map { |tool| "poetry.#{instance}.#{tool["name"]}" }.max_by(&:length)
+          return [] if longest.nil? || longest.length <= WEBMCP_NAME_BUDGET
+
+          [Finding.new(rule: "webmcp-name-budget", severity: :warning,
+                       message: "webmcp: #{instance.inspect} composes #{longest} (#{longest.length} chars) - " \
+                                "agents read names best under #{WEBMCP_NAME_BUDGET}; a shorter instance name " \
+                                "keeps the tool name legible", line: at)]
         end
 
         # poetry_webmcp_form(tool: { autosubmit: true }) must be a GET form:

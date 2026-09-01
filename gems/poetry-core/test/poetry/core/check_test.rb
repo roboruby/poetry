@@ -155,6 +155,15 @@ module Poetry
         assert_match(/already names the instance on line 1/, duplicate.message)
       end
 
+      def test_webmcp_composed_names_get_a_length_warning_past_chromes_guidance
+        assert_empty rules(%(<%= poetry_tabs(webmcp: "sections") do |t| %><% end %>))
+        finding = first(%(<%= poetry_tabs(webmcp: "the_settings_of_the_account_page") do |t| %><% end %>),
+                        "webmcp-name-budget")
+
+        assert_equal :warning, finding.severity
+        assert_match(/poetry\.the_settings_of_the_account_page\.set_value \(\d+ chars\)/, finding.message)
+      end
+
       def test_webmcp_form_autosubmit_is_get_only
         tool = %(tool: { name: "a", description: "b", autosubmit: true })
         mutating = "<%= poetry_webmcp_form(url: \"/x\", #{tool}) do |f| %><% end %>"

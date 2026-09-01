@@ -107,11 +107,14 @@ describe("poetry--core--tabs", () => {
   it("setValue is the programmatic surface and unknown values are ignored", () => {
     const controller = application.getControllerForElementAndIdentifier(el("root"), "poetry--core--tabs")
 
-    controller.setValue("password")
+    expect(controller.setValue("password")).toEqual({ value: "password", changed: true })
     expect(stateOfTab("password").active).toBe(true)
 
-    controller.setValue("nope")
+    // The resulting state is the return value (what an agent tool reports):
+    // an unknown value is a visible no-op, a repeat is changed: false.
+    expect(controller.setValue("nope")).toEqual({ value: "password", changed: false })
     expect(stateOfTab("password").active).toBe(true) // unchanged
+    expect(controller.setValue("password")).toEqual({ value: "password", changed: false })
   })
 
   it("dispatches a change event with the activated value", () => {

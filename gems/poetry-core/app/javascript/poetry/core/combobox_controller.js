@@ -419,10 +419,14 @@ export default class ComboboxController extends Controller {
    * here is belt and braces).
    */
   clear() {
-    if (this.multipleValue) return
+    if (this.multipleValue) return { value: [...this.#applied], changed: false }
 
-    if (this.#applied !== "") this.#apply("")
+    const changed = this.#applied !== ""
+
+    if (changed) this.#apply("")
     this.#trigger()?.focus()
+
+    return { value: "", changed }
   }
 
   // --- programmatic API ---
@@ -452,23 +456,33 @@ export default class ComboboxController extends Controller {
 
   /**
    * The programmatic controllable-state surface (multiple accepts an
-   * array).
+   * array). Returns the resulting state - what an agent tool reports
+   * back - so an unknown value (not committed) reads as changed: false.
    *
    * @param {string | string[] | null} value
+   * @returns {{ value: string | string[], changed: boolean }}
    */
   setValue(value) {
     if (this.multipleValue) {
       const values = this.#listValues(value)
 
-      if (this.#sameValues(values, this.#applied)) return
+      if (this.#sameValues(values, this.#applied)) return { value: [...this.#applied], changed: false }
 
       this.#apply(values)
-      return
+
+      return { value: [...this.#applied], changed: true }
     }
 
-    if (value === this.#applied) return
+    const next = String(value ?? "")
 
-    this.#apply(String(value ?? ""))
+    if (next === this.#applied) return { value: this.#applied, changed: false }
+    if (next !== "" && !this.#items().some((item) => (item.dataset.value ?? "") === next)) {
+      return { value: this.#applied, changed: false }
+    }
+
+    this.#apply(next)
+
+    return { value: this.#applied, changed: true }
   }
 
   // --- autofill adoption (Select's path verbatim) ---

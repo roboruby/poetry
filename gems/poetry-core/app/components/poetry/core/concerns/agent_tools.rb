@@ -72,6 +72,13 @@ module Poetry
         WEBMCP_CONTROLLER = "poetry--agent--webmcp"
         # The agent-legibility budget for a tool description.
         DESCRIPTION_LIMIT = 500
+        # The agent-legibility budget for one parameter's description
+        # (Chrome's guidance: 150 characters per parameter description).
+        PARAM_DESCRIPTION_LIMIT = 150
+        # The registrar's built-in per-document registration budget; the
+        # root carries an explicit budget only when the configured value
+        # ({Poetry::Core::Config#webmcp_registration_budget}) differs.
+        WEBMCP_DEFAULT_BUDGET = 20
 
         class_methods do
           # Declares one agent-callable tool of this component.
@@ -90,11 +97,15 @@ module Poetry
           # @param params [Hash{Symbol => Hash}, nil] the tool's parameters
           #   as `name => spec`; each spec requires `type:` and may carry
           #   `required: true` (folded into the schema's `required` list)
-          #   plus any JSON-Schema keywords (`description:`, `enum:`, ...)
+          #   plus any JSON-Schema keywords (`description:` - at most
+          #   {PARAM_DESCRIPTION_LIMIT} characters -, `enum:`, ...). The
+          #   generated schema closes with `additionalProperties: false`,
+          #   so a runtime rejects parameters the tool never declared.
           # @param input_schema [Hash, nil] a complete JSON-Schema object
           #   for advanced shapes - mutually exclusive with `params:`
-          # @param title [String, nil] optional human-readable label for
-          #   agent UIs
+          # @param title [String, nil] human-readable label for agent UIs
+          #   (the spec's UA-displayable field); defaults to the tool name
+          #   humanized (`set_value` -> "Set value")
           # @param mutating [Boolean] declare true when invoking the tool
           #   changes state; tools are read-only by default
           #   (`annotations.readOnlyHint` is the inverse of this flag)
@@ -168,7 +179,7 @@ module Poetry
           def tool_definitions
             tools.values.map do |tool|
               definition = { "name" => tool.name.to_s }
-              definition["title"] = tool.title if tool.title
+              definition["title"] = tool.title || default_tool_title(tool.name)
               definition["description"] = tool.description
               definition["inputSchema"] = tool.input_schema if tool.input_schema
               definition["annotations"] = {
@@ -199,6 +210,15 @@ module Poetry
           end
 
           private
+
+          # The UA-displayable default title: the snake_case name as
+          # words, first letter up ("set_value" -> "Set value").
+          #
+          # @api private
+          def default_tool_title(name)
+            words = name.to_s.tr("_", " ")
+            words[0].upcase + words[1..]
+          end
 
           # @api private
           def validate_tool_name!(name)
@@ -273,12 +293,26 @@ module Poetry
               end
               spec = deep_stringify_tool_keys(spec)
               required << param if spec.delete("required")
+              validate_param_description!(name, param, spec["description"])
               properties[param] = spec
             end
 
             schema = { "type" => "object", "properties" => properties }
             schema["required"] = required if required.any?
+            schema["additionalProperties"] = false
             schema
+          end
+
+          # @api private
+          def validate_param_description!(name, param, description)
+            return if description.nil?
+
+            text = description.to_s
+            return unless text.strip.empty? || text.length > PARAM_DESCRIPTION_LIMIT
+
+            raise ToolError,
+                  "#{self}: tool #{name.inspect} param #{param.inspect} description must be present " \
+                  "and at most #{PARAM_DESCRIPTION_LIMIT} characters"
           end
 
           # @api private
@@ -377,6 +411,8 @@ module Poetry
           builder.register_controller
           builder.with_value(:name, webmcp_name)
           builder.with_value(:tools, JSON.generate(webmcp_tools))
+          budget = Poetry::Core::Config.current.webmcp_registration_budget
+          builder.with_value(:budget, budget) if budget != WEBMCP_DEFAULT_BUDGET
         end
       end
     end

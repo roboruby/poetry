@@ -55,6 +55,15 @@ describe("poetry--core--dialog", () => {
     expect(document.body.style.overflow).toBe("")
   })
 
+  it("open() and close() report the resulting state (what an agent tool answers with)", () => {
+    const controller = application.getControllerForElementAndIdentifier(document.getElementById("root"), "poetry--core--dialog")
+
+    expect(controller.open()).toEqual({ open: true, changed: true })
+    expect(controller.open()).toEqual({ open: true, changed: false })
+    expect(controller.close()).toEqual({ open: false, changed: true })
+    expect(controller.close()).toEqual({ open: false, changed: false })
+  })
+
   // The presence-hold close (the animated path the base controller now
   // owns): the pair flips to data-closed BEFORE the native close(), so a
   // themed exit animation has a frame to run against; jsdom reports no
