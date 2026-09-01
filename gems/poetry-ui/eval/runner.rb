@@ -46,8 +46,9 @@ module Poetry
       UNIVERSAL = [
         Gate.new(:no_raw_colors, :cross_arm, lambda { |_doc, html|
           # The cheapest slop-detector rule: arbitrary color values
-          # bypass the theme.
-          !html.match?(/\b(?:bg|text|border|ring|stroke|fill)-\[(?:#|rgb|hsl|oklch)/)
+          # bypass the theme. The pattern is poetry check's own, so the
+          # gate and the linter define the exit identically.
+          !html.match?(Poetry::Core::Check::Catalog::ARBITRARY_COLOR)
         }),
         Gate.new(:design_slop, :cross_arm, lambda { |_doc, html|
           # The DesignLint AST tier reads plain HTML exactly as it
