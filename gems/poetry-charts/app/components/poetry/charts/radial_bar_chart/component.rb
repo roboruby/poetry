@@ -111,44 +111,49 @@ module Poetry
                                   "reads - per-category anchors and pre-formatted values, zero " \
                                   "chart math in the browser"
 
-        slot_doc :radial_bars, "A radial series reading data_key: values. background: draws the muted track ring; " \
-                               "bars sharing a stack: id share the ring and stack by angle; corner_radius: rounds " \
-                               "the arc ends."
-        renders_many :radial_bars, lambda { |data_key:, stack: nil, background: false, corner_radius: 0,
+        renders_many :radial_bars,
+                     doc: "A radial series reading data_key: values. background: draws the muted track ring; bars " \
+                          "sharing a stack: id share the ring and stack by angle; corner_radius: rounds the arc " \
+                          "ends.",
+                     renders: lambda { |data_key:, stack: nil, background: false, corner_radius: 0,
                                             color_key: :fill, labels: nil, label_key: nil|
-          (@series_entries ||= []) << Series.new(data_key: data_key.to_s, stack:, background:,
-                                                 corner_radius:, color_key: color_key&.to_s,
-                                                 labels: labels&.to_sym, label_key: label_key&.to_s)
-          nil
-        }
+                       (@series_entries ||= []) << Series.new(data_key: data_key.to_s, stack:, background:,
+                                                              corner_radius:, color_key: color_key&.to_s,
+                                                              labels: labels&.to_sym, label_key: label_key&.to_s)
+                       nil
+                     }
 
-        slot_doc :polar_grid, "The disc track behind the rings: radii: places the circles (default: each ring's " \
-                              "centerline), fills: tints them, and radial_lines: draws the faint value spokes that " \
-                              "show through ring gaps and the open wedge (on by default; gauges turn them off)."
-        renders_one :polar_grid, lambda { |radii: nil, fills: nil, radial_lines: true|
-          @polar_grid_config = { radii: radii, fills: Array(fills), radial_lines: radial_lines }
-          nil
-        }
+        renders_one :polar_grid,
+                    doc: "The disc track behind the rings: radii: places the circles (default: each ring's " \
+                         "centerline), fills: tints them, and radial_lines: draws the faint value spokes that show " \
+                         "through ring gaps and the open wedge (on by default; gauges turn them off).",
+                    renders: lambda { |radii: nil, fills: nil, radial_lines: true|
+                      @polar_grid_config = { radii: radii, fills: Array(fills), radial_lines: radial_lines }
+                      nil
+                    }
 
-        slot_doc :center_label, "The center text: a title line plus an optional subtitle. The default is the full " \
-                                "gauge's big centered number; compact: shrinks it and sits it just above a half " \
-                                "gauge's flat baseline."
-        renders_one :center_label, lambda { |title:, subtitle: nil, compact: false|
-          @center_label_config = { title: title, subtitle: subtitle, compact: compact }
-          nil
-        }
+        renders_one :center_label,
+                    doc: "The center text: a title line plus an optional subtitle. The default is the full gauge's " \
+                         "big centered number; compact: shrinks it and sits it just above a half gauge's flat " \
+                         "baseline.",
+                    renders: lambda { |title:, subtitle: nil, compact: false|
+                      @center_label_config = { title: title, subtitle: subtitle, compact: compact }
+                      nil
+                    }
 
-        slot_doc :legend, "The legend row: align:, items:, and hide_icon:."
-        renders_one :legend, lambda { |**options|
-          @legend_config = options
-          nil
-        }
+        renders_one :legend,
+                    doc: "The legend row: align:, items:, and hide_icon:.",
+                    renders: lambda { |**options|
+                      @legend_config = options
+                      nil
+                    }
 
-        slot_doc :tooltip, "The hover tooltip; the ring name carries the label, so hide_label defaults on."
-        renders_one :tooltip, lambda { |**options|
-          @tooltip_config = { hide_label: true }.merge(options)
-          nil
-        }
+        renders_one :tooltip,
+                    doc: "The hover tooltip; the ring name carries the label, so hide_label defaults on.",
+                    renders: lambda { |**options|
+                      @tooltip_config = { hide_label: true }.merge(options)
+                      nil
+                    }
 
         # The polar chassis: margin/plot/center geometry plus the per-arc
         # pointerover hit; the single-series tooltip chrome and payload

@@ -118,30 +118,32 @@ module Poetry
                                   "(<script type=application/json>) the tooltip controller " \
                                   "reads - zero chart math in the browser"
 
-        slot_doc :bars, "A bar series bound to data_key:. Bars sharing a stack: id pile up; radius: rounds corners; " \
-                        "labels:/label_key: stamp values; color_key:/cell_fill: color per cell; active_index: " \
-                        "highlights one bar; error_key: adds whiskers."
-        renders_many :bars, lambda { |data_key:, stack: nil, radius: 0, labels: false, label_key: nil,
+        renders_many :bars,
+                     doc: "A bar series bound to data_key:. Bars sharing a stack: id pile up; radius: rounds " \
+                          "corners; labels:/label_key: stamp values; color_key:/cell_fill: color per cell; " \
+                          "active_index: highlights one bar; error_key: adds whiskers.",
+                     renders: lambda { |data_key:, stack: nil, radius: 0, labels: false, label_key: nil,
                                       color_key: nil, cell_fill: nil, active_index: nil, stroke_width: 2,
                                       error_key: nil, error_width: 5|
-          (@series_entries ||= []) << Series.new(key: data_key.to_s, stack:, radius:, labels:,
-                                                 label_key: label_key&.to_s, color_key: color_key&.to_s,
-                                                 cell_fill:, active_index:, stroke_width:,
-                                                 error_key: error_key&.to_s, error_width:)
-          nil
-        }
+                       (@series_entries ||= []) << Series.new(key: data_key.to_s, stack:, radius:, labels:,
+                                                              label_key: label_key&.to_s, color_key: color_key&.to_s,
+                                                              cell_fill:, active_index:, stroke_width:,
+                                                              error_key: error_key&.to_s, error_width:)
+                       nil
+                     }
 
         # In the horizontal orientation the Y axis IS the category axis -
         # give it the data_key. The CartesianFamily value-axis hook, so
         # the include below declares this shape between x_axis and grid.
         def self.value_axis_slot
-          slot_doc :y_axis, "The y axis: data_key: makes it the category axis (horizontal orientation); " \
-                            "tick_count:/tick_formatter:/tick_margin: as on the x axis."
-          renders_one :y_axis, lambda { |data_key: nil, tick_count: 3, tick_formatter: nil, tick_margin: 8|
-            @y_axis_config = AxisConfig.new(data_key: data_key&.to_s, tick_formatter:,
-                                            tick_margin:, tick_count:)
-            nil
-          }
+          renders_one :y_axis,
+                      doc: "The y axis: data_key: makes it the category axis (horizontal orientation); " \
+                           "tick_count:/tick_formatter:/tick_margin: as on the x axis.",
+                      renders: lambda { |data_key: nil, tick_count: 3, tick_formatter: nil, tick_margin: 8|
+                        @y_axis_config = AxisConfig.new(data_key: data_key&.to_s, tick_formatter:,
+                                                        tick_margin:, tick_count:)
+                        nil
+                      }
         end
 
         include Poetry::Charts::CartesianFamily

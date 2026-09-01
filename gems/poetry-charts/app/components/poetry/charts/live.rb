@@ -85,12 +85,13 @@ module Poetry
                                        "geometry when data changes without a server round-trip."
           option :zoom, :boolean, default: false,
                                   doc: "Drag-to-zoom on the plot; slices the data client-side, so it needs live: true."
-          slot_doc :brush, "The brush strip below the x axis - drag its window to slice the visible range; needs " \
-                           "live: true."
-          renders_one :brush, lambda { |height: 30|
-            @brush_config = { height: height.to_f }
-            nil
-          }
+          renders_one :brush,
+                      doc: "The brush strip below the x axis - drag its window to slice the visible range; needs " \
+                           "live: true.",
+                      renders: lambda { |height: 30|
+                        @brush_config = { height: height.to_f }
+                        nil
+                      }
         end
       end
 

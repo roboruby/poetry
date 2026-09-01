@@ -108,18 +108,19 @@ module Poetry
                                   "(<script type=application/json>) the tooltip controller " \
                                   "reads - zero chart math in the browser"
 
-        slot_doc :lines, "A line series bound to data_key:. dots: marks each point; dot_color_key: reads per-point " \
-                         "dot colors from the row; labels: stamps each value above its point; error_key: adds error " \
-                         "whiskers."
-        renders_many :lines, lambda { |data_key:, curve: :natural, stroke_width: 2, dots: false,
+        renders_many :lines,
+                     doc: "A line series bound to data_key:. dots: marks each point; dot_color_key: reads per-point " \
+                          "dot colors from the row; labels: stamps each value above its point; error_key: adds " \
+                          "error whiskers.",
+                     renders: lambda { |data_key:, curve: :natural, stroke_width: 2, dots: false,
                                        dot_radius: 3, dot_color_key: nil, labels: false, error_key: nil, error_width: 5|
-          raise ArgumentError, "unknown curve #{curve.inspect}" unless CURVES.include?(curve.to_sym)
+                       raise ArgumentError, "unknown curve #{curve.inspect}" unless CURVES.include?(curve.to_sym)
 
-          (@series_entries ||= []) << Series.new(key: data_key.to_s, curve: curve.to_sym, stroke_width:,
-                                                 dots:, dot_radius:, dot_color_key: dot_color_key&.to_s,
-                                                 labels:, error_key: error_key&.to_s, error_width:)
-          nil
-        }
+                       (@series_entries ||= []) << Series.new(key: data_key.to_s, curve: curve.to_sym, stroke_width:,
+                                                              dots:, dot_radius:, dot_color_key: dot_color_key&.to_s,
+                                                              labels:, error_key: error_key&.to_s, error_width:)
+                       nil
+                     }
 
         include Poetry::Charts::CartesianFamily
 

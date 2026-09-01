@@ -101,39 +101,44 @@ module Poetry
                                   "reads - per-category anchors and pre-formatted values, zero " \
                                   "chart math in the browser"
 
-        slot_doc :radars, "A radar series bound to data_key:. fill_opacity: 0 with stroke_width: 2 draws lines only; " \
-                          "dots: marks every vertex."
-        renders_many :radars, lambda { |data_key:, fill_opacity: 0.6, stroke_width: 0, dots: false, dot_radius: 4|
-          (@series_entries ||= []) << Series.new(data_key: data_key.to_s, fill_opacity:, stroke_width:,
-                                                 dots:, dot_radius:)
-          nil
-        }
+        renders_many :radars,
+                     doc: "A radar series bound to data_key:. fill_opacity: 0 with stroke_width: 2 draws lines " \
+                          "only; dots: marks every vertex.",
+                     renders: lambda { |data_key:, fill_opacity: 0.6, stroke_width: 0, dots: false, dot_radius: 4|
+                       (@series_entries ||= []) << Series.new(data_key: data_key.to_s, fill_opacity:, stroke_width:,
+                                                              dots:, dot_radius:)
+                       nil
+                     }
 
-        slot_doc :angle_axis, "The category labels around the rim: data_key: names the field; tick_formatter: " \
-                              "reshapes each label."
-        renders_one :angle_axis, lambda { |data_key:, tick_formatter: nil|
-          @angle_axis_config = { data_key: data_key.to_s, tick_formatter: tick_formatter }
-          nil
-        }
+        renders_one :angle_axis,
+                    doc: "The category labels around the rim: data_key: names the field; tick_formatter: reshapes " \
+                         "each label.",
+                    renders: lambda { |data_key:, tick_formatter: nil|
+                      @angle_axis_config = { data_key: data_key.to_s, tick_formatter: tick_formatter }
+                      nil
+                    }
 
-        slot_doc :grid, "The polar grid: type: :circle swaps polygons for circles; radial_lines: false drops the " \
-                        "spokes; fill: tints every ring with a series color at opacity:."
-        renders_one :grid, lambda { |type: :polygon, radial_lines: true, fill: nil, opacity: 0.2|
-          @grid_config = GridConfig.new(type: type.to_sym, radial_lines:, fill: fill&.to_s, opacity:)
-          nil
-        }
+        renders_one :grid,
+                    doc: "The polar grid: type: :circle swaps polygons for circles; radial_lines: false drops the " \
+                         "spokes; fill: tints every ring with a series color at opacity:.",
+                    renders: lambda { |type: :polygon, radial_lines: true, fill: nil, opacity: 0.2|
+                      @grid_config = GridConfig.new(type: type.to_sym, radial_lines:, fill: fill&.to_s, opacity:)
+                      nil
+                    }
 
-        slot_doc :legend, "The legend row: align:, items:, and hide_icon:."
-        renders_one :legend, lambda { |**options|
-          @legend_config = options
-          nil
-        }
+        renders_one :legend,
+                    doc: "The legend row: align:, items:, and hide_icon:.",
+                    renders: lambda { |**options|
+                      @legend_config = options
+                      nil
+                    }
 
-        slot_doc :tooltip, "The hover tooltip - multi-series rows under the category label."
-        renders_one :tooltip, lambda { |**options|
-          @tooltip_config = options
-          nil
-        }
+        renders_one :tooltip,
+                    doc: "The hover tooltip - multi-series rows under the category label.",
+                    renders: lambda { |**options|
+                      @tooltip_config = options
+                      nil
+                    }
 
         # The polar chassis (margin/plot/center + the pointerover hit).
         # PolarFamily alone: radar keeps TooltipWiring's multi-series

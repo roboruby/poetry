@@ -92,40 +92,45 @@ module Poetry
                                   "reads - per-category anchors and pre-formatted values, zero " \
                                   "chart math in the browser"
 
-        slot_doc :pies, "One ring of slices reading data_key: values and name_key: slice names. inner_radius: makes " \
-                        "the donut; padding_angle: spaces the slices; active_index: pops one out by active_grow: " \
-                        "pixels."
-        renders_many :pies, lambda { |data_key:, data: nil, name_key: :name, inner_radius: 0,
+        renders_many :pies,
+                     doc: "One ring of slices reading data_key: values and name_key: slice names. inner_radius: " \
+                          "makes the donut; padding_angle: spaces the slices; active_index: pops one out by " \
+                          "active_grow: pixels.",
+                     renders: lambda { |data_key:, data: nil, name_key: :name, inner_radius: 0,
                                       outer_radius: "80%", padding_angle: 0, stroke_width: 0,
                                       color_key: :fill, labels: nil, label_key: nil,
                                       active_index: nil, active_grow: 10|
-          (@series_entries ||= []) << Series.new(data: data, data_key: data_key.to_s, name_key: name_key.to_s,
-                                                 inner_radius:, outer_radius:, padding_angle:, stroke_width:,
-                                                 color_key: color_key&.to_s, labels: labels&.to_sym,
-                                                 label_key: label_key&.to_s, active_index:, active_grow:)
-          nil
-        }
+                       (@series_entries ||= []) << Series.new(data: data, data_key: data_key.to_s,
+                                                              name_key: name_key.to_s, inner_radius:,
+                                                              outer_radius:, padding_angle:, stroke_width:,
+                                                              color_key: color_key&.to_s, labels: labels&.to_sym,
+                                                              label_key: label_key&.to_s, active_index:, active_grow:)
+                       nil
+                     }
         # ActiveSupport singularizes "pies" to "py" - give the grammar its
         # real name.
         alias with_pie with_py
 
-        slot_doc :center_label, "The donut-hole text: a title line plus an optional subtitle."
-        renders_one :center_label, lambda { |title:, subtitle: nil|
-          @center_label_config = { title: title, subtitle: subtitle }
-          nil
-        }
+        renders_one :center_label,
+                    doc: "The donut-hole text: a title line plus an optional subtitle.",
+                    renders: lambda { |title:, subtitle: nil|
+                      @center_label_config = { title: title, subtitle: subtitle }
+                      nil
+                    }
 
-        slot_doc :legend, "The legend row: align:, items:, and hide_icon:."
-        renders_one :legend, lambda { |**options|
-          @legend_config = options
-          nil
-        }
+        renders_one :legend,
+                    doc: "The legend row: align:, items:, and hide_icon:.",
+                    renders: lambda { |**options|
+                      @legend_config = options
+                      nil
+                    }
 
-        slot_doc :tooltip, "The hover tooltip; the slice name carries the label, so hide_label defaults on."
-        renders_one :tooltip, lambda { |**options|
-          @tooltip_config = { hide_label: true }.merge(options)
-          nil
-        }
+        renders_one :tooltip,
+                    doc: "The hover tooltip; the slice name carries the label, so hide_label defaults on.",
+                    renders: lambda { |**options|
+                      @tooltip_config = { hide_label: true }.merge(options)
+                      nil
+                    }
 
         # The polar chassis: margin/plot/center geometry plus the
         # per-slice pointerover hit; the single-series tooltip chrome and

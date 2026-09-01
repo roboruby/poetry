@@ -68,12 +68,13 @@ module Poetry
         # key). Families whose value axis diverges override this before
         # including the concern.
         def value_axis_slot
-          slot_doc :y_axis, "The value axis: tick_count: sets how many ticks show; tick_formatter: reshapes each " \
-                            "label; tick_margin: pads it."
-          renders_one :y_axis, lambda { |tick_count: 3, tick_formatter: nil, tick_margin: 8|
-            @y_axis_config = AxisConfig.new(data_key: nil, tick_formatter:, tick_margin:, tick_count:)
-            nil
-          }
+          renders_one :y_axis,
+                      doc: "The value axis: tick_count: sets how many ticks show; tick_formatter: reshapes each " \
+                           "label; tick_margin: pads it.",
+                      renders: lambda { |tick_count: 3, tick_formatter: nil, tick_margin: 8|
+                        @y_axis_config = AxisConfig.new(data_key: nil, tick_formatter:, tick_margin:, tick_count:)
+                        nil
+                      }
         end
       end
 

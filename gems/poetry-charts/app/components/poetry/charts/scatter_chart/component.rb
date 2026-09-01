@@ -97,50 +97,57 @@ module Poetry
                                   "(<script type=application/json>) the tooltip controller " \
                                   "reads - zero chart math in the browser"
 
-        slot_doc :scatters, "A point series colored by key:. data: gives it its own rows; error_key: adds error " \
-                            "whiskers."
-        renders_many :scatters, lambda { |key:, data: nil, error_key: nil, error_width: 5|
-          (@series_entries ||= []) << Series.new(key: key.to_s, data: data,
-                                                 error_key: error_key&.to_s, error_width:)
-          nil
-        }
+        renders_many :scatters,
+                     doc: "A point series colored by key:. data: gives it its own rows; error_key: adds error " \
+                          "whiskers.",
+                     renders: lambda { |key:, data: nil, error_key: nil, error_width: 5|
+                       (@series_entries ||= []) << Series.new(key: key.to_s, data: data,
+                                                              error_key: error_key&.to_s, error_width:)
+                       nil
+                     }
 
-        slot_doc :x_axis, "The numeric x axis: data_key: names the row key to plot; name: labels its tooltip row."
-        renders_one :x_axis, lambda { |data_key:, tick_count: 5, tick_margin: 8, name: nil|
-          @x_axis_config = AxisConfig.new(data_key: data_key.to_s, tick_count:, tick_margin:, name:)
-          nil
-        }
+        renders_one :x_axis,
+                    doc: "The numeric x axis: data_key: names the row key to plot; name: labels its tooltip row.",
+                    renders: lambda { |data_key:, tick_count: 5, tick_margin: 8, name: nil|
+                      @x_axis_config = AxisConfig.new(data_key: data_key.to_s, tick_count:, tick_margin:, name:)
+                      nil
+                    }
 
-        slot_doc :y_axis, "The numeric y axis: data_key: names the row key to plot; name: labels its tooltip row."
-        renders_one :y_axis, lambda { |data_key:, tick_count: 5, tick_margin: 8, name: nil|
-          @y_axis_config = AxisConfig.new(data_key: data_key.to_s, tick_count:, tick_margin:, name:)
-          nil
-        }
+        renders_one :y_axis,
+                    doc: "The numeric y axis: data_key: names the row key to plot; name: labels its tooltip row.",
+                    renders: lambda { |data_key:, tick_count: 5, tick_margin: 8, name: nil|
+                      @y_axis_config = AxisConfig.new(data_key: data_key.to_s, tick_count:, tick_margin:, name:)
+                      nil
+                    }
 
-        slot_doc :z_axis, "A third dimension sizing the markers: range: is marker AREA in px2 mapped linearly from " \
-                          "the data_key: values."
-        renders_one :z_axis, lambda { |data_key:, range: DEFAULT_Z_RANGE|
-          @z_axis_config = { data_key: data_key.to_s, range: range }
-          nil
-        }
+        renders_one :z_axis,
+                    doc: "A third dimension sizing the markers: range: is marker AREA in px2 mapped linearly from " \
+                         "the data_key: values.",
+                    renders: lambda { |data_key:, range: DEFAULT_Z_RANGE|
+                      @z_axis_config = { data_key: data_key.to_s, range: range }
+                      nil
+                    }
 
-        slot_doc :grid, "The gridlines: both directions by default."
-        renders_one :grid, lambda { |vertical: true, horizontal: true|
-          @grid_config = GridConfig.new(vertical:, horizontal:)
-          nil
-        }
+        renders_one :grid,
+                    doc: "The gridlines: both directions by default.",
+                    renders: lambda { |vertical: true, horizontal: true|
+                      @grid_config = GridConfig.new(vertical:, horizontal:)
+                      nil
+                    }
 
-        slot_doc :legend, "The legend row: align:, items:, and hide_icon:."
-        renders_one :legend, lambda { |**options|
-          @legend_config = options
-          nil
-        }
+        renders_one :legend,
+                    doc: "The legend row: align:, items:, and hide_icon:.",
+                    renders: lambda { |**options|
+                      @legend_config = options
+                      nil
+                    }
 
-        slot_doc :tooltip, "The hover tooltip - per-point x/y(/z) rows under the series name."
-        renders_one :tooltip, lambda { |**options|
-          @tooltip_config = options
-          nil
-        }
+        renders_one :tooltip,
+                    doc: "The hover tooltip - per-point x/y(/z) rows under the series name.",
+                    renders: lambda { |**options|
+                      @tooltip_config = options
+                      nil
+                    }
 
         # Points are hit by pointerover on the marked circle, not bisect -
         # the svg gains the enter action after the module's set.

@@ -125,26 +125,29 @@ module Poetry
                                   "(<script type=application/json>) the tooltip controller " \
                                   "reads - zero chart math in the browser"
 
-        slot_doc :areas, "An area mark bound to data_key:; areas sharing a stack: id pile up (area stacks never join " \
-                         "bar stacks)."
-        renders_many :areas, lambda { |data_key:, stack: nil, curve: :natural, fill_opacity: 0.4,
+        renders_many :areas,
+                     doc: "An area mark bound to data_key:; areas sharing a stack: id pile up (area stacks never " \
+                          "join bar stacks).",
+                     renders: lambda { |data_key:, stack: nil, curve: :natural, fill_opacity: 0.4,
                                        gradient: false, stroke_width: 1|
-          push_series(:area, key: data_key, stack: stack && "area-#{stack}",
-                             curve: curve.to_sym, fill_opacity:, gradient:, stroke_width:)
-        }
+                       push_series(:area, key: data_key, stack: stack && "area-#{stack}",
+                                          curve: curve.to_sym, fill_opacity:, gradient:, stroke_width:)
+                     }
 
-        slot_doc :bars, "A bar mark bound to data_key:; radius: rounds corners; bars sharing a stack: id pile up " \
-                        "within the bar marks."
-        renders_many :bars, lambda { |data_key:, stack: nil, radius: 0|
-          push_series(:bar, key: data_key, stack: stack && "bar-#{stack}", radius: radius)
-        }
+        renders_many :bars,
+                     doc: "A bar mark bound to data_key:; radius: rounds corners; bars sharing a stack: id pile up " \
+                          "within the bar marks.",
+                     renders: lambda { |data_key:, stack: nil, radius: 0|
+                       push_series(:bar, key: data_key, stack: stack && "bar-#{stack}", radius: radius)
+                     }
 
-        slot_doc :lines, "A line mark bound to data_key:; dots: marks each point."
-        renders_many :lines, lambda { |data_key:, curve: :natural, stroke_width: 2,
+        renders_many :lines,
+                     doc: "A line mark bound to data_key:; dots: marks each point.",
+                     renders: lambda { |data_key:, curve: :natural, stroke_width: 2,
                                        dots: false, dot_radius: 4|
-          push_series(:line, key: data_key, curve: curve.to_sym, stroke_width:,
-                             dots:, dot_radius:)
-        }
+                       push_series(:line, key: data_key, curve: curve.to_sym, stroke_width:,
+                                          dots:, dot_radius:)
+                     }
 
         include Poetry::Charts::CartesianFamily
 

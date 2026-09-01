@@ -108,16 +108,17 @@ module Poetry
                                   "(<script type=application/json>) the tooltip controller " \
                                   "reads - zero chart math in the browser"
 
-        slot_doc :areas, "An area series bound to data_key:. Areas sharing a stack: id pile up; gradient: true fades " \
-                         "the fill; curve: picks the interpolation."
-        renders_many :areas, lambda { |data_key:, stack: nil, curve: :natural, fill_opacity: 0.4,
+        renders_many :areas,
+                     doc: "An area series bound to data_key:. Areas sharing a stack: id pile up; gradient: true " \
+                          "fades the fill; curve: picks the interpolation.",
+                     renders: lambda { |data_key:, stack: nil, curve: :natural, fill_opacity: 0.4,
                                        gradient: false, stroke_width: 1|
-          raise ArgumentError, "unknown curve #{curve.inspect}" unless CURVES.include?(curve.to_sym)
+                       raise ArgumentError, "unknown curve #{curve.inspect}" unless CURVES.include?(curve.to_sym)
 
-          (@series_entries ||= []) << Series.new(key: data_key.to_s, stack:, curve: curve.to_sym,
-                                                 fill_opacity:, gradient:, stroke_width:)
-          nil
-        }
+                       (@series_entries ||= []) << Series.new(key: data_key.to_s, stack:, curve: curve.to_sym,
+                                                              fill_opacity:, gradient:, stroke_width:)
+                       nil
+                     }
 
         include Poetry::Charts::CartesianFamily
 
