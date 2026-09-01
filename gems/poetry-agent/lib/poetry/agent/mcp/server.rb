@@ -98,7 +98,8 @@ module Poetry
           "name" => "check",
           "description" => "Lint ERB source against the poetry contracts WITHOUT rendering - unknown " \
                            "components/options/variants/wiring, raw and arbitrary colors (inline styles too), the " \
-                           "! modifier, icon names, enum values, " \
+                           "! modifier, fake buttons (an inert element with onclick or role=button), icon names, " \
+                           "enum values, " \
                            "typed-slot props, helper/setter arity, yield-less blocks, setter keywords, " \
                            "required content blocks, required slots a call never set, and any-of " \
                            "contracts (Button's visible content, Command's accessible name). Returns a " \
