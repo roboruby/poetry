@@ -22,6 +22,50 @@ module Poetry
           render_inline(Component.new(**defaults, **), &block).to_html
         end
 
+        # The WebMCP payload lists the rendered options: enabled values as
+        # the enum, labels as titles (an agent reads the label, passes the
+        # value); a disabled option stays out; multiple keeps the bare
+        # schema.
+        def test_webmcp_payload_lists_the_rendered_options_with_their_labels
+          with_registrar_manifest do
+            html = render_combobox(webmcp: "framework") do |combobox|
+              combobox.with_item(value: "next.js") { "Next.js" }
+              combobox.with_item(value: "sveltekit", disabled: true) { "SvelteKit" }
+              combobox.with_item(value: "remix") { "Remix" }
+            end
+            root = doc(html).at_css("[data-controller~='poetry--agent--webmcp']")
+            tools = JSON.parse(root["data-poetry--agent--webmcp-tools-value"])
+            value = tools.find { |tool| tool["name"] == "set_value" }.dig("inputSchema", "properties", "value")
+
+            assert_equal %w[next.js remix], value["enum"]
+            assert_equal [{ "type" => "string", "const" => "next.js", "title" => "Next.js" },
+                          { "type" => "string", "const" => "remix", "title" => "Remix" }], value["anyOf"]
+            assert_equal "framework", root["data-poetry--agent--webmcp-name-value"]
+
+            html = render_combobox(webmcp: "frameworks", multiple: true)
+            root = doc(html).at_css("[data-controller~='poetry--agent--webmcp']")
+            tools = JSON.parse(root["data-poetry--agent--webmcp-tools-value"])
+            value = tools.find { |tool| tool["name"] == "set_value" }.dig("inputSchema", "properties", "value")
+
+            refute value.key?("enum")
+          end
+        end
+
+        def with_registrar_manifest
+          catalog = Poetry::Core::Stimulus::Manifest.catalog
+          registrar = Poetry::Core::Concerns::AgentTools::WEBMCP_CONTROLLER
+          had = catalog.key?(registrar)
+          catalog[registrar] ||= {
+            "targets" => [],
+            "values" => { "name" => { "type" => "String" }, "tools" => { "type" => "Array" },
+                          "budget" => { "type" => "Number", "default" => 20 } },
+            "classes" => [], "methods" => %w[connect disconnect register unregister], "events" => []
+          }
+          yield
+        ensure
+          catalog.delete(registrar) unless had
+        end
+
         def test_root_hosts_both_controllers_on_one_attributes_instance
           html = render_combobox
           root = doc(html).css('[data-slot="combobox"]').first

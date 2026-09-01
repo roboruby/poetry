@@ -408,7 +408,8 @@ module Poetry
         # The operate surface: what an in-page agent may do to a rendered
         # combobox (registered per instance, opt-in - see poetry-agent).
         tool :set_value,
-             description: "Select the option whose value matches; pass an empty string to select nothing.",
+             description: "Select the option whose value matches; the schema lists the rendered options, " \
+                          "and clear selects nothing.",
              params: { value: { type: "string", required: true, description: "The option value to select." } },
              executes: %i[combobox set_value],
              mutating: true
@@ -416,6 +417,26 @@ module Poetry
              description: "Clear the current selection.",
              executes: %i[combobox clear],
              mutating: true
+
+        # The rendered instance knows its options (the option union renders
+        # into a capture before the root's attributes): the payload's schema
+        # lists the enabled values as the enum, each with its label as the
+        # title - an agent reads "Japan" and passes "jp" - so an unknown
+        # value is refused before dispatch instead of committing nothing.
+        # multiple: keeps the bare schema (its value is a list).
+        def webmcp_tool_definition(definition)
+          return definition unless definition["name"] == "set_value" && !multiple
+
+          entries = option_set.entries.reject(&:disabled)
+          return definition if entries.empty?
+
+          schema = definition.fetch("inputSchema")
+          value = schema.fetch("properties").fetch("value").merge(
+            "enum" => entries.map(&:value),
+            "anyOf" => entries.map { |entry| { "type" => "string", "const" => entry.value, "title" => entry.label } }
+          )
+          definition.merge("inputSchema" => schema.merge("properties" => schema["properties"].merge("value" => value)))
+        end
 
         option :value, :string, doc: "The committed value; with multiple:, an array of values."
         option :name, :string, doc: "The form field name on the native <select>; multiple: appends [] for you."

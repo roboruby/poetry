@@ -2548,8 +2548,9 @@ components:
           'on': click
     tools:
     - name: set_value
-      description: Select the option whose value matches; pass an empty string to
-        select nothing.
+      title: Set value
+      description: Select the option whose value matches; the schema lists the rendered
+        options, and clear selects nothing.
       inputSchema:
         type: object
         properties:
@@ -2558,11 +2559,13 @@ components:
             description: The option value to select.
         required:
         - value
+        additionalProperties: false
       annotations:
         readOnlyHint: false
         untrustedContentHint: false
       executes: poetry--core--combobox#setValue
     - name: clear
+      title: Clear
       description: Clear the current selection.
       annotations:
         readOnlyHint: false
@@ -4118,12 +4121,14 @@ components:
         - method: close
     tools:
     - name: open
+      title: Open
       description: Open the dialog.
       annotations:
         readOnlyHint: false
         untrustedContentHint: false
       executes: poetry--core--dialog#open
     - name: close
+      title: Close
       description: Close the dialog.
       annotations:
         readOnlyHint: false
@@ -4337,12 +4342,14 @@ components:
       controllers: []
     tools:
     - name: open
+      title: Open
       description: Open the dialog.
       annotations:
         readOnlyHint: false
         untrustedContentHint: false
       executes: poetry--core--drawer#open
     - name: close
+      title: Close
       description: Close the dialog.
       annotations:
         readOnlyHint: false
@@ -9453,12 +9460,14 @@ components:
         - method: close
     tools:
     - name: open
+      title: Open
       description: Open the dialog.
       annotations:
         readOnlyHint: false
         untrustedContentHint: false
       executes: poetry--core--sheet#open
     - name: close
+      title: Close
       description: Close the dialog.
       annotations:
         readOnlyHint: false
@@ -10402,6 +10411,7 @@ components:
           'on': click
     tools:
     - name: set_value
+      title: Set value
       description: Activate the tab whose value matches and show its panel.
       inputSchema:
         type: object
@@ -10411,6 +10421,7 @@ components:
             description: The tab's value.
         required:
         - value
+        additionalProperties: false
       annotations:
         readOnlyHint: false
         untrustedContentHint: false
