@@ -1,0 +1,28 @@
+[
+  {
+    "name": "Tabs: activate the pricing tab",
+    "messages": [{ "role": "user", "type": "message", "content": "Show me the pricing tab" }],
+    "expectedCall": [{ "functionName": "poetry.sections.set_value", "arguments": { "value": "pricing" } }]
+  },
+  {
+    "name": "Dialog: open then close settings",
+    "messages": [{ "role": "user", "type": "message", "content": "Open settings, then close it" }],
+    "expectedCall": [
+      { "functionName": "poetry.settings.open", "arguments": {} },
+      { "functionName": "poetry.settings.close", "arguments": {} }
+    ]
+  },
+  {
+    "name": "Combobox: pick Japan then clear",
+    "messages": [{ "role": "user", "type": "message", "content": "Select Japan as the country, then clear it" }],
+    "expectedCall": [
+      { "functionName": "poetry.country.set_value", "arguments": { "value": "jp" } },
+      { "functionName": "poetry.country.clear", "arguments": {} }
+    ]
+  },
+  {
+    "name": "Declarative: search the docs for combobox",
+    "messages": [{ "role": "user", "type": "message", "content": "Find the combobox docs" }],
+    "expectedCall": [{ "functionName": "search_docs", "arguments": { "q": "combobox" } }]
+  }
+]

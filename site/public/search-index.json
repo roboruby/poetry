@@ -978,6 +978,12 @@
     "path": "/webmcp#two-paths"
   },
   {
+    "title": "Designing tools for your app",
+    "page": "WebMCP",
+    "section": "docs",
+    "path": "/webmcp#designing"
+  },
+  {
     "title": "Declaring tools in your own components",
     "page": "WebMCP",
     "section": "docs",

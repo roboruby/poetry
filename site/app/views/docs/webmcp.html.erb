@@ -216,6 +216,47 @@
       </p>
     <% end %>
     <%= poetry_code_block(code: form_source, language: "erb", label: "Forms") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        One honest limit of the declarative path: a form tool carries no
+        annotations today (the attribute set is four, and annotations for
+        forms are an open spec issue), so an audit that reads
+        <code>readOnlyHint</code> cannot tell a search form from a
+        mutation. The GET-only <code>autosubmit</code> rule is the
+        guarantee it cannot see; where the annotation itself matters, a
+        component tool carries it.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="designing">Designing tools for your app</h2>
+      <p>
+        Component tools are the operate layer: what an agent may do to a
+        rendered combobox, dialog, or tab strip. The tools that make a
+        journey - search, hold, book - are yours to declare, and Chrome's
+        framework for choosing them is short. Define the user's goal and
+        what success looks like. Define the initial state: where the
+        person is, what the agent already knows. Role-play the
+        conversation turn by turn and note which tool each turn needs.
+        Let the agent ask when a request is vague instead of guessing.
+        Make every failure a guide ("No results yet - search first"),
+        never a dead end.
+      </p>
+      <ul>
+        <li><strong>Answer tools</strong> read: search, details, availability. Ship these first; they keep an agent from guessing about your data. A GET <code>poetry_webmcp_form</code> is one.</li>
+        <li><strong>Action tools</strong> change state without commitment: filter, add to cart, open a panel. Component tools live here; they are declared <code>mutating: true</code>.</li>
+        <li><strong>Sensitive actions</strong> involve money or commitment. Keep the person's Submit: a form without <code>autosubmit</code> is the reversible boundary.</li>
+      </ul>
+      <p>
+        One function per tool and no overlap; names that say what happens
+        (<code>add_to_cart</code> acts, <code>start_checkout</code> opens
+        a flow); descriptions that say what comes back. Then evaluate: the
+        smoke suite below is deterministic, and an LLM-driven eval of tool
+        choice is the layer above it.
+      </p>
+    <% end %>
   </section>
 
   <section class="flex flex-col gap-4">
@@ -249,6 +290,29 @@
       </p>
     <% end %>
     <%= poetry_code_block(code: config_source, language: "ruby", label: "Origin trial") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Two constraints of the host page. The API needs an origin-isolated
+        document, so never send <code>Origin-Agent-Cluster: ?0</code> or
+        set <code>document.domain</code>. And imperative tools register
+        when the importmap module graph runs, a beat after the parser has
+        registered the declarative forms, so a scanner that snapshots at
+        parse time sees only the forms - serve the runtime preloaded and
+        cached. And never parse HTML that carries the four tool attributes
+        into an inert document (<code>DOMParser</code>,
+        <code>createHTMLDocument</code>): Chrome 151 crashes the renderer
+        on such a form, which is why the form runtime strips them from a
+        fetched answer before reading it. Turbo's own visits are
+        unaffected.
+      </p>
+      <p>
+        Tooling: Chrome's Model Context Tool Inspector and the nekuda
+        WebMCP Workbench list registrations and call them by hand, and
+        Google's <code>webmcp-evals</code> runs suites against a live page.
+        This site keeps one: <code>bin/rails webmcp:smoke</code> executes
+        every tool on this page in a real Chrome with no model involved.
+      </p>
+    <% end %>
   </section>
 
   <section class="flex flex-col gap-4">
@@ -260,6 +324,8 @@
         <li><code>autosubmit</code> is GET-only; a mutating form keeps the person in the loop.</li>
         <li>A per-document registration budget; duplicate names are refused by the browser and skipped.</li>
         <li>Re-registration only when the payload changed, never under Turbo's cache preview - the two morph-time hazards the standard documents.</li>
+        <li>Every call is validated in code: a missing, unknown, or mistyped parameter, or a value outside the rendered options, comes back as a message naming what the tool takes.</li>
+        <li>An answer is the resulting state - the active tab, the committed value, open or closed - and a form's answer is followed by the page catching up, so the person sees what the agent read.</li>
         <li>Errors return as descriptive strings, so an agent corrects its call instead of guessing.</li>
       </ul>
     <% end %>
