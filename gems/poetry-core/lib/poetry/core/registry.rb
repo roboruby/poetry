@@ -106,9 +106,8 @@ module Poetry
       #   llms.txt, the MCP server, and skills can teach the model-bound
       #   form story without booting the gem. Optional like every other
       #   section: absent -> the registry stays byte-identical.
-      # rubocop:disable Metrics/ParameterLists -- one keyword per optional registry section
-      def initialize(components: nil, source_root: Poetry::Core.root, helpers: nil, blocks: nil,
-                     helper_args: nil, descriptions: nil, form_builder: nil)
+      def initialize(components: nil, source_root: Poetry::Core.root, # rubocop:disable Metrics/ParameterLists
+                     helpers: nil, blocks: nil, helper_args: nil, descriptions: nil, form_builder: nil)
         @source_root = Pathname.new(source_root)
         @components = (components || discover).sort_by(&:name)
         @helpers = helpers
@@ -117,7 +116,6 @@ module Poetry
         @descriptions = descriptions
         @form_builder = form_builder
       end
-      # rubocop:enable Metrics/ParameterLists
 
       # The discovered component classes (the registry's working set).
       attr_reader :components

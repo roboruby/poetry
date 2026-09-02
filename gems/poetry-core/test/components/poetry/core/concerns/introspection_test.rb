@@ -119,9 +119,8 @@ module Poetry
           outlined = props[:styles].find { |style| style[:name] == :outlined }
 
           assert_equal :boolean, outlined[:type]
-          # rubocop:disable Minitest/RefuteFalse -- refute would also pass for nil; this pins the literal false
-          assert_equal false, outlined[:default], "a false default must not be dropped"
-          # rubocop:enable Minitest/RefuteFalse
+          assert_equal false, outlined[:default], # rubocop:disable Minitest/RefuteFalse -- pins the literal false
+                       "a false default must not be dropped"
           refute outlined.key?(:variants), ":boolean is a type, not a variant list"
         end
 

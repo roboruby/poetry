@@ -118,9 +118,8 @@ module Poetry
           # @example A parameterless UI-state tool
           #   tool :open, description: "Open the dialog.",
           #        executes: :open, mutating: true
-          # rubocop:disable Metrics/ParameterLists -- one keyword per MCP Tool field
-          def tool(name, description:, executes:, params: nil, input_schema: nil,
-                   title: nil, mutating: false, untrusted_content: false)
+          def tool(name, description:, executes:, # rubocop:disable Metrics/ParameterLists -- one keyword per Tool field
+                   params: nil, input_schema: nil, title: nil, mutating: false, untrusted_content: false)
             name = validate_tool_name!(name)
             raise ToolError, "#{self}: tool #{name.inspect} declared twice" if own_tools.key?(name)
 
@@ -135,7 +134,6 @@ module Poetry
               untrusted_content: untrusted_content ? true : false
             )
           end
-          # rubocop:enable Metrics/ParameterLists
 
           # This class's own tool declarations, name => {Tool}.
           #
