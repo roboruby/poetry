@@ -179,7 +179,7 @@ module Poetry
         def panel_body(tab)
           return capture(&tab.panel) unless tab.defer
 
-          helpers.poetry_deferred(src: tab.defer) { tab.panel ? capture(&tab.panel) : nil }
+          render(Poetry::Ui::Deferred::Component.new(src: tab.defer)) { tab.panel ? capture(&tab.panel) : nil }
         end
 
         # @api private

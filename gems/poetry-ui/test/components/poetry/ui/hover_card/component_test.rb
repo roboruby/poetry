@@ -20,6 +20,18 @@ module Poetry
           render_inline(Component.new(**), &block).to_html
         end
 
+        def test_defer_wraps_the_body_in_a_lazy_turbo_frame_with_the_block_as_placeholder
+          html = render_card(defer: "/previews/nextjs")
+          frame = doc(html).css('[data-slot="hover-card-content"] turbo-frame').first
+
+          assert frame, "the deferred body renders as a turbo-frame inside the content region"
+          # src rides the deferred controller's value, not the frame markup.
+          src = frame.attributes.find { |name, _| name.end_with?("src-value") }&.last&.value
+
+          assert_equal "/previews/nextjs", src
+          assert_includes frame.text, "The React Framework."
+        end
+
         def test_root_hosts_both_controllers_on_one_attributes_instance
           html = render_card
           root = doc(html).css('[data-slot="hover-card"]').first

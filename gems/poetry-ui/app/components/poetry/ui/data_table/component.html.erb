@@ -65,8 +65,8 @@
     </div>
     <% if pagination? %>
       <div data-slot="data-table-footer" class="<%= css(:footer) %>">
-        <%= helpers.poetry_pagination(current: state.page, total: total,
-                                      path: ->(page) { path_for(state.page_params(page)) }) %>
+        <%= render Poetry::Ui::Pagination::Component.new(current: state.page, total: total,
+                                                          path: ->(page) { path_for(state.page_params(page)) }) %>
       </div>
     <% end %>
   <% end %>

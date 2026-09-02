@@ -1,23 +1,23 @@
 <%= content_tag(:div, **root_attributes.to_attributes) do %>
   <% if input_variant? %>
-    <%= helpers.poetry_input_group do %>
+    <%= render Poetry::Ui::InputGroup::Component.new do %>
       <%= helpers.poetry_input_group_input(**input_attributes.symbolize_keys) %>
       <%= helpers.poetry_input_group_addon(align: :"inline-end") do %>
-        <%= helpers.poetry_popover(**popover_options, align: :end) do |popover| %>
+        <%= render Poetry::Ui::Popover::Component.new(**popover_options, align: :end) do |popover| %>
           <% popover.with_trigger(**input_trigger_options) do %>
             <%= render Poetry::Ui::Icon::Component.new(name: :calendar) %>
           <% end %>
-          <%= helpers.poetry_calendar(**calendar_options) %>
+          <%= render Poetry::Ui::Calendar::Component.new(**calendar_options) %>
         <% end %>
       <% end %>
     <% end %>
   <% else %>
-    <%= helpers.poetry_popover(**popover_options) do |popover| %>
+    <%= render Poetry::Ui::Popover::Component.new(**popover_options) do |popover| %>
       <% popover.with_trigger(**trigger_options) do %>
         <%= render Poetry::Ui::Icon::Component.new(name: :calendar) %>
         <span class="min-w-0 truncate" <%= tag.attributes(**label_target_attributes) %>><%= formatted %></span>
       <% end %>
-      <%= helpers.poetry_calendar(**calendar_options) %>
+      <%= render Poetry::Ui::Calendar::Component.new(**calendar_options) %>
     <% end %>
   <% end %>
 <% end %>
