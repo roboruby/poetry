@@ -17,8 +17,8 @@ sibling = lambda do |name|
 end
 
 gem "poetry-core", **sibling.call("poetry-core")
-gem "poetry-ui", **sibling.call("poetry-ui")
 gem "poetry-lucide", **sibling.call("poetry-lucide")
+gem "poetry-ui", **sibling.call("poetry-ui")
 
 gem "irb"
 gem "rake", "~> 13.0"
