@@ -58,6 +58,12 @@ class DocsController < ApplicationController
     }.first(8)
   end
 
+  def agui
+  end
+
+  def a2ui
+  end
+
   # The per-gem library pages (/libraries/:slug) - templates live under
   # docs/libraries/, named by the underscored slug.
   def library
@@ -181,6 +187,8 @@ class DocsController < ApplicationController
     when "data_table" then DocsMarkdown.data_table(guide_entry("data-table"))
     when "mcp" then DocsMarkdown.mcp(guide_entry("mcp-server"))
     when "webmcp" then DocsMarkdown.webmcp(guide_entry("webmcp"))
+    when "agui" then DocsMarkdown.agui(guide_entry("ag-ui"))
+    when "a2ui" then DocsMarkdown.a2ui(guide_entry("a2ui"))
     when "library" then DocsMarkdown.public_send("library_#{library_entry.slug.tr('-', '_')}", library_entry)
     when "icon_set" then DocsMarkdown.public_send("icons_#{icon_entry.slug}", icon_entry)
     when "recipes" then DocsMarkdown.recipes(guide_entry("recipes"))

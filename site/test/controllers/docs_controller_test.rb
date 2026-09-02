@@ -208,6 +208,50 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-poetry--charts--tooltip-sync-value=?]", "demo", count: 2
   end
 
+  test "the AG-UI relay guide walks the host recipe" do
+    get "/ag-ui"
+
+    assert_response :success
+    assert_select "h2#run", "Run an agent"
+    assert_select "h2#frontend-tools"
+    assert_select "h2#interrupts"
+    assert_select "h2#surfaces"
+    text = Nokogiri::HTML5(response.body).text
+
+    assert_includes text, "Poetry::Agent::AGUI::Relay.new"
+    assert_includes text, "transcript.resolve_client_tool("
+    assert_select "a[href='/demos/agui-relay']"
+    assert_select "a[href='/a2ui']"
+
+    get "/ag-ui.md"
+
+    assert_response :success
+    assert_includes response.body, "tool_descriptor"
+  end
+
+  test "the A2UI surfaces guide walks the host recipe" do
+    get "/a2ui"
+
+    assert_response :success
+    assert_select "h2#catalogs"
+    assert_select "h2#actions"
+    assert_select "h2#checks"
+    assert_select "h2#functions"
+    assert_select "h2#state"
+    text = Nokogiri::HTML5(response.body).text
+
+    assert_includes text, "Poetry::Agent::A2UI::Streams.new"
+    assert_includes text, "session.action("
+    assert_select "a[href='/demos/a2ui-surface']"
+    assert_select "a[href='/a2ui/catalog.json']"
+    assert_select "a[href='/ag-ui']"
+
+    get "/a2ui.md"
+
+    assert_response :success
+    assert_includes response.body, "Functions.basic"
+  end
+
   test "the site's MCP server answers at /mcp" do
     post "/mcp", params: { jsonrpc: "2.0", id: 1, method: "tools/list" }.to_json,
                  headers: { "CONTENT_TYPE" => "application/json" }

@@ -37,6 +37,8 @@ Rails.application.routes.draw do
   get "data-table" => "docs#data_table", as: :data_table_guide
   get "mcp-server" => "docs#mcp", as: :mcp
   get "webmcp" => "docs#webmcp", as: :webmcp
+  get "ag-ui" => "docs#agui", as: :agui
+  get "a2ui" => "docs#a2ui", as: :a2ui
   # The site's own MCP server over HTTP at the conventional same-origin
   # path - what in-page WebMCP bridges (site MCP server packs)
   # proxy, read-only by construction.

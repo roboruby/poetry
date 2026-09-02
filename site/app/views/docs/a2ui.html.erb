@@ -1,0 +1,346 @@
+<% content_for :title, "A2UI Surfaces" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("A2UI Surfaces") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
+  # this scriptlet early, so ERB samples interpolate it as #{e}; a literal opener would nest an ERB tag under Herb, so they interpolate it as #{o}.
+  e = "%" + ">"
+  o = "<" + "%"
+  gemfile_source = <<~CODE
+    gem "poetry-agent"
+  CODE
+  js_source = <<~CODE
+    // app/javascript/controllers/index.js
+    import { registerPoetryControllers } from "@poetry/controllers"
+    import { registerPoetryAgent } from "@poetry/agent"
+    registerPoetryControllers(application)
+    registerPoetryAgent(application) // the surface controller, the versioned replace, the morph guard
+  CODE
+  catalog_source = <<~CODE
+    # config/routes.rb
+    get "a2ui/catalog.json" => "a2ui#catalog"
+
+    # app/controllers/a2ui_controller.rb
+    class A2uiController < ApplicationController
+      CATALOG = Poetry::Agent::A2UI::Catalog.from_registry(Poetry::Ui.root)
+
+      def catalog
+        render json: CATALOG.to_h   # CATALOG.inline for a middleware that wants { catalogId, components }
+      end
+    end
+  CODE
+  message_source = <<~CODE
+    { "version": "v1.0",
+      "createSurface": {
+        "surfaceId": "signin", "catalogId": "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json",
+        "sendDataModel": true, "dataModel": { "email": "" },
+        "components": [
+          { "id": "root", "component": "Column", "children": ["title", "email", "submit"] },
+          { "id": "title", "component": "Text", "text": "## Sign in" },
+          { "id": "email", "component": "TextField", "label": "Email", "value": { "path": "/email" },
+            "checks": [{ "condition": { "call": "email", "args": { "value": { "path": "/email" } } },
+                         "message": "Enter a valid email" }] },
+          { "id": "submit", "component": "Button", "child": "submit_label", "variant": "primary",
+            "action": { "event": { "name": "sign_in", "context": { "email": { "path": "/email" } } } } },
+          { "id": "submit_label", "component": "Text", "text": "Sign in" } ] } }
+  CODE
+  fold_source = <<~CODE
+    session = Poetry::Agent::A2UI::Session.new
+    session.apply_all(messages)      # => ["signin"], the surfaces that changed
+    session.surfaces["signin"]       # the Surface: components, data model, version
+    session.errors                   # renderer-to-agent messages to send back, if any
+  CODE
+  render_source = <<~CODE
+    #{o}# in a view: the surface as a form whose actions post to your endpoint #{e}
+    #{o}= Poetry::Agent::A2UI::Renderer.new(surface, view: self, action_url: surface_action_path).call #{e}
+
+    # in a controller, when streaming
+    renderer = Poetry::Agent::A2UI::Renderer.new(surface, view: view_context, action_url: surface_action_path)
+    html = renderer.call
+    renderer.warnings   # => [] - or what could not render: an unknown component, a dangling id, a refused function
+  CODE
+  stream_source = <<~CODE
+    # app/controllers/surfaces_controller.rb
+    class SurfacesController < ApplicationController
+      include ActionController::Live
+
+      def stream
+        response.headers["Content-Type"] = "text/event-stream"
+        response.headers["X-Accel-Buffering"] = "no"
+        session = Poetry::Agent::A2UI::Session.new
+        streams = Poetry::Agent::A2UI::Streams.new(session: session, container: "surfaces",
+                                                   render: ->(surface) { render_surface(surface) })
+        agent.each_message do |message|            # however your agent hands you A2UI messages
+          html = streams.apply(message)             # append on first appearance, a morphing replace after
+          response.stream.write(Poetry::Agent::AGUI::TurboStream.sse(html)) unless html.empty?
+        end
+      ensure
+        response.stream.close
+      end
+
+      private
+
+      def render_surface(surface, errors: {})
+        Poetry::Agent::A2UI::Renderer.new(surface, view: view_context, errors: errors,
+                                          action_url: surface_action_path).call
+      end
+    end
+  CODE
+  page_source = <<~CODE
+    <div id="surfaces" class="flex flex-col gap-6"></div>
+    <turbo-stream-source src="#{o}= surfaces_stream_path #{e}"></turbo-stream-source>
+  CODE
+  action_source = <<~CODE
+    # POST /surfaces/action - the surface form: a2ui[surface], a2ui[action], a2ui[values][<pointer>]
+    def action
+      payload = params.require(:a2ui).permit!.to_h
+      session = surface_session                          # the surfaces this page holds, rebuilt or loaded
+      action = session.action(surface_id: payload["surface"], source: payload["action"],
+                              values: payload["values"] || {})
+      return head :not_found unless action                # no agent event on that component
+
+      streams = Poetry::Agent::A2UI::Streams.new(session: session, render: ->(surface) { render_surface(surface) })
+      streams.mark_seen(*session.surfaces.keys)
+      if action.valid?
+        reply = agent.reply(action.to_h)                  # the spec's action message; the agent answers with A2UI messages
+        render body: streams.apply_all(reply), content_type: "text/vnd.turbo-stream.html"
+      else
+        html = render_surface(action.surface, errors: action.errors)
+        render body: Poetry::Agent::AGUI::TurboStream.vreplace("a2ui-\#{action.surface.id}", html, morph: true),
+               content_type: "text/vnd.turbo-stream.html", status: :unprocessable_entity
+      end
+    end
+  CODE
+  message_json = <<~CODE
+    { "version": "v1.0",
+      "action": { "name": "sign_in", "surfaceId": "signin", "sourceComponentId": "submit",
+                  "timestamp": "2026-09-01T18:05:00.000Z", "context": { "email": "ada@example.com" } } }
+  CODE
+  function_source = <<~CODE
+    # config/initializers/a2ui.rb - a function of your own, callable from surfaces and, here, by the agent
+    Poetry::Agent::A2UI::Functions.basic.define(
+      "initials", description: "The initials of a full name.", returns: "string",
+      params: { "value" => { "$ref" => "\#{Poetry::Agent::A2UI::COMMON_TYPES}DynamicString" } },
+      required: %w[value], callers: "rendererOrAgent"
+    ) { |args, _evaluator| args["value"].to_s.split.map { |word| word[0] }.join.upcase }
+  CODE
+  interpolation_source = <<~CODE
+    { "id": "total", "component": "Text",
+      "text": { "call": "formatString",
+                "args": { "value": "${/count} ${pluralize(value: ${/count}, one: 'item', other: 'items')}, ${formatCurrency(value: ${/total}, currency: 'USD')}" } } }
+  CODE
+%>
+<div class="flex flex-col gap-10">
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h1>A2UI Surfaces</h1>
+      <p class="lead">
+        A2UI is the declarative format for agent-generated UI: the agent emits a
+        flat list of components against a catalog the client owns, and the client
+        renders it with its own components. Poetry ships both halves. Its registry
+        is the catalog, and its renderer draws surfaces on the server as forms,
+        delivered as Turbo Streams that keep their state. The
+        <%= link_to "A2UI Surface demo", "/demos/a2ui-surface" %> renders both
+        catalogs and streams a third surface progressively; this guide is the
+        recipe behind it.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="catalogs">Two catalogs</h2>
+      <p>
+        A surface names its catalog, and the renderer binds each catalog to the
+        library differently. The spec's basic catalog, the one Google's examples and
+        the AG-UI middleware default to, maps onto Poetry components: Text renders a
+        Markdown subset, Row, Column, and List are flex layouts, Card, Tabs, and
+        Button are the components of the same name, Modal is a Dialog, TextField is
+        a Field with an Input or Textarea, CheckBox, Slider, and DateTimeInput are
+        the bound controls, ChoicePicker is a radio group, a checkbox list, chips,
+        or a Combobox when filterable, Divider is a Separator, and Image, Icon,
+        Video, and AudioPlayer render natively.
+      </p>
+      <p>
+        Poetry's own catalog is the registry projected into A2UI's schema: every
+        component with its style axes as enums, options as typed properties, slots
+        as child references, and its rules in the description. Serve it for agents
+        you brief yourself; this site's copy lives at
+        <%= link_to "/a2ui/catalog.json", "/a2ui/catalog.json" %>. Surfaces
+        against it render straight from the registry, with no hand mapping, so a
+        new component is available the moment it is registered.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: catalog_source, language: "ruby", label: "Serving the catalog") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="fold">Fold the envelope</h2>
+      <p>
+        Messages arrive as an envelope: <code>createSurface</code>,
+        <code>updateComponents</code>, <code>updateDataModel</code>, and
+        <code>deleteSurface</code>. A session folds them into surfaces and records
+        what it could not honor as the spec's renderer-to-agent errors, which you
+        send back to the agent. A child referenced before it arrives is not an
+        error: streaming delivers components in any order, and the surface renders
+        what it has.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: message_source, language: "json", label: "A surface, as the agent sends it") %>
+    <%= poetry_code_block(code: fold_source, language: "ruby", label: "Folding") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="render">Render a surface</h2>
+      <p>
+        The renderer takes a surface and a view context. With an action URL it
+        renders a form: every bound input is named by its data-model pointer, every
+        agent action is a submit button, and the wrapper carries the surface's
+        version. Without one it renders a plain container. Rendering never raises
+        for an agent's mistake: an unknown component, a dangling reference, a
+        component the library refuses to build, or a function it cannot run renders
+        nothing and lands in the renderer's warnings.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: render_source, language: "erb", label: "Rendering") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="stream">Stream updates</h2>
+      <p>
+        Surfaces usually arrive over time: the surface first, its components next,
+        its data after. Streams delivers each change as a Turbo Stream, an append
+        into your container on a surface's first appearance and a morphing
+        versioned replace after, so the page paints progressively and a late frame
+        never overwrites a newer one.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: stream_source, language: "ruby", label: "The stream action") %>
+    <%= poetry_code_block(code: page_source, language: "erb", label: "The page") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="actions">Actions</h2>
+      <p>
+        The spec says two-way binding is local until an action, and a form is
+        exactly that: nothing posts until the user presses a button. The endpoint
+        writes the submitted values into the data model (only paths a bound input
+        carries, each coerced to its kind), runs the surface's checks, and resolves
+        the source component's event into the spec's action message. A valid
+        action goes to the agent; an invalid one comes back with its failures by
+        component, and you re-render the surface with them.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: action_source, language: "ruby", label: "The action endpoint") %>
+    <%= poetry_code_block(code: message_json, language: "json", label: "What the agent receives") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        <code>action.forwarded_props</code> is the same message in its AG-UI
+        placement, with the surface's data model alongside when it asked for
+        <code>sendDataModel</code>. Over AG-UI it rides the next run's
+        <code>forwardedProps</code>; the <%= link_to "AG-UI Relay guide", agui_path %>
+        shows that loop.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="checks">Checks</h2>
+      <p>
+        A component's <code>checks</code> run twice. On the server, every rule in
+        the surface runs against the submitted model before the action is accepted,
+        and a failure renders under its control. In the browser, the surface form
+        carries the same rules with their bindings made absolute, and the
+        <code>poetry--agent--a2ui-surface</code> controller evaluates them on every
+        keystroke: a button whose own checks fail is disabled, a failing input turns
+        invalid and its error slot fills. The five validators and the three
+        combinators run in both places; a function the browser does not know
+        passes there and is judged by the server. Where the browser can enforce a
+        rule natively, the renderer also emits the attribute: required, a pattern,
+        a length range, an email type.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="functions">Functions</h2>
+      <p>
+        The basic catalog's functions ship implemented: <code>formatString</code>
+        interpolation with paths, literals, and nested calls, the formatters
+        <code>formatNumber</code>, <code>formatCurrency</code>,
+        <code>formatDate</code>, and <code>pluralize</code>, the validators
+        <code>required</code>, <code>regex</code>, <code>length</code>,
+        <code>numeric</code>, and <code>email</code>, the combinators
+        <code>and</code>, <code>or</code>, and <code>not</code>, and
+        <code>openUrl</code>, which validates the scheme and renders as a link.
+        <code>@index</code> is available inside a list template. Poetry's own
+        catalog declares the same set, so agents against either catalog use them.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: interpolation_source, language: "json", label: "Interpolation") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        Add your own with <code>Functions.basic.define</code>. A function is
+        renderer-only unless it declares otherwise; one declared for agents answers
+        an agent's <code>callRendererFunction</code> with a response the session
+        collects in <code>session.responses</code>.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: function_source, language: "ruby", label: "A function of your own") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="state">State across updates</h2>
+      <p>
+        An update replaces the whole surface, which would reset a tab the reader
+        picked or text they typed. Two things prevent that. Every rendered component
+        carries a render-stable key, so two renders of a surface are byte-identical
+        and Turbo morph pairs the same element across them. And the runtime's guard
+        keeps what the server cannot know while a morph runs: tab selection, a
+        dialog's open state, an expanded popup, and any control whose value differs
+        from what the server last rendered. Pass <code>morph: false</code> to
+        Streams if you want plain swaps.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="transports">Transports</h2>
+      <p>
+        The session does not care how messages arrive. Over AG-UI they come inside
+        the event stream as <code>a2ui-surface</code> activities, and
+        <code>session.apply_activity(content)</code> folds them; over HTTP they are
+        whatever your agent returns from a request, as the stream action above
+        assumes; over MCP they sit inside an <code>application/a2ui+json</code>
+        resource, and the messages you extract fold the same way.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="setup">Setup</h2>
+    <% end %>
+    <%= poetry_code_block(code: gemfile_source, language: "ruby", label: "Gemfile") %>
+    <%= poetry_code_block(code: js_source, language: "javascript", label: "Register the runtime") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        The runtime registers the surface controller that runs checks as the user
+        types, installs the versioned replace stream action, and installs the morph
+        guard. Everything else is Ruby on the server.
+      </p>
+    <% end %>
+  </section>
+</div>

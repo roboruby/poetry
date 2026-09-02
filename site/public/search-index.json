@@ -1002,6 +1002,126 @@
     "path": "/webmcp#safety"
   },
   {
+    "title": "AG-UI Relay",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui"
+  },
+  {
+    "title": "What it is",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#what-it-is"
+  },
+  {
+    "title": "Run an agent",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#run"
+  },
+  {
+    "title": "Render the transcript",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#render"
+  },
+  {
+    "title": "Frontend tools",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#frontend-tools"
+  },
+  {
+    "title": "Interrupts",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#interrupts"
+  },
+  {
+    "title": "A2UI surfaces in the stream",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#surfaces"
+  },
+  {
+    "title": "Deterministic development",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#development"
+  },
+  {
+    "title": "Setup",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#setup"
+  },
+  {
+    "title": "A2UI Surfaces",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui"
+  },
+  {
+    "title": "Two catalogs",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#catalogs"
+  },
+  {
+    "title": "Fold the envelope",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#fold"
+  },
+  {
+    "title": "Render a surface",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#render"
+  },
+  {
+    "title": "Stream updates",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#stream"
+  },
+  {
+    "title": "Actions",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#actions"
+  },
+  {
+    "title": "Checks",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#checks"
+  },
+  {
+    "title": "Functions",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#functions"
+  },
+  {
+    "title": "State across updates",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#state"
+  },
+  {
+    "title": "Transports",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#transports"
+  },
+  {
+    "title": "Setup",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#setup"
+  },
+  {
     "title": "Accordion",
     "page": "Accordion",
     "section": "components",

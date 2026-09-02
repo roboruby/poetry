@@ -121,7 +121,17 @@ class DocsCatalog
     Entry.new(slug: "webmcp", title: "WebMCP", section: "docs", icon: :"mouse-pointer-click",
               description: "Your components' tools, registered with the user's own browser agent: " \
                        "opt a rendered Combobox, Dialog, or Tabs into WebMCP with one keyword, " \
-                       "declare a form as a tool with no JavaScript, and try both live on this page.")
+                       "declare a form as a tool with no JavaScript, and try both live on this page."),
+    Entry.new(slug: "ag-ui", title: "AG-UI Relay", section: "docs", icon: :activity,
+              description: "Bring an AG-UI agent into your Rails app: run its endpoint, fold the " \
+                       "event stream into a transcript, relay every change as a versioned Turbo " \
+                       "Stream, let the page's components answer the agent's tool calls, and " \
+                       "pause on interrupts - the full host recipe."),
+    Entry.new(slug: "a2ui", title: "A2UI Surfaces", section: "docs", icon: :"layout-template",
+              description: "Render agent-generated UI with your own components: fold A2UI " \
+                       "messages into surfaces, render them as forms, stream updates that keep " \
+                       "their state, turn a submission into the spec's action, and run the " \
+                       "catalog's functions and checks on the server and in the browser.")
   ].freeze
 
   # The interaction demos are the one hand-curated section: full-page
@@ -198,7 +208,7 @@ class DocsCatalog
     DOC_SECTIONS = {
       "Get Started" => %w[installation theming typography testing i18n stimulus editors api],
       "Advanced" => %w[accessibility forms pagination data-table deferred optimistic-forms caching stable-ids engines],
-      "AI Native" => %w[mcp-server webmcp agent-skills recipes page-agent]
+      "AI Native" => %w[mcp-server webmcp agent-skills recipes ag-ui a2ui page-agent]
     }.freeze
 
     # DOC_SECTIONS resolved to entries. Raises when the section map and
