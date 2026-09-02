@@ -26,9 +26,20 @@ module Poetry
         )
       end
 
-      initializer "poetry_charts.helpers" do
-        ActiveSupport.on_load(:action_view) do
-          include Poetry::Charts::ComponentsHelper
+      # ComponentsHelper lives in app/helpers (Zeitwerk-autoloaded), so it is
+      # NOT loaded at gem-require time. A host that forces ActionView to load
+      # during initialization (an editor gem patching a view helper at
+      # require time) fires the on_load(:action_view) hook right here, before
+      # the engine's app/helpers constant is resolvable - NameError at boot.
+      # Registering the hook from a to_prepare block runs it only once the
+      # autoload paths are wired (and re-runs safely on reload); the same fix
+      # as poetry-ui's. poetry-core's TagHelper avoids it only because it
+      # lives in lib/ and is required eagerly. EngineBootTest guards this.
+      initializer "poetry_charts.helpers" do |app|
+        app.config.to_prepare do
+          ActiveSupport.on_load(:action_view) do
+            include Poetry::Charts::ComponentsHelper
+          end
         end
       end
 
