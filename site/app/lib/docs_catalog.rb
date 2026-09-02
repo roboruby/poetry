@@ -142,6 +142,13 @@ class DocsCatalog
                            "The tabs component on the page executes the agent's tool call through " \
                            "the registrar and reports back; the interrupt is answered as a URL " \
                            "decision. No model, no key, same bytes every run."),
+    Entry.new(slug: "a2ui-surface", title: "A2UI Surface", section: "demos",
+              description: "A2UI surfaces rendered by poetry-agent: the spec's basic catalog and " \
+                           "Poetry's own catalog rendered on the server as forms, and a third streamed " \
+                           "progressively - the surface, its components, its data - as versioned Turbo " \
+                           "Streams. Submit a surface and read the action message the agent receives, " \
+                           "then watch the scripted agent's reply stream into place. No model, no key, " \
+                           "same bytes every run."),
     Entry.new(slug: "interactive", title: "Interactive Filter", section: "demos",
               description: "Upstream's interactive blocks are useState filters. Here the filter " \
                            "is a real form: submitting re-renders the chart on the server and Turbo " \

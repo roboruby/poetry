@@ -34,6 +34,7 @@ class DemosController < ApplicationController
     prepare_interactive if @entry.slug == "interactive"
     prepare_chat_replay if @entry.slug == "chat-replay"
     prepare_agui_relay if @entry.slug == "agui-relay"
+    @a2ui_session = A2uiShowcase.session if @entry.slug == "a2ui-surface"
     @examples = helpers.docs_examples_for("demos", @entry.slug)
     render template: "docs/page"
   end

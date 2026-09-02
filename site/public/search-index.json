@@ -5958,6 +5958,18 @@
     "path": "/demos/agui-relay#default"
   },
   {
+    "title": "A2UI Surface",
+    "page": "A2UI Surface",
+    "section": "demos",
+    "path": "/demos/a2ui-surface"
+  },
+  {
+    "title": "Default",
+    "page": "A2UI Surface",
+    "section": "demos",
+    "path": "/demos/a2ui-surface#default"
+  },
+  {
     "title": "Interactive Filter",
     "page": "Interactive Filter",
     "section": "demos",
@@ -6342,7 +6354,7 @@
     "path": "/libraries/agent#agui"
   },
   {
-    "title": "The A2UI catalog",
+    "title": "The A2UI catalog and renderer",
     "page": "Agent",
     "section": "libraries",
     "path": "/libraries/agent#a2ui"

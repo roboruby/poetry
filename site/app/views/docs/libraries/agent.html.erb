@@ -103,7 +103,7 @@
         agent through the whole loop: streamed rows, a tool call the tabs
         component executes, the result reported back, an interrupt answered.
       </p>
-      <h2 id="a2ui">The A2UI catalog</h2>
+      <h2 id="a2ui">The A2UI catalog and renderer</h2>
       <p>
         A2UI is the declarative generative-UI format: an agent emits a flat
         component list against a catalog the client owns. Poetry's registry is
@@ -114,6 +114,25 @@
         <code>text</code> or <code>children</code>), and this site serves it at
         <%= link_to "/a2ui/catalog.json", "/a2ui/catalog.json" %> for any agent
         or middleware that reads catalogs by URL.
+      </p>
+      <p>
+        The renderer is the other half. <code>Poetry::Agent::A2UI::Session</code>
+        folds the envelope (<code>createSurface</code>, <code>updateComponents</code>,
+        <code>updateDataModel</code>, <code>deleteSurface</code>) into surfaces and
+        answers what it cannot honor with the spec's renderer-to-agent errors;
+        <code>Renderer</code> renders a surface through your view context - the
+        spec's basic catalog mapped onto Poetry's components, or Poetry's own
+        catalog rendered straight from the registry - and <code>Streams</code>
+        delivers every change as a versioned Turbo Stream. A surface is a form:
+        bound inputs are named by their data-model pointer, every agent action is
+        a submit button, and <code>Session#action</code> turns the submitted form
+        into the spec's <code>action</code> message, so two-way binding syncs on
+        the action exactly as the spec asks. The
+        <%= link_to "A2UI Surface demo", "/demos/a2ui-surface" %> renders both
+        catalogs, streams a third surface progressively, and shows the message
+        each submission produces. Renderer functions (<code>formatString</code>,
+        <code>formatCurrency</code>, ...) and checks beyond what the browser
+        enforces natively are the next slice.
       </p>
     <% end %>
   </section>
@@ -136,6 +155,10 @@
           <tr><td><code>Poetry::Agent::AGUI</code></td><td><code>Client</code>, <code>SSE</code>, <code>RunInput</code>, <code>JsonPatch</code>, <code>Transcript</code>, <code>Relay</code>, <code>TurboStream</code> - the AG-UI client and its Turbo Stream relay</td></tr>
           <tr><td><code>poetry--agent--agui-client-tool</code></td><td>the bridge controller: executes an agent's frontend tool call through the registrar and POSTs the result to the continue URL</td></tr>
           <tr><td><code>Poetry::Agent::A2UI::Catalog</code></td><td>the registry projected as an A2UI v1.0 catalog document (<code>to_h</code>, <code>inline</code>, <code>to_json</code>)</td></tr>
+          <tr><td><code>Poetry::Agent::A2UI::Session</code></td><td>the envelope consumer: surfaces, data models, renderer-to-agent errors, and <code>#action</code> (a submitted surface form as the spec's action message)</td></tr>
+          <tr><td><code>Poetry::Agent::A2UI::Renderer</code></td><td>renders a surface through a view context as a form of pointer-named inputs and action buttons; never raises for an agent's mistake (<code>warnings</code>)</td></tr>
+          <tr><td><code>Poetry::Agent::A2UI::Catalogs</code></td><td><code>Basic</code> (the spec's catalog mapped onto Poetry's components) and <code>Native</code> (Poetry's catalog rendered from the registry, no hand mapping)</td></tr>
+          <tr><td><code>Poetry::Agent::A2UI::Streams</code></td><td>every surface change as a versioned Turbo Stream (append on first appearance, <code>vreplace</code> after, remove on delete)</td></tr>
         </tbody>
       </table>
     <% end %>

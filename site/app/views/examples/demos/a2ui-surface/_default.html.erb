@@ -1,0 +1,28 @@
+<%# The A2UI renderer live: the spec's basic catalog (sign in) and Poetry's
+    own catalog (the plan card) rendered on the server as forms, a third
+    surface streamed progressively as versioned Turbo Streams, and every
+    submission answered with the action message the agent receives plus
+    the scripted agent's reply. %>
+<% render_surface = lambda do |surface|
+     Poetry::Agent::A2UI::Renderer.new(surface, view: self, action_url: a2ui_surface_action_path,
+                                       html: { class: "flex flex-col gap-4" }).call
+   end %>
+<div class="grid w-full gap-6 lg:grid-cols-2">
+  <div class="flex flex-col gap-6">
+    <%= render_surface.call(@a2ui_session.surface("signin")) %>
+    <%= render_surface.call(@a2ui_session.surface("plan")) %>
+    <div id="a2ui-stage" class="flex flex-col gap-6"></div>
+    <turbo-stream-source id="a2ui-surface-source" src="<%= a2ui_surface_stream_path(instant: params[:instant].presence) %>"></turbo-stream-source>
+  </div>
+  <div class="flex flex-col gap-3">
+    <p class="text-sm text-muted-foreground">
+      Two surfaces rendered on the server: the sign-in form is the spec's basic catalog mapped onto
+      Poetry's components (its checks became the browser's own constraints); the plan card is Poetry's
+      catalog rendered straight from the registry. The order card below them streams in the way an agent
+      streams it - the surface, then its components, then the data - each arrival a versioned replace.
+      Submit either form: the bound inputs and the source component post back, the server builds the
+      spec's <code>action</code> message, and the scripted agent's reply streams into place.
+    </p>
+    <%= render "a2ui_surface/log", action: nil %>
+  </div>
+</div>

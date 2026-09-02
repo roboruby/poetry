@@ -1,0 +1,17 @@
+<%# What the agent receives from a submitted surface: the spec's action
+    message, and its AG-UI placement (forwardedProps) with the data model
+    the surface asked for. %>
+<div id="a2ui-action-log" class="flex flex-col gap-3">
+  <% if action %>
+    <p class="text-xs text-muted-foreground">The renderer-to-agent <code>action</code> message, built from the submitted form:</p>
+    <%= poetry_code_block(code: JSON.pretty_generate(action.to_h), language: "json", label: "action") %>
+    <% if action.forwarded_props.dig("a2uiAction", "dataModel") %>
+      <p class="text-xs text-muted-foreground">Over AG-UI it rides <code>forwardedProps</code>; the surface asked for its data model (<code>sendDataModel</code>), so that comes along:</p>
+      <%= poetry_code_block(code: JSON.pretty_generate(action.forwarded_props), language: "json", label: "forwardedProps") %>
+    <% end %>
+  <% elsif local_assigns[:rejected] %>
+    <p class="text-xs text-muted-foreground">That submission named no agent action, so nothing reached the agent.</p>
+  <% else %>
+    <p class="text-xs text-muted-foreground">Submit a surface to see the message the agent receives.</p>
+  <% end %>
+</div>
