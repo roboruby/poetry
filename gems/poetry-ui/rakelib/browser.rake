@@ -432,12 +432,28 @@ def poetry_ui_golden_manifest_path
   Poetry::Ui.root.join("test/visual_baselines/.inputs_manifest")
 end
 
+# The goldens are blessed against the sibling poetry-core checkout (the
+# Gemfile path source). Against the released gem the render inputs differ
+# by construction between core releases, so the drift check only carries
+# meaning side by side; CI and lone clones get a skip, not a red gate.
+def poetry_ui_core_sibling?
+  spec = Bundler.definition.specs.find { |s| s.name == "poetry-core" }
+  spec&.source.is_a?(Bundler::Source::Path)
+end
+
 namespace :goldens do
   desc "Verify poetry-core's render inputs (tokens/vendor CSS, controllers JS, stimulus dist, " \
        "tailwind version) still match what the visual goldens were blessed under - cheap, " \
        "no Chrome; a full green rake test:visual re-stamps the manifest"
   task :verify_inputs do
     poetry_ui_boot!
+
+    unless poetry_ui_core_sibling?
+      puts "goldens: poetry-core resolves to the released gem #{Poetry::Core::VERSION} here, not the sibling " \
+           "checkout the goldens are blessed against - inputs check skipped (it runs side by side; " \
+           "a full rake test:visual re-stamps)"
+      next
+    end
 
     stamp = poetry_ui_golden_manifest_path
     unless stamp.exist?
