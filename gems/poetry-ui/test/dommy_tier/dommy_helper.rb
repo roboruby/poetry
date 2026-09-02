@@ -43,7 +43,8 @@ module DommyTier
 
   # poetry-core develops against the npm Stimulus dist; an installed gem (a
   # lone clone, CI) has no node_modules, so the vendored test asset beside the
-  # Turbo one (test/dummy/public/vendor) is the fallback - same UMD build.
+  # Turbo one (test/dummy/public/vendor) is the fallback - same UMD build,
+  # kept in step by rake vendor:stimulus:verify (refresh: rake vendor:stimulus).
   STIMULUS_UMD = [
     Poetry::Core.root.join("node_modules/@hotwired/stimulus/dist/stimulus.umd.js"),
     Pathname.new(File.expand_path("../dummy/public/vendor/stimulus.umd.js", __dir__))

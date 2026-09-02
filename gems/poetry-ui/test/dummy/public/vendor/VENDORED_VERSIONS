@@ -1,0 +1,15 @@
+@hotwired/stimulus 3.2.2 (dist/stimulus.umd.js)
+@hotwired/turbo 8.0.13 (dist/turbo.es2017-esm.js)
+
+Test assets for the dummy host, never shipped in the gem (test/ is dev-only).
+Both MIT; the license banners ride inside the files.
+
+Stimulus: the same UMD build poetry-core develops against, for the dommy
+tier when poetry-core is an installed gem (no node_modules). Refresh with
+`bundle exec rake vendor:stimulus` (copies the sibling's dist, records the
+version here); `vendor:stimulus:verify` in the default chain fails on drift
+side by side and skips against the released gem. The dist's own banner can
+lag the package version (3.2.2 ships a "3.2.1" banner upstream).
+
+Turbo: for the stable-id gate (real Turbo morphs under test). Update by
+copying a newer dist and bumping the line above.

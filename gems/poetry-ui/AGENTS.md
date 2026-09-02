@@ -6,7 +6,8 @@ visual fragments under `themes/`.
 
 ## Gates — run what your change touches, all of it before "done"
 
-- `bundle exec rake` — the default chain: `test`, `test:dommy`, `rubocop`,
+- `bundle exec rake` — the default chain: `test`, `test:dommy`,
+  `vendor:stimulus:verify`, `rubocop`,
   `registry:verify`, `css:template_classes:verify`, `herb:compile`,
   `css:verify_compiled`, `css:verify_selected_bridge`,
   `css:verify_reduced_motion`, `css:verify_theme`, `css:verify_fidelity`,
@@ -35,6 +36,10 @@ visual fragments under `themes/`.
   card. The judged half (`eval:capture` + `eval:judge`) and the generated-arm
   benchmark (`eval:benchmark:*`) are on-demand, never CI — doctrine
   in `eval/README.md`.
+- `bundle exec rake vendor:stimulus` — refresh the vendored Stimulus UMD test
+  asset (`test/dummy/public/vendor`, the dommy tier's runtime when poetry-core
+  is an installed gem) from the sibling's npm dist; `vendor:stimulus:verify`
+  fails on drift side by side and skips against the released gem.
 - CI (`.github/workflows/main.yml`) adds `bundle-audit` and the Herb
   linter (`rake herb:lint`, rules pinned in `.herb.yml`).
 
