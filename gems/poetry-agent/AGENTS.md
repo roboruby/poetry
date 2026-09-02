@@ -59,8 +59,31 @@ component contract. Two ship:
   allowlist, coerced per kind). Basic-catalog mapping lives in
   `Catalogs::Basic`; the native catalog renders from the registry with no
   hand mapping (`Catalogs::Native`) - never special-case a component there,
-  fix the registry. Functions and non-native `checks` are a later slice:
-  a `{ "call" => ... }` value resolves to nil plus a warning.
+  fix the registry.
+- Functions: `Functions.basic` implements the spec's set from its
+  descriptions (never copy another renderer's code); `required` treats a
+  boolean false as present, as the spec says; `regex` runs under a
+  match timeout. `Expression` parses `formatString`; only function
+  ARGUMENTS interpolate `${}` strings, component properties stay literal.
+  A function problem resolves to nil and warns - rendering never raises.
+- Checks run twice: on the server (`Surface#failures` - a failing check
+  makes `Session#action` invalid, and the renderer fills the control's
+  error slot) and in the browser (`poetry--agent--a2ui-surface` evaluates
+  the rendered program on every input; unknown functions PASS there,
+  fail-open client / fail-closed server). Button checks disable the
+  button in the browser; the server enforces them on the action.
+- Every library component a surface renders gets a render-stable `key:`
+  through `Renderer#component` (surface, component id, scope, suffix) and
+  the render runs inside `StableId.with_seed`, so two renders are
+  byte-identical and morph pairs elements. Repeated instances of one
+  class under one A2UI component MUST pass a `suffix:`. Surface updates
+  are `vreplace` with `method="morph"`; the runtime's morph guard keeps
+  local state (tab selection, dialog open state, expanded popups, dirty
+  controls) - extend `LOCAL_STATE` in `stream_actions.js` when a new
+  component slot holds local state.
+- `Functions#define` takes `callers:` (`rendererOnly` default); only
+  `agentOnly` / `rendererOrAgent` functions answer `callRendererFunction`
+  (`Session#responses`).
 - The registrar validates every call in code (required, unknown, type,
   enum) and answers problems as `Error: ...` strings; a result is the
   action's returned state (core's tool-bound actions return it) or a
