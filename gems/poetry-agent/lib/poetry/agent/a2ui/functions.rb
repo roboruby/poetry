@@ -164,11 +164,16 @@ module Poetry
           PLURAL_CATEGORIES = %w[zero one two few many other].freeze
           # The argument every validator checks.
           CHECKED = { "value" => { "description" => "The value to check." } }.freeze
-          # A boolean list argument (`and`, `or`).
-          LIST = { "values" => { "type" => "array", "description" => "The values to combine.",
-                                 "items" => { "$ref" => "#{COMMON_TYPES}DynamicBoolean" }, "minItems" => 2 } }.freeze
 
           module_function
+
+          # A boolean list argument (`and`, `or`).
+          #
+          # @return [Hash]
+          def list
+            { "values" => { "type" => "array", "description" => "The values to combine.",
+                            "items" => { "$ref" => "#{COMMON_TYPES}DynamicBoolean" }, "minItems" => 2 } }
+          end
 
           # @param registry [Functions]
           # @return [void]
@@ -211,22 +216,23 @@ module Poetry
           def formatters(registry)
             grouping = { "decimals" => DYNAMIC.call("Number", "Fraction digits to show."),
                          "grouping" => DYNAMIC.call("Boolean", "Thousands separators (default true).") }
+            template = { "value" => DYNAMIC.call("String", "The string with ${} blocks.") }
             registry.define("formatString", description: "Interpolates data model values and function results " \
                                                          "into a string: ${/path}, ${name(arg: value)}.",
                                             returns: "string", required: %w[value],
-                                            params: { "value" => DYNAMIC.call("String", "The string with ${} blocks.") }) do |args, evaluator|
+                                            params: template) do |args, evaluator|
               evaluator.stringify(args["value"])
             end
+            amount = { "value" => DYNAMIC.call("Number", "The number.") }
             registry.define("formatNumber", description: "Formats a number with grouping and decimal precision.",
                                             returns: "string", required: %w[value],
-                                            params: { "value" => DYNAMIC.call("Number", "The number.") }.merge(grouping)) do |args, _|
+                                            params: amount.merge(grouping)) do |args, _|
               format_number(args)
             end
+            money = amount.merge("currency" => DYNAMIC.call("String", "The ISO 4217 code."))
             registry.define("formatCurrency", description: "Formats a number as a currency string.", returns: "string",
                                               required: %w[value currency],
-                                              params: { "value" => DYNAMIC.call("Number", "The amount."),
-                                                        "currency" => DYNAMIC.call("String",
-                                                                                   "The ISO 4217 code.") }.merge(grouping)) do |args, _|
+                                              params: money.merge(grouping)) do |args, _|
               format_currency(args)
             end
             registry.define("formatDate", description: "Formats a timestamp with a Unicode TR35 pattern " \
@@ -238,9 +244,9 @@ module Poetry
               format_date(args["value"], args["format"])
             end
             forms = PLURAL_CATEGORIES.to_h { |category| [category, DYNAMIC.call("String", "The #{category} form.")] }
+            forms["value"] = DYNAMIC.call("Number", "The number.")
             registry.define("pluralize", description: "Picks the string for a number's CLDR plural category.",
-                                         returns: "string", required: %w[value other],
-                                         params: forms.merge("value" => DYNAMIC.call("Number", "The number."))) do |args, _|
+                                         returns: "string", required: %w[value other], params: forms) do |args, _|
               pluralize(args)
             end
             registry.define("openUrl", description: "Opens an http(s) URL; the renderer links to it.", returns: "void",
@@ -253,11 +259,11 @@ module Poetry
           # @api private
           def combinators(registry)
             registry.define("and", description: "Logical AND of a list of values.", returns: "boolean",
-                                   required: %w[values], params: LIST) do |args, _|
+                                   required: %w[values], params: list) do |args, _|
               Array(args["values"]).all? { |value| Functions.truthy?(value) }
             end
             registry.define("or", description: "Logical OR of a list of values.", returns: "boolean",
-                                  required: %w[values], params: LIST) do |args, _|
+                                  required: %w[values], params: list) do |args, _|
               Array(args["values"]).any? { |value| Functions.truthy?(value) }
             end
             registry.define("not", description: "Logical NOT of a value.", returns: "boolean", required: %w[value],
