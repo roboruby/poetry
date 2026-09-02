@@ -17,3 +17,9 @@ script/theme_port/parts-*.json
 .gstack/
 /.yardoc
 .DS_Store
+
+# Dummy host app (generated; not committed)
+/test/dummy/.bundle/
+/test/dummy/tmp/
+/test/dummy/config/master.key
+/test/dummy/log/*.log
