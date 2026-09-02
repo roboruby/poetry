@@ -88,6 +88,38 @@
 
   <section class="flex flex-col gap-4">
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="agui">The AG-UI relay</h2>
+      <p>
+        AG-UI is the event protocol agent frameworks speak to user-facing
+        applications: a run streams text deltas, tool calls, shared state,
+        activities, and interrupts. <code>Poetry::Agent::AGUI</code> is the
+        Rails side of that connection - a client, not a server. Its
+        <code>Transcript</code> folds the stream into chat-shaped messages,
+        its <code>Relay</code> renders every change as a versioned Turbo
+        Stream through your own row partial, and a rendered component's
+        declared tools are advertised as the agent's frontend tools and
+        executed in the browser by the same registrar WebMCP uses. The
+        <%= link_to "AG-UI Relay demo", "/demos/agui-relay" %> runs a scripted
+        agent through the whole loop: streamed rows, a tool call the tabs
+        component executes, the result reported back, an interrupt answered.
+      </p>
+      <h2 id="a2ui">The A2UI catalog</h2>
+      <p>
+        A2UI is the declarative generative-UI format: an agent emits a flat
+        component list against a catalog the client owns. Poetry's registry is
+        that catalog once projected -
+        <code>Poetry::Agent::A2UI::Catalog.from_registry</code> writes the v1.0
+        JSON Schema document (style axes as enums, options as typed
+        properties, slots as child references, the content block as
+        <code>text</code> or <code>children</code>), and this site serves it at
+        <%= link_to "/a2ui/catalog.json", "/a2ui/catalog.json" %> for any agent
+        or middleware that reads catalogs by URL.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <h2 id="whats-in-the-gem">What's in the gem</h2>
     <% end %>
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
@@ -101,6 +133,9 @@
           <tr><td><code>@poetry/agent</code> adapter</td><td>the one file that knows the <code>document.modelContext</code> surface, so spec churn stays a one-file fix</td></tr>
           <tr><td><code>Poetry::Agent::WebMCP::OriginTrial</code></td><td>Rack middleware serving origin-trial tokens on HTML responses; a pass-through with none configured</td></tr>
           <tr><td><code>Poetry::Agent.configure</code></td><td><code>origin_trial_tokens</code> and the per-document <code>registration_budget</code></td></tr>
+          <tr><td><code>Poetry::Agent::AGUI</code></td><td><code>Client</code>, <code>SSE</code>, <code>RunInput</code>, <code>JsonPatch</code>, <code>Transcript</code>, <code>Relay</code>, <code>TurboStream</code> - the AG-UI client and its Turbo Stream relay</td></tr>
+          <tr><td><code>poetry--agent--agui-client-tool</code></td><td>the bridge controller: executes an agent's frontend tool call through the registrar and POSTs the result to the continue URL</td></tr>
+          <tr><td><code>Poetry::Agent::A2UI::Catalog</code></td><td>the registry projected as an A2UI v1.0 catalog document (<code>to_h</code>, <code>inline</code>, <code>to_json</code>)</td></tr>
         </tbody>
       </table>
     <% end %>

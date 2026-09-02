@@ -1,0 +1,52 @@
+<%# One message row from an AG-UI transcript, re-rendered by the relay on
+    every change: data-version is the versioned replace's clock. User
+    turns are bubbles at the end; assistant turns render their parts -
+    reasoning, streamed text, tool calls with their state (running, in
+    the browser, done, failed), activities as their JSON. %>
+<div id="row-<%= message.id %>" data-version="<%= version %>">
+  <% if message.role == "user" %>
+    <%= poetry_message(align: :end) do |m| %>
+      <%= poetry_bubble { message.parts.map { |part| part[:text] }.join } %>
+    <% end %>
+  <% else %>
+    <%= poetry_message do |m| %>
+      <div class="flex min-w-0 flex-col gap-2">
+        <% message.parts.each do |part| %>
+          <% case part[:kind] %>
+          <% when :reasoning %>
+            <p class="text-xs italic text-muted-foreground"><%= part[:text] %></p>
+          <% when :text %>
+            <% if part[:text].present? %>
+              <%= poetry_bubble(variant: :muted) { part[:text] } %>
+            <% end %>
+          <% when :activity %>
+            <code class="rounded-md border px-3 py-2 text-xs"><%= part[:activity_type] %>: <%= part[:content].to_json %></code>
+          <% when :tool %>
+            <div class="flex flex-col gap-1 rounded-md border px-3 py-2 text-xs">
+              <div class="flex items-center gap-2">
+                <code class="font-medium"><%= part[:name] %></code>
+                <% case part[:state] %>
+                <% when :loading %>
+                  <%= poetry_spinner(class: "size-3") %>
+                  <span class="text-muted-foreground">running…</span>
+                <% when :awaiting_client %>
+                  <%= poetry_badge(variant: :outline) { "in the browser" } %>
+                <% when :error %>
+                  <%= poetry_badge(variant: :destructive) { "failed" } %>
+                <% else %>
+                  <%= poetry_badge { "done" } %>
+                <% end %>
+              </div>
+              <% if part[:input] %>
+                <code class="text-muted-foreground">in: <%= part[:input].to_json %></code>
+              <% end %>
+              <% if part[:output] %>
+                <code>out: <%= part[:output].to_json %></code>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

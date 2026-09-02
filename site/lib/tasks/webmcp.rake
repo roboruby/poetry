@@ -12,8 +12,8 @@ namespace :webmcp do
     url = ENV.fetch("WEBMCP_URL", "http://127.0.0.1:3000").chomp("/")
     channel = ENV.fetch("CHROME_CHANNEL", "chrome")
     suite = Rails.root.join("eval/webmcp/poetry-evals.json").to_s
-    command = ["npx", "-y", "webmcp-evals@0.0.4", "smoke", "-u", "#{url}/webmcp", "-e", suite,
-               "--chrome-channel", channel, "-v"]
+    command = [ "npx", "-y", "webmcp-evals@0.0.4", "smoke", "-u", "#{url}/webmcp", "-e", suite,
+               "--chrome-channel", channel, "-v" ]
     puts command.join(" ")
     system(*command) || abort("webmcp:smoke failed")
   end

@@ -1,0 +1,17 @@
+<%# What follows a finished run: the interrupt's decision (run 2), the
+    handoff note while the browser runs the tool (run 1), or the replay
+    link. State is the URL, so every point is shareable. %>
+<% link = ->(q) { "#{page}?#{q.merge(instant: params[:instant].presence).compact.to_query}" } %>
+<div id="agui-relay-next" class="flex flex-wrap items-center gap-2 px-4 pb-4 text-xs text-muted-foreground">
+  <% if transcript.interrupted? %>
+    <span><%= transcript.interrupts.first["message"] %></span>
+    <%= poetry_button(size: :sm, href: link.call(s: 3, d: 1)) { "Approve" } %>
+    <%= poetry_button(size: :sm, variant: :outline, href: link.call(s: 3, d: 0)) { "Deny" } %>
+  <% elsif transcript.pending_client_tools.any? %>
+    <span>The browser is running <code><%= transcript.pending_client_tools.first[:name] %></code> through the registrar…</span>
+  <% elsif index >= 3 %>
+    <%= poetry_button(size: :sm, variant: :outline, href: link.call(s: 1)) { "Replay from the top" } %>
+  <% else %>
+    <span>streaming…</span>
+  <% end %>
+</div>

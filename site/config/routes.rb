@@ -103,6 +103,9 @@ Rails.application.routes.draw do
   get "charts/:slug" => "charts#show", as: :chart
   get "blocks/:slug" => "blocks#show", as: :block
   get "demos/chat-replay/stream" => "chat_replay#stream", as: :chat_replay_stream, format: false
+  get "demos/agui-relay/stream" => "agui_relay#stream", as: :agui_relay_stream, format: false
+  post "demos/agui-relay/continue" => "agui_relay#continue", as: :agui_relay_continue, format: false
+  get "a2ui/catalog.json" => "a2ui#catalog", as: :a2ui_catalog, format: false
   get "demos/:slug" => "demos#show", as: :demo
 
   # The marketing landing page owns the root; the docs shell starts at /docs.

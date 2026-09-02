@@ -33,6 +33,7 @@ class DemosController < ApplicationController
 
     prepare_interactive if @entry.slug == "interactive"
     prepare_chat_replay if @entry.slug == "chat-replay"
+    prepare_agui_relay if @entry.slug == "agui-relay"
     @examples = helpers.docs_examples_for("demos", @entry.slug)
     render template: "docs/page"
   end
@@ -44,6 +45,13 @@ class DemosController < ApplicationController
     raise ActionController::RoutingError, "unknown demo #{params[:slug]}" unless entry
 
     DocsMarkdown.example_page(entry)
+  end
+
+  # The relay demo: the runs before the current one are applied to a
+  # transcript for the server-rendered history; the current run streams.
+  def prepare_agui_relay
+    @agui_cursor = AguiReplay.cursor(params)
+    @agui_transcript = AguiReplay.transcript_before(@agui_cursor, decision: AguiReplay.decision(params))
   end
 
   def prepare_interactive

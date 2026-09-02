@@ -135,6 +135,13 @@ class DocsCatalog
                            "text, a tool call flipping loading to done, and a human-in-the-loop " \
                            "approval where the pause is a form and the continuation is the " \
                            "stream after your decision. No model, no key, same bytes every run."),
+    Entry.new(slug: "agui-relay", title: "AG-UI Relay", section: "demos",
+              description: "A scripted AG-UI agent's event stream - text deltas, reasoning, a " \
+                           "backend tool call, shared state, a frontend tool call, an interrupt - " \
+                           "relayed by poetry-agent as versioned Turbo Streams into MessageScroller. " \
+                           "The tabs component on the page executes the agent's tool call through " \
+                           "the registrar and reports back; the interrupt is answered as a URL " \
+                           "decision. No model, no key, same bytes every run."),
     Entry.new(slug: "interactive", title: "Interactive Filter", section: "demos",
               description: "Upstream's interactive blocks are useState filters. Here the filter " \
                            "is a real form: submitting re-renders the chart on the server and Turbo " \

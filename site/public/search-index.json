@@ -5946,6 +5946,18 @@
     "path": "/demos/chat-replay#default"
   },
   {
+    "title": "AG-UI Relay",
+    "page": "AG-UI Relay",
+    "section": "demos",
+    "path": "/demos/agui-relay"
+  },
+  {
+    "title": "Default",
+    "page": "AG-UI Relay",
+    "section": "demos",
+    "path": "/demos/agui-relay#default"
+  },
+  {
     "title": "Interactive Filter",
     "page": "Interactive Filter",
     "section": "demos",
@@ -6322,6 +6334,18 @@
     "page": "Agent",
     "section": "libraries",
     "path": "/libraries/agent#webmcp"
+  },
+  {
+    "title": "The AG-UI relay",
+    "page": "Agent",
+    "section": "libraries",
+    "path": "/libraries/agent#agui"
+  },
+  {
+    "title": "The A2UI catalog",
+    "page": "Agent",
+    "section": "libraries",
+    "path": "/libraries/agent#a2ui"
   },
   {
     "title": "What's in the gem",
