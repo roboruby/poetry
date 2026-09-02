@@ -20,7 +20,13 @@ class RenderGraphTest < ActiveSupport::TestCase
   # a guide page), not real renders.
   UNRESOLVED_SAMPLES = {
     [ "app/views/docs/testing.html.erb", "settings/notifications" ] =>
-      "the Testing guide's ActionView::TestCase sample renders a host partial that does not exist here"
+      "the Testing guide's ActionView::TestCase sample renders a host partial that does not exist here",
+    [ "app/views/docs/agui.html.erb", "assistant/item" ] =>
+      "the AG-UI guide's page sample renders the host's own message partial",
+    [ "app/views/docs/agui.html.erb", "assistant/row" ] =>
+      "the AG-UI guide's stream-action sample renders the host's own row partial",
+    [ "app/views/docs/agui.html.erb", "assistant/activity" ] =>
+      "the AG-UI guide's activity sample renders the host's own activity partial"
   }.freeze
 
   # Partials nothing in app/views renders by name.
