@@ -42,6 +42,18 @@ the swappability door.
 - `static events` declarations follow the poetry-core rule
   (events_declaration.test.js enforces); Ruby-side wiring is declared via
   `use_stimulus`, gated by the StimulusContract like poetry-ui.
+- Two ways to render a library component, chosen by who is authoring.
+  Inside a component template (and its Ruby), render siblings by class —
+  `render Poetry::Charts::Container::Component.new(...)` — never through
+  the `helpers` proxy: the `poetry_*` helpers are mixed into ActionView's
+  base, not ViewComponent's, so they are undefined here, and the proxy
+  couples the component to whatever view context is rendering. Host-side
+  code — docs pages, previews, generated code — uses the `poetry_*`
+  helper: the registry, editor snippets, skills, and `poetry:check` key on
+  helper names and do not parse `render Klass.new`. poetry-ui's AGENTS.md
+  carries the same rule with a carve-out for parts that exist only as
+  helpers; this gem has none — every helper is a thin wrapper over one
+  class.
 - Doc comments follow the poetry-core rule: file/class narration stays
   `//`; every PUBLIC method and exported function/constant carries a
   JSDoc `/** ... */` block with `@param`/`@returns`. No comment may
