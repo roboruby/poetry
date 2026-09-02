@@ -36,14 +36,15 @@ module Poetry
         # @param append_render [#call, nil] `(message, version) -> String` the HTML a
         #   first appearance appends - the row inside its list wrapper (a scroller
         #   item); defaults to `render`
-        def initialize(transcript:, render:, container: nil, target: ->(message) { "row-#{message.id}" },
-                       action: "vreplace", append_render: nil)
+        def initialize(transcript:, render:, container: nil, target: ->(message) { "row-#{message.id}" }, # rubocop:disable Metrics/ParameterLists
+                       action: "vreplace", append_render: nil, morph: false)
           @transcript = transcript
           @render = render
           @append_render = append_render || render
           @container = container
           @target = target
           @action = action
+          @morph = morph
           @seen = {}
         end
 
@@ -79,7 +80,8 @@ module Poetry
           @seen[id] = true
           return TurboStream.append(@container, @append_render.call(message, message.version)) if @container && first
 
-          TurboStream.build(@action, @target.call(message), @render.call(message, message.version))
+          TurboStream.build(@action, @target.call(message), @render.call(message, message.version),
+                            method: @morph ? "morph" : nil)
         end
 
         # Bridge elements for every pending client tool call.

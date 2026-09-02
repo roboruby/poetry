@@ -93,7 +93,7 @@ class SessionTest < Minitest::Test
     assert_equal "/components/a", error["path"]
   end
 
-  def test_renderer_function_calls_are_refused
+  def test_renderer_only_functions_are_refused_to_agents
     session = A2UI::Session.new
     session.apply({ "callRendererFunction" => { "functionCallId" => "f1",
                                                 "callFunction" => { "call" => "getScreenResolution",
@@ -102,7 +102,40 @@ class SessionTest < Minitest::Test
 
     assert_equal "INVALID_FUNCTION_CALL", error["code"]
     assert_equal "f1", error["functionCallId"]
-    assert_empty session.apply({ "agentFunctionResponse" => { "functionCallId" => "f2", "value" => 1 } })
+    assert_match(/not invocable by an agent/, error["message"])
+
+    session.apply({ "callRendererFunction" => { "functionCallId" => "f2",
+                                                "callFunction" => { "call" => "required",
+                                                                    "args" => { "value" => 1 } } } })
+
+    assert_equal "f2", session.errors.last.dig("error", "functionCallId")
+    assert_empty session.responses
+    assert_empty session.apply({ "agentFunctionResponse" => { "functionCallId" => "f3", "value" => 1 } })
+  end
+
+  def test_agent_callable_functions_answer_with_a_response
+    functions = A2UI::Functions.new
+    functions.define("screen", description: "The screen size.", returns: "string", callers: "rendererOrAgent",
+                               params: { "unit" => { "type" => "string" } }) do |args, _|
+      "1280x800#{args["unit"]}"
+    end
+    functions.define("shout", description: "Upcases.", returns: "string", callers: "agentOnly",
+                              required: %w[value]) { |args, _| args["value"].to_s.upcase }
+    catalog = A2UI::Catalogs::Basic.new
+    catalog.define_singleton_method(:functions) { functions }
+    session = A2UI::Session.new(catalogs: { "https://example.com/cat.json" => catalog })
+    session.apply({ "callRendererFunction" => { "functionCallId" => "f1",
+                                                "callFunction" => { "call" => "screen", "catalogId" => "https://example.com/cat.json",
+                                                                    "args" => { "unit" => "px" } } } })
+    session.apply({ "callRendererFunction" => { "functionCallId" => "f2",
+                                                "callFunction" => { "call" => "shout",
+                                                                    "catalogId" => "https://example.com/cat.json" } } })
+
+    assert_equal [{ "version" => "v1.0",
+                    "rendererFunctionResponse" => { "functionCallId" => "f1", "value" => "1280x800px" } }],
+                 session.responses
+    assert_equal "f2", session.errors.last.dig("error", "functionCallId")
+    assert_match(/missing value/, session.errors.last.dig("error", "message"))
   end
 
   def test_delete_surface

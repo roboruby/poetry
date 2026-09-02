@@ -21,14 +21,22 @@ class StreamsTest < Minitest::Test
 
     second = streams.apply({ "updateDataModel" => { "surfaceId" => "s", "path" => "/a", "value" => 1 } })
 
-    assert_includes second, '<turbo-stream action="vreplace" target="a2ui-s">'
+    assert_includes second, '<turbo-stream action="vreplace" target="a2ui-s" method="morph">'
     assert_includes second, 'data-version="1"'
+  end
+
+  def test_morph_can_be_switched_off
+    streams = A2UI::Streams.new(session: @session, render: @render, morph: false)
+
+    assert_includes streams.apply({ "createSurface" => { "surfaceId" => "s" } }),
+                    '<turbo-stream action="vreplace" target="a2ui-s">'
   end
 
   def test_without_a_container_every_change_replaces
     streams = A2UI::Streams.new(session: @session, render: @render)
 
-    assert_includes streams.apply({ "createSurface" => { "surfaceId" => "s" } }), 'action="vreplace" target="a2ui-s"'
+    assert_includes streams.apply({ "createSurface" => { "surfaceId" => "s" } }),
+                    'action="vreplace" target="a2ui-s" method="morph"'
   end
 
   def test_mark_seen_skips_the_append

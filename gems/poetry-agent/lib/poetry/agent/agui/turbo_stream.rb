@@ -17,9 +17,12 @@ module Poetry
         # @param action [String] a Turbo Stream action (`append`, `replace`, `vreplace`, `remove`, ...)
         # @param target [String] the target element id
         # @param html [String, nil] the template content (already rendered, trusted)
+        # @param method [String, nil] Turbo's `method` attribute (`"morph"` morphs instead of swapping)
         # @return [String]
-        def build(action, target, html = nil)
-          open = %(<turbo-stream action="#{escape(action)}" target="#{escape(target)}">)
+        def build(action, target, html = nil, method: nil)
+          attributes = %(action="#{escape(action)}" target="#{escape(target)}")
+          attributes += %( method="#{escape(method)}") if method
+          open = "<turbo-stream #{attributes}>"
           return "#{open}</turbo-stream>" if html.nil?
 
           "#{open}<template>#{html}</template></turbo-stream>"
@@ -27,8 +30,10 @@ module Poetry
 
         # @param target [String]
         # @param html [String]
+        # @param morph [Boolean] morph the target (Turbo's idiomorph) instead of swapping it, so
+        #   local state - typed text, a selected tab, an open dialog - survives the update
         # @return [String]
-        def vreplace(target, html) = build("vreplace", target, html)
+        def vreplace(target, html, morph: false) = build("vreplace", target, html, method: morph ? "morph" : nil)
 
         # @param target [String]
         # @param html [String]

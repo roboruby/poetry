@@ -3,6 +3,7 @@
 require "test_helper"
 require "rendering_helper"
 require "json"
+require "cgi"
 
 # Renders through the dummy Rails host (poetry-ui's real components).
 class RendererTest < Minitest::Test
@@ -59,6 +60,93 @@ class RendererTest < Minitest::Test
     assert_includes html, "<p>3</p>"
   end
 
+  def test_renders_are_byte_identical_across_calls_and_carry_the_check_program
+    surface = basic_surface(
+      [{ "id" => "root", "component" => "Column", "children" => %w[email agree tabs modal go] },
+       { "id" => "email", "component" => "TextField", "label" => "Email", "value" => { "path" => "/email" },
+         "checks" => [{ "condition" => { "call" => "email", "args" => { "value" => { "path" => "/email" } } },
+                        "message" => "Bad email" }] },
+       { "id" => "agree", "component" => "CheckBox", "label" => "Agree", "value" => { "path" => "/agree" } },
+       { "id" => "tabs", "component" => "Tabs",
+         "tabs" => [{ "title" => "One", "child" => "t1" }, { "title" => "Two", "child" => "t2" }] },
+       { "id" => "t1", "component" => "Text", "text" => "first" },
+       { "id" => "t2", "component" => "Text", "text" => "second" },
+       { "id" => "modal", "component" => "Modal", "trigger" => "mt", "content" => "t2" },
+       { "id" => "mt", "component" => "Button", "child" => "t1" },
+       { "id" => "go", "component" => "Button", "child" => "t1", "action" => { "event" => { "name" => "go" } },
+         "checks" => [{ "condition" => { "call" => "required", "args" => { "value" => { "path" => "/email" } } },
+                        "message" => "Email first" }] }],
+      data: { "email" => "", "agree" => false }
+    )
+    first, renderer = render(surface, action_url: "/a2ui")
+    second, = render(surface, action_url: "/a2ui")
+
+    assert_empty renderer.warnings
+    assert_equal first, second
+    assert_match(/id="poetry-tabs-a2ui-s-tabs-trigger-tab-0"/, first)
+    assert_match(/id="poetry-dialog-a2ui-s-modal-title"/, first)
+    assert_includes first, 'data-controller="poetry--agent--a2ui-surface"'
+    assert_includes first, 'data-action="input-&gt;poetry--agent--a2ui-surface#evaluate ' \
+                           'change-&gt;poetry--agent--a2ui-surface#evaluate"'
+    program = JSON.parse(CGI.unescapeHTML(first[/data-poetry--agent--a2ui-surface-program-value="([^"]*)"/, 1]))
+
+    assert_equal %w[email go], program["checks"].keys
+    assert_equal({ "/email" => "string", "/agree" => "boolean" }, program["inputs"])
+    assert_match(/<input id="a2ui-s-email"[^>]* data-a2ui-key="email"/, first)
+    assert_match(/<input id="a2ui-s-email"[^>]* aria-describedby="a2ui-s-email-error"/, first)
+    assert_match(Regexp.new('<p id="a2ui-s-email-error" class="text-sm text-destructive" role="alert" ' \
+                            'hidden="hidden" data-a2ui-error-for="email"></p>'), first)
+    assert_match(/<button[^>]* data-a2ui-key="go"/, first)
+    assert_match(%r{<p id="a2ui-s-go-error"[^>]* hidden="hidden" data-a2ui-error-for="go"></p>}, first)
+    refute_match(/data-a2ui-error-for="agree"/, first)
+  end
+
+  def test_two_surfaces_never_share_ids
+    components = [{ "id" => "root", "component" => "Tabs", "tabs" => [{ "title" => "One", "child" => "t" }] },
+                  { "id" => "t", "component" => "Text", "text" => "x" }]
+    session = A2UI::Session.new
+    session.apply({ "createSurface" => { "surfaceId" => "a", "catalogId" => A2UI::Catalogs::Basic::ID,
+                                         "components" => components } })
+    session.apply({ "createSurface" => { "surfaceId" => "b", "catalogId" => A2UI::Catalogs::Basic::ID,
+                                         "components" => components } })
+    ids_a = render(session.surface("a")).first.scan(/ id="([^"]+)"/).flatten
+    ids_b = render(session.surface("b")).first.scan(/ id="([^"]+)"/).flatten
+
+    assert_empty ids_a & ids_b
+    assert_equal ids_a.length, ids_a.uniq.length
+  end
+
+  def test_choice_pickers_render_chips_and_filterable_comboboxes
+    surface = basic_surface(
+      [{ "id" => "root", "component" => "Column", "children" => %w[size toppings city tags] },
+       { "id" => "size", "component" => "ChoicePicker", "label" => "Size", "displayStyle" => "chips",
+         "options" => [{ "label" => "S", "value" => "s" }, { "label" => "M", "value" => "m" }],
+         "value" => { "path" => "/size" } },
+       { "id" => "toppings", "component" => "ChoicePicker", "label" => "Toppings", "variant" => "multipleSelection",
+         "displayStyle" => "chips",
+         "options" => [{ "label" => "Nuts", "value" => "nuts" }, { "label" => "Cream", "value" => "cream" }],
+         "value" => { "path" => "/toppings" } },
+       { "id" => "city", "component" => "ChoicePicker", "label" => "City", "filterable" => true,
+         "options" => [{ "label" => "Lisbon", "value" => "lis" }, { "label" => "Porto", "value" => "opo" }],
+         "value" => { "path" => "/city" } },
+       { "id" => "tags", "component" => "ChoicePicker", "label" => "Tags", "filterable" => true,
+         "variant" => "multipleSelection",
+         "options" => [{ "label" => "A", "value" => "a" }, { "label" => "B", "value" => "b" }],
+         "value" => { "path" => "/tags" } }],
+      data: { "size" => ["m"], "toppings" => ["nuts"], "city" => ["opo"], "tags" => %w[a b] }
+    )
+    html, renderer = render(surface, action_url: "/a2ui")
+
+    assert_empty renderer.warnings
+    assert_match(/<div data-a2ui-key="size"[^>]* data-poetry--core--roving-focus-orientation-value="horizontal"/, html)
+    assert_equal 2, html.scan('class="rounded-full border px-3 py-1"').length
+    assert_includes html, "flex flex-row flex-wrap items-center gap-2"
+    assert_match(%r{<select[^>]* name="a2ui\[values\]\[/city\]"}, html)
+    assert_match(%r{<select[^>]* name="a2ui\[values\]\[/tags\]\[\]"[^>]* multiple}, html)
+    assert_match(/<option[^>]* value="opo"[^>]* selected/, html)
+    assert_equal 2, html.scan(/<option[^>]* value="[ab]"[^>]* selected/).length
+  end
+
   def test_check_failures_render_under_their_controls
     surface = basic_surface(
       [{ "id" => "root", "component" => "Column", "children" => %w[email agree go] },
@@ -74,9 +162,12 @@ class RendererTest < Minitest::Test
 
     assert_empty renderer.warnings
     assert_match(%r{<input[^>]* name="a2ui\[values\]\[/email\]"[^>]* aria-invalid="true"}, html)
-    assert_includes html, "Invalid email format"
-    assert_match(%r{<p class="text-sm text-destructive" role="alert">Required</p>}, html)
-    assert_match(%r{<p class="text-sm text-destructive" role="alert">Fix the form first</p>}, html)
+    assert_match(Regexp.new('<p id="a2ui-s-email-error" class="text-sm text-destructive" role="alert" ' \
+                            'data-a2ui-error-for="email">Invalid email format</p>'), html)
+    assert_match(Regexp.new('<p id="a2ui-s-agree-error" class="text-sm text-destructive" role="alert" ' \
+                            'data-a2ui-error-for="agree">Required</p>'), html)
+    assert_match(Regexp.new('<p id="a2ui-s-go-error" class="text-sm text-destructive" role="alert" ' \
+                            'data-a2ui-error-for="go">Fix the form first</p>'), html)
     assert_equal "Fix the form first", renderer.error_for(surface.component("go"))
     assert_nil renderer.error_for(surface.component("gl"))
   end

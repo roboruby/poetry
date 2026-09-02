@@ -45,6 +45,8 @@ module Poetry
                            "person" => "user", "email" => "mail", "schedule" => "clock", "event" => "calendar",
                            "location-on" => "map-pin", "visibility" => "eye", "visibility-off" => "eye-off",
                            "home" => "house", "shopping-cart" => "shopping-cart" }.freeze
+          # A ChoicePicker's resolved options, binding, selection, and label.
+          Choice = Struct.new(:options, :path, :selected, :label, keyword_init: true)
           # The bound kinds of the input components.
           INPUT_KINDS = { "TextField" => :string, "CheckBox" => :boolean, "Slider" => :number,
                           "ChoicePicker" => :string_list, "DateTimeInput" => :string }.freeze
@@ -231,6 +233,7 @@ module Poetry
             label = renderer.aria_label(component, scope)
             attributes[:aria] = { label: label } if label
             attributes.merge!(action_attributes(component, scope, renderer))
+            keyed(component, scope, renderer, attributes)
             button = renderer.component(Poetry::Ui::Button::Component, attributes) do
               button_content(component, scope, renderer)
             end
@@ -256,13 +259,28 @@ module Poetry
             { type: :button, disabled: true }
           end
 
-          # A check failure (a rejected action's errors) renders under its control.
+          # A checked control carries an error slot the server fills on a
+          # rejected action and the client-side evaluator fills as the user
+          # types; an unchecked control without a failure renders bare.
           def with_error(component, scope, renderer, control)
             error = renderer.error_for(component, scope)
-            return control unless error
+            return control unless error || component["checks"].is_a?(Array)
 
-            note = renderer.view.tag.p(error, class: "text-sm text-destructive", role: "alert")
+            note = renderer.view.tag.p(error, id: "#{renderer.control_id(component, scope)}-error",
+                                              class: "text-sm text-destructive", role: "alert",
+                                              hidden: error.nil?, data: { a2ui_error_for: renderer.current_key })
             renderer.view.safe_join([control, note])
+          end
+
+          # The attributes that let the client-side evaluator find a control
+          # and read its error slot.
+          def keyed(component, scope, renderer, attributes)
+            attributes[:data] = (attributes[:data] || {}).merge(a2ui_key: renderer.current_key)
+            if component["checks"].is_a?(Array)
+              described = "#{renderer.control_id(component, scope)}-error"
+              attributes[:aria] = (attributes[:aria] || {}).merge(describedby: described)
+            end
+            attributes
           end
 
           # A Text child becomes the button's label (plain, no block markup).
@@ -287,6 +305,7 @@ module Poetry
             attributes.merge!(check_attributes(component))
             error = renderer.error_for(component, scope)
             attributes[:invalid] = true if error
+            keyed(component, scope, renderer, attributes)
             control = if component["variant"] == "longText"
                         renderer.component(Poetry::Ui::Textarea::Component, attributes.except(:type).merge(rows: 3))
                       else
@@ -297,8 +316,8 @@ module Poetry
                       end
             field = { id: attributes[:id], label_text: renderer.text(component["label"], scope) }
             field[:required] = true if attributes[:required]
-            field[:error] = error if error
-            renderer.component(Poetry::Ui::Field::Component, field) { control }
+            field[:invalid] = true if error
+            with_error(component, scope, renderer, renderer.component(Poetry::Ui::Field::Component, field) { control })
           end
 
           def render_check_box(component, scope, renderer)
@@ -307,21 +326,33 @@ module Poetry
                            checked: renderer.resolve(component["value"], scope) == true }
             attributes[:name] = renderer.input_name(path, scope) if path
             attributes[:required] = true if check_attributes(component)[:required]
+            keyed(component, scope, renderer, attributes)
             with_error(component, scope, renderer, renderer.component(Poetry::Ui::Checkbox::Component, attributes))
           end
 
+          # `filterable` picks through a Combobox (single or multiple); chips
+          # lay the choices out as a wrapping row; the default is a radio
+          # group or a checkbox list.
+          # `filterable` picks through a Combobox (single or multiple); chips
+          # lay the choices out as a wrapping row; the default is a radio
+          # group or a checkbox list.
           def render_choice_picker(component, scope, renderer)
-            options = Array(component["options"]).grep(Hash)
-            path = binding_path(component["value"])
-            selected = Array(renderer.resolve(component["value"], scope)).map(&:to_s)
-            label = renderer.text(component["label"], scope)
-            control = if component["variant"] == "multipleSelection"
-                        choice_boxes(options, path, selected, label, scope, renderer)
+            choice = Choice.new(options: Array(component["options"]).grep(Hash), path: binding_path(component["value"]),
+                                selected: Array(renderer.resolve(component["value"], scope)).map(&:to_s),
+                                label: renderer.text(component["label"], scope))
+            multiple = component["variant"] == "multipleSelection"
+            chips = component["displayStyle"] == "chips"
+            control = if component["filterable"] == true
+                        choice_combobox(choice, multiple, scope, renderer)
+                      elsif multiple
+                        choice_boxes(choice, chips, scope, renderer)
                       else
-                        attributes = { label: label, value: selected.first }
-                        attributes[:name] = renderer.input_name(path, scope) if path
+                        attributes = keyed(component, scope, renderer,
+                                           { label: choice.label, value: choice.selected.first })
+                        attributes[:orientation] = :horizontal if chips
+                        attributes[:name] = renderer.input_name(choice.path, scope) if choice.path
                         renderer.component(Poetry::Ui::RadioGroup::Component, attributes) do |group|
-                          options.each do |option|
+                          choice.options.each do |option|
                             group.with_item(label: renderer.text(option["label"], scope), value: option["value"].to_s)
                           end
                           nil
@@ -330,20 +361,34 @@ module Poetry
             with_error(component, scope, renderer, control)
           end
 
+          def choice_combobox(choice, multiple, scope, renderer)
+            attributes = { multiple: multiple, placeholder: choice.label, aria: { label: choice.label },
+                           value: multiple ? choice.selected : choice.selected.first }
+            attributes[:name] = renderer.input_name(choice.path, scope) if choice.path
+            renderer.component(Poetry::Ui::Combobox::Component, attributes) do |combobox|
+              choice.options.each do |option|
+                combobox.with_item(value: option["value"].to_s) { renderer.text(option["label"], scope) }
+              end
+              nil
+            end
+          end
+
           # A checkbox per option under one list name; the leading empty
-          # value keeps "nothing checked" submittable.
-          def choice_boxes(options, path, selected, label, scope, renderer)
-            name = path && "#{renderer.input_name(path, scope)}[]"
-            items = [renderer.view.tag.legend(label, class: "mb-2 text-sm font-medium")]
+          # value keeps "nothing checked" submittable. Chips wrap the row.
+          def choice_boxes(choice, chips, scope, renderer)
+            name = choice.path && "#{renderer.input_name(choice.path, scope)}[]"
+            items = [renderer.view.tag.legend(choice.label, class: "mb-2 text-sm font-medium")]
             items << renderer.view.hidden_field_tag(name, "", id: nil) if name
-            options.each do |option|
+            choice.options.each do |option|
               value = option["value"].to_s
               attributes = { label: renderer.text(option["label"], scope), value: value,
-                             checked: selected.include?(value) }
+                             checked: choice.selected.include?(value) }
               attributes[:name] = name if name
-              items << renderer.component(Poetry::Ui::Checkbox::Component, attributes)
+              box = renderer.component(Poetry::Ui::Checkbox::Component, attributes, suffix: value)
+              items << (chips ? renderer.view.tag.span(box, class: "rounded-full border px-3 py-1") : box)
             end
-            renderer.view.tag.fieldset(renderer.view.safe_join(items), class: "flex flex-col gap-2")
+            classes = chips ? "flex flex-row flex-wrap items-center gap-2 [&>legend]:w-full" : "flex flex-col gap-2"
+            renderer.view.tag.fieldset(renderer.view.safe_join(items), class: classes)
           end
 
           def render_slider(component, scope, renderer)
@@ -357,6 +402,7 @@ module Poetry
             attributes[:name] = renderer.input_name(path, scope) if path
             steps = component["steps"]
             attributes[:step] = step_size(min, max, steps) if steps.is_a?(Integer) && steps.positive?
+            keyed(component, scope, renderer, attributes)
             with_error(component, scope, renderer, renderer.component(Poetry::Ui::Slider::Component, attributes))
           end
 
@@ -379,6 +425,7 @@ module Poetry
               attributes[bound.to_sym] = limit unless limit.empty?
             end
             attributes[:required] = true if check_attributes(component)[:required]
+            keyed(component, scope, renderer, attributes)
             with_error(component, scope, renderer, renderer.component(Poetry::Ui::Input::Component, attributes))
           end
 

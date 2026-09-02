@@ -187,6 +187,9 @@ class FunctionsTest < Minitest::Test
     assert_equal "length", schema["length"]["allOf"][1]["properties"]["call"]["const"]
     assert_equal %w[value], schema["length"]["allOf"][1]["properties"]["args"]["required"]
     assert schema["openUrl"]["requiresUserActivation"]
+    assert_equal "rendererOnly", schema["email"]["allowedCallers"]
     assert_equal 14, A2UI::Functions.basic.any_function["oneOf"].length
+    refute A2UI::Functions.basic.agent_callable?("email")
+    assert_raises(ArgumentError) { A2UI::Functions.new.define("x", description: "", returns: "string", callers: "anyone") }
   end
 end

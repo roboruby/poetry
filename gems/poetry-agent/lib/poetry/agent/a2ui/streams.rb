@@ -23,10 +23,13 @@ module Poetry
         # @param session [Session]
         # @param render [#call] `(surface) -> html`
         # @param container [String, nil] the DOM id new surfaces append into
-        def initialize(session:, render:, container: nil)
+        # @param morph [Boolean] morph replaced surfaces (the default) so local state -
+        #   typed text, a selected tab, an open dialog - survives an update; false swaps
+        def initialize(session:, render:, container: nil, morph: true)
           @session = session
           @render = render
           @container = container
+          @morph = morph
           @seen = {}
         end
 
@@ -62,7 +65,7 @@ module Poetry
           html = @render.call(surface)
           first = @container && !@seen[id]
           @seen[id] = true
-          first ? AGUI::TurboStream.append(@container, html) : AGUI::TurboStream.vreplace(target, html)
+          first ? AGUI::TurboStream.append(@container, html) : AGUI::TurboStream.vreplace(target, html, morph: @morph)
         end
 
         # Marks surfaces as already on the page (rendered server-side), so

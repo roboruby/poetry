@@ -149,6 +149,28 @@ module Poetry
           scope ? "#{component["id"]}@#{scope}" : component["id"].to_s
         end
 
+        # What a client-side evaluator needs to run the checks as the user
+        # types: every checked component's rules with its bindings made
+        # absolute for its scope, the bound inputs by absolute path with
+        # their kinds, and the data model for paths no input carries.
+        #
+        # @return [Hash] `{ "checks" => { key => { "kind", "rules" } }, "inputs" => { path => kind }, "model" => data }`
+        def program
+          checks = {}
+          walk do |component, scope|
+            rules = Array(component["checks"]).grep(Hash).select { |rule| rule["condition"] }
+            next if rules.empty?
+
+            checks[source_key(component, scope)] = {
+              "kind" => component["action"].is_a?(Hash) ? "button" : "input",
+              "rules" => rules.map do |rule|
+                { "condition" => absolutize(rule["condition"], scope), "message" => rule["message"] }
+              end
+            }
+          end
+          { "checks" => checks, "inputs" => inputs.to_h { |input| [input[:path], input[:kind].to_s] }, "model" => data }
+        end
+
         # @param value [Object]
         # @return [Boolean] whether the value is a `{ "path" => ... }` data binding
         def binding?(value)
@@ -231,6 +253,18 @@ module Poetry
 
         def bump!
           @version += 1
+        end
+
+        # Rewrites every binding in a value to its absolute pointer.
+        def absolutize(value, scope)
+          case value
+          when Array then value.map { |item| absolutize(item, scope) }
+          when Hash
+            return { "path" => Pointer.absolute(value["path"].to_s, scope) } if binding?(value)
+
+            value.transform_values { |item| absolutize(item, scope) }
+          else value
+          end
         end
 
         def walk_from(component_id, scope, stack, &block)

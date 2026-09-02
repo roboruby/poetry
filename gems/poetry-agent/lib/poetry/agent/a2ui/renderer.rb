@@ -37,6 +37,10 @@ module Poetry
         SURFACE_PARAM = "a2ui[surface]"
         # The errors an agent-authored component may provoke in the library.
         COMPONENT_ERRORS = [ArgumentError, NameError].freeze
+        # The Stimulus controller that runs a surface's checks as the user types.
+        SURFACE_CONTROLLER = "poetry--agent--a2ui-surface"
+        # The form events that re-run the checks.
+        EVALUATE_ACTIONS = "input->#{SURFACE_CONTROLLER}#evaluate change->#{SURFACE_CONTROLLER}#evaluate".freeze
 
         # @return [Surface]
         attr_reader :surface
@@ -73,11 +77,19 @@ module Poetry
 
         # @return [String] the surface's HTML (html_safe)
         def call
-          body = surface.root ? render_component("root", nil) : blank
+          body = Poetry::Core::StableId.with_seed("a2ui:#{surface.id}") do
+            surface.root ? render_component("root", nil) : blank
+          end
           data = { a2ui_surface: surface.id, version: surface.version }.merge(@html[:data] || {})
           attributes = { id: self.class.element_id(surface), data: data }.merge(@html.except(:data))
           return view.tag.div(body, **attributes) unless action_url
 
+          program = surface.program
+          if program["checks"].any?
+            data[:controller] = [data[:controller], SURFACE_CONTROLLER].compact.join(" ")
+            data[:"#{SURFACE_CONTROLLER}-program-value"] = JSON.generate(program)
+            data[:action] = [data[:action], EVALUATE_ACTIONS].compact.join(" ")
+          end
           view.form_with(url: action_url, method: :post, **attributes) do
             view.safe_join([view.hidden_field_tag(SURFACE_PARAM, surface.id, id: nil), body])
           end
@@ -90,9 +102,13 @@ module Poetry
           component = surface.component(component_id)
           return warn("unknown component id #{component_id.inspect}") unless component
 
+          previous = @current_key
+          @current_key = surface.source_key(component, scope)
           surface.catalog.render(component, scope, self) || blank
         rescue *COMPONENT_ERRORS, Poetry::Core::Error => e
           warn("#{component["component"]} #{component_id.inspect}: #{e.message}")
+        ensure
+          @current_key = previous
         end
 
         # Renders a child reference (an id, an id list, or a template).
@@ -104,15 +120,31 @@ module Poetry
           view.safe_join(surface.expand(reference, scope).map { |id, child_scope| render_component(id, child_scope) })
         end
 
-        # Builds and renders a library component, or warns.
+        # Builds and renders a library component. Every instance gets a
+        # render-stable `key:` (the surface, the component, its scope, and
+        # a suffix for repeated instances), so Turbo morph pairs the same
+        # logical element across updates and local state survives.
         #
         # @param klass [Class] the component class
         # @param attributes [Hash] constructor keywords
+        # @param suffix [String, nil] distinguishes several instances of one class for one component
+        # @param keywords [Hash] constructor keywords given keyword-style (merged into `attributes`)
         # @yield the content block (the component instance is yielded)
         # @return [String]
-        def component(klass, attributes = {}, &)
+        def component(klass, attributes = {}, suffix: nil, **keywords, &)
+          attributes = attributes.merge(keywords)
+          attributes = { key: stable_key(suffix) }.merge(attributes) unless attributes.key?(:key)
           view.render(klass.new(**attributes), &)
         end
+
+        # @param suffix [String, nil]
+        # @return [String] the render-stable key of the component being rendered
+        def stable_key(suffix = nil)
+          ["a2ui", surface.id, @current_key, suffix].compact.join("-")
+        end
+
+        # @return [String, nil] the key of the component being rendered (`id`, or `id@scope`)
+        attr_reader :current_key
 
         # The display string of a dynamic value; a function problem warns.
         #

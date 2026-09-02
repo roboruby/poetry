@@ -117,6 +117,41 @@ class SurfaceTest < Minitest::Test
     assert_equal ["root"], seen
   end
 
+  def test_program_carries_checks_with_absolute_bindings_inputs_and_the_model
+    s = surface(data: { "rows" => [{ "qty" => 1 }], "email" => "" },
+                components: [{ "id" => "root", "component" => "Column", "children" => %w[email list go] },
+                             { "id" => "email", "component" => "TextField", "label" => "E",
+                               "value" => { "path" => "/email" },
+                               "checks" => [{ "condition" => { "call" => "email",
+                                                               "args" => { "value" => { "path" => "/email" } } },
+                                              "message" => "Bad" }] },
+                             { "id" => "list", "component" => "List",
+                               "children" => { "componentId" => "row", "path" => "/rows" } },
+                             { "id" => "row", "component" => "TextField", "label" => "Q", "variant" => "number",
+                               "value" => { "path" => "qty" },
+                               "checks" => [{ "condition" => { "call" => "numeric",
+                                                               "args" => { "value" => { "path" => "qty" },
+                                                                           "min" => 1 } } }] },
+                             { "id" => "go", "component" => "Button", "child" => "email",
+                               "action" => { "event" => { "name" => "go" } },
+                               "checks" => [{ "condition" => {
+                                 "call" => "and",
+                                 "args" => { "values" => [{ "call" => "required",
+                                                            "args" => { "value" => { "path" => "/email" } } }] }
+                               } }] }])
+    program = s.program
+
+    assert_equal %w[email row@/rows/0 go], program["checks"].keys
+    assert_equal "input", program["checks"]["email"]["kind"]
+    assert_equal "button", program["checks"]["go"]["kind"]
+    assert_equal({ "path" => "/rows/0/qty" },
+                 program["checks"]["row@/rows/0"]["rules"].first.dig("condition", "args", "value"))
+    assert_equal({ "path" => "/email" },
+                 program["checks"]["go"]["rules"].first.dig("condition", "args", "values", 0, "args", "value"))
+    assert_equal({ "/email" => "string", "/rows/0/qty" => "number" }, program["inputs"])
+    assert_equal s.data, program["model"]
+  end
+
   def test_to_h_snapshots_the_surface
     s = surface(data: { "a" => 1 }, components: [{ "id" => "root", "component" => "Text", "text" => "x" }])
     snapshot = s.to_h

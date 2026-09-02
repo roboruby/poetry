@@ -116,6 +116,9 @@ module Poetry
             label = renderer.aria_label(component, scope)
             attributes[:aria] = { label: label } if label
             attributes.merge!(action_attributes(component, scope, renderer)) if component["action"].is_a?(Hash)
+            if bound || component["action"]
+              attributes[:data] = (attributes[:data] || {}).merge(a2ui_key: renderer.current_key)
+            end
             attributes
           end
 

@@ -54,6 +54,8 @@ module Poetry
         attr_reader :errors
         # @return [Array<String>] ids of deleted surfaces, in order
         attr_reader :deleted
+        # @return [Array<Hash>] renderer-to-agent `rendererFunctionResponse` messages, in order
+        attr_reader :responses
         # @return [Hash{String => Object}] catalog bindings by catalog id
         attr_reader :catalogs
 
@@ -66,6 +68,7 @@ module Poetry
           @surfaces = {}
           @errors = []
           @deleted = []
+          @responses = []
         end
 
         # Applies one envelope message. Returns the ids of the surfaces
@@ -211,12 +214,29 @@ module Poetry
           [surface.id]
         end
 
-        # No renderer functions are registered on this renderer (functions
-        # are a later slice), so every agent call is refused as the spec
-        # asks.
+        # An agent may invoke a function its catalog admits (`agentOnly` or
+        # `rendererOrAgent`); the value comes back as a
+        # `rendererFunctionResponse`, anything else as the spec's error.
         def apply_call_renderer_function(body)
-          name = body.dig("callFunction", "call")
-          error = { "code" => "INVALID_FUNCTION_CALL", "message" => "function #{name.inspect} is not registered" }
+          call = body["callFunction"].is_a?(Hash) ? body["callFunction"] : {}
+          name = call["call"].to_s
+          catalog = catalog_for(call["catalogId"])
+          unless catalog.functions.agent_callable?(name)
+            return refuse_call(body, "function #{name.inspect} is not invocable by an agent")
+          end
+
+          evaluator = Evaluator.new(Surface.new(id: "callRendererFunction", catalog: catalog))
+          value = catalog.functions.call(name, evaluator.argument(call["args"] || {}), evaluator)
+          @responses << { "version" => "v#{PROTOCOL_VERSION}",
+                          "rendererFunctionResponse" => { "functionCallId" => body["functionCallId"],
+                                                          "value" => value } }
+          []
+        rescue Functions::Error, Expression::SyntaxError => e
+          refuse_call(body, e.message)
+        end
+
+        def refuse_call(body, message)
+          error = { "code" => "INVALID_FUNCTION_CALL", "message" => message }
           error["functionCallId"] = body["functionCallId"] if body["functionCallId"]
           @errors << { "version" => "v#{PROTOCOL_VERSION}", "error" => error }
           []

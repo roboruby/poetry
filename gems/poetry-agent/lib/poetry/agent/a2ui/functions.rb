@@ -25,8 +25,11 @@ module Poetry
         class Error < StandardError; end
 
         # One declared function.
-        Definition = Struct.new(:name, :description, :returns, :params, :required, :activation, :impl,
+        Definition = Struct.new(:name, :description, :returns, :params, :required, :activation, :callers, :impl,
                                 keyword_init: true)
+
+        # The spec's execution boundaries: who may invoke a function.
+        CALLERS = %w[rendererOnly agentOnly rendererOrAgent].freeze
 
         # The email shape the basic catalog names.
         EMAIL = /\A[^\s@]+@[^\s@]+\.[^\s@]+\z/
@@ -88,13 +91,26 @@ module Poetry
         # @param params [Hash{String => Hash}] argument schemas by name
         # @param required [Array<String>] required argument names
         # @param activation [Boolean] whether the call needs a user activation
+        # @param callers [String] the execution boundary (`rendererOnly` - the default - keeps the
+        #   function out of an agent's `callRendererFunction`; `agentOnly` / `rendererOrAgent` admit it)
         # @yieldparam args [Hash{String => Object}] the resolved arguments
         # @yieldparam evaluator [Evaluator] the calling evaluator
         # @return [Functions] self
-        def define(name, description:, returns:, params: {}, required: [], activation: false, &impl)
+        # @raise [ArgumentError] for an unknown boundary
+        def define(name, description:, returns:, params: {}, required: [], activation: false, # rubocop:disable Metrics/ParameterLists
+                   callers: "rendererOnly", &impl)
+          raise ArgumentError, "callers must be one of #{CALLERS.join(", ")}" unless CALLERS.include?(callers)
+
           @definitions[name] = Definition.new(name: name, description: description, returns: returns, params: params,
-                                              required: required, activation: activation, impl: impl)
+                                              required: required, activation: activation, callers: callers, impl: impl)
           self
+        end
+
+        # @param name [String]
+        # @return [Boolean] whether an agent may invoke the function through `callRendererFunction`
+        def agent_callable?(name)
+          definition = @definitions[name]
+          !definition.nil? && definition.callers != "rendererOnly"
         end
 
         # @return [Array<String>] the declared names
@@ -133,7 +149,7 @@ module Poetry
                                        "args" => arguments_schema(definition) },
                      "required" => ["call", *("args" if definition.required.any?)] }
             document = { "type" => "object", "description" => definition.description,
-                         "returnType" => definition.returns }
+                         "returnType" => definition.returns, "allowedCallers" => definition.callers }
             document["requiresUserActivation"] = true if definition.activation
             document.merge("allOf" => [{ "$ref" => "#{COMMON_TYPES}FunctionCommon" }, call],
                            "unevaluatedProperties" => false)
