@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors = ["Matt Solt"]
   spec.email = ["mattsolt@gmail.com"]
 
-  spec.summary = "The Poetry component library: AI-Native UI components for Rails"
+  spec.summary = "The Poetry component library: AI-native UI components for Rails"
   spec.description = "Poetry's components for the AI-native UI component library: accessible, themeable, " \
                      "agent-legible ViewComponents built entirely on poetry-core's public DSL."
   spec.homepage = "https://poetryui.com"
