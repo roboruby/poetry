@@ -194,3 +194,8 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
+
+## Hotwire test assets
+
+- Source: https://github.com/hotwired/turbo (Turbo 8.0.13) and https://github.com/hotwired/stimulus (Stimulus 3.2.2), both MIT (37signals / Basecamp)
+- Vendored: `test/dummy/public/vendor/turbo.es2017-esm.js` and `test/dummy/public/vendor/stimulus.umd.js`, the unmodified dist builds with their license banners; test-only (the stable-id gate and the dommy tier), never shipped in the gem

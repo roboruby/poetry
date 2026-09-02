@@ -41,7 +41,13 @@ Rails.application.eager_load!
 module DommyTier
   CACHE_DIR = Pathname.new(File.expand_path("../../tmp/dommy_tier", __dir__))
 
-  STIMULUS_UMD = Poetry::Core.root.join("node_modules/@hotwired/stimulus/dist/stimulus.umd.js")
+  # poetry-core develops against the npm Stimulus dist; an installed gem (a
+  # lone clone, CI) has no node_modules, so the vendored test asset beside the
+  # Turbo one (test/dummy/public/vendor) is the fallback - same UMD build.
+  STIMULUS_UMD = [
+    Poetry::Core.root.join("node_modules/@hotwired/stimulus/dist/stimulus.umd.js"),
+    Pathname.new(File.expand_path("../dummy/public/vendor/stimulus.umd.js", __dir__))
+  ].find(&:exist?) || Pathname.new(File.expand_path("../dummy/public/vendor/stimulus.umd.js", __dir__))
   CONTROLLERS_DIR = Poetry::Core.root.join("app/javascript/poetry/core")
 
   # Bump when the dommy-safe transform below changes (busts the CSS cache).
