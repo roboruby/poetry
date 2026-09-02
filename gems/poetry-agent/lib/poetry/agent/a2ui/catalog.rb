@@ -2,6 +2,7 @@
 
 require "json"
 require "yaml"
+require_relative "protocol"
 require_relative "functions"
 
 module Poetry

@@ -4,6 +4,7 @@ require "json"
 require "time"
 require "active_support"
 require "active_support/number_helper"
+require_relative "protocol"
 
 module Poetry
   module Agent
