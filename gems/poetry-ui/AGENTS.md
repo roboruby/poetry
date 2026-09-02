@@ -109,6 +109,21 @@ all nine themes).
 - An icon that is a part carries the part itself (`Icon::Component.new(name:,
   class: css(:part), data: { slot: … })`); never wrap an unsized icon in a
   span — it falls back to its 24px intrinsic box.
+- Two ways to render a library component, chosen by who is authoring.
+  Inside a component template (and its Ruby), render siblings by class —
+  `render Poetry::Ui::Icon::Component.new(...)` — never through the
+  `helpers` proxy: the `poetry_*` helpers are mixed into ActionView's
+  base, not ViewComponent's, so `poetry_icon` is undefined here and
+  `helpers.poetry_icon` couples the component to whatever view context
+  is rendering (fine in a host page, wrong under an isolated render).
+  The one sanctioned proxy use is a part that exists only as a helper
+  (input-group addon/text/input, the table and sidebar parts, avatar
+  and item groups). Host-side code — docs pages, previews, generated
+  code, jumpstart overrides — uses the `poetry_*` helper: the registry,
+  editor snippets, skills, and `poetry:check` key on helper names and
+  do not parse `render Klass.new`. Instantiating a class in a host view
+  is only for handing the instance to a sibling first (a Field's
+  `control_attributes`).
 - Stimulus wiring is declared in Ruby via the `use_stimulus` DSL (47
   components do); the StimulusContract gate verifies declarations against
   poetry-core's controllers manifest, and the registry / agent surface /
