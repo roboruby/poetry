@@ -6,8 +6,8 @@ unless ENV["COVERAGE"] == "0"
   require "simplecov"
   SimpleCov.start do
     enable_coverage :branch
-    add_filter %r{^/test/}
-    track_files "{app,lib}/**/*.rb"
+    skip %r{^/test/}
+    cover "{app,lib}/**/*.rb"
   end
 end
 
