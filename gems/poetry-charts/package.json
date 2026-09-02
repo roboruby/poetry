@@ -27,8 +27,8 @@
     "d3-time-format": "^4.1.0",
     "decimal.js-light": "^2.5.1",
     "esbuild": "^0.28.1",
-    "jsdom": "^26.0.0",
-    "vitest": "^3.0.0"
+    "jsdom": "^30.0.1",
+    "vitest": "^4.1.11"
   },
   "scripts": {
     "test": "npm run vendor:d3:verify && vitest run",
