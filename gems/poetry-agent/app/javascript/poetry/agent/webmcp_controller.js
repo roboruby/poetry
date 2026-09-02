@@ -33,6 +33,11 @@ import { supported, registerTool, validToolName } from "@poetry/agent/adapter"
 // element -> { hash, controller: AbortController, names: string[] }
 const registrations = new Map()
 
+// element -> the registrar instance, for every connected root whether or
+// not the browser exposes modelContext: in-page callers (the AG-UI
+// client-tool bridge) execute a declared tool by its registered name.
+const instances = new Map()
+
 const registeredCount = () =>
   [...registrations.values()].reduce((sum, entry) => sum + entry.names.length, 0)
 
@@ -50,10 +55,12 @@ export default class extends Controller {
   ]
 
   connect() {
+    instances.set(this.element, this)
     this.register()
   }
 
   disconnect() {
+    instances.delete(this.element)
     this.unregister()
   }
 
@@ -119,6 +126,17 @@ export default class extends Controller {
       if (registrations.get(this.element) !== entry) return
       this.dispatch("registered", { prefix: "poetry:webmcp", detail: { name: this.nameValue, tools: [...entry.names] } })
     })
+  }
+
+  // Executes one of this instance's declared tools by its full registered
+  // name (`poetry.{instance}.{tool}`) or its bare tool name, with the same
+  // validation and dispatch a WebMCP call takes; unknown names answer with
+  // an error string like any other problem.
+  execute(name, args = {}) {
+    const tool = this.toolsValue.find((candidate) =>
+      `poetry.${this.nameValue}.${candidate.name}` === name || candidate.name === name)
+    if (!tool) return Promise.resolve(`Error: no tool named ${name} on ${this.nameValue}`)
+    return this.#execute(tool, args ?? {})
   }
 
   // Aborts every registration of this instance.
@@ -211,6 +229,19 @@ const serializable = (value) => {
   } catch {
     return false
   }
+}
+
+// Executes a declared tool by its full registered name on whichever
+// connected root declares it - the in-page dispatch path (no
+// modelContext needed). Answers an error string when no root does.
+export const executeRegisteredTool = (application, name, args = {}) => {
+  for (const [element, controller] of instances) {
+    const owns = controller.toolsValue.some((tool) => `poetry.${controller.nameValue}.${tool.name}` === name)
+    if (owns && application.getControllerForElementAndIdentifier(element, "poetry--agent--webmcp") === controller) {
+      return controller.execute(name, args)
+    }
+  }
+  return Promise.resolve(`Error: no registered tool named ${name} on this page`)
 }
 
 // Test seam: the live registration table.

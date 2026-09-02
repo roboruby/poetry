@@ -14,12 +14,15 @@ describe("poetry--agent--webmcp-form", () => {
             data-controller="poetry--agent--webmcp-form">
         <input name="q" value="ada">
       </form>`
+    // A Turbo host by default: the page catch-up is a visit, never a jsdom navigation.
+    window.Turbo = { visit: vi.fn(), renderStreamMessage: vi.fn() }
     application = Application.start()
     registerPoetryAgent(application)
     await flush()
   })
 
   afterEach(async () => {
+    await flush() // let a scheduled page catch-up run against the stub, not jsdom
     application.stop()
     document.body.innerHTML = ""
     delete window.Turbo

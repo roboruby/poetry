@@ -36,6 +36,16 @@ component contract. Two ship:
   `webmcp_registration_budget`, which the contract puts on each opted-in
   root) caps how many tools one page registers. Mutating tools carry
   their safety annotation; the MCP server is read-only.
+- `Poetry::Agent::AGUI` is a CLIENT of AG-UI, never a server (Ruby has
+  two): `Transcript` is the one event fold, `Relay` is view-free (the host
+  renders rows; `append_render` wraps a first appearance in its list item),
+  events may arrive camelCased or snake_cased (`AGUI.field`), and client
+  tool names are the registrar's `poetry.{instance}.{tool}` so the bridge
+  executes them in-page without `modelContext`.
+- `Poetry::Agent::A2UI::Catalog` follows the v1.0 catalog rules (the ten
+  top-level keys, `$defs` = `anyComponent` + `anyFunction`, external refs
+  into `common_types.json` only); the content-block heuristic is
+  `requires_content` / `requires_any` content / an `elements` content cell.
 - The registrar validates every call in code (required, unknown, type,
   enum) and answers problems as `Error: ...` strings; a result is the
   action's returned state (core's tool-bound actions return it) or a

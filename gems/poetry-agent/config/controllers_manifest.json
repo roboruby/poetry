@@ -17,6 +17,7 @@
     "methods": [
       "connect",
       "disconnect",
+      "execute",
       "register",
       "unregister"
     ],
@@ -36,6 +37,27 @@
     ],
     "events": [
       "poetry:webmcp:form-submitted"
+    ]
+  },
+  "poetry--agent--agui-client-tool": {
+    "targets": [],
+    "values": {
+      "call": {
+        "type": "Object"
+      },
+      "url": {
+        "type": "String"
+      },
+      "done": {
+        "type": "Boolean"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect"
+    ],
+    "events": [
+      "poetry:agui:client-tool-executed"
     ]
   }
 }

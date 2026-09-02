@@ -8,6 +8,8 @@ require_relative "agent/mcp/server"
 require_relative "agent/mcp/bundled"
 require_relative "agent/mcp/http"
 require_relative "agent/webmcp"
+require_relative "agent/agui"
+require_relative "agent/a2ui"
 require_relative "agent/engine" if defined?(Rails::Engine)
 
 # The poetry namespace.
@@ -23,6 +25,12 @@ module Poetry
   #   (`tool` declarations in poetry-core) registered with the browser's
   #   `document.modelContext` for the user's own agent (operate), plus the
   #   declarative-form path and the origin-trial delivery.
+  # - {A2UI} - the registry projected as an A2UI catalog (the vocabulary
+  #   an agent generates declarative UI against).
+  # - {AGUI} - the Rails-side AG-UI client: an agent backend's event stream
+  #   folded into chat frames and relayed as versioned Turbo Streams,
+  #   with the component tools the browser executes advertised as the
+  #   agent's frontend tools.
   #
   # Both read the same committed registries; neither is a second source.
   module Agent
