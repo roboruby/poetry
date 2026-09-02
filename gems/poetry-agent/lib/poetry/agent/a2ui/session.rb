@@ -25,15 +25,23 @@ module Poetry
 
         # A user action, ready for the agent: the spec message plus the
         # AG-UI placement (`forwardedProps.a2uiAction.userAction`).
-        Action = Struct.new(:message, :surface, keyword_init: true) do
-          # @return [Hash] the `{ "version", "action" }` renderer-to-agent message
+        Action = Struct.new(:message, :surface, :errors, keyword_init: true) do
+          # @return [Boolean] whether every check passed and the message exists
+          def valid?
+            !message.nil? && (errors.nil? || errors.empty?)
+          end
+
+          # @return [Hash, nil] the `{ "version", "action" }` renderer-to-agent
+          #   message; nil when a check failed
           def to_h
             message
           end
 
           # @return [Hash] the AG-UI `forwardedProps` carrying the action (and the
-          #   data model when the surface asked for it)
+          #   data model when the surface asked for it); empty when invalid
           def forwarded_props
+            return {} unless valid?
+
             props = { "userAction" => message["action"] }
             props["dataModel"] = surface.data if surface.send_data_model
             { "a2uiAction" => props }
@@ -109,7 +117,8 @@ module Poetry
         # (two-way binding syncs on an action), then the source
         # component's event context resolves against the updated model.
         # Returns nil when the source has no agent event (a local action,
-        # or an unknown component).
+        # or an unknown component), and an invalid action - no message,
+        # `errors` by component key - when a `checks` rule fails.
         #
         # @param surface_id [String]
         # @param source [String] the submit button's value (`id` or `id@scope`)
@@ -126,11 +135,14 @@ module Poetry
           event = component&.dig("action", "event")
           return unless event.is_a?(Hash) && event["name"].is_a?(String)
 
+          failures = surface.failures
+          return Action.new(message: nil, surface: surface, errors: failures) if failures.any?
+
           context = (event["context"] || {}).to_h { |name, value| [name.to_s, surface.resolve(value, scope)] }
           action = { "name" => event["name"], "surfaceId" => surface_id, "sourceComponentId" => component_id,
                      "timestamp" => timestamp.utc.iso8601(3), "context" => context }
           action["userMessage"] = event["userMessage"] if event["userMessage"].is_a?(String)
-          Action.new(message: { "version" => "v#{PROTOCOL_VERSION}", "action" => action }, surface: surface)
+          Action.new(message: { "version" => "v#{PROTOCOL_VERSION}", "action" => action }, surface: surface, errors: {})
         end
 
         # @param catalog_id [String, nil]

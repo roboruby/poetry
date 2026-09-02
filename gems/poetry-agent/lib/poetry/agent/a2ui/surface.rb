@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require_relative "pointer"
+require_relative "evaluator"
+require_relative "checks"
 
 module Poetry
   module Agent
@@ -100,18 +102,15 @@ module Poetry
 
         # Resolves a dynamic value in a scope: a `{ "path" => ... }` binding
         # reads the data model (relative paths against the scope), a
-        # `{ "call" => ... }` function call resolves to nil (functions are a
-        # renderer concern), anything else is a literal.
+        # `{ "call" => ... }` function call runs through the catalog's
+        # functions (see {Evaluator}), anything else is a literal.
         #
         # @param value [Object]
         # @param scope [String, nil] the collection-item pointer in effect
+        # @param on_error [#call, nil] receives each function problem's message
         # @return [Object, nil]
-        def resolve(value, scope = nil)
-          return value unless value.is_a?(Hash)
-          return read(value["path"], scope) if binding?(value)
-          return nil if function_call?(value)
-
-          value
+        def resolve(value, scope = nil, on_error: nil)
+          Evaluator.new(self, scope, on_error: on_error).resolve(value)
         end
 
         # The string a resolved value displays as (the spec's conversion
@@ -119,14 +118,35 @@ module Poetry
         #
         # @param value [Object]
         # @param scope [String, nil]
+        # @param on_error [#call, nil] receives each function problem's message
         # @return [String]
-        def text(value, scope = nil)
-          resolved = resolve(value, scope)
-          case resolved
-          when nil then ""
-          when Hash, Array then JSON.generate(resolved)
-          else resolved.to_s
+        def text(value, scope = nil, on_error: nil)
+          evaluator = Evaluator.new(self, scope, on_error: on_error)
+          evaluator.stringify(evaluator.resolve(value))
+        end
+
+        # Evaluates every rendered component's `checks` against the data
+        # model, keyed the way an action names its source (`id`, or
+        # `id@scope` inside a template).
+        #
+        # @param on_error [#call, nil] receives each function problem's message
+        # @return [Hash{String => Array<Hash>}] failures by component key
+        def failures(on_error: nil)
+          result = {}
+          walk do |component, scope|
+            next unless component["checks"].is_a?(Array)
+
+            found = Checks.failures(component, Evaluator.new(self, scope, on_error: on_error))
+            result[source_key(component, scope)] = found if found.any?
           end
+          result
+        end
+
+        # @param component [Hash]
+        # @param scope [String, nil]
+        # @return [String] `id`, or `id@scope` inside a template
+        def source_key(component, scope = nil)
+          scope ? "#{component["id"]}@#{scope}" : component["id"].to_s
         end
 
         # @param value [Object]

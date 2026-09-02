@@ -3,6 +3,10 @@
 require_relative "a2ui/catalog"
 require_relative "a2ui/pointer"
 require_relative "a2ui/markdown"
+require_relative "a2ui/expression"
+require_relative "a2ui/functions"
+require_relative "a2ui/evaluator"
+require_relative "a2ui/checks"
 require_relative "a2ui/surface"
 require_relative "a2ui/session"
 require_relative "a2ui/renderer"
@@ -26,7 +30,10 @@ module Poetry
     #   basic catalog, {Catalogs::Native} for Poetry's own), {Streams}
     #   delivers changes as versioned Turbo Streams, and a submitted
     #   surface form becomes the spec's `action` message
-    #   ({Session#action}).
+    #   ({Session#action}). {Functions} holds the basic catalog's function
+    #   set - the `formatString` grammar ({Expression}), the formatters,
+    #   the validators behind `checks` ({Checks}) - which {Evaluator} runs
+    #   for both catalogs.
     module A2UI
       # The protocol version the projection targets.
       PROTOCOL_VERSION = "1.0"

@@ -8,7 +8,6 @@ require "json"
 class RendererTest < Minitest::Test
   A2UI = Poetry::Agent::A2UI
   FIXTURES = File.expand_path("../../../fixtures/a2ui", __dir__)
-  FUNCTION_WARNING = /function ".+" is not supported/
 
   def fixture(name)
     JSON.parse(File.read(File.join(FIXTURES, "#{name}.json")))["messages"]
@@ -33,20 +32,53 @@ class RendererTest < Minitest::Test
     session.surface("s")
   end
 
-  def test_every_official_example_renders_with_only_function_warnings
+  def test_every_official_example_renders_without_warnings
     Dir[File.join(FIXTURES, "*.json")].each do |path|
       session = session_for(JSON.parse(File.read(path))["messages"])
 
       assert_empty session.errors, path
       session.surfaces.each_value do |surface|
         html, renderer = render(surface, action_url: "/a2ui")
-        others = renderer.warnings.grep_v(FUNCTION_WARNING)
 
-        assert_empty others, "#{File.basename(path)}: #{others.inspect}"
+        assert_empty renderer.warnings, "#{File.basename(path)}: #{renderer.warnings.inspect}"
         assert_includes html, "id=\"a2ui-#{surface.id}\""
         assert_includes html, "data-version=\"#{surface.version}\""
       end
     end
+  end
+
+  def test_functions_format_the_product_card_and_the_track_list
+    html, = render(session_for(fixture("05_product-card")).surface("gallery-product-card"))
+
+    assert_includes html, "$199.99"
+    assert_includes html, "(2,847 reviews)"
+
+    html, = render(session_for(fixture("18_track-list")).surface("gallery-track-list"))
+
+    assert_includes html, "<p>1</p>"
+    assert_includes html, "<p>3</p>"
+  end
+
+  def test_check_failures_render_under_their_controls
+    surface = basic_surface(
+      [{ "id" => "root", "component" => "Column", "children" => %w[email agree go] },
+       { "id" => "email", "component" => "TextField", "label" => "Email", "value" => { "path" => "/email" } },
+       { "id" => "agree", "component" => "CheckBox", "label" => "Agree", "value" => { "path" => "/agree" } },
+       { "id" => "go", "component" => "Button", "child" => "gl", "action" => { "event" => { "name" => "go" } } },
+       { "id" => "gl", "component" => "Text", "text" => "Go" }],
+      data: { "email" => "nope", "agree" => false }
+    )
+    errors = { "email" => [{ message: "Invalid email format" }], "agree" => [{ message: "Required" }],
+               "go" => [{ message: "Fix the form first" }] }
+    html, renderer = render(surface, action_url: "/a2ui", errors: errors)
+
+    assert_empty renderer.warnings
+    assert_match(%r{<input[^>]* name="a2ui\[values\]\[/email\]"[^>]* aria-invalid="true"}, html)
+    assert_includes html, "Invalid email format"
+    assert_match(%r{<p class="text-sm text-destructive" role="alert">Required</p>}, html)
+    assert_match(%r{<p class="text-sm text-destructive" role="alert">Fix the form first</p>}, html)
+    assert_equal "Fix the form first", renderer.error_for(surface.component("go"))
+    assert_nil renderer.error_for(surface.component("gl"))
   end
 
   def test_the_login_form_is_a_form_of_named_inputs_and_a_submit_button
@@ -187,7 +219,7 @@ class RendererTest < Minitest::Test
 
     assert_match(%r{<a[^>]* href="https://example.com/docs"[^>]*>.*?Docs.*?</a>}m, html)
     assert_match(%r{<button[^>]* disabled[^>]*>.*?Nope.*?</button>}m, html)
-    assert_equal ['Button "other": function "openUrl" is not supported'], renderer.warnings
+    assert_equal ['function "openUrl": openUrl: only http and https URLs open'], renderer.warnings
   end
 
   def test_unknown_components_and_dangling_references_warn_and_render_nothing

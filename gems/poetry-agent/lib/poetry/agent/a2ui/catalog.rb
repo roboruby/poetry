@@ -2,6 +2,7 @@
 
 require "json"
 require "yaml"
+require_relative "functions"
 
 module Poetry
   module Agent
@@ -44,7 +45,10 @@ module Poetry
           exactly one component has the id "root" (a layout or container such as Card, Box, or Stack). Put visible
           text in a component's `text` property; put child components in `children` (an array of component ids) or a
           slot property (one component id). Style axes are enums - pick by intent, never by color. Each component's
-          description carries its rules; they are binding.
+          description carries its rules; they are binding. Functions: `formatString` interpolates `${/path}` and
+          `${name(arg: value)}` blocks; `formatNumber`, `formatCurrency`, `formatDate`, and `pluralize` format values;
+          `required`, `regex`, `length`, `numeric`, and `email` are checks; `and`, `or`, `not` combine them; `openUrl`
+          is a Button's local action.
         TEXT
 
         # @return [String]
@@ -123,15 +127,23 @@ module Poetry
             "catalogId" => @catalog_id,
             "instructions" => @instructions,
             "components" => components,
-            "functions" => {},
+            "functions" => functions.schema,
             "$defs" => {
               "anyComponent" => {
                 "oneOf" => components.keys.map { |name| { "$ref" => "#/components/#{name}" } },
                 "discriminator" => { "propertyName" => "component" }
               },
-              "anyFunction" => { "not" => {} }
+              "anyFunction" => functions.any_function
             }
           }
+        end
+
+        # The functions the catalog declares (the basic catalog's set, which
+        # the renderer implements).
+        #
+        # @return [Functions]
+        def functions
+          Functions.basic
         end
 
         # The inline form a transport ships to an agent or a middleware

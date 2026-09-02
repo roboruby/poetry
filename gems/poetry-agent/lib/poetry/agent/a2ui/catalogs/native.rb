@@ -32,6 +32,11 @@ module Poetry
             @id = id
           end
 
+          # @return [Functions] the function set Poetry's catalog declares (the basic one)
+          def functions
+            Functions.basic
+          end
+
           # @return [Hash{String => Hash}] registry entries by path
           def entries
             @entries ||= Catalog.load_entries
@@ -119,10 +124,12 @@ module Poetry
             return renderer.submit_attributes(component, scope) if action["event"].is_a?(Hash)
 
             call = action["functionCall"]
-            url = call.is_a?(Hash) && call["call"] == "openUrl" ? renderer.text(call.dig("args", "url"), scope) : ""
-            return { href: url } if url.match?(%r{\Ahttps?://}) && !url.include?("${")
-
-            renderer.warn("#{component["component"]} #{component["id"].inspect}: unsupported local action")
+            if call.is_a?(Hash) && call["call"] == "openUrl"
+              url = renderer.call_function("openUrl", call["args"], scope)
+              return { href: url } if url
+            else
+              renderer.warn("#{component["component"]} #{component["id"].inspect}: unsupported local action")
+            end
             { type: :button, disabled: true }
           end
 

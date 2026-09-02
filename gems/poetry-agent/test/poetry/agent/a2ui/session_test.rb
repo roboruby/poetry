@@ -179,6 +179,49 @@ class SessionTest < Minitest::Test
     assert_equal data, action.forwarded_props.dig("a2uiAction", "dataModel")
   end
 
+  def test_a_failing_check_rejects_the_action_with_errors_by_component
+    session = A2UI::Session.new
+    session.apply({ "createSurface" => {
+                    "surfaceId" => "f", "catalogId" => A2UI::Catalogs::Basic::ID, "sendDataModel" => true,
+                    "dataModel" => { "formData" => { "terms" => "", "email" => "", "phone" => "" } },
+                    "components" => [
+                      { "id" => "root", "component" => "Column", "children" => %w[email submit] },
+                      { "id" => "email", "component" => "TextField", "label" => "Email",
+                        "value" => { "path" => "/formData/email" },
+                        "checks" => [{ "condition" => { "call" => "email",
+                                                        "args" => { "value" => { "path" => "/formData/email" } } },
+                                       "message" => "Invalid email format" }] },
+                      { "id" => "submit", "component" => "Button", "child" => "l",
+                        "action" => { "event" => { "name" => "submit_form" } },
+                        "checks" => [{ "condition" => { "call" => "and", "args" => { "values" => [
+                          { "call" => "required", "args" => { "value" => { "path" => "/formData/terms" } } },
+                          { "call" => "or", "args" => { "values" => [
+                            { "call" => "required", "args" => { "value" => { "path" => "/formData/email" } } },
+                            { "call" => "required", "args" => { "value" => { "path" => "/formData/phone" } } }
+                          ] } }
+                        ] } }, "message" => "You must accept terms AND provide either email or phone" }] },
+                      { "id" => "l", "component" => "Text", "text" => "Go" }
+                    ]
+                  } })
+    rejected = session.action(surface_id: "f", source: "submit", values: { "/formData/email" => "nope" })
+
+    refute_predicate rejected, :valid?
+    assert_nil rejected.to_h
+    assert_empty rejected.forwarded_props
+    assert_equal %w[email submit], rejected.errors.keys
+    assert_equal "Invalid email format", rejected.errors["email"].first[:message]
+    assert_equal "You must accept terms AND provide either email or phone", rejected.errors["submit"].first[:message]
+    assert_equal "nope", session.surface("f").data.dig("formData", "email")
+
+    session.surface("f").update_data("/formData/terms", "yes")
+    accepted = session.action(surface_id: "f", source: "submit", values: { "/formData/email" => "ada@example.com" })
+
+    assert_predicate accepted, :valid?
+    assert_equal "submit_form", accepted.to_h.dig("action", "name")
+    assert_equal({ "formData" => { "terms" => "yes", "email" => "ada@example.com", "phone" => "" } },
+                 accepted.forwarded_props.dig("a2uiAction", "dataModel"))
+  end
+
   def test_action_returns_nil_without_an_agent_event
     session = A2UI::Session.new
     session.apply({ "createSurface" => { "surfaceId" => "p", "catalogId" => A2UI::Catalogs::Basic::ID,

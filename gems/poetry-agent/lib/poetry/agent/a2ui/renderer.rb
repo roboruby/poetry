@@ -46,6 +46,8 @@ module Poetry
         attr_reader :action_url
         # @return [Array<String>] what could not be rendered, in render order
         attr_reader :warnings
+        # @return [Hash{String => Array<Hash>}] check failures by component key (see {Surface#failures})
+        attr_reader :errors
 
         # @param surface_or_id [Surface, String]
         # @return [String] the DOM id of the surface's wrapper
@@ -58,11 +60,14 @@ module Poetry
         # @param view [Object] an ActionView context (`view_context`)
         # @param action_url [String, nil] where actions post; nil renders a plain container
         # @param html [Hash] extra attributes for the wrapper (`class:` etc.)
-        def initialize(surface, view:, action_url: nil, html: {})
+        # @param errors [Hash{String => Array<Hash>}] check failures to show, by
+        #   component key (a rejected action's `errors`)
+        def initialize(surface, view:, action_url: nil, html: {}, errors: {})
           @surface = surface
           @view = view
           @action_url = action_url
           @html = html
+          @errors = errors || {}
           @warnings = []
         end
 
@@ -109,27 +114,38 @@ module Poetry
           view.render(klass.new(**attributes), &)
         end
 
-        # The display string of a dynamic value; a function call warns.
+        # The display string of a dynamic value; a function problem warns.
         #
         # @param value [Object]
         # @param scope [String, nil]
         # @return [String]
         def text(value, scope = nil)
-          if surface.function_call?(value)
-            warn("function #{value["call"].inspect} is not supported by this renderer")
-            return ""
-          end
-
-          surface.text(value, scope)
+          surface.text(value, scope, on_error: method(:warn))
         end
 
         # @param value [Object]
         # @param scope [String, nil]
         # @return [Object, nil] the resolved dynamic value
         def resolve(value, scope = nil)
-          return text(value, scope) if surface.function_call?(value)
+          surface.resolve(value, scope, on_error: method(:warn))
+        end
 
-          surface.resolve(value, scope)
+        # Calls a catalog function; a problem warns and returns nil.
+        #
+        # @param name [String]
+        # @param args [Hash, nil]
+        # @param scope [String, nil]
+        # @return [Object, nil]
+        def call_function(name, args, scope = nil)
+          Evaluator.new(surface, scope, on_error: method(:warn)).call(name, args)
+        end
+
+        # @param component [Hash]
+        # @param scope [String, nil]
+        # @return [String, nil] the first check failure message for the component
+        def error_for(component, scope = nil)
+          failure = Array(errors[surface.source_key(component, scope)]).first
+          failure && failure[:message]
         end
 
         # @param path [String] a bound pointer
@@ -155,7 +171,7 @@ module Poetry
         def submit_attributes(component, scope = nil)
           return { type: :button } unless action_url
 
-          { type: :submit, name: ACTION_PARAM, value: scope ? "#{component["id"]}@#{scope}" : component["id"] }
+          { type: :submit, name: ACTION_PARAM, value: surface.source_key(component, scope) }
         end
 
         # @param component [Hash]

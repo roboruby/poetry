@@ -54,6 +54,11 @@ module Poetry
             ID
           end
 
+          # @return [Functions] the basic catalog's function set
+          def functions
+            Functions.basic
+          end
+
           # The child references of a component (ids, id lists, templates).
           #
           # @param component [Hash]
@@ -226,11 +231,14 @@ module Poetry
             label = renderer.aria_label(component, scope)
             attributes[:aria] = { label: label } if label
             attributes.merge!(action_attributes(component, scope, renderer))
-            renderer.component(Poetry::Ui::Button::Component, attributes) { button_content(component, scope, renderer) }
+            button = renderer.component(Poetry::Ui::Button::Component, attributes) do
+              button_content(component, scope, renderer)
+            end
+            with_error(component, scope, renderer, button)
           end
 
-          # An agent event submits; `openUrl` links; other functions wait for
-          # the function slice.
+          # An agent event submits; `openUrl` links (the function validates
+          # the URL); any other local action has no renderer-side meaning.
           def action_attributes(component, scope, renderer)
             action = component["action"]
             return { type: :button } unless action.is_a?(Hash)
@@ -239,11 +247,22 @@ module Poetry
             call = action["functionCall"]
             return { type: :button } unless call.is_a?(Hash)
 
-            url = call["call"] == "openUrl" ? renderer.text(call.dig("args", "url"), scope) : ""
-            return { href: url } if url.match?(%r{\Ahttps?://}) && !url.include?("${")
-
-            renderer.warn("Button #{component["id"].inspect}: function #{call["call"].inspect} is not supported")
+            if call["call"] == "openUrl"
+              url = renderer.call_function("openUrl", call["args"], scope)
+              return { href: url } if url
+            else
+              renderer.warn("Button #{component["id"].inspect}: local action #{call["call"].inspect} is not supported")
+            end
             { type: :button, disabled: true }
+          end
+
+          # A check failure (a rejected action's errors) renders under its control.
+          def with_error(component, scope, renderer, control)
+            error = renderer.error_for(component, scope)
+            return control unless error
+
+            note = renderer.view.tag.p(error, class: "text-sm text-destructive", role: "alert")
+            renderer.view.safe_join([control, note])
           end
 
           # A Text child becomes the button's label (plain, no block markup).
@@ -266,6 +285,8 @@ module Poetry
             placeholder = renderer.text(component["placeholder"], scope)
             attributes[:placeholder] = placeholder unless placeholder.empty?
             attributes.merge!(check_attributes(component))
+            error = renderer.error_for(component, scope)
+            attributes[:invalid] = true if error
             control = if component["variant"] == "longText"
                         renderer.component(Poetry::Ui::Textarea::Component, attributes.except(:type).merge(rows: 3))
                       else
@@ -276,6 +297,7 @@ module Poetry
                       end
             field = { id: attributes[:id], label_text: renderer.text(component["label"], scope) }
             field[:required] = true if attributes[:required]
+            field[:error] = error if error
             renderer.component(Poetry::Ui::Field::Component, field) { control }
           end
 
@@ -285,7 +307,7 @@ module Poetry
                            checked: renderer.resolve(component["value"], scope) == true }
             attributes[:name] = renderer.input_name(path, scope) if path
             attributes[:required] = true if check_attributes(component)[:required]
-            renderer.component(Poetry::Ui::Checkbox::Component, attributes)
+            with_error(component, scope, renderer, renderer.component(Poetry::Ui::Checkbox::Component, attributes))
           end
 
           def render_choice_picker(component, scope, renderer)
@@ -293,18 +315,19 @@ module Poetry
             path = binding_path(component["value"])
             selected = Array(renderer.resolve(component["value"], scope)).map(&:to_s)
             label = renderer.text(component["label"], scope)
-            if component["variant"] == "multipleSelection"
-              choice_boxes(options, path, selected, label, scope, renderer)
-            else
-              attributes = { label: label, value: selected.first }
-              attributes[:name] = renderer.input_name(path, scope) if path
-              renderer.component(Poetry::Ui::RadioGroup::Component, attributes) do |group|
-                options.each do |option|
-                  group.with_item(label: renderer.text(option["label"], scope), value: option["value"].to_s)
-                end
-                nil
-              end
-            end
+            control = if component["variant"] == "multipleSelection"
+                        choice_boxes(options, path, selected, label, scope, renderer)
+                      else
+                        attributes = { label: label, value: selected.first }
+                        attributes[:name] = renderer.input_name(path, scope) if path
+                        renderer.component(Poetry::Ui::RadioGroup::Component, attributes) do |group|
+                          options.each do |option|
+                            group.with_item(label: renderer.text(option["label"], scope), value: option["value"].to_s)
+                          end
+                          nil
+                        end
+                      end
+            with_error(component, scope, renderer, control)
           end
 
           # A checkbox per option under one list name; the leading empty
@@ -334,7 +357,7 @@ module Poetry
             attributes[:name] = renderer.input_name(path, scope) if path
             steps = component["steps"]
             attributes[:step] = step_size(min, max, steps) if steps.is_a?(Integer) && steps.positive?
-            renderer.component(Poetry::Ui::Slider::Component, attributes)
+            with_error(component, scope, renderer, renderer.component(Poetry::Ui::Slider::Component, attributes))
           end
 
           def step_size(min, max, steps)
@@ -356,7 +379,7 @@ module Poetry
               attributes[bound.to_sym] = limit unless limit.empty?
             end
             attributes[:required] = true if check_attributes(component)[:required]
-            renderer.component(Poetry::Ui::Input::Component, attributes)
+            with_error(component, scope, renderer, renderer.component(Poetry::Ui::Input::Component, attributes))
           end
 
           # The checks the browser can enforce as constraint attributes.
