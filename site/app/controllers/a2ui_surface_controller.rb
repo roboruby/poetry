@@ -33,25 +33,32 @@ class A2uiSurfaceController < ApplicationController
   end
 
   # POST: a submitted surface form. The bound values sync into the data
-  # model, the source component's event becomes the action message, and
-  # the scripted agent's reply streams back with the message itself.
+  # model, the surface's checks run against it, the source component's
+  # event becomes the action message, and the scripted agent's reply
+  # streams back with the message itself. A failing check re-renders the
+  # surface with its errors instead.
   def action
     payload = params[:a2ui].respond_to?(:permit!) ? params[:a2ui].permit!.to_h : {}
     session = A2uiShowcase.session
     action = session.action(surface_id: payload["surface"].to_s, source: payload["action"].to_s,
                             values: payload["values"] || {})
-    streams = Poetry::Agent::A2UI::Streams.new(session: session, render: ->(surface) { render_surface(surface, form: true) })
+    errors = action&.errors || {}
+    streams = Poetry::Agent::A2UI::Streams.new(session: session,
+                                               render: ->(surface) { render_surface(surface, form: true, errors: errors) })
     streams.mark_seen(*session.surfaces.keys)
-    html = action ? streams.apply_all(A2uiShowcase.reply(action)) : ""
-    log = render_to_string(partial: "a2ui_surface/log", locals: { action: action })
+    html = if action&.valid? then streams.apply_all(A2uiShowcase.reply(action))
+    elsif action then streams.stream_for(action.surface.id)
+    else ""
+    end
+    log = render_to_string(partial: "a2ui_surface/log", locals: { action: action, rejected: true })
     html += Poetry::Agent::AGUI::TurboStream.replace(LOG_ID, log)
-    render body: html, content_type: "text/vnd.turbo-stream.html", status: action ? :ok : :unprocessable_entity
+    render body: html, content_type: "text/vnd.turbo-stream.html", status: action&.valid? ? :ok : :unprocessable_entity
   end
 
   private
 
-  def render_surface(surface, form: false)
-    Poetry::Agent::A2UI::Renderer.new(surface, view: view_context,
+  def render_surface(surface, form: false, errors: {})
+    Poetry::Agent::A2UI::Renderer.new(surface, view: view_context, errors: errors,
                                       action_url: form ? a2ui_surface_action_path : nil).call
   end
 

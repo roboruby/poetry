@@ -2,7 +2,10 @@
     message, and its AG-UI placement (forwardedProps) with the data model
     the surface asked for. %>
 <div id="a2ui-action-log" class="flex flex-col gap-3">
-  <% if action %>
+  <% if action && !action.valid? %>
+    <p class="text-xs text-muted-foreground">A check failed on the server, so nothing reached the agent. The surface re-rendered with the failures (the same rules the browser enforced natively where it could):</p>
+    <%= poetry_code_block(code: JSON.pretty_generate(action.errors), language: "json", label: "errors") %>
+  <% elsif action %>
     <p class="text-xs text-muted-foreground">The renderer-to-agent <code>action</code> message, built from the submitted form:</p>
     <%= poetry_code_block(code: JSON.pretty_generate(action.to_h), language: "json", label: "action") %>
     <% if action.forwarded_props.dig("a2uiAction", "dataModel") %>

@@ -20,8 +20,10 @@
       Poetry's components (its checks became the browser's own constraints); the plan card is Poetry's
       catalog rendered straight from the registry. The order card below them streams in the way an agent
       streams it - the surface, then its components, then the data - each arrival a versioned replace.
-      Submit either form: the bound inputs and the source component post back, the server builds the
-      spec's <code>action</code> message, and the scripted agent's reply streams into place.
+      Submit either form: the bound inputs and the source component post back, the server runs the
+      surface's checks against them, builds the spec's <code>action</code> message, and the scripted
+      agent's reply streams into place. The sign-in button carries a check the browser cannot run on
+      its own (no example.com addresses); the order card's text runs through the catalog functions.
     </p>
     <%= render "a2ui_surface/log", action: nil %>
   </div>

@@ -34,7 +34,14 @@ module A2uiShowcase
           { "id" => "submit", "component" => "Button", "child" => "submit_label", "variant" => "primary",
             "action" => { "event" => { "name" => "sign_in",
                                        "context" => { "email" => { "path" => "/email" },
-                                                      "remember" => { "path" => "/remember" } } } } },
+                                                      "remember" => { "path" => "/remember" } } } },
+            "checks" => [
+              { "condition" => { "call" => "not",
+                                 "args" => { "value" => { "call" => "regex",
+                                                          "args" => { "value" => { "path" => "/email" },
+                                                                      "pattern" => "@example\\.com$" } } } },
+                "message" => "Use your work email, not an example.com address." }
+            ] },
           { "id" => "submit_label", "component" => "Text", "text" => "Sign in" }
         ]
       } }
@@ -64,7 +71,8 @@ module A2uiShowcase
 
   # The order card, streamed the way an agent streams: the surface, then its
   # components, then the data - each a versioned replace (`_sleep` paces
-  # the demo; the tests run instantly).
+  # the demo; the tests run instantly). Its text runs through the catalog
+  # functions: formatString, formatDate, formatCurrency, pluralize, @index.
   STREAM = [
     { "version" => "v1.0", "createSurface" => { "surfaceId" => "order", "catalogId" => BASIC }, "_sleep" => 400 },
     { "version" => "v1.0",
@@ -73,23 +81,39 @@ module A2uiShowcase
         "components" => [
           { "id" => "root", "component" => "Card", "child" => "body" },
           { "id" => "body", "component" => "Column", "children" => %w[heading status items] },
-          { "id" => "heading", "component" => "Text", "text" => { "path" => "/title" } },
-          { "id" => "status", "component" => "Text", "variant" => "caption", "text" => { "path" => "/status" } },
+          { "id" => "heading", "component" => "Text",
+            "text" => { "call" => "formatString",
+                        "args" => { "value" => "### Order #${/number}, placed " \
+                                               "${formatDate(value: ${/placedAt}, format: 'MMM d, HH:mm')}" } } },
+          { "id" => "status", "component" => "Text", "variant" => "caption",
+            "text" => { "call" => "formatString",
+                        "args" => { "value" => "${/status}: ${/count} " \
+                                               "${pluralize(value: ${/count}, one: 'item', other: 'items')}, " \
+                                               "${formatCurrency(value: ${/total}, currency: 'USD')}" } } },
           { "id" => "items", "component" => "List", "children" => { "componentId" => "item", "path" => "/items" } },
-          { "id" => "item", "component" => "Row", "justify" => "spaceBetween", "children" => %w[item_name item_qty] },
-          { "id" => "item_name", "component" => "Text", "text" => { "path" => "name" } },
-          { "id" => "item_qty", "component" => "Text", "variant" => "caption", "text" => { "path" => "qty" } }
+          { "id" => "item", "component" => "Row", "justify" => "spaceBetween",
+            "children" => %w[item_num item_name item_qty] },
+          { "id" => "item_num", "component" => "Text", "variant" => "caption",
+            "text" => { "call" => "formatString", "args" => { "value" => "${@index(offset: 1)}." } } },
+          { "id" => "item_name", "component" => "Text", "text" => { "path" => "name" }, "weight" => 1 },
+          { "id" => "item_qty", "component" => "Text", "variant" => "caption",
+            "text" => { "call" => "formatString", "args" => { "value" => "x${qty}" } } }
         ]
       }, "_sleep" => 600 },
     { "version" => "v1.0",
       "updateDataModel" => { "surfaceId" => "order",
-                             "value" => { "title" => "### Order #4821", "status" => "Preparing", "items" => [] } },
+                             "value" => { "number" => 4821, "placedAt" => "2026-09-01T18:05:00Z",
+                                          "status" => "Preparing", "count" => 0, "total" => 0, "items" => [] } },
       "_sleep" => 700 },
     { "version" => "v1.0",
       "updateDataModel" => { "surfaceId" => "order", "path" => "/items",
-                             "value" => [ { "name" => "Flat white", "qty" => "x2" },
-                                         { "name" => "Almond croissant", "qty" => "x1" } ] },
-      "_sleep" => 900 },
+                             "value" => [ { "name" => "Flat white", "qty" => 2 },
+                                          { "name" => "Almond croissant", "qty" => 1 } ] },
+      "_sleep" => 300 },
+    { "version" => "v1.0",
+      "updateDataModel" => { "surfaceId" => "order", "path" => "/count", "value" => 3 }, "_sleep" => 100 },
+    { "version" => "v1.0",
+      "updateDataModel" => { "surfaceId" => "order", "path" => "/total", "value" => 14.5 }, "_sleep" => 900 },
     { "version" => "v1.0",
       "updateDataModel" => { "surfaceId" => "order", "path" => "/status", "value" => "Out for delivery" },
       "_sleep" => 900 },

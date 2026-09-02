@@ -30,19 +30,35 @@ class A2uiSurfaceTest < ActionDispatch::IntegrationTest
     assert_equal versions.sort, versions
     assert_operator versions.length, :>=, 5
     assert_includes response.body, "Flat white"
-    assert_includes response.body, "Delivered"
+    assert_includes response.body, "Order #4821, placed Sep 1, 18:05"
+    assert_includes response.body, "Delivered: 3 items, $14.50"
+    assert_includes response.body, "<p>2.</p>"
+    assert_includes response.body, "<p>x2</p>"
     assert_includes response.body, 'action="remove" target="a2ui-surface-source"'
+  end
+
+  test "a failing server-side check re-renders the surface with its errors" do
+    post "/demos/a2ui-surface/action",
+         params: { a2ui: { surface: "signin", action: "submit",
+                           values: { "/email" => "ada@example.com", "/password" => "pw", "/remember" => "true" } } }
+
+    assert_response :unprocessable_entity
+    assert_includes response.body, 'action="vreplace" target="a2ui-signin"'
+    assert_includes response.body, "Use your work email, not an example.com address."
+    assert_includes response.body, 'value="ada@example.com"'
+    assert_includes response.body, "A check failed on the server"
+    refute_includes response.body, "Welcome back"
   end
 
   test "submitting the sign-in surface yields the action message and the agent's reply" do
     post "/demos/a2ui-surface/action",
          params: { a2ui: { surface: "signin", action: "submit",
-                           values: { "/email" => "ada@example.com", "/password" => "pw", "/remember" => "false" } } }
+                           values: { "/email" => "ada@roboruby.com", "/password" => "pw", "/remember" => "false" } } }
 
     assert_response :success
     assert_equal "text/vnd.turbo-stream.html", response.media_type
     assert_includes response.body, 'action="vreplace" target="a2ui-signin"'
-    assert_includes response.body, "Welcome back, ada@example.com"
+    assert_includes response.body, "Welcome back, ada@roboruby.com"
     assert_includes response.body, "sign in again"
     assert_includes response.body, 'target="a2ui-action-log"'
     assert_includes response.body, "sign_in"
