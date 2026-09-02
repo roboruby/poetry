@@ -14,6 +14,7 @@ end
 
 gem "poetry-core", **sibling.call("poetry-core")
 
+gem "bundler-audit", require: false
 gem "irb"
 gem "minitest", "~> 6.0.6"
 gem "nokogiri" # the fetch script's SVG parser (dev-only)
