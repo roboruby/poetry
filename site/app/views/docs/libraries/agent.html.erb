@@ -130,9 +130,23 @@
         the action exactly as the spec asks. The
         <%= link_to "A2UI Surface demo", "/demos/a2ui-surface" %> renders both
         catalogs, streams a third surface progressively, and shows the message
-        each submission produces. Renderer functions (<code>formatString</code>,
-        <code>formatCurrency</code>, ...) and checks beyond what the browser
-        enforces natively are the next slice.
+        each submission produces.
+      </p>
+      <p>
+        The catalog's functions run on the server: <code>formatString</code>
+        interpolation, the formatters, the validators behind <code>checks</code>,
+        the combinators, <code>openUrl</code>. A failing check rejects the action
+        with its failures rendered under their controls, and the same rules run
+        in the browser as the user types (<code>poetry--agent--a2ui-surface</code>):
+        a button whose checks fail is disabled, an input's error slot fills. Every
+        rendered component carries a render-stable key, and a surface's updates
+        arrive as morphing replaces, so typed text, a selected tab, and an open
+        dialog survive the agent's next message. A function a catalog marks
+        <code>rendererOrAgent</code> answers an agent's
+        <code>callRendererFunction</code> with a response. In the
+        <%= link_to "AG-UI Relay demo", "/demos/agui-relay" %> the agent paints a
+        surface mid-stream as an <code>a2ui-surface</code> activity and its form
+        posts back into the next run as <code>forwardedProps.a2uiAction</code>.
       </p>
     <% end %>
   </section>
@@ -158,7 +172,9 @@
           <tr><td><code>Poetry::Agent::A2UI::Session</code></td><td>the envelope consumer: surfaces, data models, renderer-to-agent errors, and <code>#action</code> (a submitted surface form as the spec's action message)</td></tr>
           <tr><td><code>Poetry::Agent::A2UI::Renderer</code></td><td>renders a surface through a view context as a form of pointer-named inputs and action buttons; never raises for an agent's mistake (<code>warnings</code>)</td></tr>
           <tr><td><code>Poetry::Agent::A2UI::Catalogs</code></td><td><code>Basic</code> (the spec's catalog mapped onto Poetry's components) and <code>Native</code> (Poetry's catalog rendered from the registry, no hand mapping)</td></tr>
-          <tr><td><code>Poetry::Agent::A2UI::Streams</code></td><td>every surface change as a versioned Turbo Stream (append on first appearance, <code>vreplace</code> after, remove on delete)</td></tr>
+          <tr><td><code>Poetry::Agent::A2UI::Streams</code></td><td>every surface change as a versioned Turbo Stream (append on first appearance, a morphing <code>vreplace</code> after, remove on delete)</td></tr>
+          <tr><td><code>Poetry::Agent::A2UI::Functions</code></td><td>the function registry and the basic catalog's set (<code>Functions.basic</code>); <code>Expression</code> parses <code>formatString</code>, <code>Evaluator</code> resolves values in scope, <code>Checks</code> runs a component's rules</td></tr>
+          <tr><td><code>poetry--agent--a2ui-surface</code></td><td>the client side of a surface's checks: evaluates the rendered program as the user types, disables failing buttons, fills error slots</td></tr>
         </tbody>
       </table>
     <% end %>

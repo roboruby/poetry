@@ -9,7 +9,10 @@
     <%= poetry_button(size: :sm, variant: :outline, href: link.call(s: 3, d: 0)) { "Deny" } %>
   <% elsif transcript.pending_client_tools.any? %>
     <span>The browser is running <code><%= transcript.pending_client_tools.first[:name] %></code> through the registrar…</span>
-  <% elsif index >= 3 %>
+  <% elsif index >= 4 || (index == 3 && decision == false) %>
+    <%= poetry_button(size: :sm, variant: :outline, href: link.call(s: 1)) { "Replay from the top" } %>
+  <% elsif index == 3 %>
+    <span>The trial card above is an A2UI surface the agent painted mid-stream; its form posts back into the run.</span>
     <%= poetry_button(size: :sm, variant: :outline, href: link.call(s: 1)) { "Replay from the top" } %>
   <% else %>
     <span>streaming…</span>

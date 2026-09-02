@@ -57,10 +57,36 @@ class AguiRelayTest < ActionDispatch::IntegrationTest
 
     assert_includes response.body, "TR-3041"
     assert_includes response.body, "Replay from the top"
+    assert_includes response.body, 'action="vreplace" target="row-m3" method="morph"'
+    assert_includes response.body, 'id="a2ui-trial"'
+    assert_includes response.body, "/demos/agui-relay/surface"
+    assert_includes response.body, 'name="a2ui[values][/email]"'
+    assert_includes response.body, "data-controller=\"poetry--agent--a2ui-surface\""
 
     get "/demos/agui-relay/stream?s=3&d=0"
 
     assert_includes response.body, "No trial started"
+  end
+
+  test "the trial surface's action feeds run four as forwardedProps" do
+    post "/demos/agui-relay/surface", params: { a2ui: { surface: "trial", action: "remind", values: { "/email" => "nope" } } }
+
+    assert_response :unprocessable_entity
+    assert_includes response.body, 'action="vreplace" target="row-a3" method="morph"'
+    assert_includes response.body, "Enter a valid email"
+
+    post "/demos/agui-relay/surface", params: { a2ui: { surface: "trial", action: "remind", values: { "/email" => "ada@roboruby.com" } } }
+
+    assert_response :success
+    assert_includes response.body, 'action="remove" target="agui-relay-source"'
+    assert_includes response.body, "s=4"
+    assert_includes response.body, "email=ada%40roboruby.com"
+
+    get "/demos/agui-relay/stream?s=4&email=ada%40roboruby.com"
+
+    assert_includes response.body, "Reminder set for ada@roboruby.com"
+    assert_includes response.body, "forwardedProps.a2uiAction"
+    assert_includes response.body, "Replay from the top"
   end
 
   test "the A2UI catalog is served as JSON" do

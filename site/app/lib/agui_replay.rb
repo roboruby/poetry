@@ -20,15 +20,60 @@ class AguiReplay
   class << self
     # The events of one run.
     #
-    # @param index [Integer] 1, 2, or 3
+    # @param index [Integer] 1 to 4
     # @param decision [Boolean, nil] the approval answer (run 3)
+    # @param email [String, nil] the reminder email the trial surface posted (run 4)
     # @return [Array<Hash>] AG-UI events; `_sleep` is docs pacing, not protocol
-    def events(index, decision: nil)
+    def events(index, decision: nil, email: nil)
       case index
       when 1 then run_one
       when 2 then run_two
-      else run_three(decision)
+      when 3 then run_three(decision)
+      else run_four(email)
       end
+    end
+
+    # The A2UI surface the agent paints in run 3 (the a2ui-middleware
+    # shape: an `a2ui-surface` activity whose content carries the
+    # envelope messages): the trial card with a reminder form.
+    #
+    # @return [Array<Hash>]
+    def trial_surface
+      [ { "version" => "v1.0",
+          "createSurface" => {
+            "surfaceId" => "trial", "catalogId" => Poetry::Agent::A2UI::Catalogs::Basic::ID, "sendDataModel" => true,
+            "dataModel" => { "email" => "" },
+            "components" => [
+              { "id" => "root", "component" => "Column", "children" => %w[title note email remind] },
+              { "id" => "title", "component" => "Text", "text" => "### Trial TR-3041 is live" },
+              { "id" => "note", "component" => "Text", "variant" => "caption",
+                "text" => "Ends in 30 days. Want a reminder three days before?" },
+              { "id" => "email", "component" => "TextField", "label" => "Reminder email", "value" => { "path" => "/email" },
+                "placeholder" => "you@example.com",
+                "checks" => [ { "condition" => { "call" => "email", "args" => { "value" => { "path" => "/email" } } },
+                               "message" => "Enter a valid email" } ] },
+              { "id" => "remind", "component" => "Button", "child" => "remind_label", "variant" => "primary",
+                "action" => { "event" => { "name" => "set_reminder", "context" => { "email" => { "path" => "/email" } } } },
+                "checks" => [ { "condition" => { "call" => "required", "args" => { "value" => { "path" => "/email" } } },
+                               "message" => "Add the email first" } ] },
+              { "id" => "remind_label", "component" => "Text", "text" => "Set reminder" }
+            ]
+          } } ]
+    end
+
+    # The A2UI session holding every surface the transcript's activities
+    # painted (the relay's own consumer of the a2ui-middleware path).
+    #
+    # @param transcript [Poetry::Agent::AGUI::Transcript]
+    # @return [Poetry::Agent::A2UI::Session]
+    def surface_session(transcript)
+      session = Poetry::Agent::A2UI::Session.new
+      transcript.messages.each do |message|
+        message.parts.each do |part|
+          session.apply_activity(part[:content]) if part[:kind] == :activity && part[:activity_type] == "a2ui-surface"
+        end
+      end
+      session
     end
 
     # The user message every run's input starts from.
@@ -52,7 +97,7 @@ class AguiReplay
     # @param params [ActionController::Parameters]
     # @return [Integer]
     def cursor(params)
-      params.fetch(:s, 1).to_i.clamp(1, 3)
+      params.fetch(:s, 1).to_i.clamp(1, 4)
     end
 
     # The approval decision carried by the request, if any.
@@ -69,11 +114,12 @@ class AguiReplay
     # @param index [Integer]
     # @param decision [Boolean, nil]
     # @param tool_result [String, nil]
+    # @param email [String, nil]
     # @return [Poetry::Agent::AGUI::Transcript]
-    def transcript_before(index, decision: nil, tool_result: nil)
+    def transcript_before(index, decision: nil, tool_result: nil, email: nil)
       transcript = Poetry::Agent::AGUI::Transcript.new(client_tools: [ CLIENT_TOOL ])
       (1...index).each do |run|
-        transcript.apply_all(events(run, decision: decision).map { |event| event.except("_sleep") })
+        transcript.apply_all(events(run, decision: decision, email: email).map { |event| event.except("_sleep") })
         transcript.resolve_client_tool("c-tab", tool_result || '{"value":"pricing","changed":true}') if run == 1
       end
       transcript
@@ -121,6 +167,8 @@ class AguiReplay
           { "type" => "TOOL_CALL_RESULT", "messageId" => "t-trial", "toolCallId" => "c-trial",
             "content" => '{"trial":"TR-3041","ends":"in 30 days"}', "_sleep" => 700 },
           *text("m3", "Trial TR-3041 is live for 30 days on the Team plan. Nothing is billed until it ends."),
+          { "type" => "ACTIVITY_SNAPSHOT", "messageId" => "a3", "activityType" => "a2ui-surface",
+            "content" => { "a2ui_operations" => trial_surface }, "_sleep" => 300 },
           run_finished("r3")
         ]
       else
@@ -130,6 +178,15 @@ class AguiReplay
           run_finished("r3")
         ]
       end
+    end
+
+    def run_four(email)
+      [
+        run_started("r4"),
+        *text("m4", "Reminder set for #{email.presence || "you"}, three days before the trial ends. " \
+                    "The surface's action reached this run as forwardedProps.a2uiAction - the way A2UI rides AG-UI."),
+        run_finished("r4")
+      ]
     end
 
     def run_started(run_id)

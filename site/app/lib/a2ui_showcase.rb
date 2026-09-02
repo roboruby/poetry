@@ -80,7 +80,11 @@ module A2uiShowcase
         "surfaceId" => "order",
         "components" => [
           { "id" => "root", "component" => "Card", "child" => "body" },
-          { "id" => "body", "component" => "Column", "children" => %w[heading status items] },
+          { "id" => "body", "component" => "Column", "children" => %w[heading status tabs] },
+          { "id" => "tabs", "component" => "Tabs",
+            "tabs" => [ { "title" => "Items", "child" => "items" }, { "title" => "Note", "child" => "note" } ] },
+          { "id" => "note", "component" => "TextField", "label" => "Delivery note", "variant" => "longText",
+            "value" => { "path" => "/note" } },
           { "id" => "heading", "component" => "Text",
             "text" => { "call" => "formatString",
                         "args" => { "value" => "### Order #${/number}, placed " \
@@ -103,7 +107,8 @@ module A2uiShowcase
     { "version" => "v1.0",
       "updateDataModel" => { "surfaceId" => "order",
                              "value" => { "number" => 4821, "placedAt" => "2026-09-01T18:05:00Z",
-                                          "status" => "Preparing", "count" => 0, "total" => 0, "items" => [] } },
+                                          "status" => "Preparing", "count" => 0, "total" => 0, "items" => [],
+                                          "note" => "" } },
       "_sleep" => 700 },
     { "version" => "v1.0",
       "updateDataModel" => { "surfaceId" => "order", "path" => "/items",

@@ -1,0 +1,9 @@
+<%# An A2UI surface that arrived inside the AG-UI stream (an a2ui-surface
+    activity, the a2ui-middleware shape): folded into a session and
+    rendered as a form whose action posts back into the run. %>
+<% session = Poetry::Agent::A2UI::Session.new %>
+<% session.apply_activity(content) %>
+<% session.surfaces.each_value do |surface| %>
+  <%= Poetry::Agent::A2UI::Renderer.new(surface, view: self, action_url: surface_url, errors: errors,
+                                        html: { class: "flex flex-col gap-3 rounded-md border p-4" }).call %>
+<% end %>

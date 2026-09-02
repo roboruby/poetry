@@ -30,6 +30,8 @@ class A2uiSurfaceTest < ActionDispatch::IntegrationTest
     assert_equal versions.sort, versions
     assert_operator versions.length, :>=, 5
     assert_includes response.body, "Flat white"
+    assert_includes response.body, 'action="vreplace" target="a2ui-order" method="morph"'
+    assert_includes response.body, 'name="a2ui[values][/note]"'
     assert_includes response.body, "Order #4821, placed Sep 1, 18:05"
     assert_includes response.body, "Delivered: 3 items, $14.50"
     assert_includes response.body, "<p>2.</p>"

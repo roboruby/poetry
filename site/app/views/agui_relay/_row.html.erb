@@ -20,7 +20,11 @@
               <%= poetry_bubble(variant: :muted) { part[:text] } %>
             <% end %>
           <% when :activity %>
-            <code class="rounded-md border px-3 py-2 text-xs"><%= part[:activity_type] %>: <%= part[:content].to_json %></code>
+            <% if part[:activity_type] == "a2ui-surface" %>
+              <%= render "agui_relay/surface", content: part[:content], errors: local_assigns[:surface_errors] || {} %>
+            <% else %>
+              <code class="rounded-md border px-3 py-2 text-xs"><%= part[:activity_type] %>: <%= part[:content].to_json %></code>
+            <% end %>
           <% when :tool %>
             <div class="flex flex-col gap-1 rounded-md border px-3 py-2 text-xs">
               <div class="flex items-center gap-2">
