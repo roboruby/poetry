@@ -1,6 +1,6 @@
 {
   "name": "@poetry/charts",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "description": "poetry-charts' Stimulus chrome controllers. Importmap-first (the engine pins this tree); the same tree is the npm channel for bundler hosts.",
   "license": "MIT",
