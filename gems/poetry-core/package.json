@@ -17,8 +17,8 @@
   },
   "devDependencies": {
     "@hotwired/stimulus": "^3.2.2",
-    "jsdom": "^26.0.0",
-    "vitest": "^3.0.0"
+    "jsdom": "^30.0.1",
+    "vitest": "^4.1.11"
   },
   "scripts": {
     "test": "vitest run",
