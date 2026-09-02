@@ -1,4 +1,4 @@
-// Vendored from @floating-ui/utils@0.2.11 (dist/floating-ui.utils.mjs, MIT) - DO NOT EDIT.
+// Vendored from @floating-ui/utils@0.2.12 (dist/floating-ui.utils.mjs, MIT) - DO NOT EDIT.
 // Import specifiers rewritten to @poetry/controllers/vendor/* so the file
 // resolves via the importmap pins AND the npm exports map.
 // Versions + license: vendor/floating-ui/ (repo root). Update by re-running
@@ -103,12 +103,12 @@ function getOppositePlacement(placement) {
   return oppositeSideMap[side] + placement.slice(side.length);
 }
 function expandPaddingObject(padding) {
+  var _padding$top, _padding$right, _padding$bottom, _padding$left;
   return {
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    ...padding
+    top: (_padding$top = padding.top) != null ? _padding$top : 0,
+    right: (_padding$right = padding.right) != null ? _padding$right : 0,
+    bottom: (_padding$bottom = padding.bottom) != null ? _padding$bottom : 0,
+    left: (_padding$left = padding.left) != null ? _padding$left : 0
   };
 }
 function getPaddingObject(padding) {

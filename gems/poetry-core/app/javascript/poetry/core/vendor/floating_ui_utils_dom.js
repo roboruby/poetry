@@ -1,4 +1,4 @@
-// Vendored from @floating-ui/utils@0.2.11 (dist/floating-ui.utils.dom.mjs, MIT) - DO NOT EDIT.
+// Vendored from @floating-ui/utils@0.2.12 (dist/floating-ui.utils.dom.mjs, MIT) - DO NOT EDIT.
 // Import specifiers rewritten to @poetry/controllers/vendor/* so the file
 // resolves via the importmap pins AND the npm exports map.
 // Versions + license: vendor/floating-ui/ (repo root). Update by re-running
@@ -138,7 +138,7 @@ function getParentNode(node) {
 function getNearestOverflowAncestor(node) {
   const parentNode = getParentNode(node);
   if (isLastTraversableNode(parentNode)) {
-    return node.ownerDocument ? node.ownerDocument.body : node.body;
+    return (node.ownerDocument || node).body;
   }
   if (isHTMLElement(parentNode) && isOverflowElement(parentNode)) {
     return parentNode;
