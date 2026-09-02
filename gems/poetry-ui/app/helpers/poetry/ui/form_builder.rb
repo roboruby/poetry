@@ -657,14 +657,13 @@ module Poetry
 
       # ActionView's collection_select arity, verbatim, adapted onto
       # poetry_select (value_method/text_method read off each item).
-      # rubocop:disable Metrics/ParameterLists -- the ActionView arity, verbatim
-      def collection_select(method, collection, value_method, text_method, options = {}, html_options = {})
+      def collection_select(method, collection, value_method, text_method, # rubocop:disable Metrics/ParameterLists
+                            options = {}, html_options = {})
         pairs = collection.map { |item| [item.public_send(text_method), item.public_send(value_method)] }
         poetry_select(method, pairs,
                       include_blank: options[:include_blank] || options[:prompt],
                       **html_options.transform_keys(&:to_sym))
       end
-      # rubocop:enable Metrics/ParameterLists
 
       # ActionView's collection_radio_buttons arity adapted onto
       # radio_group (one hidden native radio per item, same serialization).

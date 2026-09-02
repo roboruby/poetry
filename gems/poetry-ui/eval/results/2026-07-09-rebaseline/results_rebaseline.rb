@@ -44,7 +44,7 @@ CRASH_ADJUDICATION = {
 }.freeze
 
 flips = tasks.keys.select { |t| baseline["tasks"][t] && baseline["tasks"][t]["verdict"] != tasks[t]["verdict"] }
-                  .to_h { |t| [t, "#{baseline["tasks"][t]["verdict"]} -> #{tasks[t]["verdict"]}"] }
+             .to_h { |t| [t, "#{baseline["tasks"][t]["verdict"]} -> #{tasks[t]["verdict"]}"] }
 
 axes = %w[hierarchy composition clarity brief_fit].to_h do |axis|
   [axis, { "poetry" => tasks.count { |_t, s| s.dig("axes", axis) == "poetry" },

@@ -101,11 +101,9 @@ module Poetry
         option :labelled_by, :string,
                doc: "aria-labelledby for the thumb(s) - the Field-wrapped single slider derives its name from the " \
                     "field label this way."
-        # rubocop:disable Style/FormatStringToken -- %{value} names the i18n token itself
         option :value_text, ActiveModel::Type::Value.new,
-               doc: "aria-valuetext formatter: a proc (v -> \"$200\") or an i18n key with %{value}; optional - falls " \
-                    "back to the bare number."
-        # rubocop:enable Style/FormatStringToken
+               doc: "aria-valuetext formatter: a proc (v -> \"$200\") or an i18n key " \
+                    "with %{value}; optional - falls back to the bare number." # rubocop:disable Style/FormatStringToken
         option :described_by, :string, doc: "Field hint/error wiring -> aria-describedby on EACH thumb."
 
         validates :orientation, inclusion: { in: ORIENTATIONS }

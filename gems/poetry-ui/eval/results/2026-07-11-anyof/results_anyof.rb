@@ -36,7 +36,7 @@ end
 FRESH_SWEEP = load_json(File.join(RUN, "fresh-arm-sweep.json"))
 
 flips = tasks.keys.select { |t| prior["tasks"][t] && prior["tasks"][t]["verdict"] != tasks[t]["verdict"] }
-                  .to_h { |t| [t, "#{prior["tasks"][t]["verdict"]} -> #{tasks[t]["verdict"]}"] }
+             .to_h { |t| [t, "#{prior["tasks"][t]["verdict"]} -> #{tasks[t]["verdict"]}"] }
 
 axes = %w[hierarchy composition clarity brief_fit].to_h do |axis|
   [axis, { "poetry" => tasks.count { |_t, s| s.dig("axes", axis) == "poetry" },
