@@ -61,12 +61,36 @@ module Poetry
         # @return [Catalog]
         # @raise [ArgumentError] when no registry is found
         def self.from_registry(root = nil, **)
+          new(entries: load_entries(root), **)
+        end
+
+        # Loads the registry entries under a root (the bundled poetry-ui
+        # registry when no root is given).
+        #
+        # @param root [String, Pathname, nil]
+        # @return [Hash{String => Hash}] entries by registry path
+        # @raise [ArgumentError] when no registry is found
+        def self.load_entries(root = nil)
           root ||= Gem::Specification.find_all_by_name("poetry-ui").first&.gem_dir
           path = root && File.join(root.to_s, Poetry::Core::Registry::RELATIVE_PATH)
           raise ArgumentError, "no component registry at #{path || "(no root)"}" unless path && File.exist?(path)
 
-          entries = YAML.safe_load_file(path, permitted_classes: [Symbol], aliases: true).fetch("components")
-          new(entries: entries, **)
+          YAML.safe_load_file(path, permitted_classes: [Symbol], aliases: true).fetch("components")
+        end
+
+        # The catalog component name of a registry path (PascalCase of its
+        # last segment).
+        #
+        # @param path [String]
+        # @return [String]
+        def self.component_name(path)
+          path.split("/").last.split("_").map(&:capitalize).join
+        end
+
+        # @param name [String] an option name
+        # @return [Boolean] whether an agent never sets it
+        def self.skipped_option?(name)
+          SKIPPED_OPTIONS.include?(name) || name.end_with?("_class")
         end
 
         # @param entries [Hash{String => Hash}] registry entries by path
@@ -137,7 +161,7 @@ module Poetry
         # @param path [String]
         # @return [String]
         def component_name(path)
-          path.split("/").last.split("_").map(&:capitalize).join
+          self.class.component_name(path)
         end
 
         private
@@ -223,8 +247,7 @@ module Poetry
         end
 
         def skipped_option?(name)
-          name = name.to_s
-          SKIPPED_OPTIONS.include?(name) || name.end_with?("_class")
+          self.class.skipped_option?(name)
         end
 
         # A component takes a content block when the registry says one is

@@ -46,6 +46,21 @@ component contract. Two ship:
   top-level keys, `$defs` = `anyComponent` + `anyFunction`, external refs
   into `common_types.json` only); the content-block heuristic is
   `requires_content` / `requires_any` content / an `elements` content cell.
+- The A2UI renderer is server-side and fail-soft: `Session` applies the
+  envelope (dangling child references are NOT errors - streaming delivers
+  children later; cycles, bad ids, the reserved `Surface` name, and
+  unknown surfaces are), `Renderer` never raises for an agent's mistake
+  (unknown component, dangling id, a library refusal such as a nameless
+  Slider or an unknown icon, an unsupported function) - it renders nothing
+  for it and records `warnings`. A surface is a form: inputs are named
+  `a2ui[values][<absolute pointer>]`, the action button is
+  `a2ui[action]=<id>` (or `<id>@<scope>` inside a template), and only
+  BOUND paths are writable from a submission (`Surface#inputs` is the
+  allowlist, coerced per kind). Basic-catalog mapping lives in
+  `Catalogs::Basic`; the native catalog renders from the registry with no
+  hand mapping (`Catalogs::Native`) - never special-case a component there,
+  fix the registry. Functions and non-native `checks` are a later slice:
+  a `{ "call" => ... }` value resolves to nil plus a warning.
 - The registrar validates every call in code (required, unknown, type,
   enum) and answers problems as `Error: ...` strings; a result is the
   action's returned state (core's tool-bound actions return it) or a
