@@ -14,13 +14,21 @@ module Poetry
           return [] if collection.empty?
 
           sample = collection.first
-          if sample.is_a?(Array) || !sample.respond_to?(:id)
+          label = options[:label_method]
+          value = options[:value_method]
+          if (sample.is_a?(Array) || !sample.respond_to?(:id)) && !(label || value)
             collection.map { |item| item.is_a?(Array) ? item : [item.to_s, item] }
           else
-            label = ::SimpleForm.collection_label_methods.find { |m| sample.respond_to?(m) }
-            value = ::SimpleForm.collection_value_methods.find { |m| sample.respond_to?(m) }
-            collection.map { |item| [item.public_send(label), item.public_send(value)] }
+            # simple_form's label_method:/value_method: (symbols or callables)
+            # win; otherwise its detection chain (name, title, to_s / id, to_s).
+            label ||= ::SimpleForm.collection_label_methods.find { |m| sample.respond_to?(m) }
+            value ||= ::SimpleForm.collection_value_methods.find { |m| sample.respond_to?(m) }
+            collection.map { |item| [read(item, label), read(item, value)] }
           end
+        end
+
+        def read(item, method)
+          method.respond_to?(:call) ? method.call(item) : item.public_send(method)
         end
       end
 

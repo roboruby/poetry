@@ -38,9 +38,11 @@ module Poetry
         def poetry_options
           opts = input_html_options.except(:class, :id)
           opts[:hint] = options[:hint] if options[:hint].is_a?(String)
-          opts[:label] = options[:label] if options[:label].is_a?(String)
+          label = options[:label].is_a?(String) ? options[:label] : translate_from_namespace(:labels)
+          opts[:label] = label if label.is_a?(String) # simple_form.labels.* keys, its own lookup chain
           placeholder = options[:placeholder] || input_html_options[:placeholder]
           opts[:placeholder] = placeholder if placeholder.is_a?(String)
+          opts[:required] = options[:required] if options.key?(:required) # explicit beats inference
           opts.merge!(options[:poetry].to_h.transform_keys(&:to_sym)) if options[:poetry]
           opts
         end

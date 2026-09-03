@@ -28,6 +28,9 @@ bin/rails g poetry:simple_form:install   # writes the one-line initializer
   even the ones simple_form never had: `:switch`, `:slider`, `:otp`,
   `:sensitive`, `:tag_group`, `:date_picker`, `:calendar`, `:combobox`,
   `:autocomplete`, `:native_select`.
+- `required: true/false` overrides the model's presence inference; `label_method:`
+  and `value_method:` (symbols or callables) are honored on every collection
+  input, with simple_form's detection chain as the fallback.
 - Poetry-only options ride a `poetry:` hash - `f.input :active, poetry:
   { switch: true }`, `f.input :code, as: :otp, poetry: { length: 4 }` -
   merged last, so it wins over anything simple_form derived. `input_html`
