@@ -1,0 +1,6 @@
+# GitHub language stats (Linguist). The eval results are harness output
+# (generated markup, judge verdicts, captures), and the Hotwire files under
+# the dummy's vendor dir are vendored test assets; neither is this gem's
+# source. Without this the repo reads as HTML instead of Ruby.
+eval/results/** linguist-generated
+test/dummy/public/vendor/** linguist-vendored
