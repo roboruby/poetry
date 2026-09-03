@@ -1,31 +1,13 @@
 /.bundle/
-/.yardoc
-/_yardoc/
 /coverage/
-/doc/
-/docs/
-/log/
 /pkg/
-/spec/reports/
 /tmp/
-
+*.gem
+/.yardoc
+/doc/
+# Repo-local plans (not shipped; see dev_only_dirs in the gemspec).
+/docs/
+/.ruby-lsp/
 .env
 .DS_Store
-.overmind.sock
-
-# Demo app
-/demo/.bundle/
-/demo/app/assets/builds/
-/demo/tmp/
-/demo/node_modules/
-/demo/config/master.key
-/demo/public/packs/
-/demo/public/assets/
-/demo/storage/*
-!/demo/storage/.keep
-/demo/log/*.log
-/demo/vendor/bundle/
-
-# Ruby LSP
-/.ruby-lsp/
 Gemfile.lock

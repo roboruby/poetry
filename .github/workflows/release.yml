@@ -25,5 +25,7 @@ jobs:
         with:
           bundler-cache: true
           ruby-version: ruby
+      - name: Tag matches VERSION
+        run: bundle exec rake version:verify_tag
       - name: Publish to RubyGems (OIDC trusted publishing)
         uses: rubygems/release-gem@v1

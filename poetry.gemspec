@@ -17,10 +17,6 @@ Gem::Specification.new do |spec|
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.4.0"
 
-  # Uncomment the line below to require MFA for gem pushes.
-  # This helps protect your gem from supply chain attacks by ensuring
-  # no one can publish a new version without multi-factor authentication.
-  # See: https://guides.rubygems.org/mfa-requirement-opt-in/
   spec.metadata["homepage_uri"] = "https://poetryui.com"
   spec.metadata["documentation_uri"] = "https://poetryui.com/docs"
   spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry"
@@ -54,7 +50,4 @@ Gem::Specification.new do |spec|
   spec.add_dependency "poetry-core", "= #{Poetry::VERSION}"
   spec.add_dependency "poetry-lucide", "= #{Poetry::VERSION}"
   spec.add_dependency "poetry-ui", "= #{Poetry::VERSION}"
-
-  # For more information and examples about making a new gem, check out our
-  # guide at: https://guides.rubygems.org/make-your-own-gem/
 end

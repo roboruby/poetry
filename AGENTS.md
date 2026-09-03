@@ -10,8 +10,15 @@ happens in the sibling gems — check their own AGENTS.md files.
 
 ## Gates
 
-- `bundle exec rake` — `test` (the loader test proves all three siblings
-  load through `require "poetry"`) + `rubocop`.
+- `bundle exec rake` — the default chain: `test` (the loader test proves all
+  three siblings load through `require "poetry"`), `rubocop`, `yard:verify`
+  (no YARD warnings), `yard:coverage` (every public object documented; the
+  floor is 0).
+- CI (`.github/workflows/main.yml`) runs that chain on Ruby 3.4 and 4.0 with
+  the siblings resolved from RubyGems, plus `bundle-audit`. The release
+  workflow (`release.yml`, tags `v*`) runs `rake version:verify_tag` (the tag
+  must equal `v<VERSION>`), then publishes via OIDC.
+- `rake "version:bump[X.Y.Z]"` edits the one VERSION constant.
 
 ## Standing rules
 

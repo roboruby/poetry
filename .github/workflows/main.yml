@@ -35,5 +35,20 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-      - name: Run the default task
+      - name: Run the default task (test + rubocop + yard)
         run: bundle exec rake
+
+  audit:
+    runs-on: ubuntu-latest
+    name: bundle audit
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - name: Audit dependencies for known CVEs
+        run: bundle exec bundle-audit check --update

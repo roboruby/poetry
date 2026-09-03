@@ -21,3 +21,5 @@ Metrics/BlockLength:
   Exclude:
     - "test/**/*"
     - "*.gemspec"
+    # Rake namespace blocks are naturally long task lists.
+    - "rakelib/**/*.rake"
