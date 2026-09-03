@@ -9,8 +9,8 @@ module Poetry
       # (the Streamable HTTP transport's request/response half) with the
       # same pure {Server#handle} the stdio exe uses - one surface, two
       # transports. Mount it at the conventional same-origin `/mcp`, which
-      # is where in-page bridges (Cloudflare's WebMCP Site MCP Server pack
-      # among them) look for a site's own MCP server.
+      # is where in-page bridges (WebMCP site MCP server packs among them)
+      # look for a site's own MCP server.
       #
       # Read-only by construction (every tool describes or verifies), so
       # exposing it is a discovery surface, not a mutation surface. The
