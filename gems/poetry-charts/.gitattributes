@@ -1,0 +1,6 @@
+# GitHub language stats (Linguist): the d3 kernel sources and its built
+# bundle are vendored third-party code, and the JS test suite is not this
+# gem's source.
+vendor/d3-kernel/** linguist-vendored
+app/javascript/poetry/charts/d3.js linguist-vendored
+test/javascript/** linguist-vendored
