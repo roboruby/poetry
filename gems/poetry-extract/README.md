@@ -1,7 +1,7 @@
 # poetry-extract
 
 Domain in, theme out. The optional design-extraction gem for
-[poetry](../poetry-ui): point it at a public website and get back a
+[poetry](https://github.com/roboruby/poetry): point it at a public website and get back a
 DESIGN.md document plus deterministic design tokens, ready for poetry's
 AA-gated theme importer.
 
