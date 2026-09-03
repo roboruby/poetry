@@ -10,8 +10,7 @@ module Poetry
       class CollectionBase < Base
         private
 
-        def label_value_pairs
-          collection = Array(options[:collection])
+        def label_value_pairs(collection = Array(options[:collection]))
           return [] if collection.empty?
 
           sample = collection.first
@@ -61,6 +60,87 @@ module Poetry
         def input(_wrapper_options = nil)
           pairs = label_value_pairs.map { |label, value| [value, label] }
           poetry_builder.checkbox_group(attribute_name, pairs, **poetry_options)
+        end
+      end
+
+      # Serves `as: :native_select`: a poetry Field wrapping the styled
+      # native <select> (the no-JS picker).
+      class NativeSelectInput < CollectionBase
+        # @return [String] the rendered Field HTML
+        def input(_wrapper_options = nil)
+          poetry_builder.native_select(attribute_name, label_value_pairs,
+                                       include_blank: options[:include_blank] || options[:prompt],
+                                       **poetry_options)
+        end
+      end
+
+      # Serves `as: :combobox`: a poetry Field wrapping the filterable Combobox.
+      class ComboboxInput < CollectionBase
+        # @return [String] the rendered Field HTML
+        def input(_wrapper_options = nil)
+          poetry_builder.poetry_combobox(attribute_name, label_value_pairs,
+                                         include_blank: options[:include_blank] || options[:prompt],
+                                         **poetry_options)
+        end
+      end
+
+      # Serves `as: :autocomplete`: a poetry Field wrapping the Autocomplete;
+      # the collection becomes its suggestions.
+      class AutocompleteInput < CollectionBase
+        # @return [String] the rendered Field HTML
+        def input(_wrapper_options = nil)
+          poetry_builder.autocomplete(attribute_name, label_value_pairs, **poetry_options)
+        end
+      end
+
+      # Serves `as: :grouped_select`: simple_form's group_method /
+      # group_label_method resolve the groups, poetry's Select renders them
+      # as labelled groups.
+      class GroupedCollectionSelectInput < CollectionBase
+        # @return [String] the rendered Field HTML
+        def input(_wrapper_options = nil)
+          poetry_builder.poetry_select(attribute_name, grouped_pairs,
+                                       include_blank: options[:include_blank] || options[:prompt],
+                                       **poetry_options)
+        end
+
+        private
+
+        # { "Group label" => [[label, value], ...] } in collection order.
+        def grouped_pairs
+          groups = options[:collection]
+          groups = groups.call if groups.respond_to?(:call)
+          group_method = options.fetch(:group_method)
+          Array(groups).to_h do |group|
+            [group_label_for(group).to_s, label_value_pairs(Array(group.public_send(group_method)))]
+          end
+        end
+
+        def group_label_for(group)
+          method = options[:group_label_method] ||
+                   ::SimpleForm.collection_label_methods.find { |m| group.respond_to?(m) }
+          method ? group.public_send(method) : group
+        end
+      end
+
+      # Serves `as: :time_zone`: every ActiveSupport::TimeZone in a poetry
+      # Select, the priority zones (priority: or SimpleForm.time_zone_priority)
+      # listed first.
+      class TimeZoneInput < CollectionBase
+        # @return [String] the rendered Field HTML
+        def input(_wrapper_options = nil)
+          poetry_builder.poetry_select(attribute_name, zone_pairs,
+                                       include_blank: options[:include_blank] || options[:prompt],
+                                       **poetry_options)
+        end
+
+        private
+
+        def zone_pairs
+          zones = ActiveSupport::TimeZone.all
+          priority = Array(options[:priority] || ::SimpleForm.time_zone_priority)
+          first = priority.map { |zone| zone.is_a?(ActiveSupport::TimeZone) ? zone : ActiveSupport::TimeZone[zone] }.compact
+          (first + (zones - first)).map { |zone| [zone.to_s, zone.name] }
         end
       end
     end

@@ -41,13 +41,16 @@ module Poetry
         # pass through (false stays false-y as an omission), required:
         # explicit override wins, input_html lands on the control minus the
         # class string (poetry components own their classes; append via
-        # input_html: { class: } consciously with poetry_class:).
+        # input_html: { class: } consciously with poetry_class:). A `poetry:`
+        # hash is the first-class channel for poetry-only options (switch:,
+        # length:, orientation:, ...) - merged last, so it wins.
         def poetry_options
           opts = input_html_options.except(:class, :id)
           opts[:hint] = options[:hint] if options[:hint].is_a?(String)
           opts[:label] = options[:label] if options[:label].is_a?(String)
           placeholder = options[:placeholder] || input_html_options[:placeholder]
           opts[:placeholder] = placeholder if placeholder.is_a?(String)
+          opts.merge!(options[:poetry].to_h.transform_keys(&:to_sym)) if options[:poetry]
           opts
         end
       end

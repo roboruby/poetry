@@ -13,7 +13,7 @@ module Poetry
           # virtual attributes) - hand poetry a nil so ITS inference runs
           # (type_for_attribute + name heuristics); a concretely resolved
           # type passes through.
-          return nil if %i[string citext].include?(input_type)
+          return nil if %i[string citext uuid].include?(input_type)
 
           input_type
         end

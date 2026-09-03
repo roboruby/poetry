@@ -17,16 +17,29 @@ bin/rails g poetry:simple_form:install   # writes the one-line initializer
 
 ## What you get
 
-- `f.input` for string/email/url/tel/search/password/text/boolean/numeric/
-  date/time/file and the collection trio (select / radio_buttons /
-  check_boxes) renders poetry Fields: `aria-required` (never native),
-  maxlength/min/max/step from validations, errors wired via
-  `aria-describedby`.
+- `f.input` for string/email/url/tel/search/uuid/password/text/json/boolean/
+  numeric/range/date/time/file and the collection trio (select /
+  radio_buttons / check_boxes), plus grouped_select and time_zone, renders
+  poetry Fields: `aria-required` (never native), maxlength/min/max/step
+  from validations, errors wired via `aria-describedby`.
 - `f.association` works unchanged (simple_form fetches the records; the
   shim's collection inputs render them as poetry pickers).
-- `:datetime` falls back to stock simple_form rendering — poetry has no
-  composite control yet, and a raise mid-migration would be hostile.
+- Every poetry form control is reachable by its poetry name through `as:`,
+  even the ones simple_form never had: `:switch`, `:slider`, `:otp`,
+  `:sensitive`, `:tag_group`, `:date_picker`, `:calendar`, `:combobox`,
+  `:autocomplete`, `:native_select`.
+- Poetry-only options ride a `poetry:` hash - `f.input :active, poetry:
+  { switch: true }`, `f.input :code, as: :otp, poetry: { length: 4 }` -
+  merged last, so it wins over anything simple_form derived. `input_html`
+  still lands on the control (minus class and id, which the component owns).
+- `:datetime`, `:rich_text_area`, `:hidden`, and `:country` fall back to
+  stock simple_form rendering on purpose (no composite date-time control,
+  no editor, nothing to render, and a country list poetry does not carry).
 - Remove the initializer to restore stock rendering instantly.
+
+The full type-to-component table is `Poetry::SimpleForm::COVERAGE`; a
+parity test in this gem fails when a new poetry form control has no
+simple_form route, so the two vocabularies cannot drift apart.
 
 ## What this is not
 
