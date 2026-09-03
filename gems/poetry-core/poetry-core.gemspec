@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
                      "the AI-native UI component library."
   spec.homepage = "https://poetryui.com"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.3.0"
+  spec.required_ruby_version = ">= 3.4.0"
 
   # Require MFA for gem pushes (supply-chain protection).
   spec.metadata["homepage_uri"] = "https://poetryui.com"

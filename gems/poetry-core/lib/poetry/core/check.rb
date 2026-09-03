@@ -796,13 +796,13 @@ module Poetry
           end
         end
 
-        def walk_prism(node, &block)
+        def walk_prism(node, &)
           return unless node
 
           yield node
           return unless node.respond_to?(:compact_child_nodes)
 
-          node.compact_child_nodes.each { |child| walk_prism(child, &block) }
+          node.compact_child_nodes.each { |child| walk_prism(child, &) }
         end
 
         # The block seam of a setter, both directions. A yieldless
@@ -1262,11 +1262,11 @@ module Poetry
           joined.empty? ? nil : joined
         end
 
-        def walk(node, &block)
+        def walk(node, &)
           return unless node
 
           yield node
-          node.child_nodes.compact.each { |child| walk(child, &block) } if node.respond_to?(:child_nodes)
+          node.child_nodes.compact.each { |child| walk(child, &) } if node.respond_to?(:child_nodes)
         end
       end
 

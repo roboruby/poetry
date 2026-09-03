@@ -408,9 +408,9 @@ module Poetry
         end
       end
 
-      def each_table(node, &block)
+      def each_table(node, &)
         yield node if node.element? && node.tag == "table"
-        node.children.each { |child| each_table(child, &block) }
+        node.children.each { |child| each_table(child, &) }
       end
 
       def collect_badge_variants(node, variants)

@@ -75,9 +75,9 @@ module Poetry
                   "the herb gem is required for template class extraction - add `gem \"herb\"` to your Gemfile"
           end
 
-          def walk(node, &block)
+          def walk(node, &)
             yield node
-            node.child_nodes.compact.each { |child| walk(child, &block) } if node.respond_to?(:child_nodes)
+            node.child_nodes.compact.each { |child| walk(child, &) } if node.respond_to?(:child_nodes)
           end
 
           def class_attribute?(attribute)

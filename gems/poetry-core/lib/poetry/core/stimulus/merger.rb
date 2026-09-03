@@ -86,7 +86,6 @@ module Poetry
         # while other data attributes are merged normally.
         #
         # @param hashes [Array<Hash>] One or more stimulus data hashes
-        # @param block [Proc] Optional block passed to Hash#merge for custom merge logic
         # @yield [key, existing, incoming] Hash#merge's conflict resolver for
         #   every key other than controller and action
         # @yieldreturn [Object] the value to keep
@@ -97,12 +96,12 @@ module Poetry
         #     { controller: "dropdown tooltip", target_value: "main" }
         #   )
         #   # => { controller: "dropdown tooltip", action: "click->dropdown#toggle", target_value: "main" }
-        def merge(*hashes, &block)
+        def merge(*hashes, &)
           hashes.flatten.compact.each_with_object({}.with_indifferent_access) do |hash, result|
             hash = hash.deep_dup.with_indifferent_access
             result[:controller] = merge_controllers(result[:controller], hash.delete(:controller))
             result[:action] = merge_actions(result[:action], hash.delete(:action))
-            result.merge!(hash, &block)
+            result.merge!(hash, &)
           end
         end
 
