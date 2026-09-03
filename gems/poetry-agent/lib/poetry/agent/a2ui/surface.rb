@@ -267,7 +267,7 @@ module Poetry
           end
         end
 
-        def walk_from(component_id, scope, stack, &block)
+        def walk_from(component_id, scope, stack, &)
           key = [component_id, scope]
           return if stack.include?(key)
 
@@ -277,7 +277,7 @@ module Poetry
           yield component, scope
           Array(catalog.references(component)).each do |reference|
             expand(reference, scope).each do |child_id, child_scope|
-              walk_from(child_id, child_scope, stack + [key], &block)
+              walk_from(child_id, child_scope, stack + [key], &)
             end
           end
         end

@@ -42,7 +42,7 @@ module Poetry
         # @raise [Error] on a non-2xx response
         # @example
         #   client.run(input) { |event| transcript.apply(event) }
-        def run(input, &block)
+        def run(input, &)
           request = Net::HTTP::Post.new(@uri)
           request["Content-Type"] = "application/json"
           request["Accept"] = "text/event-stream"
@@ -57,10 +57,10 @@ module Poetry
                 raise Error.new("AG-UI endpoint answered #{response.code}", status: response.code.to_i)
               end
 
-              response.read_body { |chunk| parser.feed(chunk, &block) }
+              response.read_body { |chunk| parser.feed(chunk, &) }
             end
           end
-          parser.finish(&block)
+          parser.finish(&)
           parser
         end
       end
