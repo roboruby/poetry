@@ -29,7 +29,7 @@ module Poetry
 
       def test_the_input_table_and_the_coverage_table_agree
         assert_equal INPUTS.keys.sort, COVERAGE.keys.sort
-        assert_empty STOCK.keys & INPUTS.keys - [:datetime], "stock-only types must not be mapped"
+        assert_empty STOCK.keys & INPUTS.keys, "stock-only types must not be mapped"
       end
 
       def test_activate_installs_exactly_the_input_table

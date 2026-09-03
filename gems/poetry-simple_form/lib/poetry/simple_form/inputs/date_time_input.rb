@@ -4,16 +4,13 @@ module Poetry
   module SimpleForm
     module Inputs
       # date -> DateField, time -> TimeField; :datetime falls back to
-      # simple_form's stock select trio (poetry has no composite control
-      # yet - a raise mid-migration would be hostile).
+      # poetry's own DateTimeField (one datetime-local control, no select trio).
       class DateTimeInput < ::SimpleForm::Inputs::DateTimeInput
-        # Render :date/:time attributes as poetry DateField/TimeField;
-        # :datetime defers to the stock select trio via super.
+        # Render :date/:time/:datetime attributes as poetry DateField /
+        # TimeField / DateTimeField - one control each, ISO on the wire.
         #
         # @return [String] the rendered HTML
         def input(wrapper_options = nil)
-          return super if input_type == :datetime
-
           Poetry::Ui::FormBuilder.new(object_name, object, template, {})
                                  .input(attribute_name, as: input_type)
         end

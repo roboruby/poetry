@@ -13,19 +13,10 @@ module Poetry
         # Poetry::Ui::FormBuilder; the subclass's `poetry_as` pins the
         # control type (nil lets poetry infer it).
         #
-        # @param wrapper_options [Hash, nil] unused - the Field owns its chrome
+        # @param _wrapper_options [Hash, nil] unused - the Field owns its chrome
         # @return [String] the rendered Field HTML
-        def input(wrapper_options = nil)
+        def input(_wrapper_options = nil)
           poetry_builder.input(attribute_name, as: poetry_as, **poetry_options)
-        rescue ArgumentError => e
-          # poetry refuses :datetime (no composite control) - fall back to
-          # simple_form's stock select trio rather than raising
-          # mid-migration (the DateTimeInput doctrine, reachable here when
-          # a column-less datetime resolves through the string path).
-          raise unless e.message.include?(":datetime")
-
-          ::SimpleForm::Inputs::DateTimeInput
-            .new(@builder, attribute_name, column, :datetime, options).input(wrapper_options)
         end
 
         private

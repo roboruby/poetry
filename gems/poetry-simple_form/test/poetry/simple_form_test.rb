@@ -103,7 +103,7 @@ module Poetry
       assert_includes html, 'value="7"'
     end
 
-    def test_datetime_falls_back_to_stock_simple_form
+    def test_datetime_renders_the_date_time_field
       klass = Class.new do
         include ActiveModel::Model
         include ActiveModel::Attributes
@@ -114,7 +114,9 @@ module Poetry
       end
       html = render_sf("<%= f.input :ships_at %>", model: klass.new)
 
-      assert_includes html, "select", "the stock datetime select trio renders (no poetry composite yet)"
+      assert_includes html, 'data-component="date_time_field"', "a :datetime attribute renders the DateTimeField"
+      assert_includes html, 'type="datetime-local"', "one native control carries the value"
+      refute_includes html, "<select", "no select trio"
     end
 
     def test_wrapper_contributes_nothing_but_display_contents

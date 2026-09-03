@@ -32,9 +32,10 @@ bin/rails g poetry:simple_form:install   # writes the one-line initializer
   { switch: true }`, `f.input :code, as: :otp, poetry: { length: 4 }` -
   merged last, so it wins over anything simple_form derived. `input_html`
   still lands on the control (minus class and id, which the component owns).
-- `:datetime`, `:rich_text_area`, `:hidden`, and `:country` fall back to
-  stock simple_form rendering on purpose (no composite date-time control,
-  no editor, nothing to render, and a country list poetry does not carry).
+- `:datetime` renders poetry's DateTimeField (one datetime-local control,
+  local wall time on the wire). `:rich_text_area`, `:hidden`, and `:country`
+  fall back to stock simple_form rendering on purpose (no editor, nothing to
+  render, and a country list poetry does not carry).
 - Remove the initializer to restore stock rendering instantly.
 
 The full type-to-component table is `Poetry::SimpleForm::COVERAGE`; a

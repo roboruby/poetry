@@ -32,7 +32,7 @@ module Poetry
     }.freeze
 
     # simple_form input type => the poetry component it renders (a registry
-    # key), or :stock where simple_form's own rendering is kept on purpose.
+    # key).
     # The parity gate (test/poetry/simple_form/coverage_test.rb) checks this
     # against every form-facing component in the registry.
     COVERAGE = {
@@ -42,7 +42,7 @@ module Poetry
       boolean: "checkbox", switch: "switch",
       integer: "number_field", decimal: "number_field", float: "number_field",
       range: "slider", slider: "slider",
-      date: "date_field", time: "time_field", datetime: :stock,
+      date: "date_field", time: "time_field", datetime: "date_time_field",
       date_picker: "date_picker", calendar: "calendar",
       file: "file_input", otp: "input_otp", tag_group: "tag_group",
       select: "select", grouped_select: "select", time_zone: "select", native_select: "native_select",
@@ -52,7 +52,6 @@ module Poetry
 
     # simple_form types left to simple_form entirely, with the reason.
     STOCK = {
-      datetime: "poetry has no composite date-time control yet",
       rich_text_area: "poetry ships no rich-text editor",
       hidden: "nothing to render",
       country: "the country list comes from the country_select gem, which poetry does not depend on"
