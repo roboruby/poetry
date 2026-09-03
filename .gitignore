@@ -5,8 +5,6 @@
 *.gem
 /.yardoc
 /doc/
-# Repo-local plans (not shipped; see dev_only_dirs in the gemspec).
-/docs/
 /.ruby-lsp/
 .env
 .DS_Store
