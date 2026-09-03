@@ -294,6 +294,12 @@
     "path": "/forms"
   },
   {
+    "title": "Coming from Simple Form?",
+    "page": "Form Builder",
+    "section": "docs",
+    "path": "/forms#simple-form"
+  },
+  {
     "title": "Default",
     "page": "Form Builder",
     "section": "docs",

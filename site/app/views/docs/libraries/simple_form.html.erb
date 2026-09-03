@@ -24,12 +24,21 @@
     #{o}= simple_form_for @user do |f| #{e}
       #{o}= f.input :email #{e}
       #{o}= f.input :bio #{e}
-      #{o}= f.input :admin, input_html: { switch: true } #{e}
+      #{o}= f.input :admin, as: :switch #{e}
       #{o}= f.input :role, collection: %w[admin member] #{e}
       #{o}= f.association :company #{e}
     #{o} end #{e}
   CODE
-  native_source = <<~CODE
+poetry_only_source = <<~CODE
+  #{o}= f.input :code, as: :otp, poetry: { length: 4 } #{e}
+  #{o}= f.input :api_key, as: :sensitive #{e}
+  #{o}= f.input :volume, as: :slider, poetry: { min: 0, max: 11 } #{e}
+  #{o}= f.input :starts_on, as: :date_picker #{e}
+  #{o}= f.input :tags, as: :tag_group #{e}
+  #{o}= f.input :city, as: :autocomplete, collection: cities #{e}
+  #{o}= f.input :plan, as: :combobox, collection: plans, label_method: :title #{e}
+CODE
+native_source = <<~CODE
     #{o}= form_with(model: @user, builder: Poetry::Ui::FormBuilder) do |f| #{e}
       #{o}= f.input :email #{e}
       #{o}= f.submit #{e}
@@ -98,35 +107,58 @@
         via <code>aria-describedby</code>.
       </p>
     <% end %>
-    <%= poetry_code_block(code: bridge_source, language: "erb", label: "Unchanged views") %>
-    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
-      <table>
-        <thead>
-          <tr><th>Simple Form type</th><th>Renders as</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><code>string</code> / <code>email</code> / <code>url</code> / <code>tel</code> / <code>search</code> / <code>citext</code></td><td>the input field, native type preserved</td></tr>
-          <tr><td><code>password</code></td><td>a password field; the value never round-trips into the markup</td></tr>
-          <tr><td><code>text</code></td><td>the textarea field</td></tr>
-          <tr><td><code>boolean</code></td><td>the horizontal checkbox field; <code>input_html: { switch: true }</code> opts into the setting-row switch</td></tr>
-          <tr><td><code>integer</code> / <code>decimal</code> / <code>float</code></td><td>the number field, min/max/step re-derived from numericality validations</td></tr>
-          <tr><td><code>date</code> / <code>time</code></td><td>the date and time fields</td></tr>
-          <tr><td><code>file</code></td><td>the file input</td></tr>
-          <tr><td><code>select</code> / <code>radio_buttons</code> / <code>check_boxes</code></td><td>the select, radio group, and checkbox group</td></tr>
-        </tbody>
-      </table>
-      <p>
-        <code>f.association</code> works unchanged: Simple Form fetches the
-        records, the bridge renders them as Poetry pickers.
-        <code>:datetime</code> falls back to stock Simple Form rendering,
-        because Poetry has no composite date-and-time control yet and a raise
-        mid-migration would be hostile. String <code>label:</code>,
-        <code>hint:</code>, and <code>placeholder:</code> options pass
-        through; the rest of <code>input_html:</code> lands on the control
-        minus its class and id, since Poetry components own their classes.
-      </p>
-    <% end %>
-  </section>
+  <%= poetry_code_block(code: bridge_source, language: "erb", label: "Unchanged views") %>
+  <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+    <table>
+      <thead>
+        <tr><th>Simple Form type</th><th>Renders as</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>string</code> / <code>email</code> / <code>url</code> / <code>tel</code> / <code>citext</code> / <code>uuid</code></td><td>the <%= link_to "input", component_path("input") %> field, native type preserved</td></tr>
+        <tr><td><code>search</code></td><td>the <%= link_to "search field", component_path("search-field") %></td></tr>
+        <tr><td><code>password</code></td><td>a password input; the value never round-trips into the markup</td></tr>
+        <tr><td><code>sensitive</code></td><td>the <%= link_to "sensitive input", component_path("sensitive-input") %>, masked with a reveal toggle</td></tr>
+        <tr><td><code>text</code> / <code>hstore</code> / <code>json</code> / <code>jsonb</code></td><td>the <%= link_to "textarea", component_path("textarea") %> field</td></tr>
+        <tr><td><code>boolean</code></td><td>the horizontal <%= link_to "checkbox", component_path("checkbox") %> field</td></tr>
+        <tr><td><code>switch</code></td><td>the <%= link_to "switch", component_path("switch") %> setting row</td></tr>
+        <tr><td><code>integer</code> / <code>decimal</code> / <code>float</code></td><td>the <%= link_to "number field", component_path("number-field") %>, min/max/step re-derived from numericality validations</td></tr>
+        <tr><td><code>range</code> / <code>slider</code></td><td>the <%= link_to "slider", component_path("slider") %></td></tr>
+        <tr><td><code>date</code> / <code>time</code> / <code>datetime</code></td><td>the <%= link_to "date", component_path("date-field") %>, <%= link_to "time", component_path("time-field") %>, and <%= link_to "date-time", component_path("date-time-field") %> fields; the composite is one <code>datetime-local</code> control</td></tr>
+        <tr><td><code>date_picker</code> / <code>calendar</code></td><td>the <%= link_to "date picker", component_path("date-picker") %> popover and the inline <%= link_to "calendar", component_path("calendar") %></td></tr>
+        <tr><td><code>file</code></td><td>the <%= link_to "file input", component_path("file-input") %>; <code>input_html: { variant: :dropzone }</code> for the drop zone</td></tr>
+        <tr><td><code>otp</code></td><td>the <%= link_to "one-time-code input", component_path("input-otp") %></td></tr>
+        <tr><td><code>tag_group</code></td><td>the <%= link_to "tag group", component_path("tag-group") %></td></tr>
+        <tr><td><code>select</code> / <code>grouped_select</code> / <code>time_zone</code></td><td>the <%= link_to "select", component_path("select") %></td></tr>
+        <tr><td><code>native_select</code></td><td>the styled <%= link_to "native select", component_path("native-select") %>, zero JavaScript</td></tr>
+        <tr><td><code>combobox</code> / <code>autocomplete</code></td><td>the <%= link_to "combobox", component_path("combobox") %> and the <%= link_to "autocomplete", component_path("autocomplete") %></td></tr>
+        <tr><td><code>radio_buttons</code> / <code>check_boxes</code></td><td>the <%= link_to "radio group", component_path("radio-group") %> and the checkbox group with its select-all</td></tr>
+        <tr><td><code>rich_text_area</code> / <code>hidden</code> / <code>country</code></td><td>left to Simple Form on purpose: Poetry ships no rich-text editor, a hidden field has nothing to render, and the country list belongs to the country_select gem</td></tr>
+      </tbody>
+    </table>
+    <p>
+      The table is <code>Poetry::SimpleForm::COVERAGE</code>, and a parity
+      test in the gem fails when a new Poetry form control has no Simple
+      Form route. The types Simple Form never had are reached by name
+      through <code>as:</code>.
+    </p>
+  <% end %>
+  <%= poetry_code_block(code: poetry_only_source, language: "erb", label: "Poetry-only types") %>
+  <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+    <p>
+      <code>f.association</code> works unchanged: Simple Form fetches the
+      records, the bridge renders them as Poetry pickers, and
+      <code>label_method:</code> / <code>value_method:</code> (symbols or
+      callables) are honored before Simple Form's detection chain.
+      <code>required: true</code> or <code>false</code> overrides the
+      presence inference, on <code>aria-required</code> only. Poetry-only
+      options ride a <code>poetry:</code> hash, merged last so it wins over
+      anything Simple Form derived. String <code>label:</code>,
+      <code>hint:</code>, and <code>placeholder:</code> options pass
+      through; the rest of <code>input_html:</code> lands on the control
+      minus its class and id, since Poetry components own their classes.
+    </p>
+  <% end %>
+</section>
 
   <section class="flex flex-col gap-4">
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
