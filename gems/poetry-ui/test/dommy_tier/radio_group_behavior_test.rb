@@ -12,8 +12,8 @@ module DommyTier
   # no-ops (radios never uncheck), and the roving tab stop rides the
   # checked item.
   class RadioGroupBehaviorTest < TestCase
-    def render_group(**options)
-      html = render_inline(Poetry::Ui::RadioGroup::Component.new(name: "plan", label: "Plan", **options)) do |group|
+    def render_group(**)
+      html = render_inline(Poetry::Ui::RadioGroup::Component.new(name: "plan", label: "Plan", **)) do |group|
         group.with_item(value: "monthly", label: "Monthly")
         group.with_item(value: "yearly", label: "Yearly")
         group.with_item(value: "lifetime", label: "Lifetime")

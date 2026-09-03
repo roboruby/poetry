@@ -6,8 +6,8 @@ module Poetry
   module Ui
     module Accordion
       class ComponentTest < ViewComponent::TestCase
-        def render_accordion(**options)
-          render_inline(Component.new(**options)) do |accordion|
+        def render_accordion(**)
+          render_inline(Component.new(**)) do |accordion|
             accordion.with_item(value: "a", title: "First") { "panel a" }
             accordion.with_item(value: "b", title: "Second") { "panel b" }
           end.to_html

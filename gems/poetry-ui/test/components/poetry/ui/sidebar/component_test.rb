@@ -6,8 +6,8 @@ module Poetry
   module Ui
     module Sidebar
       class ComponentTest < ViewComponent::TestCase
-        def render_shell(**options)
-          render_inline(Component.new(**options)) do |shell|
+        def render_shell(**)
+          render_inline(Component.new(**)) do |shell|
             shell.with_nav { "nav" }
             shell.with_inset { "page" }
           end

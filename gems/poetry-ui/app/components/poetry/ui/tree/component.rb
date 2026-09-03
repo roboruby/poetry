@@ -95,17 +95,16 @@ module Poetry
         end
 
         # Declares one row. Nest children by calling with_item again on the
-        # yielded builder.
+        # yielded builder. Keywords: text: (the row's label, required), value:
+        # (the toggle event's identity, defaults to text:), expanded: (render
+        # the subtree open), disabled:, href: (the label renders as a link).
         #
-        # @param options [Hash] text: (the row's label, required), value: (the
-        #   toggle event's identity, defaults to text:), expanded: (render the
-        #   subtree open), disabled:, href: (the label renders as a link)
         # @example
         #   tree.with_item(text: "docs", value: "docs", expanded: true) do |docs|
         #     docs.with_item(text: "intro.md", href: "/docs/intro")
         #   end
-        def with_item(**options, &block)
-          root_items << Item.new(**options).tap { |item| block&.call(item) }
+        def with_item(**, &block)
+          root_items << Item.new(**).tap { |item| block&.call(item) }
           nil
         end
 

@@ -168,7 +168,7 @@ module Poetry
         end
 
         # Builds one role=menuitemcheckbox toggle row.
-        def checkbox_item_part(**options, &block)
+        def checkbox_item_part(**options, &)
           checked = options.delete(:checked) || false
           shortcut = options.delete(:shortcut)
           attrs = {
@@ -182,18 +182,18 @@ module Poetry
           apply_item_flags(attrs, **options.extract!(:disabled, :text_value, :close_on_select))
           content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, options)) do
             safe_join([item_indicator(:check, family_style.css(:indicator_check), :checkbox),
-                       capture(&block), shortcut_span(shortcut)].compact)
+                       capture(&), shortcut_span(shortcut)].compact)
           end
         end
 
         # Builds the non-interactive heading row.
-        def label_part(inset: false, **options, &block)
+        def label_part(inset: false, **options, &)
           attrs = {
             "data-slot" => "#{family_slot_prefix}-label",
             "class" => family_style.css(:label, class: options.delete(:class))
           }
           attrs["data-inset"] = "true" if inset
-          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, options)) { capture(&block) }
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, options)) { capture(&) }
         end
 
         # Builds the role=separator rule.

@@ -14,8 +14,8 @@ module DommyTier
   class ContextMenuBehaviorTest < TestCase
     ANCHOR = "data-poetry--core--popper-anchor-point-value"
 
-    def render_menu(**options)
-      render_in_dommy(Poetry::Ui::ContextMenu::Component.new(**options)) do |menu|
+    def render_menu(**)
+      render_in_dommy(Poetry::Ui::ContextMenu::Component.new(**)) do |menu|
         menu.with_trigger(tag: :div) { "Right-click here" }
         menu.with_item { "Rename" }
         menu.with_item { "Duplicate" }

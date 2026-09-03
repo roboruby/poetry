@@ -10,8 +10,8 @@ module Poetry
     class CompositesTest < ViewComponent::TestCase
       # -- Carousel -------------------------------------------------------------
 
-      def render_carousel(**options)
-        render_inline(Carousel::Component.new(label: "Artwork", **options)) do |carousel|
+      def render_carousel(**)
+        render_inline(Carousel::Component.new(label: "Artwork", **)) do |carousel|
           3.times { |n| carousel.with_item { "slide #{n}" } }
         end
       end
@@ -92,8 +92,8 @@ module Poetry
 
       # -- Resizable ------------------------------------------------------------
 
-      def render_group(**options)
-        render_inline(Resizable::Component.new(**options)) do |group|
+      def render_group(**)
+        render_inline(Resizable::Component.new(**)) do |group|
           group.with_panel(default_size: 25, min_size: 15) { "sidebar" }
           group.with_panel { "content" }
         end

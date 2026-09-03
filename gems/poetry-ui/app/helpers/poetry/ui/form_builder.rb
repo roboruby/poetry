@@ -700,18 +700,18 @@ module Poetry
 
       # form.fieldset(legend: "Shipping") { |f| ... } - the grouped-fields
       # frame; yields the builder for nesting.
-      def fieldset(legend:, hint: nil, **options, &block)
+      def fieldset(legend:, hint: nil, **options, &)
         @template.render(Fieldset::Component.new(legend: legend, hint: hint,
                                                  **options.transform_keys(&:to_sym))) do
-          @template.capture(self, &block)
+          @template.capture(self, &)
         end
       end
 
       # form.group { |f| ... } - the FieldGroup stack (the @container the
       # responsive Field orientation measures against).
-      def group(**options, &block)
+      def group(**options, &)
         @template.render(FieldGroup::Component.new(**options.transform_keys(&:to_sym))) do
-          @template.capture(self, &block)
+          @template.capture(self, &)
         end
       end
 

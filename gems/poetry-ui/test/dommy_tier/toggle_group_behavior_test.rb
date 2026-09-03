@@ -11,8 +11,8 @@ module DommyTier
   # pressed item becoming the roving tab stop. Multiple mode is the XOR
   # machine wearing aria-pressed.
   class ToggleGroupBehaviorTest < TestCase
-    def render_group(**options)
-      render_in_dommy(Poetry::Ui::ToggleGroup::Component.new(label: "Formatting", **options)) do |group|
+    def render_group(**)
+      render_in_dommy(Poetry::Ui::ToggleGroup::Component.new(label: "Formatting", **)) do |group|
         group.with_item(value: "bold", label: "Toggle bold") { "B" }
         group.with_item(value: "italic", label: "Toggle italic") { "I" }
         group.with_item(value: "underline", label: "Toggle underline") { "U" }

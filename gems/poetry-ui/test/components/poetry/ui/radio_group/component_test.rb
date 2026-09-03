@@ -10,8 +10,8 @@ module Poetry
           Nokogiri::HTML5.fragment(html)
         end
 
-        def render_group(**options)
-          render_inline(Component.new(name: "plan", label: "Plan", **options)) do |group|
+        def render_group(**)
+          render_inline(Component.new(name: "plan", label: "Plan", **)) do |group|
             group.with_item(value: "monthly", label: "Monthly")
             group.with_item(value: "yearly", label: "Yearly")
             group.with_item(value: "lifetime", label: "Lifetime")
@@ -210,9 +210,9 @@ module Poetry
           refute_includes item["class"], "size-4"
         end
 
-        def render_cards(**options)
+        def render_cards(**)
           render_inline(Component.new(name: "compute", label: "Compute environment",
-                                      value: "kubernetes", **options)) do |group|
+                                      value: "kubernetes", **)) do |group|
             group.with_item(value: "kubernetes", label: "Kubernetes", variant: :card,
                             description: "Run GPU workloads on a K8s cluster.")
             group.with_item(value: "vm", label: "Virtual Machine", variant: :card)

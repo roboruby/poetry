@@ -6,8 +6,8 @@ module Poetry
   module Ui
     module Collapsible
       class ComponentTest < ViewComponent::TestCase
-        def render_collapsible(**options)
-          render_inline(Component.new(**options)) do |collapsible|
+        def render_collapsible(**)
+          render_inline(Component.new(**)) do |collapsible|
             collapsible.with_trigger { "Show" }
             collapsible.with_content("details")
           end.to_html

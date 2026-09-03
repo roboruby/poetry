@@ -42,8 +42,8 @@ module Poetry
 
         private
 
-        def profile_example(**options)
-          render_component(content_class: "w-80", **options) do |card|
+        def profile_example(**)
+          render_component(content_class: "w-80", **) do |card|
             card.with_trigger(href: "https://github.com/nextjs", class: "text-sm font-medium underline-offset-4 hover:underline") { "@nextjs" }
             # No text size here - the card's type scale is theme-owned
             # (.cn-hover-card-content; mira/lyra run text-xs/relaxed).

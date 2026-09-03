@@ -6,8 +6,8 @@ module Poetry
   module Ui
     module Dialog
       class ComponentTest < ViewComponent::TestCase
-        def render_dialog(**options, &config)
-          render_inline(Component.new(**options).tap do |dialog|
+        def render_dialog(**, &config)
+          render_inline(Component.new(**).tap do |dialog|
             dialog.with_trigger(variant: :outline) { "Open" }
             dialog.with_title { "Settings" }
             config&.call(dialog)

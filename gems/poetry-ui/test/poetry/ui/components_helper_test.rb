@@ -84,7 +84,7 @@ module Poetry
         declared_yielders = ComponentsHelper::HELPER_CONTRACTS.count { |_name, contract| contract["yields"] }
         with_args = source.scan(/capture\((?!&)[^)]*\)/)
 
-        assert_equal(["capture(form, &block)"] * declared_yielders, with_args,
+        assert_equal(["capture(form, &)"] * declared_yielders, with_args,
                      "capture takes only the block - unless the helper declares \"yields\" " \
                      "in HELPER_CONTRACTS and passes exactly the form builder")
         refute_match(/block\.call\(.+\)/, source, "blocks must not be called with arguments")

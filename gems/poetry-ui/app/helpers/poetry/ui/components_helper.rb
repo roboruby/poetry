@@ -248,7 +248,7 @@ module Poetry
       #   <% end %>
       # @see Poetry::Ui::OptimisticFormBuilder
       def poetry_optimistic_form(attribute_name: nil, value: OptimisticFormBuilder::UNSET,
-                                 **options, &block)
+                                 **options, &)
         options[:builder] = OptimisticFormBuilder
         options[:data] = (options[:data] || {}).dup
         options[:data][:controller] =
@@ -262,7 +262,7 @@ module Poetry
         ].compact.join(" ")
 
         form_with(**options) do |form|
-          body = capture(form, &block)
+          body = capture(form, &)
           prefix = if optimistic_auto_inject?(form, attribute_name, value)
                      form.optimistic_hidden_field(attribute_name, value: value)
                    end

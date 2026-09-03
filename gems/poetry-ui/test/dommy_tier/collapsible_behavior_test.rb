@@ -8,8 +8,8 @@ module DommyTier
   # presence helper) - a bad identifier or a broken target contract shows
   # up here as connect()/toggle() never firing.
   class CollapsibleBehaviorTest < TestCase
-    def render_collapsible(**options)
-      render_in_dommy(Poetry::Ui::Collapsible::Component.new(**options)) do |collapsible|
+    def render_collapsible(**)
+      render_in_dommy(Poetry::Ui::Collapsible::Component.new(**)) do |collapsible|
         collapsible.with_trigger { "Show details" }
         collapsible.with_content("the details")
       end

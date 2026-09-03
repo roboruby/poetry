@@ -16,8 +16,8 @@ module Poetry
           Nokogiri::HTML5.fragment(html)
         end
 
-        def render_sheet(**options, &config)
-          render_inline(Component.new(**options).tap do |sheet|
+        def render_sheet(**, &config)
+          render_inline(Component.new(**).tap do |sheet|
             sheet.with_trigger(variant: :outline) { "Open" }
             sheet.with_title { "Filters" }
             config&.call(sheet)

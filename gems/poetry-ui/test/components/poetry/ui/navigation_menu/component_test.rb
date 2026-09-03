@@ -6,8 +6,8 @@ module Poetry
   module Ui
     module NavigationMenu
       class ComponentTest < ViewComponent::TestCase
-        def render_nav(**options)
-          render_inline(Component.new(label: "Main", **options)) do |nav|
+        def render_nav(**)
+          render_inline(Component.new(label: "Main", **)) do |nav|
             nav.with_item("Products", value: "products") { "panel links" }
             nav.with_link("Docs", href: "/docs")
           end

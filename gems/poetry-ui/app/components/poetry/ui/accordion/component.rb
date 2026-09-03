@@ -173,7 +173,7 @@ module Poetry
           end
         end
 
-        def accordion_panel(item_id, open_item, &block)
+        def accordion_panel(item_id, open_item, &)
           attrs = {
             id: "#{item_id}-panel", role: "region", class: css(:content),
             "data-slot" => "accordion-content", (open_item ? "data-open" : "data-closed") => "",
@@ -181,7 +181,7 @@ module Poetry
           }
           attrs[:hidden] = true unless open_item
           content_tag(:div, attrs) do
-            content_tag(:div, capture(&block), class: css(:inner))
+            content_tag(:div, capture(&), class: css(:inner))
           end
         end
 

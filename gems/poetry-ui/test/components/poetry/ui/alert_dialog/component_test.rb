@@ -12,8 +12,8 @@ module Poetry
           Nokogiri::HTML5.fragment(html)
         end
 
-        def build(**options, &config)
-          Component.new(**options).tap do |dialog|
+        def build(**, &config)
+          Component.new(**).tap do |dialog|
             dialog.with_trigger(variant: :destructive) { "Delete" }
             dialog.with_title { "Are you absolutely sure?" }
             dialog.with_description { "This cannot be undone." }
