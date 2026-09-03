@@ -1,0 +1,4 @@
+<%# seconds: adds the seconds segment; the wire value becomes
+    YYYY-MM-DDTHH:MM:SS. hour_cycle: pins 24-hour editing regardless of
+    the page locale (omit it and the locale decides). %>
+<%= poetry_date_time_field(name: "job[run_at]", label: "Run at", value: "2026-07-13T09:30:15", seconds: true, hour_cycle: "h23", class: "w-72") %>

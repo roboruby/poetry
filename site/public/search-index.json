@@ -2508,6 +2508,36 @@
     "path": "/components/date-picker#wiring"
   },
   {
+    "title": "Date Time Field",
+    "page": "Date Time Field",
+    "section": "components",
+    "path": "/components/date-time-field"
+  },
+  {
+    "title": "Installation",
+    "page": "Date Time Field",
+    "section": "components",
+    "path": "/components/date-time-field#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Date Time Field",
+    "section": "components",
+    "path": "/components/date-time-field#default"
+  },
+  {
+    "title": "With seconds",
+    "page": "Date Time Field",
+    "section": "components",
+    "path": "/components/date-time-field#with-seconds"
+  },
+  {
+    "title": "Wiring",
+    "page": "Date Time Field",
+    "section": "components",
+    "path": "/components/date-time-field#wiring"
+  },
+  {
     "title": "Deferred",
     "page": "Deferred",
     "section": "components",

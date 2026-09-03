@@ -234,7 +234,7 @@ class DocsCatalog
       "Forms" => %w[field field-group field-separator fieldset file-input input input-group
                     input-otp label native-select number-field questionnaire search-field
                     sensitive-input textarea],
-      "Pickers & selection" => %w[autocomplete calendar checkbox combobox date-field date-picker
+      "Pickers & selection" => %w[autocomplete calendar checkbox combobox date-field date-picker date-time-field
                                   radio-group select slider switch tag-group time-field toggle
                                   toggle-group],
       "Overlays & menus" => %w[alert-dialog command command-dialog context-menu dialog drawer
