@@ -45,6 +45,7 @@ module Poetry
       "file_input" => %w[input icon], # input variant wears Input; the dropzone's upload glyph
       "date_field" => %w[input], # the pre-enhancement native input wears Input's chrome
       "time_field" => %w[date_field input], # DateField at hour granularity - one segment engine
+      "date_time_field" => %w[date_field input], # DateField with both runs - the same segment engine
       "meter" => %w[progress], # wears Progress::Style chrome verbatim
       "search_field" => %w[input input_group button icon], # composes their chrome
       "tag_group" => %w[icon], # the remove glyph
@@ -60,7 +61,8 @@ module Poetry
     # only the family it is composing in. The coverage gate fails on any
     # new component until it is mapped here.
     SKILL_FAMILIES = {
-      "forms" => %w[autocomplete button button_group calendar checkbox combobox date_field date_picker field
+      "forms" => %w[autocomplete button button_group calendar checkbox combobox date_field date_picker date_time_field
+                    field
                     field_group field_separator fieldset
                     file_input input input_group input_otp label native_select number_field
                     questionnaire radio_group search_field select sensitive_input slider switch textarea time_field

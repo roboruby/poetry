@@ -26,8 +26,8 @@ module Poetry
           "Input or a pair of selects; params[<name>] is HH:MM (HH:MM:SS with seconds:).",
           "12- vs 24-hour follows the user's locale automatically (the dayPeriod segment " \
           "appears only under twelve-hour cycles); hour_cycle: pins it when a product must.",
-          "For a date AND a time, compose a DateField and a TimeField side by side - there " \
-          "is no datetime component by design."
+          "For a date AND a time, use a DateTimeField (poetry_date_time_field / form.datetime_field): " \
+          "one control, one datetime-local value."
         ].freeze
 
         # EXTENDS DateField's root declaration (extend: true merges into

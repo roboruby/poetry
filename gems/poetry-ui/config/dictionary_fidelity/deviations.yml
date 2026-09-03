@@ -39,6 +39,7 @@ poetry_components:
   - data-table
   - date-field
   - date-picker
+  - date-time-field
   - file-input
   - link
   - metadata-list

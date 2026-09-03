@@ -1110,6 +1110,18 @@ module Poetry
         render(Poetry::Ui::TimeField::Component.new(**))
       end
 
+      # A segmented date-and-time editor over a native datetime-local
+      # input: one control, one local wall-time value (no zone on the wire).
+      #
+      # @example
+      #     poetry_date_time_field(
+      #       name: "event[starts_at]", label: "Starts", value: "2026-07-13T09:30"
+      #     )
+      # @see Poetry::Ui::DateTimeField::Component
+      def poetry_date_time_field(**)
+        render(Poetry::Ui::DateTimeField::Component.new(**))
+      end
+
       # A quantity within a known range (disk, seats, strength) - role
       # "meter progressbar" (the two-token fallback); never indeterminate.
       #

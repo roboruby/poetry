@@ -33,6 +33,7 @@ poetry/ui/context_menu: A menu of actions revealed by right-clicking an element.
 poetry/ui/data_table: A table with sorting, row selection, and sticky headers.
 poetry/ui/date_field: A segmented input for typing a date one part at a time.
 poetry/ui/date_picker: A date field that opens a calendar popover for selection.
+poetry/ui/date_time_field: A segmented input for typing a date and a time one part at a time.
 poetry/ui/deferred: A region that lazily loads its content on visibility, with skeleton
   and error states.
 poetry/ui/dialog: A window overlaid on the page for content that requires attention.

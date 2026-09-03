@@ -20,6 +20,7 @@ module Poetry
         "combobox" => :poetry_combobox,
         "date_field" => :date_field,
         "date_picker" => :date_picker,
+        "date_time_field" => :datetime_field,
         "field" => :field,
         "field_group" => :group,
         "fieldset" => :fieldset,

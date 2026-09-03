@@ -251,6 +251,27 @@ module Poetry
         end
       end
 
+      # A Field-wrapped DateTimeField (one control, one datetime-local value; seconds:/hour_cycle: pass through).
+      #
+      # @param method [Symbol] the model attribute
+      # @param hint [String, nil] hint text
+      # @return [ActiveSupport::SafeBuffer]
+      def datetime_field(method, hint: nil, **options)
+        field_component = field_for(method, hint: hint)
+        describedby = field_component.control_attributes["aria-describedby"]
+        @template.render(field_component) do
+          @template.render DateTimeField::Component.new(
+            name: field_name(method),
+            value: object.public_send(method),
+            required: required?(method),
+            invalid: field_component.invalid?,
+            id: field_component.control_attributes["id"],
+            **(describedby ? { described_by: describedby } : {}),
+            **options.transform_keys(&:to_sym)
+          )
+        end
+      end
+
       # form.file_input(:document) / form.file_input(:photos, variant: :dropzone,
       # multiple: true) - a Field wrapping a FileInput; the native
       # input is the form value, so ActiveStorage attaches as usual.
@@ -355,7 +376,7 @@ module Poetry
         select: :poetry_select, combobox: :poetry_combobox,
         radio_group: :radio_group, autocomplete: :autocomplete,
         tag_group: :tag_group, date_picker: :date_picker, calendar: :calendar,
-        slider: :slider, otp: :otp_field, native_select: :native_select
+        slider: :slider, otp: :otp_field, native_select: :native_select, datetime: :datetime_field
       }.freeze
       # The as: values that answer with #field carrying a native input type.
       TYPED_FIELDS = %i[email url tel].freeze
@@ -397,11 +418,6 @@ module Poetry
         if TYPED_FIELDS.include?(type)
           return field(method, hint: hint, type: type, **length_attributes(method),
                                **options)
-        end
-
-        if type == :datetime
-          raise ArgumentError, "f.input cannot infer :datetime (no composite control yet) - " \
-                               "pass as: :date or as: :time explicitly"
         end
 
         options = length_attributes(method).merge(options) if %i[string password text].include?(type)

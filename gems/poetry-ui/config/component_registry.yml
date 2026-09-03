@@ -3922,6 +3922,156 @@ components:
           'on': input
         - method: inputKeydown
           'on': keydown
+  poetry/ui/date_time_field:
+    class_name: Poetry::Ui::DateTimeField::Component
+    identifier: poetry--ui--date_time_field
+    bem_block: poetry-ui-date_time_field
+    styles: []
+    options:
+    - name: described_by
+      type: string
+      description: Ids for aria-describedby (hint or error text).
+    - name: disabled
+      type: boolean
+      default: false
+      description: Disables the field; the segment group dims and goes inert.
+    - name: hour_cycle
+      type: string
+      description: Pins the hour cycle (h12/h23/h11/h24) instead of the locale's.
+    - name: id
+      type: string
+      description: The native input's DOM id - the Field label target.
+    - name: invalid
+      type: boolean
+      default: false
+      description: Paints the destructive border/ring and sets aria-invalid.
+    - name: label
+      type: string
+      description: Standalone accessible name; inside a form the Field label wires
+        ids instead. Segments announce it themselves.
+    - name: locale
+      type: string
+      description: Pins the field to a locale other than the page's.
+    - name: max
+      type:
+      description: The latest allowed date (Date or ISO string) - rides native constraint
+        validation.
+    - name: min
+      type:
+      description: The earliest allowed date (Date or ISO string) - rides native constraint
+        validation.
+    - name: name
+      type: string
+      required: true
+      description: The form field name - required; the value posts as ISO yyyy-mm-dd
+        with or without JS.
+    - name: placeholder_value
+      type:
+      description: What the first arrow press on an empty segment lands on; defaults
+        to today.
+    - name: readonly
+      type: boolean
+      default: false
+      description: The value shows but cannot be edited.
+    - name: required
+      type: boolean
+      default: false
+      description: Marks the native input required.
+    - name: seconds
+      type: boolean
+      default: false
+      description: Adds the seconds segment; the wire format becomes YYYY-MM-DDTHH:MM:SS.
+    - name: value
+      type:
+      description: Date, or an ISO yyyy-mm-dd string; nil renders empty.
+    slots: []
+    description: A segmented input for typing a date and a time one part at a time.
+    elements:
+    - group
+    - input
+    capsule: c812f47a82a9
+    controllers:
+    - identifier: poetry--core--date-field
+      targets:
+      - group
+      - input
+      values:
+      - hourCycle
+      - labels
+      - locale
+      - placeholder
+      - placeholders
+      - seconds
+      actions:
+      - focusGap
+      - settle
+      events:
+      - poetry:date-field:change
+    agent_rules:
+    - Date-and-time entry is a DateTimeField (poetry_date_time_field / form.datetime_field)
+      - never a DateField beside a TimeField, three selects, or a bare input type=datetime-local
+      when the design system is in play; params[<name>] is YYYY-MM-DDTHH:MM (with
+      :SS under seconds:), with or without JS.
+    - 'No zone rides the wire: the value is the wall time the user typed on their
+      own clock - the app places it (Time.zone.parse in the controller, or the model''s
+      zone).'
+    - '12- vs 24-hour follows the user''s locale automatically (the dayPeriod segment
+      appears only under twelve-hour cycles); hour_cycle: pins it when a product must.'
+    parts:
+    - name: date-time-field
+      description: Root - the controller and the enhanced/disabled surface ride here
+        (segments inside share the date-field-* vocabulary)
+      states:
+      - attr: data-enhanced
+        condition: the controller connected and built segments (no JS = the native
+          input, visible and styled)
+      - attr: data-disabled
+        condition: 'disabled: is set'
+      - attr: data-invalid
+        condition: 'invalid: is set (the group wears the destructive ring)'
+    - name: date-time-field-group
+      description: The bordered segment row - hidden until enhancement, then the editing
+        surface (cn-input chrome, focus-within ring)
+      states:
+      - attr: data-disabled
+        condition: 'disabled: is set (chrome dims, pointer events off)'
+      - attr: data-invalid
+        condition: 'invalid: is set (destructive border + ring)'
+    - name: date-time-field-input
+      description: The native <input type=datetime-local> - THE form value in both
+        modes; tabindex -1 + aria-hidden once segments exist
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--date-field
+        registers: true
+        values:
+        - name: locale
+          conditional: if
+        - name: placeholder
+        - name: labels
+        - name: placeholders
+      - identifier: poetry--core--date-field
+        values:
+        - name: seconds
+          conditional: if seconds
+        - name: hour_cycle
+          conditional: if
+    - element: group
+      controllers:
+      - identifier: poetry--core--date-field
+        targets:
+        - name: group
+        actions:
+        - method: focusGap
+          'on': click
+        - method: settle
+          'on': focusout
+    - element: input
+      controllers:
+      - identifier: poetry--core--date-field
+        targets:
+        - name: input
   poetry/ui/deferred:
     class_name: Poetry::Ui::Deferred::Component
     identifier: poetry--ui--deferred
@@ -10672,8 +10822,8 @@ components:
       Input or a pair of selects; params[<name>] is HH:MM (HH:MM:SS with seconds:).
     - '12- vs 24-hour follows the user''s locale automatically (the dayPeriod segment
       appears only under twelve-hour cycles); hour_cycle: pins it when a product must.'
-    - For a date AND a time, compose a DateField and a TimeField side by side - there
-      is no datetime component by design.
+    - 'For a date AND a time, use a DateTimeField (poetry_date_time_field / form.datetime_field):
+      one control, one datetime-local value.'
     parts:
     - name: time-field
       description: Root - the controller and the enhanced/disabled surface ride here
@@ -12093,6 +12243,7 @@ helper_args:
   poetry_data_table: 0
   poetry_date_field: 0
   poetry_date_picker: 0
+  poetry_date_time_field: 0
   poetry_deferred: 0
   poetry_dialog: 0
   poetry_drawer: 0
@@ -12253,6 +12404,7 @@ form_builder:
   - slider
   - otp
   - native_select
+  - datetime
   - email
   - url
   - tel

@@ -79,6 +79,13 @@
     <%= poetry_time_field(name: "settings[digest_at]", id: "settings-digest-at", value: "09:30") %>
   </div>
   <div class="grid gap-2">
+    <%= poetry_label(for_id: "settings-export-at") { "Next export" } %>
+    <%# DateTimeField = DateField with both runs in one row; the native
+        type=datetime-local input IS the form value (local wall time, no zone). %>
+    <%= poetry_date_time_field(name: "settings[export_at]", id: "settings-export-at",
+                               value: "2026-08-01T09:30") %>
+  </div>
+  <div class="grid gap-2">
     <%= poetry_label(for_id: "settings-contract") { "Signed contract" } %>
     <%# The native input IS the form value; the dropzone's label
         text names the control, drag-and-drop rides the controller. %>

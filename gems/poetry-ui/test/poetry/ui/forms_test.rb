@@ -898,12 +898,15 @@ module Poetry
         assert_includes html[/<input[^>]*\[body\][^>]*>/].to_s, 'type="text"', "as: beats the column type"
       end
 
-      def test_input_datetime_raises_with_guidance
-        error = assert_raises(ActionView::Template::Error) do
-          render_form_case("<%= form.input(:created_at) %>", model: Timestamped.new)
-        end
+      def test_input_infers_a_datetime_column_into_the_date_time_field
+        html = render_form_case("<%= form.input(:created_at) %>", model: Timestamped.new)
+        doc = Nokogiri::HTML5.fragment(html)
 
-        assert_match(/as: :date or as: :time/, error.message)
+        assert doc.at_css('[data-slot="date-time-field"]'), "a :datetime column renders the DateTimeField"
+        native = doc.at_css('[data-slot="date-time-field-input"]')
+
+        assert_equal "datetime-local", native["type"]
+        assert_match(/\[created_at\]\z/, native["name"])
       end
 
       class Timestamped
