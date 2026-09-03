@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
                      "(the default icon set) together."
   spec.homepage = "https://poetryui.com"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.3.0"
+  spec.required_ruby_version = ">= 3.4.0"
 
   # Uncomment the line below to require MFA for gem pushes.
   # This helps protect your gem from supply chain attacks by ensuring
