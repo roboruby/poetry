@@ -15,10 +15,16 @@ module Poetry
     #
     # @api private
     class SkillText < LlmsText
-      def initialize(registry:, families:, charts_registry: nil)
+      # @param registry [Registry] the component registry the skill describes
+      # @param families [Hash{String => Array<String>}] family name => component names
+      # @param charts_registry [Registry, nil] the charts registry, when the gem is present
+      # @param builder_family [String] the family whose reference carries the registry's
+      #   form_builder section (rules, method summaries, the f.input as: vocabulary)
+      def initialize(registry:, families:, charts_registry: nil, builder_family: "forms")
         super(registry: registry)
         @families = families
         @charts_registry = charts_registry
+        @builder_family = builder_family
       end
 
       # The installable file map, paths relative to .claude/skills/poetry/.
@@ -250,7 +256,30 @@ module Poetry
           not suggestions. Options are keywords; content is the block.
 
           #{sections(paths)}
+          #{builder_reference if family == @builder_family}
         MD
+      end
+
+      # The registry's form_builder section rides the family that hosts the
+      # form controls: the builder's RULE lines, its method summaries, and
+      # the f.input as: vocabulary. A registry without one (charts, a host
+      # without the UI gem) contributes nothing.
+      def builder_reference
+        section = @registry.respond_to?(:form_builder) ? @registry.form_builder : nil
+        return "" unless section.is_a?(Hash) && section.any?
+
+        out = ["## Form builder (model-bound forms)", "",
+               "Inside `form_with(model:, builder:)` forms the builder derives label, hint, error, " \
+               "and aria from the model; these `RULE` lines bind there."]
+        rules = Array(section["rules"])
+        out << "" << rules.map { |rule| "- RULE: #{rule}" }.join("\n") if rules.any?
+        methods = section["methods"]
+        if methods.is_a?(Hash) && methods.any?
+          out << "" << "Methods:" << "" << methods.map { |name, summary| "- `#{name}` - #{summary}" }.join("\n")
+        end
+        types = Array(section["input_types"])
+        out << "" << "`f.input` `as:` values: #{types.join(", ")}" if types.any?
+        out.join("\n")
       end
 
       # The blocks reference inlines every block's full source - the block

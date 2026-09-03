@@ -13,6 +13,7 @@ module Poetry
     # the roster lives.
     class SkillTextTest < Minitest::Test
       FakeRegistry = Data.define(:entries, :blocks, :source_root)
+      FakeBuilderRegistry = Data.define(:entries, :blocks, :source_root, :form_builder)
 
       BADGE_ENTRY = {
         "class_name" => "Poetry::Ui::Badge::Component",
@@ -92,6 +93,28 @@ module Poetry
           assert_includes reference, "## badge (`poetry_badge`)"
           assert_includes reference, "one of default|success"
           assert_includes reference, "- RULE: Status badges on one surface read as a SET."
+        end
+      end
+
+      def test_forms_reference_carries_the_registry_form_builder_section
+        with_registry do |registry|
+          builder = FakeBuilderRegistry.new(
+            entries: registry.entries, blocks: registry.blocks, source_root: registry.source_root,
+            form_builder: { "rules" => ["Model-bound forms use the builder."],
+                            "methods" => { "input" => "the inferred entrypoint" },
+                            "input_types" => %w[boolean switch] }
+          )
+          text = SkillText.new(registry: builder, families: { "forms" => %w[badge], "data" => %w[badge] })
+          forms = text.files.fetch("references/forms.md")
+
+          assert_includes forms, "## Form builder (model-bound forms)"
+          assert_includes forms, "- RULE: Model-bound forms use the builder."
+          assert_includes forms, "- `input` - the inferred entrypoint"
+          assert_includes forms, "`as:` values: boolean, switch"
+          refute_includes text.files.fetch("references/data.md"), "## Form builder",
+                          "only the builder family carries it"
+          refute_includes skill(registry).files.fetch("references/data.md"), "## Form builder",
+                          "a registry without the section adds nothing"
         end
       end
 
