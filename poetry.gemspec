@@ -8,8 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors = ["Matt Solt"]
   spec.email = ["mattsolt@gmail.com"]
 
-  spec.summary = "Poetry, the AI-native UI component library for Rails: shadcn-parity ViewComponents on " \
-                 "Hotwire and Tailwind."
+  spec.summary = "Poetry: the AI-native UI component library for Rails."
   spec.description = "The Poetry umbrella gem: installs poetry-core (the Rails engine and component DSL), " \
                      "poetry-ui (the accessible, themeable, agent-legible component library) and poetry-lucide " \
                      "(the default icon set) together."
