@@ -64,7 +64,7 @@ module Poetry
         {
           "rules" => AGENT_RULES,
           "methods" => METHOD_SUMMARIES,
-          "input_types" => (INPUT_DISPATCH.keys + TYPED_FIELDS + %i[boolean enum]).map(&:to_s)
+          "input_types" => (INPUT_DISPATCH.keys + TYPED_FIELDS + %i[boolean switch enum]).map(&:to_s)
         }
       end
 
@@ -354,13 +354,14 @@ module Poetry
         time: :time_field, file: :file_input, sensitive: :sensitive_input,
         select: :poetry_select, combobox: :poetry_combobox,
         radio_group: :radio_group, autocomplete: :autocomplete,
-        tag_group: :tag_group, date_picker: :date_picker, calendar: :calendar
+        tag_group: :tag_group, date_picker: :date_picker, calendar: :calendar,
+        slider: :slider, otp: :otp_field, native_select: :native_select
       }.freeze
       # The as: values that answer with #field carrying a native input type.
       TYPED_FIELDS = %i[email url tel].freeze
       # The as: values whose dispatch method takes the collection as its
       # second positional argument.
-      COLLECTION_ARGS = %i[select combobox radio_group autocomplete].freeze
+      COLLECTION_ARGS = %i[select combobox radio_group autocomplete native_select].freeze
 
       # The inferred entrypoint: one call, everything derived from the
       # model. The control type comes from as: when given, otherwise from
@@ -379,9 +380,9 @@ module Poetry
       #
       # @param method [Symbol] the model attribute
       # @param as [Symbol, nil] explicit control type - an INPUT_DISPATCH
-      #   key, :email/:url/:tel, :boolean, or :enum (overrides inference)
+      #   key, :email/:url/:tel, :boolean, :switch, or :enum (overrides inference)
       # @param collection [Enumerable, nil] choices for collection-shaped
-      #   types (:select, :combobox, :radio_group, :autocomplete)
+      #   types (:select, :combobox, :radio_group, :autocomplete, :native_select)
       # @param hint [String, nil] hint text (overrides the i18n chain)
       # @return [ActiveSupport::SafeBuffer] the rendered Field
       def input(method, as: nil, collection: nil, hint: nil, **options)
@@ -391,6 +392,7 @@ module Poetry
         options.compact!
 
         return boolean_input(method, hint: hint, **options) if type == :boolean
+        return boolean_input(method, hint: hint, switch: true, **options) if type == :switch
         return enum_input(method, hint: hint, **options) if type == :enum
         if TYPED_FIELDS.include?(type)
           return field(method, hint: hint, type: type, **length_attributes(method),
@@ -406,7 +408,7 @@ module Poetry
         options = numeric_attributes(method).merge(options) if type == :number
         dispatch = INPUT_DISPATCH.fetch(type) do
           raise ArgumentError, "f.input does not know as: #{type.inspect} " \
-                               "(one of #{INPUT_DISPATCH.keys.inspect}, :email, :url, :tel, :boolean, :enum)"
+                               "(one of #{INPUT_DISPATCH.keys.inspect}, :email, :url, :tel, :boolean, :switch, :enum)"
         end
         args = COLLECTION_ARGS.include?(type) ? [method, collection] : [method]
         send(dispatch, *args, hint: hint, **options)

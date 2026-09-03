@@ -12250,8 +12250,12 @@ form_builder:
   - tag_group
   - date_picker
   - calendar
+  - slider
+  - otp
+  - native_select
   - email
   - url
   - tel
   - boolean
+  - switch
   - enum

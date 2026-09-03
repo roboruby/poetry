@@ -294,6 +294,24 @@ module Poetry
                      range.css('[data-slot="slider-thumb"]').map { |thumb| thumb["aria-valuenow"] })
       end
 
+      def test_input_as_reaches_the_slider_otp_native_select_and_switch_controls
+        html = render_form_case(<<~ERB, model: Article.new)
+          <%= form.input(:quantity, as: :slider) %>
+          <%= form.input(:title, as: :otp) %>
+          <%= form.input(:body, as: :native_select, collection: %w[draft live]) %>
+          <%= form.input(:published, as: :switch) %>
+        ERB
+        doc = Nokogiri::HTML5.fragment(html)
+
+        assert doc.at_css('[data-slot="slider"]'), "as: :slider dispatches to #slider"
+        assert doc.at_css('[data-slot="input-otp"]'), "as: :otp dispatches to #otp_field"
+        assert doc.at_css('[data-slot="native-select"]'), "as: :native_select dispatches to #native_select"
+        assert_equal %w[draft live], doc.css('[data-slot="native-select"] option').map { |o|
+          o["value"]
+        }.reject(&:empty?)
+        assert doc.at_css('[data-slot="switch"]'), "as: :switch renders the boolean as a Switch"
+      end
+
       # -- The as: :textarea switch on #field (field-shaped controls) ---------
 
       class Profile
