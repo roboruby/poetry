@@ -26,9 +26,9 @@ module Poetry
 
       MARGIN = { left: 12, right: 12 }.freeze
 
-      def render_chart(id: "test", offset: :none, **options)
+      def render_chart(id: "test", offset: :none, **)
         render_inline(AreaChart::Component.new(data: DATA, config: CONFIG, id: id,
-                                               margin: MARGIN, offset: offset, **options)) do |chart|
+                                               margin: MARGIN, offset: offset, **)) do |chart|
           chart.with_grid
           chart.with_x_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] })
           yield chart

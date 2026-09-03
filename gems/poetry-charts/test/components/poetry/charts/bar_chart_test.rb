@@ -23,8 +23,8 @@ module Poetry
         mobile: { label: "Mobile", color: "var(--chart-2)" }
       }.freeze
 
-      def render_chart(id: "test", data: DATA, **options)
-        render_inline(BarChart::Component.new(data: data, config: CONFIG, id: id, **options)) do |chart|
+      def render_chart(id: "test", data: DATA, **)
+        render_inline(BarChart::Component.new(data: data, config: CONFIG, id: id, **)) do |chart|
           chart.with_grid
           chart.with_x_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] })
           yield chart
@@ -145,9 +145,9 @@ module Poetry
 
       # -- the horizontal orientation --------------------------------------------
 
-      def render_horizontal(data: DATA, **options)
+      def render_horizontal(data: DATA, **)
         render_inline(BarChart::Component.new(data: data, config: CONFIG, id: "h",
-                                              orientation: :horizontal, **options)) do |chart|
+                                              orientation: :horizontal, **)) do |chart|
           chart.with_y_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] }, tick_margin: 10)
           yield chart
         end

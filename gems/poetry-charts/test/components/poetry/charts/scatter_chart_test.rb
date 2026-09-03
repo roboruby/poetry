@@ -19,8 +19,8 @@ module Poetry
         control: { label: "Control", color: "var(--chart-2)" }
       }.freeze
 
-      def render_chart(**options, &extra)
-        render_inline(ScatterChart::Component.new(data: DATA, config: CONFIG, id: "s", **options)) do |chart|
+      def render_chart(**, &extra)
+        render_inline(ScatterChart::Component.new(data: DATA, config: CONFIG, id: "s", **)) do |chart|
           chart.with_grid
           chart.with_x_axis(data_key: :height)
           chart.with_y_axis(data_key: :weight)
