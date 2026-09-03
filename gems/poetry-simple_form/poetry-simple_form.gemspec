@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
                      "Poetry::Ui::FormBuilder - this bridge exists to make getting there boring."
   spec.license = "MIT"
   spec.homepage = "https://poetryui.com"
-  spec.required_ruby_version = ">= 3.3.0"
+  spec.required_ruby_version = ">= 3.4.0"
   spec.files = Dir["lib/**/*", "README.md", "LICENSE.txt", "CHANGELOG.md"]
 
   spec.add_dependency "poetry-ui", "= #{Poetry::SimpleForm::VERSION}"
