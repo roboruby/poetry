@@ -12,9 +12,16 @@ exists to make getting there boring, then to be removed.
 ## Gates
 
 - `bundle exec rake` — the default chain: `test` (against `test/dummy`),
-  `yard:verify`, `yard:coverage` (every public object documented; floors at
-  0). RuboCop is not in this gem's bundle — run it from a sibling checkout
-  if you touch more than a line.
+  `rubocop` (`.rubocop.yml`, the family's shape), `yard:verify`,
+  `yard:coverage` (every public object documented; floors at 0).
+- CI (`.github/workflows/main.yml`) runs that chain on Ruby 3.4 and 4.0
+  with poetry-core, poetry-lucide, and poetry-ui checked out beside the
+  repo at their `main` — the Gemfile's sibling paths resolve exactly as in
+  development — plus `bundle-audit`. The release workflow (`release.yml`,
+  tags `v*`) resolves from RubyGems, runs `rake version:verify_tag` (the
+  tag must equal `v<VERSION>`), then publishes via OIDC.
+- `rake "version:bump[X.Y.Z]"` edits the one VERSION constant; there is
+  no npm channel to keep in step here.
 
 ## Conventions
 
@@ -37,8 +44,10 @@ explicit go, and this gem publishes after poetry-ui is live. Publishing
 runs only through the tag-triggered release workflow (OIDC trusted
 publishing) — never `gem push` by hand. The CHANGELOG stays bare until
 0.1.0; commit messages carry the record. Siblings ride local paths in the
-Gemfile only when checked out beside this repo; the lockfile is not
-committed.
+Gemfile only when checked out beside this repo (which CI arranges); the
+lockfile is not committed. Between releases the bridge tracks the family's
+`main`, so its CI proves main against main; the exact pin proves the
+released pair for consumers.
 
 Naming: "Poetry" is the product in prose; gem names, constants, and
 identifiers stay as they are.

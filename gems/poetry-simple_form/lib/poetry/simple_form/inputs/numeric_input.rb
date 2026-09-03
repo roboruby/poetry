@@ -6,7 +6,9 @@ module Poetry
       # NumberField; poetry re-derives min/max/step from numericality, so
       # the shim passes nothing simple_form computed.
       class NumericInput < Base
-        private def poetry_as = :number
+        private
+
+        def poetry_as = :number
       end
     end
   end

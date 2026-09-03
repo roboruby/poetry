@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+# Cancel superseded CI runs: a newer push to the same branch/PR kills the
+# in-flight run for that ref so we don't burn minutes on commits already dead.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+# The bridge is pinned to poetry-ui in lockstep (= its own VERSION) and
+# tracks the family's main between releases, so the build job checks the
+# three family gems out beside this repo: the Gemfile's sibling paths then
+# resolve exactly as they do in development. The release workflow resolves
+# from RubyGems, where the lockstep pin guards consumers.
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Ruby ${{ matrix.ruby }}
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby:
+          - "3.4"
+          - "4.0"
+    defaults:
+      run:
+        working-directory: poetry-simple_form
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          path: poetry-simple_form
+          persist-credentials: false
+      - name: Check out the family siblings (main)
+        uses: actions/checkout@v6
+        with:
+          repository: roboruby/poetry-core
+          path: poetry-core
+          persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          repository: roboruby/poetry-lucide
+          path: poetry-lucide
+          persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          repository: roboruby/poetry-ui
+          path: poetry-ui
+          persist-credentials: false
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+          working-directory: poetry-simple_form
+      - name: Run the default task (test + rubocop + yard)
+        run: bundle exec rake
+
+  audit:
+    runs-on: ubuntu-latest
+    name: bundle audit
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - name: Audit dependencies for known CVEs
+        run: bundle exec bundle-audit check --update

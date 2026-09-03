@@ -82,7 +82,7 @@ module Poetry
     end
 
     def test_collection_inputs_render_poetry_pickers
-      pairs = [["Starter", "starter"], ["Team", "team"]]
+      pairs = [%w[Starter starter], %w[Team team]]
       html = render_sf("<%= f.input :plan, collection: plans %>" \
                        "<%= f.input :plan, as: :radio_buttons, collection: plans %>" \
                        "<%= f.input :plan, as: :check_boxes, collection: plans %>",

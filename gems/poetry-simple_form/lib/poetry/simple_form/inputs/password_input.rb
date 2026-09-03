@@ -6,7 +6,9 @@ module Poetry
       # Serves `as: :password`: a poetry Field wrapping a type=password
       # Input; the value never round-trips into the markup.
       class PasswordInput < Base
-        private def poetry_as = :password
+        private
+
+        def poetry_as = :password
       end
     end
   end

@@ -1,0 +1,51 @@
+plugins:
+  - rubocop-performance
+  - rubocop-minitest
+  - rubocop-rake
+
+AllCops:
+  TargetRubyVersion: 3.4
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - "test/dummy/tmp/**/*"
+    - "vendor/**/*"
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+Layout/LineLength:
+  Max: 120
+
+Metrics/BlockLength:
+  Exclude:
+    - "test/**/*"
+    - "*.gemspec"
+    # Rake namespace blocks are naturally long task lists.
+    - "rakelib/**/*.rake"
+
+# Family precedent: the classes are YARD-documented (yard:coverage floor 0);
+# the compact namespace wrappers are not re-described per file.
+Style/Documentation:
+  Enabled: false
+
+# Family precedent: cohesive table-driven code and comprehensive tests are
+# the design; the contract/coverage suites are the complexity gate.
+Metrics/AbcSize:
+  Enabled: false
+Metrics/CyclomaticComplexity:
+  Enabled: false
+Metrics/PerceivedComplexity:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Metrics/ClassLength:
+  Exclude:
+    - "test/**/*"
+
+# Comprehensive, multi-assertion unit tests are intentional.
+Minitest/MultipleAssertions:
+  Enabled: false

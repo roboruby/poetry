@@ -7,7 +7,9 @@ module Poetry
       # component (the native file control in poetry chrome; input_html
       # options such as variant:/multiple: pass through).
       class FileInput < Base
-        private def poetry_as = :file
+        private
+
+        def poetry_as = :file
       end
     end
   end

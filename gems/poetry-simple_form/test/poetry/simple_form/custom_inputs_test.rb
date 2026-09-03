@@ -88,6 +88,7 @@ module Poetry
         assert component(html, "select")
         labels = doc.css('[data-component="select"] [data-value]').map { |node| node.text.strip }
         labels = doc.css('[data-component="select"] option').map { |node| node.text.strip } if labels.empty?
+
         assert_operator labels.size, :>, 100, "every ActiveSupport::TimeZone is offered"
         assert_match(/Eastern Time/, labels.reject(&:empty?).first.to_s, "the priority zone leads")
       end
@@ -99,7 +100,9 @@ module Poetry
 
         html = render_sf("<%= f.input :code, as: :otp, poetry: { length: 4 } %>")
 
-        assert_equal 4, Nokogiri::HTML5.fragment(html).css('[data-component="input_otp"] [data-slot="input-otp-slot"]').size,
+        slots = Nokogiri::HTML5.fragment(html).css('[data-component="input_otp"] [data-slot="input-otp-slot"]')
+
+        assert_equal 4, slots.size,
                      "poetry: { length: 4 } reaches the InputOtp"
       end
     end

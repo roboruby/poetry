@@ -51,18 +51,22 @@ module Poetry
       PLANS = [Plan.new("starter", "Starter", 1), Plan.new("team", "Team", 2)].freeze
 
       # simple_form type => [attribute, extra options] for the table test.
-      SETUP = Hash.new(["name", ""]).merge(
+      PLAN_CHOICES = ", collection: %w[starter team]"
+
+      SETUP = Hash.new { ["name", ""] }.merge(
         "text" => ["bio", ""], "hstore" => ["bio", ""], "json" => ["bio", ""], "jsonb" => ["bio", ""],
         "boolean" => ["active", ""], "switch" => ["active", ""],
         "integer" => ["seats", ""], "decimal" => ["price", ""], "float" => ["ratio", ""],
         "range" => ["seats", ""], "slider" => ["seats", ""],
         "date" => ["starts_on", ""], "date_picker" => ["starts_on", ""], "calendar" => ["starts_on", ""],
         "time" => ["at", ""], "datetime" => ["ships_at", ""],
-        # FileInput's default variant renders the Input component AS the control; only the dropzone root carries the marker.
+        # FileInput's default variant renders the Input component AS the control;
+        # only the dropzone root carries the marker.
         "file" => ["file", ", input_html: { variant: :dropzone }"],
-        "select" => ["plan", ", collection: %w[starter team]"], "native_select" => ["plan", ", collection: %w[starter team]"],
-        "combobox" => ["plan", ", collection: %w[starter team]"], "autocomplete" => ["city", ", collection: %w[Berlin Lisbon]"],
-        "radio_buttons" => ["plan", ", collection: %w[starter team]"], "check_boxes" => ["plan", ", collection: %w[starter team]"],
+        "select" => ["plan", PLAN_CHOICES], "native_select" => ["plan", PLAN_CHOICES],
+        "combobox" => ["plan", PLAN_CHOICES],
+        "radio_buttons" => ["plan", PLAN_CHOICES], "check_boxes" => ["plan", PLAN_CHOICES],
+        "autocomplete" => ["city", ", collection: %w[Berlin Lisbon]"],
         "grouped_select" => ["city", ", collection: regions, group_method: :cities"],
         "time_zone" => ["zone", ""]
       ).freeze
@@ -98,8 +102,10 @@ module Poetry
 
         html = render_sf("<%= f.input :name, required: false %><%= f.input :nickname, required: true %>")
 
-        assert_nil doc(html).at_css('input[name="record[name]"]')["aria-required"], "required: false overrides inference"
-        assert_equal "true", doc(html).at_css('input[name="record[nickname]"]')["aria-required"], "required: true overrides inference"
+        assert_nil doc(html).at_css('input[name="record[name]"]')["aria-required"],
+                   "required: false overrides inference"
+        assert_equal "true", doc(html).at_css('input[name="record[nickname]"]')["aria-required"],
+                     "required: true overrides inference"
       end
 
       def test_errors_reach_every_control_shape
@@ -124,7 +130,8 @@ module Poetry
       end
 
       def test_poetry_options_win_over_input_html_and_simple_form_options
-        html = render_sf("<%= f.input :name, placeholder: \"A\", input_html: { placeholder: \"B\" }, poetry: { placeholder: \"C\" } %>")
+        html = render_sf("<%= f.input :name, placeholder: \"A\", input_html: { placeholder: \"B\" }, " \
+                         "poetry: { placeholder: \"C\" } %>")
 
         assert_equal "C", doc(html).at_css('input[name="record[name]"]')["placeholder"]
       end
@@ -139,17 +146,18 @@ module Poetry
 
         assert doc(html).at_css('[data-value="starter"], option[value="starter"]'), "value_method: :code is honored"
 
-        html = render_sf("<%= f.input :plan, collection: plans, label_method: ->(p) { p.title.upcase }, value_method: :code %>")
+        html = render_sf("<%= f.input :plan, collection: plans, label_method: ->(p) { p.title.upcase }, " \
+                         "value_method: :code %>")
 
         assert_includes html, "STARTER", "callable label_method is honored"
       end
 
       def test_simple_form_i18n_keys_keep_resolving
         I18n.backend.store_translations(:en, simple_form: {
-          labels: { record: { nickname: "Handle" } },
-          hints: { record: { nickname: "Shown on your profile." } },
-          placeholders: { record: { nickname: "ada" } }
-        })
+                                          labels: { record: { nickname: "Handle" } },
+                                          hints: { record: { nickname: "Shown on your profile." } },
+                                          placeholders: { record: { nickname: "ada" } }
+                                        })
         html = render_sf("<%= f.input :nickname %>")
 
         assert_includes html, ">Handle</label>"

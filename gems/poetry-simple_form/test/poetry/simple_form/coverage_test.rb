@@ -34,6 +34,7 @@ module Poetry
 
       def test_activate_installs_exactly_the_input_table
         mappings = ::SimpleForm::FormBuilder.mappings
+
         INPUTS.each do |type, klass|
           assert_equal klass, mappings[type], "simple_form's #{type} must resolve to #{klass}"
         end

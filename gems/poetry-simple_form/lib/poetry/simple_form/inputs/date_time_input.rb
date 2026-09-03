@@ -10,7 +10,7 @@ module Poetry
         # TimeField / DateTimeField - one control each, ISO on the wire.
         #
         # @return [String] the rendered HTML
-        def input(wrapper_options = nil)
+        def input(_wrapper_options = nil)
           Poetry::Ui::FormBuilder.new(object_name, object, template, {})
                                  .input(attribute_name, as: input_type)
         end

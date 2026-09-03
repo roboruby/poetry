@@ -147,7 +147,9 @@ module Poetry
         def zone_pairs
           zones = ActiveSupport::TimeZone.all
           priority = Array(options[:priority] || ::SimpleForm.time_zone_priority)
-          first = priority.map { |zone| zone.is_a?(ActiveSupport::TimeZone) ? zone : ActiveSupport::TimeZone[zone] }.compact
+          first = priority.filter_map do |zone|
+            zone.is_a?(ActiveSupport::TimeZone) ? zone : ActiveSupport::TimeZone[zone]
+          end
           (first + (zones - first)).map { |zone| [zone.to_s, zone.name] }
         end
       end

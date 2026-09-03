@@ -6,7 +6,9 @@ module Poetry
       # The horizontal boolean Field (poetry's f.input boolean story);
       # input_html: { switch: true } opts into the setting-row Switch.
       class BooleanInput < Base
-        private def poetry_as = :boolean
+        private
+
+        def poetry_as = :boolean
       end
     end
   end

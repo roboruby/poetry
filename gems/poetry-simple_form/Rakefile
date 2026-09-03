@@ -9,4 +9,7 @@ Rake::TestTask.new(:test) do |t|
   t.warning = false
 end
 
-task default: %i[test yard:verify yard:coverage]
+require "rubocop/rake_task"
+RuboCop::RakeTask.new
+
+task default: %i[test rubocop yard:verify yard:coverage]

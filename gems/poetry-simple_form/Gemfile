@@ -16,9 +16,14 @@ gem "poetry-core", **sibling.call("poetry-core")
 gem "poetry-lucide", **sibling.call("poetry-lucide")
 gem "poetry-ui", **sibling.call("poetry-ui")
 
+gem "bundler-audit", require: false
 gem "irb"
 gem "minitest"
 gem "puma"
 gem "rails", "~> 8.1"
 gem "rake", "~> 13.0"
+gem "rubocop", "~> 1.21"
+gem "rubocop-minitest", require: false
+gem "rubocop-performance", require: false
+gem "rubocop-rake", require: false
 gem "yard", require: false
