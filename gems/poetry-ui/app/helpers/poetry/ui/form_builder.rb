@@ -28,7 +28,8 @@ module Poetry
         "f.association(:company) reflects the association - belongs_to renders a Combobox on " \
         "the foreign key, has_many the select-all checkbox group on singular_ids.",
         "Validations become attributes: presence -> aria-required (NEVER native required), " \
-        "length -> maxlength/minlength, numericality -> min/max/step.",
+        "length -> maxlength/minlength, numericality -> min/max/step; f.input(required: true/false) " \
+        "overrides the presence inference (aria only).",
         "Hints/placeholders resolve from poetry_form.* i18n (simple_form.* keys keep working " \
         "as a fallback); pass hint:/placeholder: to override.",
         "f.submit renders a poetry Button with the Rails i18n label; f.fieldset(legend:)/" \
@@ -405,8 +406,16 @@ module Poetry
       # @param collection [Enumerable, nil] choices for collection-shaped
       #   types (:select, :combobox, :radio_group, :autocomplete, :native_select)
       # @param hint [String, nil] hint text (overrides the i18n chain)
+      # @param required [Boolean, nil] overrides the presence-validator inference for this
+      #   call (aria-required only, never the native attribute)
       # @return [ActiveSupport::SafeBuffer] the rendered Field
-      def input(method, as: nil, collection: nil, hint: nil, **options)
+      def input(method, as: nil, collection: nil, hint: nil, required: nil, **options)
+        unless required.nil?
+          return with_required_override(method, required) do
+            input(method, as: as, collection: collection, hint: hint, **options)
+          end
+        end
+
         type = as || infer_input_type(method, collection: collection)
         hint ||= form_i18n(:hints, method)
         options[:placeholder] = form_i18n(:placeholders, method) if options[:placeholder].nil?
@@ -897,6 +906,7 @@ module Poetry
       # validators (:if/:unless) never claim required, and :on contexts
       # must match the record's persistence.
       def required?(method)
+        return @required_overrides[method] if @required_overrides&.key?(method)
         return false unless object.class.respond_to?(:validators_on)
 
         context = object.respond_to?(:persisted?) && object.persisted? ? :update : :create
@@ -907,6 +917,16 @@ module Poetry
           on = Array(validator.options[:on])
           on.empty? || on.include?(context)
         end
+      end
+
+      # Pins required?(method) for the duration of one render (f.input's
+      # required: keyword) - every Field-wrapped path reads required? through
+      # field_for, so the override reaches aria-required and nothing else.
+      def with_required_override(method, value)
+        (@required_overrides ||= {})[method] = value
+        yield
+      ensure
+        @required_overrides&.delete(method)
       end
 
       # The Rails 8 respellings: ActionView 8

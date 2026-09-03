@@ -898,6 +898,29 @@ module Poetry
         assert_includes html[/<input[^>]*\[body\][^>]*>/].to_s, 'type="text"', "as: beats the column type"
       end
 
+      def test_input_required_keyword_overrides_the_presence_inference
+        html = render_form_case("<%= form.input(:name, required: false) %><%= form.input(:alias, required: true) %>",
+                                model: Guarded.new)
+        doc = Nokogiri::HTML5.fragment(html)
+
+        assert_nil doc.at_css('input[name$="[name]"]')["aria-required"], "required: false silences the validator"
+        assert_equal "true", doc.at_css('input[name$="[alias]"]')["aria-required"], "required: true asserts without one"
+        assert_nil doc.at_css('input[name$="[alias]"]')["required"], "never the native attribute"
+        untouched = Nokogiri::HTML5.fragment(render_form_case("<%= form.input(:name) %>", model: Guarded.new))
+
+        assert_equal "true", untouched.at_css('input[name$="[name]"]')["aria-required"],
+                     "inference is untouched afterwards"
+      end
+
+      class Guarded
+        include ActiveModel::Model
+        include ActiveModel::Attributes
+
+        attribute :name, :string
+        attribute :alias, :string
+        validates :name, presence: true
+      end
+
       def test_input_infers_a_datetime_column_into_the_date_time_field
         html = render_form_case("<%= form.input(:created_at) %>", model: Timestamped.new)
         doc = Nokogiri::HTML5.fragment(html)

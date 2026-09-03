@@ -12359,7 +12359,8 @@ form_builder:
   - f.association(:company) reflects the association - belongs_to renders a Combobox
     on the foreign key, has_many the select-all checkbox group on singular_ids.
   - 'Validations become attributes: presence -> aria-required (NEVER native required),
-    length -> maxlength/minlength, numericality -> min/max/step.'
+    length -> maxlength/minlength, numericality -> min/max/step; f.input(required:
+    true/false) overrides the presence inference (aria only).'
   - 'Hints/placeholders resolve from poetry_form.* i18n (simple_form.* keys keep working
     as a fallback); pass hint:/placeholder: to override.'
   - 'f.submit renders a poetry Button with the Rails i18n label; f.fieldset(legend:)/f.group
