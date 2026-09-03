@@ -34,7 +34,12 @@ module Poetry
         "as a fallback); pass hint:/placeholder: to override.",
         "f.submit renders a poetry Button with the Rails i18n label; f.fieldset(legend:)/" \
         "f.group lay out sections; boolean f.input renders the horizontal Field " \
-        "(switch: true -> the setting row)."
+        "(switch: true -> the setting row).",
+        "Apps on simple_form: add poetry-simple_form instead of rewriting views - " \
+        "Poetry::SimpleForm.activate! maps every simple_form type onto this builder (poetry-only " \
+        "controls via as: :switch/:slider/:otp/:sensitive/:tag_group/:date_picker/:calendar/" \
+        ":combobox/:autocomplete/:native_select; poetry: options merge last). The bridge is the " \
+        "migration path, form_with(builder:) the end state."
       ].freeze
 
       # One-line summaries of the builder methods, projected into the
