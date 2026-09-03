@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors = ["Matt Solt"]
   spec.email = ["mattsolt@gmail.com"]
 
-  spec.summary = "Poetry's chart tier: the shadcn chart surface as server-rendered SVG."
+  spec.summary = "Poetry's chart tier: server-rendered SVG charts for Rails."
   spec.description = "Charts whose geometry is computed on the server (Ruby; d3-scale/d3-shape " \
                      "semantics, recharts' nice ticks) and shipped as finished SVG - no-JS valid, " \
                      "CSS-variable themed, zero client chart math. Stimulus chrome reads " \
