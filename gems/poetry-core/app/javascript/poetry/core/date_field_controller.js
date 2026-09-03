@@ -27,7 +27,8 @@ const isApplePlatform = () => /iP(hone|ad|od)/.test(navigator.userAgent) ||
 
 const EDITABLE = {
   date: ["year", "month", "day"],
-  time: ["hour", "minute", "second", "dayPeriod"]
+  time: ["hour", "minute", "second", "dayPeriod"],
+  datetime: ["year", "month", "day", "hour", "minute", "second", "dayPeriod"]
 }
 
 export default class DateFieldController extends Controller {
@@ -109,8 +110,15 @@ export default class DateFieldController extends Controller {
 
   // --- build ---
 
+  // The native input's type is the contract: date, time, or (datetime-local)
+  // both runs in one row, joined by the locale's own separator.
   get #kind() {
-    return this.inputTarget.type === "time" ? "time" : "date"
+    const type = this.inputTarget.type
+
+    if (type === "time") return "time"
+    if (type === "datetime-local") return "datetime"
+
+    return "date"
   }
 
   #resolvedHourCycle() {
@@ -122,13 +130,15 @@ export default class DateFieldController extends Controller {
   }
 
   #formatterOptions() {
-    if (this.#kind === "date") return { year: "numeric", month: "numeric", day: "numeric" }
+    const date = { year: "numeric", month: "numeric", day: "numeric" }
+
+    if (this.#kind === "date") return date
 
     const options = { hour: "numeric", minute: "2-digit", hourCycle: this.#value.hourCycle }
 
     if (this.secondsValue) options.second = "2-digit"
 
-    return options
+    return this.#kind === "datetime" ? { ...date, ...options } : options
   }
 
   #buildSegments() {
@@ -145,7 +155,7 @@ export default class DateFieldController extends Controller {
 
     // RTL correctness: the time run is wrapped in LRI/PDI isolates so
     // minute:hour never renders reversed (harmless in LTR).
-    if (this.#kind === "time") fragment.appendChild(this.#literal("⁦"))
+    if (this.#kind !== "date") fragment.appendChild(this.#literal("⁦"))
 
     for (const part of parts) {
       const type = part.type === "dayperiod" ? "dayPeriod" : part.type
@@ -166,7 +176,7 @@ export default class DateFieldController extends Controller {
       }
     }
 
-    if (this.#kind === "time") fragment.appendChild(this.#literal("⁩"))
+    if (this.#kind !== "date") fragment.appendChild(this.#literal("⁩"))
 
     this.groupTarget.replaceChildren(fragment)
     this.#labelSegments()
@@ -268,7 +278,7 @@ export default class DateFieldController extends Controller {
   }
 
   #resolveDayPeriodNames() {
-    if (this.#kind !== "time" || !this.#value.twelveHour) return
+    if (this.#kind === "date" || !this.#value.twelveHour) return
 
     const formatter = new Intl.DateTimeFormat(this.#locale(), { hour: "numeric", hourCycle: this.#value.hourCycle })
     const nameAt = (hour) =>
@@ -283,16 +293,18 @@ export default class DateFieldController extends Controller {
     const raw = this.inputTarget.value
 
     if (this.#kind === "date") this.#value.setFromISODate(raw)
-    else this.#value.setFromISOTime(raw)
+    else if (this.#kind === "time") this.#value.setFromISOTime(raw)
+    else this.#value.setFromISODateTime(raw)
   }
 
   #placeholderFor(type) {
     const seed = new IncompleteDate(this.#value.hourCycle)
     const iso = this.placeholderValue
 
-    if (this.#kind === "date") {
-      if (!seed.setFromISODate(iso)) { seed.year = 2020; seed.month = 1; seed.day = 1 }
-    } else if (!seed.setFromISOTime(iso)) {
+    const [datePart, timePart] = this.#kind === "datetime" ? String(iso ?? "").split("T") : [iso, iso]
+
+    if (this.#kind !== "time" && !seed.setFromISODate(datePart)) { seed.year = 2020; seed.month = 1; seed.day = 1 }
+    if (this.#kind !== "date" && !seed.setFromISOTime(timePart)) {
       seed.setFromH23(12)
       seed.minute = 0
       seed.second = 0
@@ -542,7 +554,7 @@ export default class DateFieldController extends Controller {
   }
 
   #commitIfComplete() {
-    if (this.#kind === "date" && this.#value.isComplete(["year", "month", "day"]) &&
+    if (this.#kind !== "time" && this.#value.isComplete(["year", "month", "day"]) &&
         !this.#value.isValidDate()) return // Feb 31 mid-edit: hold the wire
 
     this.#syncInput()
@@ -551,7 +563,9 @@ export default class DateFieldController extends Controller {
   #syncInput() {
     const iso = this.#kind === "date"
       ? this.#value.toISODate()
-      : this.#value.toISOTime(this.secondsValue)
+      : this.#kind === "time"
+        ? this.#value.toISOTime(this.secondsValue)
+        : this.#value.toISODateTime(this.secondsValue)
     const next = iso ?? ""
 
     if (this.inputTarget.value === next) return

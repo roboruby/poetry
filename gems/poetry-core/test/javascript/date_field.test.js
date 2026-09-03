@@ -18,7 +18,7 @@ const el = (id) => document.getElementById(id)
 const fieldMarkup = ({ type = "date", value = "", extra = "", locale = "en-US" } = {}) => `
   <div id="field" data-controller="${IDENTIFIER}"
        data-${IDENTIFIER}-locale-value="${locale}"
-       data-${IDENTIFIER}-placeholder-value="${type === "date" ? "2026-07-13" : "12:00"}"
+       data-${IDENTIFIER}-placeholder-value="${{ date: "2026-07-13", time: "12:00" }[type] ?? "2026-07-13T12:00"}"
        data-${IDENTIFIER}-labels-value='{"empty":"Empty","year":"year","month":"month","day":"day","hour":"hour","minute":"minute","second":"second","dayPeriod":"AM/PM"}'
        data-${IDENTIFIER}-placeholders-value='{"year":"yyyy","month":"mm","day":"dd","hour":"--","minute":"--","second":"--"}'
        ${extra}>
@@ -275,6 +275,51 @@ describe("poetry--core--date-field", () => {
       expect(labels.every((label) => label.includes("Due date"))).toBe(true)
       expect(segments()[0].getAttribute("aria-describedby")).toBe("hint")
       expect(segments()[1].hasAttribute("aria-describedby")).toBe(false)
+    })
+  })
+
+  describe("datetime-local (both runs in one row)", () => {
+    it("builds the date segments then the time segments in locale order, from one ISO datetime", async () => {
+      await mount({ type: "datetime-local", value: "2026-07-13T13:05" })
+
+      expect(segments().map((s) => s.getAttribute("data-type")))
+        .toEqual(["month", "day", "year", "hour", "minute", "dayPeriod"])
+      expect(segment("year").textContent).toBe("2026")
+      expect(segment("hour").textContent).toBe("1")
+      expect(segment("minute").textContent).toBe("05")
+      expect(segment("dayPeriod").textContent).toBe("PM")
+    })
+
+    it("writes the combined wire value only once both halves are complete", async () => {
+      await mount({ type: "datetime-local" })
+
+      type(segment("month"), "7")
+      type(segment("day"), "13")
+      type(segment("year"), "2026")
+      expect(el("native").value).toBe("") // the time half is still empty
+
+      type(segment("hour"), "1")
+      type(segment("minute"), "05")
+      press(segment("dayPeriod"), "ArrowUp")
+      el("group").dispatchEvent(new FocusEvent("focusout", { bubbles: true, relatedTarget: document.body }))
+      expect(el("native").value).toBe("2026-07-13T13:05")
+    })
+
+    it("carries seconds on the wire when the field declares them", async () => {
+      await mount({ type: "datetime-local", value: "2026-07-13T09:30:15",
+                    extra: `data-${IDENTIFIER}-seconds-value="true"` })
+
+      expect(segments().map((s) => s.getAttribute("data-type")))
+        .toEqual(["month", "day", "year", "hour", "minute", "second", "dayPeriod"])
+      expect(segment("second").textContent).toBe("15")
+    })
+
+    it("holds the wire on February 31st exactly like a date field", async () => {
+      await mount({ type: "datetime-local", value: "2026-02-10T08:00" })
+
+      type(segment("day"), "31")
+      el("group").dispatchEvent(new FocusEvent("focusout", { bubbles: true, relatedTarget: document.body }))
+      expect(el("native").value).toBe("2026-02-28T08:00") // blur clamps the day into the month
     })
   })
 })

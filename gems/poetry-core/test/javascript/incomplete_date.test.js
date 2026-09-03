@@ -140,7 +140,25 @@ describe("helpers/incomplete_date", () => {
     })
   })
 
-  describe("resolveHourCycle (inferred, never trusted)", () => {
+describe("ISO datetime round-trips (datetime-local's wire format)", () => {
+  it("fills both halves from one string and serializes them back", () => {
+    const value = new IncompleteDate("h23")
+
+    expect(value.setFromISODateTime("2026-07-13T13:05")).toBe(true)
+    expect(value.toISODateTime()).toBe("2026-07-13T13:05")
+    expect(value.toISODateTime(true)).toBe(null) // seconds requested, none set
+  })
+
+  it("refuses a string missing either half and leaves the value untouched", () => {
+    const value = new IncompleteDate("h23")
+
+    expect(value.setFromISODateTime("2026-07-13")).toBe(false)
+    expect(value.setFromISODateTime("13:05")).toBe(false)
+    expect(value.toISODateTime()).toBe(null)
+  })
+})
+
+describe("resolveHourCycle (inferred, never trusted)", () => {
     it("en-US infers a twelve-hour cycle; en-GB a twenty-three-hour one; overrides pin", () => {
       expect(resolveHourCycle("en-US")).toBe("h12")
       expect(resolveHourCycle("en-GB")).toBe("h23")

@@ -289,6 +289,35 @@ export class IncompleteDate {
     this.second = match[3] === undefined ? null : Number(match[3])
     return true
   }
+
+  /**
+   * Fills every field from "YYYY-MM-DDTHH:MM(:SS)" - the datetime-local
+   * wire format (no zone, local wall time).
+   *
+   * @param {string | null} iso
+   * @returns {boolean} false (nothing touched) unless both halves parse
+   */
+  setFromISODateTime(iso) {
+    // A fractional-seconds tail is tolerated (some engines normalize the
+    // value with one) and dropped: the field edits whole seconds.
+    const match = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}(?::\d{2})?)(?:\.\d+)?$/.exec(iso ?? "")
+
+    if (!match) return false
+
+    return this.setFromISODate(match[1]) && this.setFromISOTime(match[2])
+  }
+
+  /**
+   * @param {boolean} [withSeconds=false]
+   * @returns {string | null} "YYYY-MM-DDTHH:MM(:SS)", or null while either
+   *   half is incomplete
+   */
+  toISODateTime(withSeconds = false) {
+    const date = this.toISODate()
+    const time = this.toISOTime(withSeconds)
+
+    return date && time ? `${date}T${time}` : null
+  }
 }
 
 function clampToLimits(value, min, max) {
