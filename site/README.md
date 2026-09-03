@@ -21,16 +21,36 @@ chart galleries (the ui.shadcn.com parity showcase).
 ## Running it
 
 ```sh
-bundle install
-bin/rails tailwindcss:build   # or bin/dev for the watcher
-bin/rails s
+bin/setup            # installs, prepares the databases, starts bin/dev
 ```
 
-The poetry gems are **path-pinned to sibling checkouts**
-(`../poetry-core`, `../poetry-lucide`, `../poetry-ui`, `../poetry-charts`)
-while the naming hold stands — published names land once naming reopens.
-For the same reason this app has **no deploy configuration** (no Kamal, no
-Docker, no domain): build local, claim nothing.
+Two bundles, one family:
+
+- **Locally, the site runs the working trees.** When the poetry gems are
+  checked out beside this repo (`../poetry-core`, `../poetry-ui`, ...),
+  `config/boot.rb` selects `Gemfile.siblings`, and the docs describe the code
+  as it is right now - nothing is pinned. `bin/setup` installs that bundle;
+  `Gemfile.siblings.lock` stays out of git. Set `BUNDLE_GEMFILE=Gemfile` to
+  run the pinned release on the same machine.
+- **Everywhere else, the site runs the release.** `Gemfile` pins the family
+  to the version in `.poetry-version` and its `Gemfile.lock` is committed, so
+  CI, fresh clones and deploys resolve the published gems. CI is therefore
+  the standing proof that the released gems install and render.
+
+`test/poetry_version_test.rb` keeps the two honest: the loaded family must be
+one version, a RubyGems bundle must match `.poetry-version`, and every
+`data/api/*.json` must carry the version it was generated from.
+
+## After a family release
+
+```sh
+echo 0.0.4 > .poetry-version
+bundle lock                          # refresh the committed lockfile
+bin/rails docs:refresh               # skills, API reference, search index
+BUNDLE_GEMFILE=Gemfile bin/rails test   # the release, as CI runs it
+```
+
+This app carries no deploy configuration.
 
 ## Re-running the installer
 

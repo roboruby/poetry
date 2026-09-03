@@ -1,4 +1,5 @@
 {
+  "poetry_version": "0.0.3",
   "gem": "@poetry/controllers",
   "objects": [
     {
@@ -749,7 +750,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
-          "line": 310
+          "line": 339
         }
       ],
       "constants": [
@@ -2879,6 +2880,56 @@
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
           "line": 282
+        },
+        {
+          "name": "setFromISODateTime",
+          "scope": "instance",
+          "group": null,
+          "signature": "setFromISODateTime(iso)",
+          "docstring": "Fills every field from \"YYYY-MM-DDTHH:MM(:SS)\" - the datetime-local\nwire format (no zone, local wall time).",
+          "params": [
+            {
+              "name": "iso",
+              "types": [
+                "string | null"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "boolean"
+            ],
+            "text": "false (nothing touched) unless both halves parse"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
+          "line": 300
+        },
+        {
+          "name": "toISODateTime",
+          "scope": "instance",
+          "group": null,
+          "signature": "toISODateTime(withSeconds = false)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "[withSeconds=false]",
+              "types": [
+                "boolean"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "string | null"
+            ],
+            "text": "\"YYYY-MM-DDTHH:MM(:SS)\", or null while either half is incomplete"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/helpers/incomplete_date.js",
+          "line": 315
         }
       ],
       "constants": []
@@ -3756,7 +3807,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 439
+          "line": 443
         },
         {
           "name": "close",
@@ -3776,14 +3827,14 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 449
+          "line": 453
         },
         {
           "name": "setValue",
           "scope": "instance",
           "group": null,
           "signature": "setValue(value)",
-          "docstring": "The programmatic controllable-state surface (multiple accepts an\narray).",
+          "docstring": "The programmatic controllable-state surface (multiple accepts an\narray). Returns the resulting state - what an agent tool reports\nback - so an unknown value (not committed) reads as changed: false.",
           "params": [
             {
               "name": "value",
@@ -3793,10 +3844,15 @@
               "text": ""
             }
           ],
-          "return": null,
+          "return": {
+            "types": [
+              "{ value: string | string[], changed: boolean "
+            ],
+            "text": "}"
+          },
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 459
+          "line": 465
         },
         {
           "name": "nativeChanged",
@@ -3808,7 +3864,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 481
+          "line": 495
         }
       ],
       "constants": []
@@ -4079,7 +4135,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/date_field_controller.js",
-          "line": 62
+          "line": 63
         },
         {
           "name": "disconnect",
@@ -4091,7 +4147,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/date_field_controller.js",
-          "line": 84
+          "line": 85
         },
         {
           "name": "focusGap",
@@ -4111,7 +4167,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/date_field_controller.js",
-          "line": 101
+          "line": 102
         },
         {
           "name": "settle",
@@ -4131,7 +4187,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/date_field_controller.js",
-          "line": 535
+          "line": 547
         }
       ],
       "constants": []
@@ -4295,12 +4351,17 @@
           "scope": "instance",
           "group": null,
           "signature": "open()",
-          "docstring": "Opens modally: showModal() (the platform trap, top-layer and focus\nreturn), the pair flip, and the body scroll lock.",
+          "docstring": "Opens modally: showModal() (the platform trap, top-layer and focus\nreturn), the pair flip, and the body scroll lock. Returns the\nresulting state (what an agent tool reports back).",
           "params": [],
-          "return": null,
+          "return": {
+            "types": [
+              "{ open: boolean, changed: boolean "
+            ],
+            "text": "}"
+          },
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 118
+          "line": 121
         },
         {
           "name": "close",
@@ -4317,10 +4378,15 @@
               "text": "the native cancel event, when Esc drove it"
             }
           ],
-          "return": null,
+          "return": {
+            "types": [
+              "{ open: boolean, changed: boolean "
+            ],
+            "text": "} the resulting state (what an agent tool reports back)"
+          },
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 133
+          "line": 141
         },
         {
           "name": "backdropClose",
@@ -4340,7 +4406,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 157
+          "line": 167
         },
         {
           "name": "lockScroll",
@@ -4352,7 +4418,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 179
+          "line": 189
         },
         {
           "name": "unlockScroll",
@@ -4364,7 +4430,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 187
+          "line": 197
         }
       ],
       "constants": []
@@ -7751,7 +7817,7 @@
           "scope": "instance",
           "group": null,
           "signature": "setValue(value)",
-          "docstring": "The programmatic controllable-state surface: setValue(\"account\").\nUnknown values are ignored (the contract's guard).",
+          "docstring": "The programmatic controllable-state surface: setValue(\"account\").\nUnknown values are ignored (the contract's guard). Returns the\nresulting state - what an agent tool reports back - so a no-op is\nvisible as changed: false.",
           "params": [
             {
               "name": "value",
@@ -7761,10 +7827,15 @@
               "text": "a trigger's data-value (stringified)"
             }
           ],
-          "return": null,
+          "return": {
+            "types": [
+              "{ value: string, changed: boolean "
+            ],
+            "text": "} the active value after the call"
+          },
           "examples": [],
           "file": "app/javascript/poetry/core/tabs_controller.js",
-          "line": 91
+          "line": 94
         }
       ],
       "constants": []

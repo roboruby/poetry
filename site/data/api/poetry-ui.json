@@ -1,4 +1,5 @@
 {
+  "poetry_version": "0.0.3",
   "gem": "poetry-ui",
   "objects": [
     {
@@ -165,6 +166,16 @@
       "methods": [],
       "constants": [
         {
+          "name": "CLAUDE_HOOK",
+          "value": "{ \"matcher\" => \"Edit|Write|MultiEdit\",\n\"hooks\" => [{ \"type\" => \"command\", \"command\" => HOOK_SCRIPT, \"timeout\" => 120 }] }.freeze",
+          "docstring": "The Claude Code entry: PostToolUse on the file-editing tools."
+        },
+        {
+          "name": "CURSOR_HOOK",
+          "value": "{ \"command\" => HOOK_SCRIPT, \"matcher\" => \"Write\", \"timeout\" => 120 }.freeze",
+          "docstring": "Cursor's Write is its file-edit tool type; the payload is read\nleniently and the hook stays silent when it finds no path."
+        },
+        {
           "name": "HERB_CONFIG",
           "value": "<<~YML\n  # Herb toolchain configuration (linter / formatter / language server).\n  # https://herb-tools.dev/configuration - written by `rails g poetry:editor`.\n  version: 0.10.3\n\n  framework: actionvie",
           "docstring": "The Herb toolchain (HTML+ERB parser, linter, formatter, language server)\nreads one file. Poetry templates are gated to parse AND compile under\nHerb (Rails core's ERB engine since 8.2), so a Poetry app can run the\nwhole toolchain; two linter rules misread ViewComponent slot setters on\nhelper-yielded builders today, so they start off with the upstream\nissues to watch. The version pin keeps a linter upgrade from enabling\nrules silently."
@@ -173,6 +184,16 @@
           "name": "HERB_EDITORS",
           "value": "<<~TEXT\n  VS Code    install the \"Herb LSP\" extension (marcoroth.herb-lsp); Stimulus LSP (marcoroth.stimulus-lsp)\n             understands the same HTML+ERB\n  Zed        ships inside the official Ruby",
           "docstring": "Where the Herb language server comes from, per editor."
+        },
+        {
+          "name": "HOOK_NOTE",
+          "value": "<<~TEXT\n  bin/poetry-check-hook runs poetry check on every app template an agent edits and feeds the\n  findings back: registered in .claude/settings.json (Claude Code, PostToolUse on Edit/Write) and\n ",
+          "docstring": "What the generator says about the hook once it is written."
+        },
+        {
+          "name": "HOOK_SCRIPT",
+          "value": "\"bin/poetry-check-hook\"",
+          "docstring": "The check hook: stdlib Ruby that runs `poetry check` on the one app\ntemplate an agent just edited and feeds the findings back (errors as a\nblocking report, warnings as context). Registered for Claude Code and\nCursor; the script filters to app templates itself, since neither\nhook's matcher can see a file path."
         },
         {
           "name": "MANUAL_EDITORS",
@@ -317,7 +338,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 180
+          "line": 182
         },
         {
           "name": "block_components",
@@ -329,7 +350,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 276
+          "line": 278
         },
         {
           "name": "charts_registry",
@@ -341,7 +362,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 166
+          "line": 168
         },
         {
           "name": "committed_charts_registry",
@@ -353,7 +374,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 209
+          "line": 211
         },
         {
           "name": "helper_names",
@@ -365,7 +386,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 96
+          "line": 98
         },
         {
           "name": "recipe_items",
@@ -377,7 +398,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 148
+          "line": 150
         },
         {
           "name": "registry",
@@ -389,7 +410,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 109
+          "line": 111
         },
         {
           "name": "registry_blocks",
@@ -401,7 +422,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 253
+          "line": 255
         },
         {
           "name": "registry_descriptions",
@@ -413,7 +434,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 126
+          "line": 128
         },
         {
           "name": "registry_helpers",
@@ -425,7 +446,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 239
+          "line": 241
         },
         {
           "name": "registry_items",
@@ -437,7 +458,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 136
+          "line": 138
         },
         {
           "name": "root",
@@ -449,7 +470,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 81
+          "line": 83
         },
         {
           "name": "skill_files",
@@ -461,7 +482,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 158
+          "line": 160
         },
         {
           "name": "template_classes",
@@ -478,7 +499,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 86
+          "line": 88
         }
       ],
       "constants": [
@@ -499,7 +520,7 @@
         },
         {
           "name": "SKILL_FAMILIES",
-          "value": "{\n  \"forms\" => %w[autocomplete button button_group calendar checkbox combobox date_field date_picker field\n                field_group field_separator fieldset\n                file_input input input_g",
+          "value": "{\n  \"forms\" => %w[autocomplete button button_group calendar checkbox combobox date_field date_picker date_time_field\n                field\n                field_group field_separator fieldset\n        ",
           "docstring": "The usage skill's family partition: every component in exactly one\nreference file, so the skill's menu stays lean and an agent loads\nonly the family it is composing in. The coverage gate fails on any\nnew component until it is mapped here."
         },
         {
@@ -509,7 +530,7 @@
         },
         {
           "name": "VERSION",
-          "value": "\"0.0.2\"",
+          "value": "\"0.0.3\"",
           "docstring": "The gem version."
         }
       ]
@@ -4396,7 +4417,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 447
+          "line": 468
         },
         {
           "name": "align_offset",
@@ -4413,7 +4434,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 449
+          "line": 470
         },
         {
           "name": "avoid_collisions",
@@ -4430,7 +4451,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 450
+          "line": 471
         },
         {
           "name": "dir",
@@ -4447,7 +4468,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 451
+          "line": 472
         },
         {
           "name": "disabled",
@@ -4464,7 +4485,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 428
+          "line": 449
         },
         {
           "name": "empty",
@@ -4498,7 +4519,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 441
+          "line": 462
         },
         {
           "name": "id",
@@ -4515,7 +4536,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 425
+          "line": 446
         },
         {
           "name": "items",
@@ -4566,7 +4587,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 444
+          "line": 465
         },
         {
           "name": "modal",
@@ -4583,7 +4604,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 434
+          "line": 455
         },
         {
           "name": "multiple",
@@ -4600,7 +4621,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 430
+          "line": 451
         },
         {
           "name": "name",
@@ -4617,7 +4638,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 421
+          "line": 442
         },
         {
           "name": "open",
@@ -4634,7 +4655,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 426
+          "line": 447
         },
         {
           "name": "placeholder",
@@ -4651,7 +4672,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 422
+          "line": 443
         },
         {
           "name": "required",
@@ -4668,7 +4689,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 427
+          "line": 448
         },
         {
           "name": "search_placeholder",
@@ -4685,7 +4706,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 424
+          "line": 445
         },
         {
           "name": "show_clear",
@@ -4702,7 +4723,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 437
+          "line": 458
         },
         {
           "name": "side",
@@ -4719,7 +4740,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 445
+          "line": 466
         },
         {
           "name": "side_offset",
@@ -4736,7 +4757,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 448
+          "line": 469
         },
         {
           "name": "trigger",
@@ -4770,7 +4791,19 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 420
+          "line": 441
+        },
+        {
+          "name": "webmcp_tool_definition",
+          "scope": "instance",
+          "group": null,
+          "signature": "webmcp_tool_definition(definition)",
+          "docstring": "The rendered instance knows its options (the option union renders\ninto a capture before the root's attributes): the payload's schema\nlists the enabled values as the enum, each with its label as the\ntitle - an agent reads \"Japan\" and passes \"jp\" - so an unknown\nvalue is refused before dispatch instead of committing nothing.\nmultiple: keeps the bare schema (its value is a list).",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/combobox/component.rb",
+          "line": 427
         },
         {
           "name": "width",
@@ -4787,7 +4820,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 452
+          "line": 473
         },
         {
           "name": "with_empty",
@@ -5493,7 +5526,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1544
+          "line": 1556
         },
         {
           "name": "poetry_alert",
@@ -5561,7 +5594,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1447
+          "line": 1459
         },
         {
           "name": "poetry_attachment_group",
@@ -5578,7 +5611,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1458
+          "line": 1470
         },
         {
           "name": "poetry_autocomplete",
@@ -5663,7 +5696,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1363
+          "line": 1375
         },
         {
           "name": "poetry_bubble_group",
@@ -5680,7 +5713,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1376
+          "line": 1388
         },
         {
           "name": "poetry_button",
@@ -5816,7 +5849,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1218
+          "line": 1230
         },
         {
           "name": "poetry_checkbox_group",
@@ -5833,7 +5866,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1234
+          "line": 1246
         },
         {
           "name": "poetry_checkbox_group_all",
@@ -5850,7 +5883,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1249
+          "line": 1261
         },
         {
           "name": "poetry_checkbox_group_item",
@@ -5867,7 +5900,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1259
+          "line": 1271
         },
         {
           "name": "poetry_clipboard_text",
@@ -5884,7 +5917,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1273
+          "line": 1285
         },
         {
           "name": "poetry_code_block",
@@ -5901,7 +5934,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1287
+          "line": 1299
         },
         {
           "name": "poetry_collapsible",
@@ -5918,7 +5951,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1531
+          "line": 1543
         },
         {
           "name": "poetry_color_scheme_script",
@@ -5935,7 +5968,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1740
+          "line": 1752
         },
         {
           "name": "poetry_combobox",
@@ -5952,7 +5985,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1648
+          "line": 1660
         },
         {
           "name": "poetry_command",
@@ -5969,7 +6002,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1674
+          "line": 1686
         },
         {
           "name": "poetry_command_dialog",
@@ -5986,7 +6019,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1687
+          "line": 1699
         },
         {
           "name": "poetry_context_menu",
@@ -6003,7 +6036,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1661
+          "line": 1673
         },
         {
           "name": "poetry_data_table",
@@ -6055,6 +6088,23 @@
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
           "line": 461
+        },
+        {
+          "name": "poetry_date_time_field",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_date_time_field(**)",
+          "docstring": "A segmented date-and-time editor over a native datetime-local\ninput: one control, one local wall-time value (no zone on the wire).",
+          "params": [],
+          "return": null,
+          "examples": [
+            {
+              "title": "",
+              "text": "poetry_date_time_field(\n  name: \"event[starts_at]\", label: \"Starts\", value: \"2026-07-13T09:30\"\n)"
+            }
+          ],
+          "file": "app/helpers/poetry/ui/components_helper.rb",
+          "line": 1121
         },
         {
           "name": "poetry_deferred",
@@ -6122,7 +6172,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1618
+          "line": 1630
         },
         {
           "name": "poetry_empty",
@@ -6156,7 +6206,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1170
+          "line": 1182
         },
         {
           "name": "poetry_field_group",
@@ -6173,7 +6223,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1198
+          "line": 1210
         },
         {
           "name": "poetry_field_separator",
@@ -6190,7 +6240,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1208
+          "line": 1220
         },
         {
           "name": "poetry_fieldset",
@@ -6207,7 +6257,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1182
+          "line": 1194
         },
         {
           "name": "poetry_file_input",
@@ -6241,7 +6291,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1605
+          "line": 1617
         },
         {
           "name": "poetry_icon",
@@ -6275,7 +6325,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1719
+          "line": 1731
         },
         {
           "name": "poetry_input",
@@ -6530,7 +6580,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1435
+          "line": 1447
         },
         {
           "name": "poetry_menubar",
@@ -6547,7 +6597,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1703
+          "line": 1715
         },
         {
           "name": "poetry_message",
@@ -6564,7 +6614,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1414
+          "line": 1426
         },
         {
           "name": "poetry_message_group",
@@ -6581,7 +6631,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1426
+          "line": 1438
         },
         {
           "name": "poetry_message_scroller",
@@ -6598,7 +6648,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1469
+          "line": 1481
         },
         {
           "name": "poetry_message_scroller_item",
@@ -6615,7 +6665,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1481
+          "line": 1493
         },
         {
           "name": "poetry_metadata_list",
@@ -6649,7 +6699,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1119
+          "line": 1131
         },
         {
           "name": "poetry_native_select",
@@ -6757,7 +6807,7 @@
           "name": "poetry_optimistic_form",
           "scope": "instance",
           "group": null,
-          "signature": "poetry_optimistic_form(attribute_name: nil, value: OptimisticFormBuilder::UNSET, **options, &block)",
+          "signature": "poetry_optimistic_form(attribute_name: nil, value: OptimisticFormBuilder::UNSET, **options, &)",
           "docstring": "Optimistic UI for a Turbo form: the block's\nform.optimistic_template authors the PREDICTED state as a\nturbo-stream in a <template>; the controller paints it on submit\nand reconciles (morph refresh) only when the server rejects. The\nserver contract - success answers 204 or a targeted stream, NEVER\na redirect; failure answers 4xx - and the morph-refresh meta\nprerequisite live in the Optimistic Forms guide on the docs site.\nattribute_name:/value: auto-inject the submitted-value hidden field\n(false survives; form.optimistic_hidden_field places it explicitly).",
           "params": [],
           "return": null,
@@ -6802,7 +6852,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1557
+          "line": 1569
         },
         {
           "name": "poetry_progress",
@@ -6836,7 +6886,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1326
+          "line": 1338
         },
         {
           "name": "poetry_radio_group",
@@ -6853,7 +6903,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1343
+          "line": 1355
         },
         {
           "name": "poetry_resizable",
@@ -6904,7 +6954,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1129
+          "line": 1141
         },
         {
           "name": "poetry_select",
@@ -6921,7 +6971,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1633
+          "line": 1645
         },
         {
           "name": "poetry_sensitive_input",
@@ -6938,7 +6988,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1300
+          "line": 1312
         },
         {
           "name": "poetry_separator",
@@ -7210,7 +7260,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1354
+          "line": 1366
         },
         {
           "name": "poetry_spinner",
@@ -7261,7 +7311,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1311
+          "line": 1323
         },
         {
           "name": "poetry_table",
@@ -7312,7 +7362,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1142
+          "line": 1154
         },
         {
           "name": "poetry_textarea",
@@ -7380,7 +7430,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1502
+          "line": 1514
         },
         {
           "name": "poetry_toast_trigger",
@@ -7414,7 +7464,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1518
+          "line": 1530
         },
         {
           "name": "poetry_toggle",
@@ -7431,7 +7481,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1388
+          "line": 1400
         },
         {
           "name": "poetry_toggle_group",
@@ -7448,7 +7498,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1401
+          "line": 1413
         },
         {
           "name": "poetry_toolbar",
@@ -7482,7 +7532,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1571
+          "line": 1583
         },
         {
           "name": "poetry_tooltip_provider",
@@ -7499,7 +7549,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1586
+          "line": 1598
         },
         {
           "name": "poetry_tree",
@@ -7516,7 +7566,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1157
+          "line": 1169
         },
         {
           "name": "poetry_typeset",
@@ -8802,6 +8852,82 @@
       "docstring": "The DatePicker is composition (Popover + Calendar); it owns no\nvisual of its own beyond the trigger's field shape, which the\ncomponent sets inline on the Button. This dictionary exists so the\ncomponent participates in the registry/verify machinery; the root is\nan inline-block wrapper.",
       "examples": [],
       "file": "app/components/poetry/ui/date_picker/style.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Ui::DateTimeField",
+      "type": "module",
+      "superclass": null,
+      "docstring": "Segmented date-and-time editors.",
+      "examples": [],
+      "file": "app/components/poetry/ui/date_time_field/component.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Ui::DateTimeField::Component",
+      "type": "class",
+      "superclass": "Poetry::Ui::DateField::Component",
+      "docstring": "A segmented date-and-time editor: one control, one value. The form\nvalue is a native <input type=datetime-local> submitting local wall\ntime as YYYY-MM-DDTHH:MM (HH:MM:SS with seconds:), and without JS\nthat native input simply renders, so the field always works.\nEnhanced, the date segments and the time segments share one row in\nthe locale's own order and separators; the locale decides 12- vs\n24-hour editing (hour_cycle: pins it). No zone travels on the wire:\nthe value is the wall time the user typed, for the app to place.\n\nA DateTimeField is a DateField specialized to a date and a time -\nsegments share the date-field-* part vocabulary.\n\n**Anatomy** (`data-slot` parts):\n\n- `date-time-field` - Root - the controller and the enhanced/disabled surface ride here (segments inside share the date-field-* vocabulary)\n- `date-time-field-group` - The bordered segment row - hidden until enhancement, then the editing surface (cn-input chrome, focus-within ring)\n- `date-time-field-input` - The native <input type=datetime-local> - THE form value in both modes; tabindex -1 + aria-hidden once segments exist",
+      "examples": [
+        {
+          "title": "",
+          "text": "render Poetry::Ui::DateTimeField::Component.new(\n  name: \"event[starts_at]\", label: \"Starts\", value: \"2026-07-13T09:30\"\n)"
+        }
+      ],
+      "file": "app/components/poetry/ui/date_time_field/component.rb",
+      "methods": [
+        {
+          "name": "hour_cycle",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Pins the hour cycle (h12/h23/h11/h24) instead of the locale's.\n\nConstructor option `hour_cycle:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/date_time_field/component.rb",
+          "line": 50
+        },
+        {
+          "name": "seconds",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Adds the seconds segment; the wire format becomes YYYY-MM-DDTHH:MM:SS.\n\nConstructor option `seconds:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "defaults to `false`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/date_time_field/component.rb",
+          "line": 48
+        }
+      ],
+      "constants": [
+        {
+          "name": "AGENT_RULES",
+          "value": "[\n  \"Date-and-time entry is a DateTimeField (poetry_date_time_field / form.datetime_field) - \" \\\n  \"never a DateField beside a TimeField, three selects, or a bare input type=datetime-local \" \\\n  \"when",
+          "docstring": "Projected into the registry, llms.txt, and the agent surface."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Ui::DateTimeField::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "DateField's style verbatim (one segment engine, two components) -\nincluding the group/date-field marker name, which the enhanced-\ninput selector keys on. See date_field/style.rb for the rationale.",
+      "examples": [],
+      "file": "app/components/poetry/ui/date_time_field/style.rb",
       "methods": [],
       "constants": []
     },
@@ -10698,7 +10824,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 63
+          "line": 69
         },
         {
           "name": "association",
@@ -10710,7 +10836,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 420
+          "line": 452
         },
         {
           "name": "autocomplete",
@@ -10722,7 +10848,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 529
+          "line": 561
         },
         {
           "name": "button",
@@ -10734,7 +10860,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 695
+          "line": 726
         },
         {
           "name": "calendar",
@@ -10746,7 +10872,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 634
+          "line": 666
         },
         {
           "name": "check_box",
@@ -10758,7 +10884,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 108
+          "line": 114
         },
         {
           "name": "checkbox",
@@ -10770,7 +10896,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 906
+          "line": 948
         },
         {
           "name": "checkbox_group",
@@ -10782,7 +10908,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 598
+          "line": 630
         },
         {
           "name": "collection_check_boxes",
@@ -10794,7 +10920,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 678
+          "line": 709
         },
         {
           "name": "collection_checkboxes",
@@ -10806,7 +10932,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 911
+          "line": 953
         },
         {
           "name": "collection_radio_buttons",
@@ -10818,19 +10944,19 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 671
+          "line": 702
         },
         {
           "name": "collection_select",
           "scope": "instance",
           "group": null,
-          "signature": "collection_select(method, collection, value_method, text_method, options = {}, html_options = {})",
-          "docstring": "ActionView's collection_select arity, verbatim, adapted onto\npoetry_select (value_method/text_method read off each item).\nrubocop:disable Metrics/ParameterLists -- the ActionView arity, verbatim",
+          "signature": "collection_select(method, collection, value_method, text_method, # rubocop:disable Metrics/ParameterLists options = {}, html_options = {})",
+          "docstring": "ActionView's collection_select arity, verbatim, adapted onto\npoetry_select (value_method/text_method read off each item).",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 661
+          "line": 692
         },
         {
           "name": "date_field",
@@ -10842,7 +10968,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 220
+          "line": 226
         },
         {
           "name": "date_picker",
@@ -10854,7 +10980,40 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 620
+          "line": 652
+        },
+        {
+          "name": "datetime_field",
+          "scope": "instance",
+          "group": null,
+          "signature": "datetime_field(method, hint: nil, **options)",
+          "docstring": "A Field-wrapped DateTimeField (one control, one datetime-local value; seconds:/hour_cycle: pass through).",
+          "params": [
+            {
+              "name": "method",
+              "types": [
+                "Symbol"
+              ],
+              "text": "the model attribute"
+            },
+            {
+              "name": "hint",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "hint text"
+            }
+          ],
+          "return": {
+            "types": [
+              "ActiveSupport::SafeBuffer"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/helpers/poetry/ui/form_builder.rb",
+          "line": 265
         },
         {
           "name": "email_field",
@@ -10871,7 +11030,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 463
+          "line": 495
         },
         {
           "name": "field",
@@ -10883,19 +11042,19 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 75
+          "line": 81
         },
         {
           "name": "fieldset",
           "scope": "instance",
           "group": null,
-          "signature": "fieldset(legend:, hint: nil, **options, &block)",
+          "signature": "fieldset(legend:, hint: nil, **options, &)",
           "docstring": "form.fieldset(legend: \"Shipping\") { |f| ... } - the grouped-fields\nframe; yields the builder for nesting.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 704
+          "line": 735
         },
         {
           "name": "file_input",
@@ -10907,25 +11066,25 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 257
+          "line": 284
         },
         {
           "name": "group",
           "scope": "instance",
           "group": null,
-          "signature": "group(**options, &block)",
+          "signature": "group(**options, &)",
           "docstring": "form.group { |f| ... } - the FieldGroup stack (the @container the\nresponsive Field orientation measures against).",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 713
+          "line": 744
         },
         {
           "name": "input",
           "scope": "instance",
           "group": null,
-          "signature": "input(method, as: nil, collection: nil, hint: nil, **options)",
+          "signature": "input(method, as: nil, collection: nil, hint: nil, required: nil, **options)",
           "docstring": "The inferred entrypoint: one call, everything derived from the\nmodel. The control type comes from as: when given, otherwise from\nattachment duck-typing, AR enums, the attribute/column type, and\nname heuristics; hint/placeholder resolve from the poetry_form\n(or simple_form) i18n chain when not passed; length and numeric\nvalidations become maxlength/min/max/step attributes.",
           "params": [
             {
@@ -10941,7 +11100,7 @@
                 "Symbol",
                 "nil"
               ],
-              "text": "explicit control type - an INPUT_DISPATCH\nkey, :email/:url/:tel, :boolean, or :enum (overrides inference)"
+              "text": "explicit control type - an INPUT_DISPATCH\nkey, :email/:url/:tel, :boolean, :switch, or :enum (overrides inference)"
             },
             {
               "name": "collection",
@@ -10949,7 +11108,7 @@
                 "Enumerable",
                 "nil"
               ],
-              "text": "choices for collection-shaped\ntypes (:select, :combobox, :radio_group, :autocomplete)"
+              "text": "choices for collection-shaped\ntypes (:select, :combobox, :radio_group, :autocomplete, :native_select)"
             },
             {
               "name": "hint",
@@ -10958,6 +11117,14 @@
                 "nil"
               ],
               "text": "hint text (overrides the i18n chain)"
+            },
+            {
+              "name": "required",
+              "types": [
+                "Boolean",
+                "nil"
+              ],
+              "text": "overrides the presence-validator inference for this\ncall (aria-required only, never the native attribute)"
             }
           ],
           "return": {
@@ -10973,7 +11140,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 387
+          "line": 417
         },
         {
           "name": "native_select",
@@ -10985,7 +11152,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 551
+          "line": 583
         },
         {
           "name": "number_field",
@@ -10997,7 +11164,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 201
+          "line": 207
         },
         {
           "name": "otp_field",
@@ -11009,7 +11176,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 183
+          "line": 189
         },
         {
           "name": "password_field",
@@ -11021,7 +11188,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 475
+          "line": 507
         },
         {
           "name": "phone_field",
@@ -11038,7 +11205,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 470
+          "line": 502
         },
         {
           "name": "poetry_combobox",
@@ -11050,7 +11217,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 326
+          "line": 353
         },
         {
           "name": "poetry_select",
@@ -11062,7 +11229,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 284
+          "line": 311
         },
         {
           "name": "radio_group",
@@ -11074,7 +11241,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 125
+          "line": 131
         },
         {
           "name": "range_field",
@@ -11086,7 +11253,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 487
+          "line": 519
         },
         {
           "name": "search_field",
@@ -11098,7 +11265,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 493
+          "line": 525
         },
         {
           "name": "select",
@@ -11110,7 +11277,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 652
+          "line": 684
         },
         {
           "name": "sensitive_input",
@@ -11122,7 +11289,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 510
+          "line": 542
         },
         {
           "name": "slider",
@@ -11134,7 +11301,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 152
+          "line": 158
         },
         {
           "name": "submit",
@@ -11146,7 +11313,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 688
+          "line": 719
         },
         {
           "name": "switch",
@@ -11158,7 +11325,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 115
+          "line": 121
         },
         {
           "name": "tag_group",
@@ -11170,7 +11337,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 572
+          "line": 604
         },
         {
           "name": "telephone_field",
@@ -11187,7 +11354,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 463
+          "line": 495
         },
         {
           "name": "text_area",
@@ -11199,7 +11366,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 481
+          "line": 513
         },
         {
           "name": "text_field",
@@ -11216,7 +11383,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 463
+          "line": 495
         },
         {
           "name": "textarea",
@@ -11228,7 +11395,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 903
+          "line": 945
         },
         {
           "name": "time_field",
@@ -11240,7 +11407,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 238
+          "line": 244
         },
         {
           "name": "url_field",
@@ -11257,7 +11424,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 463
+          "line": 495
         }
       ],
       "constants": [
@@ -11268,7 +11435,7 @@
         },
         {
           "name": "COLLECTION_ARGS",
-          "value": "%i[select combobox radio_group autocomplete].freeze",
+          "value": "%i[select combobox radio_group autocomplete native_select].freeze",
           "docstring": "The as: values whose dispatch method takes the collection as its\nsecond positional argument."
         },
         {
@@ -17324,7 +17491,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/slider/component.rb",
-          "line": 109
+          "line": 107
         },
         {
           "name": "disabled",
@@ -17528,7 +17695,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/slider/component.rb",
-          "line": 105
+          "line": 104
         },
         {
           "name": "values",
@@ -20951,17 +21118,9 @@
           "name": "with_item",
           "scope": "instance",
           "group": null,
-          "signature": "with_item(**options, &block)",
-          "docstring": "Declares one row. Nest children by calling with_item again on the\nyielded builder.",
-          "params": [
-            {
-              "name": "options",
-              "types": [
-                "Hash"
-              ],
-              "text": "text: (the row's label, required), value: (the\ntoggle event's identity, defaults to text:), expanded: (render the\nsubtree open), disabled:, href: (the label renders as a link)"
-            }
-          ],
+          "signature": "with_item(**, &block)",
+          "docstring": "Declares one row. Nest children by calling with_item again on the\nyielded builder. Keywords: text: (the row's label, required), value:\n(the toggle event's identity, defaults to text:), expanded: (render\nthe subtree open), disabled:, href: (the label renders as a link).",
+          "params": [],
           "return": null,
           "examples": [
             {
@@ -20970,7 +21129,7 @@
             }
           ],
           "file": "app/components/poetry/ui/tree/component.rb",
-          "line": 107
+          "line": 106
         }
       ],
       "constants": [
@@ -20999,7 +21158,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/tree/component.rb",
-          "line": 203
+          "line": 202
         }
       ],
       "constants": []

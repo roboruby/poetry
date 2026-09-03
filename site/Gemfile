@@ -1,77 +1,17 @@
+# frozen_string_literal: true
+
 source "https://rubygems.org"
 
-# Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.3"
-# Use sqlite3 as the database for Active Record
-gem "sqlite3", ">= 2.1"
-# The modern asset pipeline for Rails [https://github.com/rails/propshaft]
-gem "propshaft"
-# Use the Puma web server [https://github.com/puma/puma]
-gem "puma", ">= 5.0"
-# Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
-gem "importmap-rails"
-# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
-gem "turbo-rails"
-# Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
-gem "stimulus-rails"
-# Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
-gem "tailwindcss-rails"
-# Database-backed Active Job backend [https://github.com/rails/solid_queue]
-gem "solid_queue"
-# Database-backed Action Cable adapter [https://github.com/rails/solid_cable]
-gem "solid_cable"
+eval_gemfile File.expand_path("Gemfile.shared", __dir__)
 
-# The poetry family, consumed the way a real host would (path-pinned while
-# the naming hold stands - published names once naming reopens). This app
-# doubles as the standing fresh-app install proof: `bin/rails g
-# poetry:install --charts` ran here for real.
-gem "poetry-core", path: "../poetry-core"
-gem "poetry-lucide", path: "../poetry-lucide" # icons; poetry-ui requires it at runtime
-gem "poetry-ui", path: "../poetry-ui"
-gem "poetry-charts", path: "../poetry-charts"
-gem "poetry-agent", path: "../poetry-agent" # the MCP server exe + the WebMCP runtime
-
-# The three paginator gems the /pagination guide demos live - and the
-# standing install proof for `poetry:pagination` (detection mode ran here
-# for real; the generated adapters are committed app code).
-gem "kaminari"
-gem "pagy", "~> 43.0"
-gem "will_paginate"
-
-# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-# gem "bcrypt", "~> 3.1.7"
-
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[ windows jruby ]
-
-# Reduces boot times through caching; required in config/boot.rb
-gem "bootsnap", require: false
-
-group :development, :test do
-  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
-
-  # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
-  gem "bundler-audit", require: false
-
-  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
-  gem "rubocop-rails-omakase", require: false
-
-  # ERB parser behind `bin/rails poetry:check` (optional for poetry hosts;
-  # this app is the standing install proof, so it lints for real)
-  gem "herb", ">= 0.10.3", require: false
-end
-
-group :development do
-  # Use console on exceptions pages [https://github.com/rails/web-console]
-  gem "web-console"
-end
-
-group :test do
-  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
-  gem "capybara"
-  gem "selenium-webdriver"
-end
-
-# Server-side syntax highlighting for the gallery code tabs
-gem "rouge"
+# The poetry family at the released version - one number, kept in
+# .poetry-version and checked by test/poetry_version_test.rb. The umbrella
+# brings poetry-core, poetry-ui and poetry-lucide; the opt-in gems ride the
+# same version because every gem pins its siblings exactly. This is the
+# bundle CI, fresh clones and deploys resolve; on a machine with the family
+# checked out beside this repo, config/boot.rb selects Gemfile.siblings
+# instead so the site runs the working trees unpinned.
+poetry_version = File.read(File.expand_path(".poetry-version", __dir__)).strip
+gem "poetry", poetry_version
+gem "poetry-charts", poetry_version
+gem "poetry-agent", poetry_version # the MCP server exe + the WebMCP runtime

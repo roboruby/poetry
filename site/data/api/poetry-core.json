@@ -1,4 +1,5 @@
 {
+  "poetry_version": "0.0.3",
   "gem": "poetry-core",
   "objects": [
     {
@@ -185,7 +186,7 @@
       "constants": [
         {
           "name": "VERSION",
-          "value": "\"0.0.2\"",
+          "value": "\"0.0.3\"",
           "docstring": "The gem version. Every gem in the family carries the same version\nand pins poetry-core to it exactly."
         }
       ]
@@ -852,6 +853,11 @@
           "docstring": "Parameter kinds that make a keyword surface open or unknowable\n(**rest accepts anything; a positional can swallow a braceless\nhash), and the kinds that ARE the keyword surface."
         },
         {
+          "name": "PARAM_DESCRIPTION_LIMIT",
+          "value": "150",
+          "docstring": "The agent-legibility budget for one parameter's description\n(Chrome's guidance: 150 characters per parameter description)."
+        },
+        {
           "name": "PART_NAME",
           "value": "/\\A[a-z][a-z0-9-]*\\z/",
           "docstring": "The kebab-case shape a declared part name (data-slot value) must match."
@@ -880,6 +886,11 @@
           "name": "WEBMCP_CONTROLLER",
           "value": "\"poetry--agent--webmcp\"",
           "docstring": "The registrar controller (poetry-agent's) that a `webmcp:` root\nregisters; its manifest entry joins core's catalog when the gem\nloads, so the wiring validates like any other controller."
+        },
+        {
+          "name": "WEBMCP_DEFAULT_BUDGET",
+          "value": "20",
+          "docstring": "The registrar's built-in per-document registration budget; the\nroot carries an explicit budget only when the configured value\n({Poetry::Core::Config#webmcp_registration_budget}) differs."
         }
       ]
     },
@@ -916,7 +927,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 132
+          "line": 141
         },
         {
           "name": "resolve_tool_action",
@@ -941,14 +952,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 190
+          "line": 199
         },
         {
           "name": "tool",
           "scope": "class",
           "group": null,
-          "signature": "tool(name, description:, executes:, params: nil, input_schema: nil, title: nil, mutating: false, untrusted_content: false)",
-          "docstring": "Declares one agent-callable tool of this component.\n\nrubocop:disable Metrics/ParameterLists -- one keyword per MCP Tool field",
+          "signature": "tool(name, description:, executes:, # rubocop:disable Metrics/ParameterLists -- one keyword per Tool field params: nil, input_schema: nil, title: nil, mutating: false, untrusted_content: false)",
+          "docstring": "Declares one agent-callable tool of this component.",
           "params": [
             {
               "name": "name",
@@ -978,7 +989,7 @@
                 "Hash{Symbol => Hash}",
                 "nil"
               ],
-              "text": "the tool's parameters\nas `name => spec`; each spec requires `type:` and may carry\n`required: true` (folded into the schema's `required` list)\nplus any JSON-Schema keywords (`description:`, `enum:`, ...)"
+              "text": "the tool's parameters\nas `name => spec`; each spec requires `type:` and may carry\n`required: true` (folded into the schema's `required` list)\nplus any JSON-Schema keywords (`description:` - at most\n{PARAM_DESCRIPTION_LIMIT} characters -, `enum:`, ...). The\ngenerated schema closes with `additionalProperties: false`,\nso a runtime rejects parameters the tool never declared."
             },
             {
               "name": "input_schema",
@@ -994,7 +1005,7 @@
                 "String",
                 "nil"
               ],
-              "text": "optional human-readable label for\nagent UIs"
+              "text": "human-readable label for agent UIs\n(the spec's UA-displayable field); defaults to the tool name\nhumanized (`set_value` -> \"Set value\")"
             },
             {
               "name": "mutating",
@@ -1024,7 +1035,7 @@
             }
           ],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 111
+          "line": 121
         },
         {
           "name": "tool_definitions",
@@ -1041,7 +1052,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 168
+          "line": 177
         },
         {
           "name": "tools",
@@ -1058,7 +1069,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 140
+          "line": 149
         },
         {
           "name": "webmcp_enabled?",
@@ -1075,7 +1086,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 308
+          "line": 340
         },
         {
           "name": "webmcp_name",
@@ -1093,7 +1104,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 321
+          "line": 353
         },
         {
           "name": "webmcp_tool_definition",
@@ -1118,7 +1129,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 349
+          "line": 381
         },
         {
           "name": "webmcp_tools",
@@ -1135,7 +1146,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 339
+          "line": 371
         }
       ],
       "constants": [
@@ -1155,9 +1166,19 @@
           "docstring": "Tool and param names stay inside the WebMCP tool-name grammar\n(ASCII alphanumerics, `_`, `-`, `.`) with poetry's stricter\nsnake_case convention, so a composed full name (instance prefix +\ntool name) can never need escaping."
         },
         {
+          "name": "PARAM_DESCRIPTION_LIMIT",
+          "value": "150",
+          "docstring": "The agent-legibility budget for one parameter's description\n(Chrome's guidance: 150 characters per parameter description)."
+        },
+        {
           "name": "WEBMCP_CONTROLLER",
           "value": "\"poetry--agent--webmcp\"",
           "docstring": "The registrar controller (poetry-agent's) that a `webmcp:` root\nregisters; its manifest entry joins core's catalog when the gem\nloads, so the wiring validates like any other controller."
+        },
+        {
+          "name": "WEBMCP_DEFAULT_BUDGET",
+          "value": "20",
+          "docstring": "The registrar's built-in per-document registration budget; the\nroot carries an explicit budget only when the configured value\n({Poetry::Core::Config#webmcp_registration_budget}) differs."
         }
       ]
     },
@@ -3073,7 +3094,7 @@
             }
           ],
           "file": "lib/poetry/core/config.rb",
-          "line": 136
+          "line": 145
         },
         {
           "name": "default",
@@ -3102,7 +3123,7 @@
           "scope": "class",
           "group": null,
           "signature": "defaults",
-          "docstring": "Returns the default configuration values.\n\nThese defaults are used when initializing new configuration instances and\ndefine the standard behavior for all Poetry::Core components.\n\nThe keys and their defaults:\n\n- `classname_merger` ({Poetry::Core::CSS::TailwindMerger}) - resolves\n  conflicting utility classes when caller classes meet component\n  classes.\n- `stimulus_merger` ({Poetry::Core::Stimulus::Merger}) - combines\n  Stimulus data attributes without duplicating controllers or\n  actions.\n- `css_mode` (`:tailwind`) - `:tailwind` emits resolved utility\n  classes; `:bem` emits the BEM token IR for bring-your-own-CSS\n  hosts.\n- `icon_library` (`:lucide`) - the active icon set, by the key it\n  registered under ({Poetry::Core::Icons.register}).\n- `raise_on_missing_icon` (`nil`) - the policy for a dynamic icon\n  name that resolves to nothing: nil raises in local environments\n  and degrades to the fallback elsewhere; true/false force one\n  behavior.\n- `icon_fallback` (`:\"circle-question-mark\"`) - rendered instead\n  of a missing icon when not raising; nil re-raises.\n- `on_missing_icon` (`nil`) - an optional callable\n  `(name:, library:, error:)` fired before the fallback renders.\n- `stable_id_mode` (`:off`) - the opt-in `:sequence` mode seeds a\n  per-request deterministic id sequence (read the hazards in\n  StableId before enabling).\n- `stable_id_seed` - the request-to-seed callable for that mode\n  (defaults to the request path).",
+          "docstring": "Returns the default configuration values.\n\nThese defaults are used when initializing new configuration instances and\ndefine the standard behavior for all Poetry::Core components.\n\nThe keys and their defaults:\n\n- `classname_merger` ({Poetry::Core::CSS::TailwindMerger}) - resolves\n  conflicting utility classes when caller classes meet component\n  classes.\n- `stimulus_merger` ({Poetry::Core::Stimulus::Merger}) - combines\n  Stimulus data attributes without duplicating controllers or\n  actions.\n- `css_mode` (`:tailwind`) - `:tailwind` emits resolved utility\n  classes; `:bem` emits the BEM token IR for bring-your-own-CSS\n  hosts.\n- `icon_library` (`:lucide`) - the active icon set, by the key it\n  registered under ({Poetry::Core::Icons.register}).\n- `raise_on_missing_icon` (`nil`) - the policy for a dynamic icon\n  name that resolves to nothing: nil raises in local environments\n  and degrades to the fallback elsewhere; true/false force one\n  behavior.\n- `icon_fallback` (`:\"circle-question-mark\"`) - rendered instead\n  of a missing icon when not raising; nil re-raises.\n- `on_missing_icon` (`nil`) - an optional callable\n  `(name:, library:, error:)` fired before the fallback renders.\n- `webmcp_registration_budget` (`20`) - the per-document cap on\n  WebMCP tool registrations a page's opted-in instances may make;\n  poetry-agent's `registration_budget` setting writes through.\n- `stable_id_mode` (`:off`) - the opt-in `:sequence` mode seeds a\n  per-request deterministic id sequence (read the hazards in\n  StableId before enabling).\n- `stable_id_seed` - the request-to-seed callable for that mode\n  (defaults to the request path).",
           "params": [],
           "return": {
             "types": [
@@ -3117,7 +3138,7 @@
             }
           ],
           "file": "lib/poetry/core/config.rb",
-          "line": 82
+          "line": 85
         },
         {
           "name": "classname_merger",
@@ -3134,7 +3155,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 141
+          "line": 150
         },
         {
           "name": "classname_merger=",
@@ -3159,7 +3180,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 141
+          "line": 150
         },
         {
           "name": "css_mode",
@@ -3176,7 +3197,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 141
+          "line": 150
         },
         {
           "name": "css_mode=",
@@ -3201,7 +3222,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 141
+          "line": 150
         },
         {
           "name": "icon_fallback",
@@ -3219,7 +3240,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 141
+          "line": 150
         },
         {
           "name": "icon_fallback=",
@@ -3246,7 +3267,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 141
+          "line": 150
         },
         {
           "name": "icon_library",
@@ -3263,7 +3284,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 141
+          "line": 150
         },
         {
           "name": "icon_library=",
@@ -3290,7 +3311,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 141
+          "line": 150
         },
         {
           "name": "initialize",
@@ -3312,7 +3333,7 @@
             }
           ],
           "file": "lib/poetry/core/config.rb",
-          "line": 261
+          "line": 281
         },
         {
           "name": "on_missing_icon",
@@ -3330,7 +3351,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 141
+          "line": 150
         },
         {
           "name": "on_missing_icon=",
@@ -3357,7 +3378,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 141
+          "line": 150
         },
         {
           "name": "raise_on_missing_icon",
@@ -3375,7 +3396,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 141
+          "line": 150
         },
         {
           "name": "raise_on_missing_icon=",
@@ -3402,7 +3423,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 141
+          "line": 150
         },
         {
           "name": "stable_id_mode",
@@ -3419,7 +3440,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 141
+          "line": 150
         },
         {
           "name": "stable_id_mode=",
@@ -3444,7 +3465,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 141
+          "line": 150
         },
         {
           "name": "stable_id_seed",
@@ -3461,7 +3482,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 141
+          "line": 150
         },
         {
           "name": "stable_id_seed=",
@@ -3486,7 +3507,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 141
+          "line": 150
         },
         {
           "name": "stimulus_merger",
@@ -3503,7 +3524,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 141
+          "line": 150
         },
         {
           "name": "stimulus_merger=",
@@ -3528,13 +3549,55 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 141
+          "line": 150
+        },
+        {
+          "name": "webmcp_registration_budget",
+          "scope": "instance",
+          "group": null,
+          "signature": "webmcp_registration_budget",
+          "docstring": "The per-document WebMCP registration budget the registrar\nenforces (default 20).",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/config.rb",
+          "line": 150
+        },
+        {
+          "name": "webmcp_registration_budget=",
+          "scope": "instance",
+          "group": null,
+          "signature": "webmcp_registration_budget=(count)",
+          "docstring": "Sets the per-document WebMCP registration budget.",
+          "params": [
+            {
+              "name": "count",
+              "types": [
+                "Integer"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Integer"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/config.rb",
+          "line": 150
         }
       ],
       "constants": [
         {
           "name": "SETTINGS",
-          "value": "%i[classname_merger stimulus_merger css_mode icon_library\nraise_on_missing_icon icon_fallback on_missing_icon\nstable_id_mode stable_id_seed].freeze",
+          "value": "%i[classname_merger stimulus_merger css_mode icon_library\nraise_on_missing_icon icon_fallback on_missing_icon\nstable_id_mode stable_id_seed\nwebmcp_registration_budget].freeze",
           "docstring": "The declared configuration surface: every key {.defaults} ships.\nEach is a real reader/writer pair (delegated just below); unknown\nkeys still flow through delegate_missing_to, so hosts may stash\ntheir own values."
         }
       ]
@@ -4493,7 +4556,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 127
+          "line": 125
         },
         {
           "name": "components",
@@ -4505,7 +4568,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 123
+          "line": 121
         },
         {
           "name": "entries",
@@ -4522,7 +4585,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 137
+          "line": 135
         },
         {
           "name": "form_builder",
@@ -4534,7 +4597,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 131
+          "line": 129
         },
         {
           "name": "generate!",
@@ -4560,14 +4623,14 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 159
+          "line": 157
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(components: nil, source_root: Poetry::Core.root, helpers: nil, blocks: nil, helper_args: nil, descriptions: nil, form_builder: nil)",
-          "docstring": "rubocop:disable Metrics/ParameterLists -- one keyword per optional registry section",
+          "signature": "initialize(components: nil, source_root: Poetry::Core.root, # rubocop:disable Metrics/ParameterLists helpers: nil, blocks: nil, helper_args: nil, descriptions: nil, form_builder: nil)",
+          "docstring": "",
           "params": [
             {
               "name": "components",
@@ -4634,7 +4697,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 110
+          "line": 109
         },
         {
           "name": "source_root",
@@ -4646,7 +4709,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 127
+          "line": 125
         },
         {
           "name": "to_yaml",
@@ -4663,7 +4726,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 146
+          "line": 144
         },
         {
           "name": "verified?",
@@ -4689,7 +4752,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 170
+          "line": 168
         }
       ],
       "constants": [
@@ -6996,7 +7059,7 @@
           "name": "merge",
           "scope": "instance",
           "group": null,
-          "signature": "merge(*hashes, &block)",
+          "signature": "merge(*hashes, &)",
           "docstring": "Merges multiple stimulus data hashes with special handling for controllers and actions.\n\nThis is the main merging method that intelligently combines stimulus data hashes.\nController and action values are deduplicated using their respective merge methods,\nwhile other data attributes are merged normally.",
           "params": [
             {
@@ -7005,13 +7068,6 @@
                 "Array<Hash>"
               ],
               "text": "One or more stimulus data hashes"
-            },
-            {
-              "name": "block",
-              "types": [
-                "Proc"
-              ],
-              "text": "Optional block passed to Hash#merge for custom merge logic"
             }
           ],
           "return": {
@@ -7027,7 +7083,7 @@
             }
           ],
           "file": "lib/poetry/core/stimulus/merger.rb",
-          "line": 100
+          "line": 99
         },
         {
           "name": "merge_actions",

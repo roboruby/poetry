@@ -2,7 +2,7 @@
 
 The docs site and standing fresh-app install proof: a Rails app (importmap +
 tailwindcss-rails + propshaft, sqlite-backed demo data, no Node) consuming the
-poetry gems as path-pinned siblings. Gallery + Demos + the blocks catalog +
+poetry gems as sibling checkouts locally (Gemfile.siblings) and the pinned release in CI (Gemfile + .poetry-version). Gallery + Demos + the blocks catalog +
 `/theming` with the nine-theme switcher + guide pages (installation, forms,
 pagination, typography, optimistic-forms, editors).
 
@@ -65,7 +65,7 @@ visual layer leaks omitted-token defaults through the scoped style registry
 refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
 
 <!-- poetry:agents:begin -->
-## Building UI with poetry (87 components + 13 chart components + 8 blocks)
+## Building UI with poetry (88 components + 13 chart components + 8 blocks)
 
 - FIRST MOVE on any UI brief: call the poetry MCP `compose` tool with the
   task text, before writing any ERB. It routes to the matching vetted

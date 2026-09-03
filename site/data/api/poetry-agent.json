@@ -1,4 +1,5 @@
 {
+  "poetry_version": "0.0.3",
   "gem": "poetry-agent",
   "objects": [
     {
@@ -15,7 +16,7 @@
       "path": "Poetry::Agent",
       "type": "module",
       "superclass": null,
-      "docstring": "poetry-agent: the agent-interop gem of the poetry family - the\nsurfaces through which agents reach the component contract, built\nonce (the registry) and projected many ways:\n\n- {MCP::Server} - the boot-free `poetry-agent` MCP server (discover:\n  list_components / describe_component / check / compose / build_page\n  / get_skill) for coding agents in editors.\n- {WebMCP} - the in-page runtime: rendered components' declared tools\n  (`tool` declarations in poetry-core) registered with the browser's\n  `document.modelContext` for the user's own agent (operate), plus the\n  declarative-form path and the origin-trial delivery.\n\nBoth read the same committed registries; neither is a second source.",
+      "docstring": "poetry-agent: the agent-interop gem of the poetry family - the\nsurfaces through which agents reach the component contract, built\nonce (the registry) and projected many ways:\n\n- {MCP::Server} - the boot-free `poetry-agent` MCP server (discover:\n  list_components / describe_component / check / compose / build_page\n  / get_skill) for coding agents in editors.\n- {WebMCP} - the in-page runtime: rendered components' declared tools\n  (`tool` declarations in poetry-core) registered with the browser's\n  `document.modelContext` for the user's own agent (operate), plus the\n  declarative-form path and the origin-trial delivery.\n- {A2UI} - the registry projected as an A2UI catalog (the vocabulary\n  an agent generates declarative UI against).\n- {AGUI} - the Rails-side AG-UI client: an agent backend's event stream\n  folded into chat frames and relayed as versioned Turbo Streams,\n  with the component tools the browser executes advertised as the\n  agent's frontend tools.\n\nBoth read the same committed registries; neither is a second source.",
       "examples": [],
       "file": "lib/poetry/agent.rb",
       "methods": [
@@ -34,7 +35,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent.rb",
-          "line": 40
+          "line": 48
         },
         {
           "name": "configure",
@@ -56,7 +57,7 @@
             }
           ],
           "file": "lib/poetry/agent.rb",
-          "line": 52
+          "line": 60
         },
         {
           "name": "root",
@@ -73,16 +74,6251 @@
           },
           "examples": [],
           "file": "lib/poetry/agent.rb",
-          "line": 33
+          "line": 41
         }
       ],
       "constants": [
         {
           "name": "VERSION",
-          "value": "\"0.0.2\"",
+          "value": "\"0.0.3\"",
           "docstring": "The gem version (lockstep with the poetry family)."
         }
       ]
+    },
+    {
+      "path": "Poetry::Agent::A2UI",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The A2UI surface: Google's declarative generative-UI format, where\nan agent emits a flat component list against a client-owned catalog\nand the client renders it with its own components. Two halves ship:\n\n- {Catalog} projects Poetry's registry into an A2UI v1.0 catalog\n  document, so any A2UI agent generates against Poetry's vocabulary\n  and a renderer validates what arrives against the same document.\n- The renderer: {Session} folds the envelope (`createSurface`,\n  `updateComponents`, `updateDataModel`, `deleteSurface`) into\n  {Surface}s, {Renderer} renders a surface through the host's view\n  context with a catalog binding ({Catalogs::Basic} for the spec's\n  basic catalog, {Catalogs::Native} for Poetry's own), {Streams}\n  delivers changes as versioned Turbo Streams, and a submitted\n  surface form becomes the spec's `action` message\n  ({Session#action}). {Functions} holds the basic catalog's function\n  set - the `formatString` grammar ({Expression}), the formatters,\n  the validators behind `checks` ({Checks}) - which {Evaluator} runs\n  for both catalogs.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui.rb",
+      "methods": [
+        {
+          "name": "catalogs",
+          "scope": "class",
+          "group": null,
+          "signature": "catalogs",
+          "docstring": "The catalog bindings a {Session} starts with: the spec's basic\ncatalog and Poetry's own, keyed by catalog id.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => Object}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui.rb",
+          "line": 43
+        }
+      ],
+      "constants": [
+        {
+          "name": "COMMON_TYPES",
+          "value": "\"https://a2ui.org/specification/v1_0/common_types.json#/$defs/\"",
+          "docstring": "The shared type definitions a catalog may reference."
+        },
+        {
+          "name": "PROTOCOL_VERSION",
+          "value": "\"1.0\"",
+          "docstring": "The protocol version the projection targets."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Catalog",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "Projects the component registry into an A2UI v1.0 catalog: one\nJSON Schema component per registry entry (the discriminator\n`component: { const: Name }`, style axes as enums, options as typed\nproperties, slots as child references, the content block as `text`\nor `children`, Button's `action`), the catalog's composition\ninstructions, and the `$defs` the envelope schema references. The\ndocument obeys the v1.0 catalog rules: the allowed top-level keys\nonly, `$defs` holding exactly `anyComponent` and `anyFunction`,\nexternal refs into `common_types.json` only.",
+      "examples": [
+        {
+          "title": "The docs site's catalog",
+          "text": "catalog = Poetry::Agent::A2UI::Catalog.from_registry(Poetry::Ui.root)\ncatalog.to_h[\"components\"].keys.first(3) # => [\"Accordion\", \"ActionBar\", \"Alert\"]\ncatalog.inline                            # => { \"catalogId\" => ..., \"components\" => {...} }"
+        }
+      ],
+      "file": "lib/poetry/agent/a2ui/catalog.rb",
+      "methods": [
+        {
+          "name": "component_name",
+          "scope": "class",
+          "group": null,
+          "signature": "component_name(path)",
+          "docstring": "The catalog component name of a registry path (PascalCase of its\nlast segment).",
+          "params": [
+            {
+              "name": "path",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalog.rb",
+          "line": 91
+        },
+        {
+          "name": "from_registry",
+          "scope": "class",
+          "group": null,
+          "signature": "from_registry(root = nil, **)",
+          "docstring": "Builds the catalog from a registry root (the directory holding\n`config/component_registry.yml`), or from the bundled poetry-ui\nregistry when no root is given.\n\nKeyword arguments pass through to {#initialize} (`catalog_id:`,\n`title:`, `description:`, `instructions:`, `exclude:`).",
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "String",
+                "Pathname",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Catalog"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalog.rb",
+          "line": 68
+        },
+        {
+          "name": "load_entries",
+          "scope": "class",
+          "group": null,
+          "signature": "load_entries(root = nil)",
+          "docstring": "Loads the registry entries under a root (the bundled poetry-ui\nregistry when no root is given).",
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "String",
+                "Pathname",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash{String => Hash}"
+            ],
+            "text": "entries by registry path"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalog.rb",
+          "line": 78
+        },
+        {
+          "name": "skipped_option?",
+          "scope": "class",
+          "group": null,
+          "signature": "skipped_option?(name)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": "an option name"
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "whether an agent never sets it"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalog.rb",
+          "line": 97
+        },
+        {
+          "name": "catalog_id",
+          "scope": "instance",
+          "group": null,
+          "signature": "catalog_id",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalog.rb",
+          "line": 56
+        },
+        {
+          "name": "component_name",
+          "scope": "instance",
+          "group": null,
+          "signature": "component_name(path)",
+          "docstring": "The A2UI component name of a registry path (`poetry/ui/alert_dialog`\nbecomes `AlertDialog`).",
+          "params": [
+            {
+              "name": "path",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalog.rb",
+          "line": 176
+        },
+        {
+          "name": "components",
+          "scope": "instance",
+          "group": null,
+          "signature": "components",
+          "docstring": "The component schemas by name.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => Hash}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalog.rb",
+          "line": 166
+        },
+        {
+          "name": "functions",
+          "scope": "instance",
+          "group": null,
+          "signature": "functions",
+          "docstring": "The functions the catalog declares (the basic catalog's set, which\nthe renderer implements).",
+          "params": [],
+          "return": {
+            "types": [
+              "Functions"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalog.rb",
+          "line": 146
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(entries:, catalog_id: DEFAULT_ID, title: \"Poetry UI Catalog\", description: \"Poetry's component library as an A2UI catalog, projected from its registry.\", instructions: DEFAULT_INSTRUCTIONS, exclude: [])",
+          "docstring": "",
+          "params": [
+            {
+              "name": "entries",
+              "types": [
+                "Hash{String => Hash}"
+              ],
+              "text": "registry entries by path"
+            },
+            {
+              "name": "catalog_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "title",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "description",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "instructions",
+              "types": [
+                "String"
+              ],
+              "text": "catalog-level guidance for the model"
+            },
+            {
+              "name": "exclude",
+              "types": [
+                "Array<String>"
+              ],
+              "text": "registry paths to leave out"
+            }
+          ],
+          "return": {
+            "types": [
+              "Catalog"
+            ],
+            "text": "a new instance of Catalog"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalog.rb",
+          "line": 107
+        },
+        {
+          "name": "inline",
+          "scope": "instance",
+          "group": null,
+          "signature": "inline",
+          "docstring": "The inline form a transport ships to an agent or a middleware\nfetches at boot.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "`{ \"catalogId\", \"components\" }`"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalog.rb",
+          "line": 154
+        },
+        {
+          "name": "to_h",
+          "scope": "instance",
+          "group": null,
+          "signature": "to_h",
+          "docstring": "The catalog document (JSON Schema, string keys, components sorted\nby name).",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalog.rb",
+          "line": 121
+        },
+        {
+          "name": "to_json",
+          "scope": "instance",
+          "group": null,
+          "signature": "to_json(*)",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the document as JSON"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalog.rb",
+          "line": 159
+        }
+      ],
+      "constants": [
+        {
+          "name": "DEFAULT_ID",
+          "value": "\"https://poetryui.com/a2ui/v1_0/catalog.json\"",
+          "docstring": "The default catalog id (a versioned, conventionally URI-shaped\nstring identifier - it does not need to resolve)."
+        },
+        {
+          "name": "DEFAULT_INSTRUCTIONS",
+          "value": "<<~TEXT.strip\n  Poetry components, rendered on the server. Compose a surface as a flat list of components referenced by id:\n  exactly one component has the id \"root\" (a layout or container such as Car",
+          "docstring": "The catalog-level guidance every generation reads."
+        },
+        {
+          "name": "DYNAMIC_BOOLEANS",
+          "value": "%w[checked].freeze",
+          "docstring": "Option names whose boolean values bind to the data model."
+        },
+        {
+          "name": "DYNAMIC_STRINGS",
+          "value": "%w[value placeholder label text title description].freeze",
+          "docstring": "Option names whose values bind to the data model (`{path}`)."
+        },
+        {
+          "name": "NAME_PATTERN",
+          "value": "/\\A[\\p{XID_Start}_]\\p{XID_Continue}*\\z/u",
+          "docstring": "Component and property names must be UAX #31 identifiers."
+        },
+        {
+          "name": "SKIPPED_OPTIONS",
+          "value": "%w[class id data aria key webmcp].freeze",
+          "docstring": "Options an agent never sets: styling escape hatches, the envelope's\nown `id`, and the universal wiring keywords."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Catalogs",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The catalog bindings a {Surface} renders through: how a catalog's\ncomponents reference their children, which of them are bound\ninputs, and how each one renders with Poetry.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Catalogs::Basic",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The A2UI basic catalog (v1.0) rendered with Poetry: every one of\nits components maps onto a library component or a plain element,\nits enums onto the library's axes, its bound inputs onto named\nform controls, and its `checks` onto native constraint\nattributes where the browser can enforce them.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
+      "methods": [
+        {
+          "name": "functions",
+          "scope": "instance",
+          "group": null,
+          "signature": "functions",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Functions"
+            ],
+            "text": "the basic catalog's function set"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
+          "line": 60
+        },
+        {
+          "name": "id",
+          "scope": "instance",
+          "group": null,
+          "signature": "id",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
+          "line": 55
+        },
+        {
+          "name": "inputs",
+          "scope": "instance",
+          "group": null,
+          "signature": "inputs(component, scope)",
+          "docstring": "The bound input of a component, if it is one.",
+          "params": [
+            {
+              "name": "component",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": "`{ path:, kind: }`"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
+          "line": 83
+        },
+        {
+          "name": "references",
+          "scope": "instance",
+          "group": null,
+          "signature": "references(component)",
+          "docstring": "The child references of a component (ids, id lists, templates).",
+          "params": [
+            {
+              "name": "component",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Object>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
+          "line": 68
+        },
+        {
+          "name": "render",
+          "scope": "instance",
+          "group": null,
+          "signature": "render(component, scope, renderer)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "component",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            },
+            {
+              "name": "renderer",
+              "types": [
+                "Renderer"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "HTML"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
+          "line": 96
+        }
+      ],
+      "constants": [
+        {
+          "name": "ALIGN",
+          "value": "{ \"start\" => \"items-start\", \"center\" => \"items-center\", \"end\" => \"items-end\",\n\"stretch\" => \"items-stretch\" }.freeze",
+          "docstring": "Cross-axis alignment classes by the catalog's `align` values."
+        },
+        {
+          "name": "BUTTON_VARIANTS",
+          "value": "{ \"primary\" => :default, \"default\" => :outline, \"borderless\" => :ghost }.freeze",
+          "docstring": "Poetry's Button variant by the catalog's Button `variant` values."
+        },
+        {
+          "name": "FIT",
+          "value": "{ \"contain\" => \"object-contain\", \"cover\" => \"object-cover\", \"fill\" => \"object-fill\",\n\"none\" => \"object-none\", \"scaleDown\" => \"object-scale-down\" }.freeze",
+          "docstring": "Object-fit classes by the Image `fit` values."
+        },
+        {
+          "name": "ICON_ALIASES",
+          "value": "{ \"skip-previous\" => \"skip-back\", \"skip-next\" => \"skip-forward\", \"play-arrow\" => \"play\",\n\"favorite\" => \"heart\", \"favorite-border\" => \"heart\", \"close\" => \"x\",\n\"arrow-back\" => \"arrow-left\", \"arrow-forwa",
+          "docstring": "Lucide names for the Material-style icon names agents tend to\nemit; anything else converts camelCase to kebab-case as is."
+        },
+        {
+          "name": "ID",
+          "value": "\"https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json\"",
+          "docstring": "The catalog id agents name in `createSurface`."
+        },
+        {
+          "name": "IMAGE_VARIANTS",
+          "value": "{ \"icon\" => \"size-6\", \"avatar\" => \"size-10 rounded-full\",\n\"smallFeature\" => \"w-full max-w-32\", \"mediumFeature\" => \"w-full max-w-sm\",\n\"largeFeature\" => \"w-full max-w-2xl\", \"header\" => \"w-full\" }.freeze",
+          "docstring": "Sizing classes by the Image `variant` values."
+        },
+        {
+          "name": "INPUT_KINDS",
+          "value": "{ \"TextField\" => :string, \"CheckBox\" => :boolean, \"Slider\" => :number,\n\"ChoicePicker\" => :string_list, \"DateTimeInput\" => :string }.freeze",
+          "docstring": "The bound kinds of the input components."
+        },
+        {
+          "name": "JUSTIFY",
+          "value": "{ \"start\" => \"justify-start\", \"center\" => \"justify-center\", \"end\" => \"justify-end\",\n\"spaceBetween\" => \"justify-between\", \"spaceAround\" => \"justify-around\",\n\"spaceEvenly\" => \"justify-evenly\", \"stretch\"",
+          "docstring": "Main-axis alignment classes by the catalog's `justify` values."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Catalogs::Basic::Choice",
+      "type": "class",
+      "superclass": "Struct",
+      "docstring": "A ChoicePicker's resolved options, binding, selection, and label.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
+      "methods": [
+        {
+          "name": "label",
+          "scope": "instance",
+          "group": null,
+          "signature": "label",
+          "docstring": "Returns the value of attribute label",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of label"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
+          "line": 49
+        },
+        {
+          "name": "label=",
+          "scope": "instance",
+          "group": null,
+          "signature": "label=(value)",
+          "docstring": "Sets the attribute label",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute label to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
+          "line": 49
+        },
+        {
+          "name": "options",
+          "scope": "instance",
+          "group": null,
+          "signature": "options",
+          "docstring": "Returns the value of attribute options",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of options"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
+          "line": 49
+        },
+        {
+          "name": "options=",
+          "scope": "instance",
+          "group": null,
+          "signature": "options=(value)",
+          "docstring": "Sets the attribute options",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute options to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
+          "line": 49
+        },
+        {
+          "name": "path",
+          "scope": "instance",
+          "group": null,
+          "signature": "path",
+          "docstring": "Returns the value of attribute path",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of path"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
+          "line": 49
+        },
+        {
+          "name": "path=",
+          "scope": "instance",
+          "group": null,
+          "signature": "path=(value)",
+          "docstring": "Sets the attribute path",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute path to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
+          "line": 49
+        },
+        {
+          "name": "selected",
+          "scope": "instance",
+          "group": null,
+          "signature": "selected",
+          "docstring": "Returns the value of attribute selected",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of selected"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
+          "line": 49
+        },
+        {
+          "name": "selected=",
+          "scope": "instance",
+          "group": null,
+          "signature": "selected=(value)",
+          "docstring": "Sets the attribute selected",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute selected to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/basic.rb",
+          "line": 49
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Catalogs::Native",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "Poetry's own catalog (the {Catalog} projection) rendered back\nthrough the registry: a component name resolves to its registry\nentry, style axes and options become constructor keywords, slot\nproperties drive the generated slot setters, `text` is the\ncontent block, `children` and `child` nest, and a bound `value`\nnames the control for the surface form. The registry is the one\nsource: whatever it declares renders, nothing is hand-mapped.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/catalogs/native.rb",
+      "methods": [
+        {
+          "name": "by_name",
+          "scope": "instance",
+          "group": null,
+          "signature": "by_name",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => Array(String, Hash)}"
+            ],
+            "text": "`[path, entry]` by component name"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/native.rb",
+          "line": 46
+        },
+        {
+          "name": "entries",
+          "scope": "instance",
+          "group": null,
+          "signature": "entries",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => Hash}"
+            ],
+            "text": "registry entries by path"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/native.rb",
+          "line": 41
+        },
+        {
+          "name": "functions",
+          "scope": "instance",
+          "group": null,
+          "signature": "functions",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Functions"
+            ],
+            "text": "the function set Poetry's catalog declares (the basic one)"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/native.rb",
+          "line": 36
+        },
+        {
+          "name": "id",
+          "scope": "instance",
+          "group": null,
+          "signature": "id",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/native.rb",
+          "line": 25
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(entries: nil, id: Catalog::DEFAULT_ID)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "entries",
+              "types": [
+                "Hash{String => Hash}",
+                "nil"
+              ],
+              "text": "registry entries by path\n(the poetry-ui registry when nil)"
+            },
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": "the catalog id this binding answers to"
+            }
+          ],
+          "return": {
+            "types": [
+              "Native"
+            ],
+            "text": "a new instance of Native"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/native.rb",
+          "line": 30
+        },
+        {
+          "name": "inputs",
+          "scope": "instance",
+          "group": null,
+          "signature": "inputs(component, scope)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "component",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": "`{ path:, kind: }` for each bound option"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/native.rb",
+          "line": 64
+        },
+        {
+          "name": "references",
+          "scope": "instance",
+          "group": null,
+          "signature": "references(component)",
+          "docstring": "The child references: `child`, `children`, and every slot property.",
+          "params": [
+            {
+              "name": "component",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Object>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/native.rb",
+          "line": 54
+        },
+        {
+          "name": "render",
+          "scope": "instance",
+          "group": null,
+          "signature": "render(component, scope, renderer)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "component",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            },
+            {
+              "name": "renderer",
+              "types": [
+                "Renderer"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "HTML"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/catalogs/native.rb",
+          "line": 83
+        }
+      ],
+      "constants": [
+        {
+          "name": "BOUND_OPTIONS",
+          "value": "%w[value checked values].freeze",
+          "docstring": "The bound options an input component may carry."
+        },
+        {
+          "name": "KINDS",
+          "value": "{ \"boolean\" => :boolean, \"checked_state\" => :boolean, \"integer\" => :number, \"number\" => :number,\n\"float\" => :number, \"list\" => :string_list }.freeze",
+          "docstring": "Registry option types by bound kind."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Checks",
+      "type": "module",
+      "superclass": null,
+      "docstring": "Evaluates a component's `checks`: each rule's condition (a binding\nor a function call) yields a ValidationResult - `{ \"valid\",\n\"code\", \"message\", \"severity\" }` - or a boolean; a failing rule\nof error severity is a failure, carrying the result's message or\nthe rule's fallback.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/checks.rb",
+      "methods": [
+        {
+          "name": "failures",
+          "scope": "class",
+          "group": null,
+          "signature": "failures(component, evaluator)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "component",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            },
+            {
+              "name": "evaluator",
+              "types": [
+                "Evaluator"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": "failures as `{ code:, message:, severity: }`"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/checks.rb",
+          "line": 22
+        }
+      ],
+      "constants": [
+        {
+          "name": "DEFAULT_MESSAGE",
+          "value": "\"Check failed\"",
+          "docstring": "The message when neither the result nor the rule carries one."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Evaluator",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "Resolves dynamic values in a scope: a `{ \"path\" }` binding reads\nthe data model, a `{ \"call\", \"args\" }` invokes a registered\nfunction with its arguments resolved first (a string argument with\n`${}` blocks interpolates, an array resolves item by item), and\n`@index` reads the collection index the scope carries. Problems\n(an unknown function, a bad argument, a malformed expression)\nresolve to nil and reach the `on_error` callback.",
+      "examples": [
+        {
+          "title": "",
+          "text": "Evaluator.new(surface, \"/items/2\").resolve({ \"call\" => \"@index\", \"args\" => { \"offset\" => 1 } }) # => 3"
+        }
+      ],
+      "file": "lib/poetry/agent/a2ui/evaluator.rb",
+      "methods": [
+        {
+          "name": "argument",
+          "scope": "instance",
+          "group": null,
+          "signature": "argument(value)",
+          "docstring": "Resolves a function argument: like {#resolve}, plus strings\ninterpolate and arrays and plain objects resolve inside.",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Object",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/evaluator.rb",
+          "line": 53
+        },
+        {
+          "name": "call",
+          "scope": "instance",
+          "group": null,
+          "signature": "call(name, args, resolved: false)",
+          "docstring": "Calls a function by name.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "args",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "raw arguments (resolved here unless `resolved:`)"
+            },
+            {
+              "name": "resolved",
+              "types": [
+                "Boolean"
+              ],
+              "text": "whether the arguments are already resolved"
+            }
+          ],
+          "return": {
+            "types": [
+              "Object",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/evaluator.rb",
+          "line": 71
+        },
+        {
+          "name": "evaluate",
+          "scope": "instance",
+          "group": null,
+          "signature": "evaluate(node)",
+          "docstring": "Evaluates a parsed expression node.",
+          "params": [
+            {
+              "name": "node",
+              "types": [
+                "Array"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Object",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/evaluator.rb",
+          "line": 95
+        },
+        {
+          "name": "index",
+          "scope": "instance",
+          "group": null,
+          "signature": "index",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer",
+              "nil"
+            ],
+            "text": "the collection index the scope carries"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/evaluator.rb",
+          "line": 119
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(surface, scope = nil, on_error: nil)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "surface",
+              "types": [
+                "Surface"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            },
+            {
+              "name": "on_error",
+              "types": [
+                "#call",
+                "nil"
+              ],
+              "text": "receives each problem's message"
+            }
+          ],
+          "return": {
+            "types": [
+              "Evaluator"
+            ],
+            "text": "a new instance of Evaluator"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/evaluator.rb",
+          "line": 29
+        },
+        {
+          "name": "interpolate",
+          "scope": "instance",
+          "group": null,
+          "signature": "interpolate(text)",
+          "docstring": "Interpolates a `formatString` template.",
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/evaluator.rb",
+          "line": 84
+        },
+        {
+          "name": "resolve",
+          "scope": "instance",
+          "group": null,
+          "signature": "resolve(value)",
+          "docstring": "Resolves a component property: bindings and calls resolve,\neverything else is a literal.",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Object",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/evaluator.rb",
+          "line": 40
+        },
+        {
+          "name": "scope",
+          "scope": "instance",
+          "group": null,
+          "signature": "scope",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": "the collection-item pointer in effect"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/evaluator.rb",
+          "line": 24
+        },
+        {
+          "name": "stringify",
+          "scope": "instance",
+          "group": null,
+          "signature": "stringify(value)",
+          "docstring": "The string a value displays as (the spec's conversion rules: nil\nis empty, containers are JSON, whole floats drop their fraction).",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/evaluator.rb",
+          "line": 109
+        },
+        {
+          "name": "surface",
+          "scope": "instance",
+          "group": null,
+          "signature": "surface",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Surface"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/evaluator.rb",
+          "line": 22
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Expression",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The `formatString` grammar: literal text with `${...}` blocks, each\nblock a data path, a literal, or a function call with named\narguments whose values are expressions again (a bare argument is\n`value`); `\\${` is a literal `${`. Parsing yields a plain tree the\n{Evaluator} walks:\n\n  [:template, nodes]           the whole string\n  [:text, \"literal text\"]\n  [:path, \"/absolute\"]         or a relative path\n  [:literal, 12] / [:literal, \"quoted\"] / [:literal, true]\n  [:call, \"formatDate\", { \"value\" => node, \"format\" => node }]",
+      "examples": [
+        {
+          "title": "",
+          "text": "Expression.parse(\"Hi ${/user/name}, ${formatNumber(value: ${/n}, decimals: 1)}\")"
+        }
+      ],
+      "file": "lib/poetry/agent/a2ui/expression.rb",
+      "methods": [
+        {
+          "name": "dynamic?",
+          "scope": "class",
+          "group": null,
+          "signature": "dynamic?(text)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "whether the text carries an interpolation block"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/expression.rb",
+          "line": 44
+        },
+        {
+          "name": "parse",
+          "scope": "class",
+          "group": null,
+          "signature": "parse(text)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array"
+            ],
+            "text": "the `[:template, nodes]` tree"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/expression.rb",
+          "line": 38
+        }
+      ],
+      "constants": [
+        {
+          "name": "IDENT",
+          "value": "/[A-Za-z_@][A-Za-z0-9_]*/",
+          "docstring": "Identifier: function names, argument names, relative path heads."
+        },
+        {
+          "name": "KEYWORDS",
+          "value": "{ \"true\" => true, \"false\" => false, \"null\" => nil }.freeze",
+          "docstring": "Keyword literals."
+        },
+        {
+          "name": "MAX_DEPTH",
+          "value": "32",
+          "docstring": "Nesting depth beyond which an expression is refused."
+        },
+        {
+          "name": "NUMBER",
+          "value": "%r{-?\\d+(?:\\.\\d+)?(?![\\w/])}",
+          "docstring": "A number literal not followed by a path or identifier character."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Expression::Parser",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The recursive-descent parser.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/expression.rb",
+      "methods": [
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(source)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "source",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Parser"
+            ],
+            "text": "a new instance of Parser"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/expression.rb",
+          "line": 51
+        },
+        {
+          "name": "template",
+          "scope": "instance",
+          "group": null,
+          "signature": "template",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Array"
+            ],
+            "text": "the `[:template, nodes]` tree"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/expression.rb",
+          "line": 58
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Expression::SyntaxError",
+      "type": "class",
+      "superclass": "StandardError",
+      "docstring": "A malformed expression.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/expression.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Functions",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The renderer's function registry: named functions an agent may\nreference in a component's dynamic values and checks, each with the\ndeclaration a catalog document publishes (`functions` and\n`$defs.anyFunction`). {Functions.basic} holds the spec's basic\ncatalog set - the validators, the formatters, the boolean\ncombinators, `openUrl` - implemented from their descriptions;\n`@index` is the evaluator's own system function.",
+      "examples": [
+        {
+          "title": "",
+          "text": "Functions.basic.call(\"pluralize\", { \"value\" => 2, \"one\" => \"item\", \"other\" => \"items\" }, evaluator)\n# => \"items\""
+        }
+      ],
+      "file": "lib/poetry/agent/a2ui/functions.rb",
+      "methods": [
+        {
+          "name": "basic",
+          "scope": "class",
+          "group": null,
+          "signature": "basic",
+          "docstring": "The basic catalog's functions.",
+          "params": [],
+          "return": {
+            "types": [
+              "Functions"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 51
+        },
+        {
+          "name": "number",
+          "scope": "class",
+          "group": null,
+          "signature": "number(value)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Numeric",
+              "nil"
+            ],
+            "text": "the value as a number, when it is one"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 71
+        },
+        {
+          "name": "truthy?",
+          "scope": "class",
+          "group": null,
+          "signature": "truthy?(value)",
+          "docstring": "The boolean reading of a value: a ValidationResult by its\n`valid`, strings by content, nil and false as false.",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 60
+        },
+        {
+          "name": "agent_callable?",
+          "scope": "instance",
+          "group": null,
+          "signature": "agent_callable?(name)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "whether an agent may invoke the function through `callRendererFunction`"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 111
+        },
+        {
+          "name": "any_function",
+          "scope": "instance",
+          "group": null,
+          "signature": "any_function",
+          "docstring": "The catalog document's `$defs.anyFunction`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 162
+        },
+        {
+          "name": "call",
+          "scope": "instance",
+          "group": null,
+          "signature": "call(name, args, evaluator)",
+          "docstring": "Calls a function with resolved arguments.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "args",
+              "types": [
+                "Hash{String => Object}"
+              ],
+              "text": ""
+            },
+            {
+              "name": "evaluator",
+              "types": [
+                "Evaluator"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 134
+        },
+        {
+          "name": "declared?",
+          "scope": "instance",
+          "group": null,
+          "signature": "declared?(name)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 123
+        },
+        {
+          "name": "define",
+          "scope": "instance",
+          "group": null,
+          "signature": "define(name, description:, returns:, params: {}, required: [], activation: false, # rubocop:disable Metrics/ParameterLists callers: \"rendererOnly\", &impl)",
+          "docstring": "Declares a function.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "description",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "returns",
+              "types": [
+                "String"
+              ],
+              "text": "the spec's `returnType`"
+            },
+            {
+              "name": "params",
+              "types": [
+                "Hash{String => Hash}"
+              ],
+              "text": "argument schemas by name"
+            },
+            {
+              "name": "required",
+              "types": [
+                "Array<String>"
+              ],
+              "text": "required argument names"
+            },
+            {
+              "name": "activation",
+              "types": [
+                "Boolean"
+              ],
+              "text": "whether the call needs a user activation"
+            },
+            {
+              "name": "callers",
+              "types": [
+                "String"
+              ],
+              "text": "the execution boundary (`rendererOnly` - the default - keeps the\nfunction out of an agent's `callRendererFunction`; `agentOnly` / `rendererOrAgent` admit it)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Functions"
+            ],
+            "text": "self"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 100
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Functions"
+            ],
+            "text": "a new instance of Functions"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 82
+        },
+        {
+          "name": "names",
+          "scope": "instance",
+          "group": null,
+          "signature": "names",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": "the declared names"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 117
+        },
+        {
+          "name": "schema",
+          "scope": "instance",
+          "group": null,
+          "signature": "schema",
+          "docstring": "The catalog document's `functions` section.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => Hash}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 145
+        }
+      ],
+      "constants": [
+        {
+          "name": "CALLERS",
+          "value": "%w[rendererOnly agentOnly rendererOrAgent].freeze",
+          "docstring": "The spec's execution boundaries: who may invoke a function."
+        },
+        {
+          "name": "CURRENCIES",
+          "value": "{ \"USD\" => [\"$\", 2], \"EUR\" => [\"€\", 2], \"GBP\" => [\"£\", 2], \"JPY\" => [\"¥\", 0],\n\"CNY\" => [\"CN¥\", 2], \"INR\" => [\"₹\", 2], \"KRW\" => [\"₩\", 0], \"BRL\" => [\"R$\", 2],\n\"CAD\" => [\"CA$\", 2], \"AUD\" => [\"A$\", 2], \"M",
+          "docstring": "Currency symbols (and fraction digits) by ISO 4217 code; other\ncodes render as a code prefix."
+        },
+        {
+          "name": "DATE_FIELDS",
+          "value": "{ \"yyyy\" => \"%Y\", \"yy\" => \"%y\", \"y\" => \"%Y\", \"MMMM\" => \"%B\", \"MMM\" => \"%b\", \"MM\" => \"%m\",\n\"M\" => \"%-m\", \"dd\" => \"%d\", \"d\" => \"%-d\", \"EEEE\" => \"%A\", \"EEE\" => \"%a\", \"EE\" => \"%a\",\n\"E\" => \"%a\", \"HH\" => \"%",
+          "docstring": "Unicode TR35 date-pattern fields to strftime."
+        },
+        {
+          "name": "EMAIL",
+          "value": "/\\A[^\\s@]+@[^\\s@]+\\.[^\\s@]+\\z/",
+          "docstring": "The email shape the basic catalog names."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Functions::Basic",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The basic catalog's set, from the spec's descriptions.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/functions.rb",
+      "methods": [
+        {
+          "name": "install",
+          "scope": "class",
+          "group": null,
+          "signature": "install(registry)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "registry",
+              "types": [
+                "Functions"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 197
+        },
+        {
+          "name": "list",
+          "scope": "class",
+          "group": null,
+          "signature": "list",
+          "docstring": "A boolean list argument (`and`, `or`).",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 190
+        }
+      ],
+      "constants": [
+        {
+          "name": "CHECKED",
+          "value": "{ \"value\" => { \"description\" => \"The value to check.\" } }.freeze",
+          "docstring": "The argument every validator checks."
+        },
+        {
+          "name": "DYNAMIC",
+          "value": "lambda { |kind, description|\n  { \"$ref\" => \"#{COMMON_TYPES}Dynamic#{kind}\", \"description\" => description }\n}",
+          "docstring": "A parameter schema referencing one of the common dynamic types."
+        },
+        {
+          "name": "PLURAL_CATEGORIES",
+          "value": "%w[zero one two few many other].freeze",
+          "docstring": "The CLDR plural categories `pluralize` selects among."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Functions::Definition",
+      "type": "class",
+      "superclass": "Struct",
+      "docstring": "One declared function.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/functions.rb",
+      "methods": [
+        {
+          "name": "activation",
+          "scope": "instance",
+          "group": null,
+          "signature": "activation",
+          "docstring": "Returns the value of attribute activation",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of activation"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 28
+        },
+        {
+          "name": "activation=",
+          "scope": "instance",
+          "group": null,
+          "signature": "activation=(value)",
+          "docstring": "Sets the attribute activation",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute activation to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 28
+        },
+        {
+          "name": "callers",
+          "scope": "instance",
+          "group": null,
+          "signature": "callers",
+          "docstring": "Returns the value of attribute callers",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of callers"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 28
+        },
+        {
+          "name": "callers=",
+          "scope": "instance",
+          "group": null,
+          "signature": "callers=(value)",
+          "docstring": "Sets the attribute callers",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute callers to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 28
+        },
+        {
+          "name": "description",
+          "scope": "instance",
+          "group": null,
+          "signature": "description",
+          "docstring": "Returns the value of attribute description",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of description"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 28
+        },
+        {
+          "name": "description=",
+          "scope": "instance",
+          "group": null,
+          "signature": "description=(value)",
+          "docstring": "Sets the attribute description",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute description to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 28
+        },
+        {
+          "name": "impl",
+          "scope": "instance",
+          "group": null,
+          "signature": "impl",
+          "docstring": "Returns the value of attribute impl",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of impl"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 28
+        },
+        {
+          "name": "impl=",
+          "scope": "instance",
+          "group": null,
+          "signature": "impl=(value)",
+          "docstring": "Sets the attribute impl",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute impl to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 28
+        },
+        {
+          "name": "name",
+          "scope": "instance",
+          "group": null,
+          "signature": "name",
+          "docstring": "Returns the value of attribute name",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of name"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 28
+        },
+        {
+          "name": "name=",
+          "scope": "instance",
+          "group": null,
+          "signature": "name=(value)",
+          "docstring": "Sets the attribute name",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute name to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 28
+        },
+        {
+          "name": "params",
+          "scope": "instance",
+          "group": null,
+          "signature": "params",
+          "docstring": "Returns the value of attribute params",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of params"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 28
+        },
+        {
+          "name": "params=",
+          "scope": "instance",
+          "group": null,
+          "signature": "params=(value)",
+          "docstring": "Sets the attribute params",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute params to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 28
+        },
+        {
+          "name": "required",
+          "scope": "instance",
+          "group": null,
+          "signature": "required",
+          "docstring": "Returns the value of attribute required",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of required"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 28
+        },
+        {
+          "name": "required=",
+          "scope": "instance",
+          "group": null,
+          "signature": "required=(value)",
+          "docstring": "Sets the attribute required",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute required to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 28
+        },
+        {
+          "name": "returns",
+          "scope": "instance",
+          "group": null,
+          "signature": "returns",
+          "docstring": "Returns the value of attribute returns",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of returns"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 28
+        },
+        {
+          "name": "returns=",
+          "scope": "instance",
+          "group": null,
+          "signature": "returns=(value)",
+          "docstring": "Sets the attribute returns",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute returns to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/functions.rb",
+          "line": 28
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Functions::Error",
+      "type": "class",
+      "superclass": "StandardError",
+      "docstring": "A missing function or a bad argument list.",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/functions.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Markdown",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The Markdown subset an A2UI Text component needs, rendered without\na Markdown dependency: ATX headings, paragraphs, bullet lists,\nemphasis, strong, inline code, and links. Input is escaped first,\nso agent text never reaches the page as markup.",
+      "examples": [
+        {
+          "title": "",
+          "text": "Markdown.render(\"## Login\\nWelcome **back**\") # => \"<h2>Login</h2><p>Welcome <strong>back</strong></p>\""
+        }
+      ],
+      "file": "lib/poetry/agent/a2ui/markdown.rb",
+      "methods": [
+        {
+          "name": "render",
+          "scope": "class",
+          "group": null,
+          "signature": "render(text)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "HTML (unmarked; wrap in `html_safe` at the render site)"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/markdown.rb",
+          "line": 20
+        },
+        {
+          "name": "strip",
+          "scope": "class",
+          "group": null,
+          "signature": "strip(text)",
+          "docstring": "Strips the same markers instead of rendering them - the\nfallback the basic catalog guide asks for when markup is unwanted.",
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "plain text"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/markdown.rb",
+          "line": 29
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Pointer",
+      "type": "module",
+      "superclass": null,
+      "docstring": "JSON Pointer (RFC 6901) over plain Ruby documents, with A2UI's two\nextensions: relative paths (no leading slash) resolve against a\ncollection scope, and an upsert writes through missing objects.",
+      "examples": [
+        {
+          "title": "",
+          "text": "Pointer.get({ \"user\" => { \"name\" => \"Ada\" } }, \"/user/name\") # => \"Ada\"\nPointer.absolute(\"name\", \"/users/1\")                       # => \"/users/1/name\""
+        }
+      ],
+      "file": "lib/poetry/agent/a2ui/pointer.rb",
+      "methods": [
+        {
+          "name": "absolute",
+          "scope": "class",
+          "group": null,
+          "signature": "absolute(path, scope = nil)",
+          "docstring": "Resolves a path against a scope: absolute paths pass through,\nrelative ones append to the scope (the root when no scope).",
+          "params": [
+            {
+              "name": "path",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the collection-item pointer in effect"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "an absolute pointer"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/pointer.rb",
+          "line": 44
+        },
+        {
+          "name": "build",
+          "scope": "class",
+          "group": null,
+          "signature": "build(parts)",
+          "docstring": "Joins tokens back into a pointer.",
+          "params": [
+            {
+              "name": "parts",
+              "types": [
+                "Array<String>"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/pointer.rb",
+          "line": 32
+        },
+        {
+          "name": "get",
+          "scope": "class",
+          "group": null,
+          "signature": "get(document, path)",
+          "docstring": "Reads the value at a pointer; nil for any missing step.",
+          "params": [
+            {
+              "name": "document",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            },
+            {
+              "name": "path",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Object",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/pointer.rb",
+          "line": 57
+        },
+        {
+          "name": "tokens",
+          "scope": "class",
+          "group": null,
+          "signature": "tokens(path)",
+          "docstring": "Splits a pointer into unescaped reference tokens; `\"\"` and `\"/\"`\nboth name the whole document.",
+          "params": [
+            {
+              "name": "path",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/pointer.rb",
+          "line": 21
+        },
+        {
+          "name": "upsert",
+          "scope": "class",
+          "group": null,
+          "signature": "upsert(document, path, value)",
+          "docstring": "Writes a value at a pointer (A2UI upsert semantics): missing\nobjects are created along the way, a nil value removes the key,\nand the whole-document pointer replaces the document.",
+          "params": [
+            {
+              "name": "document",
+              "types": [
+                "Hash",
+                "Array",
+                "nil"
+              ],
+              "text": ""
+            },
+            {
+              "name": "path",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "value",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the updated document"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/pointer.rb",
+          "line": 74
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Renderer",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "Renders one {Surface} to HTML through the host's view context,\ndispatching each component to the surface's catalog binding. The\nsurface becomes a form when an `action_url` is given: bound inputs\nare named by their absolute data-model pointer and every agent\naction is a submit button, so a user action posts the surface's\ncurrent inputs plus the source component - the spec's \"inputs sync\nonly on an action\" contract, in Hotwire's native shape. The\nwrapper carries the surface's version for the versioned Turbo\nStream replace.\n\nRendering never raises for an agent's mistake: an unknown\ncomponent, a dangling reference, a component the library refuses\nto build, or an unsupported function renders nothing and lands in\n{#warnings}.",
+      "examples": [
+        {
+          "title": "",
+          "text": "renderer = Renderer.new(surface, view: view_context, action_url: \"/a2ui/action\")\nhtml = renderer.call\nrenderer.warnings # => []"
+        }
+      ],
+      "file": "lib/poetry/agent/a2ui/renderer.rb",
+      "methods": [
+        {
+          "name": "element_id",
+          "scope": "class",
+          "group": null,
+          "signature": "element_id(surface_or_id)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "surface_or_id",
+              "types": [
+                "Surface",
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the DOM id of the surface's wrapper"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 58
+        },
+        {
+          "name": "action_url",
+          "scope": "instance",
+          "group": null,
+          "signature": "action_url",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 50
+        },
+        {
+          "name": "aria_label",
+          "scope": "instance",
+          "group": null,
+          "signature": "aria_label(component, scope = nil)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "component",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": "the component's accessibility label"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 212
+        },
+        {
+          "name": "blank",
+          "scope": "instance",
+          "group": null,
+          "signature": "blank",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "an empty html_safe string"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 227
+        },
+        {
+          "name": "call",
+          "scope": "instance",
+          "group": null,
+          "signature": "call",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the surface's HTML (html_safe)"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 79
+        },
+        {
+          "name": "call_function",
+          "scope": "instance",
+          "group": null,
+          "signature": "call_function(name, args, scope = nil)",
+          "docstring": "Calls a catalog function; a problem warns and returns nil.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "args",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Object",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 171
+        },
+        {
+          "name": "component",
+          "scope": "instance",
+          "group": null,
+          "signature": "component(klass, attributes = {}, suffix: nil, **keywords, &)",
+          "docstring": "Builds and renders a library component. Every instance gets a\nrender-stable `key:` (the surface, the component, its scope, and\na suffix for repeated instances), so Turbo morph pairs the same\nlogical element across updates and local state survives.",
+          "params": [
+            {
+              "name": "klass",
+              "types": [
+                "Class"
+              ],
+              "text": "the component class"
+            },
+            {
+              "name": "attributes",
+              "types": [
+                "Hash"
+              ],
+              "text": "constructor keywords"
+            },
+            {
+              "name": "suffix",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "distinguishes several instances of one class for one component"
+            },
+            {
+              "name": "keywords",
+              "types": [
+                "Hash"
+              ],
+              "text": "constructor keywords given keyword-style (merged into `attributes`)"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 134
+        },
+        {
+          "name": "control_id",
+          "scope": "instance",
+          "group": null,
+          "signature": "control_id(component, scope = nil)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "component",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "a DOM id for the component's control"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 193
+        },
+        {
+          "name": "current_key",
+          "scope": "instance",
+          "group": null,
+          "signature": "current_key",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": "the key of the component being rendered (`id`, or `id@scope`)"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 147
+        },
+        {
+          "name": "error_for",
+          "scope": "instance",
+          "group": null,
+          "signature": "error_for(component, scope = nil)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "component",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": "the first check failure message for the component"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 178
+        },
+        {
+          "name": "errors",
+          "scope": "instance",
+          "group": null,
+          "signature": "errors",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => Array<Hash>}"
+            ],
+            "text": "check failures by component key (see {Surface#failures})"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 54
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(surface, view:, action_url: nil, html: {}, errors: {})",
+          "docstring": "",
+          "params": [
+            {
+              "name": "surface",
+              "types": [
+                "Surface"
+              ],
+              "text": ""
+            },
+            {
+              "name": "view",
+              "types": [
+                "Object"
+              ],
+              "text": "an ActionView context (`view_context`)"
+            },
+            {
+              "name": "action_url",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "where actions post; nil renders a plain container"
+            },
+            {
+              "name": "html",
+              "types": [
+                "Hash"
+              ],
+              "text": "extra attributes for the wrapper (`class:` etc.)"
+            },
+            {
+              "name": "errors",
+              "types": [
+                "Hash{String => Array<Hash>}"
+              ],
+              "text": "check failures to show, by\ncomponent key (a rejected action's `errors`)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Renderer"
+            ],
+            "text": "a new instance of Renderer"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 69
+        },
+        {
+          "name": "input_name",
+          "scope": "instance",
+          "group": null,
+          "signature": "input_name(path, scope = nil)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "path",
+              "types": [
+                "String"
+              ],
+              "text": "a bound pointer"
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the input's form name"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 186
+        },
+        {
+          "name": "markdown",
+          "scope": "instance",
+          "group": null,
+          "signature": "markdown(text)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the Markdown subset rendered (html_safe)"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 222
+        },
+        {
+          "name": "render_children",
+          "scope": "instance",
+          "group": null,
+          "signature": "render_children(reference, scope = nil)",
+          "docstring": "Renders a child reference (an id, an id list, or a template).",
+          "params": [
+            {
+              "name": "reference",
+              "types": [
+                "String",
+                "Array<String>",
+                "Hash",
+                "nil"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 119
+        },
+        {
+          "name": "render_component",
+          "scope": "instance",
+          "group": null,
+          "signature": "render_component(component_id, scope = nil)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "component_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the component's HTML (empty when it cannot render)"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 101
+        },
+        {
+          "name": "resolve",
+          "scope": "instance",
+          "group": null,
+          "signature": "resolve(value, scope = nil)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Object",
+              "nil"
+            ],
+            "text": "the resolved dynamic value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 161
+        },
+        {
+          "name": "stable_key",
+          "scope": "instance",
+          "group": null,
+          "signature": "stable_key(suffix = nil)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "suffix",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the render-stable key of the component being rendered"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 142
+        },
+        {
+          "name": "submit_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "submit_attributes(component, scope = nil)",
+          "docstring": "The attributes that make a button an agent action.",
+          "params": [
+            {
+              "name": "component",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 203
+        },
+        {
+          "name": "surface",
+          "scope": "instance",
+          "group": null,
+          "signature": "surface",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Surface"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 46
+        },
+        {
+          "name": "text",
+          "scope": "instance",
+          "group": null,
+          "signature": "text(value, scope = nil)",
+          "docstring": "The display string of a dynamic value; a function problem warns.",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 154
+        },
+        {
+          "name": "view",
+          "scope": "instance",
+          "group": null,
+          "signature": "view",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the view context"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 48
+        },
+        {
+          "name": "warn",
+          "scope": "instance",
+          "group": null,
+          "signature": "warn(message)",
+          "docstring": "Records a problem and renders nothing for it.",
+          "params": [
+            {
+              "name": "message",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "an empty html_safe string"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 235
+        },
+        {
+          "name": "warnings",
+          "scope": "instance",
+          "group": null,
+          "signature": "warnings",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": "what could not be rendered, in render order"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/renderer.rb",
+          "line": 52
+        }
+      ],
+      "constants": [
+        {
+          "name": "ACTION_PARAM",
+          "value": "\"a2ui[action]\"",
+          "docstring": "The parameter carrying the source component of the action."
+        },
+        {
+          "name": "COMPONENT_ERRORS",
+          "value": "[ArgumentError, NameError].freeze",
+          "docstring": "The errors an agent-authored component may provoke in the library."
+        },
+        {
+          "name": "ELEMENT_PREFIX",
+          "value": "\"a2ui-\"",
+          "docstring": "The DOM id prefix of a rendered surface."
+        },
+        {
+          "name": "EVALUATE_ACTIONS",
+          "value": "\"input->#{SURFACE_CONTROLLER}#evaluate change->#{SURFACE_CONTROLLER}#evaluate\".freeze",
+          "docstring": "The form events that re-run the checks."
+        },
+        {
+          "name": "SURFACE_CONTROLLER",
+          "value": "\"poetry--agent--a2ui-surface\"",
+          "docstring": "The Stimulus controller that runs a surface's checks as the user types."
+        },
+        {
+          "name": "SURFACE_PARAM",
+          "value": "\"a2ui[surface]\"",
+          "docstring": "The parameter carrying the surface id."
+        },
+        {
+          "name": "VALUES_PARAM",
+          "value": "\"a2ui[values]\"",
+          "docstring": "The parameter carrying the bound values, keyed by absolute pointer."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Session",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The renderer-side consumer of the A2UI envelope: applies\n`createSurface`, `updateComponents`, `updateDataModel`, and\n`deleteSurface` to a set of {Surface}s, answers what it cannot\nhonor with renderer-to-agent error messages, and turns a\nsubmitted form into the spec's `action` message.",
+      "examples": [
+        {
+          "title": "Fold a stream of messages and read back the surfaces",
+          "text": "session = Session.new\nsession.apply_all(messages)  # => [\"login\"]\nsession.surfaces[\"login\"].data\nsession.errors               # => [] or renderer-to-agent error messages"
+        }
+      ],
+      "file": "lib/poetry/agent/a2ui/session.rb",
+      "methods": [
+        {
+          "name": "action",
+          "scope": "instance",
+          "group": null,
+          "signature": "action(surface_id:, source:, values: {}, timestamp: Time.now.utc)",
+          "docstring": "Turns a submitted surface form into the agent's `action`\nmessage: bound input values are written to the data model first\n(two-way binding syncs on an action), then the source\ncomponent's event context resolves against the updated model.\nReturns nil when the source has no agent event (a local action,\nor an unknown component), and an invalid action - no message,\n`errors` by component key - when a `checks` rule fails.",
+          "params": [
+            {
+              "name": "surface_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "source",
+              "types": [
+                "String"
+              ],
+              "text": "the submit button's value (`id` or `id@scope`)"
+            },
+            {
+              "name": "values",
+              "types": [
+                "Hash{String => Object}"
+              ],
+              "text": "submitted values by absolute pointer"
+            },
+            {
+              "name": "timestamp",
+              "types": [
+                "Time"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Action",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 131
+        },
+        {
+          "name": "apply",
+          "scope": "instance",
+          "group": null,
+          "signature": "apply(message)",
+          "docstring": "Applies one envelope message. Returns the ids of the surfaces\nit changed (a deleted surface counts); problems are recorded in\n{#errors} and return no ids.",
+          "params": [
+            {
+              "name": "message",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 80
+        },
+        {
+          "name": "apply_activity",
+          "scope": "instance",
+          "group": null,
+          "signature": "apply_activity(content)",
+          "docstring": "Applies the A2UI messages an AG-UI `a2ui-surface` activity\ncarries (an `a2ui_operations`, `messages`, or `operations` list,\nor one bare message).",
+          "params": [
+            {
+              "name": "content",
+              "types": [
+                "Hash",
+                "Array"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": "the changed surface ids"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 102
+        },
+        {
+          "name": "apply_all",
+          "scope": "instance",
+          "group": null,
+          "signature": "apply_all(messages)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "messages",
+              "types": [
+                "Array<Hash>"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": "the changed surface ids, deduplicated"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 92
+        },
+        {
+          "name": "catalog_for",
+          "scope": "instance",
+          "group": null,
+          "signature": "catalog_for(catalog_id)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "catalog_id",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the catalog binding for an id (the default when unknown)"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 153
+        },
+        {
+          "name": "catalogs",
+          "scope": "instance",
+          "group": null,
+          "signature": "catalogs",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => Object}"
+            ],
+            "text": "catalog bindings by catalog id"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 60
+        },
+        {
+          "name": "deleted",
+          "scope": "instance",
+          "group": null,
+          "signature": "deleted",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": "ids of deleted surfaces, in order"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 56
+        },
+        {
+          "name": "errors",
+          "scope": "instance",
+          "group": null,
+          "signature": "errors",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": "renderer-to-agent error messages, in order"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 54
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(catalogs: A2UI.catalogs, default_catalog: nil)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "catalogs",
+              "types": [
+                "Hash{String => Object}"
+              ],
+              "text": "catalog bindings by id"
+            },
+            {
+              "name": "default_catalog",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": "the binding for unknown catalog ids\n(Poetry's own when nil)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Session"
+            ],
+            "text": "a new instance of Session"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 65
+        },
+        {
+          "name": "responses",
+          "scope": "instance",
+          "group": null,
+          "signature": "responses",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": "renderer-to-agent `rendererFunctionResponse` messages, in order"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 58
+        },
+        {
+          "name": "surface",
+          "scope": "instance",
+          "group": null,
+          "signature": "surface(surface_id)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "surface_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Surface",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 114
+        },
+        {
+          "name": "surfaces",
+          "scope": "instance",
+          "group": null,
+          "signature": "surfaces",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => Surface}"
+            ],
+            "text": "live surfaces by id"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 52
+        }
+      ],
+      "constants": [
+        {
+          "name": "MESSAGE_KEYS",
+          "value": "%w[createSurface updateComponents updateDataModel deleteSurface\ncallRendererFunction agentFunctionResponse].freeze",
+          "docstring": "Every message carries exactly one of these keys."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Session::Action",
+      "type": "class",
+      "superclass": "Struct",
+      "docstring": "A user action, ready for the agent: the spec message plus the\nAG-UI placement (`forwardedProps.a2uiAction.userAction`).",
+      "examples": [],
+      "file": "lib/poetry/agent/a2ui/session.rb",
+      "methods": [
+        {
+          "name": "errors",
+          "scope": "instance",
+          "group": null,
+          "signature": "errors",
+          "docstring": "Returns the value of attribute errors",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of errors"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 28
+        },
+        {
+          "name": "errors=",
+          "scope": "instance",
+          "group": null,
+          "signature": "errors=(value)",
+          "docstring": "Sets the attribute errors",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute errors to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 28
+        },
+        {
+          "name": "forwarded_props",
+          "scope": "instance",
+          "group": null,
+          "signature": "forwarded_props",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "the AG-UI `forwardedProps` carrying the action (and the\ndata model when the surface asked for it); empty when invalid"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 42
+        },
+        {
+          "name": "message",
+          "scope": "instance",
+          "group": null,
+          "signature": "message",
+          "docstring": "Returns the value of attribute message",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of message"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 28
+        },
+        {
+          "name": "message=",
+          "scope": "instance",
+          "group": null,
+          "signature": "message=(value)",
+          "docstring": "Sets the attribute message",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute message to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 28
+        },
+        {
+          "name": "surface",
+          "scope": "instance",
+          "group": null,
+          "signature": "surface",
+          "docstring": "Returns the value of attribute surface",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of surface"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 28
+        },
+        {
+          "name": "surface=",
+          "scope": "instance",
+          "group": null,
+          "signature": "surface=(value)",
+          "docstring": "Sets the attribute surface",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute surface to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 28
+        },
+        {
+          "name": "to_h",
+          "scope": "instance",
+          "group": null,
+          "signature": "to_h",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash",
+              "nil"
+            ],
+            "text": "the `{ \"version\", \"action\" }` renderer-to-agent\nmessage; nil when a check failed"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 36
+        },
+        {
+          "name": "valid?",
+          "scope": "instance",
+          "group": null,
+          "signature": "valid?",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "whether every check passed and the message exists"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/session.rb",
+          "line": 30
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Streams",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "Delivers a {Session}'s surfaces as Turbo Streams: a surface's first\nappearance appends into the container (when one is given), every\nlater change is a versioned replace of its wrapper (`vreplace`,\nfrom the AG-UI relay: a stale version never overwrites a newer\none), and a deletion removes it. The host renders each surface\nthrough the `render` callable (typically a {Renderer}).",
+      "examples": [
+        {
+          "title": "",
+          "text": "streams = Streams.new(session: session, container: \"surfaces\",\n                      render: ->(surface) { Renderer.new(surface, view: view_context).call })\nresponse.stream.write(AGUI::TurboStream.sse(streams.apply(message)))"
+        }
+      ],
+      "file": "lib/poetry/agent/a2ui/streams.rb",
+      "methods": [
+        {
+          "name": "apply",
+          "scope": "instance",
+          "group": null,
+          "signature": "apply(message)",
+          "docstring": "Applies one message and returns the streams for what changed.",
+          "params": [
+            {
+              "name": "message",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "Turbo Stream HTML (empty when nothing changed)"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/streams.rb",
+          "line": 40
+        },
+        {
+          "name": "apply_all",
+          "scope": "instance",
+          "group": null,
+          "signature": "apply_all(messages)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "messages",
+              "types": [
+                "Array<Hash>"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "Turbo Stream HTML"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/streams.rb",
+          "line": 46
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(session:, render:, container: nil, morph: true)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "session",
+              "types": [
+                "Session"
+              ],
+              "text": ""
+            },
+            {
+              "name": "render",
+              "types": [
+                "#call"
+              ],
+              "text": "`(surface) -> html`"
+            },
+            {
+              "name": "container",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the DOM id new surfaces append into"
+            },
+            {
+              "name": "morph",
+              "types": [
+                "Boolean"
+              ],
+              "text": "morph replaced surfaces (the default) so local state -\ntyped text, a selected tab, an open dialog - survives an update; false swaps"
+            }
+          ],
+          "return": {
+            "types": [
+              "Streams"
+            ],
+            "text": "a new instance of Streams"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/streams.rb",
+          "line": 28
+        },
+        {
+          "name": "mark_seen",
+          "scope": "instance",
+          "group": null,
+          "signature": "mark_seen(*ids)",
+          "docstring": "Marks surfaces as already on the page (rendered server-side), so\ntheir next change replaces instead of appending.",
+          "params": [
+            {
+              "name": "ids",
+              "types": [
+                "Array<String>"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/streams.rb",
+          "line": 76
+        },
+        {
+          "name": "session",
+          "scope": "instance",
+          "group": null,
+          "signature": "session",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Session"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/streams.rb",
+          "line": 21
+        },
+        {
+          "name": "stream_for",
+          "scope": "instance",
+          "group": null,
+          "signature": "stream_for(id)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the stream for one surface (remove, append, or vreplace)"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/streams.rb",
+          "line": 60
+        },
+        {
+          "name": "streams",
+          "scope": "instance",
+          "group": null,
+          "signature": "streams(ids)",
+          "docstring": "The streams for a set of surface ids.",
+          "params": [
+            {
+              "name": "ids",
+              "types": [
+                "Array<String>"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/streams.rb",
+          "line": 54
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::A2UI::Surface",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "One A2UI surface on the renderer side: its flat component list\n(an adjacency list keyed by id, `root` at the top), its data\nmodel, and a monotonic version the Turbo Stream delivery compares.\nA surface belongs to a catalog binding, which knows how each\ncomponent references its children; the surface itself is\ncatalog-agnostic beyond that.",
+      "examples": [
+        {
+          "title": "",
+          "text": "surface = Surface.new(id: \"card\", catalog: Catalogs::Basic.new)\nsurface.update_components([{ \"id\" => \"root\", \"component\" => \"Text\", \"text\" => { \"path\" => \"/name\" } }])\nsurface.update_data(\"/name\", \"Ada\")\nsurface.resolve({ \"path\" => \"/name\" }) # => \"Ada\""
+        }
+      ],
+      "file": "lib/poetry/agent/a2ui/surface.rb",
+      "methods": [
+        {
+          "name": "binding?",
+          "scope": "instance",
+          "group": null,
+          "signature": "binding?(value)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "whether the value is a `{ \"path\" => ... }` data binding"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 176
+        },
+        {
+          "name": "catalog",
+          "scope": "instance",
+          "group": null,
+          "signature": "catalog",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the catalog binding (see {Catalogs::Basic})"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 33
+        },
+        {
+          "name": "catalog_id",
+          "scope": "instance",
+          "group": null,
+          "signature": "catalog_id",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": "the catalog id the agent named"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 31
+        },
+        {
+          "name": "component",
+          "scope": "instance",
+          "group": null,
+          "signature": "component(component_id)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "component_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 99
+        },
+        {
+          "name": "components",
+          "scope": "instance",
+          "group": null,
+          "signature": "components",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => Hash}"
+            ],
+            "text": "components by id"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 37
+        },
+        {
+          "name": "data",
+          "scope": "instance",
+          "group": null,
+          "signature": "data",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "the data model"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 39
+        },
+        {
+          "name": "expand",
+          "scope": "instance",
+          "group": null,
+          "signature": "expand(reference, scope = nil)",
+          "docstring": "Expands a child reference into `[id, scope]` pairs: an id array\nkeeps the scope, a template instantiates its component once per\nitem of the bound array with the item's pointer as the scope.",
+          "params": [
+            {
+              "name": "reference",
+              "types": [
+                "Array<String>",
+                "Hash",
+                "String",
+                "nil"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Array(String, String)>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 208
+        },
+        {
+          "name": "failures",
+          "scope": "instance",
+          "group": null,
+          "signature": "failures(on_error: nil)",
+          "docstring": "Evaluates every rendered component's `checks` against the data\nmodel, keyed the way an action names its source (`id`, or\n`id@scope` inside a template).",
+          "params": [
+            {
+              "name": "on_error",
+              "types": [
+                "#call",
+                "nil"
+              ],
+              "text": "receives each function problem's message"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash{String => Array<Hash>}"
+            ],
+            "text": "failures by component key"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 134
+        },
+        {
+          "name": "function_call?",
+          "scope": "instance",
+          "group": null,
+          "signature": "function_call?(value)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "whether the value is a `{ \"call\" => ... }` function call"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 182
+        },
+        {
+          "name": "id",
+          "scope": "instance",
+          "group": null,
+          "signature": "id",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 29
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(id:, catalog:, catalog_id: nil, send_data_model: false, data: nil, components: [])",
+          "docstring": "",
+          "params": [
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "catalog",
+              "types": [
+                "Object"
+              ],
+              "text": "the catalog binding"
+            },
+            {
+              "name": "catalog_id",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            },
+            {
+              "name": "send_data_model",
+              "types": [
+                "Boolean"
+              ],
+              "text": ""
+            },
+            {
+              "name": "data",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "the initial data model"
+            },
+            {
+              "name": "components",
+              "types": [
+                "Array<Hash>"
+              ],
+              "text": "the initial component list"
+            }
+          ],
+          "return": {
+            "types": [
+              "Surface"
+            ],
+            "text": "a new instance of Surface"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 49
+        },
+        {
+          "name": "inputs",
+          "scope": "instance",
+          "group": null,
+          "signature": "inputs",
+          "docstring": "Bound input descriptors of the rendered tree, absolute paths only.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": "`{ path:, kind: }` (kind: :string, :boolean, :number, :string_list)"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 238
+        },
+        {
+          "name": "program",
+          "scope": "instance",
+          "group": null,
+          "signature": "program",
+          "docstring": "What a client-side evaluator needs to run the checks as the user\ntypes: every checked component's rules with its bindings made\nabsolute for its scope, the bound inputs by absolute path with\ntheir kinds, and the data model for paths no input carries.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "`{ \"checks\" => { key => { \"kind\", \"rules\" } }, \"inputs\" => { path => kind }, \"model\" => data }`"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 158
+        },
+        {
+          "name": "read",
+          "scope": "instance",
+          "group": null,
+          "signature": "read(path, scope = nil)",
+          "docstring": "Reads a bound path in a scope.",
+          "params": [
+            {
+              "name": "path",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Object",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 197
+        },
+        {
+          "name": "resolve",
+          "scope": "instance",
+          "group": null,
+          "signature": "resolve(value, scope = nil, on_error: nil)",
+          "docstring": "Resolves a dynamic value in a scope: a `{ \"path\" => ... }` binding\nreads the data model (relative paths against the scope), a\n`{ \"call\" => ... }` function call runs through the catalog's\nfunctions (see {Evaluator}), anything else is a literal.",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the collection-item pointer in effect"
+            },
+            {
+              "name": "on_error",
+              "types": [
+                "#call",
+                "nil"
+              ],
+              "text": "receives each function problem's message"
+            }
+          ],
+          "return": {
+            "types": [
+              "Object",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 112
+        },
+        {
+          "name": "root",
+          "scope": "instance",
+          "group": null,
+          "signature": "root",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash",
+              "nil"
+            ],
+            "text": "the top-level component"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 93
+        },
+        {
+          "name": "send_data_model",
+          "scope": "instance",
+          "group": null,
+          "signature": "send_data_model",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "whether actions carry the whole data model"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 35
+        },
+        {
+          "name": "source_key",
+          "scope": "instance",
+          "group": null,
+          "signature": "source_key(component, scope = nil)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "component",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "`id`, or `id@scope` inside a template"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 148
+        },
+        {
+          "name": "template?",
+          "scope": "instance",
+          "group": null,
+          "signature": "template?(value)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "whether the value is a `{ \"componentId\", \"path\" }` template"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 188
+        },
+        {
+          "name": "text",
+          "scope": "instance",
+          "group": null,
+          "signature": "text(value, scope = nil, on_error: nil)",
+          "docstring": "The string a resolved value displays as (the spec's conversion\nrules: nil is empty, containers are JSON).",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            },
+            {
+              "name": "scope",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            },
+            {
+              "name": "on_error",
+              "types": [
+                "#call",
+                "nil"
+              ],
+              "text": "receives each function problem's message"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 123
+        },
+        {
+          "name": "to_h",
+          "scope": "instance",
+          "group": null,
+          "signature": "to_h",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "a JSON-ready snapshot"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 247
+        },
+        {
+          "name": "update_components",
+          "scope": "instance",
+          "group": null,
+          "signature": "update_components(list)",
+          "docstring": "Upserts components by id and validates the result. Returns the\nvalidation errors (each `{ code:, path:, message: }`); a dangling\nchild reference is not one - streaming delivers children later.",
+          "params": [
+            {
+              "name": "list",
+              "types": [
+                "Array<Hash>"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 67
+        },
+        {
+          "name": "update_data",
+          "scope": "instance",
+          "group": null,
+          "signature": "update_data(path, value)",
+          "docstring": "Applies an `updateDataModel` (upsert; nil removes; the root\npointer replaces the whole model).",
+          "params": [
+            {
+              "name": "path",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            },
+            {
+              "name": "value",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 86
+        },
+        {
+          "name": "version",
+          "scope": "instance",
+          "group": null,
+          "signature": "version",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer"
+            ],
+            "text": "bumps on every applied change"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 41
+        },
+        {
+          "name": "walk",
+          "scope": "instance",
+          "group": null,
+          "signature": "walk(&)",
+          "docstring": "Walks the rendered tree depth-first from the root, yielding each\n`[component, scope]` in render order (templates instantiate once\nper item; a cycle guard keeps the walk finite).",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/a2ui/surface.rb",
+          "line": 231
+        }
+      ],
+      "constants": [
+        {
+          "name": "NAME_PATTERN",
+          "value": "/\\A[\\p{XID_Start}_]\\p{XID_Continue}*\\z/u",
+          "docstring": "Component names are UAX #31 identifiers."
+        },
+        {
+          "name": "RESERVED_COMPONENT",
+          "value": "\"Surface\"",
+          "docstring": "The reserved container the renderer instantiates on createSurface."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::AGUI",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The AG-UI surface: a Rails-side CLIENT of the Agent-User Interaction\nprotocol. An agent backend (any AG-UI integration, or a Ruby server)\nstreams events - text deltas, tool calls, state, activities, run\nlifecycle, interrupts - and this module turns that stream into\nserver-rendered chat frames a Hotwire page updates through Turbo\nStreams, the same pipeline the chat replay rig proves.\n\nThe pieces, each usable alone:\n\n- {SSE} parses `text/event-stream` chunks into event hashes.\n- {Client} POSTs a run to an AG-UI endpoint and yields its events.\n- {RunInput} builds the `RunAgentInput` wire hash, and\n  {.tool_descriptor} advertises a rendered component's declared\n  tools as frontend-defined tools the browser executes.\n- {Transcript} folds events into messages (Chat-shaped parts),\n  shared state (JSON Patch), activities, the run status, pending\n  client tools, and interrupts.\n- {Relay} renders each change as a versioned Turbo Stream through a\n  host-supplied row renderer, plus the client-tool bridge element\n  the `poetry--agent--agui-client-tool` controller executes.\n\nNothing here calls a model: the agent is whatever the host points\nthe client at.",
+      "examples": [],
+      "file": "lib/poetry/agent/agui.rb",
+      "methods": [
+        {
+          "name": "field",
+          "scope": "class",
+          "group": null,
+          "signature": "field(hash, name)",
+          "docstring": "Reads a wire field from an event or message that may arrive\ncamelCased (the protocol) or snake_cased (a Ruby producer).",
+          "params": [
+            {
+              "name": "hash",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            },
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": "the camelCase name"
+            }
+          ],
+          "return": {
+            "types": [
+              "Object",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui.rb",
+          "line": 76
+        },
+        {
+          "name": "tool_descriptor",
+          "scope": "class",
+          "group": null,
+          "signature": "tool_descriptor(instance, definition)",
+          "docstring": "The frontend-defined tool descriptor for one of a rendered\ncomponent's declared tools: the MCP `Tool` shape the registry\nprojects, renamed to AG-UI's `parameters` and prefixed with the\ninstance name exactly as the WebMCP registrar registers it, so a\ncall the agent makes is executable in the browser by name.",
+          "params": [
+            {
+              "name": "instance",
+              "types": [
+                "String"
+              ],
+              "text": "the `webmcp:` instance name"
+            },
+            {
+              "name": "definition",
+              "types": [
+                "Hash"
+              ],
+              "text": "one entry of `Component#webmcp_tools`"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "`{ \"name\", \"description\", \"parameters\" }`"
+          },
+          "examples": [
+            {
+              "title": "",
+              "text": "Poetry::Agent::AGUI.tool_descriptor(\"sections\", tabs.webmcp_tools.first)\n# => { \"name\" => \"poetry.sections.set_value\", \"description\" => \"...\", \"parameters\" => {...} }"
+            }
+          ],
+          "file": "lib/poetry/agent/agui.rb",
+          "line": 62
+        }
+      ],
+      "constants": [
+        {
+          "name": "EVENT_TYPES",
+          "value": "%w[\n  RUN_STARTED RUN_FINISHED RUN_ERROR STEP_STARTED STEP_FINISHED\n  TEXT_MESSAGE_START TEXT_MESSAGE_CONTENT TEXT_MESSAGE_END TEXT_MESSAGE_CHUNK\n  REASONING_START REASONING_MESSAGE_START REASONING_ME",
+          "docstring": "The AG-UI event types this transcript understands (the wire\nstrings; deprecated THINKING_* aliases included)."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::AGUI::Client",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The HTTP client: POSTs a `RunAgentInput` to an AG-UI endpoint and\nyields the streamed events as they arrive (stdlib Net::HTTP,\n`text/event-stream`). One call is one run; the multi-run model\n(client tools, interrupts) is the caller's loop over {Transcript}.",
+      "examples": [],
+      "file": "lib/poetry/agent/agui/client.rb",
+      "methods": [
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(url:, headers: {}, open_timeout: 10, read_timeout: 120)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "url",
+              "types": [
+                "String"
+              ],
+              "text": "the agent's run endpoint"
+            },
+            {
+              "name": "headers",
+              "types": [
+                "Hash{String => String}"
+              ],
+              "text": "extra request headers (auth)"
+            },
+            {
+              "name": "open_timeout",
+              "types": [
+                "Numeric"
+              ],
+              "text": "seconds"
+            },
+            {
+              "name": "read_timeout",
+              "types": [
+                "Numeric"
+              ],
+              "text": "seconds between chunks"
+            }
+          ],
+          "return": {
+            "types": [
+              "Client"
+            ],
+            "text": "a new instance of Client"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/client.rb",
+          "line": 30
+        },
+        {
+          "name": "run",
+          "scope": "instance",
+          "group": null,
+          "signature": "run(input, &)",
+          "docstring": "Runs the agent and yields every event.",
+          "params": [
+            {
+              "name": "input",
+              "types": [
+                "Hash"
+              ],
+              "text": "the wire hash ({RunInput.build})"
+            }
+          ],
+          "return": {
+            "types": [
+              "SSE::Parser"
+            ],
+            "text": "the parser (its `errors` list any unreadable lines)"
+          },
+          "examples": [
+            {
+              "title": "",
+              "text": "client.run(input) { |event| transcript.apply(event) }"
+            }
+          ],
+          "file": "lib/poetry/agent/agui/client.rb",
+          "line": 45
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::AGUI::Client::Error",
+      "type": "class",
+      "superclass": "Poetry::Core::Error",
+      "docstring": "Raised for a non-success HTTP status.",
+      "examples": [],
+      "file": "lib/poetry/agent/agui/client.rb",
+      "methods": [
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(message, status:)",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Error"
+            ],
+            "text": "a new instance of Error"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/client.rb",
+          "line": 20
+        },
+        {
+          "name": "status",
+          "scope": "instance",
+          "group": null,
+          "signature": "status",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/client.rb",
+          "line": 18
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::AGUI::JsonPatch",
+      "type": "module",
+      "superclass": null,
+      "docstring": "RFC 6902 JSON Patch over plain Ruby data (Hash / Array), with RFC\n6901 JSON Pointer paths - what AG-UI's STATE_DELTA and\nACTIVITY_DELTA carry. Applies atomically: the document is deep-\ncopied first and the copy is returned, so a failing operation\nleaves the caller's document untouched.",
+      "examples": [],
+      "file": "lib/poetry/agent/agui/json_patch.rb",
+      "methods": [
+        {
+          "name": "apply",
+          "scope": "class",
+          "group": null,
+          "signature": "apply(document, operations)",
+          "docstring": "Applies a patch and returns the patched copy.",
+          "params": [
+            {
+              "name": "document",
+              "types": [
+                "Hash",
+                "Array"
+              ],
+              "text": ""
+            },
+            {
+              "name": "operations",
+              "types": [
+                "Array<Hash>"
+              ],
+              "text": "RFC 6902 operations (string or symbol keys)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash",
+              "Array"
+            ],
+            "text": "the new document"
+          },
+          "examples": [
+            {
+              "title": "",
+              "text": "JsonPatch.apply({ \"a\" => 1 }, [{ \"op\" => \"replace\", \"path\" => \"/a\", \"value\" => 2 }])\n# => { \"a\" => 2 }"
+            }
+          ],
+          "file": "lib/poetry/agent/agui/json_patch.rb",
+          "line": 27
+        },
+        {
+          "name": "get",
+          "scope": "class",
+          "group": null,
+          "signature": "get(document, path)",
+          "docstring": "Reads the value at a JSON Pointer.",
+          "params": [
+            {
+              "name": "document",
+              "types": [
+                "Hash",
+                "Array"
+              ],
+              "text": ""
+            },
+            {
+              "name": "path",
+              "types": [
+                "String"
+              ],
+              "text": "RFC 6901 pointer (\"\" is the whole document)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/json_patch.rb",
+          "line": 58
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::AGUI::JsonPatch::Error",
+      "type": "class",
+      "superclass": "Poetry::Core::Error",
+      "docstring": "Raised for an operation the document cannot take (an unknown\nop, a missing path, a failed test).",
+      "examples": [],
+      "file": "lib/poetry/agent/agui/json_patch.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::AGUI::Relay",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "Turns transcript changes into Turbo Streams. The host supplies the\nrow renderer (its own partial or component: a message and its\nversion in, the row's HTML out - the row must carry\n`data-version`), the target id scheme, and the container new rows\nappend to. The relay stays view-free.\n\nClient tools ride the same channel: when a run ends with tool\ncalls the browser must execute, {#client_tool_streams} appends\none bridge element per call; the `poetry--agent--agui-client-tool`\ncontroller executes it through the registrar and POSTs the result\nto the continue URL, whose response streams the next run.",
+      "examples": [
+        {
+          "title": "Streaming a run into a page",
+          "text": "relay = Poetry::Agent::AGUI::Relay.new(transcript: transcript, container: \"chat-messages\",\n                                       render: ->(message, version) { render_row(message, version) })\nclient.run(input) { |event| relay.apply(event).each { |stream| write(TurboStream.sse(stream)) } }"
+        }
+      ],
+      "file": "lib/poetry/agent/agui/relay.rb",
+      "methods": [
+        {
+          "name": "apply",
+          "scope": "instance",
+          "group": null,
+          "signature": "apply(event)",
+          "docstring": "Applies an event and answers the Turbo Streams it produced: an\nappend for a message's first appearance (when a container is\nset), then the update action for every change.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/relay.rb",
+          "line": 57
+        },
+        {
+          "name": "client_tool_streams",
+          "scope": "instance",
+          "group": null,
+          "signature": "client_tool_streams(continue_url:, container: @container)",
+          "docstring": "Bridge elements for every pending client tool call.",
+          "params": [
+            {
+              "name": "continue_url",
+              "types": [
+                "String"
+              ],
+              "text": "where the browser POSTs `{ toolCallId, name, content, error }`"
+            },
+            {
+              "name": "container",
+              "types": [
+                "String"
+              ],
+              "text": "the element the bridge elements append to"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/relay.rb",
+          "line": 92
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(transcript:, render:, container: nil, target: ->(message) { \"row-#{message.id}\" }, # rubocop:disable Metrics/ParameterLists action: \"vreplace\", append_render: nil, morph: false)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "transcript",
+              "types": [
+                "Transcript"
+              ],
+              "text": ""
+            },
+            {
+              "name": "render",
+              "types": [
+                "#call"
+              ],
+              "text": "`(message, version) -> String` the row HTML"
+            },
+            {
+              "name": "container",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the id new rows append to (nil: replace only)"
+            },
+            {
+              "name": "target",
+              "types": [
+                "#call"
+              ],
+              "text": "`(message) -> String` the row's element id"
+            },
+            {
+              "name": "action",
+              "types": [
+                "String"
+              ],
+              "text": "the stream action for updates (`vreplace` by default)"
+            },
+            {
+              "name": "append_render",
+              "types": [
+                "#call",
+                "nil"
+              ],
+              "text": "`(message, version) -> String` the HTML a\nfirst appearance appends - the row inside its list wrapper (a scroller\nitem); defaults to `render`"
+            }
+          ],
+          "return": {
+            "types": [
+              "Relay"
+            ],
+            "text": "a new instance of Relay"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/relay.rb",
+          "line": 39
+        },
+        {
+          "name": "mark_seen",
+          "scope": "instance",
+          "group": null,
+          "signature": "mark_seen(*ids)",
+          "docstring": "Marks message ids the page already renders, so their next change\nis an update rather than an append (server-rendered history).",
+          "params": [
+            {
+              "name": "ids",
+              "types": [
+                "Array<String>"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "self"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/relay.rb",
+          "line": 66
+        },
+        {
+          "name": "stream_for",
+          "scope": "instance",
+          "group": null,
+          "signature": "stream_for(id)",
+          "docstring": "The stream for one message id (nil when the message is unknown).",
+          "params": [
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/relay.rb",
+          "line": 75
+        },
+        {
+          "name": "transcript",
+          "scope": "instance",
+          "group": null,
+          "signature": "transcript",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Transcript"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/relay.rb",
+          "line": 29
+        }
+      ],
+      "constants": [
+        {
+          "name": "CLIENT_TOOL_CONTROLLER",
+          "value": "\"poetry--agent--agui-client-tool\"",
+          "docstring": "The bridge controller's identifier."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::AGUI::RunInput",
+      "type": "module",
+      "superclass": null,
+      "docstring": "Builds the `RunAgentInput` wire hash an AG-UI agent accepts:\ncamelCased keys, messages in the protocol's shapes, the\nfrontend-defined tools, context entries, state, forwarded props,\nand the resume entries that answer interrupts.",
+      "examples": [],
+      "file": "lib/poetry/agent/agui/run_input.rb",
+      "methods": [
+        {
+          "name": "build",
+          "scope": "class",
+          "group": null,
+          "signature": "build( # rubocop:disable Metrics/ParameterLists -- one keyword per RunAgentInput field thread_id:, messages:, run_id: SecureRandom.uuid, tools: [], context: [], state: {}, forwarded_props: {}, parent_run_id: nil, resume: nil)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "thread_id",
+              "types": [
+                "String"
+              ],
+              "text": "the conversation thread"
+            },
+            {
+              "name": "messages",
+              "types": [
+                "Array<Hash>"
+              ],
+              "text": "protocol messages (`id`, `role`, `content`, ...)"
+            },
+            {
+              "name": "run_id",
+              "types": [
+                "String"
+              ],
+              "text": "defaults to a fresh UUID"
+            },
+            {
+              "name": "tools",
+              "types": [
+                "Array<Hash>"
+              ],
+              "text": "frontend-defined tools ({AGUI.tool_descriptor})"
+            },
+            {
+              "name": "context",
+              "types": [
+                "Array<Hash>"
+              ],
+              "text": "`{ \"description\", \"value\" }` entries"
+            },
+            {
+              "name": "state",
+              "types": [
+                "Hash"
+              ],
+              "text": "the shared state to send"
+            },
+            {
+              "name": "forwarded_props",
+              "types": [
+                "Hash"
+              ],
+              "text": "integration-specific props"
+            },
+            {
+              "name": "parent_run_id",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the run this one branches from"
+            },
+            {
+              "name": "resume",
+              "types": [
+                "Array<Hash>",
+                "nil"
+              ],
+              "text": "`{ \"interruptId\", \"status\", \"payload\" }` answers"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "the wire hash (string keys)"
+          },
+          "examples": [
+            {
+              "title": "A first run with one client tool",
+              "text": "RunInput.build(thread_id: \"t1\", messages: [RunInput.user_message(\"hi\")],\n               tools: [Poetry::Agent::AGUI.tool_descriptor(\"sections\", definition)])"
+            }
+          ],
+          "file": "lib/poetry/agent/agui/run_input.rb",
+          "line": 28
+        },
+        {
+          "name": "resume_entry",
+          "scope": "class",
+          "group": null,
+          "signature": "resume_entry(interrupt_id, status: nil, payload: nil)",
+          "docstring": "A resume entry answering an interrupt.",
+          "params": [
+            {
+              "name": "interrupt_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "status",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "e.g. \"approved\", \"rejected\""
+            },
+            {
+              "name": "payload",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/run_input.rb",
+          "line": 74
+        },
+        {
+          "name": "tool_message",
+          "scope": "class",
+          "group": null,
+          "signature": "tool_message(tool_call_id, content, error: nil, id: SecureRandom.uuid)",
+          "docstring": "A tool-result message answering a tool call the browser ran.",
+          "params": [
+            {
+              "name": "tool_call_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "content",
+              "types": [
+                "String"
+              ],
+              "text": "the result as text (JSON for structured results)"
+            },
+            {
+              "name": "error",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "set when the tool failed"
+            },
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/run_input.rb",
+          "line": 62
+        },
+        {
+          "name": "user_message",
+          "scope": "class",
+          "group": null,
+          "signature": "user_message(content, id: SecureRandom.uuid)",
+          "docstring": "A user message.",
+          "params": [
+            {
+              "name": "content",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/run_input.rb",
+          "line": 51
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::AGUI::SSE",
+      "type": "module",
+      "superclass": null,
+      "docstring": "A `text/event-stream` parser for AG-UI: every event is a JSON\nobject on one or more `data:` lines, terminated by a blank line.\nIncremental (feed chunks as they arrive) and tolerant of comments,\n`event:` / `id:` / `retry:` fields, and CRLF.",
+      "examples": [],
+      "file": "lib/poetry/agent/agui/sse.rb",
+      "methods": [
+        {
+          "name": "parse",
+          "scope": "class",
+          "group": null,
+          "signature": "parse(source, &block)",
+          "docstring": "Parses a complete stream (a String or anything responding to\n`each` with chunks) and yields every event.",
+          "params": [
+            {
+              "name": "source",
+              "types": [
+                "String",
+                "#each"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": "every event, when no block is given"
+          },
+          "examples": [
+            {
+              "title": "",
+              "text": "Poetry::Agent::AGUI::SSE.parse(\"data: {\\\"type\\\":\\\"RUN_STARTED\\\"}\\n\\n\") # => [{ \"type\" => \"RUN_STARTED\" }]"
+            }
+          ],
+          "file": "lib/poetry/agent/agui/sse.rb",
+          "line": 82
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::AGUI::SSE::Parser",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The incremental parser.",
+      "examples": [],
+      "file": "lib/poetry/agent/agui/sse.rb",
+      "methods": [
+        {
+          "name": "errors",
+          "scope": "instance",
+          "group": null,
+          "signature": "errors",
+          "docstring": "Lines that carried data the parser could not read as JSON.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/sse.rb",
+          "line": 18
+        },
+        {
+          "name": "feed",
+          "scope": "instance",
+          "group": null,
+          "signature": "feed(chunk, &)",
+          "docstring": "Feeds a chunk and yields each completed event.",
+          "params": [
+            {
+              "name": "chunk",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/sse.rb",
+          "line": 31
+        },
+        {
+          "name": "finish",
+          "scope": "instance",
+          "group": null,
+          "signature": "finish(&)",
+          "docstring": "Flushes a trailing event that lacked its blank line.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/sse.rb",
+          "line": 43
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Parser"
+            ],
+            "text": "a new instance of Parser"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/sse.rb",
+          "line": 20
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::AGUI::Transcript",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "Folds an AG-UI event stream into what a chat page renders: the\nmessages in order, each assistant message as Chat-shaped parts\n(`{kind: :text, text:}`, `{kind: :reasoning, text:}`,\n`{kind: :tool, name:, input:, output:, state:, tool_call_id:}`),\nthe shared state (snapshots and JSON Patch deltas), activities,\nthe run's status, its interrupts, and the tool calls the browser\nmust execute before the next run.\n\nEvery change bumps {#version}, and {#apply} answers the ids of the\nmessages it touched, so a relay re-renders exactly those rows with\na monotonic version the page's versioned replace honors.",
+      "examples": [],
+      "file": "lib/poetry/agent/agui/transcript.rb",
+      "methods": [
+        {
+          "name": "activities",
+          "scope": "instance",
+          "group": null,
+          "signature": "activities",
+          "docstring": "Activities by message id: `{ \"type\" => ..., \"content\" => ... }`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => Hash}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 37
+        },
+        {
+          "name": "apply",
+          "scope": "instance",
+          "group": null,
+          "signature": "apply(event)",
+          "docstring": "Applies one event.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "Hash"
+              ],
+              "text": "an AG-UI event (camelCase or snake_case keys)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": "the ids of the messages this event changed"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 93
+        },
+        {
+          "name": "apply_all",
+          "scope": "instance",
+          "group": null,
+          "signature": "apply_all(events)",
+          "docstring": "Applies every event of a stream.",
+          "params": [
+            {
+              "name": "events",
+              "types": [
+                "#each"
+              ],
+              "text": "event hashes"
+            }
+          ],
+          "return": {
+            "types": [
+              "self"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 108
+        },
+        {
+          "name": "client_tools",
+          "scope": "instance",
+          "group": null,
+          "signature": "client_tools",
+          "docstring": "The frontend-defined tool names the browser executes.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 48
+        },
+        {
+          "name": "custom_events",
+          "scope": "instance",
+          "group": null,
+          "signature": "custom_events",
+          "docstring": "RAW and CUSTOM events, in order.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 59
+        },
+        {
+          "name": "ended?",
+          "scope": "instance",
+          "group": null,
+          "signature": "ended?",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "the run ended (finished, interrupted, or errored)"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 129
+        },
+        {
+          "name": "error",
+          "scope": "instance",
+          "group": null,
+          "signature": "error",
+          "docstring": "The run error, if any: `{ message:, code: }`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 148
+        },
+        {
+          "name": "frame",
+          "scope": "instance",
+          "group": null,
+          "signature": "frame(id)",
+          "docstring": "The render-ready frame of one message.",
+          "params": [
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "`{ parts:, version: }`"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 123
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(client_tools: [])",
+          "docstring": "",
+          "params": [
+            {
+              "name": "client_tools",
+              "types": [
+                "Array<String>"
+              ],
+              "text": "names of tools the browser executes"
+            }
+          ],
+          "return": {
+            "types": [
+              "Transcript"
+            ],
+            "text": "a new instance of Transcript"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 72
+        },
+        {
+          "name": "interrupted?",
+          "scope": "instance",
+          "group": null,
+          "signature": "interrupted?",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 134
+        },
+        {
+          "name": "interrupts",
+          "scope": "instance",
+          "group": null,
+          "signature": "interrupts",
+          "docstring": "The open interrupts (string-keyed hashes as on the wire).",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 141
+        },
+        {
+          "name": "message",
+          "scope": "instance",
+          "group": null,
+          "signature": "message(id)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Message",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 115
+        },
+        {
+          "name": "messages",
+          "scope": "instance",
+          "group": null,
+          "signature": "messages",
+          "docstring": "The messages in arrival order.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Message>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 27
+        },
+        {
+          "name": "messages_for_input",
+          "scope": "instance",
+          "group": null,
+          "signature": "messages_for_input",
+          "docstring": "The messages as the next run's `RunAgentInput.messages`: user\nand assistant messages (assistant tool calls in the protocol's\n`toolCalls` shape) and a tool message for every finished tool\ncall; reasoning and activities stay client-side, as the\nprotocol says.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 159
+        },
+        {
+          "name": "pending_client_tools",
+          "scope": "instance",
+          "group": null,
+          "signature": "pending_client_tools",
+          "docstring": "Tool calls to client tools awaiting execution:\n`{ tool_call_id:, name:, input:, message_id: }`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 54
+        },
+        {
+          "name": "resolve_client_tool",
+          "scope": "instance",
+          "group": null,
+          "signature": "resolve_client_tool(tool_call_id, content, error: nil)",
+          "docstring": "Marks a client tool call as executed and records its result, so\nthe next run's input carries the tool message.",
+          "params": [
+            {
+              "name": "tool_call_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "content",
+              "types": [
+                "Object"
+              ],
+              "text": "the result (a string, or data serialized as JSON)"
+            },
+            {
+              "name": "error",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": "the id of the message that changed"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 176
+        },
+        {
+          "name": "run",
+          "scope": "instance",
+          "group": null,
+          "signature": "run",
+          "docstring": "The run: `{ thread_id:, run_id:, status:, interrupts:, error:, result: }`;\nstatus is :idle, :running, :finished, :interrupted, or :error.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 43
+        },
+        {
+          "name": "state",
+          "scope": "instance",
+          "group": null,
+          "signature": "state",
+          "docstring": "The shared state after the last snapshot / delta.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 32
+        },
+        {
+          "name": "unknown_events",
+          "scope": "instance",
+          "group": null,
+          "signature": "unknown_events",
+          "docstring": "Event types this transcript did not understand.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 64
+        },
+        {
+          "name": "version",
+          "scope": "instance",
+          "group": null,
+          "signature": "version",
+          "docstring": "A monotonic clock over every applied change.",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 69
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::AGUI::Transcript::Message",
+      "type": "class",
+      "superclass": "Struct",
+      "docstring": "One message. `role` is the protocol's (\"user\", \"assistant\",\n\"tool\", \"activity\", ...); `parts` is the render-ready list.",
+      "examples": [],
+      "file": "lib/poetry/agent/agui/transcript.rb",
+      "methods": [
+        {
+          "name": "id",
+          "scope": "instance",
+          "group": null,
+          "signature": "id",
+          "docstring": "Returns the value of attribute id",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of id"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 22
+        },
+        {
+          "name": "id=",
+          "scope": "instance",
+          "group": null,
+          "signature": "id=(value)",
+          "docstring": "Sets the attribute id",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute id to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 22
+        },
+        {
+          "name": "parts",
+          "scope": "instance",
+          "group": null,
+          "signature": "parts",
+          "docstring": "Returns the value of attribute parts",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of parts"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 22
+        },
+        {
+          "name": "parts=",
+          "scope": "instance",
+          "group": null,
+          "signature": "parts=(value)",
+          "docstring": "Sets the attribute parts",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute parts to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 22
+        },
+        {
+          "name": "role",
+          "scope": "instance",
+          "group": null,
+          "signature": "role",
+          "docstring": "Returns the value of attribute role",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of role"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 22
+        },
+        {
+          "name": "role=",
+          "scope": "instance",
+          "group": null,
+          "signature": "role=(value)",
+          "docstring": "Sets the attribute role",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute role to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 22
+        },
+        {
+          "name": "version",
+          "scope": "instance",
+          "group": null,
+          "signature": "version",
+          "docstring": "Returns the value of attribute version",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of version"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 22
+        },
+        {
+          "name": "version=",
+          "scope": "instance",
+          "group": null,
+          "signature": "version=(value)",
+          "docstring": "Sets the attribute version",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute version to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 22
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::AGUI::TurboStream",
+      "type": "module",
+      "superclass": null,
+      "docstring": "Turbo Stream builders for the relay: plain strings, no view\ncontext needed. `vreplace` is the versioned replace the runtime\ninstalls on Turbo (`registerPoetryAgent`) - it applies a frame\nonly when its `data-version` is newer than the row's, so an\nout-of-order delivery can never paint an older state over a\nnewer one.",
+      "examples": [],
+      "file": "lib/poetry/agent/agui/turbo_stream.rb",
+      "methods": [
+        {
+          "name": "append",
+          "scope": "class",
+          "group": null,
+          "signature": "append(target, html)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "target",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "html",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/turbo_stream.rb",
+          "line": 41
+        },
+        {
+          "name": "build",
+          "scope": "class",
+          "group": null,
+          "signature": "build(action, target, html = nil, method: nil)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "action",
+              "types": [
+                "String"
+              ],
+              "text": "a Turbo Stream action (`append`, `replace`, `vreplace`, `remove`, ...)"
+            },
+            {
+              "name": "target",
+              "types": [
+                "String"
+              ],
+              "text": "the target element id"
+            },
+            {
+              "name": "html",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the template content (already rendered, trusted)"
+            },
+            {
+              "name": "method",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "Turbo's `method` attribute (`\"morph\"` morphs instead of swapping)"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/turbo_stream.rb",
+          "line": 22
+        },
+        {
+          "name": "remove",
+          "scope": "class",
+          "group": null,
+          "signature": "remove(target)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "target",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/turbo_stream.rb",
+          "line": 50
+        },
+        {
+          "name": "replace",
+          "scope": "class",
+          "group": null,
+          "signature": "replace(target, html)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "target",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "html",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/turbo_stream.rb",
+          "line": 46
+        },
+        {
+          "name": "sse",
+          "scope": "class",
+          "group": null,
+          "signature": "sse(html)",
+          "docstring": "One SSE frame carrying the streams (newlines folded, as Turbo's\nstream source expects one `data:` line).",
+          "params": [
+            {
+              "name": "html",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/turbo_stream.rb",
+          "line": 57
+        },
+        {
+          "name": "vreplace",
+          "scope": "class",
+          "group": null,
+          "signature": "vreplace(target, html, morph: false)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "target",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "html",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "morph",
+              "types": [
+                "Boolean"
+              ],
+              "text": "morph the target (Turbo's idiomorph) instead of swapping it, so\nlocal state - typed text, a selected tab, an open dialog - survives the update"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/turbo_stream.rb",
+          "line": 36
+        }
+      ],
+      "constants": []
     },
     {
       "path": "Poetry::Agent::Config",
@@ -107,7 +6343,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/config.rb",
-          "line": 33
+          "line": 44
         },
         {
           "name": "initialize",
@@ -124,7 +6360,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/config.rb",
-          "line": 25
+          "line": 17
         },
         {
           "name": "origin_trial_tokens",
@@ -165,7 +6401,7 @@
           "scope": "instance",
           "group": null,
           "signature": "registration_budget",
-          "docstring": "The per-page registration budget the registrar enforces: past\nthis many registered tools on one document, further registrations\nare dropped with a console warning (each tool costs the agent\ncontext; overlap confuses tool choice).",
+          "docstring": "The per-page registration budget the registrar enforces: past\nthis many registered tools on one document, further registrations\nare dropped with a console warning (each tool costs the agent\ncontext; overlap confuses tool choice). Stored on poetry-core's\nconfiguration, where the component contract reads it to put the\nbudget on every opted-in root - this accessor writes through.",
           "params": [],
           "return": {
             "types": [
@@ -175,15 +6411,23 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/config.rb",
-          "line": 23
+          "line": 29
         },
         {
           "name": "registration_budget=",
           "scope": "instance",
           "group": null,
-          "signature": "registration_budget=(value)",
-          "docstring": "The per-page registration budget the registrar enforces: past\nthis many registered tools on one document, further registrations\nare dropped with a console warning (each tool costs the agent\ncontext; overlap confuses tool choice).",
-          "params": [],
+          "signature": "registration_budget=(count)",
+          "docstring": "Sets the per-page registration budget.",
+          "params": [
+            {
+              "name": "count",
+              "types": [
+                "Integer"
+              ],
+              "text": ""
+            }
+          ],
           "return": {
             "types": [
               "Integer"
@@ -192,7 +6436,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/config.rb",
-          "line": 23
+          "line": 37
         }
       ],
       "constants": []
@@ -293,7 +6537,7 @@
       "path": "Poetry::Agent::MCP::HTTP",
       "type": "class",
       "superclass": "Object",
-      "docstring": "The MCP server over HTTP: a Rack app answering JSON-RPC 2.0 POSTs\n(the Streamable HTTP transport's request/response half) with the\nsame pure {Server#handle} the stdio exe uses - one surface, two\ntransports. Mount it at the conventional same-origin `/mcp`, which\nis where in-page bridges (WebMCP site MCP server packs\namong them) look for a site's own MCP server.\n\nRead-only by construction (every tool describes or verifies), so\nexposing it is a discovery surface, not a mutation surface. The\nOrigin header is validated against the request's own host, so a\ncross-site page cannot drive it through a visitor's browser.",
+      "docstring": "The MCP server over HTTP: a Rack app answering JSON-RPC 2.0 POSTs\n(the Streamable HTTP transport's request/response half) with the\nsame pure {Server#handle} the stdio exe uses - one surface, two\ntransports. Mount it at the conventional same-origin `/mcp`, which\nis where in-page bridges (WebMCP site MCP server packs among them)\nlook for a site's own MCP server.\n\nRead-only by construction (every tool describes or verifies), so\nexposing it is a discovery surface, not a mutation surface. The\nOrigin header is validated against the request's own host, so a\ncross-site page cannot drive it through a visitor's browser.",
       "examples": [
         {
           "title": "config/routes.rb",
@@ -386,7 +6630,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 196
+          "line": 198
         },
         {
           "name": "handle",
@@ -412,7 +6656,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 250
+          "line": 252
         },
         {
           "name": "initialize",
@@ -429,7 +6673,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 213
+          "line": 215
         },
         {
           "name": "serve",
@@ -441,7 +6685,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 265
+          "line": 267
         }
       ],
       "constants": [

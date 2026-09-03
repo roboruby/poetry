@@ -8,6 +8,16 @@ def system!(*args)
 end
 
 FileUtils.chdir APP_ROOT do
+# Local development runs the docs against the family's working trees,
+# unpinned: config/boot.rb selects Gemfile.siblings whenever ../poetry-core
+# exists, so install that bundle too. CI and lone clones only have Gemfile,
+# which pins the released version.
+if File.directory?(File.expand_path("../poetry-core", APP_ROOT))
+  puts "== Installing the sibling bundle (Gemfile.siblings) =="
+  siblings = { "BUNDLE_GEMFILE" => "Gemfile.siblings" }
+  system(siblings, "bundle check") || system!(siblings, "bundle install")
+end
+
   # This script is a way to set up or update your development environment automatically.
   # This script is idempotent, so that you can run it at any time and get an expectable outcome.
   # Add necessary setup steps to this file.
