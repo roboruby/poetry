@@ -8,12 +8,16 @@ Gem::Specification.new do |spec|
   spec.authors = ["Matt Solt"]
   spec.email = ["mattsolt@gmail.com"]
 
-  spec.summary = "Poetry's agent surfaces: the MCP server and the WebMCP runtime."
-  spec.description = "The agent-interop gem of Poetry, the AI-native UI component library: the boot-free " \
-                     "poetry-agent MCP server (the component contract over Model Context Protocol) and the WebMCP " \
-                     "runtime that registers rendered components' declared tools with in-browser agents " \
-                     "(document.modelContext), with declarative forms, an origin-trial middleware, and " \
-                     "safe-by-default, opt-in registration."
+spec.summary = "Poetry's agent surfaces: MCP server, WebMCP runtime, AG-UI relay, and A2UI catalog and renderer."
+spec.description = "The agent-interop gem of Poetry, the AI-native UI component library. Five surfaces: the " \
+                   "boot-free poetry-agent MCP server (the component contract over Model Context Protocol, with " \
+                   "runtime skill delivery); the WebMCP runtime that registers rendered components' declared tools " \
+                   "with in-browser agents (document.modelContext) behind safe-by-default, opt-in registration, " \
+                   "declarative forms, and an origin-trial middleware; the AG-UI relay, a Rails client of the " \
+                   "Agent-User Interaction protocol that runs an agent and relays its events as Turbo Streams, with " \
+                   "frontend tools and interrupts; the A2UI catalog projected from the component registry; and the " \
+                   "A2UI renderer that folds the envelope into server-rendered surfaces with forms, checks, " \
+                   "functions, and morphing updates."
   spec.homepage = "https://poetryui.com"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.4.0"
