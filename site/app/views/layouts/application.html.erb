@@ -177,6 +177,7 @@
                                        options: %w[default vega nova mira rhea maia luma lyra sera].map { |s| [s, s] },
                                        selected: "default") %>
             </div>
+            <%= render "shared/project_links" %>
             <%= poetry_button(variant: :ghost, size: :"icon-sm", label: "Toggle theme",
                               data: { action: "click->theme#toggle" }) do %>
               <%= poetry_icon(name: :sun, class: "dark:hidden") %>
