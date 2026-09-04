@@ -196,8 +196,8 @@
             body: "Build screens from vetted blocks and helpers. Your coding agent starts from the same blocks through the compose tool.",
             code: "bin/rails g poetry:block top-nav\nbin/rails g poetry:block section-card", lang: "bash" },
           { step: "3", title: "Verify",
-            body: "The check reads your templates against the committed registry and catches drift before your users do.",
-            code: "bin/rails poetry:check", lang: "bash" }
+            body: "Herb parses your ERB; the check reads it against the committed registry and catches drift before your users do.",
+            code: "bundle add herb --group development\nbin/rails poetry:check", lang: "bash" }
         ].each_with_index do |item, i| %>
           <div data-controller="reveal" data-reveal style="--reveal-delay: <%= i * 0.15 %>s">
             <div class="flex items-center gap-3">
