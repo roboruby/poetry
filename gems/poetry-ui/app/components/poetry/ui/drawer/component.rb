@@ -137,6 +137,11 @@ module Poetry
 
         # Enforces the inherited title contract plus snap-point validity.
         # @api private
+        # The operate surface, inherited from Dialog and reworded for the
+        # drawer; the bare executes: re-resolves to this class's controller.
+        tool :open, description: "Open the drawer.", executes: :open, mutating: true
+        tool :close, description: "Close the drawer.", executes: :close, mutating: true
+
         def before_render
           super
           validate_snap_points! if snap_points.present?

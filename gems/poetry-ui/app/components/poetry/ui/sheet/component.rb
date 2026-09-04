@@ -78,6 +78,11 @@ module Poetry
         part "sheet-description", "Muted copy under the title, wired to aria-describedby"
         part "sheet-footer", "Action row pinned to the bottom of the panel"
 
+        # The operate surface, inherited from Dialog and reworded for the
+        # sheet; the bare executes: re-resolves to this class's controller.
+        tool :open, description: "Open the sheet.", executes: :open, mutating: true
+        tool :close, description: "Close the sheet.", executes: :close, mutating: true
+
         private
 
         # The Sheet deltas on the inherited panel: the side's edge classes

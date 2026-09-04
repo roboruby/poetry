@@ -4493,14 +4493,14 @@ components:
     tools:
     - name: open
       title: Open
-      description: Open the dialog.
+      description: Open the drawer.
       annotations:
         readOnlyHint: false
         untrustedContentHint: false
       executes: poetry--core--drawer#open
     - name: close
       title: Close
-      description: Close the dialog.
+      description: Close the drawer.
       annotations:
         readOnlyHint: false
         untrustedContentHint: false
@@ -9611,14 +9611,14 @@ components:
     tools:
     - name: open
       title: Open
-      description: Open the dialog.
+      description: Open the sheet.
       annotations:
         readOnlyHint: false
         untrustedContentHint: false
       executes: poetry--core--sheet#open
     - name: close
       title: Close
-      description: Close the dialog.
+      description: Close the sheet.
       annotations:
         readOnlyHint: false
         untrustedContentHint: false
