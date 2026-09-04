@@ -245,8 +245,8 @@
           <% end %>
           <% accordion.with_item(value: "a11y", title: "How serious is the accessibility story?") do %>
             Components implement the APG keyboard patterns, manage focus,
-            and wire aria for you. Every preview runs through axe in CI,
-            and composite widgets carry manual test protocols.
+            and wire aria for you. A rake task walks every preview with axe in
+            headless Chrome, and composite widgets carry manual test protocols.
           <% end %>
           <% accordion.with_item(value: "agents", title: "What does my coding agent get?") do %>
             A committed component registry, llms.txt, an MCP server with
