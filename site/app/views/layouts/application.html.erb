@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html class="style-default">
   <head>
-    <title><%= content_for(:title) ? "#{content_for(:title)} — poetry" : "poetry" %></title>
+    <title><%= page_meta[:title] %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= render "layouts/meta" %>
     <%# poetry_optimistic_form's prerequisite: failure
         reconciliation is a Turbo refresh that must MORPH to be seamless. %>
     <meta name="turbo-refresh-method" content="morph">
