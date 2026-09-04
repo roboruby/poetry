@@ -129,40 +129,43 @@
     </div>
   </section>
 
-  <%# ---- Benefits ----------------------------------------------------- %>
-  <section class="border-t border-border bg-card/50">
-    <div class="mx-auto max-w-6xl px-6 py-24">
-      <h2 class="max-w-170 text-3xl font-semibold" data-controller="reveal" data-reveal style="text-wrap: balance">
-        What you get on day one
-      </h2>
-      <div class="mt-12 grid gap-6 sm:grid-cols-2">
-        <% [
-          { icon: :"square-terminal", title: "Ship real UI from ERB you already know",
-            body: "Every component is a Ruby helper with a typed contract: options are keywords, content is the block. If a value is wrong, you find out at render, not in production." },
-          { icon: :accessibility, title: "Accessible by construction",
-            body: "Keyboard contracts, focus management, and aria wiring live inside the components. Axe runs against every preview in CI, so the floor never quietly drops." },
-          { icon: :"chart-line", title: "Charts with no client engine",
-            body: "All 9 chart families compute their geometry in Ruby and ship as SVG in the initial HTML. They hold up in print, PDF, email, and with JavaScript turned off." },
-          { icon: :bot, title: "Legible to your coding agent",
-            body: "A committed registry, llms.txt, an MCP server, and generated skills mean your coding agent composes the same vetted components you do. And with WebMCP, the components you render register their tools with the user's own browser agent." }
-        ].each_with_index do |benefit, i| %>
-          <div data-controller="reveal" data-reveal style="--reveal-delay: <%= (i % 2) * 0.15 %>s">
-            <%= poetry_card do |card| %>
-              <% card.with_title do %>
-                <span class="flex items-center gap-3">
-                  <span class="flex size-8 items-center justify-center rounded-md bg-secondary">
-                    <%= poetry_icon(name: benefit[:icon], class: "size-4 text-primary") %>
-                  </span>
-                  <%= benefit[:title] %>
+<%# ---- Audiences -------------------------------------------------- %>
+<%# The day-one benefit cards this section replaced (ship from ERB,
+    accessible by construction, charts with no client engine, legible to
+    your coding agent) return in the feature section; see git history. %>
+<section class="border-t border-border bg-card/50">
+  <div class="mx-auto max-w-6xl px-6 py-24">
+    <h2 class="max-w-170 text-3xl font-semibold" data-controller="reveal" data-reveal style="text-wrap: balance">
+      One library built for four audiences
+    </h2>
+    <div class="mt-12 grid gap-6 sm:grid-cols-2">
+      <% [
+        { icon: :users, title: "Users",
+          body: "They get an interface that is beautiful, consistent, and accessible by construction. Keyboard contracts, focus management, and aria wiring live inside every component, and each theme clears its contrast gates before it ships. When they bring their own agent, the page cooperates: components declare what an agent may do, so a user's browser agent can operate your app on their behalf." },
+        { icon: :code, title: "Developers",
+          body: "Ruby all the way down. Every component is a helper with a typed contract, content is the block, and a wrong value fails at render instead of in production. Forms derive labels, errors, and aria from the model. Nine themes, copy-in ownership when you need to customize, a bridge for apps already on Simple Form, and no React and no build step." },
+        { icon: :bot, title: "Agents",
+          body: "Coding agents get the whole contract as text: a committed registry, llms.txt, an MCP server that composes from vetted blocks and checks the result, and installable skills. Page agents get an operator register that describes every screen in their vocabulary. In-page agents get WebMCP tools the components declare themselves. The result is UI an agent composes correctly the first time and can verify before it ships." },
+        { icon: :brain, title: "Models",
+          body: "Discoverable, understandable, and learnable. Every page mirrors as markdown, the site publishes llms.txt and a skills index, and its content signals say yes to search, AI input, and training. One consistent vocabulary with stable names and stated rules lets a model learn Poetry the way it learned Rails, and the library is open and MIT, so nothing stands in the way." }
+      ].each_with_index do |audience, i| %>
+        <div data-controller="reveal" data-reveal style="--reveal-delay: <%= (i % 2) * 0.15 %>s">
+          <%= poetry_card do |card| %>
+            <% card.with_title do %>
+              <span class="flex items-center gap-3">
+                <span class="flex size-8 items-center justify-center rounded-md bg-secondary">
+                  <%= poetry_icon(name: audience[:icon], class: "size-4 text-primary") %>
                 </span>
-              <% end %>
-              <p class="text-sm text-muted-foreground" style="text-wrap: pretty"><%= benefit[:body] %></p>
+                <%= audience[:title] %>
+              </span>
             <% end %>
-          </div>
-        <% end %>
-      </div>
+            <p class="text-sm text-muted-foreground" style="text-wrap: pretty"><%= audience[:body] %></p>
+          <% end %>
+        </div>
+      <% end %>
     </div>
-  </section>
+  </div>
+</section>
 
   <%# ---- Tagline reveal (the page's own moment) ----------------------- %>
   <section class="mx-auto max-w-6xl px-6 py-32" data-controller="word-reveal">
