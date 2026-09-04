@@ -160,7 +160,12 @@
           <div class="hidden truncate lg:block"><%= yield :breadcrumb %></div>
           <div class="ml-auto flex items-center gap-2">
             <%= render "shared/site_nav" %>
-            <%= render "shared/search" %>
+            <%# The palette lists every page plus the search index headings (a
+                thousand items) and depends on nothing in the request, so it is
+                cached whole; its ids are random per render and stay unique. %>
+            <% cache [ "docs", "search-palette", Poetry::Ui::VERSION, SearchIndex.digest ] do %>
+              <%= render "shared/search" %>
+            <% end %>
             <%# The theme switcher is itself styled by the theme it switches, so
                 its native-select width would otherwise track each theme's font/
                 padding and jump on change. class: "w-full" overrides the

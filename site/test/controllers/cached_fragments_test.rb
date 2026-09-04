@@ -5,13 +5,18 @@ require "test_helper"
 # controller caching on, so a cached sidebar must still mark the right page
 # active and a cached code block must not repeat an id across the page.
 class CachedFragmentsTest < ActionDispatch::IntegrationTest
+  # Fragment caching writes through the controller's store (wired from
+  # config.cache_store at boot), so both stores are swapped here.
   def with_caching
-    store, caching = Rails.cache, ActionController::Base.perform_caching
-    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+    store, controller_store, caching = Rails.cache, ActionController::Base.cache_store, ActionController::Base.perform_caching
+    memory = ActiveSupport::Cache::MemoryStore.new
+    Rails.cache = memory
+    ActionController::Base.cache_store = memory
     ActionController::Base.perform_caching = true
     yield
   ensure
     Rails.cache = store
+    ActionController::Base.cache_store = controller_store
     ActionController::Base.perform_caching = caching
   end
 
@@ -34,6 +39,23 @@ class CachedFragmentsTest < ActionDispatch::IntegrationTest
       assert_equal [ component_path("button") ], active_links, "a cache hit must return the page's own sidebar"
     end
   end
+
+test "the cached palette keeps every item and its ids stay unique on any page" do
+  with_caching do
+    get component_path("button")
+    first = Nokogiri::HTML5(response.body).css("[data-component=command-dialog]").first.to_html
+    items = Nokogiri::HTML5(first).css("[data-slot=command-item]").size
+
+    assert_operator items, :>, DocsCatalog.components.size, "the palette lists the catalog and the index headings"
+
+    get introduction_path
+    doc = Nokogiri::HTML5(response.body)
+
+    assert_equal first, doc.css("[data-component=command-dialog]").first.to_html, "the palette is one cached fragment"
+    ids = doc.css("[id]").map { |n| n["id"] }
+    assert_empty ids.tally.select { |_, count| count > 1 }, "duplicate ids on a cached render"
+  end
+end
 
   test "cached code blocks are stable across renders and never duplicate an id" do
     with_caching do

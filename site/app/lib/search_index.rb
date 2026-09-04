@@ -30,6 +30,12 @@ class SearchIndex
       entries.size
     end
 
+    # A digest of the committed index, for cache keys: the palette that
+    # renders these entries changes only when this file or the gems do.
+    def digest
+      @digest ||= PATH.exist? ? Digest::SHA256.file(PATH).hexdigest[0, 16] : "none"
+    end
+
     def entries
       @entries ||= PATH.exist? ? JSON.parse(PATH.read) : []
     end
