@@ -3,8 +3,9 @@
 Server-rendered UI components for Rails — the shadcn/ui component set as
 ViewComponents on Stimulus, with nine complete visual themes, a
 machine-readable component registry, and a full agent surface (llms.txt,
-MCP, Claude Code skills, `poetry check`). Names are working titles; the
-gems are unpublished.
+MCP, Claude Code skills, `poetry check`). Published on RubyGems as
+`poetry-ui`; the `poetry` umbrella installs it with poetry-core and
+poetry-lucide.
 
 ## Install
 
