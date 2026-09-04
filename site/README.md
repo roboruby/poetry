@@ -2,7 +2,7 @@
 
 The documentation site for the **poetry** family — a Rails app that consumes
 the gems exactly the way a real host does, and will grow the component +
-chart galleries (the ui.shadcn.com parity showcase).
+chart galleries.
 
 ## Two jobs
 
