@@ -120,7 +120,7 @@ class DocsCatalog
                        "and how it fits with llms.txt and the installable skills."),
     Entry.new(slug: "webmcp", title: "WebMCP", section: "docs", icon: :"mouse-pointer-click",
               description: "Your components' tools, registered with the user's own browser agent: " \
-                       "opt a rendered Combobox, Dialog, or Tabs into WebMCP with one keyword, " \
+                       "opt a rendered Combobox, Dialog, Drawer, Sheet, or Tabs into WebMCP with one keyword, " \
                        "declare a form as a tool with no JavaScript, and try both live on this page."),
     Entry.new(slug: "ag-ui", title: "AG-UI Relay", section: "docs", icon: :activity,
               description: "Bring an AG-UI agent into your Rails app: run its endpoint, fold the " \
