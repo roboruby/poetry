@@ -298,6 +298,10 @@ class DocsCatalog
     # The library pages - one per gem in the family, prose-first guides at
     # /libraries/<slug>. Descriptions are the sidebar/palette cards.
     LIBRARIES = [
+      Entry.new(slug: "poetry", title: "Poetry", section: "libraries", icon: :feather,
+                description: "The umbrella gem: one gem \"poetry\" installs the engine, the components and " \
+                           "the default icon set together; charts, the agent surfaces, extraction and " \
+                           "the Simple Form bridge stay opt-in."),
       Entry.new(slug: "core", title: "Core", section: "libraries", icon: :cpu,
                 description: "The engine gem: the component DSL, design tokens, and 53 Stimulus " \
                            "primitives poetry-ui is built on - the same public surface you use " \

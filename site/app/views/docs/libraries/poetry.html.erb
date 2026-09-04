@@ -1,0 +1,112 @@
+<% content_for :title, "Poetry" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Poetry") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag (a literal ERB closer would end it).
+  gemfile_source = <<~CODE
+    gem "poetry"
+  CODE
+  install_source = <<~CODE
+    bundle install
+    bin/rails generate poetry:install
+  CODE
+  ecosystem_source = <<~CODE
+    gem "poetry"
+    gem "poetry-charts"        # server-rendered SVG charts
+    gem "poetry-agent"         # MCP server, WebMCP, AG-UI, A2UI
+    gem "poetry-extract"       # DESIGN.md + tokens from any public site
+    gem "poetry-simple_form"   # the Simple Form migration bridge
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Poetry</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      The umbrella gem. One line installs the library proper: the engine,
+      the components, and the default icon set. Everything else in the
+      family is opt-in and listed below.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="what-it-installs">What the umbrella installs</h2>
+      <p>
+        <%= link_to "poetry-core", library_path("core") %> is the framework
+        layer: the Rails engine, the component base class, the DSL that gives a
+        component its style axes, options, parts and slots, the Stimulus
+        integration, and the design-token foundation every theme is built on.
+      </p>
+      <p>
+        <%= link_to "poetry-ui", library_path("ui") %> is the component
+        library itself: <%= DocsCatalog.components.size %> accessible,
+        themeable components exposed as <code>poetry_*</code> helpers, nine
+        complete themes, the model-bound form builder, the vetted blocks, and
+        the agent surface that this site and the MCP tools read.
+      </p>
+      <p>
+        <%= link_to "poetry-lucide", icon_set_path("lucide") %> is the default
+        icon set: Lucide's icons vendored at a pinned commit and sanitized
+        when vendored, so rendering an icon never parses, sanitizes, or
+        fetches anything.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="install">Install</h2>
+      <p>
+        Add the gem and run the installer. It wires the engine, the Tailwind
+        entry point and the importmap pins, and writes the agent skills into
+        the app.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: gemfile_source, language: "ruby", label: "Gemfile") %>
+    <%= poetry_code_block(code: install_source, language: "shell", label: "Install") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        From there <code>poetry_button</code>, <code>poetry_dialog</code>,
+        <code>poetry_data_table</code> and the rest are available in every
+        view; the <%= link_to "installation guide", installation_path %>
+        covers themes, charts and upgrades.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="ecosystem">The ecosystem gems</h2>
+      <p>
+        Add what you use; nothing here is pulled in by the umbrella. The
+        family releases in lockstep and every gem pins its siblings to its
+        own version, so these resolve to the umbrella's release without
+        version constraints.
+      </p>
+      <ul>
+        <li><%= link_to "Charts", library_path("charts") %>: nine chart families computed in Ruby and shipped as finished SVG.</li>
+        <li><%= link_to "Agent", library_path("agent") %>: the MCP server, the WebMCP runtime, the AG-UI relay and the A2UI catalog and renderer.</li>
+        <li><%= link_to "Extract", library_path("extract") %>: a <code>DESIGN.md</code> and deterministic tokens from any public website.</li>
+        <li><%= link_to "Simple Form", library_path("simple-form") %>: the migration bridge for apps already on Simple Form.</li>
+      </ul>
+    <% end %>
+    <%= poetry_code_block(code: ecosystem_source, language: "ruby", label: "A full Gemfile") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="where">Where it lives</h2>
+      <p>
+        The code is on <a href="https://github.com/roboruby/poetry">GitHub</a>,
+        where the umbrella's README links every sibling repository, and the
+        gems are on <a href="https://rubygems.org/gems/poetry">RubyGems</a>.
+        The family's version is one number across all of them.
+      </p>
+    <% end %>
+  </section>
+</div>

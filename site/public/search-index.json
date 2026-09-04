@@ -6288,6 +6288,36 @@
     "path": "/api/poetry-extract#poetry"
   },
   {
+    "title": "Poetry",
+    "page": "Poetry",
+    "section": "libraries",
+    "path": "/libraries/poetry"
+  },
+  {
+    "title": "What the umbrella installs",
+    "page": "Poetry",
+    "section": "libraries",
+    "path": "/libraries/poetry#what-it-installs"
+  },
+  {
+    "title": "Install",
+    "page": "Poetry",
+    "section": "libraries",
+    "path": "/libraries/poetry#install"
+  },
+  {
+    "title": "The ecosystem gems",
+    "page": "Poetry",
+    "section": "libraries",
+    "path": "/libraries/poetry#ecosystem"
+  },
+  {
+    "title": "Where it lives",
+    "page": "Poetry",
+    "section": "libraries",
+    "path": "/libraries/poetry#where"
+  },
+  {
     "title": "Core",
     "page": "Core",
     "section": "libraries",

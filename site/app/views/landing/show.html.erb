@@ -13,9 +13,9 @@
       <div class="hidden sm:block">
         <%= poetry_navigation_menu(label: "Site", viewport: true) do |nav| %>
           <% nav.with_link("Docs", href: introduction_path) %>
-          <% nav.with_link("Themes", href: theming_path) %>
-          <% nav.with_link("Forms", href: forms_path) %>
           <% nav.with_link("Components", href: DocsCatalog.components.first.path) %>
+          <% nav.with_link("Libraries", href: library_path("poetry")) %>
+          <% nav.with_link("AI", href: mcp_path) %>
         <% end %>
       </div>
       <%= render "shared/project_links" %>

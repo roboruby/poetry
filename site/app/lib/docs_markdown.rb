@@ -154,6 +154,15 @@ class DocsMarkdown
       MD
     end
 
+# The umbrella library page's mirror.
+def library_poetry(entry)
+  <<~MD
+    #{header(entry)}
+
+    The umbrella gem: `gem "poetry"` installs the library proper - poetry-core (the Rails engine, the component DSL, the Stimulus integration and the design-token foundation), poetry-ui (#{DocsCatalog.components.size} accessible, themeable components as `poetry_*` helpers, nine themes, the form builder, the blocks and the agent surface) and poetry-lucide (the default icon set, vendored and sanitized at a pinned commit). `bin/rails generate poetry:install` wires the engine, the Tailwind entry point, the importmap pins and the agent skills. The ecosystem gems stay opt-in and resolve to the umbrella's release without version constraints: [poetry-charts](/libraries/charts), [poetry-agent](/libraries/agent), [poetry-extract](/libraries/extract) and [poetry-simple_form](/libraries/simple-form). Code: https://github.com/roboruby/poetry - gems: https://rubygems.org/gems/poetry.
+  MD
+end
+
     # The Agent library page's mirror.
     def agui(entry)
       <<~MD

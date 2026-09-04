@@ -24,6 +24,41 @@ class SiteNavTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "the landing nav is Docs, Components, Libraries (the umbrella page) and AI" do
+    get root_path
+
+
+    links = css_select("header nav [data-slot='navigation-menu-link']").map { |a| [ a.text.strip, a["href"] ] }
+
+    assert_equal [ [ "Docs", "/docs" ], [ "Components", DocsCatalog.components.first.path ],
+
+                   [ "Libraries", "/libraries/poetry" ], [ "AI", "/mcp-server" ] ], links
+  end
+
+
+  test "the umbrella library page leads the Libraries section and mirrors as markdown" do
+    assert_equal "poetry", DocsCatalog.libraries.first.slug
+
+
+    get library_path("poetry")
+
+
+    assert_response :success
+
+    assert_select "h1", "Poetry"
+
+    assert_select "a[href=?]", library_path("core")
+
+
+    get "/libraries/poetry.md"
+
+
+    assert_response :success
+
+    assert_includes response.body, "gem \"poetry\""
+  end
+
+
   test "the docs header and the landing header link the code and the gem" do
     get introduction_path
     HOMES.each { |href| assert_select "header a[href=?]", href, { minimum: 1 } }
