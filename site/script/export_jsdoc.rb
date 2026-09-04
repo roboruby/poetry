@@ -32,12 +32,12 @@ abort "usage: export_jsdoc.rb <gem_root> <out.json>" unless gem_root && out_path
 CONFIGS = {
   "poetry-core" => {
     subpath: "poetry/core", package: "@poetry/controllers",
-    prefix: "poetry--core--", skip: ["vendor/"],
+    prefix: "poetry--core--", skip: [ "vendor/" ],
     superclasses: { "DialogController" => "poetry--core--dialog" }
   },
   "poetry-charts" => {
     subpath: "poetry/charts", package: "@poetry/charts",
-    prefix: "poetry--charts--", skip: ["d3.js"],
+    prefix: "poetry--charts--", skip: [ "d3.js" ],
     superclasses: {}
   }
 }.freeze
@@ -73,10 +73,10 @@ def parse_jsdoc(block)
   tags.each do |tag|
     case tag
     when /\A@param\s+(?:\{([^}]*)\}\s*)?(\S+)(?:\s+-?\s*(.*))?\z/m
-      params << { "name" => Regexp.last_match(2), "types" => [Regexp.last_match(1)].compact,
+      params << { "name" => Regexp.last_match(2), "types" => [ Regexp.last_match(1) ].compact,
                   "text" => tidy(Regexp.last_match(3).to_s) }
     when /\A@returns?\s+(?:\{([^}]*)\}\s*)?(.*)\z/m
-      ret = { "types" => [Regexp.last_match(1)].compact, "text" => tidy(Regexp.last_match(2).to_s) }
+      ret = { "types" => [ Regexp.last_match(1) ].compact, "text" => tidy(Regexp.last_match(2).to_s) }
     when /\A@throws\s+(?:\{([^}]*)\}\s*)?(.*)\z/m
       extra << "Raises `#{Regexp.last_match(1)}` - #{tidy(Regexp.last_match(2).to_s)}"
     when /\A@type\b/
@@ -87,7 +87,7 @@ def parse_jsdoc(block)
   end
 
   docstring = tidy(description.join("\n").strip)
-  docstring = [docstring, *extra].reject(&:empty?).join("\n\n")
+  docstring = [ docstring, *extra ].reject(&:empty?).join("\n\n")
   { "docstring" => docstring, "params" => params, "return" => ret }
 end
 
@@ -146,7 +146,7 @@ def scan(path)
 
     if (match = line.match(%r{\A(\s{0,2})/\*\*}))
       indent = match[1]
-      block = [line]
+      block = [ line ]
       block << lines[i += 1] until lines[i].include?("*/")
       i += 1
       i += 1 while lines[i].to_s.strip.empty?
@@ -256,7 +256,7 @@ Dir[File.join(JS_ROOT, "**/*.js")].sort.each do |path|
            "controllers map) - exported without the facts section"
     end
 
-    docstring = [scanned[:header], facts_for(identifier)].compact.reject(&:empty?).join("\n\n")
+    docstring = [ scanned[:header], facts_for(identifier) ].compact.reject(&:empty?).join("\n\n")
     objects << { "path" => identifier, "type" => "controller",
                  "superclass" => SUPERCLASS_IDENTIFIERS[scanned[:extends]],
                  "docstring" => docstring, "examples" => [], "file" => scanned[:file],

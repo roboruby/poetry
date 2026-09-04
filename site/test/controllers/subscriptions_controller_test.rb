@@ -26,7 +26,7 @@ class SubscriptionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert JSON.parse(response.body)["ok"]
-    assert_equal ["reader@example.com"], calls
+    assert_equal [ "reader@example.com" ], calls
   end
 
   test "an invalid email is rejected before any API call" do

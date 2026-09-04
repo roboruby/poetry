@@ -64,7 +64,7 @@ payload = objects.sort_by(&:path).map do |o|
   methods = o.meths(inherited: false, included: false)
              .select { |m| m.visibility == :public && !api_private?(m) }
              .reject { |m| m.docstring.blank? && m.tags.empty? }
-             .sort_by { |m| [m.scope.to_s, m.name.to_s] }
+             .sort_by { |m| [ m.scope.to_s, m.name.to_s ] }
              .map { |m| method_entry(m) }
 
   constants = o.constants(inherited: false)
