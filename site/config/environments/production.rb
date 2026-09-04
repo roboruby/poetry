@@ -44,7 +44,10 @@ Rails.application.configure do
   config.active_support.report_deprecations = false
 
   # Replace the default in-process memory cache store with a durable alternative.
-  # config.cache_store = :mem_cache_store
+  # One Puma process per container: an in-process memory store is the right
+  # fit for the fragment caches (highlighted example sources, sidebar item
+  # lists), all keyed on the Poetry version so a release invalidates them.
+  config.cache_store = :memory_store, { size: 256.megabytes }
 
   # Store uploaded files on the local file system (config/storage.yml names the services).
   config.active_storage.service = :local

@@ -125,6 +125,10 @@
                                          "group-data-[open]/collapsible:rotate-90") %>
                 <% end %>
                 <%= poetry_sidebar_group_content(class: "pt-1") do %>
+                  <%# The item list is the expensive part (~150 buttons per page) and
+                      depends only on the catalog, the gem version and which page is
+                      active; the disclosure state above stays outside the cache. %>
+                  <% cache [ "docs", "sidebar-items", Poetry::Ui::VERSION, title, request.path ] do %>
                   <%= poetry_sidebar_menu do %>
                     <% entries.each do |entry| %>
                       <%= poetry_sidebar_menu_item do %>
@@ -134,6 +138,7 @@
                         <% end %>
                       <% end %>
                     <% end %>
+                  <% end %>
                   <% end %>
                 <% end %>
               <% end %>

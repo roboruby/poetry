@@ -284,10 +284,16 @@ rescue JSON::ParserError
   {}
 end
 
-  # Example/block source panels ride the CodeBlock component: the
-  # theme-owned syntax palette replaces the vendored GitHub rouge.css, and
-  # every code tab gains the copy affordance.
-  def highlight_erb(source)
-    poetry_code_block(code: source, language: "erb", label: "Example source", line_numbers: true)
-  end
+# Example/block source panels ride the CodeBlock component: the
+# theme-owned syntax palette replaces the vendored GitHub rouge.css, and
+# every code tab gains the copy affordance.
+# Highlighting is a pure function of the source and the gem version (the
+# CodeBlock component owns the markup), and the rendered block carries no
+# per-request ids, so the fragment caches safely across requests.
+def highlight_erb(source)
+  key = [ "docs", "highlight", Poetry::Ui::VERSION, Digest::SHA256.hexdigest(source) ]
+  Rails.cache.fetch(key, expires_in: 1.week) do
+    poetry_code_block(code: source, language: "erb", label: "Example source", line_numbers: true).to_str
+  end.html_safe # rubocop:disable Rails/OutputSafety
+end
 end
