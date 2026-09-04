@@ -67,7 +67,7 @@
   <header class="flex flex-col gap-3">
     <h1 class="text-4xl font-semibold tracking-tight">UI</h1>
     <p class="max-w-2xl text-lg text-muted-foreground">
-      poetry-ui is the component catalog: 87 accessible, themeable
+      poetry-ui is the component catalog: <%= DocsCatalog.components.size %> accessible, themeable
       components rendered server-side from Ruby helpers, with nine
       complete themes, eight page blocks, a form builder, testing
       helpers, and a full agent surface.
@@ -152,7 +152,7 @@
         carries nine complete visual themes (default, vega, nova, mira,
         rhea, maia, luma, lyra, and sera), and the installer copies your
         choice into the app. Components reference stable class names, the
-        theme file paints them, so switching restyles all 87 components
+        theme file paints them, so switching restyles all <%= DocsCatalog.components.size %> components
         and every block at once:
       </p>
     <% end %>

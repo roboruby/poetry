@@ -304,7 +304,7 @@ class DocsCatalog
                            "to build your own component library, styled with Tailwind utilities " \
                            "or a stable BEM class contract."),
       Entry.new(slug: "ui", title: "UI", section: "libraries", icon: :"layout-dashboard",
-                description: "The component catalog: 87 accessible components rendered server-side " \
+                description: "The component catalog: #{COMPONENT_GROUPS.values.sum(&:size)} accessible components rendered server-side " \
                            "from Ruby helpers, with nine themes in the gem, copy-in ownership " \
                            "via poetry:add, testing helpers, and a full agent surface."),
       Entry.new(slug: "charts", title: "Charts", section: "libraries", icon: :"chart-line",

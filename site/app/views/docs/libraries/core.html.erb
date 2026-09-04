@@ -239,7 +239,7 @@
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <h2 id="build-your-own">Build your own component library</h2>
       <p>
-        Everything poetry-ui's 87 components are made of is public API.
+        Everything poetry-ui's <%= DocsCatalog.components.size %> components are made of is public API.
         Subclass <code>Poetry::Core::Component</code> and your components
         get the same declared surface: typed attributes, a style axis
         vocabulary, documented slots, a part contract, and a place in the

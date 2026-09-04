@@ -74,8 +74,8 @@
   <%# ---- Proof: the numbers, right under the promise ----------------- %>
   <section class="border-y border-border bg-card">
     <div class="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-6 py-12 sm:grid-cols-4" data-controller="reveal" data-reveal>
-      <%= poetry_stat(label: "Components") { "87" } %>
-      <%= poetry_stat(label: "Chart families") { "9" } %>
+      <%= poetry_stat(label: "Components") { DocsCatalog.components.size.to_s } %>
+      <%= poetry_stat(label: "Chart families") { DocsCatalog.charts.size.to_s } %>
       <%= poetry_stat(label: "Themes") { "9" } %>
       <%= poetry_stat(label: "Possibilities") do %>
         <%# The infinity stays fully drawn; a highlight dash orbits the
