@@ -177,12 +177,15 @@
                                        options: %w[default vega nova mira rhea maia luma lyra sera].map { |s| [s, s] },
                                        selected: "default") %>
             </div>
-            <%= render "shared/project_links" %>
             <%= poetry_button(variant: :ghost, size: :"icon-sm", label: "Toggle theme",
                               data: { action: "click->theme#toggle" }) do %>
               <%= poetry_icon(name: :sun, class: "dark:hidden") %>
               <%= poetry_icon(name: :moon, class: "hidden dark:block") %>
             <% end %>
+            <%# The appearance controls (style, light/dark) on one side of the
+                divider, the project links on the other. %>
+            <%= poetry_separator(orientation: :vertical, class: "mx-1 h-5") %>
+            <%= render "shared/project_links" %>
           </div>
         </header>
         <main class="mx-auto w-full max-w-4xl flex-1 p-6 lg:p-10">
