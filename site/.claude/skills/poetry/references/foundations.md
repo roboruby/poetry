@@ -72,3 +72,4 @@ In blocks: `app-shell`, `page-header` - for a screen, start from the block (MCP 
 - RULE: A purely visual divider stays decorative (the default): aria-hidden, role absent.
 - RULE: Set decorative: false only when the divide is semantically meaningful (role=separator).
 
+

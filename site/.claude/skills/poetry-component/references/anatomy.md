@@ -13,6 +13,7 @@ arguments, structure, then implementation.
 | 2 | Constants | vocabularies first (`VARIANTS`, `SIZES`, ...), then the agent contract (`AGENT_RULES`, `REQUIRES_ANY`, `SLOT_RENDERS`) |
 | 3 | Slots | `renders_one` / `renders_many` |
 | 4 | Stimulus | `use_stimulus do ... end` |
+| 4b | Agent tools | `tool :name, executes:, ...` (interactive components; optional) |
 | 5 | Styles & options | `style` declarations, then `option` declarations |
 | 6 | Validations | `validates` / `validate` |
 | 7 | Parts | `part` declarations |
@@ -119,6 +120,31 @@ module MyApp
   end
 end
 ```
+
+## Agent tools (the operate surface)
+
+Beside `use_stimulus`, an interactive component may declare the tools an
+in-page agent (WebMCP, `document.modelContext`) can invoke on a rendered
+instance. Each tool is MCP `Tool`-shaped and dispatches to one of the
+component's OWN Stimulus actions, positionally in declared parameter order:
+
+```ruby
+tool :set_value,
+     description: "Activate the tab whose value matches and show its panel.",
+     params: { value: { type: "string", required: true, description: "The tab's value." } },
+     executes: :set_value,   # a declared controller action - validated at class load
+     mutating: true          # read-only by default; the annotation says which
+```
+
+Rules: declare `use_stimulus` first; keep `executes:` bare (`:open`) when a
+subclass may re-controller the root (Sheet over Dialog) - it re-resolves per
+class; descriptions are positive, single-purpose, at most 500 characters.
+Override `webmcp_tool_definition(definition)` to refine a schema with what
+only the rendered instance knows (Tabs adds its tab values as the enum).
+Nothing registers until a call opts in: `poetry_tabs(webmcp: "sections")`.
+The registry projects tools to llms-full.txt, `describe_component`, and the
+docs page; `poetry:check` gates the opt-ins (`webmcp-without-tools`,
+`webmcp-name`, `webmcp-duplicate-name`).
 
 A component may not need every section - Button has no `use_stimulus`,
 static components have no validations. Skip absent sections entirely;

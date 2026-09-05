@@ -185,7 +185,7 @@ Class: Poetry::Charts::Container::Component - BEM block `poetry-charts-container
 - `config:` () - required - The series config - key => { label:, color: } - driving the per-series color emission.
 - `id:` (string) - Explicit DOM id token, stable across renders; otherwise the frame gets a unique per-render id.
 - PART `chart` - The chart frame (<div>) - the aspect-video chrome, the tooltip layer's positioning anchor, and the id scope the per-series colors are emitted for | states: data-chart (always - the chart instance id (explicit id: or unique per render); the scoped color emission keys off it) | vars: --color-* (per-series color, one entry per series key - the frame's <style> block emits them for [data-chart=<id>] in both themes)
-- RULE: Every chart lives inside poetry_chart_container(config:) - the config maps series keys to labels/colors.
+- RULE: Every chart lives inside poetry_container(config:) - the config maps series keys to labels/colors.
 - RULE: Reference series colors as var(--color-<key>); never hard-code a color in chart markup.
 - RULE: Config colors point at theme tokens (var(--chart-1..5)) or use theme: { light:, dark: } maps.
 - RULE: Give charts an explicit id: when the page renders more than one of the same chart.

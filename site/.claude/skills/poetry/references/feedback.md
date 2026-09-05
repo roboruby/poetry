@@ -126,3 +126,4 @@ Class: Poetry::Ui::Toaster::Component - BEM block `poetry-ui-toaster`.
 - RULE: Client-side (no round-trip) toasts go through poetry_toast_trigger(template:) + a <template> holding the rendered poetry_toast - the trigger stamps it into the region.
 - RULE: Do not announce() toast content yourself - the toast controller already does; double-announcing is a regression.
 
+

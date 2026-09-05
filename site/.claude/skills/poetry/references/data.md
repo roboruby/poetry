@@ -18,6 +18,7 @@ Slots: items (The accordion sections. Each takes value: (its open-state key), ti
 - PART `accordion-item` - One value-keyed section wrapping its header and panel | states: data-open (the item is expanded (server-rendered from open:; the controller flips the pair at runtime)); data-closed (the item is collapsed); data-value (the item's open-state key (always present)); data-disabled (with_item(disabled: true) - the item is locked (styling hook; the trigger carries the native disabled attribute))
 - PART `accordion-header` - The heading element (heading_level:, h3 default) hosting the trigger button
 - PART `accordion-trigger` - The toggle button inside the header - the chevron rotation rides aria-expanded, not a data attribute | states: data-panel-open (its panel is open (controller-written; absent while closed)); data-disabled (with_item(disabled: true) - stamped beside the native disabled attribute; roving focus filters it out at query time)
+- PART `accordion-trigger-icon` - The chevron svg inside the trigger (aria-hidden) - rotates with the item
 - PART `accordion-content` - The role=region panel - the presence animation and the measured height var ride here | states: data-open (panel is open or entering); data-closed (panel is closed or animating out (hidden lands after the exit finishes)) | vars: --accordion-panel-height (the measured content height (controller-written) that feeds the accordion-down/up keyframes)
 - WIRING root: `poetry--core--accordion` registers; values type, collapsible | `poetry--core--roving-focus` registers; values orientation, manage_tabindex; actions keydown on keydown
 - WIRING trigger: `poetry--core--accordion` actions toggle on click
@@ -422,4 +423,5 @@ Content block REQUIRED (the rendered prose HTML) - a blockless call raises.
 - RULE: preset: "docs" appends typeset-docs - a preset is a tiny class in the app's own CSS setting --typeset-size/-leading/-flow (and font vars).
 - RULE: Opt an embedded component OUT of the prose styling with class: "not-typeset" - it covers the whole subtree.
 - RULE: Wrap a wide table (or any wide block) in a typeset-scroll div inside the prose to scroll horizontally instead of compressing.
+
 

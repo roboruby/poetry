@@ -9,7 +9,7 @@ description: >-
 
 # poetry - component usage
 
-Generated from the poetry registry (87 components + 13 chart components + 8 blocks). After updating
+Generated from the poetry registry (88 components + 13 chart components + 8 blocks). After updating
 poetry gems, regenerate with `bin/rails g poetry:skill`.
 
 ## Guardrails
@@ -39,6 +39,12 @@ poetry gems, regenerate with `bin/rails g poetry:skill`.
   when composing into an already-padded frame.
 - One visual theme per app (chosen at install); components read
   tokens, never restate them.
+- Browser agents (WebMCP): opt a rendered component into the user's
+  own agent with `webmcp: "name"` on the call - only components that
+  declare tools (Combobox, Dialog, Sheet, Drawer, Tabs; `describe_component`
+  at `full` lists them); a form becomes a tool with
+  `poetry_webmcp_form(tool: { name:, description: })` (autosubmit is
+  GET-only). Needs the poetry-agent gem; check gates the opt-ins.
 - Check comes LAST: run `bin/rails poetry:check` (or the poetry MCP
   `check` tool - instant, no app boot) as the FINAL action, after
   your last edit. An edit made after your last check is unverified
@@ -54,7 +60,7 @@ Load the reference for the family you are composing in - each file
 carries the full contracts (options, variants, slots, wiring, RULE
 lines) for its components:
 
-- **forms** (`references/forms.md`): autocomplete, button, button_group, calendar, checkbox, combobox, date_field, date_picker, field, field_group, field_separator, fieldset, file_input, input, input_group, input_otp, label, native_select, number_field, questionnaire, radio_group, search_field, select, sensitive_input, slider, switch, textarea, time_field, toggle, toggle_group
+- **forms** (`references/forms.md`): autocomplete, button, button_group, calendar, checkbox, combobox, date_field, date_picker, date_time_field, field, field_group, field_separator, fieldset, file_input, input, input_group, input_otp, label, native_select, number_field, questionnaire, radio_group, search_field, select, sensitive_input, slider, switch, textarea, time_field, toggle, toggle_group
 - **overlays** (`references/overlays.md`): alert_dialog, command, command_dialog, context_menu, dialog, drawer, dropdown_menu, hover_card, menubar, popover, sheet, tooltip
 - **data** (`references/data.md`): accordion, avatar, badge, card, carousel, clipboard_text, code_block, collapsible, data_table, empty, item, metadata_list, meter, stat, table, tag_group, timeline, toolbar, tree, typeset
 - **feedback** (`references/feedback.md`): alert, deferred, progress, skeleton, spinner, toast, toast_trigger, toaster

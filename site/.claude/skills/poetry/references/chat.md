@@ -90,3 +90,4 @@ Class: Poetry::Ui::MessageScroller::Component - BEM block `poetry-ui-message_scr
 - RULE: History loads PREPEND into the content element - the controller preserves the reading position.
 - RULE: Never nest a second scroll container inside the viewport.
 
+

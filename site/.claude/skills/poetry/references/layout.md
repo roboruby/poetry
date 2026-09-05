@@ -45,3 +45,4 @@ Content block REQUIRED (what scrolls) - a blockless call raises.
 - RULE: label: is REQUIRED - the viewport is focusable, and a focusable region needs a name (role=region + aria-label).
 - RULE: This is a NATIVE scroll surface - never bolt scroll JS onto it; use MessageScroller for chat transcripts.
 
+

@@ -52,3 +52,7 @@ surface.
   every surface derived from it skip them.
 - Behavior belongs to Stimulus controllers declared through
   `use_stimulus`; a component never ships inline `<script>`.
+- Agent tools: declare what an in-page agent may do to a rendered instance
+  with `tool :name, description:, params:, executes:, mutating:` beside
+  `use_stimulus` (`executes:` names a declared Stimulus action - validated at
+  class load); a call opts in with `webmcp: "name"`. See `references/anatomy.md`.

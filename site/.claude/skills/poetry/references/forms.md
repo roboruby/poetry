@@ -175,22 +175,23 @@ Slots: trigger (Optional custom trigger content rendered BEFORE the value span (
 - PART `combobox-native` - The visually-hidden native <select> - the serialization truth (Select's decision verbatim); plumbing, never styled or targeted
 - PART `combobox-trigger` - The role=combobox button (the demo's outline Button) the field label reaches - value display and chevrons ride inside | states: data-placeholder (no option is committed (bare; the controller toggles it on every commit)); data-popup-open (the popup is open (bare while open, absent while closed - the controller flips it with the open state))
 - PART `combobox-value` - The value display span - the selected option's label, or the placeholder | states: data-placeholder (placeholder: is given - carries the placeholder text so the controller can restore it)
-- PART `combobox-content` - The popper-positioned popup housing the embedded Command anatomy - open/closed and the resolved placement ride here | states: data-open (popup is open (the controller flips the pair at runtime)); data-closed (popup is closed or animating out (the server-rendered state)); data-side=top|right|bottom|left (the placement side - server-rendered from side:, rewritten to the resolved side by popper on open); data-align=start|center|end (the placement alignment - server-rendered from align:, rewritten by popper on open) | vars: --transform-origin (popper - the animation origin matching the resolved placement); --available-width (popper - viewport space available to the popup post-flip); --available-height (popper - viewport space available to the popup post-flip); --anchor-width (popper - the trigger's measured width (the popup width tracks it - one knob, two surfaces)); --anchor-height (popper - the trigger's measured height)
+- PART `combobox-chip-input` - The inline filter input beside the chips (multiple: only) - the one typing surface; the source's chip input
+- PART `combobox-content` - The popper-positioned popup housing the embedded Command anatomy - open/closed and the resolved placement ride here | states: data-open (popup is open (the controller flips the pair at runtime)); data-closed (popup is closed or animating out (the server-rendered state)); data-chips (multiple: - chips mode; the popup's minimum width follows the chips field); data-side=top|right|bottom|left (the placement side - server-rendered from side:, rewritten to the resolved side by popper on open); data-align=start|center|end (the placement alignment - server-rendered from align:, rewritten by popper on open) | vars: --transform-origin (popper - the animation origin matching the resolved placement); --available-width (popper - viewport space available to the popup post-flip); --available-height (popper - viewport space available to the popup post-flip); --anchor-width (popper - the trigger's measured width (the popup width tracks it - one knob, two surfaces)); --anchor-height (popper - the trigger's measured height)
 - PART `combobox-clear` - The show_clear: deselection X - a trigger sibling seated over the chevron slot; pressing it commits the blank value and returns focus to the trigger. Wears the html hidden attribute while no value is committed (the controller flips it on every commit; the chevron swap derives from that one flip in CSS)
-- PART `command` - The embedded engine root - Command's anatomy rendered here against its own controller (composition at the markup contract)
-- PART `command-input-wrapper` - The input row - search icon + filter input above the list
-- PART `command-search-icon` - Decorative search glyph beside the input
-- PART `command-input` - The filter input (role=combobox) - the typing session and aria-activedescendant live here. Single: in the popup with its own accessible name; multiple: INLINE in the chips frame (the input-inside layout), where the field label reaches it | states: data-popup-open (multiple: the popup is open (bare while open, absent while closed - the input carries the flip; single's trigger owns it))
-- PART `command-list` - THE role=listbox - the aria-controls target of both combobox roles
-- PART `command-empty` - Zero-matches message - rendered hidden; the engine unhides it when the filter pass leaves no visible items
-- PART `command-group` - role=group labelled by its heading - hidden by the engine when every member item is filtered out
-- PART `command-group-heading` - The group heading - styled, no ARIA role (the group points at it via aria-labelledby)
-- PART `command-item` - One role=option div wearing BOTH meanings - a Command item (filtering + highlight) AND Select's committed-value surface | states: data-value (always - the option's committable value (the native <option> twin)); data-selected (the option is committed (bare; absent while unselected - the controller twin-writes it with aria-selected)); data-highlighted (the item holds the activedescendant highlight (the server seeds it; the engine moves it with the input's aria-activedescendant)); data-disabled (disabled: is set (aria-disabled rides along)); data-hidden (the filter scored the item zero (the engine pairs it with hidden; never rendered server-side))
-- PART `command-item-text` - The option's label span - the filter/typematch text source
+- PART `combobox-command` - The embedded engine root - Command's anatomy rendered here against its own controller (composition at the markup contract)
+- PART `combobox-input-wrapper` - The input row - search icon + filter input above the list
+- PART `combobox-search-icon` - Decorative search glyph beside the input
+- PART `combobox-input` - The filter input (role=combobox) - the typing session and aria-activedescendant live here. Single: in the popup with its own accessible name; multiple: INLINE in the chips frame (the input-inside layout), where the field label reaches it | states: data-popup-open (multiple: the popup is open (bare while open, absent while closed - the input carries the flip; single's trigger owns it))
+- PART `combobox-list` - THE role=listbox - the aria-controls target of both combobox roles
+- PART `combobox-empty` - Zero-matches message - rendered hidden; the engine unhides it when the filter pass leaves no visible items
+- PART `combobox-group` - role=group labelled by its heading - hidden by the engine when every member item is filtered out
+- PART `combobox-label` - The group heading - styled, no ARIA role (the group points at it via aria-labelledby)
+- PART `combobox-item` - One role=option div wearing BOTH meanings - a Command item (filtering + highlight) AND Select's committed-value surface | states: data-value (always - the option's committable value (the native <option> twin)); data-selected (the option is committed (bare; absent while unselected - the controller twin-writes it with aria-selected)); data-highlighted (the item holds the activedescendant highlight (the server seeds it; the engine moves it with the input's aria-activedescendant)); data-disabled (disabled: is set (aria-disabled rides along)); data-hidden (the filter scored the item zero (the engine pairs it with hidden; never rendered server-side))
+- PART `combobox-item-text` - The option's label span - the filter/typematch text source
 - PART `combobox-item-indicator` - The trailing committed-value check (ms-auto per the demo) - the parent item's data-selected absence hides it
-- PART `command-separator` - Decorative divider (aria-hidden) - hidden by the engine whenever the query is non-empty
-- PART `command-loading` - Pending affordance (role=status) - rendered hidden; the HOST unhides it around async refills
-- PART `command-status` - The engine's sr-only polite result-count live region | states: data-zero (always - the localized zero-results template); data-one (always - the localized one-result template); data-other (always - the localized many-results template (a literal count placeholder the controller interpolates))
+- PART `combobox-separator` - Decorative divider (aria-hidden) - hidden by the engine whenever the query is non-empty
+- PART `combobox-loading` - Pending affordance (role=status) - rendered hidden; the HOST unhides it around async refills
+- PART `combobox-status` - The engine's sr-only polite result-count live region | states: data-zero (always - the localized zero-results template); data-one (always - the localized one-result template); data-other (always - the localized many-results template (a literal count placeholder the controller interpolates))
 - PART `combobox-chips` - The chips FIELD frame (multiple: only) - the popper anchor replacing the trigger; chips + the inline input flex-wrap inside, and role=toolbar rides it only while it holds >=1 chip | states: data-placeholder (the selection is empty (bare; the controller flips it on every commit - the toolbar role departs with it)); data-disabled (disabled: is set - every chip mutation is gated); data-remove-label (always - the localized chip-remove template (a literal label placeholder the controller interpolates for client-built chips))
 - PART `combobox-chip` - One committed value (multiple: only) - a div taking REAL focus (tabindex=-1, styled by :focus-visible; chips NEVER wear data-highlighted), named by its value text, holding the remove button | states: data-value (always - the chip's committed value (the native <option> twin)); data-disabled (disabled: is set (chip focus is blocked entirely))
 - PART `combobox-chip-remove` - The chip's native remove button (tabindex=-1, labelled 'Remove <label>') - a press removes the value and is never a chips-area press
@@ -206,6 +207,8 @@ Slots: trigger (Optional custom trigger content rendered BEFORE the value span (
 - WIRING clear: `poetry--core--combobox` actions clear on click
 - WIRING chip: `poetry--core--combobox` actions chipKeydown on keydown
 - WIRING chip_remove: `poetry--core--combobox` actions removeChip on click
+- tool set_value (mutating; params: value (string, required)) - Select the option whose value matches; the schema lists the rendered options, and clear selects nothing. [opt in with webmcp: "name" on the call; dispatches poetry--core--combobox#setValue]
+- tool clear (mutating) - Clear the current selection. [opt in with webmcp: "name" on the call; dispatches poetry--core--combobox#clear]
 - RULE: Use poetry_combobox (f.poetry_combobox in forms) - never hand-wire Popover+Command+hidden-input; this component IS that wiring, with the form story done right.
 - RULE: Combobox picks VALUES. Filter-then-ACT is bare Command; short known lists are Select; free text is Input.
 - RULE: Every Combobox MUST be named (Field label via id: or aria-label) - a nameless bare combobox fails at render.
@@ -262,8 +265,39 @@ Class: Poetry::Ui::DatePicker::Component - BEM block `poetry-ui-date_picker`.
 - RULE: name: is REQUIRED - the chosen date posts as an ISO string (the Calendar's hidden input).
 - RULE: value: preselects a date (a Date or ISO string) - the trigger shows it formatted, no JS needed.
 - RULE: min:/max: bound the selectable range; the label + placeholder are the trigger's text.
+- RULE: key:/id: forwards to the composed Popover - a keyed DatePicker renders cache-stable popover ids.
 - RULE: variant: :input renders a text field with a calendar button - typed parseable dates re-select the calendar; single mode only.
 - RULE: For an always-visible grid use Calendar directly - DatePicker is the field+popover form.
+
+## date_time_field (`poetry_date_time_field`)
+
+A segmented input for typing a date and a time one part at a time.
+
+Class: Poetry::Ui::DateTimeField::Component - BEM block `poetry-ui-date_time_field`.
+- `described_by:` (string) - Ids for aria-describedby (hint or error text).
+- `disabled:` (boolean) - default false - Disables the field; the segment group dims and goes inert.
+- `hour_cycle:` (string) - Pins the hour cycle (h12/h23/h11/h24) instead of the locale's.
+- `id:` (string) - The native input's DOM id - the Field label target.
+- `invalid:` (boolean) - default false - Paints the destructive border/ring and sets aria-invalid.
+- `label:` (string) - Standalone accessible name; inside a form the Field label wires ids instead. Segments announce it themselves.
+- `locale:` (string) - Pins the field to a locale other than the page's.
+- `max:` () - The latest allowed date (Date or ISO string) - rides native constraint validation.
+- `min:` () - The earliest allowed date (Date or ISO string) - rides native constraint validation.
+- `name:` (string) - required - The form field name - required; the value posts as ISO yyyy-mm-dd with or without JS.
+- `placeholder_value:` () - What the first arrow press on an empty segment lands on; defaults to today.
+- `readonly:` (boolean) - default false - The value shows but cannot be edited.
+- `required:` (boolean) - default false - Marks the native input required.
+- `seconds:` (boolean) - default false - Adds the seconds segment; the wire format becomes YYYY-MM-DDTHH:MM:SS.
+- `value:` () - Date, or an ISO yyyy-mm-dd string; nil renders empty.
+- PART `date-time-field` - Root - the controller and the enhanced/disabled surface ride here (segments inside share the date-field-* vocabulary) | states: data-enhanced (the controller connected and built segments (no JS = the native input, visible and styled)); data-disabled (disabled: is set); data-invalid (invalid: is set (the group wears the destructive ring))
+- PART `date-time-field-group` - The bordered segment row - hidden until enhancement, then the editing surface (cn-input chrome, focus-within ring) | states: data-disabled (disabled: is set (chrome dims, pointer events off)); data-invalid (invalid: is set (destructive border + ring))
+- PART `date-time-field-input` - The native <input type=datetime-local> - THE form value in both modes; tabindex -1 + aria-hidden once segments exist
+- WIRING root: `poetry--core--date-field` registers; values locale (if), placeholder, labels, placeholders | `poetry--core--date-field` values seconds (if seconds), hour_cycle (if)
+- WIRING group: `poetry--core--date-field` actions focusGap on click, settle on focusout; targets group
+- WIRING input: `poetry--core--date-field` targets input
+- RULE: Date-and-time entry is a DateTimeField (poetry_date_time_field / form.datetime_field) - never a DateField beside a TimeField, three selects, or a bare input type=datetime-local when the design system is in play; params[<name>] is YYYY-MM-DDTHH:MM (with :SS under seconds:), with or without JS.
+- RULE: No zone rides the wire: the value is the wall time the user typed on their own clock - the app places it (Time.zone.parse in the controller, or the model's zone).
+- RULE: 12- vs 24-hour follows the user's locale automatically (the dayPeriod segment appears only under twelve-hour cycles); hour_cycle: pins it when a product must.
 
 ## field (`poetry_field`)
 
@@ -280,7 +314,8 @@ Class: Poetry::Ui::Field::Component - BEM block `poetry-ui-field`.
 - `label_text:` (string) - The visible label text, associated with the control via for=.
 - `required:` (boolean) - default false - Marks the control required via aria-required only - never the native required attribute.
 - PART `field` - The quartet's grid root - label, control, hint, and error stack inside | states: data-invalid=true|false (always - true when error: is present or invalid: is set, else false); data-orientation=vertical|horizontal|setting|responsive (always - the resolved orientation (horizontal is the boolean-control layout))
-- PART `field-hint` - The hint <p> - its id lands in the control's aria-describedby
+- PART `field-label` - The Label (composed) wearing the source's field-label slot - names the control
+- PART `field-description` - The hint <p> (the source's description) - its id lands in the control's aria-describedby
 - PART `field-error` - The error <p> - present only when error: is set; its id leads the control's aria-describedby
 - PART `checkbox-input` - A nested Checkbox's hidden native input - the toggle renders as a wrapper-free fragment, so its sibling form store sits directly in the field's DOM (the horizontal boolean-control layout)
 - PART `switch-input` - A nested Switch's hidden native input - the same wrapper-free fragment escape as checkbox-input (the setting-row layout)
@@ -786,7 +821,7 @@ Class: Poetry::Ui::TimeField::Component - BEM block `poetry-ui-time_field`.
 - WIRING input: `poetry--core--date-field` targets input
 - RULE: Time entry is a TimeField (poetry_time_field / form.time_field) - never a masked Input or a pair of selects; params[<name>] is HH:MM (HH:MM:SS with seconds:).
 - RULE: 12- vs 24-hour follows the user's locale automatically (the dayPeriod segment appears only under twelve-hour cycles); hour_cycle: pins it when a product must.
-- RULE: For a date AND a time, compose a DateField and a TimeField side by side - there is no datetime component by design.
+- RULE: For a date AND a time, use a DateTimeField (poetry_date_time_field / form.datetime_field): one control, one datetime-local value.
 
 ## toggle (`poetry_toggle`)
 
@@ -835,3 +870,31 @@ Slots: items (Declares one item: value: (unique - duplicates raise), label: (req
 - RULE: Never mix vocabularies: single items carry aria-checked, multiple carry aria-pressed - the controller enforces it; agents patching DOM must too.
 - RULE: single deselects to empty by re-press - if your UI needs always-one-selected, handle the empty change in the host.
 
+## Form builder (model-bound forms)
+
+Inside `form_with(model:, builder:)` forms the builder derives label, hint, error, and aria from the model; these `RULE` lines bind there.
+
+- RULE: Model-bound forms use form_with(model:, builder: Poetry::Ui::FormBuilder) - inside them, ALWAYS the builder methods, never bare components (the builder derives label/value/error/required/aria from the object).
+- RULE: f.input(:attribute) is the default call - the type is inferred (attachment -> file, AR enum -> select, column type, name heuristics); as: overrides it.
+- RULE: f.association(:company) reflects the association - belongs_to renders a Combobox on the foreign key, has_many the select-all checkbox group on singular_ids.
+- RULE: Validations become attributes: presence -> aria-required (NEVER native required), length -> maxlength/minlength, numericality -> min/max/step; f.input(required: true/false) overrides the presence inference (aria only).
+- RULE: Hints/placeholders resolve from poetry_form.* i18n (simple_form.* keys keep working as a fallback); pass hint:/placeholder: to override.
+- RULE: f.submit renders a poetry Button with the Rails i18n label; f.fieldset(legend:)/f.group lay out sections; boolean f.input renders the horizontal Field (switch: true -> the setting row).
+- RULE: Apps on simple_form: add poetry-simple_form instead of rewriting views - Poetry::SimpleForm.activate! maps every simple_form type onto this builder (poetry-only controls via as: :switch/:slider/:otp/:sensitive/:tag_group/:date_picker/:calendar/:combobox/:autocomplete/:native_select; poetry: options merge last). The bridge is the migration path, form_with(builder:) the end state.
+
+Methods:
+
+- `input` - the inferred entrypoint: type from as:/attachments/enums/column/name
+- `association` - reflection-derived: belongs_to -> Combobox(fk), has_many -> checkbox group(_ids)
+- `field` - Field-wrapped Input/Textarea (as: :textarea; orientation:/hint_position: pass through)
+- `check_box / switch` - bare toggles (Rails check_box parity; switch = role=switch)
+- `radio_group` - collection_radio_buttons-equivalent on RadioGroup
+- `checkbox_group` - collection_check_boxes-equivalent on the select-all group (ONE clearing hidden)
+- `poetry_select / poetry_combobox` - the rich pickers (Rails choice shapes; combobox multiple: chips)
+- `native_select` - the styled native <select> (zero JS)
+- `slider / otp_field / number_field / date_field / time_field / file_input` - dedicated Field-wrapped controls
+- `search_field / sensitive_input / autocomplete / tag_group / date_picker / calendar` - the poetry-only control mappings
+- `submit / button` - poetry Buttons (type submit; loading: opt-in)
+- `fieldset / group` - layout frames yielding the builder
+
+`f.input` `as:` values: string, search, password, text, number, date, time, file, sensitive, select, combobox, radio_group, autocomplete, tag_group, date_picker, calendar, slider, otp, native_select, datetime, email, url, tel, boolean, switch, enum

@@ -18,6 +18,7 @@ Slots: trigger (The button that opens the dialog; keywords are forwarded as Butt
 - PART `alert-dialog` - Root wrapper around the trigger and the <dialog> element
 - PART `alert-dialog-content` - The role=alertdialog <dialog> panel - sizing, animation, and the open state ride here | states: data-open (panel is open (the shared dialog controller flips the pair at runtime)); data-closed (panel is closed (the server-rendered state)); data-size=default|sm (always - the resolved size)
 - PART `alert-dialog-header` - Title block - holds the optional media well, the title, and the description
+- PART `alert-dialog-media` - The optional media well above the title (an icon or illustration) - the header's first row; absent unless with_media is used
 - PART `alert-dialog-title` - The heading - the alertdialog's accessible name (required slot)
 - PART `alert-dialog-description` - The explanation, wired to aria-describedby (required slot)
 - PART `alert-dialog-footer` - The choice row - cancel then action
@@ -85,7 +86,7 @@ Class: Poetry::Ui::Command::DialogComponent - BEM block `poetry-ui-command-dialo
 - `list_label:` (string) - Passed through: the listbox's accessible name.
 - `loop:` (boolean) - default false - Passed through: wraps arrow-key highlight movement at the ends.
 - `placeholder:` (string) - Passed through: the filter input's placeholder text.
-- `show_close_button:` (boolean) - default true - Renders the corner X (Esc always closes regardless).
+- `show_close_button:` (boolean) - default "dynamic" - The close X, seated in the input row. Off by default while backdrop clicks close the palette (Esc, the backdrop, or picking an item all close it); on when dismissible: false so a pointer has a way out. Pass true to always show it.
 - `title:` (string) - default "dynamic" - The dialog's sr-only accessible name (localized default) - override rather than remove.
 - `value:` (string) - Passed through: seats the initial highlight on this item value.
 Slots: trigger (The trigger is a poetry Button wired to open - the Dialog pattern: with_trigger(variant: :outline) { "Open palette" }.; with_trigger yields NOTHING to the block - no |param|, write content directly).
@@ -102,6 +103,7 @@ Slots: trigger (The trigger is a poetry Button wired to open - the Dialog patter
 - RULE: Open it with with_trigger(...) too - the hotkey is an accelerator, not the only way in.
 - RULE: The sr-only title/description default to the source strings - override title:/description: rather than removing them (they are the dialog's accessible name).
 - RULE: Item wiring is Command's: act on poetry:command:select; close the dialog in the listener if the action should dismiss the palette.
+- RULE: The close X is off by default (keyboard-first: Esc, the backdrop, or picking an item closes it) and appears with dismissible: false; show_close_button: true forces it - it seats in the input row, never over it.
 
 ## context_menu (`poetry_context_menu`)
 
@@ -124,12 +126,13 @@ Slots: items (The menu composition API: one ordered items collection accepting s
 - PART `context-menu-trigger` - The right-click/long-press SURFACE wrapping the logical object - not a widget: no role, no aria-haspopup | states: data-popup-open (the menu is open (absence is the closed state - no aria-expanded on a role-less surface)); data-disabled (the surface is inert (disabled: true))
 - PART `context-menu-content` - The role=menu popup panel - anchored at the pointer via popper's virtual-anchor mode; open state and animation ride here | states: data-open (menu is open (presence flips the pair at runtime)); data-closed (menu is closed or animating out (the server-rendered state)); data-side=top|right|bottom|left (the placement side (the side: option, default right; popper re-writes it after collision flips)); data-align=start|center|end (the alignment (forced start initially; popper re-resolves it)) | vars: --transform-origin (popper's anchor-facing animation origin); --available-width (popper: viewport space left for the panel (post-flip)); --available-height (popper: viewport space left for the panel (post-flip)); --anchor-width (popper: the anchor rect's measured width); --anchor-height (popper: the anchor rect's measured height)
 - PART `context-menu-group` - role=group semantic grouping between separators
-- PART `context-menu-label` - Non-interactive heading for a run of items
+- PART `context-menu-label` - Non-interactive heading for a run of items | states: data-inset (indented to align with checkbox/radio item text (inset: true))
 - PART `context-menu-item` - One role=menuitem action row | states: data-variant (default or destructive (the danger treatment)); data-inset (indented to align with checkbox/radio item text (inset: true)); data-disabled (item is disabled (always written together with aria-disabled))
 - PART `context-menu-checkbox-item` - A role=menuitemcheckbox toggle row | states: data-checked (checked (the controller re-writes the pair with aria-checked on activation)); data-unchecked (unchecked); data-disabled (item is disabled (always written together with aria-disabled)); data-close-on-select (per-item override of the menu's close-on-select default ("false" keeps the menu open))
 - PART `context-menu-radio-group` - role=group scoping one single-select value | states: data-value (the selected radio value (the controller re-writes it on change))
-- PART `context-menu-radio-item` - A role=menuitemradio row inside a radio group | states: data-checked (the selected radio (the controller re-writes the pair with aria-checked)); data-unchecked (not selected); data-value (the radio's value)
-- PART `context-menu-item-indicator` - The check/circle glyph slot inside checkbox and radio items - state rides the parent item; the glyph stays decorative
+- PART `context-menu-radio-item` - A role=menuitemradio row inside a radio group | states: data-checked (the selected radio (the controller re-writes the pair with aria-checked)); data-unchecked (not selected); data-value (the radio's value); data-disabled (item is disabled (always written together with aria-disabled))
+- PART `context-menu-checkbox-item-indicator` - The check glyph inside checkbox items (aria-hidden; the item carries the checked state)
+- PART `context-menu-radio-item-indicator` - The circle glyph inside radio items (aria-hidden; the item carries the checked state)
 - PART `context-menu-separator` - role=separator rule between groups
 - PART `context-menu-shortcut` - The trailing keybinding HINT - aria-hidden, never binds the key
 - PART `context-menu-sub` - A submenu scope - hosts its own popper around the sub trigger/content pair
@@ -169,6 +172,8 @@ Slots: trigger (The trigger is a poetry Button wired to open the dialog - agents
 - WIRING content: `poetry--core--dialog` actions close on cancel, backdropClose on click; targets dialog
 - WIRING trigger: `poetry--core--dialog` actions open
 - WIRING close: `poetry--core--dialog` actions close
+- tool open (mutating) - Open the dialog. [opt in with webmcp: "name" on the call; dispatches poetry--core--dialog#open]
+- tool close (mutating) - Close the dialog. [opt in with webmcp: "name" on the call; dispatches poetry--core--dialog#close]
 - RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the trigger wiring (the Stimulus behavior the overlay needs; poppers add id/aria and their trigger slot, modals hand only the open action) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: Open dialogs with with_trigger(...) - never a hand-wired button.
 - RULE: with_title is REQUIRED (the accessible name); with_description when the purpose needs explaining.
@@ -201,6 +206,8 @@ Slots: trigger (The trigger is a poetry Button wired to open the dialog - agents
 - WIRING content: `poetry--core--drawer` actions close on cancel, backdropClose on click, escapeClose on keydown (unless modal), swipeStart on pointerdown, swipeMove on pointermove, swipeEnd on pointerup, swipeCancel on pointercancel; targets dialog
 - WIRING trigger: `poetry--core--drawer` actions open
 - WIRING close: 
+- tool open (mutating) - Open the drawer. [opt in with webmcp: "name" on the call; dispatches poetry--core--drawer#open]
+- tool close (mutating) - Close the drawer. [opt in with webmcp: "name" on the call; dispatches poetry--core--drawer#close]
 - RULE: Open drawers with with_trigger(...) - never a hand-wired button.
 - RULE: with_title is REQUIRED (the accessible name) - the inherited Dialog rule.
 - RULE: direction: is the DISMISS direction: :down is the mobile bottom sheet (the default); left/right make an edge panel - prefer Sheet on desktop.
@@ -234,8 +241,9 @@ Slots: items (The menu composition API: one ordered items collection accepting s
 - PART `dropdown-menu-item` - One role=menuitem action row | states: data-variant (default or destructive (the danger treatment)); data-inset (indented to align with checkbox/radio item text (inset: true)); data-disabled (item is disabled (always written together with aria-disabled))
 - PART `dropdown-menu-checkbox-item` - A role=menuitemcheckbox toggle row | states: data-checked (checked (the controller re-writes the pair with aria-checked on activation)); data-unchecked (unchecked); data-disabled (item is disabled (always written together with aria-disabled)); data-close-on-select (per-item override of the menu's close-on-select default ("false" keeps the menu open))
 - PART `dropdown-menu-radio-group` - role=group scoping one single-select value | states: data-value (the selected radio value (the controller re-writes it on change))
-- PART `dropdown-menu-radio-item` - A role=menuitemradio row inside a radio group | states: data-checked (the selected radio (the controller re-writes the pair with aria-checked)); data-unchecked (not selected); data-value (the radio's value)
-- PART `dropdown-menu-item-indicator` - The check/circle glyph slot inside checkbox and radio items - state rides the parent item; the glyph stays decorative
+- PART `dropdown-menu-radio-item` - A role=menuitemradio row inside a radio group | states: data-checked (the selected radio (the controller re-writes the pair with aria-checked)); data-unchecked (not selected); data-value (the radio's value); data-disabled (item is disabled (always written together with aria-disabled))
+- PART `dropdown-menu-checkbox-item-indicator` - The check glyph inside checkbox items (aria-hidden; the item carries the checked state)
+- PART `dropdown-menu-radio-item-indicator` - The circle glyph inside radio items (aria-hidden; the item carries the checked state)
 - PART `dropdown-menu-separator` - role=separator rule between groups
 - PART `dropdown-menu-shortcut` - The trailing keybinding HINT - aria-hidden, never binds the key
 - PART `dropdown-menu-sub` - A submenu scope - hosts its own popper around the sub trigger/content pair
@@ -306,12 +314,13 @@ Slots: menus (The top-level menus. Each takes with_trigger (the menu button) plu
 - PART `menubar-trigger` - The top-level menu button - a role=menuitem INSIDE the bar | states: data-value (the menu's value - the coordinator's open/close key); data-popup-open (its menu is open (written with aria-expanded; absence is the closed state)); data-disabled (trigger is disabled (written together with the disabled property))
 - PART `menubar-content` - The role=menu popup panel - positioning, animation, and the open state ride here | states: data-open (menu is open (presence flips the pair at runtime)); data-closed (menu is closed or animating out (the server-rendered state)); data-side=top|right|bottom|left (the placement side (bottom initially; popper re-writes it after collision flips)); data-align=start|center|end (the alignment against the trigger (start initially; popper re-resolves it)) | vars: --transform-origin (popper's anchor-facing animation origin); --available-width (popper: viewport space left for the panel (post-flip)); --available-height (popper: viewport space left for the panel (post-flip)); --anchor-width (popper: the trigger's measured width); --anchor-height (popper: the trigger's measured height)
 - PART `menubar-group` - role=group semantic grouping between separators
-- PART `menubar-label` - Non-interactive heading for a run of items
+- PART `menubar-label` - Non-interactive heading for a run of items | states: data-inset (indented to align with checkbox/radio item text (inset: true))
 - PART `menubar-item` - One role=menuitem action row | states: data-variant (default or destructive (the danger treatment)); data-inset (indented to align with checkbox/radio item text (inset: true)); data-disabled (item is disabled (always written together with aria-disabled))
 - PART `menubar-checkbox-item` - A role=menuitemcheckbox toggle row | states: data-checked (checked (the controller re-writes the pair with aria-checked on activation)); data-unchecked (unchecked); data-disabled (item is disabled (always written together with aria-disabled)); data-close-on-select (per-item override of the menu's close-on-select default ("false" keeps the menu open))
 - PART `menubar-radio-group` - role=group scoping one single-select value | states: data-value (the selected radio value (the controller re-writes it on change))
-- PART `menubar-radio-item` - A role=menuitemradio row inside a radio group | states: data-checked (the selected radio (the controller re-writes the pair with aria-checked)); data-unchecked (not selected); data-value (the radio's value)
-- PART `menubar-item-indicator` - The check/circle glyph slot inside checkbox and radio items - state rides the parent item; the glyph stays decorative
+- PART `menubar-radio-item` - A role=menuitemradio row inside a radio group | states: data-checked (the selected radio (the controller re-writes the pair with aria-checked)); data-unchecked (not selected); data-value (the radio's value); data-disabled (item is disabled (always written together with aria-disabled))
+- PART `menubar-checkbox-item-indicator` - The check glyph slot inside checkbox items - aria-hidden; the item's aria-checked/data-checked pair carries state
+- PART `menubar-radio-item-indicator` - The circle glyph slot inside radio items - aria-hidden; the item's aria-checked/data-checked pair carries state
 - PART `menubar-separator` - role=separator rule between groups
 - PART `menubar-shortcut` - The trailing keybinding HINT - aria-hidden, never binds the key
 - PART `menubar-sub` - A submenu scope - hosts its own popper around the sub trigger/content pair
@@ -386,6 +395,8 @@ Slots: trigger (The trigger is a poetry Button wired to open the dialog - agents
 - WIRING content: `poetry--core--sheet` actions close on cancel, backdropClose on click; targets dialog
 - WIRING trigger: `poetry--core--sheet` actions open
 - WIRING close: `poetry--core--sheet` actions close
+- tool open (mutating) - Open the sheet. [opt in with webmcp: "name" on the call; dispatches poetry--core--sheet#open]
+- tool close (mutating) - Close the sheet. [opt in with webmcp: "name" on the call; dispatches poetry--core--sheet#close]
 - RULE: Open sheets with with_trigger(...) - never a hand-wired button.
 - RULE: with_title is REQUIRED (the accessible name) - the inherited Dialog rule.
 - RULE: Pick side by content: navigation left, detail/edit right, pickers bottom.
@@ -424,4 +435,5 @@ Slots: trigger (The described control - commonly a poetry Button (with_trigger(v
 - RULE: Wrap toolbar/button rows in ONE poetry_tooltip_provider so the warm grace makes the row feel continuous.
 - RULE: Rich visual content needs label: (the plain-text announcement).
 - RULE: Do not pin tooltips open as onboarding callouts - that is a Popover.
+
 

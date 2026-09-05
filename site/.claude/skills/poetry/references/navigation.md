@@ -38,7 +38,7 @@ Slots: items (The bar entries. with_item(title, value:) { panel } declares a tri
 - PART `navigation-menu-trigger` - The disclosure button opening its panel | states: data-popup-open (its panel is open (written with aria-expanded - the chevron rotation hook)); data-open (its panel is open (the controller writes both vocabularies)); data-closed (its panel is closed (written after the first close))
 - PART `navigation-menu-content` - One item's panel - presence-animated; in viewport mode it is adopted into the shared viewport on first activation | states: data-open (panel is open (presence flips the pair at runtime)); data-closed (panel is closed or animating out (the server-rendered state)); data-activation-direction (which way the activation traveled between triggers (left/right, viewport mode) - keys the slide styles); data-viewport-panel (stamped once the panel is adopted into the shared viewport)
 - PART `navigation-menu-positioner` - The viewport-mode shell popper positions against the active trigger | states: data-instant (suppresses the morph transitions for one painted frame (cold opens)) | vars: --positioner-width (the pinned morph width (reset to auto once the transition settles)); --positioner-height (the pinned morph height (reset to auto once the transition settles))
-- PART `navigation-menu-popup` - The morphing card inside the positioner - open state and the size transition ride here | states: data-open (a panel is showing (the controller flips the pair)); data-closed (the popup is closed (the server-rendered state)); data-instant (suppresses the morph transitions for one painted frame (cold opens)) | vars: --popup-width (the pinned morph width (reset to auto once the transition settles)); --popup-height (the pinned morph height (reset to auto once the transition settles))
+- PART `navigation-menu-popup` - The morphing card inside the positioner - open state and the size transition ride here | states: data-open (a panel is showing (the controller flips the pair)); data-closed (the popup is closed (the server-rendered state)); data-instant (suppresses the morph transitions for one painted frame (cold opens)); data-starting-style (the enter transition's first frame (the presence module's two-frame trick)); data-ending-style (held through the exit transition before the popup hides) | vars: --popup-width (the pinned morph width (reset to auto once the transition settles)); --popup-height (the pinned morph height (reset to auto once the transition settles))
 - PART `navigation-menu-viewport` - The adoption container inside the popup - adopted panels stack absolutely in it
 - PART `navigation-menu-link` - A REAL destination link - top-level (with_link) or a panel entry (poetry_navigation_menu_link) | states: data-active (the current page (active: true))
 In blocks: `top-nav` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
@@ -103,7 +103,7 @@ Slots: nav (The sidebar column's content (required) - groups, menus, header/foot
 - PART `sidebar-group-label` - The section heading - fades and collapses away in icon mode
 - PART `sidebar-menu` - The <ul> of menu items inside a group
 - PART `sidebar-menu-item` - One <li> menu row (the group/menu-item hover scope)
-- PART `sidebar-menu-button` - The row's link (href:) or button - the navigation entry itself | states: data-active (the current route (active: - links also get aria-current=page)); data-size (the row size variant (default, sm, or lg) - the action/badge tops key on it); data-variant=default|outline (always - the treatment)
+- PART `sidebar-menu-button` - The row's link (href:) or button - the navigation entry itself | states: data-active (the current route (active: - links also get aria-current=page)); data-open (when the button is a collapsible's trigger - the disclosure state the collapsible controller flips); data-size (the row size variant (default, sm, or lg) - the action/badge tops key on it); data-variant=default|outline (always - the treatment)
 - PART `sidebar-menu-action` - The item-corner action button, absolutely positioned in the row | states: data-sidebar (always "menu-action" - the suite-wide sub-part marker)
 - PART `sidebar-menu-badge` - The trailing count/status chrome in the row corner - pointer-transparent | states: data-sidebar (always "menu-badge" - the suite-wide sub-part marker)
 In blocks: `app-shell` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
@@ -136,9 +136,11 @@ Slots: tabs (Declares one tab: the title, its value:, and the panel as the block
 - WIRING root: `poetry--core--tabs` registers
 - WIRING list: `poetry--core--roving-focus` registers; values orientation, loop; actions keydown on keydown | `poetry--core--tabs` actions focusActivate on poetry--core--roving-focus:entry
 - WIRING trigger: `poetry--core--tabs` actions activate on click
+- tool set_value (mutating; params: value (string, required)) - Activate the tab whose value matches and show its panel. [opt in with webmcp: "name" on the call; dispatches poetry--core--tabs#setValue]
 - RULE: Declare tabs with with_tab(title, value:) + the panel block (or defer: for a lazy turbo-frame panel) - never hand-wire role=tab/tabpanel ids.
 - RULE: panel: false declares a list-only tab (no tabpanel renders, the trigger drops aria-controls) - for demos/pattern shells; real tab sets carry panels.
 - RULE: default: picks the server-rendered active tab (the first enabled tab otherwise) - the panel is visible without JS.
 - RULE: label: names the tablist (aria-label) - recommended whenever the page has several tab sets.
 - RULE: Tabs switch VIEWS of one context; use navigation (links) when the URL should change.
+
 
