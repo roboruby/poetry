@@ -9,17 +9,33 @@
     <a href="<%= root_path %>" class="flex items-center gap-2 text-base font-semibold">
       <%= poetry_icon(name: :feather, class: "size-5 text-primary") %> poetry
     </a>
-    <nav aria-label="Site" class="flex items-center gap-6">
+    <% site_links = [ [ "Docs", introduction_path ], [ "Components", DocsCatalog.components.first.path ],
+                      [ "Libraries", library_path("poetry") ], [ "AI", mcp_path ] ] %>
+    <nav aria-label="Site" class="flex items-center gap-3 sm:gap-6">
       <div class="hidden sm:block">
         <%= poetry_navigation_menu(label: "Site", viewport: true) do |nav| %>
-          <% nav.with_link("Docs", href: introduction_path) %>
-          <% nav.with_link("Components", href: DocsCatalog.components.first.path) %>
-          <% nav.with_link("Libraries", href: library_path("poetry")) %>
-          <% nav.with_link("AI", href: mcp_path) %>
+          <% site_links.each { |text, href| nav.with_link(text, href: href) } %>
         <% end %>
       </div>
-      <%= render "shared/project_links" %>
+      <div class="hidden items-center gap-6 sm:flex">
+        <%= render "shared/project_links" %>
+      </div>
       <%= poetry_button(size: :sm, href: installation_path) { "Start building" } %>
+      <%# Below sm the links live in a sheet behind a menu button. %>
+      <div class="sm:hidden">
+        <%= poetry_sheet(side: :right, content_class: "w-72") do |sheet| %>
+          <% sheet.with_trigger(variant: :ghost, size: :"icon-sm", label: "Open menu") { poetry_icon(name: :menu, class: "size-5") } %>
+          <% sheet.with_title { "Menu" } %>
+          <nav aria-label="Site, mobile" class="mt-6 flex flex-col gap-1">
+            <% site_links.each do |text, href| %>
+              <%= poetry_button(variant: :ghost, size: :lg, href: href, class: "w-full justify-start px-3 text-base") { text } %>
+            <% end %>
+          </nav>
+          <div class="mt-6 flex items-center gap-2 border-t pt-6">
+            <%= render "shared/project_links" %>
+          </div>
+        <% end %>
+      </div>
     </nav>
   </div>
 </header>
