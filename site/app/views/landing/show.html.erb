@@ -308,14 +308,18 @@
 </main>
 
 <footer class="border-t border-border bg-card">
-  <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-8 text-sm text-muted-foreground">
+  <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-8 gap-y-4 px-6 py-8 text-sm text-muted-foreground">
     <span class="flex items-center gap-2">
       <%= poetry_icon(name: :feather, class: "size-4 text-primary") %> poetry — released under the MIT license
     </span>
-    <nav aria-label="Footer" class="flex items-center gap-6">
-      <%= poetry_link(href: introduction_path) { "Docs" } %>
-      <%= poetry_link(href: theming_path) { "Themes" } %>
-      <%= poetry_link(href: introduction_path) { "Component reference" } %>
+    <nav aria-label="Footer" class="flex flex-wrap items-center gap-x-6 gap-y-3">
+      <% site_links.each do |text, href| %>
+        <%= poetry_link(href: href) { text } %>
+      <% end %>
+      <%= poetry_link(href: "https://rubyai.beehiiv.com/", target: "_blank", rel: "noopener") { "Ruby AI News" } %>
+      <span class="flex items-center gap-1">
+        <%= render "shared/project_links" %>
+      </span>
     </nav>
   </div>
 </footer>

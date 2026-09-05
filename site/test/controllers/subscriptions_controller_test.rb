@@ -74,8 +74,10 @@ class SubscriptionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes response.body, "Subscribe to Ruby AI News for Updates"
-    # The whole point: no beehiiv script, style, or iframe on the page.
-    refute_includes response.body, "beehiiv.com"
+    # The whole point: no beehiiv script, style, or iframe on the page. A
+    # plain link to the newsletter (the footer carries one) is fine.
+    refute_match %r{<(script|iframe|link)[^>]*beehiiv\.com}, response.body
+    assert_select "a[href='https://rubyai.beehiiv.com/']", text: "Ruby AI News"
     assert_includes response.body, 'data-controller="newsletter"'
     assert_includes response.body, 'action="/subscriptions"'
   end
