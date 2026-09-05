@@ -56,7 +56,7 @@ one version, a RubyGems bundle must match `.poetry-version`, and every
 ## After a family release
 
 ```sh
-echo 0.0.4 > .poetry-version
+echo 0.1.0 > .poetry-version
 bundle lock                          # refresh the committed lockfile
 bin/rails docs:refresh               # skills, API reference, search index
 BUNDLE_GEMFILE=Gemfile bin/rails test   # the release, as CI runs it
