@@ -12,13 +12,13 @@ module Poetry
       # chrome. The content block is the chart body.
       #
       # @example
-      #   <%= poetry_chart_container(config: { desktop: { label: "Desktop", color: "var(--chart-1)" } }) do %>
+      #   <%= poetry_container(config: { desktop: { label: "Desktop", color: "var(--chart-1)" } }) do %>
       #     ...the chart body...
       #   <% end %>
       class Component < Poetry::Core::Component
         # Projected into the registry and agent surface.
         AGENT_RULES = [
-          "Every chart lives inside poetry_chart_container(config:) - the config maps series keys to labels/colors.",
+          "Every chart lives inside poetry_container(config:) - the config maps series keys to labels/colors.",
           "Reference series colors as var(--color-<key>); never hard-code a color in chart markup.",
           "Config colors point at theme tokens (var(--chart-1..5)) or use theme: { light:, dark: } maps.",
           "Give charts an explicit id: when the page renders more than one of the same chart."

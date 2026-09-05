@@ -10,7 +10,7 @@ module Poetry
       # to override, e.g. per-slice pie legends.
       #
       # @example
-      #   <%= poetry_chart_legend_content(config: config) %>
+      #   <%= poetry_legend_content(config: config) %>
       class Component < Poetry::Core::Component
         # Projected into the registry and agent surface.
         AGENT_RULES = [

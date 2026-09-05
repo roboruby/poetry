@@ -12,7 +12,7 @@ module Poetry
       # row's swatch follows its series.
       #
       # @example
-      #   <%= poetry_chart_tooltip_content(config: config,
+      #   <%= poetry_tooltip_content(config: config,
       #                                    items: [{ key: :desktop, value: 186 }]) %>
       #
       # Items are `{ key:, name:, value:, color: }` hashes; names resolve

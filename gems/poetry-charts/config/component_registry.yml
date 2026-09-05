@@ -1314,7 +1314,7 @@ components:
     elements: []
     capsule: 7b90eeaff974
     agent_rules:
-    - Every chart lives inside poetry_chart_container(config:) - the config maps series
+    - Every chart lives inside poetry_container(config:) - the config maps series
       keys to labels/colors.
     - Reference series colors as var(--color-<key>); never hard-code a color in chart
       markup.
@@ -3046,10 +3046,20 @@ helpers:
   poetry_chart:
     yields: the dispatched chart component
 helper_args:
+  poetry_adapter_chart: 0
   poetry_area_chart: 0
   poetry_bar_chart: 0
   poetry_chart: 1
   poetry_chart_container: 0
   poetry_chart_legend_content: 0
   poetry_chart_tooltip_content: 0
+  poetry_composed_chart: 0
+  poetry_container: 0
+  poetry_legend_content: 0
   poetry_line_chart: 0
+  poetry_pie_chart: 0
+  poetry_radar_chart: 0
+  poetry_radial_bar_chart: 0
+  poetry_scatter_chart: 0
+  poetry_tooltip_content: 0
+  poetry_tooltip_layer: 0
