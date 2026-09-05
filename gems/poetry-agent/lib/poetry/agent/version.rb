@@ -3,6 +3,6 @@
 module Poetry
   module Agent
     # The gem version (lockstep with the poetry family).
-    VERSION = "0.0.3"
+    VERSION = "0.0.4"
   end
 end
