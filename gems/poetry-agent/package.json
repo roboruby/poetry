@@ -1,6 +1,6 @@
 {
   "name": "@poetry/agent",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "private": true,
   "description": "poetry-agent's WebMCP runtime: the registrar and declarative-form Stimulus controllers plus the document.modelContext adapter. Importmap-first (the engine pins this tree); the same tree is the npm channel for bundler hosts.",
   "license": "MIT",
