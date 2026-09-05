@@ -116,8 +116,11 @@
 
   <%# ---- Problem to solution ---------------------------------------- %>
   <section class="mx-auto max-w-6xl px-6 py-24">
+    <%# min-w-0 on both cells: a grid track sizes to its content's widest line, and the
+        code sample is wider than a phone; letting the cells shrink keeps the prose at
+        viewport width and lets the code block scroll inside its own box. %>
     <div class="grid items-center gap-16 lg:grid-cols-2">
-      <div data-controller="reveal" data-reveal>
+      <div class="min-w-0" data-controller="reveal" data-reveal>
         <h2 class="text-3xl font-semibold" style="text-wrap: balance">
           Rails stopped at the view layer
         </h2>
@@ -138,7 +141,7 @@
           </p>
         </div>
       </div>
-      <div data-controller="reveal" data-reveal style="--reveal-delay: 0.15s">
+      <div class="min-w-0" data-controller="reveal" data-reveal style="--reveal-delay: 0.15s">
         <%= poetry_code_block(code: Rails.root.join("app/views/landing/compose_example.erb.sample").read,
                               language: "erb", label: "app/views/dashboard/show.html.erb") %>
       </div>
