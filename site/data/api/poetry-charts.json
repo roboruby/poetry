@@ -1,5 +1,5 @@
 {
-  "poetry_version": "0.0.3",
+  "poetry_version": "0.0.4",
   "gem": "poetry-charts",
   "objects": [
     {
@@ -99,7 +99,7 @@
         },
         {
           "name": "VERSION",
-          "value": "\"0.0.3\"",
+          "value": "\"0.0.4\"",
           "docstring": "The gem version."
         }
       ]
@@ -1783,10 +1783,27 @@
       "path": "Poetry::Charts::ComponentsHelper",
       "type": "module",
       "superclass": null,
-      "docstring": "The poetry_chart_* view helpers - the agent-facing chart surface,\nfrom the chart-root dispatcher down to the per-family helpers.",
+      "docstring": "The poetry_* chart view helpers - the agent-facing chart surface, from\nthe chart-root dispatcher down to one helper per component. Every\nregistered component answers to poetry_<component name>, the\nconvention the registry, `poetry check`, llms.txt, and the skills\nderive helper names from; the three poetry_chart_* wrappers stay as\naliases for callers that adopted them.",
       "examples": [],
       "file": "app/helpers/poetry/charts/components_helper.rb",
       "methods": [
+        {
+          "name": "poetry_adapter_chart",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_adapter_chart(**)",
+          "docstring": "Renders the adapter mount directly - the closed spec (type:,\nengine:, series:, axes:) handed to a registered client-side engine.\npoetry_chart(type, engine:) is the same call with the type first.",
+          "params": [],
+          "return": null,
+          "examples": [
+            {
+              "title": "",
+              "text": "<%= poetry_adapter_chart(type: :line, engine: :chartjs, data: data, config: config,\n                         series: [{ data_key: :desktop }]) %>"
+            }
+          ],
+          "file": "app/helpers/poetry/charts/components_helper.rb",
+          "line": 165
+        },
         {
           "name": "poetry_area_chart",
           "scope": "instance",
@@ -1802,7 +1819,7 @@
             }
           ],
           "file": "app/helpers/poetry/charts/components_helper.rb",
-          "line": 60
+          "line": 64
         },
         {
           "name": "poetry_bar_chart",
@@ -1819,7 +1836,7 @@
             }
           ],
           "file": "app/helpers/poetry/charts/components_helper.rb",
-          "line": 84
+          "line": 88
         },
         {
           "name": "poetry_chart",
@@ -1853,58 +1870,109 @@
             }
           ],
           "file": "app/helpers/poetry/charts/components_helper.rb",
-          "line": 35
+          "line": 39
         },
         {
           "name": "poetry_chart_container",
           "scope": "instance",
           "group": null,
-          "signature": "poetry_chart_container(**, &)",
+          "signature": "poetry_container(**, &)",
           "docstring": "Renders the chart container - the sized, theme-scoped wrapper that\nemits var(--color-<key>) for every configured series and hosts the\nchart plus its tooltip and legend.",
           "params": [],
           "return": null,
           "examples": [
             {
               "title": "",
-              "text": "<%= poetry_chart_container(config: config, class: \"h-64\") do %>\n  <%= poetry_area_chart(data: data, config: config) %>\n<% end %>"
+              "text": "<%= poetry_container(config: config, class: \"h-64\") do %>\n  <%= poetry_area_chart(data: data, config: config) %>\n<% end %>"
             }
           ],
           "file": "app/helpers/poetry/charts/components_helper.rb",
-          "line": 98
+          "line": 182
         },
         {
           "name": "poetry_chart_legend_content",
           "scope": "instance",
           "group": null,
-          "signature": "poetry_chart_legend_content(**, &)",
+          "signature": "poetry_legend_content(**, &)",
           "docstring": "Renders a standalone legend for the configured series - a swatch\nplus label per entry.",
           "params": [],
           "return": null,
           "examples": [
             {
               "title": "",
-              "text": "<%= poetry_chart_legend_content(config: config) %>"
+              "text": "<%= poetry_legend_content(config: config) %>"
             }
           ],
           "file": "app/helpers/poetry/charts/components_helper.rb",
-          "line": 120
+          "line": 218
         },
         {
           "name": "poetry_chart_tooltip_content",
           "scope": "instance",
           "group": null,
-          "signature": "poetry_chart_tooltip_content(**, &)",
+          "signature": "poetry_tooltip_content(**, &)",
           "docstring": "Renders the tooltip panel a chart's hover layer positions and fills -\nplace it inside the container alongside the chart.",
           "params": [],
           "return": null,
           "examples": [
             {
               "title": "",
-              "text": "<%= poetry_chart_tooltip_content(indicator: :line) %>"
+              "text": "<%= poetry_tooltip_content(indicator: :line) %>"
             }
           ],
           "file": "app/helpers/poetry/charts/components_helper.rb",
-          "line": 109
+          "line": 194
+        },
+        {
+          "name": "poetry_composed_chart",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_composed_chart(**, &)",
+          "docstring": "Renders a composed chart - areas, bars, and lines sharing one x band\nand one y domain; declaration order is paint order.",
+          "params": [],
+          "return": null,
+          "examples": [
+            {
+              "title": "",
+              "text": "<%= poetry_composed_chart(data: data, config: config) do |c| %>\n  <% c.with_bar data_key: :desktop %>\n  <% c.with_line data_key: :mobile %>\n<% end %>"
+            }
+          ],
+          "file": "app/helpers/poetry/charts/components_helper.rb",
+          "line": 102
+        },
+        {
+          "name": "poetry_container",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_container(**, &)",
+          "docstring": "Renders the chart container - the sized, theme-scoped wrapper that\nemits var(--color-<key>) for every configured series and hosts the\nchart plus its tooltip and legend.",
+          "params": [],
+          "return": null,
+          "examples": [
+            {
+              "title": "",
+              "text": "<%= poetry_container(config: config, class: \"h-64\") do %>\n  <%= poetry_area_chart(data: data, config: config) %>\n<% end %>"
+            }
+          ],
+          "file": "app/helpers/poetry/charts/components_helper.rb",
+          "line": 179
+        },
+        {
+          "name": "poetry_legend_content",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_legend_content(**, &)",
+          "docstring": "Renders a standalone legend for the configured series - a swatch\nplus label per entry.",
+          "params": [],
+          "return": null,
+          "examples": [
+            {
+              "title": "",
+              "text": "<%= poetry_legend_content(config: config) %>"
+            }
+          ],
+          "file": "app/helpers/poetry/charts/components_helper.rb",
+          "line": 215
         },
         {
           "name": "poetry_line_chart",
@@ -1921,7 +1989,109 @@
             }
           ],
           "file": "app/helpers/poetry/charts/components_helper.rb",
-          "line": 72
+          "line": 76
+        },
+        {
+          "name": "poetry_pie_chart",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_pie_chart(**, &)",
+          "docstring": "Renders a pie chart - one or more rings of slices; inner_radius on a\npie makes the donut, with_center_label fills the hole.",
+          "params": [],
+          "return": null,
+          "examples": [
+            {
+              "title": "",
+              "text": "<%= poetry_pie_chart(data: data, config: config) do |c| %>\n  <% c.with_pie data_key: :visitors, name_key: :browser, inner_radius: 60 %>\n  <% c.with_tooltip %>\n<% end %>"
+            }
+          ],
+          "file": "app/helpers/poetry/charts/components_helper.rb",
+          "line": 116
+        },
+        {
+          "name": "poetry_radar_chart",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_radar_chart(**, &)",
+          "docstring": "Renders a radar chart - series drawn as polygons over a polar grid.",
+          "params": [],
+          "return": null,
+          "examples": [
+            {
+              "title": "",
+              "text": "<%= poetry_radar_chart(data: data, config: config) do |c| %>\n  <% c.with_radar data_key: :desktop %>\n<% end %>"
+            }
+          ],
+          "file": "app/helpers/poetry/charts/components_helper.rb",
+          "line": 128
+        },
+        {
+          "name": "poetry_radial_bar_chart",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_radial_bar_chart(**, &)",
+          "docstring": "Renders a radial bar chart - values as arcs around a shared center.",
+          "params": [],
+          "return": null,
+          "examples": [
+            {
+              "title": "",
+              "text": "<%= poetry_radial_bar_chart(data: data, config: config) do |c| %>\n  <% c.with_radial_bar data_key: :visitors %>\n<% end %>"
+            }
+          ],
+          "file": "app/helpers/poetry/charts/components_helper.rb",
+          "line": 140
+        },
+        {
+          "name": "poetry_scatter_chart",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_scatter_chart(**, &)",
+          "docstring": "Renders a scatter chart - points positioned by two numeric keys.",
+          "params": [],
+          "return": null,
+          "examples": [
+            {
+              "title": "",
+              "text": "<%= poetry_scatter_chart(data: data, config: config) do |c| %>\n  <% c.with_scatter data_key: :desktop %>\n<% end %>"
+            }
+          ],
+          "file": "app/helpers/poetry/charts/components_helper.rb",
+          "line": 152
+        },
+        {
+          "name": "poetry_tooltip_content",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_tooltip_content(**, &)",
+          "docstring": "Renders the tooltip panel a chart's hover layer positions and fills -\nplace it inside the container alongside the chart.",
+          "params": [],
+          "return": null,
+          "examples": [
+            {
+              "title": "",
+              "text": "<%= poetry_tooltip_content(indicator: :line) %>"
+            }
+          ],
+          "file": "app/helpers/poetry/charts/components_helper.rb",
+          "line": 191
+        },
+        {
+          "name": "poetry_tooltip_layer",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_tooltip_layer(**, &)",
+          "docstring": "Renders the hover layer that positions the tooltip over a chart -\nthe charts attach it themselves through with_tooltip; reach for the\nhelper only when composing the layer by hand.",
+          "params": [],
+          "return": null,
+          "examples": [
+            {
+              "title": "",
+              "text": "<%= poetry_tooltip_layer(chart_id: \"traffic\") %>"
+            }
+          ],
+          "file": "app/helpers/poetry/charts/components_helper.rb",
+          "line": 204
         }
       ],
       "constants": [
@@ -2783,7 +2953,7 @@
       "examples": [
         {
           "title": "",
-          "text": "<%= poetry_chart_container(config: { desktop: { label: \"Desktop\", color: \"var(--chart-1)\" } }) do %>\n  ...the chart body...\n<% end %>"
+          "text": "<%= poetry_container(config: { desktop: { label: \"Desktop\", color: \"var(--chart-1)\" } }) do %>\n  ...the chart body...\n<% end %>"
         }
       ],
       "file": "app/components/poetry/charts/container/component.rb",
@@ -2826,7 +2996,7 @@
       "constants": [
         {
           "name": "AGENT_RULES",
-          "value": "[\n  \"Every chart lives inside poetry_chart_container(config:) - the config maps series keys to labels/colors.\",\n  \"Reference series colors as var(--color-<key>); never hard-code a color in chart marku",
+          "value": "[\n  \"Every chart lives inside poetry_container(config:) - the config maps series keys to labels/colors.\",\n  \"Reference series colors as var(--color-<key>); never hard-code a color in chart markup.\",\n ",
           "docstring": "Projected into the registry and agent surface."
         }
       ]
@@ -4140,7 +4310,7 @@
       "examples": [
         {
           "title": "",
-          "text": "<%= poetry_chart_legend_content(config: config) %>"
+          "text": "<%= poetry_legend_content(config: config) %>"
         }
       ],
       "file": "app/components/poetry/charts/legend_content/component.rb",
@@ -8021,7 +8191,7 @@
       "examples": [
         {
           "title": "",
-          "text": "<%= poetry_chart_tooltip_content(config: config,\n                                 items: [{ key: :desktop, value: 186 }]) %>"
+          "text": "<%= poetry_tooltip_content(config: config,\n                                 items: [{ key: :desktop, value: 186 }]) %>"
         }
       ],
       "file": "app/components/poetry/charts/tooltip_content/component.rb",
