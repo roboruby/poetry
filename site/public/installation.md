@@ -6,7 +6,7 @@ file is the copy-and-follow version.
 
 ## Requirements
 
-- Ruby >= 3.3, Rails ~> 8.0
+- Ruby >= 3.4, Rails ~> 8.0
 - Tailwind CSS v4 via `tailwindcss-rails` (standalone CLI; no Node required)
 - Stimulus >= 3.2 (importmap is fine; no build step needed)
 
@@ -14,16 +14,16 @@ file is the copy-and-follow version.
 
 ```ruby
 # Gemfile
-gem "poetry-core"
-gem "poetry-ui"
-gem "poetry-lucide"        # default icon set; most components render an icon
-gem "poetry-agent"         # the poetry-agent MCP server exe + the WebMCP runtime
+gem "poetry"               # the library: poetry-core + poetry-ui + poetry-lucide at one version
+gem "poetry-agent"         # optional: the MCP server exe, WebMCP, AG-UI and A2UI surfaces
 # gem "poetry-charts"      # optional: server-rendered SVG charts
+# gem "poetry-simple_form" # optional: the migration bridge from simple_form
+# gem "poetry-extract"     # optional: extract a theme from a live site
 ```
 
-Then `bundle install`. (The gem named `poetry` is a name-reservation stub -
-do not install it as the entry point; `poetry-core` + `poetry-ui` are the
-library.)
+Then `bundle install`. The gems release in lockstep and pin each other to the
+same version, so one `bundle update poetry poetry-agent poetry-charts` moves the
+whole family.
 
 ## 2. Run the installer (idempotent - it is also the upgrade path)
 
@@ -96,6 +96,6 @@ Swatches that fail WCAG AA are dropped and reported, never shipped.
 
 ## Upgrading
 
-`bundle update` upgrades gem-owned code; re-run `bin/rails g poetry:install`
+`bundle update poetry poetry-agent poetry-charts` upgrades gem-owned code; re-run `bin/rails g poetry:install`
 to refresh the vendored CSS/safelist (your theme choice sticks). `bin/rails g
 poetry:diff` reports where your copy-ins stand.

@@ -8,18 +8,16 @@
 <%
   # Heredocs live inside ONE scriptlet tag, never inside an output tag.
   gemfile_source = <<~CODE
-    gem "poetry-core"
-    gem "poetry-ui"
-    gem "poetry-lucide"     # default icon set
-    gem "poetry-agent"      # the MCP server exe + the WebMCP runtime
-    # gem "poetry-charts"   # optional
+    gem "poetry"            # poetry-core + poetry-ui + poetry-lucide at one version
+    gem "poetry-agent"      # optional: MCP server exe, WebMCP, AG-UI and A2UI surfaces
+    # gem "poetry-charts"   # optional: server-rendered SVG charts
   CODE
   install_source = <<~CODE
     bundle install
     bin/rails g poetry:install --theme default
   CODE
   upgrade_source = <<~CODE
-    bundle update poetry-core poetry-ui poetry-lucide poetry-charts
+    bundle update poetry poetry-agent poetry-charts
     bin/rails g poetry:install     # your theme choice sticks; --theme switches
     bin/rails tailwindcss:build    # or your CSS build
     bin/rails test                 # confirm the app still renders
