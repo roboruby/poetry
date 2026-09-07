@@ -2,6 +2,8 @@
 
 An AI-native, Rails-first component library — a shadcn/ui-parity design system built on ViewComponent, Hotwire, and Tailwind, designed so coding agents compose UI inside a constrained design system.
 
+Documentation, live component previews, and guides are at [poetryui.com](https://poetryui.com).
+
 This is the umbrella gem. One line installs the library proper: the engine, the components, and the default icon set. Everything else in the ecosystem is opt-in and listed below.
 
 ## What the umbrella installs
@@ -83,6 +85,14 @@ gem "poetry-simple_form"
 ```bash
 bin/rails generate poetry:simple_form:install
 ```
+
+## Demo
+
+### [Poetry in Motion](https://github.com/roboruby/poetry_in_motion) — generative UI on Rails
+
+A Rails app whose screens are composed while you talk. You ask an operations analyst about a synthetic bank (50,000 customers, a million transactions) and the analyst answers through [RubyLLM](https://rubyllm.com) by building the workspace around the conversation out of Poetry components: KPI rows, tables, charts, customer cards, filter forms, and buttons that ask the next question for you. Surfaces talk back, so a button or a filter inside one becomes the next turn, and follow-ups update the surface in place rather than adding a duplicate.
+
+It is the reference implementation for Poetry's RubyLLM installer, what `rails g ruby_llm:chat_ui` scaffolds rebuilt on Poetry's chat components, and it runs the umbrella together with poetry-charts and poetry-agent, so it is the quickest way to see the library, the charts, and the agent surfaces working in one app. Clone it, add an OpenRouter key, and `bin/setup` imports the bundled dataset in about thirty seconds.
 
 ## Status
 
