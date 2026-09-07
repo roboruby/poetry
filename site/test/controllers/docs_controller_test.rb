@@ -41,6 +41,28 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-slot=collapsible][data-open]", 0 # an explicit close beats the section default
   end
 
+  test "the landing section links open their sidebar section on arrival" do
+    get root_url
+
+    sections = { DocsCatalog.components.first.path => "Components", "/libraries/poetry" => "Libraries",
+                 "/mcp-server" => "AI Native" }
+    openers = css_select(%([data-controller="sidebar-sections"][data-action="click->sidebar-sections#open"]))
+    assert_equal 3, openers.size, "the header menu, the mobile sheet and the footer each carry the opener"
+    openers.each { |container| assert_equal sections, JSON.parse(container["data-sidebar-sections-links-value"]) }
+
+    # Every section the map names is a real sidebar section, and the cookie
+    # the click writes opens it on the page the link leads to.
+    sections.each do |href, title|
+      cookies[:docs_sidebar] = { title => false }.to_json
+      get href
+      assert_select "[data-slot=collapsible][data-open] [data-sidebar-sections-section-param=?]", title, 0
+
+      cookies[:docs_sidebar] = { title => true }.to_json
+      get href
+      assert_select "[data-slot=collapsible][data-open] [data-sidebar-sections-section-param=?]", title, 1
+    end
+  end
+
   test "the i18n guide serves the catalogue, the override story, and the model chain" do
     get "/i18n"
 
