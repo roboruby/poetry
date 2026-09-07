@@ -8,8 +8,9 @@ import { tabbableWithin } from "@poetry/controllers/helpers/tabbable"
 // pointer-only enrichment behind a LINK. Two timers (open 600 / close
 // 300, over the trigger+content
 // pair, re-enter cancels - the grace window, no polygon), the touch double-guard
-// (pointerType 'touch' no-ops AND touchstart preventDefaults so a tap can
-// never synthesize a focus-open - a tap just navigates the link), the focus
+// (pointerType 'touch' no-ops AND the pointerdown latch swallows the focus a
+// tap or click causes, so a tap keeps its click and just navigates the
+// link - cancelling touchstart would cancel that click with it), the focus
 // mirror (trigger focus opens immediately / blur closes - a keyboard user
 // SEES the card), the per-open TABINDEX STRIP (every tabbable inside is
 // forced tabindex=-1: keyboard and touch users never reach inside,
@@ -49,7 +50,13 @@ export default class HoverCardController extends Controller {
   #containSelection = false
   #hasSelection = false
   #previousBodyUserSelect = null
+  #isPointerDown = false
   #onPointerup = () => this.#handlePointerup()
+  #releaseLatch = () => {
+    this.#isPointerDown = false
+    document.removeEventListener("pointerup", this.#releaseLatch)
+    document.removeEventListener("pointercancel", this.#releaseLatch)
+  }
 
   /**
    * Wires the content listeners (portal-safe) and reconciles a
@@ -93,6 +100,7 @@ export default class HoverCardController extends Controller {
 
     this.#wired = []
     document.removeEventListener("pointerup", this.#onPointerup)
+    this.#releaseLatch()
   }
 
   /**
@@ -152,9 +160,11 @@ export default class HoverCardController extends Controller {
   /**
    * The trigger's focus action: opens IMMEDIATELY, skipping the timers -
    * a keyboard user sees the preview even though they
-   * cannot enter it.
+   * cannot enter it. Focus a pointer caused (the latch) does not open.
    */
   focusOpen() {
+    if (this.#isPointerDown) return
+
     this.#clearCloseTimer()
     this.#show()
   }
@@ -169,15 +179,17 @@ export default class HoverCardController extends Controller {
   }
 
   /**
-   * The trigger's touchstart action - the touch guard: preventDefault so
-   * a tap can never synthesize a focus event (a focus-opened card on
-   * touch would be unreachable). The tap still navigates the
-   * link.
-   *
-   * @param {TouchEvent} event
+   * The trigger's pointerdown action - the latch: the focus a tap or a
+   * click causes must not open the card (a pointer user never gets a
+   * focus-opened card; on touch it would be unreachable), so focusOpen
+   * stays shut until the pointer lifts. The event is never cancelled:
+   * cancelling touchstart would cancel the tap's click, and the tap must
+   * still navigate the link.
    */
-  touchGuard(event) {
-    event.preventDefault()
+  pointerDown() {
+    this.#isPointerDown = true
+    document.addEventListener("pointerup", this.#releaseLatch)
+    document.addEventListener("pointercancel", this.#releaseLatch)
   }
 
   // --- open / close ---

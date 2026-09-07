@@ -3,9 +3,10 @@ import { Application } from "@hotwired/stimulus"
 import { registerPoetryControllers } from "@poetry/controllers"
 
 // poetry--core--hover-card JS-unit: the trio's thinnest machine -
-// pointerenter arms open_delay / opens; touch pointerType no-ops and
-// touchstart preventDefaults (the double-guard); focus opens immediately /
-// blur closes; pair-leave arms close_delay and re-enter cancels; the
+// pointerenter arms open_delay / opens; touch pointerType no-ops and the
+// pointerdown latch swallows a tap's or click's focus (the double-guard -
+// touchstart is never cancelled, so a tap keeps its click); focus opens
+// immediately / blur closes; pair-leave arms close_delay and re-enter cancels; the
 // selection hold defers the pointer-leave close but never Esc/outside; the
 // tabindex strip runs per-open and catches streamed-in tabbables; timers
 // and the body user-select suppression are cleared on disconnect. NO aria
@@ -47,7 +48,7 @@ const markup = ({ open = false, openDelay = 600, closeDelay = 300 } = {}) => `
        ${open ? "data-popup-open" : ""}
        data-action="pointerenter->poetry--core--hover-card#pointerEnter pointerleave->poetry--core--hover-card#pointerLeave
                     focus->poetry--core--hover-card#focusOpen blur->poetry--core--hover-card#blurClose
-                    touchstart->poetry--core--hover-card#touchGuard">@nextjs</a>
+                    pointerdown->poetry--core--hover-card#pointerDown">@nextjs</a>
     <div id="hc-content" data-slot="hover-card-content"
          ${open ? "data-open" : "data-closed"} ${open ? "" : "hidden"}>
       <a id="inside-link" href="/users/nextjs">full profile</a>
@@ -163,14 +164,31 @@ describe("poetry--core--hover-card", () => {
       expect(el("hc-content").hasAttribute("data-closed")).toBe(true)
     })
 
-    it("touchstart is preventDefaulted (no synthetic focus-open; the tap navigates the link)", async () => {
+    it("touchstart is never cancelled - a tap keeps its click and navigates the link", async () => {
       await mount()
 
       const event = new Event("touchstart", { bubbles: true, cancelable: true })
 
       el("hc-trigger").dispatchEvent(event)
 
-      expect(event.defaultPrevented).toBe(true)
+      expect(event.defaultPrevented).toBe(false)
+    })
+
+    it("the pointerdown latch: focus a tap or click causes does not open; pointerup releases it", async () => {
+      await mount()
+
+      pointer(el("hc-trigger"), "pointerdown", { pointerType: "touch" })
+      el("hc-trigger").focus()
+      await nextFrame()
+
+      expect(el("hc-content").hasAttribute("data-closed")).toBe(true)
+
+      pointer(el("hc-trigger"), "pointerup", { pointerType: "touch" })
+      el("hc-trigger").blur()
+      el("hc-trigger").focus()
+      await nextFrame()
+
+      expect(el("hc-content").hasAttribute("data-open")).toBe(true)
     })
   })
 

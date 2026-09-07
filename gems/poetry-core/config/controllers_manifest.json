@@ -595,9 +595,9 @@
       "disconnect",
       "focusOpen",
       "openValueChanged",
+      "pointerDown",
       "pointerEnter",
-      "pointerLeave",
-      "touchGuard"
+      "pointerLeave"
     ],
     "events": [
       "poetry:hover-card:closed",
