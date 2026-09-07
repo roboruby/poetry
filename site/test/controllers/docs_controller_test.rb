@@ -25,21 +25,21 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_select "meta[name=robots]", count: 0
   end
 
-test "the sidebar collapse persists via the sidebar_state cookie" do
-  get introduction_url
+  test "the sidebar collapse persists via the sidebar_state cookie" do
+    get introduction_url
 
-  assert_select "[data-slot=sidebar][data-state=expanded][data-collapsible=\"\"]", 1
+    assert_select "[data-slot=sidebar][data-state=expanded][data-collapsible=\"\"]", 1
 
-  cookies[:sidebar_state] = "false"
-  get "/theming"
+    cookies[:sidebar_state] = "false"
+    get "/theming"
 
-  assert_select "[data-slot=sidebar][data-state=collapsed][data-collapsible=icon]", 1
+    assert_select "[data-slot=sidebar][data-state=collapsed][data-collapsible=icon]", 1
 
-  cookies[:sidebar_state] = "true"
-  get "/theming"
+    cookies[:sidebar_state] = "true"
+    get "/theming"
 
-  assert_select "[data-slot=sidebar][data-state=expanded]", 1
-end
+    assert_select "[data-slot=sidebar][data-state=expanded]", 1
+  end
 
   test "explicit sidebar disclosure choices persist via the cookie" do
     get "/theming"
@@ -89,13 +89,13 @@ end
     assert_match "human_attribute_name", response.body
   end
 
-test "the landing badge links the launch essay" do
-  get root_url
+  test "the landing badge links the launch essay" do
+    get root_url
 
-  href = "https://rubyai.beehiiv.com/p/one-decision-put-ruby-into-a-downward-spiral-it-s-not-too-late-to-fix-it"
-  assert_select "a[data-slot=badge][href=?][target=_blank][rel=noopener]", href,
-                  { count: 1, text: /Built for Rails 8 — Read the announcement/ }
-end
+    href = "https://rubyai.beehiiv.com/p/one-decision-put-ruby-into-a-downward-spiral-it-s-not-too-late-to-fix-it"
+    assert_select "a[data-slot=badge][href=?][target=_blank][rel=noopener]", href,
+                    { count: 1, text: /Built for Rails 8 — Read the announcement/ }
+  end
 
   test "the landing nav links Components at the catalog's first page" do
     get root_url
