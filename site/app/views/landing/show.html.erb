@@ -70,7 +70,12 @@
 
     <div class="mx-auto max-w-6xl px-6 pb-24 pt-40 sm:pb-32 sm:pt-48">
       <div class="max-w-170" data-controller="reveal" data-reveal>
-        <%= poetry_badge(variant: :secondary) { "Built for Rails 8" } %>
+<%# The badge IS the link (Badge's one interactive form, href:) - the
+    whole pill opens the launch essay; the phrase is marked as the link. %>
+<%= poetry_badge(variant: :secondary, href: "https://rubyai.beehiiv.com/p/one-decision-put-ruby-into-a-downward-spiral-it-s-not-too-late-to-fix-it",
+                 target: "_blank", rel: "noopener") do %>
+  Built for Rails 8 — <span class="underline underline-offset-2">Read the announcement</span>
+<% end %>
         <h1 class="mt-6 text-5xl font-semibold text-foreground" style="text-wrap: balance">
           The AI-Native<br>UI Component Library<br>For Ruby on Rails
         </h1>

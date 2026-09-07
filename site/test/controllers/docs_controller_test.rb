@@ -89,6 +89,14 @@ end
     assert_match "human_attribute_name", response.body
   end
 
+test "the landing badge links the launch essay" do
+  get root_url
+
+  href = "https://rubyai.beehiiv.com/p/one-decision-put-ruby-into-a-downward-spiral-it-s-not-too-late-to-fix-it"
+  assert_select "a[data-slot=badge][href=?][target=_blank][rel=noopener]", href,
+                  { count: 1, text: /Built for Rails 8 — Read the announcement/ }
+end
+
   test "the landing nav links Components at the catalog's first page" do
     get root_url
 
