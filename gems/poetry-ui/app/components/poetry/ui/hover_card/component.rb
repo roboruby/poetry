@@ -95,14 +95,15 @@ module Poetry
           end
           # The trigger handlers: pointerenter/leave pair
           # timers (touch excluded), focus opens immediately / blur closes,
-          # and the touchstart guard (a tap navigates, never focus-opens).
+          # and the pointerdown latch (a tap or click never focus-opens; the
+          # tap keeps its click, so it navigates).
           on :trigger do
             controller :hover_card do
               action :pointer_enter, on: :pointerenter
               action :pointer_leave, on: :pointerleave
               action :focus_open, on: :focus
               action :blur_close, on: :blur
-              action :touch_guard, on: :touchstart
+              action :pointer_down, on: :pointerdown
             end
             controller(:popper) { target :anchor }
           end

@@ -5651,9 +5651,9 @@ components:
       - blurClose
       - focusOpen
       - openValueChanged
+      - pointerDown
       - pointerEnter
       - pointerLeave
-      - touchGuard
       events:
       - poetry:hover-card:closed
       - poetry:hover-card:open
@@ -5773,8 +5773,8 @@ components:
           'on': focus
         - method: blurClose
           'on': blur
-        - method: touchGuard
-          'on': touchstart
+        - method: pointerDown
+          'on': pointerdown
       - identifier: poetry--core--popper
         targets:
         - name: anchor

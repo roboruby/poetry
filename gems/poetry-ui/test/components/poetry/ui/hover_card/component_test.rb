@@ -63,7 +63,7 @@ module Poetry
             pointerleave->poetry--core--hover-card#pointerLeave
             focus->poetry--core--hover-card#focusOpen
             blur->poetry--core--hover-card#blurClose
-            touchstart->poetry--core--hover-card#touchGuard
+            pointerdown->poetry--core--hover-card#pointerDown
           ].each { |action| assert_includes trigger["data-action"], action }
           # NO aria anywhere (Radix-exact, deliberate): advertising a
           # keyboard-unreachable surface to AT is worse than silence.
