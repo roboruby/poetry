@@ -16,10 +16,9 @@
         even for a visitor who once collapsed it. %>
     <% site_links = [ [ "Docs", introduction_path, nil ], [ "Components", DocsCatalog.components.first.path, "Components" ],
                       [ "Libraries", library_path("poetry"), "Libraries" ], [ "AI", mcp_path, "AI Native" ] ] %>
-    <% sidebar_opener = { controller: "sidebar-sections", action: "click->sidebar-sections#open",
-                          sidebar_sections_links_value: site_links.filter_map { |_, href, section| [ href, section ] if section }.to_h.to_json } %>
+    <% opener = sidebar_opener(site_links.filter_map { |_, href, section| [ href, section ] if section }.to_h) %>
     <nav aria-label="Site" class="flex items-center gap-3 sm:gap-6">
-      <%= tag.div(class: "hidden sm:block", data: sidebar_opener) do %>
+      <%= tag.div(class: "hidden sm:block", data: opener) do %>
         <%= poetry_navigation_menu(label: "Site", viewport: true) do |nav| %>
           <% site_links.each { |text, href| nav.with_link(text, href: href) } %>
         <% end %>
@@ -33,7 +32,7 @@
         <%= poetry_sheet(side: :right, content_class: "w-72") do |sheet| %>
           <% sheet.with_trigger(variant: :ghost, size: :"icon-sm", label: "Open menu") { poetry_icon(name: :menu, class: "size-5") } %>
           <% sheet.with_title { "Menu" } %>
-          <%= tag.nav("aria-label": "Site, mobile", class: "mt-6 flex flex-col gap-1", data: sidebar_opener) do %>
+          <%= tag.nav("aria-label": "Site, mobile", class: "mt-6 flex flex-col gap-1", data: opener) do %>
             <% site_links.each do |text, href| %>
               <%= poetry_button(variant: :ghost, size: :lg, href: href, class: "w-full justify-start px-3 text-base") { text } %>
             <% end %>
@@ -319,7 +318,7 @@
     <span class="flex items-center gap-2">
       <%= poetry_icon(name: :feather, class: "size-4 text-primary") %> poetry — released under the MIT license
     </span>
-    <%= tag.nav("aria-label": "Footer", class: "flex flex-wrap items-center gap-x-6 gap-y-3", data: sidebar_opener) do %>
+    <%= tag.nav("aria-label": "Footer", class: "flex flex-wrap items-center gap-x-6 gap-y-3", data: opener) do %>
       <% site_links.each do |text, href| %>
         <%= poetry_link(href: href) { text } %>
       <% end %>

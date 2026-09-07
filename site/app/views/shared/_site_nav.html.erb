@@ -1,6 +1,10 @@
 <%# The top nav: the NavigationMenu morphing viewport in production -
-    switching between the two panels morphs the shared popup. %>
-<div class="hidden lg:block">
+    switching between the two panels morphs the shared popup. The links
+    that lead into a sidebar section open it on arrival (the opener map
+    below, read by the sidebar-sections controller). %>
+<% section_links = { "/components/button" => "Components", "/charts/area" => "Charts",
+                     agent_skills_path => "AI Native", mcp_path => "AI Native" } %>
+<%= tag.div(class: "hidden lg:block", data: sidebar_opener(section_links)) do %>
   <%= poetry_navigation_menu(label: "Site", viewport: true) do |nav| %>
     <% nav.with_item("Get Started", value: "start") do %>
       <div class="grid w-64 gap-1">
@@ -56,4 +60,4 @@
       </div>
     <% end %>
   <% end %>
-</div>
+<% end %>

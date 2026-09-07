@@ -284,6 +284,16 @@ rescue JSON::ParserError
   {}
 end
 
+# The data attributes for a container of links that lead into sidebar
+# sections (href => section title): a click on a mapped link records
+# that section as open (the same cookie the section triggers write)
+# before the link is followed, so a remembered collapse never hides
+# the section the link just led to.
+def sidebar_opener(links)
+  { controller: "sidebar-sections", action: "click->sidebar-sections#open",
+    sidebar_sections_links_value: links.to_json }
+end
+
 # Example/block source panels ride the CodeBlock component: the
 # theme-owned syntax palette replaces the vendored GitHub rouge.css, and
 # every code tab gains the copy affordance.
