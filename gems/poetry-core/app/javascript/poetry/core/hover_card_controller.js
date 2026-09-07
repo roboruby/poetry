@@ -29,6 +29,11 @@ const CONTENT_SELECTOR = '[data-slot="hover-card-content"]'
 const EVENT_PREFIX = "poetry:hover-card"
 
 const DISMISSABLE = "poetry--core--dismissable"
+// The pointerdown latch releases once the press has fully landed: the
+// compatibility mouseup (a tap dispatches its mouse events, focus among
+// them, AFTER its pointerup - so pointerup is too early), a cancelled
+// touch, or any key (keyboard use is never mid-press).
+const LATCH_RELEASE_EVENTS = ["mouseup", "pointercancel", "keydown"]
 const POPPER_STRATEGY = "data-poetry--core--popper-strategy-value"
 
 export default class HoverCardController extends Controller {
@@ -54,8 +59,7 @@ export default class HoverCardController extends Controller {
   #onPointerup = () => this.#handlePointerup()
   #releaseLatch = () => {
     this.#isPointerDown = false
-    document.removeEventListener("pointerup", this.#releaseLatch)
-    document.removeEventListener("pointercancel", this.#releaseLatch)
+    for (const type of LATCH_RELEASE_EVENTS) document.removeEventListener(type, this.#releaseLatch)
   }
 
   /**
@@ -182,14 +186,13 @@ export default class HoverCardController extends Controller {
    * The trigger's pointerdown action - the latch: the focus a tap or a
    * click causes must not open the card (a pointer user never gets a
    * focus-opened card; on touch it would be unreachable), so focusOpen
-   * stays shut until the pointer lifts. The event is never cancelled:
-   * cancelling touchstart would cancel the tap's click, and the tap must
-   * still navigate the link.
+   * stays shut until the press has landed (LATCH_RELEASE_EVENTS). The
+   * event is never cancelled: cancelling touchstart would cancel the
+   * tap's click, and the tap must still navigate the link.
    */
   pointerDown() {
     this.#isPointerDown = true
-    document.addEventListener("pointerup", this.#releaseLatch)
-    document.addEventListener("pointercancel", this.#releaseLatch)
+    for (const type of LATCH_RELEASE_EVENTS) document.addEventListener(type, this.#releaseLatch)
   }
 
   // --- open / close ---

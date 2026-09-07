@@ -174,17 +174,62 @@ describe("poetry--core--hover-card", () => {
       expect(event.defaultPrevented).toBe(false)
     })
 
-    it("the pointerdown latch: focus a tap or click causes does not open; pointerup releases it", async () => {
+    it("the pointerdown latch: the focus a click causes does not open; the mouseup releases it", async () => {
       await mount()
 
-      pointer(el("hc-trigger"), "pointerdown", { pointerType: "touch" })
+      pointer(el("hc-trigger"), "pointerdown")
+      pointer(el("hc-trigger"), "mousedown")
       el("hc-trigger").focus()
       await nextFrame()
 
       expect(el("hc-content").hasAttribute("data-closed")).toBe(true)
 
-      pointer(el("hc-trigger"), "pointerup", { pointerType: "touch" })
+      pointer(el("hc-trigger"), "pointerup")
+      pointer(el("hc-trigger"), "mouseup")
       el("hc-trigger").blur()
+      el("hc-trigger").focus()
+      await nextFrame()
+
+      expect(el("hc-content").hasAttribute("data-open")).toBe(true)
+    })
+
+    it("the latch outlasts a tap's pointerup: the compatibility mouse events (focus among them) land after it", async () => {
+      await mount()
+
+      // Chrome's order for a tap: pointerdown, touchstart, pointerup,
+      // touchend, THEN mousedown, focus, mouseup, click.
+      pointer(el("hc-trigger"), "pointerdown", { pointerType: "touch" })
+      el("hc-trigger").dispatchEvent(new Event("touchstart", { bubbles: true, cancelable: true }))
+      pointer(el("hc-trigger"), "pointerup", { pointerType: "touch" })
+      el("hc-trigger").dispatchEvent(new Event("touchend", { bubbles: true, cancelable: true }))
+      pointer(el("hc-trigger"), "mousedown")
+      el("hc-trigger").focus()
+      await nextFrame()
+
+      expect(el("hc-content").hasAttribute("data-closed")).toBe(true)
+
+      pointer(el("hc-trigger"), "mouseup")
+      el("hc-trigger").blur()
+      el("hc-trigger").focus()
+      await nextFrame()
+
+      expect(el("hc-content").hasAttribute("data-open")).toBe(true)
+    })
+
+    it("a cancelled touch or a key releases the latch (no stuck keyboard path)", async () => {
+      await mount()
+
+      pointer(el("hc-trigger"), "pointerdown", { pointerType: "touch" })
+      pointer(el("hc-trigger"), "pointercancel", { pointerType: "touch" })
+      el("hc-trigger").focus()
+      await nextFrame()
+
+      expect(el("hc-content").hasAttribute("data-open")).toBe(true)
+
+      el("hc-trigger").blur()
+      await nextFrame()
+      pointer(el("hc-trigger"), "pointerdown")
+      document.body.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", bubbles: true }))
       el("hc-trigger").focus()
       await nextFrame()
 
