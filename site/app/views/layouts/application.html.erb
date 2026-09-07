@@ -47,7 +47,9 @@
   </head>
 
   <body data-controller="theme sidebar-sections" class="min-h-screen bg-background text-foreground antialiased">
-    <%= poetry_sidebar(collapsible: :icon) do |shell| %>
+    <%# open: reads the cookie the sidebar controller persists, so a
+        collapse survives the next visit and the first paint matches it. %>
+    <%= poetry_sidebar(open: cookies[:sidebar_state] != "false", collapsible: :icon) do |shell| %>
       <% shell.with_nav do %>
         <%= poetry_sidebar_header do %>
           <%= link_to root_path, "aria-label": "poetry",

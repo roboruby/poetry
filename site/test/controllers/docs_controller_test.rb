@@ -25,6 +25,22 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_select "meta[name=robots]", count: 0
   end
 
+test "the sidebar collapse persists via the sidebar_state cookie" do
+  get introduction_url
+
+  assert_select "[data-slot=sidebar][data-state=expanded][data-collapsible=\"\"]", 1
+
+  cookies[:sidebar_state] = "false"
+  get "/theming"
+
+  assert_select "[data-slot=sidebar][data-state=collapsed][data-collapsible=icon]", 1
+
+  cookies[:sidebar_state] = "true"
+  get "/theming"
+
+  assert_select "[data-slot=sidebar][data-state=expanded]", 1
+end
+
   test "explicit sidebar disclosure choices persist via the cookie" do
     get "/theming"
 
