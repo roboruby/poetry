@@ -43,6 +43,12 @@ module Poetry
 
     class_option :charts, type: :boolean, default: false,
                           desc: %(Also wire poetry-charts (requires gem "poetry-charts" in the bundle))
+    class_option :skip_bundle, type: :boolean, default: false,
+                               desc: "Skip `bundle install` after adding the herb gem (poetry:check's parser)"
+
+    # A Gemfile line declaring herb, in any quoting, at any indentation
+    # (a `group :development do` block included).
+    HERB_GEM_LINE = /^\s*gem\s+["']herb["']/
 
     # Install-time theme selection. Every themes/<name>.css fragment is
     # a complete visual theme; the chosen one fills the style-default.css
@@ -251,6 +257,29 @@ module Poetry
         import { registerPoetryChartsControllers } from "@poetry/charts"
         registerPoetryChartsControllers(application)
       JS
+    end
+
+    # poetry:check parses ERB with herb, which stays out of poetry's runtime
+    # dependencies on purpose (hosts never need it to render), so the
+    # install adds it to the development group - once, and never when the
+    # Gemfile already declares it anywhere. Then `bundle install`, unless
+    # --skip-bundle (the note says what is left to do).
+    # @api private
+    def add_herb_gem
+      gemfile = File.join(destination_root, "Gemfile")
+      return unless File.exist?(gemfile)
+
+      if File.read(gemfile).match?(HERB_GEM_LINE)
+        say_status :skip, "herb is already in the Gemfile (poetry:check's parser)", :cyan
+        return
+      end
+
+      gem "herb", group: :development, comment: "poetry:check parses ERB with herb (development only)"
+      if options[:skip_bundle]
+        say_status :note, "run `bundle install` to fetch herb before `bin/rails poetry:check`", :cyan
+      else
+        in_root { Bundler.with_unbundled_env { run "bundle install" } }
+      end
     end
 
     # The llms.txt / llms-full.txt agent docs are engine routes - without

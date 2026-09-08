@@ -39,6 +39,35 @@ module Poetry
       assert_file "config/poetry_components.yml", /components: \{\}/
     end
 
+    def test_install_adds_herb_to_the_development_group_once
+      File.write(File.join(destination_root, "Gemfile"), %(source "https://rubygems.org"\ngem "rails"\n))
+      run_generator %w[--skip-bundle]
+      run_generator %w[--skip-bundle]
+
+      assert_file "Gemfile" do |content|
+        assert_equal 1, content.scan(/^gem "herb", group: :development$/).size
+        assert_match(/^# poetry:check parses ERB with herb/, content)
+      end
+    end
+
+    def test_install_leaves_an_existing_herb_entry_alone
+      # Any quoting, inside a group block: present is present.
+      File.write(File.join(destination_root, "Gemfile"),
+                 %(source "https://rubygems.org"\ngroup :development do\n  gem 'herb'\nend\n))
+      run_generator %w[--skip-bundle]
+
+      assert_file "Gemfile" do |content|
+        assert_equal 1, content.scan(/gem ["']herb["']/).size
+        refute_match(/group: :development/, content)
+      end
+    end
+
+    def test_install_without_a_gemfile_skips_the_herb_step
+      run_generator %w[--skip-bundle]
+
+      assert_no_file "Gemfile"
+    end
+
     def test_install_writes_the_agents_md_section_idempotently
       run_generator
       run_generator

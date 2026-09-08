@@ -12,7 +12,8 @@ namespace :poetry do
     # optional-parser posture as poetry:verify's template gate.
     unless Poetry::Core::CSS::TemplateClasses.available?
       abort "poetry:check: the herb gem is required to parse templates - " \
-            "add `gem \"herb\"` to your Gemfile (development group is enough)"
+            "`bin/rails g poetry:install` adds it to your development group " \
+            "(or add `gem \"herb\"` to the Gemfile yourself and bundle)"
     end
 
     # Default sweep: ERB through the template tier, app Ruby through the

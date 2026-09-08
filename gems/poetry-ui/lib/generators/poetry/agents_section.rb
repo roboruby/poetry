@@ -60,7 +60,7 @@ module Poetry
             the last edit (unknown components/slots/variants/wiring, icon names,
             enum values, typed-slot props, helper + setter arity, yield-less
             blocks, setter keywords, required content blocks, required slots,
-            did-you-mean, `--json`; needs the `herb` gem in the Gemfile). An edit
+            did-you-mean, `--json`; `poetry:install` adds the `herb` gem it parses with). An edit
             made after your last check is unverified markup - re-run it.
           - Faster: the `poetry` MCP server (`.mcp.json`: command `bundle`, args
             `["exec", "poetry-agent"]`, the poetry-agent gem) serves ten tools from the live registry
