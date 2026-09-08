@@ -20,7 +20,7 @@ function mount({ value = "", min, max, step, snap, format, wheel } = {}) {
       <button id="dec" data-poetry--core--number-field-target="decrement"
               data-action="pointerdown->poetry--core--number-field#press click->poetry--core--number-field#tap pointerleave->poetry--core--number-field#leave">-</button>
       <input id="input" type="text" data-poetry--core--number-field-target="input"
-             data-action="keydown->poetry--core--number-field#keydown input->poetry--core--number-field#input focus->poetry--core--number-field#focus blur->poetry--core--number-field#blur">
+             data-action="keydown->poetry--core--number-field#keydown input->poetry--core--number-field#input blur->poetry--core--number-field#blur">
       <button id="inc" data-poetry--core--number-field-target="increment"
               data-action="pointerdown->poetry--core--number-field#press click->poetry--core--number-field#tap pointerleave->poetry--core--number-field#leave">+</button>
       <input id="hidden" type="number" hidden value="${value}"
@@ -255,6 +255,52 @@ describe("poetry--core--number-field", () => {
     expect(el("hidden").value).toBe("6")
     el("input").dispatchEvent(new WheelEvent("wheel", { deltaY: 1, ctrlKey: true, cancelable: true }))
     expect(el("hidden").value).toBe("6")
+  })
+
+  it("wheel: the dominant axis decides - a sideways swipe passes through, Shift+horizontal steps", async () => {
+    mount({ value: "5", wheel: true })
+    await nextFrame()
+    el("input").focus()
+
+    // A precision touchpad emits sub-pixel cross-axis noise during a sideways swipe.
+    const sideways = new WheelEvent("wheel", { deltaX: 30, deltaY: 0.4, cancelable: true })
+    el("input").dispatchEvent(sideways)
+    expect(el("hidden").value).toBe("5")
+    expect(sideways.defaultPrevented).toBe(false) // the page keeps its scroll
+
+    // No movement at all: nothing steps, nothing is cancelled.
+    const still = new WheelEvent("wheel", { deltaX: 0, deltaY: 0, cancelable: true })
+    el("input").dispatchEvent(still)
+    expect(el("hidden").value).toBe("5")
+    expect(still.defaultPrevented).toBe(false)
+
+    // Some browsers deliver Shift+wheel on the horizontal axis: positive is
+    // "down", the large step, and cross-axis noise never flips it.
+    const shifted = new WheelEvent("wheel", { deltaX: 30, deltaY: -0.4, shiftKey: true, cancelable: true })
+    el("input").dispatchEvent(shifted)
+    expect(el("hidden").value).toBe("-5")
+    expect(shifted.defaultPrevented).toBe(true)
+
+    el("input").dispatchEvent(new WheelEvent("wheel", { deltaY: -1, shiftKey: true, cancelable: true }))
+    expect(el("hidden").value).toBe("5")
+  })
+
+  it("the user's focus keeps the browser's selection; a stepper press parks the caret at the end", async () => {
+    mount({ value: "123" })
+    await nextFrame()
+    const input = el("input")
+
+    // Tab selects the whole value; nothing in the controller undoes it.
+    input.focus()
+    input.setSelectionRange(0, 3)
+    input.dispatchEvent(new FocusEvent("focus"))
+    expect([input.selectionStart, input.selectionEnd]).toEqual([0, 3])
+
+    input.blur()
+    el("inc").dispatchEvent(new MouseEvent("pointerdown", { bubbles: true, button: 0 }))
+    expect(document.activeElement).toBe(input)
+    expect(input.value).toBe("124")
+    expect([input.selectionStart, input.selectionEnd]).toEqual([3, 3])
   })
 
   it("autofill on the hidden input is adopted and clamped", async () => {

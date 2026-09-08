@@ -32,7 +32,6 @@ export default class extends Controller {
   static events = ["poetry:number-field:change", "poetry:number-field:commit"]
 
   #value = null
-  #focusedOnce = false
   #holdTimer = null
   #holdInterval = null
   #holdChanged = false
@@ -119,15 +118,6 @@ export default class extends Controller {
     if (parsed !== null) this.#apply(parsed, { display: false })
   }
 
-  /** The focus action: the first focus parks the caret at the end. */
-  focus() {
-    if (this.#focusedOnce) return
-
-    this.#focusedOnce = true
-    const end = this.inputTarget.value.length
-    this.inputTarget.setSelectionRange(end, end)
-  }
-
   /**
    * The blur action - the text commit point: empty clears, unparseable
    * text is left as typed with no commit, parseable text clamps and
@@ -161,7 +151,7 @@ export default class extends Controller {
     if (event.button !== 0 || this.inputTarget.readOnly) return
 
     // Mouse focuses the input (touch would pop the software keyboard).
-    if (event.pointerType !== "touch") this.inputTarget.focus()
+    if (event.pointerType !== "touch") this.#focusInput()
     this.#pressTicked = true
     this.#holdChanged = false
     const direction = this.#directionFor(event.currentTarget)
@@ -224,6 +214,17 @@ export default class extends Controller {
     return changed
   }
 
+  // Programmatic focus (the steppers) parks the caret at the end BEFORE
+  // focusing: every engine restores the stored selection on focus, and a
+  // host's own focus handler can still choose differently. Keyboard and
+  // pointer focus keep the browser's native selection (Tab selects the
+  // value, a click places the caret).
+  #focusInput() {
+    const end = this.inputTarget.value.length
+    this.inputTarget.setSelectionRange(end, end)
+    this.inputTarget.focus()
+  }
+
   #directionFor(button) {
     return this.hasIncrementTarget && button === this.incrementTarget ? 1 : -1
   }
@@ -240,13 +241,22 @@ export default class extends Controller {
     this.#apply(candidate, { display: true })
   }
 
+  // The dominant axis decides (a precision touchpad emits sub-pixel
+  // cross-axis noise): a sideways gesture is page scroll and passes
+  // through untouched, except under Shift, which some browsers deliver
+  // on the horizontal axis - there the horizontal delta is the intended
+  // one. Positive is "down", stepping the value down.
   #wheel(event) {
     if (event.ctrlKey || document.activeElement !== this.inputTarget) return
 
-    event.preventDefault()
-    if (event.deltaY === 0) return
+    const horizontal = Math.abs(event.deltaX) > Math.abs(event.deltaY)
+    if (horizontal && !event.shiftKey) return
 
-    this.#step(event.deltaY > 0 ? -1 : 1, event)
+    const delta = horizontal ? event.deltaX : event.deltaY
+    if (delta === 0) return
+
+    event.preventDefault()
+    this.#step(delta > 0 ? -1 : 1, event)
     this.#commit()
   }
 
