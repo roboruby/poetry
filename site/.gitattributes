@@ -5,3 +5,15 @@
 vendor/* linguist-vendored
 config/credentials/*.yml.enc diff=rails_credentials
 config/credentials.yml.enc diff=rails_credentials
+
+# Language statistics: the site is a Ruby app. Templates count as Ruby;
+# the vendored poetry CSS (poetry:install output), the generated theme
+# registry, the API reference data, the search index and the skill
+# references are excluded and collapse in diffs.
+*.erb linguist-language=Ruby
+app/assets/tailwind/poetry/** linguist-vendored
+public/vendor/** linguist-vendored
+app/assets/tailwind/styles/** linguist-generated
+data/api/** linguist-generated
+public/search-index.json linguist-generated
+.claude/skills/poetry/references/** linguist-generated
