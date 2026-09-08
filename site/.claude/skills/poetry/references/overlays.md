@@ -112,6 +112,7 @@ A menu of actions revealed by right-clicking an element.
 Class: Poetry::Ui::ContextMenu::Component - BEM block `poetry-ui-context_menu`.
 Slot REQUIRED: with_trigger (the right-click surface) - a call without it raises.
 Slot REQUIRED: with_item (at least one item) - a call without it raises.
+- `content_class:` (string) - Class merge seam for the menu panel (e.g. content_class: "w-48"). Root-level class: styles the surface wrapper, not the panel.
 - `dir:` (symbol) - one of ltr|rtl - Writing-direction override (ltr/rtl) stamped on the root.
 - `disabled:` (boolean) - default false - Inerts the surface - no gesture opens the menu.
 - `focusable_surface:` (boolean) - default false - Puts the surface in the tab order and advertises Shift+F10.
@@ -226,6 +227,7 @@ Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `align:` (symbol) - one of start|center|end, default "center" - The menu's alignment against the trigger's edge.
 - `align_offset:` (integer) - default 0 - Pixel shift along the alignment edge.
 - `avoid_collisions:` (boolean) - default true - Flips/shifts placement to keep the menu inside the viewport.
+- `content_class:` (string) - Class merge seam for the menu panel - the panel opens at the trigger's width (min 8rem), so content_class: "w-56" widens it. Root-level class: styles the wrapper, not the panel.
 - `dir:` (symbol) - one of ltr|rtl - Reading direction; :rtl flips submenu sides and indicators.
 - `disabled:` (boolean) - default false - Disables the menu trigger button.
 - `loop:` (boolean) - default false - Arrow-key navigation wraps from the last item back to the first.
@@ -287,7 +289,7 @@ Slots: trigger (The enriched LINK: a real navigable <a> - THE no-JS fallback. ta
 - PART `hover-card-trigger` - The enriched link itself - simultaneously the no-JS fallback, the touch path, and the keyboard path | states: data-popup-open (bare while the card is open; absent while closed (absence IS the closed state))
 - PART `hover-card-content` - The role-less preview panel (invisible to AT on purpose) - positioning, animation, and the open state ride here | states: data-open (card is open (the controller flips the pair at runtime)); data-closed (card is closed (the server-rendered state; hidden rides along)); data-side=top|right|bottom|left (always - the side (initial placement, re-resolved live by popper after flip)); data-align=start|center|end (always - the alignment (re-resolved live by popper)) | vars: --transform-origin (the anchor-facing origin popper writes for scale-in animation); --available-width (viewport space left for the panel (popper, post-flip)); --available-height (viewport space left for the panel (popper, post-flip)); --anchor-width (the anchor's measured width (popper)); --anchor-height (the anchor's measured height (popper))
 - WIRING root: `poetry--core--hover-card` registers; values open, open_delay, close_delay | `poetry--core--popper` registers; values side, align, side_offset, align_offset, avoid_collisions
-- WIRING trigger: `poetry--core--hover-card` actions pointerEnter on pointerenter, pointerLeave on pointerleave, focusOpen on focus, blurClose on blur, touchGuard on touchstart | `poetry--core--popper` targets anchor
+- WIRING trigger: `poetry--core--hover-card` actions pointerEnter on pointerenter, pointerLeave on pointerleave, focusOpen on focus, blurClose on blur, pointerDown on pointerdown | `poetry--core--popper` targets anchor
 - WIRING content: `poetry--core--popper` targets content
 - RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the trigger wiring (the Stimulus behavior the overlay needs; poppers add id/aria and their trigger slot, modals hand only the open action) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: Use poetry_hover_card - never hand-roll hover-div previews.
@@ -308,7 +310,7 @@ Slot REQUIRED: with_menu (at least one menu) - a call without it raises.
 - `label:` (string) - required - The bar's accessible name - a page may hold more than one menubar.
 - `loop:` (boolean) - default false - Wraps arrow-key movement past either end of the bar.
 - `value:` (string) - Server-renders the menu with this value open (values default to "menu-<position>").
-Slots: menus (The top-level menus. Each takes with_trigger (the menu button) plus the family item slots (with_item, with_checkbox_item, with_radio_group, with_sub, with_separator, ...); value: defaults to the menu's position.; many; each with_menu REQUIRES with_trigger inside its block (the top-level menu button); each with_menu REQUIRES with_item inside its block (at least one item)).
+Slots: menus (The top-level menus. Each takes with_trigger (the menu button) plus the family item slots (with_item, with_checkbox_item, with_radio_group, with_sub, with_separator, ...); value: defaults to the menu's position; content_class: is the panel's class merge seam.; many; each with_menu REQUIRES with_trigger inside its block (the top-level menu button); each with_menu REQUIRES with_item inside its block (at least one item)).
 - PART `menubar` - The role=menubar bar - one horizontal roving tab stop across the triggers | states: data-open (some menu is open (value present; the coordinator flips the pair)); data-closed (no menu is open)
 - PART `menubar-menu` - One logical menu - a display:contents wrapper hosting the trigger + content pair's menu and popper controllers
 - PART `menubar-trigger` - The top-level menu button - a role=menuitem INSIDE the bar | states: data-value (the menu's value - the coordinator's open/close key); data-popup-open (its menu is open (written with aria-expanded; absence is the closed state)); data-disabled (trigger is disabled (written together with the disabled property))

@@ -509,7 +509,7 @@ Class: Poetry::Ui::NumberField::Component - BEM block `poetry-ui-number_field`.
 - PART `input-group-addon` - The two stepper cells - InputGroup's addon vocabulary, reused so the group paddings compose | states: data-align=inline-start|inline-end (always - inline-start holds the decrement, inline-end the increment)
 - PART `input-group-control` - The visible formatted <input type=text> - InputGroup's control slot (the themes' focus-ring hook); aria-roledescription "Number field", never a spinbutton
 - WIRING root: `poetry--core--number-field` registers; values min (if), max (if), step, large_step, small_step, snap (if snap), wheel (if wheel), format (if), locale (if)
-- WIRING input: `poetry--core--number-field` actions keydown on keydown, input on input, focus on focus, blur on blur; targets input
+- WIRING input: `poetry--core--number-field` actions keydown on keydown, input on input, blur on blur; targets input
 - WIRING hidden: `poetry--core--number-field` actions hiddenChanged on change; targets hidden
 - WIRING increment: `poetry--core--number-field` actions press on pointerdown, tap on click, leave on pointerleave; targets increment
 - WIRING decrement: `poetry--core--number-field` actions press on pointerdown, tap on click, leave on pointerleave; targets decrement
