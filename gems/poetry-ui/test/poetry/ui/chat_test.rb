@@ -51,6 +51,13 @@ module Poetry
         assert_equal a, b
       end
 
+      test "continuation frames need an approval pause" do
+        error = assert_raises(Chat::Error) { script.segments[1].continuation_frames(approved: true) }
+
+        assert_equal "turn has no approval pause", error.message
+        assert_kind_of Poetry::Core::Error, error, "rescuable with the family base"
+      end
+
       test "an approval tool pauses the turn at awaiting_approval" do
         seg = script.segments[3]
 

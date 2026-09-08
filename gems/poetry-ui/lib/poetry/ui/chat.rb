@@ -37,6 +37,11 @@ module Poetry
         Script.new(&)
       end
 
+      # Raised when a script is asked for what its shape cannot give -
+      # continuation frames from a turn that has no approval pause.
+      # Inherits the family base, so `rescue Poetry::Core::Error` covers it.
+      class Error < Poetry::Core::Error; end
+
       # One rendered state of an assistant row mid-stream.
       Frame = Struct.new(:parts, :sleep_ms, :version, keyword_init: true)
 
