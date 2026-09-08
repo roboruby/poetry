@@ -20,10 +20,6 @@ After checking out the repo, run `bin/setup` to install dependencies, then `bund
 
 Releases publish to [RubyGems.org](https://rubygems.org) via GitHub Actions OIDC **trusted publishing** (no API keys). Run `bundle exec rake "version:bump[X.Y.Z]"` (sets `Poetry::Core::VERSION` and package.json together; `rake version:verify` in the default chain fails on drift), commit, then push a `vX.Y.Z` tag — the `Release` workflow checks the tag against the version and publishes the gem.
 
-## Lineage
-
-poetry-core evolves the framework layer of `view_component_plus` (the `Plus` gem) — itself a synthesis of view_component-contrib and fox_tail.
-
 ## License
 
 Available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
