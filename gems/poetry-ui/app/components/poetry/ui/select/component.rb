@@ -626,12 +626,14 @@ module Poetry
         end
 
         # A styled heading, no ARIA role - the group points at it via
-        # aria-labelledby.
+        # aria-labelledby, and aria-hidden keeps the text from being read a
+        # second time as a stray child of the listbox (the name still flows
+        # through the reference).
         def label_part
           return if @label_text.blank?
 
           content_tag(:div, @label_text, "data-slot" => "select-label", "id" => label_id,
-                                         "class" => Style.css(:label))
+                                         "aria-hidden" => "true", "class" => Style.css(:label))
         end
       end
     end

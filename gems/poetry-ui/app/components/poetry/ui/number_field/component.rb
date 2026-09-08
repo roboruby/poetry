@@ -59,7 +59,6 @@ module Poetry
               target :input
               action :keydown, on: :keydown
               action :input, on: :input
-              action :focus, on: :focus
               action :blur, on: :blur
             end
           end

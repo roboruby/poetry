@@ -236,9 +236,12 @@ module Poetry
           "#{group_id}-heading"
         end
 
+        # The group's name flows through aria-labelledby; aria-hidden keeps
+        # the text from being read a second time as a stray child of the
+        # listbox.
         def heading_part
           content_tag(:div, @heading_text, "data-slot" => "combobox-label", "id" => heading_id,
-                                           "class" => Style.css(:label))
+                                           "aria-hidden" => "true", "class" => Style.css(:label))
         end
       end
 

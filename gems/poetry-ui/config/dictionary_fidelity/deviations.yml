@@ -916,10 +916,14 @@ message-scroller:
   slots:
     message-scroller-viewport:
       reason: Poetry hides the scrollbar entirely while autoscrolling (scrollbar-none)
-        instead of the source's transparent thumb/track pair.
+        instead of the source's transparent thumb/track pair. The noscript pair lifts
+        the opening-position hold when scripts are off - the viewport stays readable
+        without JavaScript, this component's contract.
       dropped:
       - data-autoscrolling:scrollbar-thumb-transparent
       - data-autoscrolling:scrollbar-track-transparent
+      added:
+      - noscript:data-pending-scroll:visible
       classic:
       - data-autoscrolling:scrollbar-none
 native-select:

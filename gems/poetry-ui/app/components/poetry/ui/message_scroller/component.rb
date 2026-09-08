@@ -9,6 +9,16 @@ module Poetry
       # a jump-to-latest button. Without JavaScript it is a plain
       # scrollable region, fully readable.
       #
+      # Opening position: a scroll container always opens at the top, so a
+      # transcript opening at the newest message would paint the oldest
+      # rows first and jump once the controller runs. For :end and
+      # :"last-anchor" the root and the viewport render
+      # data-pending-scroll; the viewport's dictionary hides it while the
+      # attribute is present (visibility, so layout exists for the scroll)
+      # and the controller clears it once the position lands, or at once
+      # for an empty transcript. Without JavaScript the hold is lifted
+      # (a scripting: none media rule), so the region stays readable.
+      #
       # The content element is the Turbo Stream append target (stable
       # dom id "<id>-messages"); rows are poetry_message_scroller_item
       # wrappers keyed by message id. History prepends keep the reading
@@ -92,14 +102,20 @@ module Poetry
                "data-scrollable" => "overflow exists - carries which edges have room " \
                                     "(start, end, or both as a space-separated pair)",
                "data-autoscrolling" => "a programmatic scroll is settling - the " \
-                                       "follow-bottom release is suppressed while set"
+                                       "follow-bottom release is suppressed while set",
+               "data-pending-scroll" => "the opening-position hold - rendered for " \
+                                        "default_scroll_position :end / :\"last-anchor\", " \
+                                        "cleared once the position lands (at once for an " \
+                                        "empty transcript)"
              }
         part "message-scroller-viewport", "The native scroll region (role=region, " \
                                           "focusable) - the controller mirrors the same " \
                                           "runtime attributes here",
              states: {
                "data-scrollable" => "overflow exists - the same edge tokens as the root",
-               "data-autoscrolling" => "a programmatic scroll is settling"
+               "data-autoscrolling" => "a programmatic scroll is settling",
+               "data-pending-scroll" => "the opening-position hold (the root's) - the " \
+                                        "dictionary hides the viewport while it is set"
              }
         part "message-scroller-content", "The row container and Turbo Stream append target " \
                                          "(stable dom id <id>-messages); role=log announces " \
@@ -120,6 +136,7 @@ module Poetry
             { "data-slot" => "message-scroller" }
               .merge(stimulus_attributes_for(:root))
               .merge(component_data_attributes)
+              .merge(pending_scroll_attributes)
           )
         end
 
@@ -129,7 +146,13 @@ module Poetry
             "class" => css(:viewport), "data-slot" => "message-scroller-viewport",
             "role" => "region", "tabindex" => "0",
             "aria-label" => t("poetry.message_scroller.region")
-          }.merge(stimulus_attributes_for(:viewport))
+          }.merge(stimulus_attributes_for(:viewport)).merge(pending_scroll_attributes)
+        end
+
+        # The opening-position hold (the class doc) - the server renders it so
+        # the first paint never shows the top of the thread.
+        def pending_scroll_attributes
+          %i[end last-anchor].include?(default_scroll_position) ? { "data-pending-scroll" => "" } : {}
         end
 
         # @api private
@@ -156,7 +179,8 @@ module Poetry
           }.merge(stimulus_attributes_for(:jump_button))
         end
 
-        private :root_attributes, :viewport_attributes, :content_attributes, :spacer_attributes, :button_attributes
+        private :root_attributes, :viewport_attributes, :content_attributes, :spacer_attributes, :button_attributes,
+                :pending_scroll_attributes
       end
     end
   end

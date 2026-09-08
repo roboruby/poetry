@@ -31,6 +31,30 @@ module Poetry
                           'data-poetry--core--message-scroller-auto-scroll-value="false"'
         end
 
+        def test_the_opening_position_hold_rides_the_root_and_the_viewport
+          fragment = Nokogiri::HTML5.fragment(render_scroller { "x" })
+          root = fragment.css('[data-slot="message-scroller"]').first
+          viewport = fragment.css('[data-slot="message-scroller-viewport"]').first
+
+          # :end (the default) renders the hold on both elements; the
+          # viewport's dictionary hides it until the controller lands the
+          # position, the noscript pair lifts it when scripts are off.
+          assert_equal "", root["data-pending-scroll"]
+          assert_equal "", viewport["data-pending-scroll"]
+          assert_includes viewport["class"], "data-pending-scroll:invisible"
+          assert_includes viewport["class"], "noscript:data-pending-scroll:visible"
+
+          anchored = Nokogiri::HTML5.fragment(render_scroller(default_scroll_position: :"last-anchor") { "x" })
+
+          assert_equal "", anchored.css('[data-slot="message-scroller-viewport"]').first["data-pending-scroll"]
+        end
+
+        def test_start_opens_where_the_browser_does_with_no_hold
+          html = render_scroller(default_scroll_position: :start) { "x" }
+
+          refute_includes html, "data-pending-scroll="
+        end
+
         def test_aria_contract
           html = render_scroller { "x" }
 

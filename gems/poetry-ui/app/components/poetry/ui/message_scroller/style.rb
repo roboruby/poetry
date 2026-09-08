@@ -16,8 +16,14 @@ module Poetry
         # (rightly) rejects classes no build can produce.
         base "relative flex size-full min-h-0 flex-col overflow-hidden group/message-scroller"
 
+        # data-pending-scroll:invisible = the opening-position hold: the
+        # viewport hides (layout intact) until the controller lands the
+        # opening position. The noscript pair lifts it when scripts are off -
+        # the plain scrollable region stays readable, this component's no-JS
+        # contract.
         element :viewport, "size-full min-h-0 min-w-0 scroll-fade-b scrollbar-thin scrollbar-gutter-stable " \
-                           "overflow-y-auto overscroll-contain contain-content data-autoscrolling:scrollbar-none"
+                           "overflow-y-auto overscroll-contain contain-content data-autoscrolling:scrollbar-none " \
+                           "data-pending-scroll:invisible noscript:data-pending-scroll:visible"
 
         element :content, "cn-message-scroller-content flex h-max min-h-full flex-col"
 

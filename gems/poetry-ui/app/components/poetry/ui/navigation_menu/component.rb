@@ -36,21 +36,28 @@ module Poetry
           "(the top-nav block shows the viewport pattern)."
         ].freeze
 
-        # One declared bar entry - a link (href:) or a trigger + panel pair.
+        # One declared bar entry - a link (href:) or a trigger + panel pair
+        # (disabled: renders the trigger inert).
         # @api private
-        Entry = Data.define(:title, :value, :href, :panel)
+        Entry = Data.define(:title, :value, :href, :panel, :disabled)
 
         renders_many :items,
-                     doc: "The bar entries. with_item(title, value:) { panel } declares a trigger + panel; " \
-                          "with_item(title, href:) a top-level link (with_link is the shorthand).",
-                     renders: lambda { |title, value: nil, href: nil, &panel|
+                     doc: "The bar entries. with_item(title, value:) { panel } declares a trigger + panel " \
+                          "(disabled: true renders the trigger inert - native disabled plus data-disabled; hover " \
+                          "and click never open its panel); with_item(title, href:) a top-level link (with_link " \
+                          "is the shorthand).",
+                     renders: lambda { |title, value: nil, href: nil, disabled: false, &panel|
                        if href.nil? && panel.nil?
                          raise ArgumentError,
                                "NavigationMenu item #{title.inspect} needs href: (a link) or a panel block"
                        end
+                       if href && disabled
+                         raise ArgumentError,
+                               "NavigationMenu item #{title.inspect}: disabled: applies to a trigger, not a link"
+                       end
 
                        entries << Entry.new(title: title, value: value&.to_s || title.to_s.parameterize, href: href,
-                                            panel: panel)
+                                            panel: panel, disabled: disabled)
                        nil
                      }
 
@@ -116,7 +123,9 @@ module Poetry
                "data-popup-open" => "its panel is open (written with aria-expanded - the chevron " \
                                     "rotation hook)",
                "data-open" => "its panel is open (the controller writes both vocabularies)",
-               "data-closed" => "its panel is closed (written after the first close)"
+               "data-closed" => "its panel is closed (written after the first close)",
+               "data-disabled" => "disabled: true - inert (native disabled rides along; hover and " \
+                                  "click never open the panel, the arrows step over it)"
              }
         part "navigation-menu-content", "One item's panel - presence-animated; in viewport mode it is " \
                                         "adopted into the shared viewport on first activation",
@@ -203,11 +212,16 @@ module Poetry
 
         # @api private
         def trigger_attributes(entry)
-          {
+          attrs = {
             "type" => "button", "data-slot" => "navigation-menu-trigger",
             "aria-expanded" => "false", "aria-controls" => panel_id(entry),
             "class" => "#{css(:trigger)} group"
-          }.merge(stimulus_attributes_for(:trigger))
+          }
+          if entry.disabled
+            attrs["disabled"] = true # inert: no focus, no click
+            attrs["data-disabled"] = "" # the contract's styling hook
+          end
+          attrs.merge(stimulus_attributes_for(:trigger))
         end
 
         # @api private

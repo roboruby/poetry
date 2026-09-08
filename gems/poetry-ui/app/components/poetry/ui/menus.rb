@@ -226,10 +226,27 @@ module Poetry
 
         def call
           attrs = { "data-slot" => "#{family_slot_prefix}-group", "role" => "group" }
+          attrs["aria-labelledby"] = label_id if @labelled
           content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, html_attributes)) { safe_join(items.map(&:to_s)) }
         end
 
         private
+
+        # A label inside a group names the group (aria-labelledby) and is
+        # aria-hidden, so its text is not read a second time as a stray child
+        # of the menu; a label outside any group stays plain text.
+        def label_part(**, &)
+          @labelled = true
+          super("id" => label_id, "aria-hidden" => "true", **, &)
+        end
+
+        def group_id
+          @group_id ||= poetry_instance_id("poetry-#{family_slot_prefix}-group")
+        end
+
+        def label_id
+          "#{group_id}-label"
+        end
 
         def menu_dir
           @dir

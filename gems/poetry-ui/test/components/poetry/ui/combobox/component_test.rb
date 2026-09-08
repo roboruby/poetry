@@ -341,6 +341,7 @@ module Poetry
           assert_equal "group", group["role"]
           assert_equal heading["id"], group["aria-labelledby"]
           assert_equal "Frameworks", heading.text
+          assert_equal "true", heading["aria-hidden"], "named through the reference, never read twice"
           # The popup's geometry is the combobox's own (the list carries
           # the inset, the group is unpadded and hookless, the label is
           # themed) - Command's slot names stay for the engine.

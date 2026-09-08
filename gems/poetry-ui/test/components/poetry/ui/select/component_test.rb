@@ -211,6 +211,7 @@ module Poetry
           assert_equal "group", group["role"]
           assert_equal label["id"], group["aria-labelledby"]
           assert_equal "Fruits", label.text
+          assert_equal "true", label["aria-hidden"], "named through the reference, never read twice"
           assert_nil label["role"], "label is a styled heading, no ARIA role (Radix-exact)"
           # Decorative inside a listbox: aria-hidden, no separator role
           # (only option/group children are valid; axe rule).

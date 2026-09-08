@@ -7083,7 +7083,7 @@ components:
     - content
     - item
     - button
-    capsule: cc8c5beaabc7
+    capsule: 7baeb0a95efa
     controllers:
     - identifier: poetry--core--message-scroller
       targets:
@@ -7143,6 +7143,10 @@ components:
       - attr: data-autoscrolling
         condition: a programmatic scroll is settling - the follow-bottom release is
           suppressed while set
+      - attr: data-pending-scroll
+        condition: the opening-position hold - rendered for default_scroll_position
+          :end / :"last-anchor", cleared once the position lands (at once for an empty
+          transcript)
     - name: message-scroller-viewport
       description: The native scroll region (role=region, focusable) - the controller
         mirrors the same runtime attributes here
@@ -7151,6 +7155,9 @@ components:
         condition: overflow exists - the same edge tokens as the root
       - attr: data-autoscrolling
         condition: a programmatic scroll is settling
+      - attr: data-pending-scroll
+        condition: the opening-position hold (the root's) - the dictionary hides the
+          viewport while it is set
     - name: message-scroller-content
       description: The row container and Turbo Stream append target (stable dom id
         <id>-messages); role=log announces additions
@@ -7420,9 +7427,10 @@ components:
     slots:
     - name: items
       many: true
-      description: The bar entries. with_item(title, value:) { panel } declares a
-        trigger + panel; with_item(title, href:) a top-level link (with_link is the
-        shorthand).
+      description: 'The bar entries. with_item(title, value:) { panel } declares a
+        trigger + panel (disabled: true renders the trigger inert - native disabled
+        plus data-disabled; hover and click never open its panel); with_item(title,
+        href:) a top-level link (with_link is the shorthand).'
       setter_args:
         item: 1
       yieldless:
@@ -7513,6 +7521,9 @@ components:
         condition: its panel is open (the controller writes both vocabularies)
       - attr: data-closed
         condition: its panel is closed (written after the first close)
+      - attr: data-disabled
+        condition: 'disabled: true - inert (native disabled rides along; hover and
+          click never open the panel, the arrows step over it)'
     - name: navigation-menu-content
       description: One item's panel - presence-animated; in viewport mode it is adopted
         into the shared viewport on first activation
@@ -7709,7 +7720,6 @@ components:
       - wheel
       actions:
       - blur
-      - focus
       - hiddenChanged
       - input
       - keydown
@@ -7788,8 +7798,6 @@ components:
           'on': keydown
         - method: input
           'on': input
-        - method: focus
-          'on': focus
         - method: blur
           'on': blur
     - element: hidden

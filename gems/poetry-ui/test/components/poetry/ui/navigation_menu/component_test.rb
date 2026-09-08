@@ -64,6 +64,28 @@ module Poetry
           end
         end
 
+        def test_a_disabled_trigger_is_inert_and_marked
+          html = render_inline(Component.new(label: "Main")) do |nav|
+            nav.with_item("Products", value: "products") { "panel links" }
+            nav.with_item("Labs", value: "labs", disabled: true) { "coming soon" }
+          end
+
+          products, labs = html.css('button[data-slot="navigation-menu-trigger"]').to_a
+
+          assert labs["disabled"], "native disabled: the button is inert"
+          assert_equal "", labs["data-disabled"], "the contract's styling hook"
+          assert_nil products["disabled"]
+          assert_nil products["data-disabled"]
+        end
+
+        def test_disabled_applies_to_triggers_not_links
+          assert_raises(ArgumentError) do
+            render_inline(Component.new(label: "Main")) do |nav|
+              nav.with_item("Docs", href: "/docs", disabled: true)
+            end
+          end
+        end
+
         def test_viewport_mode_renders_the_shared_shell_and_registers_the_popper
           html = render_viewport_nav
           nav = html.css("nav").first

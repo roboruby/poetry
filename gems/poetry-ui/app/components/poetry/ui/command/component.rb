@@ -207,10 +207,11 @@ module Poetry
         end
 
         # A styled heading, no ARIA role - the group points at it via
-        # aria-labelledby.
+        # aria-labelledby, and aria-hidden keeps the text from being read a
+        # second time as a stray child of the listbox.
         def heading_part
           content_tag(:div, @heading_text, "data-slot" => "command-group-heading", "id" => heading_id,
-                                           "class" => Style.css(:heading))
+                                           "aria-hidden" => "true", "class" => Style.css(:heading))
         end
       end
 

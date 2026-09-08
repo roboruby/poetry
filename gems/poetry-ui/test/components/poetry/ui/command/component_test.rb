@@ -180,6 +180,7 @@ module Poetry
           assert_equal "group", group["role"]
           assert_equal heading["id"], group["aria-labelledby"]
           assert_equal "Suggestions", heading.text
+          assert_equal "true", heading["aria-hidden"], "named through the reference, never read twice"
           assert_nil heading["role"], "the heading is labelling text, no ARIA role"
           assert_includes group["class"], "overflow-hidden"
           assert_includes heading["class"], "cn-command-group-heading"

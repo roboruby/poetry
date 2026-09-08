@@ -272,12 +272,28 @@ module Poetry
           assert_equal "My Account", label.text
           assert_equal "true", label["data-inset"]
           assert_nil label["role"], "label is a styled heading, no ARIA role (Radix-exact)"
+          assert_nil label["aria-hidden"], "a label outside any group is plain text to AT"
           assert_equal "separator", separator["role"]
           assert_equal "horizontal", separator["aria-orientation"]
           assert_equal "group", group["role"]
           assert_predicate group.css('[data-slot="dropdown-menu-item"]'), :any?, "groups nest the same item union"
           assert_equal "⇧⌘P", shortcut.text
           assert_equal "true", shortcut["aria-hidden"], "shortcut is a visual hint only (family rule)"
+        end
+
+        def test_a_label_inside_a_group_names_the_group_and_hides_its_text
+          html = render_menu do |menu|
+            menu.with_trigger { "Open" }
+            menu.with_group do |group|
+              group.with_label { "Account" }
+              group.with_item { "Profile" }
+            end
+          end
+          group = doc(html).css('[data-slot="dropdown-menu-group"]').first
+          label = group.css('[data-slot="dropdown-menu-label"]').first
+
+          assert_equal label["id"], group["aria-labelledby"], "the group is named by its label"
+          assert_equal "true", label["aria-hidden"], "the text is not read a second time as a stray child"
         end
 
         def test_parts_are_ordered_as_declared

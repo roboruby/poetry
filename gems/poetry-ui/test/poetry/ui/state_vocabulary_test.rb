@@ -62,6 +62,9 @@ module Poetry
         "position" => "toaster stack position (server-rendered)",
         "direction" => "message/scroller direction marker (server-rendered)",
         "autoscrolling" => "message-scroller follow state (JS)",
+        "pending-scroll" => "message-scroller opening-position hold (server-rendered for :end / " \
+                            ":\"last-anchor\"; poetry--core--message-scroller clears it via " \
+                            "removeAttribute once the position lands)",
         "upload-state" => "attachment lifecycle (server-owned)",
         "mode" => "message-scroller scroll mode (JS)",
         "instant" => "tooltip instant-open reason (JS)",
