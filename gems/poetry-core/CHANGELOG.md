@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- `poetry--core--hover-card`: `touchGuard` (on touchstart) is replaced by `pointerDown` (on pointerdown). `poetry--core--number-field`: the `focus` action is removed. A host that wired either by hand updates the action strings; poetry-ui's components already have.
+
 ## [0.1.0] - 2026-09-05
 
 Initial public release. The family releases in lockstep; every gem pins its siblings at the same version.
