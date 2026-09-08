@@ -1,7 +1,7 @@
 <%# Every menu surface in one place: labeled groups, shortcuts, checkbox toggles,
     a radio theme picker, and submenus nested two deep. close_on_select: false
     keeps toggle rows from dismissing the menu. %>
-<%= poetry_dropdown_menu(align: :start) do |menu| %>
+<%= poetry_dropdown_menu(align: :start, content_class: "w-48") do |menu| %>
   <% menu.with_trigger(variant: :outline) { "Complex Menu" } %>
   <% menu.with_group do |file_menu| %>
     <% file_menu.with_label { "File" } %>

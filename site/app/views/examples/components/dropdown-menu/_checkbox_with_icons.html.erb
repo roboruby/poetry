@@ -1,5 +1,5 @@
 <%# Checkbox items keep their left-side check indicator; a labeled icon follows it. %>
-<%= poetry_dropdown_menu(align: :start) do |menu| %>
+<%= poetry_dropdown_menu(align: :start, content_class: "w-48") do |menu| %>
   <% menu.with_trigger(variant: :outline) { "Notifications" } %>
   <% menu.with_label { "Notify me about" } %>
   <% menu.with_separator %>

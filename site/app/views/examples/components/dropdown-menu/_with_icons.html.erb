@@ -1,5 +1,5 @@
 <%# A leading icon sits inside the item block; the theme layer sets the svg size and gap. %>
-<%= poetry_dropdown_menu(align: :start) do |menu| %>
+<%= poetry_dropdown_menu(align: :start, content_class: "w-48") do |menu| %>
   <% menu.with_trigger(variant: :outline) { "Actions" } %>
   <% menu.with_label { "Document" } %>
   <% menu.with_separator %>

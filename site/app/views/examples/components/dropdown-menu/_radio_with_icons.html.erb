@@ -1,5 +1,5 @@
 <%# Radio items carry a leading icon; the single-select circle indicator stays on the left. %>
-<%= poetry_dropdown_menu(align: :start) do |menu| %>
+<%= poetry_dropdown_menu(align: :start, content_class: "min-w-56") do |menu| %>
   <% menu.with_trigger(variant: :outline) { "Sort by" } %>
   <% menu.with_label { "Sort order" } %>
   <% menu.with_separator %>

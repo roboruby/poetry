@@ -1,5 +1,5 @@
 <%# close_on_select: false keeps the menu open while toggling. %>
-<%= poetry_dropdown_menu(align: :start) do |menu| %>
+<%= poetry_dropdown_menu(align: :start, content_class: "w-40") do |menu| %>
   <% menu.with_trigger(variant: :outline) { "View" } %>
   <% menu.with_label { "Appearance" } %>
   <% menu.with_separator %>
