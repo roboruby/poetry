@@ -358,6 +358,13 @@ module Poetry
           assert_includes sub_trigger["class"], "cn-context-menu-sub-trigger"
           refute_includes sub_trigger["class"], "gap-2", "the context sub-trigger omits gap-2 (source-exact)"
         end
+
+        def test_content_class_lands_on_the_panel_not_the_surface
+          fragment = Nokogiri::HTML5.fragment(render_menu(content_class: "w-48"))
+
+          assert_includes fragment.css('[data-slot="context-menu-content"]').first["class"], "w-48"
+          refute_includes fragment.css('[data-slot="context-menu"]').first["class"].to_s, "w-48"
+        end
       end
     end
   end

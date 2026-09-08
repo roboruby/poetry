@@ -135,6 +135,9 @@ module Poetry
         option :loop, :boolean, default: false, doc: "Wraps arrow-key movement past either end of the menu."
         option :long_press_delay, :integer, default: 700, doc: "Touch long-press duration in ms before the menu opens."
         option :disabled, :boolean, default: false, doc: "Inerts the surface - no gesture opens the menu."
+        option :content_class, :string,
+               doc: "Class merge seam for the menu panel (e.g. content_class: \"w-48\"). Root-level " \
+                    "class: styles the surface wrapper, not the panel."
         option :label, :string, doc: "The menu's accessible name (localized fallback when omitted)."
         option :focusable_surface, :boolean, default: false,
                                              doc: "Puts the surface in the tab order and advertises Shift+F10."
@@ -278,7 +281,7 @@ module Poetry
             "data-slot" => "context-menu-content", (open ? "data-open" : "data-closed") => "",
             # The initial placement (side: option; re-resolved live by popper).
             "data-side" => side.to_s, "data-align" => "start",
-            "class" => css(:content)
+            "class" => css(:content, class: content_class)
           }.merge(stimulus_attributes_for(:content))
           attrs["hidden"] = true unless open
           attrs

@@ -2924,6 +2924,10 @@ components:
     bem_block: poetry-ui-context_menu
     styles: []
     options:
+    - name: content_class
+      type: string
+      description: 'Class merge seam for the menu panel (e.g. content_class: "w-48").
+        Root-level class: styles the surface wrapper, not the panel.'
     - name: dir
       type: symbol
       variants:
@@ -4527,6 +4531,11 @@ components:
       type: boolean
       default: true
       description: Flips/shifts placement to keep the menu inside the viewport.
+    - name: content_class
+      type: string
+      description: 'Class merge seam for the menu panel - the panel opens at the trigger''s
+        width (min 8rem), so content_class: "w-56" widens it. Root-level class: styles
+        the wrapper, not the panel.'
     - name: dir
       type: symbol
       variants:
@@ -6362,7 +6371,8 @@ components:
       many: true
       description: 'The top-level menus. Each takes with_trigger (the menu button)
         plus the family item slots (with_item, with_checkbox_item, with_radio_group,
-        with_sub, with_separator, ...); value: defaults to the menu''s position.'
+        with_sub, with_separator, ...); value: defaults to the menu''s position; content_class:
+        is the panel''s class merge seam.'
       setter_args:
         menu: 0
       builders:

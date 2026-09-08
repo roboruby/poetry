@@ -328,9 +328,11 @@ module Poetry
                       end
                     }
 
-        def initialize(dir: nil, **extra_attributes)
+        # content_class: is the sub-panel's class merge seam (with_sub(content_class: "w-40")).
+        def initialize(dir: nil, content_class: nil, **extra_attributes)
           super(extra_attributes)
           @dir = dir
+          @content_class = content_class
         end
 
         def before_render
@@ -380,7 +382,7 @@ module Poetry
             "id" => content_id, "role" => "menu", "aria-orientation" => "vertical",
             "aria-labelledby" => trigger_id, "tabindex" => "-1",
             "data-slot" => "#{family_slot_prefix}-sub-content", "data-closed" => "", "hidden" => true,
-            "class" => family_style.css(:sub_content)
+            "class" => family_style.css(:sub_content, class: @content_class)
           }.merge(stimulus_attributes(:popper) { |popper| popper.with_target(:content) })
           content_tag(:div, attrs) { safe_join(items.map(&:to_s)) }
         end

@@ -296,6 +296,25 @@ module Poetry
           assert_equal "true", label["aria-hidden"], "the text is not read a second time as a stray child"
         end
 
+        def test_content_class_lands_on_the_panel_not_the_root
+          fragment = doc(render_menu(content_class: "w-56"))
+
+          assert_includes fragment.css('[data-slot="dropdown-menu-content"]').first["class"], "w-56"
+          refute_includes fragment.css('[data-slot="dropdown-menu"]').first["class"].to_s, "w-56"
+        end
+
+        def test_a_submenu_takes_its_own_content_class
+          html = render_menu do |menu|
+            menu.with_trigger { "Open" }
+            menu.with_sub(content_class: "w-40") do |sub|
+              sub.with_trigger { "Share" }
+              sub.with_item { "Email" }
+            end
+          end
+
+          assert_includes doc(html).css('[data-slot="dropdown-menu-sub-content"]').first["class"], "w-40"
+        end
+
         def test_parts_are_ordered_as_declared
           html = render_menu do |menu|
             menu.with_trigger { "Open" }

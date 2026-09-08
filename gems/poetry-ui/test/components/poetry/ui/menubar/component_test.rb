@@ -345,6 +345,23 @@ module Poetry
           assert_includes checkbox["class"], "cn-menubar-checkbox-item"
           assert_includes sub_trigger["class"].split, "outline-none"
         end
+
+        def test_a_menu_takes_a_content_class_for_its_panel
+          html = render_bar do |bar|
+            bar.with_menu(content_class: "w-64") do |menu|
+              menu.with_trigger { "File" }
+              menu.with_item { "New Tab" }
+            end
+            bar.with_menu do |menu|
+              menu.with_trigger { "Edit" }
+              menu.with_item { "Undo" }
+            end
+          end
+          panels = Nokogiri::HTML5.fragment(html).css('[data-slot="menubar-content"]')
+
+          assert_includes panels[0]["class"], "w-64"
+          refute_includes panels[1]["class"], "w-64"
+        end
       end
     end
   end

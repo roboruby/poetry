@@ -143,6 +143,10 @@ module Poetry
         option :loop, :boolean, default: false, doc: "Arrow-key navigation wraps from the last item back to the first."
         option :dir, :symbol, doc: "Reading direction; :rtl flips submenu sides and indicators."
         option :disabled, :boolean, default: false, doc: "Disables the menu trigger button."
+        option :content_class, :string,
+               doc: "Class merge seam for the menu panel - the panel opens at the trigger's width " \
+                    "(min 8rem), so content_class: \"w-56\" widens it. Root-level class: styles the " \
+                    "wrapper, not the panel."
 
         validates :side, inclusion: { in: SIDES }
         validates :align, inclusion: { in: ALIGNS }
@@ -272,7 +276,7 @@ module Poetry
             "data-slot" => "dropdown-menu-content", (open ? "data-open" : "data-closed") => "",
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
-            "class" => css(:content)
+            "class" => css(:content, class: content_class)
           }.merge(stimulus_attributes_for(:content))
           attrs["hidden"] = true unless open
           attrs

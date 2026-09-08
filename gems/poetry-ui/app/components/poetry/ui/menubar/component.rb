@@ -73,7 +73,7 @@ module Poetry
         renders_many :menus,
                      doc: "The top-level menus. Each takes with_trigger (the menu button) plus the family item " \
                           "slots (with_item, with_checkbox_item, with_radio_group, with_sub, with_separator, ...); " \
-                          "value: defaults to the menu's position.",
+                          "value: defaults to the menu's position; content_class: is the panel's class merge seam.",
                      renders: ->(**options) { Menu.new(bar: self, dir: dir, **options) }
 
         use_stimulus do
@@ -341,11 +341,12 @@ module Poetry
                       content_tag(:button, Poetry::Core::HTML::Attributes.merged(attrs, options)) { capture(&block) }
                     }
 
-        def initialize(bar:, value: nil, disabled: false, dir: nil, **extra_attributes)
+        def initialize(bar:, value: nil, disabled: false, dir: nil, content_class: nil, **extra_attributes)
           super(extra_attributes)
           @bar = bar
           @disabled = disabled
           @dir = dir
+          @content_class = content_class
           position = @bar.register_menu(self)
           @value = (value || "menu-#{position}").to_s
         end
@@ -419,7 +420,7 @@ module Poetry
             "data-slot" => "menubar-content", (open? ? "data-open" : "data-closed") => "",
             # Initial placement, re-resolved live by popper on open.
             "data-side" => "bottom", "data-align" => "start",
-            "class" => Style.css(:content)
+            "class" => Style.css(:content, class: @content_class)
           }.merge(stimulus_attributes(:popper) { |popper| popper.with_target(:content) })
           attrs["hidden"] = true unless open?
           content_tag(:div, attrs) { safe_join(items.map(&:to_s)) }
