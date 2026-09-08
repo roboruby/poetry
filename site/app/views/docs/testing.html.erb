@@ -100,8 +100,10 @@
         <code>data:</code> keywords, raw color classes, and icon
         declarations in app Ruby. A rename in your wiring can never silently
         strand a controller. It
-        needs the <code>herb</code> gem to parse templates; adding it to
-        your Gemfile's development group is enough.
+        parses templates with the <code>herb</code> gem, which
+        <code>poetry:install</code> adds to your development group; an app
+        installed before that only needs
+        <code>bundle add herb --group development</code>.
       </p>
     <% end %>
     <%= poetry_code_block(code: check_source, language: "shell", label: "poetry check") %>

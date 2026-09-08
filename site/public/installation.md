@@ -83,7 +83,7 @@ Or add the MCP server by hand:
 
 When composing with the MCP: call `compose` FIRST, build from primitives, and
 run `check` LAST (a PASS verdict, not an eyeball). `bin/rails poetry:check`
-lints ERB against the contracts (needs `gem "herb"`).
+lints ERB against the contracts (`poetry:install` adds the `herb` gem it parses with).
 
 ## 6. Bring a design in (optional)
 
