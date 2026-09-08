@@ -387,7 +387,11 @@
         not Tailwind. The mode is global through
         <code>Poetry::Core::Config</code> or per call
         (<code>css(css_mode: :bem)</code>); there is deliberately no mode
-        that emits both.
+        that emits both. The mode is for kits authored on poetry-core, where
+        you write every template. poetry-ui is Tailwind-native, its templates
+        and theme layer are utilities, so it is not a <code>:bem</code>
+        consumer; a Tailwind-free host wants a kit of its own on the DSL,
+        not poetry-ui under <code>:bem</code>.
       </p>
       <p>
         You style those classes against a generated reference stylesheet.
