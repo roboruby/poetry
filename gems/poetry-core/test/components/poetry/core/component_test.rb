@@ -42,6 +42,52 @@ module Poetry
         assert_includes component.html_attributes[:class], "custom-class"
       end
 
+      # --- the passthrough contract ---
+
+      def test_a_near_miss_of_a_declared_option_raises_with_did_you_mean
+        error = assert_raises(ArgumentError) { TestComponent.new(colr: :secondary) }
+
+        assert_match(/has no option colr: \(did you mean color:\?\)/, error.message)
+      end
+
+      def test_an_unrelated_keyword_passes_through_as_an_html_attribute
+        component = TestComponent.new(title: "Save", colspan: 2, "aria-label": "Save")
+
+        assert_equal "Save", component.html_attributes[:title]
+        assert_equal 2, component.html_attributes[:colspan]
+      end
+
+      def test_data_component_is_never_overridable
+        assert_raises(ArgumentError) { TestComponent.new("data-component" => "hijack") }
+        assert_raises(ArgumentError) { TestComponent.new(data: { component: "hijack" }) }
+      end
+
+      def test_identity_is_the_sanctioned_way_to_re_identify_a_composed_root
+        component = TestComponent.new(identity: "outer")
+
+        assert_equal({ "data-component" => "outer" }, component.component_data_attributes)
+        refute component.html_attributes.key?("identity"), "never an HTML attribute"
+      end
+
+      def test_data_slot_stays_a_composition_seam
+        component = TestComponent.new(data: { slot: "icon" })
+
+        assert_equal "icon", component.html_attributes[:data][:slot]
+      end
+
+      def test_outside_development_and_test_the_guard_logs_and_the_render_survives
+        original = Rails.env
+        Rails.env = "production"
+        component = TestComponent.new(colr: :secondary, "data-component" => "hijack",
+                                      data: { component: "x", slot: "icon" })
+
+        assert_equal "secondary", component.html_attributes[:colr].to_s, "the typo still passes through"
+        refute component.html_attributes.key?("data-component"), "the identity override is dropped"
+        assert_equal({ "slot" => "icon" }, component.html_attributes[:data].to_h)
+      ensure
+        Rails.env = original
+      end
+
       def test_component_tracks_registered_styles
         component = TestComponent.new(color: :secondary)
 

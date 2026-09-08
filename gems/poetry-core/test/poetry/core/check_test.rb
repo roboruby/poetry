@@ -287,11 +287,31 @@ module Poetry
 
       # --- unknown option (typo) vs passthrough ---
 
-      def test_a_near_miss_option_warns_with_did_you_mean
+      def test_a_near_miss_option_is_an_error_with_did_you_mean
         finding = first(%(<%= poetry_button(loding: true) { "x" } %>), "unknown-option")
 
-        assert_equal :warning, finding.severity
+        # The render raises in development and test - the error tier.
+        assert_equal :error, finding.severity
         assert_equal "loading", finding.suggestion
+      end
+
+      def test_data_component_is_a_reserved_attribute_in_both_spellings
+        finding = first(%(<%= poetry_button("data-component" => "hijack") { "x" } %>), "reserved-attribute")
+
+        assert_equal :error, finding.severity
+        assert_match(/data-component is poetry_button's own identity attribute/, finding.message)
+
+        nested = first(%(<%= poetry_button(data: { component: "hijack" }) { "x" } %>), "reserved-attribute")
+
+        assert_match(/data: \{ component: \}/, nested.message)
+      end
+
+      def test_identity_is_a_passthrough_keyword
+        refute_includes rules(%(<%= poetry_button(identity: "outer") { "x" } %>)), "unknown-option"
+      end
+
+      def test_data_slot_is_not_reserved
+        refute_includes rules(%(<%= poetry_button(data: { slot: "icon" }) { "x" } %>)), "reserved-attribute"
       end
 
       def test_an_unrelated_keyword_is_treated_as_passthrough_not_flagged

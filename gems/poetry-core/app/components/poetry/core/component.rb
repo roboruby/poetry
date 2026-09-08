@@ -145,14 +145,36 @@ module Poetry
         end
       end
 
+      # Keywords that are never options and never typos - the passthrough
+      # vocabulary the static check exempts too (Check::Catalog::PASSTHROUGH).
+      PASSTHROUGH_KEYS = %w[class id key webmcp identity data aria role style].freeze
+
+      # HTML attribute names a caller passes through on purpose. Exempt from
+      # the near-miss guard so `for:` never reads as a typo of a `form`
+      # option, `size:` on a component without a size axis stays the native
+      # attribute, and so on. Only keys that are NOT declared options reach
+      # the guard, so a declared option of the same name is untouched.
+      HTML_ATTRIBUTE_KEYS = %w[
+        accept accesskey action alt autocapitalize autocomplete autofocus checked cite cols colspan
+        contenteditable crossorigin datetime decoding dir dirname disabled download draggable enctype
+        enterkeyhint for form headers height hidden href hreflang inert inputmode is itemid itemprop
+        itemref itemscope itemtype label lang list loading max maxlength method min minlength multiple
+        name nonce novalidate open part pattern ping placeholder popover readonly referrerpolicy rel
+        required reversed rows rowspan scope selected size sizes slot span spellcheck src srcset start
+        step tabindex target title translate type value width wrap
+      ].freeze
+
       # The self-identification markup contract, the convention every
       # component follows: `data-component` on the component root maps live DOM
       # back to the component that rendered it - the hook agents, the
       # Verifier, and the browser-verification loop key on.
       #
+      # A component rendering as another's root passes identity: (the
+      # composition seam), and the root wears that name instead.
+      #
       # @return [Hash] e.g. { "data-component" => "button" }
       def component_data_attributes
-        { "data-component" => self.class.component_title }
+        { "data-component" => (@identity || self.class.component_title).to_s }
       end
 
       # `data-slot` for a named part of the component's anatomy
@@ -224,6 +246,14 @@ module Poetry
         @webmcp = attributes[:webmcp] || attributes["webmcp"]
         attributes = attributes.except(:webmcp, "webmcp") unless @webmcp.nil?
 
+        # identity: is the composition seam for a component that renders AS
+        # another component's root (ToastTrigger renders as a Button): the
+        # inner root wears the outer's data-component. Universal like key:,
+        # never an HTML attribute - and the ONLY sanctioned way to set
+        # data-component (the raw attribute is reserved, see guard_passthrough).
+        @identity = attributes[:identity] || attributes["identity"]
+        attributes = attributes.except(:identity, "identity") unless @identity.nil?
+
         # Initialize a fresh Set for this instance
         self.registered_styles = Set.new
         self.registered_options = Set.new
@@ -249,11 +279,76 @@ module Poetry
         end
 
         @attributes = self.class._default_attributes.deep_dup
-        html_attrs = attributes.with_indifferent_access.except(*attribute_names)
+        html_attrs = guard_passthrough(attributes.with_indifferent_access.except(*attribute_names))
         @html_attributes = Poetry::Core::HTML::Attributes.new(html_attrs)
 
         assign_attributes attributes.with_indifferent_access.slice(*attribute_names)
       end
+
+      # The passthrough contract, enforced at the seam. A keyword that is not
+      # an option renders as an HTML attribute on the root (title:, tabindex:,
+      # colspan:) - so a NEAR-MISS of a declared option (varient:) would
+      # silently render a bogus attribute while the default applied. That
+      # raises in development and test with the did-you-mean the static check
+      # gives, and only logs in production (the render still succeeds).
+      # data-component is the component's own identity - the hook agents,
+      # the Verifier and the browser loop key on - and is never overridable:
+      # dropped in production, raised the same way in development and test.
+      # data-slot is NOT reserved: re-slotting an embedded root is the
+      # composition seam a part contract allows; re-identifying one goes
+      # through identity:, the sanctioned spelling.
+      #
+      # @param html_attrs [ActiveSupport::HashWithIndifferentAccess]
+      # @return [ActiveSupport::HashWithIndifferentAccess] the attributes, minus a reserved override
+      def guard_passthrough(html_attrs)
+        problems = []
+
+        if html_attrs.key?("data-component")
+          problems << "data-component is #{passthrough_owner}'s own identity attribute and is never overridable"
+          html_attrs = html_attrs.except("data-component")
+        end
+        data = html_attrs["data"]
+        if data.respond_to?(:key?) && data.key?("component")
+          problems << "data: { component: } is #{passthrough_owner}'s own identity attribute and is never overridable"
+          html_attrs["data"] = data.except("component")
+        end
+
+        html_attrs.each_key do |key|
+          next if PASSTHROUGH_KEYS.include?(key) || HTML_ATTRIBUTE_KEYS.include?(key) || key.include?("-")
+
+          suggestion = option_suggestion(key)
+          next unless suggestion
+
+          problems << "#{passthrough_owner} has no option #{key}: (did you mean #{suggestion}:?) - " \
+                      "unknown keywords render as HTML attributes"
+        end
+        return html_attrs if problems.empty?
+
+        raise ArgumentError, problems.join("; ") if strict_passthrough?
+
+        Rails.logger&.warn("poetry: #{problems.join("; ")}") if defined?(Rails) && Rails.respond_to?(:logger)
+        html_attrs
+      end
+
+      # The did-you-mean against this component's declared options and
+      # styles, the same checker the static check runs.
+      def option_suggestion(key)
+        require "did_you_mean"
+        DidYouMean::SpellChecker.new(dictionary: self.class.attribute_names.map(&:to_s)).correct(key.to_s).first
+      end
+
+      # The component named in a passthrough problem - an anonymous class
+      # (a test double) has no path to title.
+      def passthrough_owner
+        self.class.name ? self.class.component_title : "this component"
+      end
+
+      # Raise (development, test) or log (everything else).
+      def strict_passthrough?
+        defined?(Rails) && Rails.respond_to?(:env) && Rails.env.local?
+      end
+
+      private :guard_passthrough, :option_suggestion, :passthrough_owner, :strict_passthrough?
 
       # Returns all component attributes, ensuring proc defaults are evaluated.
       #

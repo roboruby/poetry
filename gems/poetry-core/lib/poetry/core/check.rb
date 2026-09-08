@@ -47,7 +47,7 @@ module Poetry
       #
       # @api private
       class Catalog
-        PASSTHROUGH = %w[class id key webmcp data aria role style if unless].freeze
+        PASSTHROUGH = %w[class id key webmcp identity data aria role style if unless].freeze
         COLOR_FAMILIES = %w[
           slate gray zinc neutral stone red orange amber yellow lime green emerald
           teal cyan sky blue indigo violet purple fuchsia pink rose
@@ -401,7 +401,7 @@ module Poetry
           unless path
             return helper_findings(helper, call, base_line) + yieldless_findings(helper, call, line) +
                    helper_arity_findings(helper, call, line) + webmcp_form_findings(helper, call, line) +
-                   passthrough_findings(keyword_pairs(call), base_line) + data_findings(call, base_line)
+                   passthrough_findings(keyword_pairs(call), base_line) + data_findings(call, base_line, helper)
           end
 
           record_binding(call, path, bindings, line)
@@ -415,7 +415,7 @@ module Poetry
             content_findings(path, helper, call, line, content_fed) +
             blockless_slot_findings(path, helper, call, pairs, line) +
             requires_any_findings(path, call, pairs, line, content_fed) +
-            passthrough_findings(pairs, base_line) + data_findings(call, base_line)
+            passthrough_findings(pairs, base_line) + data_findings(call, base_line, helper)
         end
 
         # The requires_content tier: a component that raises without a
@@ -474,13 +474,19 @@ module Poetry
           known = @catalog.option_names(path)
           entry = @catalog.option_entry(path, key)
 
+          # The component's identity attribute: never overridable (the render
+          # raises in development and test, drops it in production).
+          return [reserved_finding("data-component", helper_of(path), line)] if key == "data-component"
+
           unless known.include?(key) || Catalog::PASSTHROUGH.include?(key)
             suggestion = suggest(key, known)
-            # No suggestion => an intentional pass-through html attribute, not a typo.
+            # No suggestion => an intentional pass-through html attribute, not a
+            # typo. A suggestion is the render-time raise (development, test).
             if suggestion
-              findings << Finding.new(rule: "unknown-option", severity: :warning,
-                                      message: "#{helper_of(path)} has no option #{key}", line: line,
-                                      suggestion: suggestion)
+              findings << Finding.new(rule: "unknown-option", severity: :error,
+                                      message: "#{helper_of(path)} has no option #{key} " \
+                                               "(unknown keywords render as HTML attributes)",
+                                      line: line, suggestion: suggestion)
             end
           end
 
@@ -640,7 +646,7 @@ module Poetry
           findings = arity_findings(entry, slot_name, call, line) +
                      setter_block_findings(entry, slot_name, call, line) +
                      setter_keyword_findings(entry, slot_name, call, base_line) +
-                     passthrough_findings(keyword_pairs(call), base_line) + data_findings(call, base_line)
+                     passthrough_findings(keyword_pairs(call), base_line) + data_findings(call, base_line, label)
           component = entry["component"]
           return findings unless component
 
@@ -948,16 +954,27 @@ module Poetry
         # data key (`poetry__core__x_target:` and `"poetry--core--x-target":`
         # both render data-poetry--core--x-target), so the rendered name is
         # what gets checked. Dynamic values are left alone.
-        def data_findings(call, base_line)
+        def data_findings(call, base_line, helper)
           hash = hash_argument(call, "data")
           return [] unless hash
 
           hash_pairs(hash).flat_map do |key, node|
+            line = base_line + node.location.start_line - 1
+            next [reserved_finding("data: { component: }", helper, line)] if key == "component"
+
             value = literal_value(node)
             next [] unless value.is_a?(String)
 
-            stimulus_findings("data-#{key.tr("_", "-")}", value, base_line + node.location.start_line - 1)
+            stimulus_findings("data-#{key.tr("_", "-")}", value, line)
           end
+        end
+
+        def reserved_finding(spelling, helper, line)
+          Finding.new(rule: "reserved-attribute", severity: :error,
+                      message: "#{spelling} is #{helper}'s own identity attribute and is never overridable " \
+                               "(a composed root takes identity: instead; the raw attribute raises at render " \
+                               "in development)",
+                      line: line)
         end
 
         def controller_findings(value, line)
