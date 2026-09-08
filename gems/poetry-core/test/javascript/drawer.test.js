@@ -140,6 +140,29 @@ describe("poetry--core--drawer", () => {
     expect(dialog.style.getPropertyValue("--drawer-swipe-movement-y")).toBe("0px")
   })
 
+  it("the click after a press that started inside the panel never dismisses (the ghost click)", async () => {
+    const dialog = el("dialog")
+    dialog.getBoundingClientRect = () => ({ top: 400, bottom: 800, left: 0, right: 1000, width: 1000, height: 400 })
+    const click = (y) => dialog.dispatchEvent(new MouseEvent("click", { bubbles: true, clientX: 500, clientY: y }))
+
+    // A press on the panel, dragged up against the clamp, released over
+    // the backdrop: the browser's compat click lands at the release point.
+    pointer("pointerdown", el("body-text"), { x: 500, y: 420 })
+    pointer("pointermove", dialog, { x: 500, y: 300, time: 200 })
+    pointer("pointerup", dialog, { x: 500, y: 300, time: 300 })
+    click(300)
+
+    expect(dialog.hasAttribute("data-open")).toBe(true)
+
+    // A press that started on the backdrop still dismisses.
+    pointer("pointerdown", dialog, { x: 500, y: 100 })
+    pointer("pointerup", dialog, { x: 500, y: 100 })
+    click(100)
+    await nextFrame()
+
+    expect(dialog.hasAttribute("data-open")).toBe(false)
+  })
+
   it("interactive targets own the pointer - no drag starts from a button", () => {
     pointer("pointerdown", el("inner-button"), { y: 100 })
     pointer("pointermove", el("dialog"), { y: 200 })

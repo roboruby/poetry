@@ -49,6 +49,10 @@ export default class DrawerController extends DialogController {
   }
 
   #swipe = null
+  // Where the last press landed (inside the panel or on the backdrop) -
+  // the click that follows a press is never a backdrop dismissal when the
+  // press started inside, however far the pointer travelled since.
+  #pressInside = false
   #closing = false
   #snapIndex = 0
 
@@ -114,6 +118,29 @@ export default class DrawerController extends DialogController {
     })
   }
 
+  /**
+   * The inherited backdrop click, minus the ghost: a press that started
+   * inside the panel can end over the backdrop (a drag against the
+   * clamp, a slip off an inner control) and the click the browser then
+   * fires is a backdrop click by target and coordinates, never by intent.
+   *
+   * @param {MouseEvent} event
+   */
+  backdropClose(event) {
+    if (this.#pressInside) return
+
+    super.backdropClose(event)
+  }
+
+  // The dialog's own inside test (a press on the backdrop targets the
+  // <dialog> too - only the rect tells them apart).
+  #insidePanel(event) {
+    const rect = this.dialogTarget.getBoundingClientRect()
+
+    return rect.top <= event.clientY && event.clientY <= rect.bottom &&
+      rect.left <= event.clientX && event.clientX <= rect.right
+  }
+
   // --- the swipe -----------------------------------------------------------
 
   /**
@@ -124,6 +151,7 @@ export default class DrawerController extends DialogController {
    * @param {PointerEvent} event
    */
   swipeStart(event) {
+    this.#pressInside = this.#insidePanel(event)
     if (event.button !== 0 && event.pointerType === "mouse") return
     if (this.#closing) return
 
