@@ -7503,7 +7503,9 @@ components:
     - 'Panel content is poetry_navigation_menu_link entries (active: marks the current
       page) - never buttons; navigation navigates.'
     - 'This is a DISCLOSURE bar: Tab moves through it normally and nothing traps -
-      do not wire menu/menuitem roles.'
+      do not wire menu/menuitem roles. Keys: ArrowLeft/ArrowRight step between triggers
+      and links, ArrowDown opens the focused trigger''s panel (focus stays on the
+      trigger; Tab enters it), Escape closes and returns focus to the trigger.'
     - 'Rich panels (title + description grids) want viewport: true - the shared morphing
       card contains and sizes them; the default per-item mode suits simple link lists
       (the top-nav block shows the viewport pattern).'
