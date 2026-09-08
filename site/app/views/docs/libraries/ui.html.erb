@@ -119,10 +119,18 @@
       <p>
         Every helper accepts <code>class:</code>, <code>data:</code>, and
         <code>aria:</code> passthroughs, merged over the component's own
-        attributes with your classes winning conflicts. Variant and size
-        vocabularies are closed sets recorded in the registry, so
-        <code>bin/rails poetry:check</code> flags a typo with a
-        did-you-mean suggestion before it ships.
+        attributes with your classes winning conflicts, and any other keyword
+        that is not an option renders as an HTML attribute on the root
+        (<code>title:</code>, <code>tabindex:</code>). A near miss of a real
+        option (<code>varient:</code>) raises in development and test with a
+        did-you-mean instead of rendering a bogus attribute, and
+        <code>data-component</code>, the identity the agent surface keys on, is
+        never overridable (a component that renders as another's root passes
+        <code>identity:</code> instead); <code>data-slot</code> stays open,
+        since re-slotting an embedded root is how parts compose. Variant and size vocabularies
+        are closed sets recorded in the registry, so
+        <code>bin/rails poetry:check</code> flags all of it with the same
+        did-you-mean before it ships.
       </p>
       <h3 id="forms">The form builder handoff</h3>
       <p>
