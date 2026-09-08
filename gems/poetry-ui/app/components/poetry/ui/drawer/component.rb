@@ -142,6 +142,9 @@ module Poetry
         tool :open, description: "Open the drawer.", executes: :open, mutating: true
         tool :close, description: "Close the drawer.", executes: :close, mutating: true
 
+        # The inherited render checks, then the snap-point rules when
+        # snap_points: is given.
+        # @api private
         def before_render
           super
           validate_snap_points! if snap_points.present?
