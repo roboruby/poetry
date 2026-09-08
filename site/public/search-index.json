@@ -3714,6 +3714,12 @@
     "path": "/components/message-scroller#installation"
   },
   {
+    "title": "Opening position",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#opening-position"
+  },
+  {
     "title": "Default",
     "page": "Message Scroller",
     "section": "components",

@@ -1,0 +1,29 @@
+<%# The opening-position hold: a server-rendered transcript would paint
+    its oldest rows and jump once the controller runs, so the component
+    renders data-pending-scroll and the viewport hides until the
+    position lands. %>
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="opening-position">Opening position</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    A scroll container always opens at the top, and HTML has no way to set a
+    scroll position, so a server-rendered transcript would show its oldest
+    messages first and jump to the newest once the controller runs. Poetry
+    avoids the jump: for <code class="text-foreground">default_scroll_position: :end</code>
+    (the default) and <code class="text-foreground">:"last-anchor"</code>, the root and the
+    viewport render <code class="text-foreground">data-pending-scroll</code>, the viewport
+    stays hidden while the attribute is present, and the controller removes it the
+    moment the opening position is applied — or right away when the transcript is empty.
+    <code class="text-foreground">:start</code> opens where the browser does and never
+    holds.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    The hold keeps the frame: the viewport hides with
+    <code class="text-foreground">visibility</code>, so the layout exists for the scroll
+    and nothing around it moves. Without JavaScript the hold is lifted and the region
+    is a plain, readable scroll container. A cached page that Turbo restores gets the
+    hold back before it is snapshotted, so returning to a conversation never flashes
+    the top of the thread either. Style the state yourself with the
+    <code class="text-foreground">data-pending-scroll</code> attribute if you replace the
+    viewport's classes.
+  </p>
+</section>
