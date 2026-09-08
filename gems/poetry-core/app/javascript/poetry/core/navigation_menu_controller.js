@@ -44,6 +44,7 @@ export default class NavigationMenuController extends Controller {
   #cancelExit = new Map() // value -> abandon-this-panel's-exit (per panel, not global)
   #onOutsidePress = null
   #unsubscribeBeforeCache = null
+  #itemsObserver = null
   #sizeGeneration = 0
 
   /**
@@ -62,6 +63,16 @@ export default class NavigationMenuController extends Controller {
       this.#close()
       flushPendingExits()
     })
+
+    // A morph or stream that removes the OPEN trigger's item takes the
+    // per-item panel with it but leaves an adopted viewport panel behind,
+    // and either way the bar still counts itself open: close as if the
+    // trigger had been dismissed, and drop any adopted panel no trigger
+    // owns any more.
+    if (typeof MutationObserver !== "undefined") {
+      this.#itemsObserver = new MutationObserver(() => this.#reconcileRemovedItems())
+      this.#itemsObserver.observe(this.element, { childList: true, subtree: true })
+    }
   }
 
   /**
@@ -73,6 +84,8 @@ export default class NavigationMenuController extends Controller {
     this.#unbindOutsidePress()
     this.#unsubscribeBeforeCache?.()
     this.#unsubscribeBeforeCache = null
+    this.#itemsObserver?.disconnect()
+    this.#itemsObserver = null
   }
 
   /**
@@ -209,6 +222,28 @@ export default class NavigationMenuController extends Controller {
       }
     }
     this.#bindOutsidePress()
+  }
+
+  #reconcileRemovedItems() {
+    const viewport = this.#viewport()
+    if (viewport) {
+      for (const panel of viewport.querySelectorAll("[data-viewport-panel]")) {
+        if (!this.#ownerOf(panel)) panel.remove()
+      }
+    }
+    if (this.#openValue === null || this.#triggerFor(this.#openValue)) return
+
+    this.#clearTimer()
+    this.#close()
+  }
+
+  // The trigger whose aria-controls names this adopted panel, if it still
+  // exists.
+  #ownerOf(panel) {
+    if (!panel.id) return null
+
+    return [...this.element.querySelectorAll(TRIGGER_SELECTOR)]
+      .find((trigger) => trigger.getAttribute("aria-controls") === panel.id) ?? null
   }
 
   #close() {

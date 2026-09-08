@@ -170,6 +170,19 @@ describe("poetry--core--navigation-menu", () => {
     expect(stateOf("products").hidden).toBe(true)
   })
 
+  it("removing the open item closes cleanly and the next trigger opens fresh", async () => {
+    el("trigger-products").click()
+    expect(stateOf("products").expanded).toBe("true")
+
+    el("item-products").remove()
+    await Promise.resolve() // MutationObserver delivery (a microtask)
+    await Promise.resolve()
+
+    document.body.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true })) // never throws on the vanished trigger
+    el("trigger-solutions").click()
+    expect(stateOf("solutions").expanded).toBe("true")
+  })
+
   it("arrows move between triggers AND top-level links, no tabindex writes", () => {
     el("trigger-products").focus()
     el("trigger-products")
@@ -304,6 +317,25 @@ describe("poetry--core--navigation-menu viewport mode", () => {
     expect(el("panel-solutions").hidden).toBe(false)
     expect(el("trigger-solutions").getAttribute("aria-expanded")).toBe("true")
     expect(el("trigger-products").getAttribute("aria-expanded")).toBe("false")
+  })
+
+  it("removing the open trigger's item closes the bar and drops its orphaned panel", async () => {
+    application = await mountViewport()
+    el("trigger-products").click()
+    await nextFrame()
+    expect(el("panel-products").parentElement).toBe(el("viewport"))
+
+    el("item-products").remove()
+    await nextFrame() // MutationObserver delivery
+
+    expect(el("positioner").hidden).toBe(true)
+    expect(el("panel-products")).toBeNull()
+
+    // The bar keeps working: the surviving trigger opens alone.
+    el("trigger-solutions").click()
+    await nextFrame()
+    expect(el("positioner").hidden).toBe(false)
+    expect(el("viewport").querySelectorAll("[data-viewport-panel]").length).toBe(1)
   })
 
   it("Escape closes the viewport composite", async () => {
