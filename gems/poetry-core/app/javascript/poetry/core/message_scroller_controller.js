@@ -27,6 +27,17 @@ import {
 // auto-scroll animation cannot release itself.
 const AUTOSCROLLING_CLEAR_DELAY = 180
 
+// The opening-position hold: data-pending-scroll sits on the root and the
+// viewport until defaultScrollPosition end / last-anchor is applied (or
+// skipped, on an empty transcript), so the dictionary can hide the viewport
+// instead of painting the top of the thread and then jumping. The server
+// renders the attribute for those two positions (a scroll container always
+// opens at the top, and the first paint must not wait for this controller);
+// from connect on the controller owns it. Mount-only: a live value change
+// re-applies the position without hiding the viewport again.
+const PENDING_SCROLL_ATTRIBUTE = "data-pending-scroll"
+const HELD_SCROLL_POSITIONS = new Set(["end", "last-anchor"])
+
 // Viewport keys that count as deliberate scroll intent and release follow.
 const USER_SCROLL_KEYS = new Set([
   "ArrowDown",
@@ -55,6 +66,10 @@ const USER_SCROLL_KEYS = new Set([
 //   free-scrolling      reader scrolled away; position left alone
 //   anchored-to-message a turn held at the reading line while a reply streams
 //   settling-jump       a programmatic jump animating; intent suppressed
+//
+// Presence attributes mirrored on the root AND the viewport: data-scrollable
+// (which edges have room), data-autoscrolling (a programmatic scroll is
+// settling), data-pending-scroll (the opening-position hold, above).
 //
 // Viewport scroll/wheel/touchmove/keydown listeners are wired here (passive
 // flags need addEventListener) - do NOT also declare them as data-actions.
@@ -101,6 +116,7 @@ export default class extends Controller {
     this.prependRestore = null
     this.pendingScrollToMessage = null
     this.defaultScrollPositionApplied = false
+    this.pendingScroll = HELD_SCROLL_POSITIONS.has(this.defaultScrollPositionValue)
     this.spacerHeight = 0
     this.spacerGap = getFlexGap(this.#spacer()?.parentElement ?? null)
     this.handledScrollAnchors = new WeakSet()
@@ -150,6 +166,16 @@ export default class extends Controller {
     // defaultScrollPosition once, commits scrollable state.
     this.#handleContentChange()
 
+    // The hold releases with the opening position (inside the mount pass),
+    // or right away when there is nothing to scroll. A Turbo morph that
+    // re-stamps the server's attribute afterwards is stripped by the
+    // observer; a cache snapshot re-arms it (see #rearmPendingScroll).
+    if (this.itemCount === 0) this.pendingScroll = false
+    this.#writePendingScroll()
+    this.#observePendingScroll(viewport)
+    this.onBeforeCache = () => this.#rearmPendingScroll()
+    document.addEventListener("turbo:before-cache", this.onBeforeCache)
+
     if (this.trackVisibilityValue) this.#observeVisibility()
 
     this.started = true
@@ -189,6 +215,9 @@ export default class extends Controller {
     this.contentResizeObserver = null
     this.visibilityObserver?.disconnect()
     this.visibilityObserver = null
+    this.pendingScrollObserver?.disconnect()
+    this.pendingScrollObserver = null
+    document.removeEventListener("turbo:before-cache", this.onBeforeCache)
     this.observedRows.clear()
     this.visibleMessageIds.clear()
 
@@ -661,7 +690,7 @@ export default class extends Controller {
 
     if (!handled) return false
 
-    this.defaultScrollPositionApplied = true
+    this.#markDefaultScrollPositionApplied()
 
     return true
   }
@@ -706,6 +735,55 @@ export default class extends Controller {
     this.#scheduleVisibilitySync()
 
     return true
+  }
+
+  // --- the opening-position hold ---
+
+  #markDefaultScrollPositionApplied() {
+    this.defaultScrollPositionApplied = true
+
+    if (!this.pendingScroll) return
+
+    this.pendingScroll = false
+    this.#writePendingScroll()
+  }
+
+  #writePendingScroll() {
+    for (const element of [this.element, this.#viewport()]) {
+      if (!element) continue
+
+      if (this.pendingScroll) element.setAttribute(PENDING_SCROLL_ATTRIBUTE, "")
+      else element.removeAttribute(PENDING_SCROLL_ATTRIBUTE)
+    }
+  }
+
+  // A Turbo morph re-stamps the server-rendered attribute onto the live
+  // elements after the position already applied: strip it. Never re-add
+  // through this path - an inline script that scrolled and released the
+  // hold before connect must keep its release.
+  #observePendingScroll(viewport) {
+    if (typeof MutationObserver === "undefined") return
+
+    this.pendingScrollObserver = new MutationObserver(() => {
+      if (!this.pendingScroll) this.#writePendingScroll()
+    })
+
+    for (const element of [this.element, viewport]) {
+      this.pendingScrollObserver.observe(element, {
+        attributes: true,
+        attributeFilter: [PENDING_SCROLL_ATTRIBUTE]
+      })
+    }
+  }
+
+  // A cached snapshot clones the elements without their scroll position, so
+  // a restore would paint the top of the thread until reconnect re-applies
+  // the opening position: re-arm the hold before Turbo caches the page.
+  #rearmPendingScroll() {
+    if (!HELD_SCROLL_POSITIONS.has(this.defaultScrollPositionValue)) return
+
+    this.pendingScroll = true
+    this.#writePendingScroll()
   }
 
   // --- scroll commands (mechanics, split from the policy above as in source) ---
@@ -878,7 +956,7 @@ export default class extends Controller {
     if (!element) {
       if (this.itemCount === 0) {
         this.pendingScrollToMessage = { messageId, options }
-        this.defaultScrollPositionApplied = true
+        this.#markDefaultScrollPositionApplied()
 
         return true
       }
@@ -886,7 +964,7 @@ export default class extends Controller {
       return false
     }
 
-    this.defaultScrollPositionApplied = true
+    this.#markDefaultScrollPositionApplied()
 
     if (this.#scrollToElement(element, options)) {
       this.pendingScrollToMessage = null
@@ -910,7 +988,7 @@ export default class extends Controller {
     if (!this.#scrollToElement(element, pending.options)) return false
 
     this.pendingScrollToMessage = null
-    this.defaultScrollPositionApplied = true
+    this.#markDefaultScrollPositionApplied()
 
     return true
   }

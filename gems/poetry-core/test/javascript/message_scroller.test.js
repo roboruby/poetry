@@ -122,7 +122,7 @@ function stubViewport(viewport, metrics) {
   return metrics
 }
 
-async function mount({ values = {}, rows = [], metrics = {} } = {}) {
+async function mount({ values = {}, rows = [], metrics = {}, hold = false } = {}) {
   // The poetry ViewComponent opts into following by default; the raw
   // controller default is the source-faithful false. Tests mount the
   // component posture unless a test overrides the value.
@@ -137,6 +137,11 @@ async function mount({ values = {}, rows = [], metrics = {} } = {}) {
 
   const viewport = document.createElement("div")
   viewport.setAttribute(`data-${ID}-target`, "viewport")
+  // The server renders the opening-position hold on root + viewport.
+  if (hold) {
+    root.setAttribute("data-pending-scroll", "")
+    viewport.setAttribute("data-pending-scroll", "")
+  }
   const content = document.createElement("div")
   content.setAttribute(`data-${ID}-target`, "content")
   const spacer = document.createElement("div")
@@ -624,6 +629,109 @@ describe("poetry--core--message-scroller", () => {
       rowElements[0].remove()
       await flushMutations()
       expect(observer.observed.has(rowElements[0])).toBe(false)
+    })
+  })
+
+  describe("the opening-position hold (data-pending-scroll)", () => {
+    const held = (element) => element.hasAttribute("data-pending-scroll")
+
+    it("releases the server-rendered hold on root and viewport once the opening position applies", async () => {
+      const { root, viewport, metrics } = await mount({
+        hold: true,
+        rows: [{ id: "m1", top: 0, height: 100 }, { id: "m2", top: 100, height: 100 }],
+        metrics: { scrollHeight: 600 }
+      })
+
+      expect(metrics.scrollTop).toBe(400)
+      expect(held(root)).toBe(false)
+      expect(held(viewport)).toBe(false)
+    })
+
+    it("last-anchor releases through the anchor branch", async () => {
+      const { root, viewport } = await mount({
+        hold: true,
+        values: { "default-scroll-position": "last-anchor" },
+        rows: [{ id: "m1", top: 0, height: 100 }, { id: "m2", anchor: true, top: 100, height: 400 }],
+        metrics: { scrollHeight: 500 }
+      })
+
+      expect(held(root)).toBe(false)
+      expect(held(viewport)).toBe(false)
+    })
+
+    it("an empty transcript has nothing to scroll: the hold releases at mount", async () => {
+      const { root, viewport } = await mount({ hold: true, rows: [] })
+
+      expect(held(root)).toBe(false)
+      expect(held(viewport)).toBe(false)
+    })
+
+    it("start opens where the browser does: a stray hold is cleared", async () => {
+      const { root, viewport } = await mount({
+        hold: true,
+        values: { "auto-scroll": false, "default-scroll-position": "start" },
+        rows: [{ id: "m1", top: 0, height: 100 }]
+      })
+
+      expect(held(root)).toBe(false)
+      expect(held(viewport)).toBe(false)
+    })
+
+    it("a morph re-stamping the attribute after the position applied is stripped", async () => {
+      const { root, viewport } = await mount({ hold: true, rows: [{ id: "m1", top: 0, height: 100 }] })
+
+      root.setAttribute("data-pending-scroll", "")
+      viewport.setAttribute("data-pending-scroll", "")
+      await flushMutations()
+
+      expect(held(root)).toBe(false)
+      expect(held(viewport)).toBe(false)
+    })
+
+    it("a live value change re-applies the position without hiding the viewport again", async () => {
+      const { root, viewport } = await mount({
+        hold: true,
+        rows: [{ id: "m1", top: 0, height: 100 }],
+        metrics: { scrollHeight: 600 }
+      })
+
+      root.setAttribute(`data-${ID}-default-scroll-position-value`, "start")
+      await nextFrame()
+
+      expect(held(root)).toBe(false)
+      expect(held(viewport)).toBe(false)
+    })
+
+    it("turbo:before-cache re-arms the hold so a restored snapshot never paints the top of the thread", async () => {
+      const { root, viewport } = await mount({ rows: [{ id: "m1", top: 0, height: 100 }] })
+
+      document.dispatchEvent(new Event("turbo:before-cache"))
+
+      expect(held(root)).toBe(true)
+      expect(held(viewport)).toBe(true)
+    })
+
+    it("before-cache holds nothing for start", async () => {
+      const { root, viewport } = await mount({
+        values: { "auto-scroll": false, "default-scroll-position": "start" },
+        rows: [{ id: "m1", top: 0, height: 100 }]
+      })
+
+      document.dispatchEvent(new Event("turbo:before-cache"))
+
+      expect(held(root)).toBe(false)
+      expect(held(viewport)).toBe(false)
+    })
+
+    it("disconnect drops the before-cache subscription", async () => {
+      const { root, viewport } = await mount({ rows: [{ id: "m1", top: 0, height: 100 }] })
+
+      root.remove()
+      await nextFrame()
+      document.dispatchEvent(new Event("turbo:before-cache"))
+
+      expect(held(root)).toBe(false)
+      expect(held(viewport)).toBe(false)
     })
   })
 
