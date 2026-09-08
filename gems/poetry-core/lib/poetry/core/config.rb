@@ -56,7 +56,8 @@ module Poetry
         #   actions.
         # - `css_mode` (`:tailwind`) - `:tailwind` emits resolved utility
         #   classes; `:bem` emits the BEM token IR for bring-your-own-CSS
-        #   hosts.
+        #   kits authored on this DSL (poetry-ui is Tailwind-native and is
+        #   not a `:bem` consumer).
         # - `icon_library` (`:lucide`) - the active icon set, by the key it
         #   registered under ({Poetry::Core::Icons.register}).
         # - `raise_on_missing_icon` (`nil`) - the policy for a dynamic icon
@@ -169,7 +170,9 @@ module Poetry
       #
       # @!method css_mode
       #   The class emission mode: `:tailwind` resolves style values to
-      #   utility classes, `:bem` emits the BEM token IR.
+      #   utility classes, `:bem` emits the BEM token IR - for kits authored
+      #   on the DSL that write their own templates; poetry-ui is
+      #   Tailwind-native and is not a `:bem` consumer.
       #   @return [Symbol] :tailwind or :bem
       #
       # @!method css_mode=(mode)
