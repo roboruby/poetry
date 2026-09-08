@@ -130,6 +130,13 @@
     .my-kit-pill--variant-danger { /* tailwind-equivalent: bg-destructive/10 text-destructive */ }
     .my-kit-pill--interactive { /* tailwind-equivalent: cursor-pointer hover:opacity-80 ... */ }
   CODE
+  bem_compat_source = <<~CODE
+    bin/rails g poetry:bem
+    # app/assets/stylesheets/poetry/bem-compat.css     vendored, never edited
+    # app/assets/stylesheets/poetry/bem-reference.css  yours: every selector, with comments
+    # then, in the layout head:
+    stylesheet_link_tag "poetry/bem-compat", "poetry/bem-reference"
+  CODE
   tokens_source = <<~CODE
     :root {
       --background: oklch(1 0 0);
@@ -399,6 +406,22 @@
       </p>
     <% end %>
     <%= poetry_code_block(code: bem_reference_source, language: "css", label: "The generated reference") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        The templates also carry a small set of structural classes the
+        dictionaries do not own: the screen-reader-only text, the loading
+        spinner, focus rings, open and closed transitions, the layout of
+        composed parts (113 classes in all). In <code>:bem</code> mode they
+        would otherwise reach the page undefined, so
+        <code>rails g poetry:bem</code> vendors them as a compiled compat
+        stylesheet, no Tailwind build needed, and writes the reference
+        stylesheet next to it for your rules. The compat file resolves
+        colors through the same token variables as the
+        <a href="#tokens">tokens</a> section, so your <code>:root</code>
+        values apply, and it is layered so your own CSS always wins.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: bem_compat_source, language: "shell", label: "Starter files for :bem") %>
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <p>
         The header embeds the dictionary's capsule digest as a leak-guard:
