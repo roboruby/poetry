@@ -65,12 +65,13 @@ module Poetry
         def button_options
           wiring = { data: { slot: "toast-trigger" } }
                    .merge(stimulus_attributes_for(:root))
-                   .merge(component_data_attributes)
 
           # Caller attributes never clobber the trigger's wiring: both sides
           # flow through Attributes, so a host data-controller/action
-          # concatenates instead of silently killing fire-on-click.
-          { variant: variant, size: size }
+          # concatenates instead of silently killing fire-on-click. The
+          # Button root wears THIS component's identity through the
+          # identity: seam (the raw data-component is reserved).
+          { variant: variant, size: size, identity: self.class.component_title }
             .merge(Poetry::Core::HTML::Attributes.merged(wiring, html_attributes))
             .symbolize_keys
         end
