@@ -1,5 +1,5 @@
 /* poetry rhea theme - upstream style-rhea.css ported onto the
- * cn-* layer (pinned clone 1773ecfe, the shadcn@4.19.0 release). Same contract as default.css:
+ * cn-* layer (pinned clone 7c9eaba1, the shadcn@4.21.0 release). Same contract as default.css:
  * imported layer(base); bare selectors while installs carry ONE theme;
  * rule order per component = base < elements < variants < compounds;
  * split-side, no-empty-rules and cross-component-last rules apply.

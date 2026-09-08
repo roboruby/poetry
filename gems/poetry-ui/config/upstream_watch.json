@@ -1,9 +1,8 @@
 {
-  "pin": "d14b6e69",
-  "generated_at": "2026-08-18",
+  "pin": "7c9eaba1",
+  "generated_at": "2026-09-07",
   "families": {
     "new-york-v4/ui/accordion": [
-      "@/lib/utils",
       "[&[data-state=open]>svg]:rotate-180",
       "accordion",
       "accordion-content",
@@ -11,6 +10,7 @@
       "accordion-trigger",
       "border-b",
       "client",
+      "cn",
       "data-[state=closed]:animate-accordion-up",
       "data-[state=open]:animate-accordion-down",
       "disabled:opacity-50",
@@ -49,7 +49,6 @@
     ],
     "new-york-v4/ui/alert-dialog": [
       "*:[svg:not([class*='size-'])]:size-8",
-      "@/lib/utils",
       "@/registry/new-york-v4/ui/button",
       "alert-dialog",
       "alert-dialog-action",
@@ -68,6 +67,7 @@
       "bg-muted",
       "border",
       "client",
+      "cn",
       "data-[size=default]:sm:max-w-lg",
       "data-[size=sm]:max-w-xs",
       "data-[state=closed]:animate-out",
@@ -132,7 +132,6 @@
     ],
     "new-york-v4/ui/alert": [
       "*:data-[slot=alert-description]:text-destructive/90",
-      "@/lib/utils",
       "[&>svg]:size-4",
       "[&>svg]:text-current",
       "[&>svg]:translate-y-0.5",
@@ -143,6 +142,7 @@
       "bg-card",
       "border",
       "class-variance-authority",
+      "cn",
       "col-start-2",
       "default",
       "div",
@@ -181,7 +181,6 @@
       "*:[img]:w-full",
       "*:data-[slot=attachment]:flex-none",
       "*:data-[slot=attachment]:snap-start",
-      "@/lib/utils",
       "@/registry/new-york-v4/ui/button",
       "[&_svg:not([class*='size-'])]:size-4",
       "[&_svg]:pointer-events-none",
@@ -202,6 +201,7 @@
       "border",
       "button",
       "class-variance-authority",
+      "cn",
       "data-[state=error]:border-destructive/30",
       "data-[state=idle]:border-dashed",
       "default",
@@ -300,7 +300,6 @@
       "*:data-[slot=avatar]:ring-2",
       "*:data-[slot=avatar]:ring-background",
       "-space-x-2",
-      "@/lib/utils",
       "[&>svg]:size-4",
       "absolute",
       "aspect-square",
@@ -314,6 +313,7 @@
       "bg-primary",
       "bottom-0",
       "client",
+      "cn",
       "data-[size=lg]:size-10",
       "data-[size=sm]:size-6",
       "default",
@@ -357,7 +357,6 @@
       "z-10"
     ],
     "new-york-v4/ui/badge": [
-      "@/lib/utils",
       "[&>svg]:pointer-events-none",
       "[&>svg]:size-3",
       "[a&]:hover:bg-accent",
@@ -376,6 +375,7 @@
       "border-border",
       "border-transparent",
       "class-variance-authority",
+      "cn",
       "dark:aria-invalid:ring-destructive/40",
       "dark:bg-destructive/60",
       "dark:focus-visible:ring-destructive/40",
@@ -409,7 +409,6 @@
       "whitespace-nowrap"
     ],
     "new-york-v4/ui/breadcrumb": [
-      "@/lib/utils",
       "[&>svg]:size-3.5",
       "a",
       "breadcrumb",
@@ -420,6 +419,7 @@
       "breadcrumb-page",
       "breadcrumb-separator",
       "break-words",
+      "cn",
       "flex",
       "flex-wrap",
       "font-normal",
@@ -464,7 +464,6 @@
       "*:data-[slot=bubble-content]:text-primary-foreground",
       "*:data-[slot=bubble-content]:text-secondary-foreground",
       "-translate-y-3/4",
-      "@/lib/utils",
       "[&>[data-slot=bubble-content]:is(button,a):hover]:bg-[color-mix(in_oklch,var(--muted),var(--foreground)_5%)]",
       "[&>[data-slot=bubble-content]:is(button,a):hover]:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)]",
       "[&>[data-slot=bubble-content]:is(button,a):hover]:bg-[oklch(from_var(--primary)_0.88_calc(c*0.5)_h)]",
@@ -490,6 +489,7 @@
       "bubble-group",
       "bubble-reactions",
       "class-variance-authority",
+      "cn",
       "dark:*:data-[slot=bubble-content]:bg-[oklch(from_var(--primary)_0.3_calc(c*0.4)_h)]",
       "dark:*:data-[slot=bubble-content]:bg-destructive/20",
       "dark:[&>[data-slot=bubble-content]:is(button,a):hover]:bg-[oklch(from_var(--primary)_0.35_calc(c*0.5)_h)]",
@@ -540,7 +540,6 @@
       "z-10"
     ],
     "new-york-v4/ui/button-group": [
-      "@/lib/utils",
       "@/registry/new-york-v4/ui/separator",
       "[&>*:not(:first-child)]:border-l-0",
       "[&>*:not(:first-child)]:border-t-0",
@@ -560,6 +559,7 @@
       "button-group",
       "button-group-separator",
       "class-variance-authority",
+      "cn",
       "data-[orientation=vertical]:h-auto",
       "div",
       "flex",
@@ -584,7 +584,6 @@
       "w-fit"
     ],
     "new-york-v4/ui/button": [
-      "@/lib/utils",
       "[&_svg:not([class*='size-'])]:size-3",
       "[&_svg:not([class*='size-'])]:size-4",
       "[&_svg]:pointer-events-none",
@@ -598,6 +597,7 @@
       "border",
       "button",
       "class-variance-authority",
+      "cn",
       "dark:aria-invalid:ring-destructive/40",
       "dark:bg-destructive/60",
       "dark:bg-input/30",
@@ -662,7 +662,6 @@
       "whitespace-nowrap"
     ],
     "new-york-v4/ui/calendar": [
-      "@/lib/utils",
       "@/registry/new-york-v4/ui/button",
       "[&:first-child[data-selected=true]_button]:rounded-l-md",
       "[&:last-child[data-selected=true]_button]:rounded-r-md",
@@ -686,6 +685,7 @@
       "border-input",
       "calendar",
       "client",
+      "cn",
       "dark:hover:text-accent-foreground",
       "data-[range-end=true]:bg-primary",
       "data-[range-end=true]:rounded-md",
@@ -774,7 +774,6 @@
       "w-full"
     ],
     "new-york-v4/ui/card": [
-      "@/lib/utils",
       "@container/card-header",
       "[.border-b]:pb-6",
       "[.border-t]:pt-6",
@@ -788,6 +787,7 @@
       "card-footer",
       "card-header",
       "card-title",
+      "cn",
       "col-start-2",
       "div",
       "flex",
@@ -825,7 +825,6 @@
       "-translate-y-1/2",
       "/>",
       "<Carousel",
-      "@/lib/utils",
       "@/registry/new-york-v4/ui/button",
       "ArrowLeft",
       "ArrowRight",
@@ -839,6 +838,7 @@
       "carousel-next",
       "carousel-previous",
       "client",
+      "cn",
       "div",
       "embla-carousel-react",
       "flex",
@@ -889,7 +889,6 @@
       "=>",
       "?",
       "??",
-      "@/lib/utils",
       "[&>svg]:h-2.5",
       "[&>svg]:h-3",
       "[&>svg]:text-muted-foreground",
@@ -928,6 +927,7 @@
       "chart-",
       "children",
       "client",
+      "cn",
       "color",
       "const",
       "dashed",
@@ -997,7 +997,6 @@
       "})"
     ],
     "new-york-v4/ui/checkbox": [
-      "@/lib/utils",
       "aria-invalid:border-destructive",
       "aria-invalid:ring-destructive/20",
       "border",
@@ -1005,6 +1004,7 @@
       "checkbox",
       "checkbox-indicator",
       "client",
+      "cn",
       "dark:aria-invalid:ring-destructive/40",
       "dark:bg-input/30",
       "dark:data-[state=checked]:bg-primary",
@@ -1050,7 +1050,6 @@
       "*:data-[slot=input-group]:shadow-none",
       "-ml-1",
       "-mx-1",
-      "@/lib/utils",
       "@/registry/new-york-v4/ui/button",
       "@/registry/new-york-v4/ui/input-group",
       "@base-ui/react",
@@ -1070,6 +1069,7 @@
       "border-input",
       "bottom",
       "client",
+      "cn",
       "combobox-chip",
       "combobox-chip-input",
       "combobox-chip-remove",
@@ -1201,7 +1201,6 @@
     "new-york-v4/ui/command": [
       "**:data-[slot=command-input-wrapper]:h-12",
       "-mx-1",
-      "@/lib/utils",
       "@/registry/new-york-v4/ui/dialog",
       "Command",
       "Palette",
@@ -1231,6 +1230,7 @@
       "border-b",
       "client",
       "cmdk",
+      "cn",
       "command",
       "command-empty",
       "command-group",
@@ -1296,7 +1296,6 @@
     ],
     "new-york-v4/ui/context-menu": [
       "-mx-1",
-      "@/lib/utils",
       "[&_svg:not([class*='size-'])]:size-4",
       "[&_svg:not([class*='text-'])]:text-muted-foreground",
       "[&_svg]:pointer-events-none",
@@ -1306,6 +1305,7 @@
       "bg-popover",
       "border",
       "client",
+      "cn",
       "context-menu",
       "context-menu-checkbox-item",
       "context-menu-content",
@@ -1392,7 +1392,6 @@
       "z-50"
     ],
     "new-york-v4/ui/dialog": [
-      "@/lib/utils",
       "@/registry/new-york-v4/ui/button",
       "[&_svg:not([class*='size-'])]:size-4",
       "[&_svg]:pointer-events-none",
@@ -1402,6 +1401,7 @@
       "bg-black/50",
       "border",
       "client",
+      "cn",
       "data-[state=closed]:animate-out",
       "data-[state=closed]:fade-out-0",
       "data-[state=closed]:zoom-out-95",
@@ -1478,11 +1478,11 @@
       "use"
     ],
     "new-york-v4/ui/drawer": [
-      "@/lib/utils",
       "bg-background",
       "bg-black/50",
       "bg-muted",
       "client",
+      "cn",
       "data-[state=closed]:animate-out",
       "data-[state=closed]:fade-out-0",
       "data-[state=open]:animate-in",
@@ -1553,7 +1553,6 @@
     ],
     "new-york-v4/ui/dropdown-menu": [
       "-mx-1",
-      "@/lib/utils",
       "[&_svg:not([class*='size-'])]:size-4",
       "[&_svg:not([class*='text-'])]:text-muted-foreground",
       "[&_svg]:pointer-events-none",
@@ -1563,6 +1562,7 @@
       "bg-popover",
       "border",
       "client",
+      "cn",
       "cursor-default",
       "dark:data-[variant=destructive]:focus:bg-destructive/20",
       "data-[disabled]:opacity-50",
@@ -1648,7 +1648,6 @@
       "z-50"
     ],
     "new-york-v4/ui/empty": [
-      "@/lib/utils",
       "[&>a:hover]:text-primary",
       "[&>a]:underline",
       "[&>a]:underline-offset-4",
@@ -1659,6 +1658,7 @@
       "bg-transparent",
       "border-dashed",
       "class-variance-authority",
+      "cn",
       "default",
       "div",
       "empty",
@@ -1697,7 +1697,6 @@
     ],
     "new-york-v4/ui/field": [
       "-my-2",
-      "@/lib/utils",
       "@/registry/new-york-v4/ui/label",
       "@/registry/new-york-v4/ui/separator",
       "@container/field-group",
@@ -1722,6 +1721,7 @@
       "block",
       "class-variance-authority",
       "client",
+      "cn",
       "dark:has-data-[state=checked]:bg-primary/10",
       "data-[invalid=true]:text-destructive",
       "data-[slot=checkbox-group]:gap-3",
@@ -1801,10 +1801,10 @@
       "-form-item-description",
       "-form-item-message",
       "<FormField>",
-      "@/lib/utils",
       "@/registry/new-york-v4/ui/label",
       "be",
       "client",
+      "cn",
       "data-[error=true]:text-destructive",
       "div",
       "form-control",
@@ -1828,11 +1828,11 @@
       "within"
     ],
     "new-york-v4/ui/hover-card": [
-      "@/lib/utils",
       "bg-popover",
       "border",
       "center",
       "client",
+      "cn",
       "data-[side=bottom]:slide-in-from-top-2",
       "data-[side=left]:slide-in-from-right-2",
       "data-[side=right]:slide-in-from-left-2",
@@ -1860,7 +1860,6 @@
       "z-50"
     ],
     "new-york-v4/ui/input-group": [
-      "@/lib/utils",
       "@/registry/new-york-v4/ui/button",
       "@/registry/new-york-v4/ui/input",
       "@/registry/new-york-v4/ui/textarea",
@@ -1880,6 +1879,7 @@
       "button",
       "class-variance-authority",
       "client",
+      "cn",
       "cursor-text",
       "dark:bg-input/30",
       "dark:bg-transparent",
@@ -1970,7 +1970,6 @@
       "xs"
     ],
     "new-york-v4/ui/input-otp": [
-      "@/lib/utils",
       "absolute",
       "animate-caret-blink",
       "aria-invalid:border-destructive",
@@ -1979,6 +1978,7 @@
       "border-r",
       "border-y",
       "client",
+      "cn",
       "dark:bg-input/30",
       "dark:data-[active=true]:aria-invalid:ring-destructive/40",
       "data-[active=true]:aria-invalid:border-destructive",
@@ -2019,12 +2019,12 @@
       "w-px"
     ],
     "new-york-v4/ui/input": [
-      "@/lib/utils",
       "aria-invalid:border-destructive",
       "aria-invalid:ring-destructive/20",
       "bg-transparent",
       "border",
       "border-input",
+      "cn",
       "dark:aria-invalid:ring-destructive/40",
       "dark:bg-input/30",
       "disabled:cursor-not-allowed",
@@ -2058,7 +2058,6 @@
       "w-full"
     ],
     "new-york-v4/ui/item": [
-      "@/lib/utils",
       "@/registry/new-york-v4/ui/separator",
       "[&+[data-slot=item-content]]:flex-none",
       "[&>a:hover]:text-primary",
@@ -2078,6 +2077,7 @@
       "border-border",
       "border-transparent",
       "class-variance-authority",
+      "cn",
       "default",
       "div",
       "duration-100",
@@ -2137,11 +2137,11 @@
       "w-fit"
     ],
     "new-york-v4/ui/kbd": [
-      "@/lib/utils",
       "[&_svg:not([class*='size-'])]:size-3",
       "[[data-slot=tooltip-content]_&]:bg-background/20",
       "[[data-slot=tooltip-content]_&]:text-background",
       "bg-muted",
+      "cn",
       "dark:[[data-slot=tooltip-content]_&]:bg-background/10",
       "div",
       "font-medium",
@@ -2163,8 +2163,8 @@
       "w-fit"
     ],
     "new-york-v4/ui/label": [
-      "@/lib/utils",
       "client",
+      "cn",
       "flex",
       "font-medium",
       "gap-2",
@@ -2185,7 +2185,6 @@
       "*:[a]:hover:text-foreground",
       "*:[a]:underline",
       "*:[a]:underline-offset-3",
-      "@/lib/utils",
       "[&_svg:not([class*='size-'])]:size-4",
       "[a]:hover:text-foreground",
       "[a]:underline",
@@ -2203,6 +2202,7 @@
       "border-b",
       "border-border",
       "class-variance-authority",
+      "cn",
       "default",
       "div",
       "flex",
@@ -2232,7 +2232,6 @@
     ],
     "new-york-v4/ui/menubar": [
       "-mx-1",
-      "@/lib/utils",
       "[&_svg:not([class*='size-'])]:size-4",
       "[&_svg:not([class*='text-'])]:text-muted-foreground",
       "[&_svg]:pointer-events-none",
@@ -2243,6 +2242,7 @@
       "bg-popover",
       "border",
       "client",
+      "cn",
       "cursor-default",
       "dark:data-[variant=destructive]:focus:bg-destructive/20",
       "data-[disabled]:opacity-50",
@@ -2337,7 +2337,6 @@
     ],
     "new-york-v4/ui/message-scroller": [
       "-translate-x-1/2",
-      "@/lib/utils",
       "@/registry/new-york-v4/ui/button",
       "@shadcn/react/message-scroller",
       "Scroll",
@@ -2347,6 +2346,7 @@
       "bg-background",
       "border-border",
       "client",
+      "cn",
       "contain-content",
       "data-[active=false]:duration-400",
       "data-[active=false]:ease-[cubic-bezier(0.7,0,0.84,0)]",
@@ -2363,6 +2363,7 @@
       "data-[direction=start]:data-[active=false]:-translate-y-full",
       "data-[direction=start]:top-4",
       "data-autoscrolling:scrollbar-none",
+      "data-pending-scroll:invisible",
       "duration-200",
       "end",
       "flex",
@@ -2405,8 +2406,8 @@
       "variant"
     ],
     "new-york-v4/ui/message": [
-      "@/lib/utils",
       "bg-muted",
+      "cn",
       "data-[align=end]:flex-row-reverse",
       "div",
       "end",
@@ -2448,7 +2449,6 @@
     ],
     "new-york-v4/ui/native-select": [
       "-translate-y-1/2",
-      "@/lib/utils",
       "absolute",
       "appearance-none",
       "aria-invalid:border-destructive",
@@ -2457,6 +2457,7 @@
       "bg-transparent",
       "border",
       "border-input",
+      "cn",
       "dark:aria-invalid:ring-destructive/40",
       "dark:bg-input/30",
       "dark:hover:bg-input/50",
@@ -2511,7 +2512,6 @@
     "new-york-v4/ui/navigation-menu": [
       "**:data-[slot=navigation-menu-link]:focus:outline-none",
       "**:data-[slot=navigation-menu-link]:focus:ring-0",
-      "@/lib/utils",
       "[&_svg:not([class*='size-'])]:size-4",
       "[&_svg:not([class*='text-'])]:text-muted-foreground",
       "absolute",
@@ -2520,6 +2520,7 @@
       "bg-popover",
       "border",
       "class-variance-authority",
+      "cn",
       "data-[active=true]:bg-accent/50",
       "data-[active=true]:focus:bg-accent",
       "data-[active=true]:hover:bg-accent",
@@ -2637,10 +2638,10 @@
       "z-[1]"
     ],
     "new-york-v4/ui/pagination": [
-      "@/lib/utils",
       "@/registry/new-york-v4/ui/button",
       "Go",
       "a",
+      "cn",
       "default",
       "flex",
       "flex-row",
@@ -2679,11 +2680,11 @@
       "w-full"
     ],
     "new-york-v4/ui/popover": [
-      "@/lib/utils",
       "bg-popover",
       "border",
       "center",
       "client",
+      "cn",
       "data-[side=bottom]:slide-in-from-top-2",
       "data-[side=left]:slide-in-from-right-2",
       "data-[side=right]:slide-in-from-left-2",
@@ -2724,10 +2725,10 @@
     ],
     "new-york-v4/ui/progress": [
       "%)",
-      "@/lib/utils",
       "bg-primary",
       "bg-primary/20",
       "client",
+      "cn",
       "flex-1",
       "h-2",
       "h-full",
@@ -2746,7 +2747,6 @@
     "new-york-v4/ui/radio-group": [
       "-translate-x-1/2",
       "-translate-y-1/2",
-      "@/lib/utils",
       "absolute",
       "aria-invalid:border-destructive",
       "aria-invalid:ring-destructive/20",
@@ -2754,6 +2754,7 @@
       "border",
       "border-input",
       "client",
+      "cn",
       "dark:aria-invalid:ring-destructive/40",
       "dark:bg-input/30",
       "disabled:cursor-not-allowed",
@@ -2787,7 +2788,6 @@
       "use"
     ],
     "new-york-v4/ui/resizable": [
-      "@/lib/utils",
       "[&[aria-orientation=horizontal]>div]:rotate-90",
       "after:-translate-x-1/2",
       "after:absolute",
@@ -2805,6 +2805,7 @@
       "bg-border",
       "border",
       "client",
+      "cn",
       "flex",
       "focus-visible:outline-hidden",
       "focus-visible:ring-1",
@@ -2829,13 +2830,13 @@
       "z-10"
     ],
     "new-york-v4/ui/scroll-area": [
-      "@/lib/utils",
       "bg-border",
       "border-l",
       "border-l-transparent",
       "border-t",
       "border-t-transparent",
       "client",
+      "cn",
       "flex",
       "flex-1",
       "flex-col",
@@ -2874,7 +2875,6 @@
       "*:data-[slot=select-value]:items-center",
       "*:data-[slot=select-value]:line-clamp-1",
       "-mx-1",
-      "@/lib/utils",
       "[&_svg:not([class*='size-'])]:size-4",
       "[&_svg:not([class*='text-'])]:text-muted-foreground",
       "[&_svg]:pointer-events-none",
@@ -2889,6 +2889,7 @@
       "border-input",
       "center",
       "client",
+      "cn",
       "cursor-default",
       "dark:aria-invalid:ring-destructive/40",
       "dark:bg-input/30",
@@ -2985,9 +2986,9 @@
       "z-50"
     ],
     "new-york-v4/ui/separator": [
-      "@/lib/utils",
       "bg-border",
       "client",
+      "cn",
       "data-[orientation=horizontal]:h-px",
       "data-[orientation=horizontal]:w-full",
       "data-[orientation=vertical]:h-full",
@@ -3000,7 +3001,6 @@
       "use"
     ],
     "new-york-v4/ui/sheet": [
-      "@/lib/utils",
       "absolute",
       "bg-background",
       "bg-black/50",
@@ -3011,6 +3011,7 @@
       "bottom",
       "bottom-0",
       "client",
+      "cn",
       "data-[state=closed]:animate-out",
       "data-[state=closed]:duration-300",
       "data-[state=closed]:fade-out-0",
@@ -3098,7 +3099,6 @@
       ";",
       "=",
       "@/registry/new-york-v4/hooks/use-mobile",
-      "@/registry/new-york-v4/lib/utils",
       "@/registry/new-york-v4/ui/button",
       "@/registry/new-york-v4/ui/input",
       "@/registry/new-york-v4/ui/separator",
@@ -3141,6 +3141,7 @@
       "center",
       "class-variance-authority",
       "client",
+      "cn",
       "collapsed",
       "content",
       "data-[active=true]:bg-sidebar-accent",
@@ -3360,15 +3361,14 @@
       "z-20"
     ],
     "new-york-v4/ui/skeleton": [
-      "@/lib/utils",
       "animate-pulse",
       "bg-accent",
+      "cn",
       "div",
       "rounded-md",
       "skeleton"
     ],
     "new-york-v4/ui/slider": [
-      "@/lib/utils",
       "absolute",
       "bg-muted",
       "bg-primary",
@@ -3377,6 +3377,7 @@
       "border",
       "border-primary",
       "client",
+      "cn",
       "data-[disabled]:opacity-50",
       "data-[orientation=horizontal]:h-1.5",
       "data-[orientation=horizontal]:h-full",
@@ -3436,21 +3437,21 @@
       "var(--radius)"
     ],
     "new-york-v4/ui/spinner": [
-      "@/lib/utils",
       "Loading",
       "animate-spin",
+      "cn",
       "lucide-react",
       "size-4",
       "status",
       "svg"
     ],
     "new-york-v4/ui/switch": [
-      "@/lib/utils",
       "bg-background",
       "block",
       "border",
       "border-transparent",
       "client",
+      "cn",
       "dark:data-[state=checked]:bg-primary-foreground",
       "dark:data-[state=unchecked]:bg-foreground",
       "dark:data-[state=unchecked]:bg-input/80",
@@ -3490,7 +3491,6 @@
       "use"
     ],
     "new-york-v4/ui/table": [
-      "@/lib/utils",
       "[&:has([role=checkbox])]:pr-0",
       "[&>[role=checkbox]]:translate-y-[2px]",
       "[&>tr]:last:border-b-0",
@@ -3503,6 +3503,7 @@
       "caption",
       "caption-bottom",
       "client",
+      "cn",
       "data-[state=selected]:bg-muted",
       "font-medium",
       "h-10",
@@ -3539,7 +3540,6 @@
       "whitespace-nowrap"
     ],
     "new-york-v4/ui/tabs": [
-      "@/lib/utils",
       "[&_svg:not([class*='size-'])]:size-4",
       "[&_svg]:pointer-events-none",
       "[&_svg]:shrink-0",
@@ -3553,6 +3553,7 @@
       "border-transparent",
       "class-variance-authority",
       "client",
+      "cn",
       "dark:data-[state=active]:bg-input/30",
       "dark:data-[state=active]:border-input",
       "dark:data-[state=active]:text-foreground",
@@ -3624,12 +3625,12 @@
       "whitespace-nowrap"
     ],
     "new-york-v4/ui/textarea": [
-      "@/lib/utils",
       "aria-invalid:border-destructive",
       "aria-invalid:ring-destructive/20",
       "bg-transparent",
       "border",
       "border-input",
+      "cn",
       "dark:aria-invalid:ring-destructive/40",
       "dark:bg-input/30",
       "disabled:cursor-not-allowed",
@@ -3655,10 +3656,10 @@
     ],
     "new-york-v4/ui/toggle-group": [
       "--gap",
-      "@/lib/utils",
       "@/registry/new-york-v4/ui/toggle",
       "class-variance-authority",
       "client",
+      "cn",
       "data-[spacing=0]:data-[variant=outline]:border-l-0",
       "data-[spacing=0]:data-[variant=outline]:first:border-l",
       "data-[spacing=0]:first:rounded-l-md",
@@ -3686,7 +3687,6 @@
       "w-fit"
     ],
     "new-york-v4/ui/toggle": [
-      "@/lib/utils",
       "[&_svg:not([class*='size-'])]:size-4",
       "[&_svg]:pointer-events-none",
       "[&_svg]:shrink-0",
@@ -3697,6 +3697,7 @@
       "border-input",
       "class-variance-authority",
       "client",
+      "cn",
       "dark:aria-invalid:ring-destructive/40",
       "data-[state=on]:bg-accent",
       "data-[state=on]:text-accent-foreground",
@@ -3736,10 +3737,10 @@
       "whitespace-nowrap"
     ],
     "new-york-v4/ui/tooltip": [
-      "@/lib/utils",
       "animate-in",
       "bg-foreground",
       "client",
+      "cn",
       "data-[side=bottom]:slide-in-from-top-2",
       "data-[side=left]:slide-in-from-right-2",
       "data-[side=right]:slide-in-from-left-2",
@@ -7197,7 +7198,6 @@
     ],
     "bases/base/ui/accordion": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/accordion",
       "ArrowDown01Icon",
       "ArrowUp01Icon",
@@ -7222,6 +7222,7 @@
       "aria-disabled:pointer-events-none",
       "border",
       "border-transparent",
+      "cn",
       "cn-accordion",
       "cn-accordion-content",
       "cn-accordion-content-inner",
@@ -7251,7 +7252,6 @@
     "bases/base/ui/alert-dialog": [
       "-translate-x-1/2",
       "-translate-y-1/2",
-      "@/registry/bases/base/lib/utils",
       "@/registry/bases/base/ui/button",
       "@base-ui/react/alert-dialog",
       "alert-dialog",
@@ -7267,6 +7267,7 @@
       "alert-dialog-title",
       "alert-dialog-trigger",
       "client",
+      "cn",
       "cn-alert-dialog-action",
       "cn-alert-dialog-cancel",
       "cn-alert-dialog-content",
@@ -7304,7 +7305,6 @@
       "z-50"
     ],
     "bases/base/ui/alert": [
-      "@/registry/bases/base/lib/utils",
       "[&_a]:hover:text-foreground",
       "[&_a]:underline",
       "[&_a]:underline-offset-3",
@@ -7313,6 +7313,7 @@
       "alert-description",
       "alert-title",
       "class-variance-authority",
+      "cn",
       "cn-alert",
       "cn-alert-action",
       "cn-alert-description",
@@ -7328,9 +7329,9 @@
     ],
     "bases/base/ui/aspect-ratio": [
       "--ratio",
-      "@/registry/bases/base/lib/utils",
       "aspect-(--ratio)",
       "aspect-ratio",
+      "cn",
       "div",
       "relative"
     ],
@@ -7340,7 +7341,6 @@
       "*:[img]:w-full",
       "*:data-[slot=attachment]:flex-none",
       "*:data-[slot=attachment]:snap-start",
-      "@/registry/bases/base/lib/utils",
       "@/registry/bases/base/ui/button",
       "@base-ui/react/merge-props",
       "@base-ui/react/use-render",
@@ -7361,6 +7361,7 @@
       "border",
       "button",
       "class-variance-authority",
+      "cn",
       "cn-attachment",
       "cn-attachment-action",
       "cn-attachment-actions",
@@ -7428,7 +7429,6 @@
       "*:data-[slot=avatar]:ring-2",
       "*:data-[slot=avatar]:ring-background",
       "-space-x-2",
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/avatar",
       "absolute",
       "after:absolute",
@@ -7446,6 +7446,7 @@
       "bg-blend-color",
       "bottom-0",
       "client",
+      "cn",
       "cn-avatar",
       "cn-avatar-badge",
       "cn-avatar-fallback",
@@ -7486,7 +7487,6 @@
       "z-10"
     ],
     "bases/base/ui/badge": [
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/merge-props",
       "@base-ui/react/use-render",
       "[&>svg]:pointer-events-none",
@@ -7494,6 +7494,7 @@
       "aria-invalid:ring-destructive/20",
       "badge",
       "class-variance-authority",
+      "cn",
       "cn-badge",
       "cn-badge-variant-default",
       "cn-badge-variant-destructive",
@@ -7518,7 +7519,6 @@
     ],
     "bases/base/ui/breadcrumb": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/merge-props",
       "@base-ui/react/use-render",
       "ArrowRight01Icon",
@@ -7539,6 +7539,7 @@
       "breadcrumb-list",
       "breadcrumb-page",
       "breadcrumb-separator",
+      "cn",
       "cn-breadcrumb",
       "cn-breadcrumb-ellipsis",
       "cn-breadcrumb-item",
@@ -7565,7 +7566,6 @@
       "wrap-break-word"
     ],
     "bases/base/ui/bubble": [
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/merge-props",
       "@base-ui/react/use-render",
       "[button,a]:transition-colors",
@@ -7577,6 +7577,7 @@
       "bubble-group",
       "bubble-reactions",
       "class-variance-authority",
+      "cn",
       "cn-bubble",
       "cn-bubble-content",
       "cn-bubble-group",
@@ -7616,7 +7617,6 @@
       "*:data-slot:rounded-r-none",
       "*:focus-visible:relative",
       "*:focus-visible:z-10",
-      "@/registry/bases/base/lib/utils",
       "@/registry/bases/base/ui/separator",
       "@base-ui/react/merge-props",
       "@base-ui/react/use-render",
@@ -7631,6 +7631,7 @@
       "button-group-separator",
       "button-group-text",
       "class-variance-authority",
+      "cn",
       "cn-button-group",
       "cn-button-group-orientation-horizontal",
       "cn-button-group-orientation-vertical",
@@ -7653,12 +7654,12 @@
       "w-fit"
     ],
     "bases/base/ui/button": [
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/button",
       "[&_svg]:pointer-events-none",
       "[&_svg]:shrink-0",
       "button",
       "class-variance-authority",
+      "cn",
       "cn-button",
       "cn-button-size-default",
       "cn-button-size-icon",
@@ -7692,7 +7693,6 @@
     ],
     "bases/base/ui/calendar": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "@/registry/bases/base/ui/button",
       "ArrowDownIcon",
       "ArrowLeftIcon",
@@ -7733,6 +7733,7 @@
       "border-collapse",
       "calendar",
       "client",
+      "cn",
       "cn-calendar",
       "cn-calendar-caption",
       "cn-calendar-caption-label",
@@ -7822,7 +7823,6 @@
       "z-10"
     ],
     "bases/base/ui/card": [
-      "@/registry/bases/base/lib/utils",
       "@container/card-header",
       "auto-rows-min",
       "card",
@@ -7832,6 +7832,7 @@
       "card-footer",
       "card-header",
       "card-title",
+      "cn",
       "cn-card",
       "cn-card-action",
       "cn-card-content",
@@ -7870,7 +7871,6 @@
       "/>",
       "<Carousel",
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "@/registry/bases/base/ui/button",
       "ArrowLeft",
       "ArrowLeft01Icon",
@@ -7894,6 +7894,7 @@
       "carousel-next",
       "carousel-previous",
       "client",
+      "cn",
       "cn-carousel-next",
       "cn-carousel-previous",
       "cn-rtl-flip",
@@ -7946,7 +7947,6 @@
       "=>",
       "?",
       "??",
-      "@/registry/bases/base/lib/utils",
       "[&>svg]:h-2.5",
       "[&>svg]:h-3",
       "[&>svg]:text-muted-foreground",
@@ -7982,6 +7982,7 @@
       "chart-",
       "children",
       "client",
+      "cn",
       "cn-chart",
       "cn-chart-tooltip",
       "color",
@@ -8050,7 +8051,6 @@
     ],
     "bases/base/ui/checkbox": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/checkbox",
       "CheckIcon",
       "IconCheck",
@@ -8062,6 +8062,7 @@
       "checkbox",
       "checkbox-indicator",
       "client",
+      "cn",
       "cn-checkbox",
       "cn-checkbox-indicator",
       "disabled:cursor-not-allowed",
@@ -8086,7 +8087,6 @@
     ],
     "bases/base/ui/combobox": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "@/registry/bases/base/ui/button",
       "@/registry/bases/base/ui/input-group",
       "@base-ui/react",
@@ -8110,6 +8110,7 @@
       "anchor",
       "bottom",
       "client",
+      "cn",
       "cn-combobox-chip",
       "cn-combobox-chip-indicator-icon",
       "cn-combobox-chip-input",
@@ -8189,7 +8190,6 @@
     ],
     "bases/base/ui/command": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "@/registry/bases/base/ui/dialog",
       "@/registry/bases/base/ui/input-group",
       "CheckIcon",
@@ -8209,6 +8209,7 @@
       "children",
       "client",
       "cmdk",
+      "cn",
       "cn-command",
       "cn-command-dialog",
       "cn-command-empty",
@@ -8260,7 +8261,6 @@
     ],
     "bases/base/ui/context-menu": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/context-menu",
       "ArrowRight01Icon",
       "CaretRightIcon",
@@ -8276,6 +8276,7 @@
       "align",
       "alignOffset",
       "client",
+      "cn",
       "cn-context-menu-checkbox-item",
       "cn-context-menu-content",
       "cn-context-menu-content-logical",
@@ -8338,7 +8339,6 @@
       "-translate-x-1/2",
       "-translate-y-1/2",
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "@/registry/bases/base/ui/button",
       "@base-ui/react/dialog",
       "Cancel01Icon",
@@ -8346,6 +8346,7 @@
       "RiCloseLine",
       "XIcon",
       "client",
+      "cn",
       "cn-dialog-close",
       "cn-dialog-content",
       "cn-dialog-description",
@@ -8392,7 +8393,6 @@
       "use"
     ],
     "bases/base/ui/drawer": [
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/drawer",
       "Drawer.",
       "[--bleed:3rem]",
@@ -8413,6 +8413,7 @@
       "after:pointer-events-none",
       "be",
       "client",
+      "cn",
       "cn-drawer-content-base",
       "cn-drawer-description",
       "cn-drawer-footer-base",
@@ -8544,7 +8545,6 @@
     ],
     "bases/base/ui/dropdown-menu": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/menu",
       "ArrowRight01Icon",
       "CaretRightIcon",
@@ -8561,6 +8561,7 @@
       "alignOffset",
       "bottom",
       "client",
+      "cn",
       "cn-dropdown-menu-checkbox-item",
       "cn-dropdown-menu-content",
       "cn-dropdown-menu-content-logical",
@@ -8626,13 +8627,13 @@
       "z-50"
     ],
     "bases/base/ui/empty": [
-      "@/registry/bases/base/lib/utils",
       "[&>a:hover]:text-primary",
       "[&>a]:underline",
       "[&>a]:underline-offset-4",
       "[&_svg]:pointer-events-none",
       "[&_svg]:shrink-0",
       "class-variance-authority",
+      "cn",
       "cn-empty",
       "cn-empty-content",
       "cn-empty-description",
@@ -8667,7 +8668,6 @@
     "bases/base/ui/field": [
       "*:data-[slot=field-label]:flex-auto",
       "*:w-full",
-      "@/registry/bases/base/lib/utils",
       "@/registry/bases/base/ui/label",
       "@/registry/bases/base/ui/separator",
       "@container/field-group",
@@ -8687,6 +8687,7 @@
       "block",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-field",
       "cn-field-content",
       "cn-field-description",
@@ -8751,13 +8752,13 @@
       "w-full"
     ],
     "bases/base/ui/hover-card": [
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/preview-card",
       "align",
       "alignOffset",
       "bottom",
       "center",
       "client",
+      "cn",
       "cn-hover-card-content",
       "cn-hover-card-content-logical",
       "hover-card",
@@ -8773,7 +8774,6 @@
       "z-50"
     ],
     "bases/base/ui/input-group": [
-      "@/registry/bases/base/lib/utils",
       "@/registry/bases/base/ui/button",
       "@/registry/bases/base/ui/input",
       "@/registry/bases/base/ui/textarea",
@@ -8783,6 +8783,7 @@
       "button",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-input-group",
       "cn-input-group-addon",
       "cn-input-group-addon-align-block-end",
@@ -8837,13 +8838,13 @@
     ],
     "bases/base/ui/input-otp": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "IconMinus",
       "MinusIcon",
       "MinusSignIcon",
       "RiSubtractLine",
       "absolute",
       "client",
+      "cn",
       "cn-input-otp",
       "cn-input-otp-caret",
       "cn-input-otp-caret-line",
@@ -8870,8 +8871,8 @@
       "use"
     ],
     "bases/base/ui/input": [
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/input",
+      "cn",
       "cn-input",
       "disabled:cursor-not-allowed",
       "disabled:opacity-50",
@@ -8888,7 +8889,6 @@
       "w-full"
     ],
     "bases/base/ui/item": [
-      "@/registry/bases/base/lib/utils",
       "@/registry/bases/base/ui/separator",
       "@base-ui/react/merge-props",
       "@base-ui/react/use-render",
@@ -8900,6 +8900,7 @@
       "[a]:transition-colors",
       "basis-full",
       "class-variance-authority",
+      "cn",
       "cn-item",
       "cn-item-actions",
       "cn-item-content",
@@ -8958,7 +8959,7 @@
       "w-full"
     ],
     "bases/base/ui/kbd": [
-      "@/registry/bases/base/lib/utils",
+      "cn",
       "cn-kbd",
       "cn-kbd-group",
       "div",
@@ -8971,8 +8972,8 @@
       "select-none"
     ],
     "bases/base/ui/label": [
-      "@/registry/bases/base/lib/utils",
       "client",
+      "cn",
       "cn-label",
       "flex",
       "group-data-[disabled=true]:pointer-events-none",
@@ -8984,10 +8985,10 @@
       "use"
     ],
     "bases/base/ui/marker": [
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/merge-props",
       "@base-ui/react/use-render",
       "class-variance-authority",
+      "cn",
       "cn-marker",
       "cn-marker-content",
       "cn-marker-icon",
@@ -9014,7 +9015,6 @@
     "bases/base/ui/menubar": [
       "-mx-1",
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "@/registry/bases/base/ui/dropdown-menu",
       "@base-ui/react/menu",
       "@base-ui/react/menubar",
@@ -9026,6 +9026,7 @@
       "[&_svg]:shrink-0",
       "absolute",
       "client",
+      "cn",
       "cn-menu-target",
       "cn-menu-translucent",
       "cn-menubar",
@@ -9080,7 +9081,6 @@
     "bases/base/ui/message-scroller": [
       "-translate-x-1/2",
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "@/registry/bases/base/ui/button",
       "@shadcn/react/message-scroller",
       "ArrowDown02Icon",
@@ -9094,6 +9094,7 @@
       "bg-background",
       "border-border",
       "client",
+      "cn",
       "cn-message-scroller",
       "cn-message-scroller-button",
       "cn-message-scroller-content",
@@ -9116,6 +9117,7 @@
       "data-[direction=start]:top-4",
       "data-autoscrolling:scrollbar-thumb-transparent",
       "data-autoscrolling:scrollbar-track-transparent",
+      "data-pending-scroll:invisible",
       "duration-200",
       "end",
       "flex",
@@ -9156,8 +9158,8 @@
       "variant"
     ],
     "bases/base/ui/message": [
-      "@/registry/bases/base/lib/utils",
       "bg-muted",
+      "cn",
       "cn-message",
       "cn-message-avatar",
       "cn-message-content",
@@ -9194,7 +9196,6 @@
     ],
     "bases/base/ui/native-select": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "CaretDownIcon",
       "ChevronDownIcon",
       "IconSelector",
@@ -9202,6 +9203,7 @@
       "UnfoldMoreIcon",
       "absolute",
       "bg-[Canvas]",
+      "cn",
       "cn-native-select",
       "cn-native-select-icon",
       "cn-native-select-wrapper",
@@ -9233,7 +9235,6 @@
       "**:data-[slot=navigation-menu-link]:focus:outline-none",
       "**:data-[slot=navigation-menu-link]:focus:ring-0",
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/navigation-menu",
       "ArrowDown01Icon",
       "CaretDownIcon",
@@ -9243,6 +9244,7 @@
       "align",
       "bottom",
       "class-variance-authority",
+      "cn",
       "cn-navigation-menu",
       "cn-navigation-menu-content",
       "cn-navigation-menu-indicator",
@@ -9315,7 +9317,6 @@
     ],
     "bases/base/ui/pagination": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "@/registry/bases/base/ui/button",
       "ArrowLeft01Icon",
       "ArrowRight01Icon",
@@ -9336,6 +9337,7 @@
       "RiArrowRightSLine",
       "RiMoreLine",
       "a",
+      "cn",
       "cn-pagination",
       "cn-pagination-content",
       "cn-pagination-ellipsis",
@@ -9377,13 +9379,13 @@
       "w-full"
     ],
     "bases/base/ui/popover": [
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/popover",
       "align",
       "alignOffset",
       "bottom",
       "center",
       "client",
+      "cn",
       "cn-popover-content",
       "cn-popover-content-logical",
       "cn-popover-description",
@@ -9407,9 +9409,9 @@
       "z-50"
     ],
     "bases/base/ui/progress": [
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/progress",
       "client",
+      "cn",
       "cn-progress-indicator",
       "cn-progress-label",
       "cn-progress-root",
@@ -9433,7 +9435,6 @@
     ],
     "bases/base/ui/questionnaire": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "@/registry/bases/base/ui/button",
       "@shadcn/react/questionnaire",
       "CheckIcon",
@@ -9448,6 +9449,7 @@
       "border",
       "border-0",
       "client",
+      "cn",
       "cn-font-heading",
       "cn-questionnaire",
       "cn-questionnaire-actions",
@@ -9567,7 +9569,6 @@
       "z-10"
     ],
     "bases/base/ui/radio-group": [
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/radio",
       "@base-ui/react/radio-group",
       "after:-inset-x-3",
@@ -9576,6 +9577,7 @@
       "aspect-square",
       "border",
       "client",
+      "cn",
       "cn-radio-group",
       "cn-radio-group-indicator",
       "cn-radio-group-indicator-icon",
@@ -9594,7 +9596,6 @@
       "w-full"
     ],
     "bases/base/ui/resizable": [
-      "@/registry/bases/base/lib/utils",
       "[&[aria-orientation=horizontal]>div]:rotate-90",
       "after:-translate-x-1/2",
       "after:absolute",
@@ -9611,6 +9612,7 @@
       "aria-[orientation=vertical]:flex-col",
       "bg-border",
       "client",
+      "cn",
       "cn-resizable-handle",
       "cn-resizable-handle-icon",
       "cn-resizable-panel-group",
@@ -9634,10 +9636,10 @@
       "z-10"
     ],
     "bases/base/ui/scroll-area": [
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/scroll-area",
       "bg-border",
       "client",
+      "cn",
       "cn-scroll-area",
       "cn-scroll-area-scrollbar",
       "cn-scroll-area-thumb",
@@ -9669,7 +9671,6 @@
       "*:data-[slot=select-value]:items-center",
       "*:data-[slot=select-value]:line-clamp-1",
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/select",
       "ArrowDown01Icon",
       "ArrowUp01Icon",
@@ -9696,6 +9697,7 @@
       "bottom-0",
       "center",
       "client",
+      "cn",
       "cn-menu-target",
       "cn-menu-translucent",
       "cn-select-content",
@@ -9755,10 +9757,10 @@
       "z-50"
     ],
     "bases/base/ui/separator": [
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/separator",
       "bg-border",
       "client",
+      "cn",
       "data-horizontal:h-px",
       "data-horizontal:w-full",
       "data-vertical:self-stretch",
@@ -9770,7 +9772,6 @@
     ],
     "bases/base/ui/sheet": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "@/registry/bases/base/ui/button",
       "@base-ui/react/dialog",
       "Cancel01Icon",
@@ -9779,6 +9780,7 @@
       "XIcon",
       "bottom",
       "client",
+      "cn",
       "cn-font-heading",
       "cn-sheet-close",
       "cn-sheet-content",
@@ -9838,7 +9840,6 @@
       "=",
       "@/app/(create)/components/icon-placeholder",
       "@/registry/bases/base/hooks/use-mobile",
-      "@/registry/bases/base/lib/utils",
       "@/registry/bases/base/ui/button",
       "@/registry/bases/base/ui/input",
       "@/registry/bases/base/ui/separator",
@@ -9883,6 +9884,7 @@
       "center",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-rtl-flip",
       "cn-sidebar-content",
       "cn-sidebar-footer",
@@ -10069,16 +10071,16 @@
       "z-20"
     ],
     "bases/base/ui/skeleton": [
-      "@/registry/bases/base/lib/utils",
       "animate-pulse",
+      "cn",
       "cn-skeleton",
       "div",
       "skeleton"
     ],
     "bases/base/ui/slider": [
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/slider",
       "block",
+      "cn",
       "cn-slider",
       "cn-slider-range",
       "cn-slider-thumb",
@@ -10155,7 +10157,6 @@
     ],
     "bases/base/ui/spinner": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "IconLoader",
       "Loader2Icon",
       "Loading",
@@ -10163,19 +10164,20 @@
       "RiLoaderLine",
       "SpinnerIcon",
       "animate-spin",
+      "cn",
       "size-4",
       "spinner",
       "status",
       "svg"
     ],
     "bases/base/ui/switch": [
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/switch",
       "after:-inset-x-3",
       "after:-inset-y-2",
       "after:absolute",
       "block",
       "client",
+      "cn",
       "cn-switch",
       "cn-switch-thumb",
       "data-disabled:cursor-not-allowed",
@@ -10197,9 +10199,9 @@
       "use"
     ],
     "bases/base/ui/table": [
-      "@/registry/bases/base/lib/utils",
       "caption",
       "client",
+      "cn",
       "cn-table",
       "cn-table-body",
       "cn-table-caption",
@@ -10229,7 +10231,6 @@
       "use"
     ],
     "bases/base/ui/tabs": [
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/tabs",
       "[&_svg]:pointer-events-none",
       "[&_svg]:shrink-0",
@@ -10243,6 +10244,7 @@
       "bg-transparent",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-tabs",
       "cn-tabs-content",
       "cn-tabs-list",
@@ -10305,7 +10307,7 @@
       "whitespace-nowrap"
     ],
     "bases/base/ui/textarea": [
-      "@/registry/bases/base/lib/utils",
+      "cn",
       "cn-textarea",
       "disabled:cursor-not-allowed",
       "disabled:opacity-50",
@@ -10320,7 +10322,6 @@
     ],
     "bases/base/ui/toast": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/base/lib/utils",
       "@/registry/bases/base/ui/button",
       "@base-ui/react/toast",
       "Alert02Icon",
@@ -10377,6 +10378,7 @@
       "bottom-0",
       "bottom-4",
       "client",
+      "cn",
       "cn-toast",
       "data-behind:opacity-0",
       "data-ending-style:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))]",
@@ -10462,12 +10464,12 @@
     ],
     "bases/base/ui/toggle-group": [
       "--gap",
-      "@/registry/bases/base/lib/utils",
       "@/registry/bases/base/ui/toggle",
       "@base-ui/react/toggle",
       "@base-ui/react/toggle-group",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-toggle-group",
       "cn-toggle-group-item",
       "data-vertical:flex-col",
@@ -10494,12 +10496,12 @@
       "w-fit"
     ],
     "bases/base/ui/toggle": [
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/toggle",
       "[&_svg]:pointer-events-none",
       "[&_svg]:shrink-0",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-toggle",
       "cn-toggle-size-default",
       "cn-toggle-size-lg",
@@ -10521,13 +10523,13 @@
       "whitespace-nowrap"
     ],
     "bases/base/ui/tooltip": [
-      "@/registry/bases/base/lib/utils",
       "@base-ui/react/tooltip",
       "align",
       "alignOffset",
       "bg-foreground",
       "center",
       "client",
+      "cn",
       "cn-tooltip-arrow",
       "cn-tooltip-arrow-logical",
       "cn-tooltip-content",
@@ -10558,7 +10560,6 @@
     ],
     "bases/aria/ui/accordion": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/aria/lib/utils",
       "ArrowDown01Icon",
       "ArrowUp01Icon",
       "CaretDownIcon",
@@ -10582,6 +10583,7 @@
       "border-transparent",
       "children",
       "client",
+      "cn",
       "cn-accordion",
       "cn-accordion-content",
       "cn-accordion-content-inner",
@@ -10616,7 +10618,6 @@
     "bases/aria/ui/alert-dialog": [
       "-translate-x-1/2",
       "-translate-y-1/2",
-      "@/registry/bases/aria/lib/utils",
       "@/registry/bases/aria/ui/button",
       "[display:inherit]",
       "[gap:inherit]",
@@ -10636,6 +10637,7 @@
       "className",
       "client",
       "close",
+      "cn",
       "cn-alert-dialog-action",
       "cn-alert-dialog-cancel",
       "cn-alert-dialog-content-aria",
@@ -10675,7 +10677,6 @@
       "z-50"
     ],
     "bases/aria/ui/alert": [
-      "@/registry/bases/aria/lib/utils",
       "[&_a]:hover:text-foreground",
       "[&_a]:underline",
       "[&_a]:underline-offset-3",
@@ -10684,6 +10685,7 @@
       "alert-description",
       "alert-title",
       "class-variance-authority",
+      "cn",
       "cn-alert",
       "cn-alert-action",
       "cn-alert-description",
@@ -10699,9 +10701,9 @@
     ],
     "bases/aria/ui/aspect-ratio": [
       "--ratio",
-      "@/registry/bases/aria/lib/utils",
       "aspect-(--ratio)",
       "aspect-ratio",
+      "cn",
       "div",
       "relative"
     ],
@@ -10711,7 +10713,6 @@
       "*:[img]:w-full",
       "*:data-[slot=attachment]:flex-none",
       "*:data-[slot=attachment]:snap-start",
-      "@/registry/bases/aria/lib/utils",
       "@/registry/bases/aria/ui/button",
       "[&_svg]:pointer-events-none",
       "absolute",
@@ -10730,6 +10731,7 @@
       "border",
       "button",
       "class-variance-authority",
+      "cn",
       "cn-attachment",
       "cn-attachment-action",
       "cn-attachment-actions",
@@ -10798,7 +10800,6 @@
       "*:data-[slot=avatar]:ring-2",
       "*:data-[slot=avatar]:ring-background",
       "-space-x-2",
-      "@/registry/bases/aria/lib/utils",
       "absolute",
       "after:absolute",
       "after:border",
@@ -10815,6 +10816,7 @@
       "bg-blend-color",
       "bottom-0",
       "client",
+      "cn",
       "cn-avatar",
       "cn-avatar-badge",
       "cn-avatar-fallback",
@@ -10863,12 +10865,12 @@
       "z-10"
     ],
     "bases/aria/ui/badge": [
-      "@/registry/bases/aria/lib/utils",
       "[&>svg]:pointer-events-none",
       "aria-invalid:border-destructive",
       "aria-invalid:ring-destructive/20",
       "badge",
       "class-variance-authority",
+      "cn",
       "cn-badge",
       "cn-badge-variant-default",
       "cn-badge-variant-destructive",
@@ -10895,7 +10897,6 @@
     ],
     "bases/aria/ui/breadcrumb": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/aria/lib/utils",
       "ArrowRight01Icon",
       "CaretRightIcon",
       "ChevronRightIcon",
@@ -10914,6 +10915,7 @@
       "breadcrumb-page",
       "breadcrumb-separator",
       "client",
+      "cn",
       "cn-breadcrumb",
       "cn-breadcrumb-ellipsis",
       "cn-breadcrumb-item",
@@ -10940,7 +10942,6 @@
       "wrap-break-word"
     ],
     "bases/aria/ui/bubble": [
-      "@/registry/bases/aria/lib/utils",
       "[button,a]:transition-colors",
       "[button]:text-left",
       "absolute",
@@ -10950,6 +10951,7 @@
       "bubble-group",
       "bubble-reactions",
       "class-variance-authority",
+      "cn",
       "cn-bubble",
       "cn-bubble-content",
       "cn-bubble-group",
@@ -10990,7 +10992,6 @@
       "**:data-slot:rounded-r-none",
       "*:focus-visible:relative",
       "*:focus-visible:z-10",
-      "@/registry/bases/aria/lib/utils",
       "@/registry/bases/aria/ui/separator",
       "[&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit",
       "[&>input]:flex-1",
@@ -11003,6 +11004,7 @@
       "button-group-separator",
       "button-group-text",
       "class-variance-authority",
+      "cn",
       "cn-button-group",
       "cn-button-group-orientation-horizontal",
       "cn-button-group-orientation-vertical",
@@ -11026,13 +11028,13 @@
       "w-fit"
     ],
     "bases/aria/ui/button": [
-      "@/registry/bases/aria/lib/utils",
       "[&_svg]:pointer-events-none",
       "[&_svg]:shrink-0",
       "button",
       "class-variance-authority",
       "className",
       "client",
+      "cn",
       "cn-button",
       "cn-button-size-default",
       "cn-button-size-icon",
@@ -11069,7 +11071,6 @@
     ],
     "bases/aria/ui/calendar": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/aria/lib/utils",
       "@/registry/bases/aria/ui/button",
       "@/registry/bases/aria/ui/select",
       "ArrowLeftIcon",
@@ -11105,6 +11106,7 @@
       "calendar",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-calendar",
       "cn-calendar-caption",
       "cn-calendar-day-button",
@@ -11187,7 +11189,6 @@
       "z-10"
     ],
     "bases/aria/ui/card": [
-      "@/registry/bases/aria/lib/utils",
       "@container/card-header",
       "auto-rows-min",
       "card",
@@ -11197,6 +11198,7 @@
       "card-footer",
       "card-header",
       "card-title",
+      "cn",
       "cn-card",
       "cn-card-action",
       "cn-card-content",
@@ -11235,7 +11237,6 @@
       "/>",
       "<Carousel",
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/aria/lib/utils",
       "@/registry/bases/aria/ui/button",
       "ArrowLeft",
       "ArrowLeft01Icon",
@@ -11259,6 +11260,7 @@
       "carousel-next",
       "carousel-previous",
       "client",
+      "cn",
       "cn-carousel-next",
       "cn-carousel-previous",
       "cn-rtl-flip",
@@ -11311,7 +11313,6 @@
       "=>",
       "?",
       "??",
-      "@/registry/bases/aria/lib/utils",
       "[&>svg]:h-2.5",
       "[&>svg]:h-3",
       "[&>svg]:text-muted-foreground",
@@ -11347,6 +11348,7 @@
       "chart-",
       "children",
       "client",
+      "cn",
       "cn-chart",
       "cn-chart-tooltip",
       "color",
@@ -11415,7 +11417,6 @@
     ],
     "bases/aria/ui/checkbox": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/aria/lib/utils",
       "CheckIcon",
       "IconCheck",
       "RiCheckLine",
@@ -11426,6 +11427,7 @@
       "checkbox",
       "checkbox-indicator",
       "client",
+      "cn",
       "cn-checkbox",
       "cn-checkbox-aria",
       "cn-checkbox-indicator",
@@ -11453,7 +11455,6 @@
     ],
     "bases/aria/ui/combobox": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/aria/lib/utils",
       "@/registry/bases/aria/ui/button",
       "@/registry/bases/aria/ui/input-group",
       "ArrowDown01Icon",
@@ -11477,6 +11478,7 @@
       "children",
       "className",
       "client",
+      "cn",
       "cn-combobox-chip",
       "cn-combobox-chip-indicator-icon",
       "cn-combobox-chip-input",
@@ -11557,7 +11559,6 @@
     ],
     "bases/aria/ui/command": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/aria/lib/utils",
       "@/registry/bases/aria/ui/dialog",
       "@/registry/bases/aria/ui/input-group",
       "CheckIcon",
@@ -11579,6 +11580,7 @@
       "children",
       "className",
       "client",
+      "cn",
       "cn-command",
       "cn-command-dialog",
       "cn-command-empty",
@@ -11639,7 +11641,6 @@
     ],
     "bases/aria/ui/context-menu": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/aria/lib/utils",
       "ArrowRight01Icon",
       "CaretRightIcon",
       "CheckIcon",
@@ -11656,6 +11657,7 @@
       "class-variance-authority",
       "className",
       "client",
+      "cn",
       "cn-context-menu-checkbox-item",
       "cn-context-menu-content-aria",
       "cn-context-menu-item",
@@ -11666,14 +11668,11 @@
       "cn-context-menu-shortcut",
       "cn-context-menu-sub-content-aria",
       "cn-context-menu-sub-trigger",
-      "cn-context-menu-trigger",
       "cn-menu-target",
       "cn-menu-translucent",
       "cn-menu-translucent-aria",
       "cn-rtl-flip",
-      "contents",
       "context-menu",
-      "context-menu-anchor",
       "context-menu-checkbox-item-indicator",
       "context-menu-content",
       "context-menu-group",
@@ -11685,7 +11684,7 @@
       "context-menu-sub",
       "context-menu-sub-content",
       "context-menu-sub-trigger",
-      "context-menu-trigger",
+      "contextMenu",
       "crossOffset",
       "cursor-default",
       "data-disabled:opacity-50",
@@ -11693,13 +11692,10 @@
       "data-exiting:overflow-hidden",
       "data-slot",
       "default",
-      "defaultOpen",
       "destructive",
       "end",
-      "fixed",
       "flex",
       "group/context-menu-item",
-      "isOpen",
       "items-center",
       "max-h-[inherit]",
       "ml-auto",
@@ -11714,7 +11710,6 @@
       "pointer-events-none",
       "react",
       "react-aria-components",
-      "react-dom",
       "relative",
       "select-none",
       "single",
@@ -11732,7 +11727,6 @@
       "-translate-x-1/2",
       "-translate-y-1/2",
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/aria/lib/utils",
       "@/registry/bases/aria/ui/button",
       "Cancel01Icon",
       "IconX",
@@ -11744,6 +11738,7 @@
       "className",
       "client",
       "close",
+      "cn",
       "cn-dialog-close",
       "cn-dialog-content-aria",
       "cn-dialog-description",
@@ -11801,7 +11796,6 @@
       "use"
     ],
     "bases/aria/ui/drawer": [
-      "@/registry/bases/aria/lib/utils",
       "@base-ui/react/drawer",
       "Drawer.",
       "[--bleed:3rem]",
@@ -11822,6 +11816,7 @@
       "after:pointer-events-none",
       "be",
       "client",
+      "cn",
       "cn-drawer-content-base",
       "cn-drawer-description",
       "cn-drawer-footer-base",
@@ -11953,7 +11948,6 @@
     ],
     "bases/aria/ui/dropdown-menu": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/aria/lib/utils",
       "ArrowRight01Icon",
       "CaretRightIcon",
       "CheckIcon",
@@ -11970,6 +11964,7 @@
       "class-variance-authority",
       "className",
       "client",
+      "cn",
       "cn-dropdown-menu-checkbox-item",
       "cn-dropdown-menu-content-aria",
       "cn-dropdown-menu-item",
@@ -12034,13 +12029,13 @@
       "z-50"
     ],
     "bases/aria/ui/empty": [
-      "@/registry/bases/aria/lib/utils",
       "[&>a:hover]:text-primary",
       "[&>a]:underline",
       "[&>a]:underline-offset-4",
       "[&_svg]:pointer-events-none",
       "[&_svg]:shrink-0",
       "class-variance-authority",
+      "cn",
       "cn-empty",
       "cn-empty-content",
       "cn-empty-description",
@@ -12075,7 +12070,6 @@
     "bases/aria/ui/field": [
       "*:data-[slot=field-label]:flex-auto",
       "*:w-full",
-      "@/registry/bases/aria/lib/utils",
       "@/registry/bases/aria/ui/label",
       "@/registry/bases/aria/ui/separator",
       "@container/field-group",
@@ -12095,6 +12089,7 @@
       "block",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-field",
       "cn-field-content",
       "cn-field-description",
@@ -12159,8 +12154,21 @@
       "w-fit",
       "w-full"
     ],
+    "bases/aria/ui/hover-card": [
+      "bottom",
+      "className",
+      "client",
+      "cn",
+      "cn-hover-card-content-aria",
+      "hover-card-content",
+      "hover-card-trigger",
+      "origin-(--trigger-anchor-point)",
+      "outline-hidden",
+      "react-aria-components",
+      "use",
+      "z-50"
+    ],
     "bases/aria/ui/input-group": [
-      "@/registry/bases/aria/lib/utils",
       "@/registry/bases/aria/ui/button",
       "@/registry/bases/aria/ui/input",
       "@/registry/bases/aria/ui/textarea",
@@ -12170,6 +12178,7 @@
       "button",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-input-group",
       "cn-input-group-addon",
       "cn-input-group-addon-align-block-end",
@@ -12225,13 +12234,13 @@
     ],
     "bases/aria/ui/input-otp": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/aria/lib/utils",
       "IconMinus",
       "MinusIcon",
       "MinusSignIcon",
       "RiSubtractLine",
       "absolute",
       "client",
+      "cn",
       "cn-input-otp",
       "cn-input-otp-caret",
       "cn-input-otp-caret-line",
@@ -12258,8 +12267,8 @@
       "use"
     ],
     "bases/aria/ui/input": [
-      "@/registry/bases/aria/lib/utils",
       "client",
+      "cn",
       "cn-input",
       "disabled:cursor-not-allowed",
       "disabled:opacity-50",
@@ -12278,7 +12287,6 @@
       "w-full"
     ],
     "bases/aria/ui/item": [
-      "@/registry/bases/aria/lib/utils",
       "@/registry/bases/aria/ui/separator",
       "[&+[data-slot=item-content]]:flex-none",
       "[&>a:hover]:text-primary",
@@ -12290,6 +12298,7 @@
       "children",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-item",
       "cn-item-actions",
       "cn-item-content",
@@ -12351,8 +12360,8 @@
       "w-full"
     ],
     "bases/aria/ui/kbd": [
-      "@/registry/bases/aria/lib/utils",
       "client",
+      "cn",
       "cn-kbd",
       "cn-kbd-group",
       "div",
@@ -12367,8 +12376,8 @@
       "use"
     ],
     "bases/aria/ui/label": [
-      "@/registry/bases/aria/lib/utils",
       "client",
+      "cn",
       "cn-label",
       "cn-label-aria",
       "flex",
@@ -12382,8 +12391,8 @@
       "use"
     ],
     "bases/aria/ui/marker": [
-      "@/registry/bases/aria/lib/utils",
       "class-variance-authority",
+      "cn",
       "cn-marker",
       "cn-marker-content",
       "cn-marker-icon",
@@ -12412,7 +12421,6 @@
     "bases/aria/ui/message-scroller": [
       "-translate-x-1/2",
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/aria/lib/utils",
       "@/registry/bases/aria/ui/button",
       "@shadcn/react/message-scroller",
       "ArrowDown02Icon",
@@ -12426,6 +12434,7 @@
       "bg-background",
       "border-border",
       "client",
+      "cn",
       "cn-message-scroller",
       "cn-message-scroller-button",
       "cn-message-scroller-content",
@@ -12448,6 +12457,7 @@
       "data-[direction=start]:top-4",
       "data-autoscrolling:scrollbar-thumb-transparent",
       "data-autoscrolling:scrollbar-track-transparent",
+      "data-pending-scroll:invisible",
       "duration-200",
       "end",
       "flex",
@@ -12488,8 +12498,8 @@
       "variant"
     ],
     "bases/aria/ui/message": [
-      "@/registry/bases/aria/lib/utils",
       "bg-muted",
+      "cn",
       "cn-message",
       "cn-message-avatar",
       "cn-message-content",
@@ -12526,7 +12536,6 @@
     ],
     "bases/aria/ui/native-select": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/aria/lib/utils",
       "CaretDownIcon",
       "ChevronDownIcon",
       "IconSelector",
@@ -12534,6 +12543,7 @@
       "UnfoldMoreIcon",
       "absolute",
       "bg-[Canvas]",
+      "cn",
       "cn-native-select",
       "cn-native-select-icon",
       "cn-native-select-wrapper",
@@ -12563,7 +12573,6 @@
     ],
     "bases/aria/ui/pagination": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/aria/lib/utils",
       "@/registry/bases/aria/ui/button",
       "ArrowLeft01Icon",
       "ArrowRight01Icon",
@@ -12583,6 +12592,7 @@
       "RiArrowLeftSLine",
       "RiArrowRightSLine",
       "RiMoreLine",
+      "cn",
       "cn-pagination",
       "cn-pagination-content",
       "cn-pagination-ellipsis",
@@ -12624,10 +12634,10 @@
       "w-full"
     ],
     "bases/aria/ui/popover": [
-      "@/registry/bases/aria/lib/utils",
       "bottom",
       "className",
       "client",
+      "cn",
       "cn-popover-content-aria",
       "cn-popover-description",
       "cn-popover-header",
@@ -12648,13 +12658,13 @@
     ],
     "bases/aria/ui/progress": [
       "%",
-      "@/registry/bases/aria/lib/utils",
       "Progress.",
       "a",
       "be",
       "children",
       "className",
       "client",
+      "cn",
       "cn-progress-indicator",
       "cn-progress-label",
       "cn-progress-root",
@@ -12685,7 +12695,6 @@
     ],
     "bases/aria/ui/questionnaire": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/aria/lib/utils",
       "@/registry/bases/aria/ui/button",
       "@shadcn/react/questionnaire",
       "CheckIcon",
@@ -12700,6 +12709,7 @@
       "border",
       "border-0",
       "client",
+      "cn",
       "cn-font-heading",
       "cn-questionnaire",
       "cn-questionnaire-actions",
@@ -12819,13 +12829,13 @@
       "z-10"
     ],
     "bases/aria/ui/radio-group": [
-      "@/registry/bases/aria/lib/utils",
       "after:-inset-x-3",
       "after:-inset-y-2",
       "after:absolute",
       "aspect-square",
       "border",
       "client",
+      "cn",
       "cn-radio-group",
       "cn-radio-group-indicator",
       "cn-radio-group-indicator-icon",
@@ -12846,7 +12856,6 @@
       "w-full"
     ],
     "bases/aria/ui/resizable": [
-      "@/registry/bases/aria/lib/utils",
       "[&[aria-orientation=horizontal]>div]:rotate-90",
       "after:-translate-x-1/2",
       "after:absolute",
@@ -12863,6 +12872,7 @@
       "aria-[orientation=vertical]:flex-col",
       "bg-border",
       "client",
+      "cn",
       "cn-resizable-handle",
       "cn-resizable-handle-icon",
       "cn-resizable-panel-group",
@@ -12886,10 +12896,10 @@
       "z-10"
     ],
     "bases/aria/ui/scroll-area": [
-      "@/registry/bases/aria/lib/utils",
       "[scrollbar-color:var(--color-border)_transparent]",
       "[scrollbar-width:thin]",
       "client",
+      "cn",
       "cn-scroll-area",
       "div",
       "focus-visible:outline-1",
@@ -12907,7 +12917,6 @@
       "*:data-[slot=select-value]:items-center",
       "*:data-[slot=select-value]:line-clamp-1",
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/aria/lib/utils",
       "@/registry/bases/aria/ui/input-group",
       "CaretDownIcon",
       "CheckIcon",
@@ -12929,6 +12938,7 @@
       "children",
       "className",
       "client",
+      "cn",
       "cn-command-input-icon",
       "cn-menu-target",
       "cn-menu-translucent",
@@ -13001,7 +13011,6 @@
       "z-50"
     ],
     "bases/aria/ui/separator": [
-      "@/registry/bases/aria/lib/utils",
       "[:is(hr)]:h-px",
       "[:is(hr)]:w-full",
       "aria-[orientation=horizontal]:h-px",
@@ -13012,6 +13021,7 @@
       "block",
       "border-0",
       "client",
+      "cn",
       "horizontal",
       "react-aria-components",
       "separator",
@@ -13020,7 +13030,6 @@
     ],
     "bases/aria/ui/sheet": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/aria/lib/utils",
       "@/registry/bases/aria/ui/button",
       "Cancel01Icon",
       "IconX",
@@ -13034,6 +13043,7 @@
       "className",
       "client",
       "close",
+      "cn",
       "cn-font-heading",
       "cn-sheet-close",
       "cn-sheet-content",
@@ -13101,7 +13111,6 @@
       "=",
       "@/app/(create)/components/icon-placeholder",
       "@/registry/bases/aria/hooks/use-mobile",
-      "@/registry/bases/aria/lib/utils",
       "@/registry/bases/aria/ui/button",
       "@/registry/bases/aria/ui/input",
       "@/registry/bases/aria/ui/separator",
@@ -13143,6 +13152,7 @@
       "button",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-rtl-flip",
       "cn-sidebar-content",
       "cn-sidebar-footer",
@@ -13331,18 +13341,18 @@
       "z-20"
     ],
     "bases/aria/ui/skeleton": [
-      "@/registry/bases/aria/lib/utils",
       "animate-pulse",
+      "cn",
       "cn-skeleton",
       "div",
       "skeleton"
     ],
     "bases/aria/ui/slider": [
-      "@/registry/bases/aria/lib/utils",
       "absolute",
       "block",
       "className",
       "client",
+      "cn",
       "cn-slider",
       "cn-slider-range",
       "cn-slider-thumb",
@@ -13422,7 +13432,6 @@
     ],
     "bases/aria/ui/spinner": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/aria/lib/utils",
       "IconLoader",
       "Loader2Icon",
       "Loading",
@@ -13430,18 +13439,19 @@
       "RiLoaderLine",
       "SpinnerIcon",
       "animate-spin",
+      "cn",
       "size-4",
       "spinner",
       "status",
       "svg"
     ],
     "bases/aria/ui/switch": [
-      "@/registry/bases/aria/lib/utils",
       "after:-inset-x-3",
       "after:-inset-y-2",
       "after:absolute",
       "block",
       "client",
+      "cn",
       "cn-switch",
       "cn-switch-aria",
       "cn-switch-thumb",
@@ -13466,8 +13476,8 @@
       "use"
     ],
     "bases/aria/ui/table": [
-      "@/registry/bases/aria/lib/utils",
       "client",
+      "cn",
       "cn-table",
       "cn-table-body",
       "cn-table-caption",
@@ -13499,7 +13509,6 @@
       "use"
     ],
     "bases/aria/ui/tabs": [
-      "@/registry/bases/aria/lib/utils",
       "[&_svg]:pointer-events-none",
       "[&_svg]:shrink-0",
       "after:absolute",
@@ -13510,6 +13519,7 @@
       "bg-transparent",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-tabs",
       "cn-tabs-content",
       "cn-tabs-list",
@@ -13577,8 +13587,8 @@
       "whitespace-nowrap"
     ],
     "bases/aria/ui/textarea": [
-      "@/registry/bases/aria/lib/utils",
       "client",
+      "cn",
       "cn-textarea",
       "disabled:cursor-not-allowed",
       "disabled:opacity-50",
@@ -13597,12 +13607,12 @@
       ")",
       "*",
       "--gap",
-      "@/registry/bases/aria/lib/utils",
       "@/registry/bases/aria/ui/toggle",
       "calc(var(--spacing)",
       "children",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-toggle-group",
       "cn-toggle-group-item",
       "data-vertical:flex-col",
@@ -13630,11 +13640,11 @@
       "w-fit"
     ],
     "bases/aria/ui/toggle": [
-      "@/registry/bases/aria/lib/utils",
       "[&_svg]:pointer-events-none",
       "[&_svg]:shrink-0",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-toggle",
       "cn-toggle-aria",
       "cn-toggle-size-default",
@@ -13665,7 +13675,6 @@
       "0deg",
       "2px))",
       "2px),",
-      "@/registry/bases/aria/lib/utils",
       "bg-foreground",
       "bottom",
       "calc(-50%",
@@ -13673,6 +13682,7 @@
       "children",
       "className",
       "client",
+      "cn",
       "cn-tooltip-arrow",
       "cn-tooltip-content-aria",
       "fill-foreground",
@@ -13695,7 +13705,6 @@
     ],
     "bases/radix/ui/accordion": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "ArrowDown01Icon",
       "ArrowUp01Icon",
       "CaretDownIcon",
@@ -13718,6 +13727,7 @@
       "border",
       "border-transparent",
       "client",
+      "cn",
       "cn-accordion",
       "cn-accordion-content",
       "cn-accordion-content-inner",
@@ -13750,7 +13760,6 @@
     "bases/radix/ui/alert-dialog": [
       "-translate-x-1/2",
       "-translate-y-1/2",
-      "@/registry/bases/radix/lib/utils",
       "@/registry/bases/radix/ui/button",
       "alert-dialog",
       "alert-dialog-action",
@@ -13765,6 +13774,7 @@
       "alert-dialog-title",
       "alert-dialog-trigger",
       "client",
+      "cn",
       "cn-alert-dialog-action",
       "cn-alert-dialog-cancel",
       "cn-alert-dialog-content",
@@ -13802,7 +13812,6 @@
       "z-50"
     ],
     "bases/radix/ui/alert": [
-      "@/registry/bases/radix/lib/utils",
       "[&_a]:hover:text-foreground",
       "[&_a]:underline",
       "[&_a]:underline-offset-3",
@@ -13811,6 +13820,7 @@
       "alert-description",
       "alert-title",
       "class-variance-authority",
+      "cn",
       "cn-alert",
       "cn-alert-action",
       "cn-alert-description",
@@ -13836,7 +13846,6 @@
       "*:[img]:w-full",
       "*:data-[slot=attachment]:flex-none",
       "*:data-[slot=attachment]:snap-start",
-      "@/registry/bases/radix/lib/utils",
       "@/registry/bases/radix/ui/button",
       "[&_svg]:pointer-events-none",
       "absolute",
@@ -13855,6 +13864,7 @@
       "border",
       "button",
       "class-variance-authority",
+      "cn",
       "cn-attachment",
       "cn-attachment-action",
       "cn-attachment-actions",
@@ -13923,7 +13933,6 @@
       "*:data-[slot=avatar]:ring-2",
       "*:data-[slot=avatar]:ring-background",
       "-space-x-2",
-      "@/registry/bases/radix/lib/utils",
       "absolute",
       "after:absolute",
       "after:border",
@@ -13940,6 +13949,7 @@
       "bg-blend-color",
       "bottom-0",
       "client",
+      "cn",
       "cn-avatar",
       "cn-avatar-badge",
       "cn-avatar-fallback",
@@ -13981,12 +13991,12 @@
       "z-10"
     ],
     "bases/radix/ui/badge": [
-      "@/registry/bases/radix/lib/utils",
       "[&>svg]:pointer-events-none",
       "aria-invalid:border-destructive",
       "aria-invalid:ring-destructive/20",
       "badge",
       "class-variance-authority",
+      "cn",
       "cn-badge",
       "cn-badge-variant-default",
       "cn-badge-variant-destructive",
@@ -14013,7 +14023,6 @@
     ],
     "bases/radix/ui/breadcrumb": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "ArrowRight01Icon",
       "CaretRightIcon",
       "ChevronRightIcon",
@@ -14032,6 +14041,7 @@
       "breadcrumb-list",
       "breadcrumb-page",
       "breadcrumb-separator",
+      "cn",
       "cn-breadcrumb",
       "cn-breadcrumb-ellipsis",
       "cn-breadcrumb-item",
@@ -14059,7 +14069,6 @@
       "wrap-break-word"
     ],
     "bases/radix/ui/bubble": [
-      "@/registry/bases/radix/lib/utils",
       "[button,a]:transition-colors",
       "[button]:text-left",
       "absolute",
@@ -14069,6 +14078,7 @@
       "bubble-group",
       "bubble-reactions",
       "class-variance-authority",
+      "cn",
       "cn-bubble",
       "cn-bubble-content",
       "cn-bubble-group",
@@ -14107,7 +14117,6 @@
     "bases/radix/ui/button-group": [
       "*:focus-visible:relative",
       "*:focus-visible:z-10",
-      "@/registry/bases/radix/lib/utils",
       "@/registry/bases/radix/ui/separator",
       "[&>*:not(:first-child)]:border-l-0",
       "[&>*:not(:first-child)]:border-t-0",
@@ -14121,6 +14130,7 @@
       "button-group",
       "button-group-separator",
       "class-variance-authority",
+      "cn",
       "cn-button-group",
       "cn-button-group-orientation-horizontal",
       "cn-button-group-orientation-vertical",
@@ -14145,11 +14155,11 @@
       "w-fit"
     ],
     "bases/radix/ui/button": [
-      "@/registry/bases/radix/lib/utils",
       "[&_svg]:pointer-events-none",
       "[&_svg]:shrink-0",
       "button",
       "class-variance-authority",
+      "cn",
       "cn-button",
       "cn-button-size-default",
       "cn-button-size-icon",
@@ -14185,7 +14195,6 @@
     ],
     "bases/radix/ui/calendar": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "@/registry/bases/radix/ui/button",
       "ArrowDownIcon",
       "ArrowLeftIcon",
@@ -14226,6 +14235,7 @@
       "border-collapse",
       "calendar",
       "client",
+      "cn",
       "cn-calendar",
       "cn-calendar-caption",
       "cn-calendar-caption-label",
@@ -14315,7 +14325,6 @@
       "z-10"
     ],
     "bases/radix/ui/card": [
-      "@/registry/bases/radix/lib/utils",
       "@container/card-header",
       "auto-rows-min",
       "card",
@@ -14325,6 +14334,7 @@
       "card-footer",
       "card-header",
       "card-title",
+      "cn",
       "cn-card",
       "cn-card-action",
       "cn-card-content",
@@ -14363,7 +14373,6 @@
       "/>",
       "<Carousel",
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "@/registry/bases/radix/ui/button",
       "ArrowLeft",
       "ArrowLeft01Icon",
@@ -14387,6 +14396,7 @@
       "carousel-next",
       "carousel-previous",
       "client",
+      "cn",
       "cn-carousel-next",
       "cn-carousel-previous",
       "cn-rtl-flip",
@@ -14439,7 +14449,6 @@
       "=>",
       "?",
       "??",
-      "@/registry/bases/radix/lib/utils",
       "[&>svg]:h-2.5",
       "[&>svg]:h-3",
       "[&>svg]:text-muted-foreground",
@@ -14475,6 +14484,7 @@
       "chart-",
       "children",
       "client",
+      "cn",
       "cn-chart",
       "cn-chart-tooltip",
       "color",
@@ -14543,7 +14553,6 @@
     ],
     "bases/radix/ui/checkbox": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "CheckIcon",
       "IconCheck",
       "RiCheckLine",
@@ -14554,6 +14563,7 @@
       "checkbox",
       "checkbox-indicator",
       "client",
+      "cn",
       "cn-checkbox",
       "cn-checkbox-indicator",
       "disabled:cursor-not-allowed",
@@ -14580,7 +14590,6 @@
     ],
     "bases/radix/ui/combobox": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "@/registry/bases/radix/ui/button",
       "@/registry/bases/radix/ui/input-group",
       "@base-ui/react",
@@ -14604,6 +14613,7 @@
       "anchor",
       "bottom",
       "client",
+      "cn",
       "cn-combobox-chip",
       "cn-combobox-chip-indicator-icon",
       "cn-combobox-chip-input",
@@ -14683,7 +14693,6 @@
     ],
     "bases/radix/ui/command": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "@/registry/bases/radix/ui/dialog",
       "@/registry/bases/radix/ui/input-group",
       "CheckIcon",
@@ -14702,6 +14711,7 @@
       "a",
       "client",
       "cmdk",
+      "cn",
       "cn-command",
       "cn-command-dialog",
       "cn-command-empty",
@@ -14753,7 +14763,6 @@
     ],
     "bases/radix/ui/context-menu": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "ArrowRight01Icon",
       "CaretRightIcon",
       "CheckIcon",
@@ -14767,6 +14776,7 @@
       "[&_svg]:shrink-0",
       "bottom",
       "client",
+      "cn",
       "cn-context-menu-checkbox-item",
       "cn-context-menu-content",
       "cn-context-menu-item",
@@ -14827,13 +14837,13 @@
       "-translate-x-1/2",
       "-translate-y-1/2",
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "@/registry/bases/radix/ui/button",
       "Cancel01Icon",
       "IconX",
       "RiCloseLine",
       "XIcon",
       "client",
+      "cn",
       "cn-dialog-close",
       "cn-dialog-content",
       "cn-dialog-description",
@@ -14883,8 +14893,8 @@
       "use"
     ],
     "bases/radix/ui/drawer": [
-      "@/registry/bases/radix/lib/utils",
       "client",
+      "cn",
       "cn-drawer-content",
       "cn-drawer-description",
       "cn-drawer-footer",
@@ -14943,7 +14953,6 @@
     ],
     "bases/radix/ui/dropdown-menu": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "ArrowRight01Icon",
       "CaretRightIcon",
       "CheckIcon",
@@ -14956,6 +14965,7 @@
       "[&_svg]:pointer-events-none",
       "[&_svg]:shrink-0",
       "client",
+      "cn",
       "cn-dropdown-menu-checkbox-item",
       "cn-dropdown-menu-content",
       "cn-dropdown-menu-item",
@@ -15014,13 +15024,13 @@
       "z-50"
     ],
     "bases/radix/ui/empty": [
-      "@/registry/bases/radix/lib/utils",
       "[&>a:hover]:text-primary",
       "[&>a]:underline",
       "[&>a]:underline-offset-4",
       "[&_svg]:pointer-events-none",
       "[&_svg]:shrink-0",
       "class-variance-authority",
+      "cn",
       "cn-empty",
       "cn-empty-content",
       "cn-empty-description",
@@ -15055,7 +15065,6 @@
     "bases/radix/ui/field": [
       "*:data-[slot=field-label]:flex-auto",
       "*:w-full",
-      "@/registry/bases/radix/lib/utils",
       "@/registry/bases/radix/ui/label",
       "@/registry/bases/radix/ui/separator",
       "@container/field-group",
@@ -15075,6 +15084,7 @@
       "block",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-field",
       "cn-field-content",
       "cn-field-description",
@@ -15139,9 +15149,9 @@
       "w-full"
     ],
     "bases/radix/ui/hover-card": [
-      "@/registry/bases/radix/lib/utils",
       "center",
       "client",
+      "cn",
       "cn-hover-card-content",
       "hover-card",
       "hover-card-content",
@@ -15155,7 +15165,6 @@
       "z-50"
     ],
     "bases/radix/ui/input-group": [
-      "@/registry/bases/radix/lib/utils",
       "@/registry/bases/radix/ui/button",
       "@/registry/bases/radix/ui/input",
       "@/registry/bases/radix/ui/textarea",
@@ -15165,6 +15174,7 @@
       "button",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-input-group",
       "cn-input-group-addon",
       "cn-input-group-addon-align-block-end",
@@ -15216,13 +15226,13 @@
     ],
     "bases/radix/ui/input-otp": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "IconMinus",
       "MinusIcon",
       "MinusSignIcon",
       "RiSubtractLine",
       "absolute",
       "client",
+      "cn",
       "cn-input-otp",
       "cn-input-otp-caret",
       "cn-input-otp-caret-line",
@@ -15249,7 +15259,7 @@
       "use"
     ],
     "bases/radix/ui/input": [
-      "@/registry/bases/radix/lib/utils",
+      "cn",
       "cn-input",
       "disabled:cursor-not-allowed",
       "disabled:opacity-50",
@@ -15266,7 +15276,6 @@
       "w-full"
     ],
     "bases/radix/ui/item": [
-      "@/registry/bases/radix/lib/utils",
       "@/registry/bases/radix/ui/separator",
       "[&+[data-slot=item-content]]:flex-none",
       "[&>a:hover]:text-primary",
@@ -15276,6 +15285,7 @@
       "[a]:transition-colors",
       "basis-full",
       "class-variance-authority",
+      "cn",
       "cn-item",
       "cn-item-actions",
       "cn-item-content",
@@ -15335,7 +15345,7 @@
       "w-full"
     ],
     "bases/radix/ui/kbd": [
-      "@/registry/bases/radix/lib/utils",
+      "cn",
       "cn-kbd",
       "cn-kbd-group",
       "div",
@@ -15348,8 +15358,8 @@
       "select-none"
     ],
     "bases/radix/ui/label": [
-      "@/registry/bases/radix/lib/utils",
       "client",
+      "cn",
       "cn-label",
       "flex",
       "group-data-[disabled=true]:pointer-events-none",
@@ -15362,8 +15372,8 @@
       "use"
     ],
     "bases/radix/ui/marker": [
-      "@/registry/bases/radix/lib/utils",
       "class-variance-authority",
+      "cn",
       "cn-marker",
       "cn-marker-content",
       "cn-marker-icon",
@@ -15391,7 +15401,6 @@
     "bases/radix/ui/menubar": [
       "-mx-1",
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "ArrowRight01Icon",
       "CaretRightIcon",
       "CheckIcon",
@@ -15405,6 +15414,7 @@
       "[&_svg]:shrink-0",
       "absolute",
       "client",
+      "cn",
       "cn-menu-target",
       "cn-menu-translucent",
       "cn-menubar",
@@ -15466,7 +15476,6 @@
     "bases/radix/ui/message-scroller": [
       "-translate-x-1/2",
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "@/registry/bases/radix/ui/button",
       "@shadcn/react/message-scroller",
       "ArrowDown02Icon",
@@ -15480,6 +15489,7 @@
       "bg-background",
       "border-border",
       "client",
+      "cn",
       "cn-message-scroller",
       "cn-message-scroller-button",
       "cn-message-scroller-content",
@@ -15502,6 +15512,7 @@
       "data-[direction=start]:top-4",
       "data-autoscrolling:scrollbar-thumb-transparent",
       "data-autoscrolling:scrollbar-track-transparent",
+      "data-pending-scroll:invisible",
       "duration-200",
       "end",
       "flex",
@@ -15542,8 +15553,8 @@
       "variant"
     ],
     "bases/radix/ui/message": [
-      "@/registry/bases/radix/lib/utils",
       "bg-muted",
+      "cn",
       "cn-message",
       "cn-message-avatar",
       "cn-message-content",
@@ -15580,7 +15591,6 @@
     ],
     "bases/radix/ui/native-select": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "CaretDownIcon",
       "ChevronDownIcon",
       "IconSelector",
@@ -15588,6 +15598,7 @@
       "UnfoldMoreIcon",
       "absolute",
       "bg-[Canvas]",
+      "cn",
       "cn-native-select",
       "cn-native-select-icon",
       "cn-native-select-wrapper",
@@ -15619,7 +15630,6 @@
       "**:data-[slot=navigation-menu-link]:focus:outline-none",
       "**:data-[slot=navigation-menu-link]:focus:ring-0",
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "ArrowDown01Icon",
       "CaretDownIcon",
       "ChevronDownIcon",
@@ -15627,6 +15637,7 @@
       "RiArrowDownSLine",
       "absolute",
       "class-variance-authority",
+      "cn",
       "cn-navigation-menu",
       "cn-navigation-menu-content",
       "cn-navigation-menu-indicator",
@@ -15690,7 +15701,6 @@
     ],
     "bases/radix/ui/pagination": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "@/registry/bases/radix/ui/button",
       "ArrowLeft01Icon",
       "ArrowRight01Icon",
@@ -15711,6 +15721,7 @@
       "RiArrowRightSLine",
       "RiMoreLine",
       "a",
+      "cn",
       "cn-pagination",
       "cn-pagination-content",
       "cn-pagination-ellipsis",
@@ -15752,9 +15763,9 @@
       "w-full"
     ],
     "bases/radix/ui/popover": [
-      "@/registry/bases/radix/lib/utils",
       "center",
       "client",
+      "cn",
       "cn-popover-content",
       "cn-popover-description",
       "cn-popover-header",
@@ -15779,8 +15790,8 @@
     ],
     "bases/radix/ui/progress": [
       "%)",
-      "@/registry/bases/radix/lib/utils",
       "client",
+      "cn",
       "cn-progress",
       "cn-progress-indicator",
       "flex",
@@ -15800,7 +15811,6 @@
     ],
     "bases/radix/ui/questionnaire": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "@/registry/bases/radix/ui/button",
       "@shadcn/react/questionnaire",
       "CheckIcon",
@@ -15815,6 +15825,7 @@
       "border",
       "border-0",
       "client",
+      "cn",
       "cn-font-heading",
       "cn-questionnaire",
       "cn-questionnaire-actions",
@@ -15934,13 +15945,13 @@
       "z-10"
     ],
     "bases/radix/ui/radio-group": [
-      "@/registry/bases/radix/lib/utils",
       "after:-inset-x-3",
       "after:-inset-y-2",
       "after:absolute",
       "aspect-square",
       "border",
       "client",
+      "cn",
       "cn-radio-group",
       "cn-radio-group-indicator",
       "cn-radio-group-indicator-icon",
@@ -15961,7 +15972,6 @@
       "w-full"
     ],
     "bases/radix/ui/resizable": [
-      "@/registry/bases/radix/lib/utils",
       "[&[aria-orientation=horizontal]>div]:rotate-90",
       "after:-translate-x-1/2",
       "after:absolute",
@@ -15978,6 +15988,7 @@
       "aria-[orientation=vertical]:flex-col",
       "bg-border",
       "client",
+      "cn",
       "cn-resizable-handle",
       "cn-resizable-handle-icon",
       "cn-resizable-panel-group",
@@ -16001,9 +16012,9 @@
       "z-10"
     ],
     "bases/radix/ui/scroll-area": [
-      "@/registry/bases/radix/lib/utils",
       "bg-border",
       "client",
+      "cn",
       "cn-scroll-area",
       "cn-scroll-area-scrollbar",
       "cn-scroll-area-thumb",
@@ -16036,7 +16047,6 @@
       "*:data-[slot=select-value]:items-center",
       "*:data-[slot=select-value]:line-clamp-1",
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "ArrowDown01Icon",
       "ArrowUp01Icon",
       "CaretDownIcon",
@@ -16057,6 +16067,7 @@
       "[&_svg]:shrink-0",
       "center",
       "client",
+      "cn",
       "cn-menu-target",
       "cn-menu-translucent",
       "cn-select-content",
@@ -16119,9 +16130,9 @@
       "z-50"
     ],
     "bases/radix/ui/separator": [
-      "@/registry/bases/radix/lib/utils",
       "bg-border",
       "client",
+      "cn",
       "data-horizontal:h-px",
       "data-horizontal:w-full",
       "data-vertical:self-stretch",
@@ -16135,7 +16146,6 @@
     ],
     "bases/radix/ui/sheet": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "@/registry/bases/radix/ui/button",
       "Cancel01Icon",
       "IconX",
@@ -16143,6 +16153,7 @@
       "XIcon",
       "bottom",
       "client",
+      "cn",
       "cn-font-heading",
       "cn-sheet-close",
       "cn-sheet-content",
@@ -16204,7 +16215,6 @@
       "=",
       "@/app/(create)/components/icon-placeholder",
       "@/registry/bases/radix/hooks/use-mobile",
-      "@/registry/bases/radix/lib/utils",
       "@/registry/bases/radix/ui/button",
       "@/registry/bases/radix/ui/input",
       "@/registry/bases/radix/ui/separator",
@@ -16247,6 +16257,7 @@
       "center",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-rtl-flip",
       "cn-sidebar-content",
       "cn-sidebar-footer",
@@ -16434,17 +16445,17 @@
       "z-20"
     ],
     "bases/radix/ui/skeleton": [
-      "@/registry/bases/radix/lib/utils",
       "animate-pulse",
+      "cn",
       "cn-skeleton",
       "div",
       "skeleton"
     ],
     "bases/radix/ui/slider": [
-      "@/registry/bases/radix/lib/utils",
       "absolute",
       "block",
       "client",
+      "cn",
       "cn-slider",
       "cn-slider-range",
       "cn-slider-thumb",
@@ -16523,7 +16534,6 @@
     ],
     "bases/radix/ui/spinner": [
       "@/app/(create)/components/icon-placeholder",
-      "@/registry/bases/radix/lib/utils",
       "IconLoader",
       "Loader2Icon",
       "Loading",
@@ -16531,18 +16541,19 @@
       "RiLoaderLine",
       "SpinnerIcon",
       "animate-spin",
+      "cn",
       "size-4",
       "spinner",
       "status",
       "svg"
     ],
     "bases/radix/ui/switch": [
-      "@/registry/bases/radix/lib/utils",
       "after:-inset-x-3",
       "after:-inset-y-2",
       "after:absolute",
       "block",
       "client",
+      "cn",
       "cn-switch",
       "cn-switch-thumb",
       "data-disabled:cursor-not-allowed",
@@ -16566,9 +16577,9 @@
       "use"
     ],
     "bases/radix/ui/table": [
-      "@/registry/bases/radix/lib/utils",
       "caption",
       "client",
+      "cn",
       "cn-table",
       "cn-table-body",
       "cn-table-caption",
@@ -16598,7 +16609,6 @@
       "use"
     ],
     "bases/radix/ui/tabs": [
-      "@/registry/bases/radix/lib/utils",
       "[&_svg]:pointer-events-none",
       "[&_svg]:shrink-0",
       "after:absolute",
@@ -16609,6 +16619,7 @@
       "bg-transparent",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-tabs",
       "cn-tabs-content",
       "cn-tabs-list",
@@ -16673,7 +16684,7 @@
       "whitespace-nowrap"
     ],
     "bases/radix/ui/textarea": [
-      "@/registry/bases/radix/lib/utils",
+      "cn",
       "cn-textarea",
       "disabled:cursor-not-allowed",
       "disabled:opacity-50",
@@ -16688,10 +16699,10 @@
     ],
     "bases/radix/ui/toggle-group": [
       "--gap",
-      "@/registry/bases/radix/lib/utils",
       "@/registry/bases/radix/ui/toggle",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-toggle-group",
       "cn-toggle-group-item",
       "data-vertical:flex-col",
@@ -16719,11 +16730,11 @@
       "w-fit"
     ],
     "bases/radix/ui/toggle": [
-      "@/registry/bases/radix/lib/utils",
       "[&_svg]:pointer-events-none",
       "[&_svg]:shrink-0",
       "class-variance-authority",
       "client",
+      "cn",
       "cn-toggle",
       "cn-toggle-size-default",
       "cn-toggle-size-lg",
@@ -16747,9 +16758,9 @@
       "whitespace-nowrap"
     ],
     "bases/radix/ui/tooltip": [
-      "@/registry/bases/radix/lib/utils",
       "bg-foreground",
       "client",
+      "cn",
       "cn-tooltip-arrow",
       "cn-tooltip-content",
       "fill-foreground",

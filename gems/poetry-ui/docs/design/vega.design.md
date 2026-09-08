@@ -100,8 +100,8 @@ poetry:
     3xl: calc(var(--radius) * 2.2)
     4xl: calc(var(--radius) * 2.6)
   typography_pairing: system sans
-  treatment: the vega treatment, ported from the source style-vega.css at pin shadcn@4.19.0
-    (1773ecfe)
+  treatment: the vega treatment, ported from the source style-vega.css at pin shadcn@4.21.0
+    (7c9eaba1)
   components_count: 88
   components_pointer: "/poetry/llms.txt"
   contrast_policy:
@@ -125,7 +125,7 @@ poetry vega - semantic role tokens (shared across every poetry theme) under the 
 ## Overview
 
 - design system: poetry - server-rendered Rails components (ViewComponent + Stimulus + Tailwind v4)
-- theme: vega - the vega treatment, ported from the source style-vega.css at pin shadcn@4.19.0 (1773ecfe)
+- theme: vega - the vega treatment, ported from the source style-vega.css at pin shadcn@4.21.0 (7c9eaba1)
 - token source: one DTCG file shared by every poetry theme (`tokens/tokens.dtcg.json`);
   themes are component-treatment layers, not palettes
 - dark mode: the `.dark` class - both modes ship in this file

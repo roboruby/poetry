@@ -1,5 +1,5 @@
 {
-  "pin": "1773ecfe",
+  "pin": "7c9eaba1",
   "components": {
     "accordion": {
       "accordion": {
@@ -4050,6 +4050,7 @@
           "contain-content",
           "data-autoscrolling:scrollbar-thumb-transparent",
           "data-autoscrolling:scrollbar-track-transparent",
+          "data-pending-scroll:invisible",
           "min-h-0",
           "min-w-0",
           "overflow-y-auto",
@@ -4062,6 +4063,7 @@
         "classic": [
           "contain-content",
           "data-autoscrolling:scrollbar-none",
+          "data-pending-scroll:invisible",
           "min-h-0",
           "min-w-0",
           "overflow-y-auto",

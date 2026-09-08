@@ -5,7 +5,7 @@
 # between two pins. The first step of a pin bump: read this together,
 # then adopt or record each change. Read-only; bumps nothing.
 #
-#   bundle exec ruby script/upstream_delta.rb d0fae528 shadcn@4.19.0
+#   bundle exec ruby script/upstream_delta.rb shadcn@4.19.0 shadcn@4.21.0
 #   UPSTREAM=/path/to/checkout ...   (default ~/Desktop/save/shadcn-ui)
 #
 # Refs may be shas or tags (pins are tagged releases from 4.19.0 on).
