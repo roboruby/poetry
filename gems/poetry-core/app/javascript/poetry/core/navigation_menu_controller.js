@@ -82,7 +82,7 @@ export default class NavigationMenuController extends Controller {
    */
   toggle(event) {
     const value = this.#valueFrom(event)
-    if (value === null) return
+    if (value === null || this.#disabled(value)) return
 
     this.#clearTimer()
     if (this.#openValue === value) this.#close()
@@ -101,7 +101,7 @@ export default class NavigationMenuController extends Controller {
     if (event.pointerType === "touch") return // touch is click's job
 
     const value = this.#valueFrom(event)
-    if (value === null) return
+    if (value === null || this.#disabled(value)) return
     if (value === this.#openValue) {
       this.#clearTimer() // re-entering the open item cancels a pending close
       return
@@ -434,6 +434,12 @@ export default class NavigationMenuController extends Controller {
     return this.#itemFor(value)?.querySelector(TRIGGER_SELECTOR) ?? null
   }
 
+  // A disabled trigger (native disabled, data-disabled) never opens its
+  // panel - not by click, not by hover - and the arrows step over it.
+  #disabled(value) {
+    return this.#triggerFor(value)?.disabled === true
+  }
+
   // An adopted panel (viewport mode) no longer lives inside its item -
   // the trigger's aria-controls id finds it wherever it moved.
   #panelFor(value) {
@@ -449,10 +455,10 @@ export default class NavigationMenuController extends Controller {
       .find((item) => item.dataset.value === value) ?? null
   }
 
-  // Arrow stops: every trigger and top-level link in the bar, DOM order.
+  // Arrow stops: every enabled trigger and top-level link in the bar, DOM order.
   #arrowStops() {
     return [...this.element.querySelectorAll(
       `${TRIGGER_SELECTOR}, [data-slot="navigation-menu-list"] > ${ITEM_SELECTOR} > a`
-    )]
+    )].filter((stop) => !stop.disabled)
   }
 }

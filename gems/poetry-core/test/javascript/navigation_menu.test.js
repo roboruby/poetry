@@ -38,7 +38,7 @@ vi.mock("@poetry/controllers/vendor/floating_ui_dom", () => {
 const nextFrame = () => new Promise((resolve) => setTimeout(resolve, 0))
 const el = (id) => document.getElementById(id)
 
-const item = (value, { link = false } = {}) => link
+const item = (value, { link = false, disabled = false } = {}) => link
   ? `<div id="item-${value}" data-slot="navigation-menu-item" data-value="${value}" class="relative">
        <a id="link-${value}" href="/${value}">${value}</a>
      </div>`
@@ -46,7 +46,7 @@ const item = (value, { link = false } = {}) => link
          data-action="pointerenter->poetry--core--navigation-menu#scheduleOpen
                       pointerleave->poetry--core--navigation-menu#scheduleClose">
        <button id="trigger-${value}" type="button" data-slot="navigation-menu-trigger"
-               aria-expanded="false" aria-controls="panel-${value}"
+               aria-expanded="false" aria-controls="panel-${value}"${disabled ? " disabled data-disabled" : ""}
                data-action="click->poetry--core--navigation-menu#toggle">${value}</button>
        <div id="panel-${value}" data-slot="navigation-menu-content" data-closed hidden>
          <a href="/${value}/one">${value} one</a>
@@ -220,6 +220,50 @@ async function mountViewport() {
   await nextFrame()
   return application
 }
+
+describe("poetry--core--navigation-menu disabled trigger", () => {
+  let application
+
+  beforeEach(async () => {
+    document.body.innerHTML = `
+      <nav id="root" aria-label="Main" data-controller="poetry--core--navigation-menu"
+           data-action="keydown->poetry--core--navigation-menu#keydown
+                        focusout->poetry--core--navigation-menu#focusLeft">
+        <div data-slot="navigation-menu-list">
+          ${item("products")}
+          ${item("labs", { disabled: true })}
+          ${item("docs", { link: true })}
+        </div>
+      </nav>`
+    application = Application.start()
+    registerPoetryControllers(application)
+    await nextFrame()
+    vi.useFakeTimers()
+    return async () => {
+      vi.useRealTimers()
+      application.stop()
+      document.body.replaceChildren()
+      await nextFrame()
+    }
+  })
+
+  it("never opens - not by hover, not by click", () => {
+    hover("pointerenter", el("item-labs"))
+    vi.advanceTimersByTime(1000)
+    expect(stateOf("labs")).toEqual({ expanded: "false", popupOpen: false, hidden: true })
+
+    el("trigger-labs").dispatchEvent(new MouseEvent("click", { bubbles: true }))
+    expect(stateOf("labs")).toEqual({ expanded: "false", popupOpen: false, hidden: true })
+  })
+
+  it("the arrows step over it", () => {
+    el("trigger-products").focus()
+    el("trigger-products").dispatchEvent(
+      new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true })
+    )
+    expect(document.activeElement).toBe(el("link-docs"))
+  })
+})
 
 describe("poetry--core--navigation-menu viewport mode", () => {
   let application
