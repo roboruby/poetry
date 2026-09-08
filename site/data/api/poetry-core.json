@@ -1,5 +1,5 @@
 {
-  "poetry_version": "0.1.0",
+  "poetry_version": "0.1.1",
   "gem": "poetry-core",
   "objects": [
     {
@@ -186,7 +186,7 @@
       "constants": [
         {
           "name": "VERSION",
-          "value": "\"0.1.0\"",
+          "value": "\"0.1.1\"",
           "docstring": "The gem version. Every gem in the family carries the same version\nand pins poetry-core to it exactly."
         }
       ]
@@ -529,7 +529,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 264
+          "line": 359
         },
         {
           "name": "classnames",
@@ -559,14 +559,14 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 336
+          "line": 431
         },
         {
           "name": "component_data_attributes",
           "scope": "instance",
           "group": null,
           "signature": "component_data_attributes",
-          "docstring": "The self-identification markup contract, the convention every\ncomponent follows: `data-component` on the component root maps live DOM\nback to the component that rendered it - the hook agents, the\nVerifier, and the browser-verification loop key on.",
+          "docstring": "The self-identification markup contract, the convention every\ncomponent follows: `data-component` on the component root maps live DOM\nback to the component that rendered it - the hook agents, the\nVerifier, and the browser-verification loop key on.\n\nA component rendering as another's root passes identity: (the\ncomposition seam), and the root wears that name instead.",
           "params": [],
           "return": {
             "types": [
@@ -576,7 +576,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 154
+          "line": 176
         },
         {
           "name": "dom_id_token",
@@ -602,7 +602,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 370
+          "line": 465
         },
         {
           "name": "ensure_content!",
@@ -619,7 +619,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 174
+          "line": 196
         },
         {
           "name": "html_attributes",
@@ -641,7 +641,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 290
+          "line": 385
         },
         {
           "name": "initialize",
@@ -679,7 +679,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 213
+          "line": 235
         },
         {
           "name": "persisted?",
@@ -696,7 +696,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 185
+          "line": 207
         },
         {
           "name": "poetry_instance_id",
@@ -721,7 +721,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 314
+          "line": 409
         },
         {
           "name": "script_json",
@@ -747,7 +747,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 356
+          "line": 451
         },
         {
           "name": "slot_data_attributes",
@@ -773,7 +773,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 163
+          "line": 185
         },
         {
           "name": "stable_key",
@@ -791,7 +791,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 303
+          "line": 398
         },
         {
           "name": "to_html",
@@ -813,7 +813,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 383
+          "line": 478
         }
       ],
       "constants": [
@@ -831,6 +831,11 @@
           "name": "DYNAMIC_DEFAULT",
           "value": ":dynamic",
           "docstring": "The registry's marker for a proc default (its value depends on\nother attributes and is unknowable statically)."
+        },
+        {
+          "name": "HTML_ATTRIBUTE_KEYS",
+          "value": "%w[\n  accept accesskey action alt autocapitalize autocomplete autofocus checked cite cols colspan\n  contenteditable crossorigin datetime decoding dir dirname disabled download draggable enctype\n  ente",
+          "docstring": "HTML attribute names a caller passes through on purpose. Exempt from\nthe near-miss guard so `for:` never reads as a typo of a `form`\noption, `size:` on a component without a size axis stays the native\nattribute, and so on. Only keys that are NOT declared options reach\nthe guard, so a declared option of the same name is untouched."
         },
         {
           "name": "KEYWORD_PARAMETER_KINDS",
@@ -861,6 +866,11 @@
           "name": "PART_NAME",
           "value": "/\\A[a-z][a-z0-9-]*\\z/",
           "docstring": "The kebab-case shape a declared part name (data-slot value) must match."
+        },
+        {
+          "name": "PASSTHROUGH_KEYS",
+          "value": "%w[class id key webmcp identity data aria role style].freeze",
+          "docstring": "Keywords that are never options and never typos - the passthrough\nvocabulary the static check exempts too (Check::Catalog::PASSTHROUGH)."
         },
         {
           "name": "POSITIONAL_KINDS",
@@ -3094,7 +3104,7 @@
             }
           ],
           "file": "lib/poetry/core/config.rb",
-          "line": 145
+          "line": 146
         },
         {
           "name": "default",
@@ -3123,7 +3133,7 @@
           "scope": "class",
           "group": null,
           "signature": "defaults",
-          "docstring": "Returns the default configuration values.\n\nThese defaults are used when initializing new configuration instances and\ndefine the standard behavior for all Poetry::Core components.\n\nThe keys and their defaults:\n\n- `classname_merger` ({Poetry::Core::CSS::TailwindMerger}) - resolves\n  conflicting utility classes when caller classes meet component\n  classes.\n- `stimulus_merger` ({Poetry::Core::Stimulus::Merger}) - combines\n  Stimulus data attributes without duplicating controllers or\n  actions.\n- `css_mode` (`:tailwind`) - `:tailwind` emits resolved utility\n  classes; `:bem` emits the BEM token IR for bring-your-own-CSS\n  hosts.\n- `icon_library` (`:lucide`) - the active icon set, by the key it\n  registered under ({Poetry::Core::Icons.register}).\n- `raise_on_missing_icon` (`nil`) - the policy for a dynamic icon\n  name that resolves to nothing: nil raises in local environments\n  and degrades to the fallback elsewhere; true/false force one\n  behavior.\n- `icon_fallback` (`:\"circle-question-mark\"`) - rendered instead\n  of a missing icon when not raising; nil re-raises.\n- `on_missing_icon` (`nil`) - an optional callable\n  `(name:, library:, error:)` fired before the fallback renders.\n- `webmcp_registration_budget` (`20`) - the per-document cap on\n  WebMCP tool registrations a page's opted-in instances may make;\n  poetry-agent's `registration_budget` setting writes through.\n- `stable_id_mode` (`:off`) - the opt-in `:sequence` mode seeds a\n  per-request deterministic id sequence (read the hazards in\n  StableId before enabling).\n- `stable_id_seed` - the request-to-seed callable for that mode\n  (defaults to the request path).",
+          "docstring": "Returns the default configuration values.\n\nThese defaults are used when initializing new configuration instances and\ndefine the standard behavior for all Poetry::Core components.\n\nThe keys and their defaults:\n\n- `classname_merger` ({Poetry::Core::CSS::TailwindMerger}) - resolves\n  conflicting utility classes when caller classes meet component\n  classes.\n- `stimulus_merger` ({Poetry::Core::Stimulus::Merger}) - combines\n  Stimulus data attributes without duplicating controllers or\n  actions.\n- `css_mode` (`:tailwind`) - `:tailwind` emits resolved utility\n  classes; `:bem` emits the BEM token IR for bring-your-own-CSS\n  kits authored on this DSL (poetry-ui is Tailwind-native and is\n  not a `:bem` consumer).\n- `icon_library` (`:lucide`) - the active icon set, by the key it\n  registered under ({Poetry::Core::Icons.register}).\n- `raise_on_missing_icon` (`nil`) - the policy for a dynamic icon\n  name that resolves to nothing: nil raises in local environments\n  and degrades to the fallback elsewhere; true/false force one\n  behavior.\n- `icon_fallback` (`:\"circle-question-mark\"`) - rendered instead\n  of a missing icon when not raising; nil re-raises.\n- `on_missing_icon` (`nil`) - an optional callable\n  `(name:, library:, error:)` fired before the fallback renders.\n- `webmcp_registration_budget` (`20`) - the per-document cap on\n  WebMCP tool registrations a page's opted-in instances may make;\n  poetry-agent's `registration_budget` setting writes through.\n- `stable_id_mode` (`:off`) - the opt-in `:sequence` mode seeds a\n  per-request deterministic id sequence (read the hazards in\n  StableId before enabling).\n- `stable_id_seed` - the request-to-seed callable for that mode\n  (defaults to the request path).",
           "params": [],
           "return": {
             "types": [
@@ -3138,7 +3148,7 @@
             }
           ],
           "file": "lib/poetry/core/config.rb",
-          "line": 85
+          "line": 86
         },
         {
           "name": "classname_merger",
@@ -3155,7 +3165,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "classname_merger=",
@@ -3180,14 +3190,14 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "css_mode",
           "scope": "instance",
           "group": null,
           "signature": "css_mode",
-          "docstring": "The class emission mode: `:tailwind` resolves style values to\nutility classes, `:bem` emits the BEM token IR.",
+          "docstring": "The class emission mode: `:tailwind` resolves style values to\nutility classes, `:bem` emits the BEM token IR - for kits authored\non the DSL that write their own templates; poetry-ui is\nTailwind-native and is not a `:bem` consumer.",
           "params": [],
           "return": {
             "types": [
@@ -3197,7 +3207,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "css_mode=",
@@ -3222,7 +3232,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "icon_fallback",
@@ -3240,7 +3250,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "icon_fallback=",
@@ -3267,7 +3277,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "icon_library",
@@ -3284,7 +3294,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "icon_library=",
@@ -3311,7 +3321,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "initialize",
@@ -3333,7 +3343,7 @@
             }
           ],
           "file": "lib/poetry/core/config.rb",
-          "line": 281
+          "line": 284
         },
         {
           "name": "on_missing_icon",
@@ -3351,7 +3361,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "on_missing_icon=",
@@ -3378,7 +3388,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "raise_on_missing_icon",
@@ -3396,7 +3406,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "raise_on_missing_icon=",
@@ -3423,7 +3433,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "stable_id_mode",
@@ -3440,7 +3450,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "stable_id_mode=",
@@ -3465,7 +3475,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "stable_id_seed",
@@ -3482,7 +3492,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "stable_id_seed=",
@@ -3507,7 +3517,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "stimulus_merger",
@@ -3524,7 +3534,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "stimulus_merger=",
@@ -3549,7 +3559,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "webmcp_registration_budget",
@@ -3566,7 +3576,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         },
         {
           "name": "webmcp_registration_budget=",
@@ -3591,7 +3601,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 150
+          "line": 151
         }
       ],
       "constants": [

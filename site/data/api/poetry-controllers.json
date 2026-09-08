@@ -1,5 +1,5 @@
 {
-  "poetry_version": "0.1.0",
+  "poetry_version": "0.1.1",
   "gem": "@poetry/controllers",
   "objects": [
     {
@@ -4488,7 +4488,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 61
+          "line": 65
         },
         {
           "name": "escapeClose",
@@ -4508,7 +4508,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 86
+          "line": 90
         },
         {
           "name": "close",
@@ -4528,7 +4528,27 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 102
+          "line": 106
+        },
+        {
+          "name": "backdropClose",
+          "scope": "instance",
+          "group": null,
+          "signature": "backdropClose(event)",
+          "docstring": "The inherited backdrop click, minus the ghost: a press that started\ninside the panel can end over the backdrop (a drag against the\nclamp, a slip off an inner control) and the click the browser then\nfires is a backdrop click by target and coordinates, never by intent.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "MouseEvent"
+              ],
+              "text": ""
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/drawer_controller.js",
+          "line": 129
         },
         {
           "name": "swipeStart",
@@ -4548,7 +4568,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 126
+          "line": 153
         },
         {
           "name": "swipeMove",
@@ -4568,7 +4588,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 156
+          "line": 184
         },
         {
           "name": "swipeEnd",
@@ -4588,7 +4608,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 192
+          "line": 220
         },
         {
           "name": "swipeCancel",
@@ -4608,7 +4628,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 221
+          "line": 249
         }
       ],
       "constants": []
@@ -4814,7 +4834,7 @@
       "path": "poetry--core--hover-card",
       "type": "controller",
       "superclass": null,
-      "docstring": "The HoverCard controller (the popper-consumer trio's thinnest machine):\npointer-only enrichment behind a LINK. Two timers (open 600 / close\n300, over the trigger+content\npair, re-enter cancels - the grace window, no polygon), the touch double-guard\n(pointerType 'touch' no-ops AND touchstart preventDefaults so a tap can\nnever synthesize a focus-open - a tap just navigates the link), the focus\nmirror (trigger focus opens immediately / blur closes - a keyboard user\nSEES the card), the per-open TABINDEX STRIP (every tabbable inside is\nforced tabindex=-1: keyboard and touch users never reach inside,\nintentional and contractual - the reachable-elsewhere rule), and the\nSELECTION HOLD (text selection started in the card keeps it open and\nsuppresses body user-select while dragging, so previews are copyable).\n\nNO focus-scope anywhere in the lifecycle: focus never moves in, so there\nis nothing to trap or restore - the trio's simplest teardown. The\ntoken-activated dismissable delivers Esc (topmost-only) + outside press\nwhile open. No aria surface is added (no haspopup/expanded/describedby):\nadvertising a keyboard-unreachable surface to AT is worse than silence.\n\n**Values**: `open` (Boolean, default: false); `openDelay` (Number, default: 600); `closeDelay` (Number, default: 300)\n\n**Events**: `poetry:hover-card:closed`, `poetry:hover-card:open`",
+      "docstring": "The HoverCard controller (the popper-consumer trio's thinnest machine):\npointer-only enrichment behind a LINK. Two timers (open 600 / close\n300, over the trigger+content\npair, re-enter cancels - the grace window, no polygon), the touch double-guard\n(pointerType 'touch' no-ops AND the pointerdown latch swallows the focus a\ntap or click causes, so a tap keeps its click and just navigates the\nlink - cancelling touchstart would cancel that click with it), the focus\nmirror (trigger focus opens immediately / blur closes - a keyboard user\nSEES the card), the per-open TABINDEX STRIP (every tabbable inside is\nforced tabindex=-1: keyboard and touch users never reach inside,\nintentional and contractual - the reachable-elsewhere rule), and the\nSELECTION HOLD (text selection started in the card keeps it open and\nsuppresses body user-select while dragging, so previews are copyable).\n\nNO focus-scope anywhere in the lifecycle: focus never moves in, so there\nis nothing to trap or restore - the trio's simplest teardown. The\ntoken-activated dismissable delivers Esc (topmost-only) + outside press\nwhile open. No aria surface is added (no haspopup/expanded/describedby):\nadvertising a keyboard-unreachable surface to AT is worse than silence.\n\n**Values**: `open` (Boolean, default: false); `openDelay` (Number, default: 600); `closeDelay` (Number, default: 300)\n\n**Events**: `poetry:hover-card:closed`, `poetry:hover-card:open`",
       "examples": [],
       "file": "app/javascript/poetry/core/hover_card_controller.js",
       "methods": [
@@ -4828,7 +4848,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/hover_card_controller.js",
-          "line": 58
+          "line": 69
         },
         {
           "name": "disconnect",
@@ -4840,7 +4860,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/hover_card_controller.js",
-          "line": 79
+          "line": 90
         },
         {
           "name": "openValueChanged",
@@ -4860,7 +4880,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/hover_card_controller.js",
-          "line": 104
+          "line": 116
         },
         {
           "name": "pointerEnter",
@@ -4880,7 +4900,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/hover_card_controller.js",
-          "line": 120
+          "line": 132
         },
         {
           "name": "pointerLeave",
@@ -4900,19 +4920,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/hover_card_controller.js",
-          "line": 141
+          "line": 153
         },
         {
           "name": "focusOpen",
           "scope": "instance",
           "group": null,
           "signature": "focusOpen()",
-          "docstring": "The trigger's focus action: opens IMMEDIATELY, skipping the timers -\na keyboard user sees the preview even though they\ncannot enter it.",
+          "docstring": "The trigger's focus action: opens IMMEDIATELY, skipping the timers -\na keyboard user sees the preview even though they\ncannot enter it. Focus a pointer caused (the latch) does not open.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/hover_card_controller.js",
-          "line": 157
+          "line": 169
         },
         {
           "name": "blurClose",
@@ -4924,27 +4944,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/hover_card_controller.js",
-          "line": 163
+          "line": 177
         },
         {
-          "name": "touchGuard",
+          "name": "pointerDown",
           "scope": "instance",
           "group": null,
-          "signature": "touchGuard(event)",
-          "docstring": "The trigger's touchstart action - the touch guard: preventDefault so\na tap can never synthesize a focus event (a focus-opened card on\ntouch would be unreachable). The tap still navigates the\nlink.",
-          "params": [
-            {
-              "name": "event",
-              "types": [
-                "TouchEvent"
-              ],
-              "text": ""
-            }
-          ],
+          "signature": "pointerDown()",
+          "docstring": "The trigger's pointerdown action - the latch: the focus a tap or a\nclick causes must not open the card (a pointer user never gets a\nfocus-opened card; on touch it would be unreachable), so focusOpen\nstays shut until the press has landed (LATCH_RELEASE_EVENTS). The\nevent is never cancelled: cancelling touchstart would cancel the\ntap's click, and the tap must still navigate the link.",
+          "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/hover_card_controller.js",
-          "line": 179
+          "line": 193
         }
       ],
       "constants": []
@@ -5446,7 +5458,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 91
+          "line": 106
         },
         {
           "name": "disconnect",
@@ -5458,7 +5470,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 162
+          "line": 188
         },
         {
           "name": "defaultScrollPositionValueChanged",
@@ -5470,7 +5482,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 206
+          "line": 235
         },
         {
           "name": "autoScrollValueChanged",
@@ -5482,7 +5494,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 214
+          "line": 243
         },
         {
           "name": "syncAfterScroll",
@@ -5494,7 +5506,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 231
+          "line": 260
         },
         {
           "name": "userScrollIntent",
@@ -5506,7 +5518,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 242
+          "line": 271
         },
         {
           "name": "keydownIntent",
@@ -5526,7 +5538,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 259
+          "line": 288
         },
         {
           "name": "jump",
@@ -5546,7 +5558,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 271
+          "line": 300
         },
         {
           "name": "scrollToEnd",
@@ -5571,7 +5583,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 291
+          "line": 320
         },
         {
           "name": "scrollToStart",
@@ -5596,7 +5608,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 301
+          "line": 330
         },
         {
           "name": "scrollToMessage",
@@ -5628,7 +5640,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 315
+          "line": 344
         }
       ],
       "constants": []
@@ -5651,7 +5663,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/navigation_menu_controller.js",
-          "line": 53
+          "line": 54
         },
         {
           "name": "disconnect",
@@ -5663,7 +5675,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/navigation_menu_controller.js",
-          "line": 71
+          "line": 82
         },
         {
           "name": "toggle",
@@ -5683,7 +5695,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/navigation_menu_controller.js",
-          "line": 83
+          "line": 96
         },
         {
           "name": "scheduleOpen",
@@ -5703,7 +5715,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/navigation_menu_controller.js",
-          "line": 100
+          "line": 113
         },
         {
           "name": "scheduleClose",
@@ -5723,7 +5735,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/navigation_menu_controller.js",
-          "line": 120
+          "line": 133
         },
         {
           "name": "cancelClose",
@@ -5735,7 +5747,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/navigation_menu_controller.js",
-          "line": 132
+          "line": 145
         },
         {
           "name": "keydown",
@@ -5755,7 +5767,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/navigation_menu_controller.js",
-          "line": 143
+          "line": 156
         },
         {
           "name": "focusLeft",
@@ -5775,7 +5787,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/navigation_menu_controller.js",
-          "line": 174
+          "line": 201
         }
       ],
       "constants": []
@@ -5798,7 +5810,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/number_field_controller.js",
-          "line": 48
+          "line": 47
         },
         {
           "name": "disconnect",
@@ -5810,7 +5822,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/number_field_controller.js",
-          "line": 64
+          "line": 63
         },
         {
           "name": "keydown",
@@ -5830,7 +5842,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/number_field_controller.js",
-          "line": 80
+          "line": 79
         },
         {
           "name": "input",
@@ -5842,19 +5854,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/number_field_controller.js",
-          "line": 112
-        },
-        {
-          "name": "focus",
-          "scope": "instance",
-          "group": null,
-          "signature": "focus()",
-          "docstring": "The focus action: the first focus parks the caret at the end.",
-          "params": [],
-          "return": null,
-          "examples": [],
-          "file": "app/javascript/poetry/core/number_field_controller.js",
-          "line": 123
+          "line": 111
         },
         {
           "name": "blur",
@@ -5866,7 +5866,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/number_field_controller.js",
-          "line": 137
+          "line": 127
         },
         {
           "name": "press",
@@ -5886,7 +5886,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/number_field_controller.js",
-          "line": 160
+          "line": 150
         },
         {
           "name": "tap",
@@ -5906,7 +5906,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/number_field_controller.js",
-          "line": 184
+          "line": 174
         },
         {
           "name": "leave",
@@ -5918,7 +5918,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/number_field_controller.js",
-          "line": 196
+          "line": 186
         },
         {
           "name": "hiddenChanged",
@@ -5930,7 +5930,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/number_field_controller.js",
-          "line": 399
+          "line": 409
         }
       ],
       "constants": []
