@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- HoverCard's trigger wiring is `pointerdown->pointerDown` (was `touchstart->touchGuard`), and NumberField's input no longer wires a `focus` action. A copy made with `poetry:add hover_card` or `poetry:add number_field` before this version carries the old wiring and logs a Stimulus "undefined method" error on those events: run `bin/rails g poetry:diff` and update the two lines. Apps on the gem-owned tier need nothing.
+
 ## [0.1.0] - 2026-09-05
 
 Initial public release. The family releases in lockstep; every gem pins its siblings at the same version.
