@@ -51,8 +51,9 @@ pagination, typography, optimistic-forms, editors).
   `/.well-known/skills/` (with an `agent-skills` alias); HTML pages
   advertise their twin via `<link rel="alternate">` + the HTTP `Link`
   header. robots.txt and `/sitemap.xml` are DYNAMIC (MachineController) -
-  absolute URLs derive from the request host since the naming hold means
-  no fixed domain; robots carries Content-Signal + the sitemap pointer. A new machine endpoint gets an ENDPOINTS row in
+  absolute URLs derive from the request host (poetryui.com in production,
+  127.0.0.1 locally - nothing hardcodes a domain); robots carries
+  Content-Signal + the sitemap pointer. A new machine endpoint gets an ENDPOINTS row in
   MachineController - the openapi test GETs every documented path, so the
   description can't drift into a document that lies.
 
