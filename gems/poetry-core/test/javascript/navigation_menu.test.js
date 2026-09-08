@@ -170,6 +170,26 @@ describe("poetry--core--navigation-menu", () => {
     expect(stateOf("products").hidden).toBe(true)
   })
 
+  it("ArrowDown opens the focused trigger's panel and leaves focus on the trigger", () => {
+    const arrowDown = () => new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true })
+    el("trigger-products").focus()
+    const opening = arrowDown()
+    el("trigger-products").dispatchEvent(opening)
+
+    expect(opening.defaultPrevented).toBe(true)
+    expect(stateOf("products")).toEqual({ expanded: "true", popupOpen: true, hidden: false })
+    expect(document.activeElement).toBe(el("trigger-products"), "focus stays on the trigger - Tab enters the panel")
+
+    // Again on the open trigger: still open, never a toggle.
+    el("trigger-products").dispatchEvent(arrowDown())
+    expect(stateOf("products").expanded).toBe("true")
+
+    // A top-level link is not a trigger: the key passes through untouched.
+    const onLink = arrowDown()
+    el("link-docs").dispatchEvent(onLink)
+    expect(onLink.defaultPrevented).toBe(false)
+  })
+
   it("removing the open item closes cleanly and the next trigger opens fresh", async () => {
     el("trigger-products").click()
     expect(stateOf("products").expanded).toBe("true")
@@ -266,6 +286,9 @@ describe("poetry--core--navigation-menu disabled trigger", () => {
     expect(stateOf("labs")).toEqual({ expanded: "false", popupOpen: false, hidden: true })
 
     el("trigger-labs").dispatchEvent(new MouseEvent("click", { bubbles: true }))
+    expect(stateOf("labs")).toEqual({ expanded: "false", popupOpen: false, hidden: true })
+
+    el("trigger-labs").dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true }))
     expect(stateOf("labs")).toEqual({ expanded: "false", popupOpen: false, hidden: true })
   })
 

@@ -165,6 +165,20 @@ export default class NavigationMenuController extends Controller {
       return
     }
 
+    // ArrowDown on a trigger opens its panel and is consumed; focus stays
+    // on the trigger (Tab enters the panel). A top-level link is not a
+    // trigger and keeps the key.
+    if (event.key === "ArrowDown") {
+      const trigger = event.target instanceof Element ? event.target.closest(TRIGGER_SELECTOR) : null
+      const value = this.#valueFrom(event)
+      if (!trigger || value === null || this.#disabled(value)) return
+
+      event.preventDefault()
+      this.#clearTimer()
+      if (this.#openValue !== value) this.#open(value)
+      return
+    }
+
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return
 
     const stops = this.#arrowStops()
