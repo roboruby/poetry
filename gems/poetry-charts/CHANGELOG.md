@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.1] - 2026-09-08
+
+### Changed
+
+- Theme headers reference the shadcn@4.21.0 pin; the chart rule is unchanged. Lockstep release with the family.
+
 ## [0.1.0] - 2026-09-05
 
 Initial public release. The family releases in lockstep; every gem pins its siblings at the same version.
