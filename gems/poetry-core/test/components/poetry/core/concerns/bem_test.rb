@@ -126,8 +126,10 @@ module Poetry
           bem_root = Kit::Tag::Component.new(class: "acme acme--x acme").html_attributes
           tailwind_root = Chip::Component.new(class: "acme acme--x acme").html_attributes
 
-          assert bem_root.merge_classes("p-4 p-2")["class"].end_with?(" acme acme--x p-4 p-2"), "BEM: dedupe, no conflicts"
-          assert tailwind_root.merge_classes("p-4 p-2")["class"].end_with?(" acme acme--x acme p-2"), "Tailwind: conflicts"
+          assert bem_root.merge_classes("p-4 p-2")["class"].end_with?(" acme acme--x p-4 p-2"),
+                 "BEM: dedupe, no conflicts"
+          assert tailwind_root.merge_classes("p-4 p-2")["class"].end_with?(" acme acme--x acme p-2"),
+                 "Tailwind: conflicts"
         end
 
         def test_the_global_merger_is_honoured_when_it_matches_the_mode_and_replaced_when_it_does_not
