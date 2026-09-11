@@ -112,7 +112,16 @@
     end
   CODE
   bem_mode_source = <<~CODE
-    # config/initializers/poetry.rb
+    # app/components/my_kit/base.rb - the kit declares its mode once; every
+    # component in it inherits :bem, and poetry-ui beside it stays Tailwind
+    module MyKit
+      class Base < Poetry::Core::Component
+        css_mode :bem
+      end
+    end
+
+    # config/initializers/poetry.rb - or make :bem the default for every kit
+    # that declares nothing (poetry-ui and poetry-charts pin their own)
     Poetry::Core::Config.current.css_mode = :bem
     Poetry::Core::Config.current.classname_merger = Poetry::Core::CSS::BemMerger.new
   CODE
@@ -373,7 +382,7 @@
         and emits a stable class vocabulary instead:
       </p>
     <% end %>
-    <%= poetry_code_block(code: bem_mode_source, language: "ruby", label: "Switch globally") %>
+    <%= poetry_code_block(code: bem_mode_source, language: "ruby", label: "Declare the kit's mode") %>
     <%= poetry_code_block(code: bem_classes_source, language: "ruby", label: "What :bem emits") %>
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <p>
