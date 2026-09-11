@@ -58,6 +58,74 @@ module Poetry
           assert_equal "#{chip.bem_block}__icon", chip.bem(:icon)
         end
 
+        # A kit declares its mode once on a base; subclasses inherit it.
+        module Kit
+          class Base < Poetry::Core::Component
+            css_mode :bem
+          end
+
+          # The sidecar convention: Tag::Component resolves Tag::Style.
+          module Tag
+            class Component < Base
+              style :tone, default: :sky, variants: %i[sky rose]
+
+              def call
+                content_tag(:span, "tag", class: css)
+              end
+            end
+
+            class Style < Poetry::Core::Style
+              base "inline-flex"
+              variant :tone, sky: "bg-sky-100", rose: "bg-rose-100"
+            end
+          end
+        end
+
+        def test_css_mode_declared_on_a_base_is_inherited_and_beats_the_global
+          assert_equal :bem, Kit::Base.css_mode
+          assert_equal :bem, Kit::Tag::Component.css_mode
+          assert_equal :tailwind, Chip::Component.css_mode, "an undeclared kit follows the global"
+          css = Kit::Tag::Component.new(tone: :rose).css
+
+          assert_includes css, "poetry-core-concerns-bem_test-kit-tag--tone-rose"
+          refute_includes css, "bg-rose-100"
+        end
+
+        def test_a_namespace_pin_beats_the_global_and_a_declaration_beats_the_pin
+          Poetry::Core::CSS::Modes.pin("Poetry::Core::Concerns::BemTest", :bem)
+          Poetry::Core::Config.current.css_mode = :tailwind
+
+          assert_equal :bem, Chip::Component.css_mode, "pinned namespace, global ignored"
+          assert_includes Chip::Component.new(color: :red).css, "--color-red"
+          Poetry::Core::CSS::Modes.pin("Poetry::Core::Concerns::BemTest::Kit", :tailwind)
+
+          assert_equal :bem, Kit::Tag::Component.css_mode, "the class declaration wins over its namespace pin"
+        ensure
+          Poetry::Core::CSS::Modes.unpin("Poetry::Core::Concerns::BemTest")
+          Poetry::Core::CSS::Modes.unpin("Poetry::Core::Concerns::BemTest::Kit")
+        end
+
+        def test_the_longest_matching_namespace_pin_wins
+          Poetry::Core::CSS::Modes.pin("Poetry::Core", :bem)
+          Poetry::Core::CSS::Modes.pin("Poetry::Core::Concerns::BemTest::Chip", :tailwind)
+
+          assert_equal :tailwind, Poetry::Core::CSS::Modes.for(Chip::Component)
+          assert_equal :bem, Poetry::Core::CSS::Modes.for(Poetry::Core::Box::Component)
+          assert_nil Poetry::Core::CSS::Modes.for(Class.new(Poetry::Core::Component) { def self.name = "Other::Thing" })
+        ensure
+          Poetry::Core::CSS::Modes.unpin("Poetry::Core")
+          Poetry::Core::CSS::Modes.unpin("Poetry::Core::Concerns::BemTest::Chip")
+        end
+
+        def test_a_per_call_mode_wins_over_a_declaration
+          assert_includes Kit::Tag::Component.new(tone: :rose).css(css_mode: :tailwind), "bg-rose-100"
+        end
+
+        def test_an_unknown_declared_mode_raises
+          assert_raises(Poetry::Core::Error) { Class.new(Poetry::Core::Component) { css_mode :sass } }
+          assert_raises(Poetry::Core::Error) { Poetry::Core::CSS::Modes.pin("X", :sass) }
+        end
+
         def test_css_mode_tailwind_is_the_default
           assert_equal :tailwind, Poetry::Core::Config.current.css_mode
           assert_includes Chip::Component.new.css, "bg-muted"

@@ -54,10 +54,13 @@ module Poetry
         # - `stimulus_merger` ({Poetry::Core::Stimulus::Merger}) - combines
         #   Stimulus data attributes without duplicating controllers or
         #   actions.
-        # - `css_mode` (`:tailwind`) - `:tailwind` emits resolved utility
-        #   classes; `:bem` emits the BEM token IR for bring-your-own-CSS
-        #   kits authored on this DSL (poetry-ui is Tailwind-native and is
-        #   not a `:bem` consumer).
+        # - `css_mode` (`:tailwind`) - the default mode for component kits
+        #   authored on this DSL: `:tailwind` resolves the Style dictionary
+        #   to utilities; `:bem` emits the BEM token IR for a kit that brings
+        #   its own CSS. A kit declares its own (`css_mode :bem` on its base)
+        #   or pins its namespace ({Poetry::Core::CSS::Modes}); poetry-ui and
+        #   poetry-charts pin `:tailwind`, so this global never reaches them
+        #   and a BEM kit renders beside them.
         # - `icon_library` (`:lucide`) - the active icon set, by the key it
         #   registered under ({Poetry::Core::Icons.register}).
         # - `raise_on_missing_icon` (`nil`) - the policy for a dynamic icon

@@ -53,6 +53,8 @@ module Poetry
         STYLE_CLASS_SUFFIX = "::Style"
 
         included do
+          # The kit-level mode declaration (`css_mode :bem`), inherited.
+          class_attribute :declared_css_mode, instance_accessor: false, default: nil
           class_attribute :registered_styles,
                           instance_writer: true,
                           instance_predicate: false,
@@ -60,6 +62,28 @@ module Poetry
         end
 
         class_methods do
+          # The CSS mode this component renders in, declared per kit
+          # (inherited by subclasses): `css_mode :bem` on a kit's base
+          # class, and every component in it emits the BEM token IR. With
+          # no argument, the resolved mode: the declaration, else the mode
+          # pinned for the namespace ({Poetry::Core::CSS::Modes} - poetry-ui
+          # pins `:tailwind`), else the global
+          # `Poetry::Core::Config.current.css_mode`. A `css_mode:` keyword
+          # on a `css` call still wins over all of them.
+          #
+          # @example A kit that brings its own CSS
+          #   class Acme::Ui::Base < Poetry::Core::Component
+          #     css_mode :bem
+          #   end
+          # @param mode [Symbol, nil] :tailwind or :bem to declare; nil to read
+          # @return [Symbol] the declared or resolved mode
+          # @raise [Poetry::Core::Error] for an unknown mode
+          def css_mode(mode = nil)
+            return self.declared_css_mode = Poetry::Core::CSS::Modes.validate!(mode) unless mode.nil?
+
+            declared_css_mode || Poetry::Core::CSS::Modes.for(self) || Poetry::Core::Config.current.css_mode
+          end
+
           # Defines a style attribute for the component.
           #
           # @param name [Symbol, String] the name of the style attribute
@@ -274,7 +298,7 @@ module Poetry
         # @raise [Poetry::Core::Error] for a css_mode other than :tailwind
         #   or :bem
         def css(element = nil, **options, &)
-          mode = options.delete(:css_mode) || Poetry::Core::Config.current.css_mode
+          mode = options.delete(:css_mode) || css_mode
 
           case mode
           when :tailwind
@@ -288,8 +312,16 @@ module Poetry
             extra = options.delete(:class)
             [bem(element, **options), extra].compact.join(" ")
           else
-            raise Poetry::Core::Error, "unknown css_mode #{mode.inspect} (expected :tailwind or :bem)"
+            Poetry::Core::CSS::Modes.validate!(mode)
           end
+        end
+
+        # The CSS mode this instance renders in (the class's resolved mode;
+        # see the class-level `css_mode`).
+        #
+        # @return [Symbol] :tailwind or :bem
+        def css_mode
+          self.class.css_mode
         end
 
         # The component's BEM block name - the stable, framework-agnostic
