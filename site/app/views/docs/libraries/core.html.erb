@@ -384,14 +384,18 @@
         <code>block__element</code>. The merger pairs with the mode:
         <code>BemMerger</code> dedupes and joins caller classes instead
         of applying Tailwind conflict semantics to a stylesheet that is
-        not Tailwind. The mode is global through
-        <code>Poetry::Core::Config</code> or per call
-        (<code>css(css_mode: :bem)</code>); there is deliberately no mode
-        that emits both. The mode is for kits authored on poetry-core, where
-        you write every template. poetry-ui is Tailwind-native, its templates
-        and theme layer are utilities, so it is not a <code>:bem</code>
-        consumer; a Tailwind-free host wants a kit of its own on the DSL,
-        not poetry-ui under <code>:bem</code>.
+        not Tailwind. The mode is decided per kit: a kit declares it once
+        on its base class (<code>css_mode :bem</code>, inherited) or pins
+        its namespace (<code>Poetry::Core::CSS::Modes.pin("Acme::Ui", :bem)</code>);
+        the global <code>Poetry::Core::Config.current.css_mode</code> is the
+        default for kits that declare nothing, and a <code>css_mode:</code>
+        keyword on a <code>css</code> call wins over all of them. There is
+        deliberately no mode that emits both. poetry-ui is Tailwind-native,
+        its templates and theme layer are utilities, so it pins its own
+        namespace to <code>:tailwind</code>: a host's global never reaches
+        it, and a BEM kit of your own renders beside poetry-ui in one app. A
+        Tailwind-free host wants such a kit on the DSL, not poetry-ui under
+        <code>:bem</code>.
       </p>
       <p>
         You style those classes against a generated reference stylesheet.
