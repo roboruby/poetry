@@ -197,8 +197,17 @@ module Poetry
         # first fetch - server boot stays instant.
         def self.from_registry(root, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [])
           committed = Poetry::Core::Registry.committed(root)
+          # The app's own components declare their helpers in source
+          # (`helper :name`); a boot-free scan of app_root's component files
+          # adds those names to the valid set, so the check tool agrees with
+          # `bin/rails poetry:check` that the helper exists (their option
+          # contracts are only known to the booted check).
+          helper_entries = (committed.helpers || {}).dup
+          if app_root
+            Poetry::Core::HostComponents.declared_helpers(root: app_root).each { |name| helper_entries[name] ||= {} }
+          end
           catalog = Poetry::Core::Check::Catalog.new(committed.entries, helpers: helpers,
-                                                                        helper_entries: committed.helpers,
+                                                                        helper_entries: helper_entries,
                                                                         icon_names: icon_names,
                                                                         helper_args: committed.helper_args)
           new(entries: committed.entries, catalog: catalog, blocks: committed.blocks || {},

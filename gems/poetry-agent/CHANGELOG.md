@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.2]
+
+### Changed
+
+- The MCP `check` tool knows the host application's own component helpers: a boot-free scan of the app directory's component files for `helper :name` declarations adds those names to the valid set, so the tool agrees with `bin/rails poetry:check` that the helper exists. Their option contracts stay with the booted check.
+
 ## [0.1.1] - 2026-09-08
 
 Lockstep release with the family; no changes in this gem.

@@ -435,6 +435,29 @@ module Poetry
         assert_includes call("check", "source" => %(<%= poetry_button(variant: :ghost) { "x" } %>)), "PASS"
       end
 
+      # The app's own components declare their helpers in source; the
+      # boot-free scan of app_root adds those names, so the check tool
+      # agrees with `bin/rails poetry:check` that the helper exists.
+      def test_check_knows_the_app_s_declared_helpers_from_source
+        require "tmpdir"
+        Dir.mktmpdir("host-app") do |app_root|
+          dir = File.join(app_root, "app/components/demo/badge")
+          FileUtils.mkdir_p(dir)
+          File.write(File.join(dir, "component.rb"), <<~COMPONENT)
+            module Demo::Badge
+              class Component < Poetry::Core::Component
+                helper :demo_badge
+              end
+            end
+          COMPONENT
+          target = MCP::Server.from_registry(Poetry::Core.root, app_root: app_root)
+          text = call_on(target, "check", "source" => %(<%= demo_badge(tone: :loud) { "x" } %>))
+
+          assert_includes text, "PASS"
+          refute_includes text, "no poetry component demo_badge"
+        end
+      end
+
       def test_check_fails_and_reports_findings
         text = call("check", "source" => %(<%= poetry_button(variant: :nope) { "x" } %>))
 
