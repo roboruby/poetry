@@ -54,6 +54,14 @@ module Poetry
       # a subclass of an internal component stays internal.
       class_attribute :internal_component, default: false, instance_predicate: false
 
+      # The declared vocabulary the runtime values tier checks:
+      # name => { variants: [...] or nil, required: true/false }, recorded
+      # by `style` and `option` at declaration (copy-on-write per class, so
+      # a subclass's declarations never leak up). A direct lookup, not an
+      # ActiveModel validation pass - measured at nine percent of a
+      # Button's render when it ran through `valid?`.
+      class_attribute :declared_values, instance_accessor: false, default: {}.freeze
+
       class << self
         # Marks this class (and its descendants) as an implementation
         # detail - full machinery, no registry entry.
@@ -65,6 +73,49 @@ module Poetry
         # @return [void]
         def internal_component!
           self.internal_component = true
+        end
+
+        # The vocabulary the runtime values tier checks, computed once per
+        # class at first construction (the class body is complete by then):
+        # the recorded `style`/`option` declarations plus every inclusion
+        # validator with an Array (`validates :side, inclusion: { in: SIDES }`
+        # is how options declare a closed vocabulary). Method validators are
+        # not vocabulary and stay the component's own (Icon's unknown-name
+        # policy).
+        #
+        # @return [Hash{Symbol => Hash}]
+        # @api private
+        def runtime_vocabulary
+          @runtime_vocabulary ||= begin
+            vocabulary = declared_values.dup
+            names = attribute_names.map(&:to_sym)
+            validators.each do |validator|
+              next unless validator.is_a?(ActiveModel::Validations::InclusionValidator)
+              next unless (allowed = validator.options[:in]).is_a?(Array)
+
+              validator.attributes.each do |attribute|
+                attribute = attribute.to_sym
+                next unless names.include?(attribute)
+
+                spec = vocabulary[attribute] || { variants: nil, required: false }
+                vocabulary[attribute] = spec.merge(variants: allowed).freeze unless spec[:variants]
+              end
+            end
+            vocabulary.freeze
+          end
+        end
+
+        # Records a declared attribute's vocabulary for the runtime values
+        # tier ({#guard_declared_values}).
+        #
+        # @param name [Symbol]
+        # @param variants [Array, nil] the closed vocabulary, nil for open values
+        # @param required [Boolean]
+        # @return [void]
+        # @api private
+        def record_declared_value(name, variants:, required:)
+          spec = { variants: variants, required: required }.freeze
+          self.declared_values = declared_values.merge(name.to_sym => spec).freeze
         end
 
         # Names the view helper that renders this component - for a
@@ -311,12 +362,13 @@ module Poetry
         end
 
         @attributes = self.class._default_attributes.deep_dup
-        html_attrs = guard_passthrough(attributes.with_indifferent_access.except(*attribute_names))
-        @html_attributes = Poetry::Core::HTML::Attributes.new(html_attrs)
+        given = attributes.with_indifferent_access
+        names = attribute_names
+        @html_attributes = Poetry::Core::HTML::Attributes.new(guard_passthrough(given.except(*names)))
         # The root merges classes with the kit's merger (its CSS mode's).
         @html_attributes.classname_merger = classname_merger
 
-        assign_attributes attributes.with_indifferent_access.slice(*attribute_names)
+        assign_attributes given.slice(*names)
         guard_declared_values
       end
 
@@ -378,59 +430,38 @@ module Poetry
         self.class.name ? self.class.component_title : "this component"
       end
 
-      # The error types the DSL's own validations produce.
-      DECLARED_VALUE_ERRORS = %i[inclusion blank].freeze
-
       # The runtime values tier, beside the passthrough guard: the declared
-      # vocabulary (`style ... variants:`, `required:`) is validated at
+      # vocabulary (`style ... variants:`, `required:`) is checked at
       # construction, where every component - gem or app, whatever it does
       # in before_render - passes. Off-list values raise in development and
       # test with the allowed values and a did-you-mean; in production they
       # log and render as before. `poetry check` catches the same mistakes
       # in templates statically; this tier catches the value that arrives
-      # from data.
+      # from data. A direct lookup over {.declared_values}; a component's
+      # custom validators keep their own policy.
       def guard_declared_values
-        return if valid?
+        problems = nil
+        self.class.runtime_vocabulary.each do |name, spec|
+          value = public_send(name)
+          if value.nil? || (value.respond_to?(:empty?) && value.empty?)
+            (problems ||= []) << "#{passthrough_owner} requires #{name}:" if spec[:required]
+          elsif spec[:variants] && !spec[:variants].include?(value)
+            (problems ||= []) << off_list_problem(name, value, spec[:variants])
+          end
+        end
+        return unless problems
 
-        # Only the DSL's own validations: an off-list value (inclusion) or a
-        # missing required one (blank). A component's custom validators keep
-        # their own policy (Icon renders a fallback for an unknown name
-        # outside local environments).
-        declared = errors.select { |error| DECLARED_VALUE_ERRORS.include?(error.type) }
-        return if declared.empty?
-
-        message = declared.map { |error| declared_value_problem(error) }.join("; ")
+        message = problems.join("; ")
         raise ArgumentError, message if strict_passthrough?
 
         Rails.logger&.warn("poetry: #{message}") if defined?(Rails) && Rails.respond_to?(:logger)
       end
 
-      # One error as the message a developer reads: the declared vocabulary
-      # for an off-list value, `requires` for a missing one, and a custom
-      # validator's own message otherwise.
-      def declared_value_problem(error)
-        attribute = error.attribute
-        case error.type
-        when :inclusion
-          allowed = declared_variants(attribute)
-          value = error.options[:value]
-          hint = variant_suggestion(value, allowed)
-          "#{passthrough_owner} #{attribute}: #{value.inspect} is not one of " \
-            "#{allowed.map(&:inspect).join(", ")}#{hint}"
-        when :blank
-          "#{passthrough_owner} requires #{attribute}:"
-        else
-          "#{passthrough_owner} #{attribute}: #{error.message}"
-        end
-      end
-
-      # The declared vocabulary of a style (booleans read as true/false).
-      def declared_variants(attribute)
-        getter = "#{attribute}_variants"
-        return [] unless self.class.respond_to?(getter)
-
-        variants = self.class.public_send(getter)
-        variants == :boolean ? [true, false] : Array(variants)
+      # The message a developer reads for an off-list value: the declared
+      # vocabulary and a did-you-mean.
+      def off_list_problem(name, value, allowed)
+        "#{passthrough_owner} #{name}: #{value.inspect} is not one of " \
+          "#{allowed.map(&:inspect).join(", ")}#{variant_suggestion(value, allowed)}"
       end
 
       def variant_suggestion(value, allowed)
@@ -447,7 +478,7 @@ module Poetry
       end
 
       private :guard_passthrough, :option_suggestion, :passthrough_owner, :strict_passthrough?,
-              :guard_declared_values, :declared_value_problem, :declared_variants, :variant_suggestion
+              :guard_declared_values, :off_list_problem, :variant_suggestion
 
       # Returns all component attributes, ensuring proc defaults are evaluated.
       #

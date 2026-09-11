@@ -42,6 +42,10 @@ module Poetry
           @elements = {}
           @variants = {}
           @compounds = []
+          # The dictionary walk per criteria, memoised: the variant space is
+          # finite, so this is bounded, and the merger caches the join.
+          @root_cache = {}
+          @root_mutex = Mutex.new
         end
 
         # Subclass inheritance: a child Style extends a copy of its parent's
@@ -58,22 +62,26 @@ module Poetry
         # -- The dictionary DSL ------------------------------------------------
 
         def base(classes)
+          @root_cache.clear
           @bases << classes.to_s
           self
         end
 
         def element(name, classes)
+          @root_cache.clear
           (@elements[name.to_sym] ||= []) << classes.to_s
           self
         end
 
         def variant(attr, mapping)
+          @root_cache.clear
           bucket = (@variants[attr.to_sym] ||= {})
           mapping.each { |value, classes| bucket[value] = classes.to_s }
           self
         end
 
         def compound(criteria, classes)
+          @root_cache.clear
           raise ArgumentError, "compound criteria must name at least two variant keys" if criteria.size < 2
 
           @compounds << Compound.new(criteria.transform_keys(&:to_sym), classes.to_s)
@@ -92,9 +100,8 @@ module Poetry
         # @param criteria [Hash{Symbol => Object}] resolved style values keyed by variant attr
         # @return [String, nil] the merged class string, or nil when nothing resolves
         def render(element = nil, extra: nil, **criteria)
-          classes = element ? @elements.fetch(element.to_sym, []).dup : root_classes(criteria)
-          classes << extra if extra
-          merger.merge(*classes)
+          classes = element ? @elements.fetch(element.to_sym, []) : cached_root_classes(criteria)
+          extra ? merger.merge(*classes, extra) : merger.merge(*classes)
         end
 
         # The introspection surface (previews, docs, the registry):
@@ -136,6 +143,10 @@ module Poetry
                                .map { |attr, mapping| [attr, mapping.sort_by { |value, _| value.to_s }] },
             compounds: @compounds.map { |rule| [rule.criteria.sort_by { |k, _| k.to_s }, rule.classes] }
           }
+        end
+
+        def cached_root_classes(criteria)
+          @root_cache[criteria] || @root_mutex.synchronize { @root_cache[criteria] ||= root_classes(criteria).freeze }
         end
 
         def root_classes(criteria)

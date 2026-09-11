@@ -195,6 +195,7 @@ module Poetry
           # @param _type [Symbol] the attribute type (unused; kept for signature parity)
           # @param required [Boolean] whether the attribute is required
           def add_option_validations(name, _type, required)
+            record_declared_value(name, variants: nil, required: required)
             # Type validation is automatic via ActiveModel::Type
             validates name, presence: true if required
           end

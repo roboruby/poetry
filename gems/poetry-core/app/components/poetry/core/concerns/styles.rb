@@ -201,6 +201,7 @@ module Poetry
           # @param variants [Object] the allowed variants
           # @param required [Boolean] whether the attribute is required
           def add_style_validations(name, type, variants, required)
+            record_declared_value(name, variants: type == :boolean ? nil : variants, required: required)
             # nil is an omitted value, not an off-list one; `required` adds
             # presence for the styles that may not be omitted.
             if type == :boolean
