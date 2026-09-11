@@ -33,10 +33,10 @@ module Poetry
           assert_includes root["class"], "cn-field-group-choices"
         end
 
-        def test_unknown_variant_is_invalid
-          # The Button precedent: style axes validate through ActiveModel,
-          # not a render-time KeyError.
-          refute_predicate Component.new(variant: :tight), :valid?
+        def test_unknown_variant_raises_at_construction
+          # The Button precedent: style axes validate through ActiveModel and
+          # the values guard raises in local environments.
+          assert_raises(ArgumentError) { Component.new(variant: :tight) }
           assert_predicate Component.new(variant: :choices), :valid?
         end
       end

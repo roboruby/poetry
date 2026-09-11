@@ -169,10 +169,14 @@ module Poetry
 
         # -- Validation + introspection -----------------------------------------
 
-        def test_unknown_variant_and_type_are_invalid
-          refute_predicate Component.new(variant: :sparkly), :valid?
+        # Off-list values raise at construction (development and test) with
+        # the allowed values and a did-you-mean; production logs and renders.
+        def test_unknown_variant_and_type_raise
+          error = assert_raises(ArgumentError) { Component.new(variant: :sparkly) }
+
+          assert_match(/button variant: :sparkly is not one of :default, :destructive/, error.message)
           refute_predicate Component.new(type: :reset), :invalid?
-          refute_predicate Component.new(type: :detonate), :valid?
+          assert_raises(ArgumentError) { Component.new(type: :detonate) }
         end
 
         def test_prop_definitions_expose_the_contract_surface

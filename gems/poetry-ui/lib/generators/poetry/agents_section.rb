@@ -66,7 +66,9 @@ module Poetry
             enum values, typed-slot props, helper + setter arity, yield-less
             blocks, setter keywords, required content blocks, required slots,
             did-you-mean, `--json`; `poetry:install` adds the `herb` gem it parses with). An edit
-            made after your last check is unverified markup - re-run it.
+            made after your last check is unverified markup - re-run it. Values that
+            arrive from data meet a runtime tier: an off-list variant or a missing
+            required option raises at construction in development and test.
           - Faster: the `poetry` MCP server (`.mcp.json`: command `bundle`, args
             `["exec", "poetry-agent"]`, the poetry-agent gem) serves ten tools from the live registry
             with no app boot - `compose`, `build_page`, `list_components`,

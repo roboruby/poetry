@@ -151,7 +151,7 @@ module Poetry
 
       def test_toast_trigger_root_keeps_wiring
         render_inline(ToastTrigger::Component.new(
-          title: "Saved", data: { controller: HOST_CONTROLLER, action: HOST_ACTION }
+          template: "saved-toast", title: "Saved", data: { controller: HOST_CONTROLLER, action: HOST_ACTION }
         ) { "Notify" })
 
         button = page.find("[data-slot=toast-trigger]")
