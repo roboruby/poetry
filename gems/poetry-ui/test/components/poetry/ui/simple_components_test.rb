@@ -141,12 +141,17 @@ module Poetry
         end
       end
 
-      def test_all_four_render_in_bem_mode
+      # poetry-ui is Tailwind-native and pins its namespace: a host's global
+      # :bem (set for a kit of its own on the DSL) never reaches it. The BEM
+      # token IR stays reachable per call.
+      def test_poetry_ui_stays_tailwind_whatever_the_global_mode
         Poetry::Core::Config.current.css_mode = :bem
         html = render_inline(Badge::Component.new(variant: :outline)) { "x" }.to_html
 
-        assert_includes html, "poetry-ui-badge--variant-outline"
-        refute_includes html, "rounded-md"
+        assert_equal :tailwind, Badge::Component.css_mode
+        assert_includes html, "cn-badge"
+        refute_includes html, "poetry-ui-badge--variant-outline"
+        assert_includes Badge::Component.new(variant: :outline).css(css_mode: :bem), "poetry-ui-badge--variant-outline"
       ensure
         Poetry::Core::Config.current.css_mode = :tailwind
       end

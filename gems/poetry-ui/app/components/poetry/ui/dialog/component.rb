@@ -169,7 +169,7 @@ module Poetry
         # block--modifier tokens ARE the host's styling contract.
         # @api private
         def html_attributes
-          return super unless Poetry::Core::Config.current.css_mode == :tailwind
+          return super unless css_mode == :tailwind
 
           @html_attributes.merge(class: classnames(@html_attributes[:class]))
         end

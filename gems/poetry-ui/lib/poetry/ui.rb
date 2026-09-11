@@ -10,6 +10,12 @@ require_relative "ui/chat"
 require_relative "ui/webmcp"
 require_relative "ui/reset_floor"
 
+# poetry-ui is Tailwind-native: its templates and theme layer are
+# utilities, so its components render in :tailwind whatever a host sets
+# the global css_mode to (that global is for kits the host writes on the
+# DSL; a BEM kit renders beside poetry-ui in one app).
+Poetry::Core::CSS::Modes.pin("Poetry::Ui", :tailwind)
+
 # The poetry namespace: poetry-ui shares it with poetry-core (the DSL)
 # and the optional poetry-charts.
 module Poetry
