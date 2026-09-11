@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2]
+
+### Changed
+
+- `poetry:install` imports `tokens.css` into `layer(theme)`, so a token the host already declares (`--primary`, `--accent`, `--muted`, ...) keeps its value whatever the order in the Tailwind entry, and that value now reaches Poetry's components too. Before, the appended import landed after the host's own `:root` and took the same names over: an app's brand color vanished before a single Poetry component rendered. A re-run rewrites the earlier unlayered import line in place.
+- `poetry:install` reports, before writing anything, every Poetry token name and theme key the app's stylesheets already declare, with the file and line and what Poetry paints with that role. It never blocks. `poetry:check` repeats the report as `token-collision` warnings.
+
 ## [0.1.1] - 2026-09-08
 
 ### Added

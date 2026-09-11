@@ -7,7 +7,8 @@ require_relative "../skills_section"
 module Poetry
   # `rails g poetry:install` - wires poetry into a host app:
   #
-  #   app/assets/tailwind/poetry/tokens.css   the design tokens (:root + .dark)
+  #   app/assets/tailwind/poetry/tokens.css   the design tokens (:root + .dark),
+  #                                           imported into layer(theme)
   #   app/assets/tailwind/poetry/theme.css    the Tailwind v4 @theme mapping
   #   app/assets/tailwind/poetry/animate.css  the vendored animation
   #                                           utility layer (Rails hosts
@@ -19,7 +20,15 @@ module Poetry
   #   config/poetry_components.yml            the copy-in manifest (empty)
   #
   # plus idempotent @import/@source injection into the host's Tailwind entry
-  # (append-unless-present - re-running install is always safe).
+  # (append-unless-present - re-running install is always safe; a line an
+  # earlier version wrote in a superseded form is rewritten in place).
+  #
+  # Poetry's token names are the widely-distributed v4 names, and a host may
+  # already own some of them. The install never takes a name over: the
+  # tokens import into a cascade layer and the theme mapping is `@theme
+  # default`, so a host declaration wins from either side of the import,
+  # inside poetry's components too. The first step reports every such
+  # name, so the share is a visible decision, not a surprise.
   #
   # `--charts` additionally wires poetry-charts (the gem must already be in
   # the bundle - its engine merges the @poetry/charts importmap pins and the
@@ -68,7 +77,10 @@ module Poetry
     # Injected line by line (not as one block) so a re-run after an upgrade
     # appends any line a previous poetry version didn't know about.
     ENTRY_LINES = [
-      %(@import "./poetry/tokens.css";),
+      # layer(theme): any unlayered token the host declares beats poetry's,
+      # whatever the order in the entry (the appended import used to land
+      # after the host's own :root and take its brand colors over).
+      %(@import "./poetry/tokens.css" layer(theme);),
       %(@import "./poetry/theme.css";),
       %(@import "./poetry/animate.css";),
       %(@import "./poetry/utilities.css";),
@@ -78,6 +90,13 @@ module Poetry
       %(@import "./poetry/typeset.css";),
       %(@source "./poetry/safelist.txt";)
     ].freeze
+
+    # Entry lines earlier versions wrote, keyed to their current form: a
+    # re-run rewrites them in place instead of appending a second import
+    # (two tokens imports would let the old unlayered one win again).
+    SUPERSEDED_ENTRY_LINES = {
+      %(@import "./poetry/tokens.css";) => %(@import "./poetry/tokens.css" layer(theme);)
+    }.freeze
 
     # The base layer (upstream's init writes the same defaults into the
     # host stylesheet):
@@ -99,6 +118,22 @@ module Poetry
     CSS
 
     desc "Install poetry: tokens, Tailwind theme, safelist, initializer, and the component manifest"
+
+    # Step: reports every poetry token name and theme key the host's own
+    # stylesheets already declare. Never blocks - precedence (layer(theme)
+    # + @theme default) makes the install safe - but the host reads, at
+    # the moment the share is created, which of its values now reach
+    # poetry's components and what those roles paint. Runs first, on the
+    # host's files only (poetry's vendored directory is excluded), so a
+    # re-run reports the same set. `bin/rails poetry:check` repeats it.
+    # @api private
+    def report_token_collisions
+      scan = Poetry::Core::CSS::TokenCollisions.scan(root: destination_root)
+      return if scan.ok?
+
+      scan.collisions.each { |collision| say_status :token, collision.to_s, :yellow }
+      say_status :note, scan.to_text.lines.last.strip, :yellow
+    end
 
     # Fails fast BEFORE any file lands: --charts against a bundle without
     # the gem would otherwise half-install (css copied, dead registration).
@@ -184,6 +219,7 @@ module Poetry
       unless File.exist?(File.join(destination_root, TAILWIND_ENTRY))
         create_file TAILWIND_ENTRY, %(@import "tailwindcss";\n)
       end
+      SUPERSEDED_ENTRY_LINES.each { |old, current| replace_line(TAILWIND_ENTRY, old, current) }
       ENTRY_LINES.each { |line| inject_unless_present(TAILWIND_ENTRY, line) }
     end
 
@@ -388,6 +424,18 @@ module Poetry
       return if File.exist?(path) && File.read(path).include?(line)
 
       append_to_file relative, "#{line}\n"
+    end
+
+    # Rewrites one superseded entry line in place (whole line, so the
+    # current form - which contains the old one's prefix - is never touched).
+    def replace_line(relative, old, current)
+      path = File.join(destination_root, relative)
+      return unless File.exist?(path)
+
+      pattern = /^#{Regexp.escape(old)}[ \t]*$/
+      return unless File.read(path).match?(pattern)
+
+      gsub_file relative, pattern, current
     end
   end
 end

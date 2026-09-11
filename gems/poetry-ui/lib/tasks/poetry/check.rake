@@ -63,6 +63,18 @@ namespace :poetry do
       )
     end
 
+    # The shared-name tier: every poetry token name or theme key the app's
+    # own stylesheets declare. Poetry's values are defaults, so the host's
+    # win inside poetry's components too - a warning that says which, and
+    # what the role paints, so a name that means something else here is a
+    # decision and not a surprise. The installer prints the same report.
+    findings += Poetry::Core::CSS::TokenCollisions.scan(root: Rails.root).collisions.map do |collision|
+      Poetry::Core::Check::Finding.new(rule: "token-collision", severity: :warning,
+                                       message: "#{collision.name} is yours, so it wins inside poetry's " \
+                                                "components too - poetry uses it for #{collision.role}",
+                                       file: collision.path, line: collision.line)
+    end
+
     if ENV["POETRY_CHECK_JSON"] == "1"
       puts Poetry::Core::Check.to_json(findings)
     else

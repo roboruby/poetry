@@ -87,19 +87,7 @@ module Poetry
       run_generator
       run_generator
 
-      require "open3"
-      require "tailwindcss/ruby"
-
-      compiled = Dir.chdir(destination_root) do
-        FileUtils.mkdir_p("tmp")
-        _out, err, status = Open3.capture3(
-          Tailwindcss::Ruby.executable,
-          "-i", "app/assets/tailwind/application.css", "-o", "tmp/compiled.css"
-        )
-
-        assert_predicate status, :success?, "the generated Tailwind entry failed to compile:\n#{err}"
-        File.read("tmp/compiled.css")
-      end
+      compiled = compile_entry
 
       assert_includes compiled, "--background:", "tokens missing from the compiled host build"
       assert_match(/\.cn-button[\s{,]/, compiled, "safelisted component classes missing from the compiled host build")
@@ -203,13 +191,92 @@ module Poetry
     def test_a_stale_entry_gains_only_the_missing_lines_on_rerun
       entry = File.join(destination_root, InstallGenerator::TAILWIND_ENTRY)
       FileUtils.mkdir_p(File.dirname(entry))
-      File.write(entry, %(@import "tailwindcss";\n@import "./poetry/tokens.css";\n))
+      File.write(entry, %(@import "tailwindcss";\n@import "./poetry/tokens.css";\n@import "./poetry/theme.css";\n))
 
       run_generator
       content = File.read(entry)
 
-      assert_equal 1, content.scan('@import "./poetry/tokens.css";').size, "pre-existing line not duplicated"
+      # The pre-layer tokens line is rewritten in place, not joined by a
+      # second import (which would let the old unlayered one win again).
+      assert_equal 0, content.scan('@import "./poetry/tokens.css";').size, "superseded line rewritten"
+      assert_equal 1, content.scan('@import "./poetry/tokens.css" layer(theme);').size
+      assert_equal 1, content.scan('@import "./poetry/theme.css";').size, "pre-existing line not duplicated"
       assert_equal 1, content.scan('@import "./poetry/animate.css";').size, "the upgrade path: new lines appended"
+      assert_equal 1, content.lines.index { |line| line.include?("tokens.css") }, "rewritten where it stood"
+    end
+
+    def test_tokens_are_defaults_a_host_declaration_beats
+      # The two halves of the precedence rule: the tokens import into a
+      # cascade layer (a host :root declaration wins from either side of
+      # the import) and the theme mapping is @theme default (a host @theme
+      # key wins the same way). Without them the appended import took a
+      # host's brand colors and its rounded-sm size over.
+      run_generator
+
+      assert_file "app/assets/tailwind/application.css", %r{^@import "\./poetry/tokens\.css" layer\(theme\);$}
+      assert_file "app/assets/tailwind/poetry/theme.css", /^@theme inline default \{$/
+    end
+
+    def test_a_host_that_owns_a_token_name_keeps_it_in_the_compiled_build
+      # Executed against the real compiler: the host declares --primary and
+      # --radius-sm BEFORE the appended poetry imports, the form that used
+      # to lose. The utilities must resolve to the host's values.
+      entry = File.join(destination_root, InstallGenerator::TAILWIND_ENTRY)
+      FileUtils.mkdir_p(File.dirname(entry))
+      File.write(entry, <<~CSS)
+        @import "tailwindcss";
+        :root { --primary: rgb(255 0 0); }
+        @theme { --radius-sm: 1px; --color-brand: rgb(0 0 255); --color-primary: var(--color-brand); }
+      CSS
+      FileUtils.mkdir_p(File.join(destination_root, "app/views"))
+      File.write(File.join(destination_root, "app/views/probe.html"), %(<div class="rounded-sm bg-primary"></div>))
+      run_generator
+
+      compiled = compile_entry
+
+      rounded = compiled[/\.rounded-sm\s*\{[^}]*\}/]
+
+      assert rounded, "probe class missing from the build"
+      assert_match(/1px|var\(--radius-sm\)/, rounded, "the host's radius must survive: #{rounded}")
+      refute_match(/calc\(var\(--radius\)/, rounded, "poetry's default replaced the host's rounded-sm")
+      assert_match(/--radius-sm:\s*1px/, compiled) if rounded.include?("var(--radius-sm)")
+      bg = compiled[/\.bg-primary\s*\{[^}]*\}/]
+
+      assert bg, "probe class missing from the build"
+      assert_match(/var\(--color-primary\)|var\(--color-brand\)|rgb\(0 0 255\)/, bg,
+                   "the host's @theme color must survive: #{bg}")
+      refute_match(/var\(--primary\)/, bg, "poetry's default replaced the host's --color-primary")
+      # The tokens ride the theme layer, so the host's unlayered :root wins the cascade.
+      assert_match(/@layer theme\s*\{\s*:root\s*\{[^}]*--background:/m, compiled,
+                   "poetry's tokens must sit inside @layer theme")
+      assert_includes compiled, "--primary: rgb(255 0 0)", "the host's own :root declaration is kept"
+    end
+
+    def test_install_reports_the_host_s_token_collisions_without_blocking
+      entry = File.join(destination_root, InstallGenerator::TAILWIND_ENTRY)
+      FileUtils.mkdir_p(File.dirname(entry))
+      File.write(entry, <<~CSS)
+        @import "tailwindcss";
+        :root {
+          --accent: #ffd400;
+          --brand: red;
+        }
+        @theme { --radius-sm: 1px; }
+      CSS
+
+      output = run_generator
+
+      assert_match(/application\.css:3: --accent is yours, so it wins inside poetry's components too/, output)
+      assert_match(/--radius-sm is yours/, output)
+      refute_match(/--brand/, output, "only poetry's names are reported")
+      assert_match(/2 poetry token name\(s\) are already declared/, output)
+      assert_file "app/assets/tailwind/poetry/tokens.css", /--background:/
+    end
+
+    def test_install_stays_quiet_when_the_host_declares_no_poetry_name
+      output = run_generator
+
+      refute_match(/is yours, so it wins/, output)
     end
 
     # -- the --charts flag (cross-repo: poetry-charts) ----------------------
@@ -346,6 +413,26 @@ module Poetry
       assert_match(/poetry-charts does not ship theme "vega"/, stderr)
       assert_no_file "app/assets/tailwind/poetry/tokens.css"
       assert_no_file "app/assets/tailwind/poetry/style-charts.css"
+    end
+
+    private
+
+    # Runs the real Tailwind binary over the generated entry and returns
+    # the build (an entry that fails to compile fails the test).
+    def compile_entry
+      require "open3"
+      require "tailwindcss/ruby"
+
+      Dir.chdir(destination_root) do
+        FileUtils.mkdir_p("tmp")
+        _out, err, status = Open3.capture3(
+          Tailwindcss::Ruby.executable,
+          "-i", "app/assets/tailwind/application.css", "-o", "tmp/compiled.css"
+        )
+
+        assert_predicate status, :success?, "the generated Tailwind entry failed to compile:\n#{err}"
+        File.read("tmp/compiled.css")
+      end
     end
   end
 
