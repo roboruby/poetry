@@ -2,6 +2,10 @@
 
 require "poetry/core"
 require "yaml"
+
+# Tailwind-native like poetry-ui: the charts render in :tailwind whatever a
+# host sets the global css_mode to (that global is for kits the host writes).
+Poetry::Core::CSS::Modes.pin("Poetry::Charts", :tailwind)
 require_relative "charts/version"
 require_relative "charts/config"
 require_relative "charts/theme_style"

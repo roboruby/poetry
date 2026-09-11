@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.2]
+
+### Changed
+
+- The charts pin `css_mode :tailwind` for their namespace, like poetry-ui: a host's global `:bem` (for a kit of its own on the DSL) never reaches them.
+
 ## [0.1.1] - 2026-09-08
 
 ### Changed
