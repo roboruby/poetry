@@ -62,6 +62,20 @@ module Poetry
       end
     end
 
+    def test_install_sees_herb_declared_in_an_eval_gemfile_d_file
+      # A shared Gemfile pulled in with eval_gemfile (the docs site's
+      # layout): herb declared there is declared - the install once added
+      # a second copy to the Gemfile proper.
+      File.write(File.join(destination_root, "Gemfile.shared"), %(gem "herb", ">= 0.10.3", require: false\n))
+      File.write(File.join(destination_root, "Gemfile"),
+                 %(source "https://rubygems.org"\neval_gemfile File.expand_path("Gemfile.shared", __dir__)\n))
+      run_generator %w[--skip-bundle]
+
+      assert_file "Gemfile" do |content|
+        assert_equal 0, content.scan(/gem ["']herb["']/).size, "herb is already declared in Gemfile.shared"
+      end
+    end
+
     def test_install_without_a_gemfile_skips_the_herb_step
       run_generator %w[--skip-bundle]
 

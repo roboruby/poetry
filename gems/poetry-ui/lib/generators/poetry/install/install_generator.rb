@@ -305,7 +305,7 @@ module Poetry
       gemfile = File.join(destination_root, "Gemfile")
       return unless File.exist?(gemfile)
 
-      if File.read(gemfile).match?(HERB_GEM_LINE)
+      if gemfile_sources(gemfile).any? { |source| source.match?(HERB_GEM_LINE) }
         say_status :skip, "herb is already in the Gemfile (poetry:check's parser)", :cyan
         return
       end
@@ -406,6 +406,19 @@ module Poetry
         import { registerPoetryAgent } from "@poetry/agent"
         registerPoetryAgent(application)
       JS
+    end
+
+    # The Gemfile's text plus every file it pulls in with eval_gemfile (a
+    # shared Gemfile.shared, a family Gemfile) - a gem declared there is
+    # declared, and the install must not add it a second time.
+    def gemfile_sources(gemfile)
+      text = File.read(gemfile)
+      pattern = /^\s*eval_gemfile\s+(?:File\.expand_path\()?["']([^"']+)["']/
+      evaluated = text.scan(pattern).flatten.filter_map do |relative|
+        path = File.expand_path(relative, File.dirname(gemfile))
+        File.read(path) if File.exist?(path)
+      end
+      [text] + evaluated
     end
 
     def ui_theme_path
