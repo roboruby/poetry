@@ -55,6 +55,33 @@
     $ bin/rails g poetry:install --theme lyra
     $ bin/rails tailwindcss:build
   CODE
+  own_component_source = <<~CODE
+    # app/components/billing/invoice_status/component.rb
+    module Billing
+      module InvoiceStatus
+        class Component < Poetry::Core::Component
+          helper :billing_invoice_status          # the view helper's name
+
+          AGENT_RULES = ["Pass the invoice's state as tone:; never a free-text label."].freeze
+
+          style :tone, default: :neutral, required: true, variants: %i[neutral paid overdue]
+
+          def call
+            content_tag(:span, content, class: css)
+          end
+        end
+
+        class Style < Poetry::Core::Style
+          base "cn-badge inline-flex"
+          variant :tone, neutral: "cn-badge-variant-outline", paid: "cn-badge-variant-success",
+                         overdue: "cn-badge-variant-destructive"
+        end
+      end
+    end
+  CODE
+  own_component_view_source = <<~CODE
+    #{o}= billing_invoice_status(tone: :overdue) { "Overdue" } #{e}
+  CODE
   subclass_source = <<~CODE
     # The component and its sidecar Style travel as a pair - the subclass
     # inherits the full dictionary and can extend or override axes.
@@ -210,6 +237,65 @@
         <a href="<%= theming_path %>#overrides">override ladder</a> in the
         Theming guide applies unchanged inside engines: template utilities,
         token imports, and declared <code>cn-*</code> overrides.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="your-own-components">Your own components</h2>
+      <p>
+        A component you write on the DSL, in an engine or in the
+        application itself, gets the whole authoring surface: the Style
+        dictionary, options, parts, attribute merging and
+        <code>data-slot</code>. Name its view helper with
+        <code>helper</code>, and it is first-class on the surfaces that
+        read the registry too. Nothing to register, no manifest to keep
+        fresh: discovery is by convention, a published Component under
+        <code>app/</code> outside the <code>poetry/</code> namespace.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: own_component_source, language: "ruby", label: "An app component") %>
+    <%= poetry_code_block(code: own_component_view_source, language: "erb", label: "In a view") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        The helper is defined when the app boots and again on every code
+        reload, so a view can call it before anything else has referenced
+        the class. It takes keywords and a content block, like every Poetry
+        helper. From there the booted surfaces know the component:
+      </p>
+      <ul>
+        <li>
+          <strong><code>bin/rails poetry:check</code></strong> lints
+          <code>billing_invoice_status</code> under its own name, with its
+          own contract: unknown variants, near-miss options, a positional
+          argument, and the stable-identity heuristics.
+        </li>
+        <li>
+          <strong><code>/poetry/llms.txt</code> and <code>llms-full.txt</code></strong>
+          list it under an App components section, agent rules included, so
+          an agent reading the app's catalog sees your vocabulary beside the
+          gem's.
+        </li>
+        <li>
+          <strong><code>rails g poetry:skill</code></strong> writes a
+          <code>references/app.md</code> with the same contract format and
+          adds it to the skill's menu.
+        </li>
+        <li>
+          <strong>The MCP server's <code>check</code> tool</strong> reads the
+          declared helper names from source, so it agrees the helper exists;
+          the full contract and the runtime skill map stay with the gems,
+          because that server runs without booting the app.
+        </li>
+      </ul>
+      <p>
+        Pick a distinctive helper name: a name any view helper already owns
+        raises at boot, and a generic word would make ordinary method calls
+        look like component calls to the check. Components copied in with
+        <code>poetry:add</code> keep their gem namespace and their
+        <code>poetry_</code> helpers, and are described by the gem's registry
+        as before.
       </p>
     <% end %>
   </section>

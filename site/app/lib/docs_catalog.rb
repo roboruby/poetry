@@ -109,7 +109,9 @@ class DocsCatalog
                        "CSS - the host's theme styles every mounted engine, so one retheme " \
                        "command restyles the whole application, engines included. The recipe: " \
                        "gemspec dependency, host layout, the tailwindcss-rails engines wiring, " \
-                       "and the subclass pair for engine-owned component styling."),
+                       "the subclass pair for engine-owned component styling, and your own " \
+                       "components on the DSL: helper :name makes them first-class on " \
+                       "poetry:check, llms.txt and the skill."),
     Entry.new(slug: "accessibility", title: "Accessibility", section: "docs", icon: :accessibility,
               description: "What Poetry guarantees by construction - required accessible names, " \
                        "Field-chain aria wiring, native form participation, overlay focus - " \
