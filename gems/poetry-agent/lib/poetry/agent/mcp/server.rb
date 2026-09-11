@@ -196,7 +196,17 @@ module Poetry
         # Lazy because the usage skill is generated from the registry on
         # first fetch - server boot stays instant.
         def self.from_registry(root, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [])
-          committed = Poetry::Core::Registry.committed(root)
+          from_registries([root], helpers: helpers, icon_names: icon_names, skills: skills,
+                                  app_root: app_root, recipes: recipes)
+        end
+
+        # Several registry roots as one catalog (Registry.merged: later
+        # roots win a path collision, block templates resolve to absolute
+        # paths): the gems' published registries and, when the app
+        # committed its own with `bin/rails poetry:registry`, the app's -
+        # its components then describe, check and compose like a gem's.
+        def self.from_registries(roots, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [])
+          committed = Poetry::Core::Registry.merged(roots, source_root: roots.first)
           # The app's own components declare their helpers in source
           # (`helper :name`); a boot-free scan of app_root's component files
           # adds those names to the valid set, so the check tool agrees with
@@ -206,12 +216,22 @@ module Poetry
           if app_root
             Poetry::Core::HostComponents.declared_helpers(root: app_root).each { |name| helper_entries[name] ||= {} }
           end
+          helpers = (helpers + mapped_helpers(committed.entries)).uniq if helpers
           catalog = Poetry::Core::Check::Catalog.new(committed.entries, helpers: helpers,
                                                                         helper_entries: helper_entries,
                                                                         icon_names: icon_names,
                                                                         helper_args: committed.helper_args)
           new(entries: committed.entries, catalog: catalog, blocks: committed.blocks || {},
-              root: root, skills: skills, app_root: app_root, recipes: recipes)
+              root: committed.source_root.to_s, skills: skills, app_root: app_root, recipes: recipes)
+        end
+
+        # The helper each entry maps to (its declared name or the poetry_
+        # convention), so an explicit helper list never hides another
+        # root's components.
+        def self.mapped_helpers(entries)
+          entries.map do |path, entry|
+            entry["helper"] || "poetry_#{path.sub(%r{\Apoetry/[^/]+/}, "").tr("/", "_")}"
+          end
         end
 
         # app_root: the HOST app directory (where `bundle exec poetry-agent`
@@ -945,14 +965,18 @@ module Poetry
         end
 
         # name may be the title (button, command_dialog) or the full path.
+        # A registry path, a title, or a helper name (the poetry_ convention
+        # or an app component's declared helper).
         def resolve(name)
           return name if @entries.key?(name)
 
-          @entries.keys.find { |path| title(path) == name }
+          @entries.keys.find { |path| title(path) == name || helper(path) == name }
         end
 
-        def title(path) = path.split("/").drop(2).join("_")
-        def helper(path) = "poetry_#{title(path)}"
+        # A gem path drops its poetry/<gem>/ prefix; an app path is its own.
+        def title(path) = (path.start_with?("poetry/") ? path.split("/").drop(2) : path.split("/")).join("_")
+        # The declared helper (an app component), or the poetry_ convention.
+        def helper(path) = @entries.dig(path, "helper") || "poetry_#{title(path)}"
 
         def result(id, value) = { "jsonrpc" => "2.0", "id" => id, "result" => value }
 

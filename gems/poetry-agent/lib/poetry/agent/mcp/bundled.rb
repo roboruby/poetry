@@ -12,23 +12,32 @@ module Poetry
       module Bundled
         module_function
 
-        # @param root [String, nil] a registry root; defaults to poetry-ui
-        # @param app_root [String] the host app (build_page's probe/direct
+        # @param root [String, nil] one more registry root to serve (the
+        #   bundle's published registries and the app's committed one are
+        #   found on their own)
+        # @param app_root [String] the host app (its committed registry, when
+        #   `bin/rails poetry:registry` wrote one; build_page's probe/direct
         #   steps read its config/theme)
         # @return [Server]
         # @raise [ArgumentError] when no component registry is found
         def server(root: nil, app_root: Dir.pwd)
           ui = soft_require("poetry/ui")
-          root ||= ui ? Poetry::Ui.root.to_s : Gem::Specification.find_all_by_name("poetry-ui").first&.gem_dir
-          registry = root && File.join(root, Poetry::Core::Registry::RELATIVE_PATH)
-          unless registry && File.exist?(registry)
-            raise ArgumentError, "no component registry at #{registry || "(no poetry-ui found)"} - pass root:"
-          end
+          roots = Poetry::Core::Registry.gem_roots(app_root: app_root).map(&:to_s)
+          roots.unshift(root) if root && !roots.include?(root)
+          raise ArgumentError, "no published component registry in the bundle - pass a root" if roots.empty?
 
           skills, helpers, recipes =
-            ui ? [Poetry::Ui.agent_skills, Poetry::Ui.helper_names, Poetry::Ui.recipe_items.summaries] : [{}, nil, []]
-          Server.from_registry(root, icon_names: icon_names, helpers: helpers, skills: skills,
-                                     app_root: app_root, recipes: recipes)
+            if ui
+              [Poetry::Ui.agent_skills(app_root: app_root), Poetry::Ui.helper_names, Poetry::Ui.recipe_items.summaries]
+            else
+              [{}, nil, []]
+            end
+          # The valid helper set: the registries' own sections carry every
+          # gem helper and the app's declared ones; poetry-ui's live names
+          # ride along when the gem is loaded, for a registry that predates
+          # the sections.
+          Server.from_registries(roots, icon_names: icon_names, helpers: helpers, skills: skills,
+                                        app_root: app_root, recipes: recipes)
         end
 
         # The lucide names, or nil for a host without poetry-lucide (check

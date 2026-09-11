@@ -458,6 +458,44 @@ module Poetry
         end
       end
 
+      # The app's committed registry (bin/rails poetry:registry) joins the
+      # gems' as one more root: its components describe and check with
+      # their full contracts, under their declared helpers.
+      def test_from_registries_serves_the_app_s_committed_registry_with_contracts
+        require "tmpdir"
+        Dir.mktmpdir("host-app") do |app_root|
+          FileUtils.mkdir_p(File.join(app_root, "config"))
+          File.write(File.join(app_root, "config/component_registry.yml"), <<~YAML)
+            components:
+              demo/badge:
+                class_name: Demo::Badge::Component
+                identifier: demo--badge
+                bem_block: demo-badge
+                helper: demo_badge
+                styles:
+                - name: tone
+                  variants: [neutral, loud]
+                options: []
+                slots: []
+                agent_rules:
+                - Demo badges are read-only labels.
+            helper_args:
+              demo_badge: 0
+          YAML
+          target = MCP::Server.from_registries([Poetry::Core.root.to_s, app_root], app_root: app_root)
+
+          assert_includes call_on(target, "check", "source" => %(<%= demo_badge(tone: :loud) { "x" } %>)), "PASS"
+          failing = call_on(target, "check", "source" => %(<%= demo_badge(tone: :nope) { "x" } %>))
+
+          assert_includes failing, "FAIL"
+          assert_includes failing, "not a demo_badge tone"
+          described = call_on(target, "describe_component", "name" => "demo_badge", "detail" => "full")
+
+          assert_includes described, "demo_badge"
+          assert_includes described, "Demo badges are read-only labels."
+        end
+      end
+
       def test_check_fails_and_reports_findings
         text = call("check", "source" => %(<%= poetry_button(variant: :nope) { "x" } %>))
 
