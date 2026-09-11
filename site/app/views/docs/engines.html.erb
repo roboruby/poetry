@@ -283,12 +283,26 @@
           adds it to the skill's menu.
         </li>
         <li>
-          <strong>The MCP server's <code>check</code> tool</strong> reads the
-          declared helper names from source, so it agrees the helper exists;
-          the full contract and the runtime skill map stay with the gems,
-          because that server runs without booting the app.
+          <strong>The MCP server</strong> runs without booting the app, so
+          it reads registries from files. <code>bin/rails poetry:registry</code>
+          writes the app's components to <code>config/component_registry.yml</code>,
+          the same path a gem's registry lives at; commit it and the server
+          describes, checks and composes them with full contracts, and the
+          runtime skill carries the same <code>references/app.md</code>.
+          Without the file, the check tool still knows the declared helper
+          names from source. Once written it is a build artifact:
+          <code>poetry:check</code> warns and <code>poetry:verify</code>
+          fails when it no longer matches the classes.
         </li>
       </ul>
+      <p>
+        Registry roots are found by convention, not by name: every loaded
+        engine whose root carries a published registry joins
+        <code>poetry:check</code>, the census in <code>AGENTS.md</code>, and
+        the MCP server. An engine built on the DSL commits its own registry
+        the way poetry-ui does, and its components are served to every
+        host that bundles it, with nothing to configure.
+      </p>
       <p>
         Pick a distinctive helper name: a name any view helper already owns
         raises at boot, and a generic word would make ordinary method calls

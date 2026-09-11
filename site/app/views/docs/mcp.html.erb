@@ -201,8 +201,11 @@
         The committed registry is the single source: the MCP tools, the
         <code>poetry:check</code> linter, the editor snippets, and the
         machine-readable catalog are all projections of it, so none of them
-        can drift from what ships. In your app the mounted engine serves that
-        catalog directly:
+        can drift from what ships. The server reads every published registry
+        in your bundle, and your own components join it once
+        <code>bin/rails poetry:registry</code> has committed the app's file
+        (the <a href="<%= engines_guide_path %>#your-own-components">Rails Engines guide</a>).
+        In your app the mounted engine serves that catalog directly:
       </p>
     <% end %>
     <%= poetry_code_block(code: llms_source, language: "plaintext", label: "llms.txt routes") %>
