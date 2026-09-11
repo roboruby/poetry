@@ -66,7 +66,7 @@ visual layer leaks omitted-token defaults through the scoped style registry
 refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
 
 <!-- poetry:agents:begin -->
-## Building UI with poetry (88 components + 13 chart components + 8 blocks)
+## Building UI with poetry (101 components + 8 blocks)
 
 - FIRST MOVE on any UI brief: call the poetry MCP `compose` tool with the
   task text, before writing any ERB. It routes to the matching vetted
@@ -83,7 +83,7 @@ refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
   the last edit (unknown components/slots/variants/wiring, icon names,
   enum values, typed-slot props, helper + setter arity, yield-less
   blocks, setter keywords, required content blocks, required slots,
-  did-you-mean, `--json`; needs the `herb` gem in the Gemfile). An edit
+  did-you-mean, `--json`; `poetry:install` adds the `herb` gem it parses with). An edit
   made after your last check is unverified markup - re-run it.
 - Faster: the `poetry` MCP server (`.mcp.json`: command `bundle`, args
   `["exec", "poetry-agent"]`, the poetry-agent gem) serves ten tools from the live registry
