@@ -155,6 +155,18 @@ module Poetry
       ensure
         Poetry::Core::Config.current.css_mode = :tailwind
       end
+
+      # The merger follows the mode too: a host's BEM merger, set for a kit
+      # of its own, never reaches poetry-ui's Tailwind conflict resolution.
+      def test_poetry_ui_keeps_tailwind_merging_under_a_global_bem_merger
+        Poetry::Core::Config.current.classname_merger = Poetry::Core::CSS::BemMerger.new
+        html = render_inline(Button::Component.new(class: "p-4 p-2")) { "x" }.to_html
+
+        assert_includes html, "p-2"
+        refute_includes html, "p-4", "utility conflicts still resolve"
+      ensure
+        Poetry::Core::Config.current.classname_merger = Poetry::Core::CSS::TailwindMerger.new
+      end
     end
   end
 end

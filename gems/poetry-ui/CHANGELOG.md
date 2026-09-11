@@ -11,7 +11,7 @@
 
 ### Changed
 
-- poetry-ui pins its components to `css_mode :tailwind`. A host's global `css_mode = :bem` (for a kit of its own on the DSL) no longer strips poetry-ui's styling; the two render side by side. The seeded initializer's comment says so instead of offering `:bem` as a poetry-ui option.
+- poetry-ui pins its components to `css_mode :tailwind`, and the class-name merger follows: a host's global `BemMerger` (for a kit of its own) never reaches poetry-ui's utility conflict resolution. A host's global `css_mode = :bem` (for a kit of its own on the DSL) no longer strips poetry-ui's styling; the two render side by side. The seeded initializer's comment says so instead of offering `:bem` as a poetry-ui option.
 - `poetry:check` and the AGENTS.md census find registry roots by convention (every loaded engine with a published registry, then the app's own file) and name no gem; poetry-charts is no longer special-cased, and any engine built on the DSL that commits a registry joins the check the same way.
 - `poetry:install` imports `tokens.css` into `layer(theme)`, so a token the host already declares (`--primary`, `--accent`, `--muted`, ...) keeps its value whatever the order in the Tailwind entry, and that value now reaches Poetry's components too. Before, the appended import landed after the host's own `:root` and took the same names over: an app's brand color vanished before a single Poetry component rendered. A re-run rewrites the earlier unlayered import line in place.
 - `poetry:install` reports, before writing anything, every Poetry token name and theme key the app's stylesheets already declare, with the file and line and what Poetry paints with that role. It never blocks. `poetry:check` repeats the report as `token-collision` warnings.
