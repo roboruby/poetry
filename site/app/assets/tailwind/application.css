@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "./poetry/tokens.css";
+@import "./poetry/tokens.css" layer(theme);
 @import "./poetry/theme.css";
 @import "./poetry/animate.css";
 @import "./poetry/utilities.css";

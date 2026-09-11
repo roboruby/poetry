@@ -98,6 +98,36 @@
 
   <section class="flex flex-col gap-4">
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="your-tokens-win">Your tokens win</h2>
+      <p>
+        Poetry's token names are the widely shared ones
+        (<code>--primary</code>, <code>--accent</code>, <code>--muted</code>,
+        <code>--radius</code>), and an existing app may already own some of
+        them with its own meaning. Poetry's values are defaults: the tokens
+        import into <code>layer(theme)</code> and the Tailwind mapping is
+        <code>@theme default</code>, so anything you declare wins, whether
+        it sits before or after the Poetry imports, and your value reaches
+        Poetry's components too. Installing Poetry never changes a color or
+        a radius your app already set.
+      </p>
+      <p>
+        The install tells you which of your declarations now reach Poetry:
+        each shared name is listed with its file and line and what Poetry
+        paints with that role, and <code>bin/rails poetry:check</code>
+        repeats the list as <code>token-collision</code> warnings. If a name
+        means something else in your app (an <code>--accent</code> that is a
+        brand color, where Poetry's is the quiet hover surface in menus),
+        rename yours, or set Poetry's meaning explicitly in
+        <code>design-overrides.css</code>, which loads after everything and
+        wins. A value declared on <code>:root</code> alone also applies in
+        dark mode; declare a <code>.dark</code> value beside it when the two
+        should differ.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <h2 id="owning-the-design">Owning the design outright</h2>
       <p>
         The vendored slot is refreshed on every install re-run, which keeps
