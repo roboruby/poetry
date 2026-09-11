@@ -47,6 +47,14 @@ surface.
   published family's base) and lives in its own `app/components`
   namespace. Never copy a poetry component's source into the app to
   modify it - subclass it, or compose it in a template.
+- An app or engine component names its view helper with `helper :name`
+  (a distinctive name; keywords + content block, like every poetry
+  helper). That one declaration makes it first-class: the helper is
+  defined at boot and on reload, `poetry:check` lints it under that name
+  with its own contract, llms.txt and the generated skill list it. Run
+  `bin/rails poetry:registry` and commit the file so the MCP server (which
+  never boots the app) describes and checks it too; `poetry:verify` fails
+  when that file is stale.
 - Inner classes that exist only to serve a family (item builders,
   internal wrappers) declare `internal_component!` so the registry and
   every surface derived from it skip them.

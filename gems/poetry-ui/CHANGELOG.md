@@ -4,7 +4,7 @@
 
 ### Added
 
-- App components are first-class on the booted surfaces. A component the app defines on the DSL with `helper :name` renders through that helper, `poetry:check` lints it under that name with its own contract, `/poetry/llms.txt` and `llms-full.txt` list it under an App components section with its agent rules, and `poetry:skill` writes a `references/app.md` with a menu line. The MCP server's `check` tool learns the declared helpers from source, so it agrees the helper exists; its contracts and the runtime skill map stay gem-only (boot-free by design).
+- App components are first-class on the booted surfaces. A component the app defines on the DSL with `helper :name` renders through that helper, `poetry:check` lints it under that name with its own contract, `/poetry/llms.txt` and `llms-full.txt` list it under an App components section with its agent rules, and `poetry:skill` writes a `references/app.md` with a menu line. The AGENTS.md section and the poetry-component skill teach the declaration. The MCP server's `check` tool learns the declared helpers from source, so it agrees the helper exists; its contracts and the runtime skill map stay gem-only (boot-free by design).
 
 - `bin/rails poetry:registry` writes the app's own components to `config/component_registry.yml`, the path a gem's registry lives at, so the MCP server and the runtime skill find them boot-free with full contracts and agent rules. Opt-in; once written, `poetry:check` warns (`registry-stale`) and `poetry:verify` fails when the file no longer matches the classes.
 
