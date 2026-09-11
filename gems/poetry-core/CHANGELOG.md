@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.2]
+
+### Added
+
+- `Poetry::Core::CSS::TokenCollisions`: scans a host app's stylesheets for declarations of Poetry's token names (`--primary`, `--accent`, `--radius`, ...) and Tailwind theme keys (`--color-*`, `--radius-*`), and reports each with its location and what the role paints in Poetry's components. `poetry:install` and `poetry:check` run it.
+
+### Changed
+
+- The generated Tailwind theme mapping is `@theme inline default`. A host `@theme` value for the same key (its own `--color-primary`, a `--radius-sm` it set before Poetry arrived) wins whether it is declared before or after the mapping; Poetry's value still applies wherever the host set nothing. Before, the mapping replaced the host's keys wholesale, so every `rounded-sm` in an existing app changed size.
+
 ## [0.1.1] - 2026-09-08
 
 ### Added

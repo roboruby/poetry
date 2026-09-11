@@ -89,7 +89,16 @@ module Poetry
           # Travels with the theme mapping.
           lines << "@custom-variant dark (&:where(.dark, .dark *));"
           lines << ""
-          lines << "@theme inline {"
+          # `default`: every key here is a DEFAULT in Tailwind's theme
+          # registry - a host @theme value for the same key (its own
+          # --color-primary, or a --radius-sm it set before poetry arrived)
+          # wins whether it is declared before or after this file, and
+          # poetry's value still applies wherever the host set nothing.
+          # Without it the install's appended import replaced the host's
+          # keys wholesale (every rounded-sm in an existing app changed
+          # size). The tokens.css import carries the same posture on the
+          # cascade side (layer(theme) in the installer's entry line).
+          lines << "@theme inline default {"
           RADIUS_SCALE.each { |step, value| lines << "  --radius-#{step}: #{value};" }
           @tokens.color_names("light").each do |name|
             lines << "  --color-#{name}: var(--#{name});"

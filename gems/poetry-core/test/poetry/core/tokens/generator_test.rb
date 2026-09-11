@@ -21,7 +21,7 @@ module Poetry
         def test_tailwind_theme_css_maps_every_color_var
           css = Generator.new.tailwind_theme_css
 
-          assert_includes css, "@theme inline {"
+          assert_includes css, "@theme inline default {"
           # The Base-era multiplicative scale: identical px to the old
           # additive ny-v4 stops at the default --radius, plus 2xl..4xl for
           # the style ports.
