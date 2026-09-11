@@ -14,7 +14,7 @@ module Poetry
         html = ApplicationController.render(inline: %(<%= demo_badge(tone: :loud) { "New" } %>))
 
         assert_includes html, "New"
-        assert_includes html, "demo-badge-loud"
+        assert_includes html, "bg-primary"
       end
 
       def test_poetry_check_lints_the_app_component_under_its_own_name

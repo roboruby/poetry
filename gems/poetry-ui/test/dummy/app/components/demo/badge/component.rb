@@ -28,8 +28,10 @@ module Demo
     end
 
     class Style < Poetry::Core::Style
-      base "demo-badge inline-flex"
-      variant :tone, neutral: "demo-badge-neutral", loud: "demo-badge-loud"
+      # Real utilities: the gem's compiled-CSS gate holds every loaded
+      # dictionary, this one included, to a real Tailwind build.
+      base "inline-flex items-center rounded-md px-2 text-xs"
+      variant :tone, neutral: "bg-muted text-muted-foreground", loud: "bg-primary text-primary-foreground"
     end
   end
 end
