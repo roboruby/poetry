@@ -121,9 +121,9 @@
     end
 
     # config/initializers/poetry.rb - or make :bem the default for every kit
-    # that declares nothing (poetry-ui and poetry-charts pin their own)
+    # that declares nothing (poetry-ui and poetry-charts pin their own); the
+    # merger follows the mode, so this line is all it takes
     Poetry::Core::Config.current.css_mode = :bem
-    Poetry::Core::Config.current.classname_merger = Poetry::Core::CSS::BemMerger.new
   CODE
   bem_classes_source = <<~CODE
     pill = MyKit::Pill::Component.new(variant: :danger, interactive: true)
@@ -390,10 +390,15 @@
         from the component path, each style value becomes a
         <code>block--attribute-value</code> modifier, booleans become
         presence modifiers, and named elements become
-        <code>block__element</code>. The merger pairs with the mode:
-        <code>BemMerger</code> dedupes and joins caller classes instead
-        of applying Tailwind conflict semantics to a stylesheet that is
-        not Tailwind. The mode is decided per kit: a kit declares it once
+        <code>block__element</code>. The merger follows the mode: a
+        <code>:bem</code> kit merges caller classes with
+        <code>BemMerger</code>, which dedupes and joins instead of applying
+        Tailwind conflict semantics to a stylesheet that is not Tailwind,
+        and a <code>:tailwind</code> kit merges with the Tailwind merger. The
+        global <code>classname_merger</code> is honoured whenever it is of
+        the kit's kind, so a customised Tailwind merger still reaches
+        poetry-ui and a BEM merger of your own still reaches your kit. The
+        mode is decided per kit: a kit declares it once
         on its base class (<code>css_mode :bem</code>, inherited) or pins
         its namespace (<code>Poetry::Core::CSS::Modes.pin("Acme::Ui", :bem)</code>);
         the global <code>Poetry::Core::Config.current.css_mode</code> is the
