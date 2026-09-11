@@ -25,14 +25,24 @@ module Poetry
           assert_equal "a b", @merger.merge(["a", nil], "", "b")
         end
 
-        def test_the_classnames_seam_uses_the_configured_merger
+        # The merger follows the mode: a configured BEM merger serves the
+        # classnames seam of a component in :bem mode, and a component in
+        # :tailwind mode keeps Tailwind conflict resolution regardless.
+        def test_the_classnames_seam_uses_the_configured_merger_in_bem_mode
           original = Poetry::Core::Config.current.classname_merger
           Poetry::Core::Config.current.classname_merger = BemMerger.new
+          Poetry::Core::Config.current.css_mode = :bem
           html = render_inline(Poetry::Core::Box::Component.new(html_tag: "span",
                                                                 class: "custom custom p-4 p-2")) { "x" }
 
-          assert_equal "custom p-4 p-2", html.css("span").first["class"]
+          assert html.css("span").first["class"].end_with?(" custom p-4 p-2")
+          Poetry::Core::Config.current.css_mode = :tailwind
+          html = render_inline(Poetry::Core::Box::Component.new(html_tag: "span",
+                                                                class: "custom custom p-4 p-2")) { "x" }
+
+          assert_equal "custom custom p-2", html.css("span").first["class"]
         ensure
+          Poetry::Core::Config.current.css_mode = :tailwind
           Poetry::Core::Config.current.classname_merger = original
         end
       end

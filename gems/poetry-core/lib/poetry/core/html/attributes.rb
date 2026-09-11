@@ -93,7 +93,7 @@ module Poetry
         #   attrs.merge_classes!("btn-primary")
         #   attrs["class"] # => "btn btn-primary"
         def merge_classes!(*classnames)
-          self["class"] = config.classname_merger.merge(self["class"], *classnames)
+          self["class"] = classname_merger.merge(self["class"], *classnames)
           self
         end
 
@@ -378,6 +378,37 @@ module Poetry
           @config ||= Poetry::Core::Config.current.deep_dup
         end
 
+        public
+
+        # The merger every class merge on this object uses: the one the
+        # owning component assigned (its kit's, from its CSS mode), else
+        # the configured global.
+        #
+        # @return [#merge]
+        def classname_merger
+          @classname_merger || config.classname_merger
+        end
+
+        # Assigns the merger (the component does this for its root
+        # attributes, from its CSS mode).
+        #
+        # @return [#merge]
+        attr_writer :classname_merger
+
+        # A copy keeps the assigned merger. The base class copies through a
+        # plain constructor, and every non-mutating merge (`merge`,
+        # `deep_dup`, `merge_classes`) copies first - without this the
+        # kit's merger would silently revert to the global on those paths.
+        #
+        # @return [Poetry::Core::HTML::Attributes]
+        def dup
+          copy = super
+          copy.classname_merger = @classname_merger if @classname_merger
+          copy
+        end
+
+        private
+
         # Normalizes flat data-* and aria-* attributes to nested format.
         #
         # Converts "data-controller" => "dropdown" to data: { controller: "dropdown" }
@@ -646,7 +677,7 @@ module Poetry
         # @api private
         def update_single_attribute(key, old_value, new_value, &block)
           if key == "class"
-            config.classname_merger.merge(old_value, new_value)
+            classname_merger.merge(old_value, new_value)
           elsif key == "data"
             config.stimulus_merger.merge(old_value, convert_value(new_value), &block)
           elsif key == "data-controller"

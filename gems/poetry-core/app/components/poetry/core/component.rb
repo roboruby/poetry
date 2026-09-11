@@ -313,6 +313,8 @@ module Poetry
         @attributes = self.class._default_attributes.deep_dup
         html_attrs = guard_passthrough(attributes.with_indifferent_access.except(*attribute_names))
         @html_attributes = Poetry::Core::HTML::Attributes.new(html_attrs)
+        # The root merges classes with the kit's merger (its CSS mode's).
+        @html_attributes.classname_merger = classname_merger
 
         assign_attributes attributes.with_indifferent_access.slice(*attribute_names)
       end
@@ -453,15 +455,24 @@ module Poetry
 
       # Merges multiple class name values into a single string.
       #
-      # Uses the configured classname merger (typically Tailwind Merge) to
-      # intelligently combine CSS class names, handling conflicts and duplicates.
+      # Uses the kit's classname merger (Tailwind Merge in :tailwind mode,
+      # the BEM merger in :bem mode - {Poetry::Core::CSS::Modes.merger_for})
+      # to combine CSS class names, handling conflicts and duplicates.
       #
       # @param classnames [Array<String, nil>] class names to merge
       # @return [String] the merged class names
       # @example
       #   classnames("text-red-500", "text-blue-500") # => "text-blue-500"
       def classnames(*classnames)
-        self.class.config.classname_merger.merge(*classnames)
+        classname_merger.merge(*classnames)
+      end
+
+      # The class-name merger this component merges with: the one that
+      # matches its CSS mode ({Poetry::Core::CSS::Modes.merger_for}).
+      #
+      # @return [#merge]
+      def classname_merger
+        Poetry::Core::CSS::Modes.merger_for(css_mode)
       end
 
       # HTML-safe JSON for embedding in a `<script type="application/json">`

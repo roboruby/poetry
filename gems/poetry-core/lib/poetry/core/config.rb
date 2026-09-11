@@ -50,7 +50,11 @@ module Poetry
         #
         # - `classname_merger` ({Poetry::Core::CSS::TailwindMerger}) - resolves
         #   conflicting utility classes when caller classes meet component
-        #   classes.
+        #   classes. Each kit merges with the merger of its CSS mode
+        #   ({Poetry::Core::CSS::Modes.merger_for}): this global serves every
+        #   kit whose mode matches its kind (a customised Tailwind merger
+        #   reaches poetry-ui; a {Poetry::Core::CSS::BemMerger} reaches a BEM
+        #   kit), and a kit of the other kind uses the stock merger instead.
         # - `stimulus_merger` ({Poetry::Core::Stimulus::Merger}) - combines
         #   Stimulus data attributes without duplicating controllers or
         #   actions.

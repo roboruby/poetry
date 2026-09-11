@@ -117,6 +117,51 @@ module Poetry
           Poetry::Core::CSS::Modes.unpin("Poetry::Core::Concerns::BemTest::Chip")
         end
 
+        def test_the_merger_follows_the_kit_s_mode
+          assert_instance_of Poetry::Core::CSS::BemMerger, Kit::Tag::Component.new.classname_merger
+          assert_same Poetry::Core::Config.current.classname_merger, Chip::Component.new.classname_merger,
+                      "a kit on the global :tailwind mode merges with the configured merger"
+          # A BEM kit dedupes tokens and never resolves utility conflicts;
+          # a Tailwind kit resolves them. Both through the root attributes.
+          bem_root = Kit::Tag::Component.new(class: "acme acme--x acme").html_attributes
+          tailwind_root = Chip::Component.new(class: "acme acme--x acme").html_attributes
+
+          assert bem_root.merge_classes("p-4 p-2")["class"].end_with?(" acme acme--x p-4 p-2"), "BEM: dedupe, no conflicts"
+          assert tailwind_root.merge_classes("p-4 p-2")["class"].end_with?(" acme acme--x acme p-2"), "Tailwind: conflicts"
+        end
+
+        def test_the_global_merger_is_honoured_when_it_matches_the_mode_and_replaced_when_it_does_not
+          bem = Poetry::Core::CSS::BemMerger.new
+          Poetry::Core::Config.current.classname_merger = bem
+
+          assert_same bem, Poetry::Core::CSS::Modes.merger_for(:bem), "a host's BEM merger serves its BEM kit"
+          assert_instance_of Poetry::Core::CSS::TailwindMerger, Poetry::Core::CSS::Modes.merger_for(:tailwind),
+                             "a Tailwind kit falls back to the stock Tailwind merger"
+          assert_same Poetry::Core::CSS::Modes.merger_for(:tailwind), Poetry::Core::CSS::Modes.merger_for(:tailwind),
+                      "stock mergers are built once"
+          tailwind = Poetry::Core::CSS::TailwindMerger.new
+          Poetry::Core::Config.current.classname_merger = tailwind
+
+          assert_same tailwind, Poetry::Core::CSS::Modes.merger_for(:tailwind), "a customised Tailwind merger is kept"
+          assert_instance_of Poetry::Core::CSS::BemMerger, Poetry::Core::CSS::Modes.merger_for(:bem)
+        ensure
+          Poetry::Core::Config.current.classname_merger = Poetry::Core::CSS::TailwindMerger.new
+        end
+
+        def test_an_attributes_copy_keeps_the_assigned_merger
+          attrs = Poetry::Core::HTML::Attributes.new(class: "acme acme")
+          attrs.classname_merger = Poetry::Core::CSS::BemMerger.new
+
+          assert_equal "acme x", attrs.dup.merge_classes!("x")["class"]
+          assert_equal "acme x", attrs.deep_dup.merge_classes!("x")["class"]
+          assert_equal "acme x", attrs.merge(class: "x")["class"]
+          assert_equal "acme x", attrs.merge_classes("x")["class"]
+          plain = Poetry::Core::HTML::Attributes.new(class: "acme acme")
+
+          assert_equal "acme acme x", plain.merge_classes("x")["class"],
+                       "no assigned merger: the global keeps duplicates"
+        end
+
         def test_a_per_call_mode_wins_over_a_declaration
           assert_includes Kit::Tag::Component.new(tone: :rose).css(css_mode: :tailwind), "bg-rose-100"
         end

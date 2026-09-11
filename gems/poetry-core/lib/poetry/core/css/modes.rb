@@ -60,6 +60,38 @@ module Poetry
           @pins ||= {}
         end
 
+        # The class-name merger a component in `mode` merges with. Each mode
+        # has a merger kind: `:bem` merges with a {BemMerger} (token dedupe,
+        # no utility conflict semantics), `:tailwind` with a
+        # {TailwindMerger}. The global `Config.current.classname_merger` is
+        # honoured whenever it is of the right kind - a host's customised
+        # Tailwind merger still serves poetry-ui and every Tailwind kit, a
+        # host's BEM merger still serves its BEM kit - and a mismatch falls
+        # back to the stock merger of the mode, so a global set for one kit
+        # never reaches a kit of the other kind.
+        #
+        # @param mode [Symbol] :tailwind or :bem
+        # @return [#merge]
+        def merger_for(mode)
+          global = Poetry::Core::Config.current.classname_merger
+          global_is_bem = global.is_a?(Poetry::Core::CSS::BemMerger)
+          if validate!(mode) == :bem
+            global_is_bem ? global : stock_merger(:bem)
+          else
+            global_is_bem ? stock_merger(:tailwind) : global
+          end
+        end
+
+        # The stock merger of a mode, built once (a Tailwind merger carries
+        # a cache and a mutex).
+        #
+        # @param mode [Symbol]
+        # @return [#merge]
+        def stock_merger(mode)
+          @stock_mergers ||= {}
+          @stock_mergers[mode] ||= mode == :bem ? Poetry::Core::CSS::BemMerger.new : Poetry::Core::CSS::TailwindMerger.new
+        end
+
         # @param mode [Symbol, String]
         # @return [Symbol]
         # @raise [Poetry::Core::Error] for anything but :tailwind or :bem
