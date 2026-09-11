@@ -74,9 +74,14 @@ refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
   or to the right components. No MCP? `bin/rails g poetry:block --list`
   and start from the closest block. Composing a screen from scratch when
   a block matched is the known losing path.
-- Compose with the `poetry_*` helpers; never hand-write `cn-*` classes, raw
-  hex/oklch colors, or off-scale arbitrary values - tokens and variants carry
-  the design.
+- Compose with the `poetry_*` helpers (and the app's own components through
+  the helpers they declare with `helper :name`); never hand-write `cn-*`
+  classes, raw hex/oklch colors, or off-scale arbitrary values - tokens and
+  variants carry the design.
+- An app component written on the DSL declares `helper :name`; that makes it
+  first-class on check, llms.txt and the skill. `bin/rails poetry:registry`
+  (commit the file) exposes it to the MCP server too; `poetry:verify` fails
+  when that file is stale.
 - Machine catalog: `/poetry/llms.txt` (index + blocks) and `/poetry/llms-full.txt`
   (full contracts + Stimulus wiring: targets / values / actions / events).
 - Check comes LAST: `bin/rails poetry:check` as the FINAL action, after
