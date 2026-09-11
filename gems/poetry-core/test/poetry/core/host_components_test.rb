@@ -114,11 +114,20 @@ module Poetry
         assert_empty HostHelpers.owned
       end
 
-      def test_a_name_already_taken_by_a_view_helper_raises
-        clash = Class.new(Poetry::Core::Component) { helper :render }
-        clash.define_singleton_method(:name) { "Clash::Component" }
+      # A named probe (an anonymous class with a stubbed name would sit in
+      # `descendants` with a constant that resolves to nothing).
+      module ClashProbe
+        class Component < Poetry::Core::Component
+          helper :render
 
-        error = assert_raises(Poetry::Core::Error) { HostHelpers.sync!([clash]) }
+          def call
+            content_tag(:span, content)
+          end
+        end
+      end
+
+      def test_a_name_already_taken_by_a_view_helper_raises
+        error = assert_raises(Poetry::Core::Error) { HostHelpers.sync!([ClashProbe::Component]) }
         assert_match(/helper :render, but a view helper named render already exists/, error.message)
       end
     end
