@@ -89,10 +89,9 @@ module Poetry
         end
 
         def test_required_attributes_validation
-          component = RequiredComponent.new
+          error = assert_raises(ArgumentError) { RequiredComponent.new }
 
-          assert_not component.valid?
-          assert_predicate component.errors[:id], :any?
+          assert_match(/requires id:/, error.message)
 
           component_with_id = RequiredComponent.new(id: "unique-id")
 

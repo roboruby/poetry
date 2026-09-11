@@ -106,12 +106,12 @@ module Poetry
         end
 
         def test_the_longest_matching_namespace_pin_wins
+          assert_nil Poetry::Core::CSS::Modes.for(Poetry::Core::Box::Component), "no pin covers core"
           Poetry::Core::CSS::Modes.pin("Poetry::Core", :bem)
           Poetry::Core::CSS::Modes.pin("Poetry::Core::Concerns::BemTest::Chip", :tailwind)
 
           assert_equal :tailwind, Poetry::Core::CSS::Modes.for(Chip::Component)
           assert_equal :bem, Poetry::Core::CSS::Modes.for(Poetry::Core::Box::Component)
-          assert_nil Poetry::Core::CSS::Modes.for(Class.new(Poetry::Core::Component) { def self.name = "Other::Thing" })
         ensure
           Poetry::Core::CSS::Modes.unpin("Poetry::Core")
           Poetry::Core::CSS::Modes.unpin("Poetry::Core::Concerns::BemTest::Chip")

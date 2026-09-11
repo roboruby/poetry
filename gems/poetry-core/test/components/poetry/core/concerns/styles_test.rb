@@ -43,18 +43,18 @@ module Poetry
           assert_equal :lg, component.size
         end
 
+        # The declared vocabulary is enforced at construction (development
+        # and test raise; production logs) - see the values guard tests.
         def test_validates_against_variants
-          component = BasicComponent.new(color: :invalid)
+          error = assert_raises(ArgumentError) { BasicComponent.new(color: :invalid) }
 
-          assert_not component.valid?
-          assert_predicate component.errors[:color], :any?
+          assert_match(/color: :invalid is not one of :primary, :secondary, :success/, error.message)
         end
 
         def test_required_attributes_validation
-          component = RequiredComponent.new
+          error = assert_raises(ArgumentError) { RequiredComponent.new }
 
-          assert_not component.valid?
-          assert_predicate component.errors[:type], :any?
+          assert_match(/requires type:/, error.message)
 
           component_with_type = RequiredComponent.new(type: :button)
 

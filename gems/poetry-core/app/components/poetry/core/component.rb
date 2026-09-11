@@ -317,6 +317,7 @@ module Poetry
         @html_attributes.classname_merger = classname_merger
 
         assign_attributes attributes.with_indifferent_access.slice(*attribute_names)
+        guard_declared_values
       end
 
       # The passthrough contract, enforced at the seam. A keyword that is not
@@ -377,12 +378,76 @@ module Poetry
         self.class.name ? self.class.component_title : "this component"
       end
 
+      # The error types the DSL's own validations produce.
+      DECLARED_VALUE_ERRORS = %i[inclusion blank].freeze
+
+      # The runtime values tier, beside the passthrough guard: the declared
+      # vocabulary (`style ... variants:`, `required:`) is validated at
+      # construction, where every component - gem or app, whatever it does
+      # in before_render - passes. Off-list values raise in development and
+      # test with the allowed values and a did-you-mean; in production they
+      # log and render as before. `poetry check` catches the same mistakes
+      # in templates statically; this tier catches the value that arrives
+      # from data.
+      def guard_declared_values
+        return if valid?
+
+        # Only the DSL's own validations: an off-list value (inclusion) or a
+        # missing required one (blank). A component's custom validators keep
+        # their own policy (Icon renders a fallback for an unknown name
+        # outside local environments).
+        declared = errors.select { |error| DECLARED_VALUE_ERRORS.include?(error.type) }
+        return if declared.empty?
+
+        message = declared.map { |error| declared_value_problem(error) }.join("; ")
+        raise ArgumentError, message if strict_passthrough?
+
+        Rails.logger&.warn("poetry: #{message}") if defined?(Rails) && Rails.respond_to?(:logger)
+      end
+
+      # One error as the message a developer reads: the declared vocabulary
+      # for an off-list value, `requires` for a missing one, and a custom
+      # validator's own message otherwise.
+      def declared_value_problem(error)
+        attribute = error.attribute
+        case error.type
+        when :inclusion
+          allowed = declared_variants(attribute)
+          value = error.options[:value]
+          hint = variant_suggestion(value, allowed)
+          "#{passthrough_owner} #{attribute}: #{value.inspect} is not one of " \
+            "#{allowed.map(&:inspect).join(", ")}#{hint}"
+        when :blank
+          "#{passthrough_owner} requires #{attribute}:"
+        else
+          "#{passthrough_owner} #{attribute}: #{error.message}"
+        end
+      end
+
+      # The declared vocabulary of a style (booleans read as true/false).
+      def declared_variants(attribute)
+        getter = "#{attribute}_variants"
+        return [] unless self.class.respond_to?(getter)
+
+        variants = self.class.public_send(getter)
+        variants == :boolean ? [true, false] : Array(variants)
+      end
+
+      def variant_suggestion(value, allowed)
+        return "" if allowed.empty? || value.nil?
+
+        require "did_you_mean"
+        suggestion = DidYouMean::SpellChecker.new(dictionary: allowed.map(&:to_s)).correct(value.to_s).first
+        suggestion ? " (did you mean #{suggestion.to_sym.inspect}?)" : ""
+      end
+
       # Raise (development, test) or log (everything else).
       def strict_passthrough?
         defined?(Rails) && Rails.respond_to?(:env) && Rails.env.local?
       end
 
-      private :guard_passthrough, :option_suggestion, :passthrough_owner, :strict_passthrough?
+      private :guard_passthrough, :option_suggestion, :passthrough_owner, :strict_passthrough?,
+              :guard_declared_values, :declared_value_problem, :declared_variants, :variant_suggestion
 
       # Returns all component attributes, ensuring proc defaults are evaluated.
       #

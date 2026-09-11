@@ -201,10 +201,12 @@ module Poetry
           # @param variants [Object] the allowed variants
           # @param required [Boolean] whether the attribute is required
           def add_style_validations(name, type, variants, required)
+            # nil is an omitted value, not an off-list one; `required` adds
+            # presence for the styles that may not be omitted.
             if type == :boolean
-              validates name, inclusion: { in: [true, false] }
+              validates name, inclusion: { in: [true, false] }, allow_nil: true
             elsif variants
-              validates name, inclusion: { in: variants }
+              validates name, inclusion: { in: variants }, allow_nil: true
             end
             validates name, presence: true if required
           end
