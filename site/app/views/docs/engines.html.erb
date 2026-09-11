@@ -269,7 +269,10 @@
           <strong><code>bin/rails poetry:check</code></strong> lints
           <code>billing_invoice_status</code> under its own name, with its
           own contract: unknown variants, near-miss options, a positional
-          argument, and the stable-identity heuristics.
+          argument, and the stable-identity heuristics. At render, an
+          off-list value raises in development and test and logs in
+          production, the same as for a gem component, so nothing to add
+          in <code>before_render</code>.
         </li>
         <li>
           <strong><code>/poetry/llms.txt</code> and <code>llms-full.txt</code></strong>

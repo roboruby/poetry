@@ -99,7 +99,12 @@
         whether hand-written or passed through a Poetry helper's
         <code>data:</code> keywords, raw color classes, and icon
         declarations in app Ruby. A rename in your wiring can never silently
-        strand a controller. It
+        strand a controller. The value that arrives from data, which no
+        template scan can see, meets a runtime tier: a component built with
+        an off-list variant or a missing required option raises at
+        construction in development and test, naming the allowed values
+        with a did-you-mean, and logs in production while rendering as
+        before. It
         parses templates with the <code>herb</code> gem, which
         <code>poetry:install</code> adds to your development group; an app
         installed before that only needs
