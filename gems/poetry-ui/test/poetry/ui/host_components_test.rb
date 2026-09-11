@@ -44,6 +44,36 @@ module Poetry
         assert_includes response.body, "- demo_badge: `demo_badge` - tone: neutral|loud"
       end
 
+      def test_registry_roots_are_found_by_convention_and_carry_every_gem_helper
+        roots = Poetry::Core::Registry.roots.map(&:to_s)
+
+        assert_includes roots, Poetry::Ui.root.to_s
+        refute_includes roots, Poetry::Core.root.to_s, "poetry-core's registry is internal"
+        # The invariant poetry:check relies on when it names no gem: the
+        # registries' own sections carry every helper the gem defines.
+        catalog = Poetry::Core::Check::Catalog.from_registries(Poetry::Core::Registry.roots)
+
+        assert_empty Poetry::Ui.helper_names - catalog.helper_names
+      end
+
+      def test_poetry_registry_writes_the_app_file_the_boot_free_surfaces_read
+        Dir.mktmpdir do |root|
+          path = Poetry::Core::HostComponents.registry(root: root).generate!
+
+          assert_equal :fresh, Poetry::Core::HostComponents.committed_state(root: root)
+          assert Poetry::Core::Registry.published_at?(root)
+          committed = Poetry::Core::Registry.committed(root)
+
+          assert_equal "demo_badge", committed.entries.dig("demo/badge", "helper")
+          assert_includes Poetry::Ui.agent_skills(app_root: root).fetch("poetry").call.fetch("references/app.md"),
+                          "## demo_badge (`demo_badge`)"
+          assert_includes Poetry::Core::Registry.gem_roots(app_root: root).map(&:to_s), root
+          path.write("#{path.read}# edited\n")
+
+          assert_equal :stale, Poetry::Core::HostComponents.committed_state(root: root)
+        end
+      end
+
       def test_the_generated_skill_carries_an_app_reference
         files = Poetry::Ui.skill_files(host_registry: Poetry::Core::HostComponents.registry(root: Rails.root))
 

@@ -29,6 +29,12 @@ namespace :poetry do
       puts "poetry:verify: #{e.message} - template parse gate skipped"
     end
 
+    # The committed app registry (poetry:registry), when present, must
+    # match the live classes - the MCP server reads the file.
+    if Poetry::Core::HostComponents.committed_state(root: Rails.root) == :stale
+      failures << "#{Poetry::Core::Registry::RELATIVE_PATH}: stale app registry - " \
+                  "run `bin/rails poetry:registry` and commit"
+    end
     abort "poetry:verify failed:\n#{failures.join("\n")}" if failures.any?
 
     puts "poetry:verify: clean"

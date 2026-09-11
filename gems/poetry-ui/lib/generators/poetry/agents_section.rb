@@ -125,11 +125,14 @@ module Poetry
       # The human count line (components + charts + blocks) for the
       # section heading.
       def agents_component_counts
-        parts = ["#{agents_registry_size(Poetry::Ui.root)} components"]
-        # Tolerant on charts: a stubbed/partial gem without a registry file
-        # (the install-test stub) just drops out of the count.
-        charts = defined?(Poetry::Charts::Engine) && agents_registry_size(Poetry::Charts.root)
-        parts << "#{charts} chart components" if charts
+        # Every published registry in the boot (no gem named; a stubbed gem
+        # without a registry file simply contributes nothing), the app's
+        # own committed registry counted apart.
+        app_root = Rails.root.to_s
+        gem_roots, app_roots = Poetry::Core::Registry.roots.partition { |root| root.to_s != app_root }
+        parts = ["#{gem_roots.sum { |root| agents_registry_size(root).to_i }} components"]
+        app = app_roots.sum { |root| agents_registry_size(root).to_i }
+        parts << "#{app} app components" if app.positive?
         blocks = agents_registry_size(Poetry::Ui.root, section: "blocks")
         parts << "#{blocks} blocks" if blocks&.positive?
         parts.join(" + ")

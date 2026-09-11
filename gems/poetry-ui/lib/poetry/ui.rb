@@ -195,9 +195,14 @@ module Poetry
       # the COMMITTED registries (never the booted builders above), the
       # design skill reads its static templates - so the exe can serve both
       # without Rails. Lazy: nothing generates until an agent asks.
-      def agent_skills
+      #
+      # app_root: the host app directory (the MCP server passes Dir.pwd);
+      # when `bin/rails poetry:registry` committed the app's registry there,
+      # the usage skill carries references/app.md too - boot-free, from the
+      # committed file, like every other registry it reads.
+      def agent_skills(app_root: nil)
         {
-          "poetry" => -> { runtime_skill_files },
+          "poetry" => -> { runtime_skill_files(app_root: app_root) },
           "poetry-design" => lambda {
             require "generators/poetry/skills_section"
             Object.new.extend(Poetry::Generators::SkillsSection).design_skill_files
@@ -214,10 +219,12 @@ module Poetry
       # and the recipes projection serve without Rails.
       #
       # @api private
-      def runtime_skill_files
+      def runtime_skill_files(app_root: nil)
+        published = app_root && Poetry::Core::Registry.published_at?(app_root)
+        host = published ? Poetry::Core::Registry.committed(app_root) : nil
         Poetry::Core::SkillText.new(
           registry: Poetry::Core::Registry.committed(root),
-          families: SKILL_FAMILIES, charts_registry: committed_charts_registry
+          families: SKILL_FAMILIES, charts_registry: committed_charts_registry, host_registry: host
         ).files
       end
 

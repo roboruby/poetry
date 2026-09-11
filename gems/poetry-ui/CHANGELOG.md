@@ -6,8 +6,11 @@
 
 - App components are first-class on the booted surfaces. A component the app defines on the DSL with `helper :name` renders through that helper, `poetry:check` lints it under that name with its own contract, `/poetry/llms.txt` and `llms-full.txt` list it under an App components section with its agent rules, and `poetry:skill` writes a `references/app.md` with a menu line. The MCP server's `check` tool learns the declared helpers from source, so it agrees the helper exists; its contracts and the runtime skill map stay gem-only (boot-free by design).
 
+- `bin/rails poetry:registry` writes the app's own components to `config/component_registry.yml`, the path a gem's registry lives at, so the MCP server and the runtime skill find them boot-free with full contracts and agent rules. Opt-in; once written, `poetry:check` warns (`registry-stale`) and `poetry:verify` fails when the file no longer matches the classes.
+
 ### Changed
 
+- `poetry:check` and the AGENTS.md census find registry roots by convention (every loaded engine with a published registry, then the app's own file) and name no gem; poetry-charts is no longer special-cased, and any engine built on the DSL that commits a registry joins the check the same way.
 - `poetry:install` imports `tokens.css` into `layer(theme)`, so a token the host already declares (`--primary`, `--accent`, `--muted`, ...) keeps its value whatever the order in the Tailwind entry, and that value now reaches Poetry's components too. Before, the appended import landed after the host's own `:root` and took the same names over: an app's brand color vanished before a single Poetry component rendered. A re-run rewrites the earlier unlayered import line in place.
 - `poetry:install` reports, before writing anything, every Poetry token name and theme key the app's stylesheets already declare, with the file and line and what Poetry paints with that role. It never blocks. `poetry:check` repeats the report as `token-collision` warnings.
 

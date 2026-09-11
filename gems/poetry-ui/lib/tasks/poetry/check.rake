@@ -25,16 +25,12 @@ namespace :poetry do
       exit 0
     end
 
-    helpers = Poetry::Ui.helper_names
-    roots = [Poetry::Ui.root]
-    if defined?(Poetry::Charts::ComponentsHelper)
-      helpers += Poetry::Charts::ComponentsHelper.public_instance_methods(false)
-                                                 .grep(/\Apoetry_/).map(&:to_s)
-      # The charts registry must join the catalog, not just the helper
-      # names - a name-valid pathless helper reads as a yielding wrapper
-      # (the chart yieldless-block false-positive class).
-      roots << Poetry::Charts.root
-    end
+    # Every published registry in the boot (poetry-ui, poetry-charts, any
+    # engine on the DSL that committed one, the app's own file): no gem is
+    # named. The valid helper set is each registry's component-mapped
+    # helpers plus its helpers section (the pathless wrappers, part
+    # helpers, value contracts), which the builders keep complete.
+    roots = Poetry::Core::Registry.roots
     # The active set's names light up membership validation (the value
     # contract) and the declaration tier; a host without a
     # registered set still checks icon-name shape.
@@ -47,9 +43,7 @@ namespace :poetry do
     # helpers join the valid set and their contracts are checked like the
     # gems' - built live from the loaded classes, never a committed file.
     host = Poetry::Core::HostComponents.registry(root: Rails.root)
-    helpers += host.helper_args.keys
-    catalog = Poetry::Core::Check::Catalog.from_registries(roots, helpers: helpers, icon_names: icon_names,
-                                                                  host_registry: host)
+    catalog = Poetry::Core::Check::Catalog.from_registries(roots, icon_names: icon_names, host_registry: host)
     findings = Poetry::Core::Check::Runner.new(catalog).run(paths)
 
     # The taste tier: design-slop warnings join the mechanical
@@ -79,6 +73,17 @@ namespace :poetry do
                                        message: "#{collision.name} is yours, so it wins inside poetry's " \
                                                 "components too - poetry uses it for #{collision.role}",
                                        file: collision.path, line: collision.line)
+    end
+
+    # The committed app registry (poetry:registry) against the live
+    # classes: stale means the MCP server describes components the app no
+    # longer has, or misses new ones. Missing is not a finding (opt-in).
+    if Poetry::Core::HostComponents.committed_state(root: Rails.root) == :stale
+      findings << Poetry::Core::Check::Finding.new(
+        rule: "registry-stale", severity: :warning, file: Poetry::Core::Registry::RELATIVE_PATH,
+        message: "the committed app registry no longer matches app/components - run " \
+                 "`bin/rails poetry:registry` and commit (poetry:verify fails on this)"
+      )
     end
 
     if ENV["POETRY_CHECK_JSON"] == "1"
