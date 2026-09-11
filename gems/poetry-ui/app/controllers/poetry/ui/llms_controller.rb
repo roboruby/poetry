@@ -21,7 +21,11 @@ module Poetry
         # The shared builder (the llms construction rule, extended): the
         # served text uses the exact registry construction the committed
         # file is generated from - helpers and blocks sections included.
-        Poetry::Core::LlmsText.new(registry: Poetry::Ui.registry)
+        # The app's own components ride along (their section follows the
+        # gem catalog), so an agent reading llms-full.txt sees their agent
+        # rules and helpers too.
+        Poetry::Core::LlmsText.new(registry: Poetry::Ui.registry,
+                                   host_registry: Poetry::Core::HostComponents.registry(root: Rails.root))
       end
     end
   end

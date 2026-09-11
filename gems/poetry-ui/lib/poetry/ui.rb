@@ -157,10 +157,26 @@ module Poetry
       # per-family references, generated from the live
       # registry - the seam the poetry:skill generator and the eval
       # harness share (the agents_section_text pattern).
-      def skill_files
+      #
+      # host_registry: the app's own components, passed by the generator
+      # running inside a host (references/app.md + the menu line); absent
+      # by default, so this set stays the gem's and equals the boot-free
+      # runtime map the MCP server serves.
+      def skill_files(host_registry: nil)
         Poetry::Core::SkillText.new(
-          registry: registry, families: SKILL_FAMILIES, charts_registry: charts_registry
+          registry: registry, families: SKILL_FAMILIES, charts_registry: charts_registry,
+          host_registry: host_registry
         ).files
+      end
+
+      # The app's own components, for the generators that run inside a
+      # host. nil outside Rails.
+      def host_registry
+        return nil unless defined?(Rails.application) && Rails.application
+
+        Poetry::Core::HostComponents.registry(root: Rails.root)
+      rescue StandardError
+        nil
       end
 
       # Tolerant on charts, like the AGENTS.md census: a host without the

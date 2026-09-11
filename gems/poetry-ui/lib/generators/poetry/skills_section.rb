@@ -22,7 +22,7 @@ module Poetry
       # Writes or refreshes the three skill directories under
       # .claude/skills/.
       def apply_poetry_skills
-        Poetry::Ui.skill_files.each do |relative, content|
+        Poetry::Ui.skill_files(host_registry: Poetry::Ui.host_registry).each do |relative, content|
           create_file ".claude/skills/poetry/#{relative}", content
         end
         design_skill_files.each do |relative, content|

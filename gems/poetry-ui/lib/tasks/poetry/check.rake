@@ -43,7 +43,13 @@ namespace :poetry do
     rescue Poetry::Core::Error
       nil
     end
-    catalog = Poetry::Core::Check::Catalog.from_registries(roots, helpers: helpers, icon_names: icon_names)
+    # The app's own components (`helper :name` on the DSL): their declared
+    # helpers join the valid set and their contracts are checked like the
+    # gems' - built live from the loaded classes, never a committed file.
+    host = Poetry::Core::HostComponents.registry(root: Rails.root)
+    helpers += host.helper_args.keys
+    catalog = Poetry::Core::Check::Catalog.from_registries(roots, helpers: helpers, icon_names: icon_names,
+                                                                  host_registry: host)
     findings = Poetry::Core::Check::Runner.new(catalog).run(paths)
 
     # The taste tier: design-slop warnings join the mechanical
