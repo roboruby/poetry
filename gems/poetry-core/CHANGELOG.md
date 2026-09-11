@@ -4,6 +4,7 @@
 
 ### Added
 
+- `helper :name` on a component: an application's (or an engine's) own component written on the DSL names its view helper. The engine defines that helper on Action View at boot and on every reload, and `Poetry::Core::HostComponents` discovers the app's components by convention (under `app/`, outside the `poetry/` namespace, published), builds their registry live, and reads their declared helpers boot-free from source. The registry entry carries `helper`; `poetry check` lints a declared helper under its own name (options, variants, arity, stable identity); llms.txt and the generated skill take an app registry and render an App components section and a `references/app.md`.
 - `Poetry::Core::CSS::TokenCollisions`: scans a host app's stylesheets for declarations of Poetry's token names (`--primary`, `--accent`, `--radius`, ...) and Tailwind theme keys (`--color-*`, `--radius-*`), and reports each with its location and what the role paints in Poetry's components. `poetry:install` and `poetry:check` run it.
 
 ### Changed

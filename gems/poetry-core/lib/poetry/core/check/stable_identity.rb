@@ -68,6 +68,16 @@ module Poetry
 
         private
 
+        # The gem convention plus every helper the catalog knows by a name
+        # of its own (an app component's declared helper), so the
+        # heuristics cover app components too.
+        def helper_pattern
+          @helper_pattern ||= begin
+            declared = @catalog.helper_names.reject { |name| name.start_with?("poetry_") }
+            Regexp.union(/\b(poetry_[a-z0-9_]+)\b/, *declared.map { |name| /\b(#{Regexp.escape(name)})\b/ })
+          end
+        end
+
         def frame_for(code)
           return :cache if code.match?(CACHE_OPENER)
           return :loop if code.match?(LOOP_OPENER)
@@ -76,7 +86,7 @@ module Poetry
         end
 
         def flag_helpers(code, line, stack, findings)
-          code.scan(/\b(poetry_[a-z0-9_]+)\b/) do |(helper)|
+          code.scan(helper_pattern) do |(helper)|
             next unless @catalog.helper?(helper)
             next if @catalog.identity_free?(helper)
             next if code.match?(IDENTITY_ARG)

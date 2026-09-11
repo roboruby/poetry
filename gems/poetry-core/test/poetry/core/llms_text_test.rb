@@ -52,6 +52,25 @@ module Poetry
         end
       end
 
+      APP_ENTRY = { "class_name" => "Demo::Badge::Component", "bem_block" => "demo-badge", "helper" => "demo_badge",
+                    "styles" => [{ "name" => "tone", "variants" => %w[neutral loud] }], "options" => [], "slots" => [],
+                    "agent_rules" => ["Demo badges are read-only labels."] }.freeze
+
+      def test_app_components_follow_the_gem_catalog_under_their_declared_helpers
+        with_registry do |registry|
+          host = FakeRegistry.new(entries: { "demo/badge" => APP_ENTRY }, blocks: nil,
+                                  source_root: registry.source_root)
+          text = LlmsText.new(registry: registry, host_registry: host)
+
+          assert_includes text.index, "## App components"
+          assert_includes text.index, "- demo_badge: `demo_badge` - tone: neutral|loud"
+          assert_includes text.full, "## App components"
+          assert_includes text.full, "## demo_badge (`demo_badge`)"
+          assert_includes text.full, "- RULE: Demo badges are read-only labels."
+          refute_includes LlmsText.new(registry: registry).index, "## App components", "nothing without app components"
+        end
+      end
+
       def test_index_lists_blocks_with_the_decision_hierarchy
         with_registry do |registry|
           index = LlmsText.new(registry: registry).index

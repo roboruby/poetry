@@ -47,6 +47,21 @@ module Poetry
                       charts_registry: charts_registry)
       end
 
+      def test_app_components_get_their_own_reference
+        with_registry do |registry|
+          entry = BADGE_ENTRY.merge("class_name" => "Demo::Badge::Component", "helper" => "demo_badge",
+                                    "agent_rules" => ["Demo badges are read-only labels."])
+          host = FakeRegistry.new(entries: { "demo/badge" => entry }, blocks: nil, source_root: registry.source_root)
+          files = SkillText.new(registry: registry, families: { "data" => %w[badge] }, host_registry: host).files
+
+          assert_includes files.fetch("references/app.md"), "## demo_badge (`demo_badge`)"
+          assert_includes files.fetch("references/app.md"), "- RULE: Demo badges are read-only labels."
+          assert_includes files.fetch("SKILL.md"), "1 app components"
+          assert_includes files.fetch("SKILL.md"), "- **app** (`references/app.md`): demo_badge"
+          refute skill(registry).files.key?("references/app.md"), "nothing without app components"
+        end
+      end
+
       def test_files_map_covers_menu_families_and_blocks
         with_registry do |registry|
           assert_equal ["SKILL.md", "references/data.md", "references/blocks.md",

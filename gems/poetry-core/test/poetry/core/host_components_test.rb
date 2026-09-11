@@ -1,0 +1,112 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+module Poetry
+  module Core
+    # The host application's own components: discovered by convention
+    # (under the app root, outside the gem namespace, published), carrying
+    # their declared helper into the registry, and readable boot-free.
+    class HostComponentsTest < Minitest::Test
+      FIXTURE_ROOT = Pathname.new(File.expand_path("../../fixtures/host_app", __dir__))
+
+      # Loaded once from the fixture tree (no autoloader covers it), so
+      # const_source_location points under FIXTURE_ROOT/app.
+      def self.load_fixtures!
+        return if defined?(Demo::Badge::Component)
+
+        Dir.glob(FIXTURE_ROOT.join("app/components/**/*.rb").to_s).each { |file| load file }
+      end
+
+      def setup
+        self.class.load_fixtures!
+      end
+
+      def test_select_keeps_the_app_s_published_components_only
+        selected = HostComponents.select(Poetry::Core::Component.descendants, root: FIXTURE_ROOT)
+
+        assert_equal ["Demo::Badge::Component"], selected.map(&:name)
+        refute_includes selected, Poetry::Core::CopiedProbe::Component, "a copy under the gem namespace is the gem's"
+        refute_includes selected, Demo::Badge::Item, "internal components have no entry"
+      end
+
+      def test_discover_without_an_autoloader_for_the_root_still_selects
+        assert_equal ["Demo::Badge::Component"], HostComponents.discover(root: FIXTURE_ROOT).map(&:name)
+      end
+
+      def test_registry_carries_the_declared_helper_and_the_contract
+        registry = HostComponents.registry(root: FIXTURE_ROOT)
+        entry = registry.entries.fetch("demo/badge")
+
+        assert_equal "demo_badge", entry["helper"]
+        assert_equal ["Demo badges are read-only labels; never attach click handlers."], entry["agent_rules"]
+        assert_equal %w[neutral loud], entry["styles"].find { |style| style["name"] == "tone" }["variants"]
+        assert_equal({ "demo_badge" => 0 }, registry.helper_args, "factory helpers take keywords only")
+        assert_equal FIXTURE_ROOT, registry.source_root
+      end
+
+      def test_declared_helpers_reads_the_source_without_loading
+        assert_equal ["demo_badge"], HostComponents.declared_helpers(root: FIXTURE_ROOT)
+      end
+
+      def test_helper_macro_validates_the_name_and_is_own_class_only
+        assert_raises(ArgumentError) { Class.new(Poetry::Core::Component) { helper :"bad-name" } }
+        assert_nil Class.new(Demo::Badge::Component).helper_name, "a subclass declares its own or has none"
+        assert_equal "demo_badge", Demo::Badge::Component.helper_name
+      end
+    end
+
+    # The engine-defined view helpers for those components.
+    class HostHelpersTest < Minitest::Test
+      FIXTURE_ROOT = HostComponentsTest::FIXTURE_ROOT
+
+      View = Class.new do
+        include Poetry::Core::HostHelpers
+
+        attr_reader :rendered
+
+        def render(component, &block)
+          @rendered = [component, block]
+          "rendered"
+        end
+      end
+
+      def setup
+        HostComponentsTest.load_fixtures!
+      end
+
+      def teardown
+        HostHelpers.sync!([])
+      end
+
+      def test_sync_defines_a_keyword_helper_that_renders_the_class_by_name
+        assert_equal ["demo_badge"], HostHelpers.sync!([Demo::Badge::Component])
+
+        view = View.new
+        result = view.demo_badge(tone: :loud) { "New" }
+        component, block = view.rendered
+
+        assert_equal "rendered", result
+        assert_instance_of Demo::Badge::Component, component
+        assert_equal :loud, component.tone
+        assert_equal "New", block.call
+      end
+
+      def test_sync_removes_helpers_no_longer_declared
+        HostHelpers.sync!([Demo::Badge::Component])
+        HostHelpers.sync!([])
+
+        refute_respond_to View.new, :demo_badge
+        assert_empty HostHelpers.owned
+      end
+
+      def test_a_name_already_taken_by_a_view_helper_raises
+        clash = Class.new(Poetry::Core::Component) { helper :render }
+        clash.define_singleton_method(:name) { "Clash::Component" }
+
+        error = assert_raises(Poetry::Core::Error) { HostHelpers.sync!([clash]) }
+        assert_match(/helper :render, but a view helper named render already exists/, error.message)
+      end
+    end
+  end
+end

@@ -79,15 +79,24 @@ module Poetry
         # gem whose components stay out of the merge leaves its helpers
         # name-valid but pathless, and every one of their blocks reads as a
         # yieldless wrapper block (the chart false-positive class).
-        def self.from_registries(roots, helpers: nil, icon_names: nil)
+        # host_registry: the app's own components (HostComponents.registry),
+        # merged in beside the gem registries - their declared helpers join
+        # the valid set and their contracts are checked like any other.
+        def self.from_registries(roots, helpers: nil, icon_names: nil, host_registry: nil)
           payloads = roots.map do |root|
             YAML.load_file(Pathname.new(root).join(Registry::RELATIVE_PATH), aliases: true)
           end
-          new(payloads.map { |payload| payload.fetch("components") }.reduce({}, :merge),
+          components = payloads.map { |payload| payload.fetch("components") }.reduce({}, :merge)
+          helper_args = payloads.map { |payload| payload["helper_args"] || {} }.reduce({}, :merge)
+          if host_registry
+            components = components.merge(host_registry.entries)
+            helper_args = helper_args.merge(host_registry.helper_args || {}) if host_registry.respond_to?(:helper_args)
+          end
+          new(components,
               helpers: helpers,
               helper_entries: payloads.map { |payload| payload["helpers"] || {} }.reduce({}, :merge),
               icon_names: icon_names,
-              helper_args: payloads.map { |payload| payload["helper_args"] || {} }.reduce({}, :merge))
+              helper_args: helper_args)
         end
 
         # helpers: the FULL set of valid poetry_* helper method names (from
@@ -113,9 +122,12 @@ module Poetry
           # merged catalog carries poetry/charts/* too, and a chart helper
           # that fails to map here reads as a yielding wrapper (the chart
           # yieldless-block false positives).
-          @path_by_helper = components.keys.to_h do |path|
-            ["poetry_#{path.sub(%r{\Apoetry/[^/]+/}, "").tr("/", "_")}", path]
+          # An entry that names its helper (an app component's `helper
+          # :name`) maps by that name; the gems' entries map by convention.
+          @path_by_helper = components.to_h do |path, entry|
+            [entry["helper"] || "poetry_#{path.sub(%r{\Apoetry/[^/]+/}, "").tr("/", "_")}", path]
           end
+          @helper_by_path = @path_by_helper.invert
           @helper_names = ((helpers&.map(&:to_s) || @path_by_helper.keys) + @helper_entries.keys).to_set
         end
 
@@ -125,6 +137,9 @@ module Poetry
 
         def helper?(name) = @helper_names.include?(name)
         def path_for(helper) = @path_by_helper[helper]
+        # The helper that renders a registry path (the declared name, or the
+        # poetry_ convention).
+        def helper_for(path) = @helper_by_path[path]
 
         # Max positional arity for a helper, or nil when the registry does
         # not state one (legacy registries stay lint-identical).
@@ -378,9 +393,14 @@ module Poetry
         def collect_calls(node, into)
           return unless node
 
-          into << node if node.is_a?(Prism::CallNode) && node.name.to_s.start_with?("poetry_")
+          into << node if node.is_a?(Prism::CallNode) && helper_call?(node.name.to_s)
           node.compact_child_nodes.each { |child| collect_calls(child, into) } if node.respond_to?(:compact_child_nodes)
         end
+
+        # A poetry_* call (the gem convention, so an unknown one still reads
+        # as unknown-component) or a helper the catalog knows by name (an
+        # app component's declared helper).
+        def helper_call?(name) = name.start_with?("poetry_") || @catalog.helper?(name)
 
         def call_findings(call, base_line, bindings, content_fed = Set.new)
           helper = call.name.to_s
@@ -1257,7 +1277,7 @@ module Poetry
           DidYouMean::SpellChecker.new(dictionary: dictionary.map(&:to_s)).correct(input.to_s).first
         end
 
-        def helper_of(path) = "poetry_#{path.delete_prefix("poetry/ui/").tr("/", "_")}"
+        def helper_of(path) = @catalog.helper_for(path) || "poetry_#{path.delete_prefix("poetry/ui/").tr("/", "_")}"
         def line_of(node) = node.location.start.line
 
         def attribute_name(node)

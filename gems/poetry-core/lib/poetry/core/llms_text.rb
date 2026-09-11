@@ -27,16 +27,35 @@ module Poetry
         wiring against these contracts. Testing doctrine: the Testing guide on the poetry docs site.
       TEXT
 
-      def initialize(registry:)
+      # host_registry: the app's own components (HostComponents.registry),
+      # rendered as their own section after the gem catalog.
+      def initialize(registry:, host_registry: nil)
         @registry = registry
+        @host_registry = host_registry
       end
 
       # The lean index: one line per component (+ the blocks catalog).
       def index
         lines = @registry.entries.map do |path, entry|
-          "- #{title(path)}: `#{helper(path)}` - #{index_summary(entry)}"
+          "- #{title(path)}: `#{helper(path, entry)}` - #{index_summary(entry)}"
         end
-        "#{PREAMBLE}\n## Components\n\n#{lines.join("\n")}\n#{blocks_index}"
+        "#{PREAMBLE}\n## Components\n\n#{lines.join("\n")}\n#{app_index}#{blocks_index}"
+      end
+
+      # The app's own components, indexed after the gem catalog (nothing
+      # when the app defines none).
+      def app_index
+        return "" unless app_entries.any?
+
+        lines = app_entries.map do |path, entry|
+          "- #{title(path)}: `#{helper(path, entry)}` - #{index_summary(entry)}"
+        end
+        "\n## App components\n\nThis application's own components, on the same contract.\n\n" \
+          "#{lines.join("\n")}\n"
+      end
+
+      def app_entries
+        @host_registry ? @host_registry.entries : {}
       end
 
       # The index line's summary: the human description leads (what it is),
@@ -55,7 +74,16 @@ module Poetry
       # screen from a vetted composition without another fetch.
       def full
         sections = @registry.entries.map { |path, entry| component_section(path, entry) }
-        "#{PREAMBLE}\n#{sections.join("\n")}#{forms_full}#{blocks_full}"
+        "#{PREAMBLE}\n#{sections.join("\n")}#{app_full}#{forms_full}#{blocks_full}"
+      end
+
+      # The app's own components' full contracts, agent rules included.
+      def app_full
+        return "" unless app_entries.any?
+
+        sections = app_entries.map { |path, entry| component_section(path, entry) }
+        ["\n## App components\n\nThis application's own components, rendered with the helpers named here.\n\n",
+         sections.join("\n")].join
       end
 
       # The Forms section (the registry's optional form_builder surface):
@@ -82,8 +110,10 @@ module Poetry
       # The helper is poetry_ + the path under the ui/ namespace, so
       # command/dialog -> poetry_command_dialog (not the last-segment
       # poetry_dialog, which collides with the top-level dialog).
-      def title(path) = path.split("/").drop(2).join("_")
-      def helper(path) = "poetry_#{title(path)}"
+      # A gem path drops its poetry/<gem>/ prefix; an app path is its own.
+      def title(path) = (path.start_with?("poetry/") ? path.split("/").drop(2) : path.split("/")).join("_")
+      # The declared helper (an app component), or the poetry_ convention.
+      def helper(path, entry = {}) = entry["helper"] || "poetry_#{title(path)}"
 
       def surface_summary(entry)
         parts = entry["styles"].map do |style|
@@ -94,7 +124,7 @@ module Poetry
       end
 
       def component_section(path, entry)
-        lines = ["## #{title(path)} (`#{helper(path)}`)", ""]
+        lines = ["## #{title(path)} (`#{helper(path, entry)}`)", ""]
         lines << "#{entry["description"]}\n" if entry["description"]
         lines << "Class: #{entry["class_name"]} - BEM block `#{entry["bem_block"]}`."
         if (hint = entry["requires_content"])

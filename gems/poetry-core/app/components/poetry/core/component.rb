@@ -66,6 +66,38 @@ module Poetry
         def internal_component!
           self.internal_component = true
         end
+
+        # Names the view helper that renders this component - for a
+        # component the host application (or an engine) defines on the
+        # DSL. The poetry-core engine defines the method on Action View at
+        # boot and on every reload, and the app's registry carries the name
+        # so `poetry check`, llms.txt and the generated skill know the
+        # helper. Own-class only: a subclass declares its own or has none.
+        # The gems' components do not declare one; their helpers follow the
+        # `poetry_<name>` convention.
+        #
+        # @example
+        #   class Demo::Badge::Component < Poetry::Core::Component
+        #     helper :demo_badge
+        #   end
+        #   # <%= demo_badge(tone: :loud) { "New" } %>
+        # @param name [Symbol, String] a Ruby method name
+        # @return [void]
+        # @raise [ArgumentError] when the name is not a plain method name
+        def helper(name)
+          name = name.to_s
+          unless name.match?(/\A[a-z_][a-z0-9_]*\z/)
+            raise ArgumentError, "helper name #{name.inspect} must be a plain method name (a-z, 0-9, _)"
+          end
+
+          @helper_name = name
+        end
+
+        # The declared helper name, or nil (the gems' components; a
+        # subclass that declares none).
+        #
+        # @return [String, nil]
+        attr_reader :helper_name
       end
 
       class << self

@@ -110,6 +110,51 @@ module Poetry
       ).freeze
 
       def lint(source) = Check.lint(source, catalog: CATALOG)
+
+      # An app component's entry: the declared helper maps it, so the
+      # catalog, the collector, and every message use that name.
+      HOST_CATALOG = Check::Catalog.new(
+        {
+          "poetry/ui/button" => { "options" => [{ "name" => "label" }], "styles" => [] },
+          "demo/badge" => {
+            "helper" => "demo_badge",
+            "options" => [],
+            "styles" => [{ "name" => "tone", "variants" => %w[neutral loud] }]
+          }
+        },
+        helper_args: { "demo_badge" => 0 }
+      )
+
+      def test_a_declared_helper_maps_its_entry_both_ways
+        assert HOST_CATALOG.helper?("demo_badge")
+        assert_equal "demo/badge", HOST_CATALOG.path_for("demo_badge")
+        assert_equal "demo_badge", HOST_CATALOG.helper_for("demo/badge")
+        assert_equal "poetry_button", HOST_CATALOG.helper_for("poetry/ui/button"), "gem entries keep the convention"
+      end
+
+      def test_a_declared_helper_is_linted_under_its_own_name
+        findings = Check.lint(<<~ERB, catalog: HOST_CATALOG)
+          <%= demo_badge(tone: :nope) { "x" } %>
+          <%= demo_badge "positional" %>
+          <%= poetry_bogus { "x" } %>
+        ERB
+
+        assert_equal %w[unknown-variant helper-arity unknown-component], findings.map(&:rule)
+        assert_match(/is not a demo_badge tone/, findings[0].message)
+        assert_match(/demo_badge/, findings[1].message)
+      end
+
+      def test_from_registries_merges_the_app_registry
+        host = Data.define(:entries, :helper_args).new(
+          entries: { "demo/badge" => { "helper" => "demo_badge", "options" => [], "styles" => [] } },
+          helper_args: { "demo_badge" => 0 }
+        )
+        catalog = Check::Catalog.from_registries([Poetry::Core.root], host_registry: host)
+
+        assert catalog.helper?("demo_badge")
+        assert_equal 0, catalog.helper_args("demo_badge")
+      end
+
       def rules(source) = lint(source).map(&:rule)
       def first(source, rule) = lint(source).find { |finding| finding.rule == rule }
 

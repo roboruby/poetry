@@ -37,6 +37,25 @@ module Poetry
         end
       end
 
+      # `helper :name` lands in the entry; its absence keeps gem entries
+      # byte-identical.
+      module HelperProbe
+        class Component < Poetry::Core::Component
+          helper :probe_thing
+
+          def call
+            content_tag(:span, content)
+          end
+        end
+      end
+
+      def test_a_declared_helper_is_the_entry_s_helper_key
+        entries = Registry.new(components: [HelperProbe::Component, ContentProbe::Component]).entries
+
+        assert_equal "probe_thing", entries.fetch(HelperProbe::Component.component_path)["helper"]
+        refute entries.fetch(ContentProbe::Component.component_path).key?("helper")
+      end
+
       # use_stimulus declarations feed the registry's controllers section
       # directly (the constant scan remains for unmigrated components).
       module DeclaredProbe

@@ -20,11 +20,14 @@ module Poetry
       # @param charts_registry [Registry, nil] the charts registry, when the gem is present
       # @param builder_family [String] the family whose reference carries the registry's
       #   form_builder section (rules, method summaries, the f.input as: vocabulary)
-      def initialize(registry:, families:, charts_registry: nil, builder_family: "forms")
+      # @param host_registry [Registry, nil] the app's own components
+      #   (HostComponents.registry) - a references/app.md of their own
+      def initialize(registry:, families:, charts_registry: nil, builder_family: "forms", host_registry: nil)
         super(registry: registry)
         @families = families
         @charts_registry = charts_registry
         @builder_family = builder_family
+        @host_registry = host_registry if host_registry&.entries&.any?
       end
 
       # The installable file map, paths relative to .claude/skills/poetry/.
@@ -34,6 +37,7 @@ module Poetry
         files["references/blocks.md"] = blocks_reference
         files["references/deciding.md"] = self.class.deciding_reference
         files["references/charts.md"] = charts_reference if @charts_registry
+        files["references/app.md"] = app_reference if @host_registry
         files
       end
 
@@ -226,6 +230,7 @@ module Poetry
       def census
         parts = ["#{@registry.entries.size} components"]
         parts << "#{@charts_registry.entries.size} chart components" if @charts_registry
+        parts << "#{@host_registry.entries.size} app components" if @host_registry
         blocks = @registry.blocks
         parts << "#{blocks.size} blocks" if blocks&.any?
         parts.join(" + ")
@@ -237,6 +242,7 @@ module Poetry
         end
         lines << "- **blocks** (`references/blocks.md`): #{(@registry.blocks || {}).keys.join(", ")}"
         lines << "- **charts** (`references/charts.md`): #{chart_names.join(", ")}" if @charts_registry
+        lines << "- **app** (`references/app.md`): #{app_helper_names.join(", ")}" if @host_registry
         lines.join("\n")
       end
 
@@ -297,6 +303,26 @@ module Poetry
           furniture, realistic content - so a screen starts composed, not
           blank. The sample content is meant to be replaced.
           #{blocks_full}
+        MD
+      end
+
+      def app_helper_names
+        @host_registry.entries.map { |path, entry| helper(path, entry) }
+      end
+
+      # The app's own components: the same contract format as the gem
+      # families, under the helpers the app declared.
+      def app_reference
+        app = self.class.new(registry: @host_registry, families: {})
+        <<~MD
+          # This application's own components
+
+          Components the app defines on the Poetry DSL, rendered with the
+          helper named in each heading. Same contract as the gem families:
+          `RULE` lines are constraints, options are keywords, content is the
+          block.
+
+          #{app.sections}
         MD
       end
 

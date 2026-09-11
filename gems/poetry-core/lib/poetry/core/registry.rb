@@ -124,6 +124,9 @@ module Poetry
       # LlmsText reads both to inline block source into llms-full.txt.
       attr_reader :blocks, :source_root
 
+      # The helper arity map (optional section).
+      attr_reader :helper_args
+
       # The FormBuilder surface (optional section) - LlmsText renders it as
       # the Forms section.
       attr_reader :form_builder
@@ -228,6 +231,10 @@ module Poetry
           "options" => plain(props[:options]),
           "slots" => plain(props[:slots])
         }
+        # The declared view helper (an app component's `helper :name`);
+        # absent for the gems' components, whose helpers follow the
+        # poetry_<name> convention - so gem registries are byte-identical.
+        entry["helper"] = component.helper_name if component.respond_to?(:helper_name) && component.helper_name
         # The one-line human description (editorial, merged from the gem's
         # component_descriptions.yml) - the summary llms.txt / describe_component
         # / the docs page read from this single source.
