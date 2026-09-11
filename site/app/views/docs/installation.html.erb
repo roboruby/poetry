@@ -16,6 +16,18 @@
     bundle install
     bin/rails g poetry:install --theme default
   CODE
+  legacy_css_source = <<~CODE
+    /* app/assets/tailwind/application.css */
+    @import "tailwindcss";
+    @import "./legacy.css" layer(base);   /* your existing stylesheet, ABOVE the poetry lines */
+    @import "./poetry/tokens.css" layer(theme);
+    /* ...the poetry lines the installer wrote... */
+  CODE
+  no_preflight_source = <<~CODE
+    $ bin/rails g poetry:install --no-preflight
+    # app/assets/tailwind/poetry/reset.css        <- preflight at zero specificity
+    # @import "./poetry/reset.css" layer(base);   <- ahead of the theme in your entry
+  CODE
   upgrade_source = <<~CODE
     bundle update poetry poetry-agent poetry-charts
     bin/rails g poetry:install     # your theme choice sticks; --theme switches
@@ -66,6 +78,73 @@
         only missing lines. Before writing anything it lists every Poetry
         token name your stylesheets already declare; those keep their values
         (the Theming guide, "Your tokens win").
+      </p>
+    <% end %>
+  </section>
+
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="existing-css">Installing into an app that already has CSS</h2>
+      <p>
+        A fresh app takes the install as written. An app with years of its
+        own stylesheets meets three consequences of how Poetry sits in the
+        cascade. None of them is a bug, and each has a one-line answer.
+      </p>
+      <h3 id="unlayered-css">Your unlayered CSS beats the theme</h3>
+      <p>
+        Poetry's theme imports into <code>layer(base)</code> so that utility
+        classes in your templates always win over it. The other side of
+        that contract: <em>any</em> unlayered rule beats <em>any</em>
+        layered one, whatever its specificity. A legacy
+        <code>a { color: … }</code> wins over every Poetry link surface
+        (link Buttons, Breadcrumb, Pagination, NavigationMenu), a legacy
+        <code>input { … }</code> over every field, down to the text color
+        on a primary button rendered as a link. If you want Poetry's rules
+        to win, give your stylesheet a layer, and mind where: a layer
+        declared after Tailwind's import ranks <em>above</em> utilities and
+        makes things worse. Import it into <code>layer(base)</code> above
+        the Poetry lines instead: same layer, so specificity decides, and
+        Poetry's class selectors beat element selectors.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: legacy_css_source, language: "css", label: "Legacy stylesheet in the base layer") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h3 id="existing-tokens">Tokens you already own keep winning</h3>
+      <p>
+        Poetry's tokens are defaults. A <code>--primary</code> or
+        <code>--radius</code> your app already declares wins, and reaches
+        Poetry's components; the install lists every such name. The
+        <a href="<%= theming_path %>#your-tokens-win">Theming guide</a>
+        has the rule and the escape hatches.
+      </p>
+      <h3 id="preflight">Preflight, and the app that has its own reset</h3>
+      <p>
+        <code>@import "tailwindcss"</code> brings Tailwind's preflight, and
+        the installer writes that import when your app has no Tailwind entry
+        yet. Poetry's components lean on a handful of preflight's
+        normalizations: the universal <code>border: 0 solid</code> and zero
+        padding, transparent form controls, headings at inherited size,
+        collapsed tables, hidden <code>[hidden]</code>. Measured against the
+        golden screenshot corpus, removing preflight changes two thirds of
+        it even behind a modern reset: triggers grow native button chrome,
+        dialogs keep their browser border and padding, titles jump in size.
+        So an app that imports Tailwind without preflight installs the reset
+        floor instead:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: no_preflight_source, language: "shell", label: "Without preflight") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        The floor is preflight itself, generated from the pinned Tailwind
+        and gated against it, with every selector wrapped in
+        <code>:where()</code>. It has zero specificity, so your own reset
+        wins wherever it speaks and the floor fills only what nothing else
+        declared. On a fresh entry the flag also writes the split
+        no-preflight import; on an existing entry it never touches your
+        import lines. A plain re-run keeps the floor once installed. If an
+        entry imports neither preflight nor the floor, the installer and
+        <code>poetry:check</code> say so in one line.
       </p>
     <% end %>
   </section>
