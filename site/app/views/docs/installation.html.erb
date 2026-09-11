@@ -74,7 +74,10 @@
         group (the parser behind <code>poetry:check</code>) and bundles it, and
         writes the <code>AGENTS.md</code> section and the Claude Code skills.
         Add <code>--charts</code> to wire
-        poetry-charts. File creations skip what exists; injections append
+        poetry-charts, and <code>--no-preflight</code> when your Tailwind entry
+        omits preflight (see
+        <a href="#preflight">Installing into an app that already has CSS</a>).
+        File creations skip what exists; injections append
         only missing lines. Before writing anything it lists every Poetry
         token name your stylesheets already declare; those keep their values
         (the Theming guide, "Your tokens win").
