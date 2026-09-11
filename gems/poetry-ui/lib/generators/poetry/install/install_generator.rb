@@ -44,6 +44,9 @@ module Poetry
 
     # The host's Tailwind entry stylesheet (import/@source injection).
     TAILWIND_ENTRY = "app/assets/tailwind/application.css"
+    # The reset floor, vendored only for hosts that opted out of preflight.
+    RESET_FILE = "app/assets/tailwind/poetry/reset.css"
+    RESET_LINE = %(@import "./poetry/reset.css" layer(base);)
     # The theme slot: --theme swaps its CONTENT, the filename stays put.
     STYLE_SLOT = "app/assets/tailwind/poetry/style-default.css"
     # Every shipped fragment opens with `/* poetry <name> theme` - the sniff
@@ -54,6 +57,16 @@ module Poetry
                           desc: %(Also wire poetry-charts (requires gem "poetry-charts" in the bundle))
     class_option :skip_bundle, type: :boolean, default: false,
                                desc: "Skip `bundle install` after adding the herb gem (poetry:check's parser)"
+    # --no-preflight: the host imports Tailwind without preflight (its own
+    # reset). Poetry's components lean on a handful of preflight's
+    # normalizations, so the install vendors the reset floor - preflight at
+    # zero specificity (lib/poetry/ui/reset_floor.rb) - and imports it
+    # into layer(base) ahead of the theme; on a fresh entry it writes the
+    # split no-preflight import. Remembered like the theme: a re-run keeps
+    # vendoring the floor while reset.css is present.
+    class_option :preflight, type: :boolean, default: true,
+                             desc: "Pass --no-preflight when your Tailwind entry omits preflight: vendors poetry's " \
+                                   "reset floor (poetry/reset.css) so the components keep their normalizations"
 
     # A Gemfile line declaring herb, in any quoting, at any indentation
     # (a `group :development do` block included).
@@ -135,6 +148,23 @@ module Poetry
       say_status :note, scan.to_text.lines.last.strip, :yellow
     end
 
+    # Step: a Tailwind entry that imports neither preflight nor the reset
+    # floor is a host that removed preflight after installing, or before
+    # installing without saying so - the components lose the
+    # normalizations they lean on. Says so; never blocks (poetry:check
+    # repeats it).
+    # @api private
+    def report_preflight
+      return if floor?
+
+      path = File.join(destination_root, TAILWIND_ENTRY)
+      return unless File.exist?(path) && Poetry::Ui::ResetFloor.entry_state(File.read(path)) == :none
+
+      say_status :preflight, "#{TAILWIND_ENTRY} imports Tailwind without preflight and without poetry's reset " \
+                             "floor - re-run with --no-preflight to vendor the floor (the components lean on " \
+                             "preflight's normalizations)", :yellow
+    end
+
     # Fails fast BEFORE any file lands: --charts against a bundle without
     # the gem would otherwise half-install (css copied, dead registration).
     # @api private
@@ -186,6 +216,9 @@ module Poetry
       # --theme swaps the CONTENT; the slot filename stays put.
       create_file "app/assets/tailwind/poetry/style-default.css",
                   ui_theme_path.read, force: true
+      # The reset floor: preflight at zero specificity, for hosts without
+      # preflight (--no-preflight, remembered while the file is present).
+      create_file RESET_FILE, Poetry::Ui.root.join(Poetry::Ui::ResetFloor::RELATIVE_PATH).read, force: true if floor?
       create_file "app/assets/tailwind/poetry/base.css", BASE_CSS, skip: true
       # poetry/typeset (the vendored prose-styling port - provenance in
       # THIRD_PARTY_NOTICES.md): prose styling for
@@ -217,10 +250,14 @@ module Poetry
     # @api private
     def wire_tailwind_entry
       unless File.exist?(File.join(destination_root, TAILWIND_ENTRY))
-        create_file TAILWIND_ENTRY, %(@import "tailwindcss";\n)
+        create_file TAILWIND_ENTRY, floor? ? Poetry::Ui::ResetFloor::NO_PREFLIGHT_ENTRY : %(@import "tailwindcss";\n)
       end
       SUPERSEDED_ENTRY_LINES.each { |old, current| replace_line(TAILWIND_ENTRY, old, current) }
       ENTRY_LINES.each { |line| inject_unless_present(TAILWIND_ENTRY, line) }
+      # The floor imports into layer(base) AHEAD of the theme: its few
+      # pseudo-element rules cannot be :where()-wrapped, and earlier in the
+      # same layer loses a tie to the theme, as preflight would.
+      inject_line_before(TAILWIND_ENTRY, RESET_LINE, %(@import "./poetry/style-default.css" layer(base);)) if floor?
     end
 
     # Step: writes the commented configuration initializer.
@@ -366,6 +403,12 @@ module Poetry
 
     private
 
+    # Whether this install vendors the reset floor: asked for now, or
+    # installed by an earlier run (the file is present).
+    def floor?
+      options[:preflight] == false || File.exist?(File.join(destination_root, RESET_FILE))
+    end
+
     def resolved_theme
       @resolved_theme ||= options[:theme] || installed_theme || "default"
     end
@@ -437,6 +480,19 @@ module Poetry
       return if File.exist?(path) && File.read(path).include?(line)
 
       append_to_file relative, "#{line}\n"
+    end
+
+    # Injects a line before an anchor line (appends when the anchor is
+    # absent); a no-op when the line is already present.
+    def inject_line_before(relative, line, anchor)
+      path = File.join(destination_root, relative)
+      return if File.exist?(path) && File.read(path).include?(line)
+
+      if File.exist?(path) && File.read(path).include?(anchor)
+        inject_into_file relative, "#{line}\n", before: anchor
+      else
+        append_to_file relative, "#{line}\n"
+      end
     end
 
     # Rewrites one superseded entry line in place (whole line, so the

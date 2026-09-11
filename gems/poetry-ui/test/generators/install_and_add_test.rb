@@ -287,6 +287,76 @@ module Poetry
       assert_file "app/assets/tailwind/poetry/tokens.css", /--background:/
     end
 
+    def test_no_preflight_writes_the_split_entry_and_vendors_the_floor_ahead_of_the_theme
+      run_generator %w[--no-preflight --skip-bundle]
+
+      assert_file "app/assets/tailwind/poetry/reset.css", /:where\(button\), :where\(input\)/
+      assert_file "app/assets/tailwind/application.css" do |entry|
+        assert_includes entry, %(@import "tailwindcss/utilities.css" layer(utilities);)
+        refute_match(/^@import "tailwindcss";/, entry, "no preflight on a fresh --no-preflight entry")
+        lines = entry.lines.map(&:strip)
+
+        theme_at = lines.index(%(@import "./poetry/style-default.css" layer(base);))
+
+        assert_operator lines.index(InstallGenerator::RESET_LINE), :<, theme_at, "the floor precedes the theme"
+        assert_equal :floor, Poetry::Ui::ResetFloor.entry_state(entry)
+      end
+    end
+
+    def test_a_plain_rerun_keeps_the_floor_once_installed
+      run_generator %w[--no-preflight --skip-bundle]
+      File.write(File.join(destination_root, InstallGenerator::RESET_FILE), "/* stale */\n")
+      run_generator %w[--skip-bundle]
+
+      assert_file "app/assets/tailwind/poetry/reset.css", /:where\(html\)/
+      assert_file "app/assets/tailwind/application.css" do |entry|
+        assert_equal 1, entry.scan(InstallGenerator::RESET_LINE).size
+      end
+    end
+
+    def test_a_default_install_vendors_no_floor
+      run_generator %w[--skip-bundle]
+
+      assert_no_file "app/assets/tailwind/poetry/reset.css"
+      assert_file "app/assets/tailwind/application.css" do |entry|
+        assert_match(/^@import "tailwindcss";/, entry)
+        refute_includes entry, "reset.css"
+      end
+    end
+
+    def test_no_preflight_on_an_existing_entry_adds_the_floor_without_touching_the_tailwind_import
+      entry = File.join(destination_root, InstallGenerator::TAILWIND_ENTRY)
+      FileUtils.mkdir_p(File.dirname(entry))
+      File.write(entry, Poetry::Ui::ResetFloor::NO_PREFLIGHT_ENTRY)
+      run_generator %w[--no-preflight --skip-bundle]
+
+      assert_file "app/assets/tailwind/application.css" do |content|
+        assert content.start_with?(Poetry::Ui::ResetFloor::NO_PREFLIGHT_ENTRY), "the host's own import lines are kept"
+        assert_equal 1, content.scan(InstallGenerator::RESET_LINE).size
+      end
+    end
+
+    def test_install_warns_when_the_entry_has_neither_preflight_nor_the_floor
+      entry = File.join(destination_root, InstallGenerator::TAILWIND_ENTRY)
+      FileUtils.mkdir_p(File.dirname(entry))
+      File.write(entry, Poetry::Ui::ResetFloor::NO_PREFLIGHT_ENTRY)
+      output = run_generator %w[--skip-bundle]
+
+      assert_match(/imports Tailwind without preflight and without poetry's reset floor/, output)
+      # The warning never installs the floor by itself.
+      assert_no_file "app/assets/tailwind/poetry/reset.css"
+      refute_match(/without poetry's reset floor/, run_generator(%w[--no-preflight --skip-bundle]))
+    end
+
+    def test_a_no_preflight_entry_compiles_with_the_real_tailwind_binary
+      run_generator %w[--no-preflight --skip-bundle]
+      compiled = compile_entry
+
+      assert_includes compiled, ":where(html)", "the floor is in the build"
+      refute_match(/^\s*html, :host \{/, compiled, "preflight is not")
+      assert_match(/\.cn-button[\s{,]/, compiled)
+    end
+
     def test_install_stays_quiet_when_the_host_declares_no_poetry_name
       output = run_generator
 

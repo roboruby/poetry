@@ -57,8 +57,21 @@ def poetry_ui_compile_tailwind(theme: poetry_ui_theme_name, extra_sources: [])
     safelist = Poetry::Core::CSS::Safelist.new(style_classes: styles,
                                                template_classes: Poetry::Ui.template_classes)
     File.write(File.join(dir, "safelist.txt"), safelist.text)
+    # POETRY_PREFLIGHT=0: the no-preflight build - the split Tailwind entry
+    # plus the reset floor, exactly what `poetry:install --no-preflight`
+    # writes - so the golden corpus proves the floor (rake test:visual).
+    tailwind_entry = if ENV["POETRY_PREFLIGHT"] == "0"
+                       <<~ENTRY
+                         @layer theme, base, components, utilities;
+                         @import "tailwindcss/theme.css" layer(theme);
+                         @import "tailwindcss/utilities.css" layer(utilities) source(none);
+                         @import "#{Poetry::Ui.root.join(Poetry::Ui::ResetFloor::RELATIVE_PATH)}" layer(base);
+                       ENTRY
+                     else
+                       %(@import "tailwindcss" source(none);\n)
+                     end
     File.write(File.join(dir, "entry.css"), <<~CSS)
-      @import "tailwindcss" source(none);
+      #{tailwind_entry}
       @import "#{Poetry::Core.root.join("tokens/tokens.css")}";
       @import "#{Poetry::Core.root.join("tokens/tailwind-theme.css")}";
       @import "#{Poetry::Core.root.join("vendor/tw-animate-css/tw-animate.css")}";

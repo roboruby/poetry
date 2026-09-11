@@ -86,6 +86,19 @@ namespace :poetry do
       )
     end
 
+    # A Tailwind entry with neither preflight nor poetry's reset floor:
+    # the components lose the normalizations they lean on (measured
+    # against the golden corpus). One line, like the installer's.
+    entry = Rails.root.join("app/assets/tailwind/application.css")
+    if entry.exist? && Poetry::Ui::ResetFloor.entry_state(entry.read) == :none
+      findings << Poetry::Core::Check::Finding.new(
+        rule: "preflight-missing", severity: :warning, file: "app/assets/tailwind/application.css",
+        message: "the Tailwind entry imports neither preflight nor poetry's reset floor - run " \
+                 "`bin/rails g poetry:install --no-preflight` to vendor the floor (the components lean on " \
+                 "preflight's normalizations)"
+      )
+    end
+
     if ENV["POETRY_CHECK_JSON"] == "1"
       puts Poetry::Core::Check.to_json(findings)
     else

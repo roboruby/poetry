@@ -8,6 +8,7 @@ require_relative "ui/code_block_highlighter"
 require_relative "ui/recipes"
 require_relative "ui/chat"
 require_relative "ui/webmcp"
+require_relative "ui/reset_floor"
 
 # The poetry namespace: poetry-ui shares it with poetry-core (the DSL)
 # and the optional poetry-charts.
