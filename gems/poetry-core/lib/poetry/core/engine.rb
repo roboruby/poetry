@@ -33,12 +33,12 @@ module Poetry
         end
       end
 
-      # The app's own components' helpers (`helper :name`): defined at boot
-      # and on every reload, after the app's components directory loads,
+      # The app's and its engines' own components' helpers (`helper :name`):
+      # defined at boot and on every reload, after the components directories load,
       # so a view can call one before anything else referenced the class.
       initializer "poetry_core.host_helpers" do |app|
         app.config.to_prepare do
-          Poetry::Core::HostHelpers.sync!(Poetry::Core::HostComponents.discover(root: Rails.root))
+          Poetry::Core::HostHelpers.sync!(Poetry::Core::HostComponents.discover)
           ActiveSupport.on_load(:action_view) do
             include Poetry::Core::HostHelpers unless include?(Poetry::Core::HostHelpers)
           end

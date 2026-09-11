@@ -42,6 +42,10 @@ module Poetry
       class Committed
         attr_reader :entries, :blocks, :helpers, :helper_args, :form_builder, :source_root
 
+        # Whether the file marks itself internal (a gem's own gate
+        # artifact, never a consumer surface) - see {Registry.roots}.
+        attr_reader :internal
+
         # Holds the sections of one committed registry file;
         # {Registry.committed} is the loader.
         #
@@ -51,8 +55,10 @@ module Poetry
         # @param helper_args [Hash, nil] the "helper_args" section
         # @param source_root [Pathname] the gem root the paths resolve against
         # @param form_builder [Hash, nil] the "form_builder" section
-        def initialize(entries:, blocks:, helpers:, helper_args:, source_root:, form_builder: nil)
+        # @param internal [Boolean] the file's internal marker
+        def initialize(entries:, blocks:, helpers:, helper_args:, source_root:, form_builder: nil, internal: false) # rubocop:disable Metrics/ParameterLists
           @form_builder = form_builder
+          @internal = internal
           @entries = entries
           @blocks = blocks
           @helpers = helpers
@@ -70,7 +76,75 @@ module Poetry
         payload = YAML.load_file(source_root.join(RELATIVE_PATH), aliases: true)
         Committed.new(entries: payload.fetch("components"), blocks: payload["blocks"],
                       helpers: payload["helpers"], helper_args: payload["helper_args"],
-                      form_builder: payload["form_builder"], source_root: source_root)
+                      form_builder: payload["form_builder"], source_root: source_root,
+                      internal: payload["internal"] == true)
+      end
+
+      # Whether a root carries a committed registry meant for consumers: the
+      # file exists and does not mark itself internal (poetry-core's own is
+      # a gate artifact for building blocks that have no helpers).
+      #
+      # @param root [String, Pathname]
+      # @return [Boolean]
+      def self.published_at?(root)
+        path = Pathname.new(root).join(RELATIVE_PATH)
+        return false unless path.exist?
+
+        YAML.load_file(path, aliases: true)["internal"] != true
+      end
+
+      # The registry roots of a booted host, by convention: every loaded
+      # engine whose root carries a published registry (poetry-ui,
+      # poetry-charts, any engine built on the DSL that committed one), then
+      # the app itself when `bin/rails poetry:registry` wrote its file. No
+      # gem is named; later roots win a path collision on merge.
+      #
+      # @return [Array<Pathname>]
+      def self.roots
+        engines = Rails::Engine.subclasses.map(&:root).uniq.select { |root| published_at?(root) }
+        engines << Rails.root if defined?(Rails.root) && Rails.root && published_at?(Rails.root)
+        engines
+      end
+
+      # The registry roots visible without booting: every gem in the bundle
+      # (or installed) whose root carries a published registry, plus
+      # app_root when it committed one - what the MCP server assembles from.
+      #
+      # @param app_root [String, Pathname, nil] the host app directory
+      # @return [Array<Pathname>]
+      def self.gem_roots(app_root: nil)
+        specs = defined?(Bundler) ? Bundler.load.specs : Gem::Specification.to_a
+        roots = specs.map { |spec| Pathname.new(spec.full_gem_path) }.uniq.sort
+                     .select { |root| published_at?(root) }
+        roots << Pathname.new(app_root) if app_root && published_at?(app_root)
+        roots
+      end
+
+      # One Committed view over several roots: entries, helpers and arity
+      # maps merge (later roots win), block templates are resolved to
+      # absolute paths so any source_root reads them, and the form builder
+      # is the first one found.
+      #
+      # @param roots [Array<String, Pathname>] published registry roots
+      # @param source_root [String, Pathname, nil] the root the view resolves
+      #   against (defaults to the first)
+      # @return [Committed]
+      # @raise [ArgumentError] with no roots
+      def self.merged(roots, source_root: nil)
+        raise ArgumentError, "no registry roots" if roots.empty?
+
+        committed = roots.map { |root| self.committed(root) }
+        blocks = committed.flat_map do |registry|
+          (registry.blocks || {}).map do |name, block|
+            [name, block.merge("template" => registry.source_root.join(block.fetch("template")).to_s)]
+          end
+        end.to_h
+        Committed.new(entries: committed.map(&:entries).reduce({}, :merge),
+                      blocks: blocks,
+                      helpers: committed.map { |registry| registry.helpers || {} }.reduce({}, :merge),
+                      helper_args: committed.map { |registry| registry.helper_args || {} }.reduce({}, :merge),
+                      form_builder: committed.filter_map(&:form_builder).first,
+                      source_root: Pathname.new(source_root || roots.first))
       end
 
       # @param components [Enumerable<Class>, nil] component classes; defaults
@@ -106,9 +180,16 @@ module Poetry
       #   llms.txt, the MCP server, and skills can teach the model-bound
       #   form story without booting the gem. Optional like every other
       #   section: absent -> the registry stays byte-identical.
+      # @param internal [Boolean] mark the file internal: a gate artifact
+      #   consumers skip ({.roots}, {.gem_roots}) - poetry-core's own
+      #   registry of helperless building blocks
+      # @param banner [String] the do-not-edit header written at the top
       def initialize(components: nil, source_root: Poetry::Core.root, # rubocop:disable Metrics/ParameterLists
-                     helpers: nil, blocks: nil, helper_args: nil, descriptions: nil, form_builder: nil)
+                     helpers: nil, blocks: nil, helper_args: nil, descriptions: nil, form_builder: nil,
+                     internal: false, banner: HEADER)
         @source_root = Pathname.new(source_root)
+        @internal = internal
+        @banner = banner
         @components = (components || discover).sort_by(&:name)
         @helpers = helpers
         @blocks = blocks
@@ -146,11 +227,12 @@ module Poetry
       # @return [String]
       def to_yaml
         payload = { "components" => entries }
+        payload["internal"] = true if @internal
         payload["helpers"] = plain(@helpers.sort.to_h) if @helpers&.any?
         payload["blocks"] = plain(@blocks.sort.to_h) if @blocks&.any?
         payload["helper_args"] = plain(@helper_args.sort.to_h) if @helper_args&.any?
         payload["form_builder"] = plain(@form_builder) if @form_builder&.any?
-        HEADER + YAML.dump(payload)
+        @banner + YAML.dump(payload)
       end
 
       # Writes the registry YAML to its committed location under root.

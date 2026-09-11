@@ -18,3 +18,4 @@ components:
     parts:
     - name: box
       description: The rendered element itself - the whole component is one part
+internal: true

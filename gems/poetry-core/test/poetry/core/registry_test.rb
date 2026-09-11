@@ -49,6 +49,46 @@ module Poetry
         end
       end
 
+      def test_internal_marker_round_trips_and_keeps_the_root_out_of_the_consumer_roots
+        Dir.mktmpdir do |dir|
+          Registry.new(components: [ContentProbe::Component], source_root: dir, internal: true).generate!
+
+          assert Registry.committed(dir).internal
+          refute Registry.published_at?(dir)
+          Registry.new(components: [ContentProbe::Component], source_root: dir).generate!
+
+          assert Registry.published_at?(dir)
+          refute Registry.committed(dir).internal
+        end
+      end
+
+      def test_merged_unions_roots_and_resolves_block_templates_to_absolute_paths
+        Dir.mktmpdir do |one|
+          Dir.mktmpdir do |two|
+            Registry.new(components: [ContentProbe::Component], source_root: one, helper_args: { "poetry_a" => 1 },
+                         blocks: { "b" => { "title" => "B", "template" => "blocks/b.html.erb", "components" => [] } })
+                    .generate!
+            Registry.new(components: [HelperProbe::Component], source_root: two, helper_args: { "poetry_b" => 0 })
+                    .generate!
+            merged = Registry.merged([one, two], source_root: two)
+
+            assert_includes merged.entries.keys, ContentProbe::Component.component_path
+            assert_includes merged.entries.keys, HelperProbe::Component.component_path
+            assert_equal({ "poetry_a" => 1, "poetry_b" => 0 }, merged.helper_args)
+            assert_equal File.join(one, "blocks/b.html.erb"), merged.blocks.dig("b", "template")
+            assert_equal Pathname.new(two), merged.source_root
+          end
+        end
+      end
+
+      def test_roots_and_gem_roots_skip_internal_registries
+        # poetry-core's own registry is a gate artifact (internal: true).
+        assert_predicate Pathname.new(Poetry::Core.root).join(Registry::RELATIVE_PATH), :exist?
+        refute_includes Registry.roots.map(&:to_s), Poetry::Core.root.to_s
+        refute_includes Registry.gem_roots.map(&:to_s), Poetry::Core.root.to_s
+        assert_kind_of Array, Registry.gem_roots(app_root: Dir.pwd)
+      end
+
       def test_a_declared_helper_is_the_entry_s_helper_key
         entries = Registry.new(components: [HelperProbe::Component, ContentProbe::Component]).entries
 
@@ -304,7 +344,7 @@ module Poetry
         # The CI drift gate as a unit test: default discovery filters to
         # components whose source lives in this gem, so the set is identical
         # here and under the rake task's fresh boot.
-        assert_predicate Registry.new, :verified?,
+        assert_predicate Registry.new(internal: true), :verified?,
                          "committed component registry drifted - run `bin/rake registry:generate` and commit"
       end
 
