@@ -128,7 +128,9 @@ module Poetry
             override - a dated, reasoned entry under `overrides:` in
             config/poetry_components.yml (`bin/rails poetry:design:overrides`
             reports drift and prints the paste-ready declaration). Declare
-            only after the user confirms intent; never declare to skip a fix.
+            only after the user confirms intent; never declare to skip a fix. A
+            kit's own `cn-*` classes are the app's, not overrides - prefix them
+            (`cn-acme-*`) and never declare them.
           #{END_MARKER}
         MD
       end

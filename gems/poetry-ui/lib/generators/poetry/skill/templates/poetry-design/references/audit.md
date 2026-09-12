@@ -117,7 +117,9 @@ Work the rendered page, not the source:
 
 Report findings in the linters' voice: name the surface, name the fix, and
 express every fix through a token, variant, option, theme, or DESIGN.md
-override - never per-instance CSS. Host CSS already touching `cn-*` classes
-is either a DECLARED override (listed by `bin/rails poetry:design:overrides`;
+override - never per-instance CSS. Host CSS touching a THEME-OWNED `cn-*`
+class (one a Poetry dictionary emits, or the installed fragment defines) is
+either a DECLARED override (listed by `bin/rails poetry:design:overrides`;
 respect it - it is recorded design intent) or drift to flag, never silently
-extend.
+extend. A host kit's own `cn-*` classes are the host's, not overrides;
+never ask for them to be declared.
