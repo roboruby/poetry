@@ -243,16 +243,19 @@
         <code>lib/templates/</code>; Poetry ships a set that renders with
         the library. After installing them, the standard scaffold generator
         produces a DataTable index with sanitized URL state (sortable
-        columns, filter, pagination and a matching controller),
-        Field-composed forms mapped from attribute types, and a MetadataList
-        show page:
+        columns, filter, pagination and a matching controller), a form on the
+        Poetry form builder (one <code>f.input</code> per attribute, the
+        control inferred from the column, the name and the validations), and
+        a MetadataList show page:
       </p>
     <% end %>
     <%= poetry_code_block(code: scaffold_source, language: "shell", label: "Scaffold templates") %>
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <p>
         The copies under <code>lib/templates/</code> are app-owned: edit
-        them freely, and re-runs never overwrite. The templates are
+        them freely, and re-runs never overwrite. That is also why a Simple
+        Form app keeps its own scaffold form partial: with the bridge active
+        it already renders through Poetry, and nothing here replaces it. The templates are
         lint-gated in the gem's own suite, so generated views pass
         <code>poetry:check</code> by construction.
       </p>
