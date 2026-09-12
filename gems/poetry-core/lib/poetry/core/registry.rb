@@ -112,11 +112,13 @@ module Poetry
       #
       # @param app_root [String, Pathname, nil] the host app directory
       # @return [Array<Pathname>]
-      def self.gem_roots(app_root: nil)
+      # registry: false lists every bundled gem root (plus app_root) whatever
+      # it carries - the manifest registration walks the same roots.
+      def self.gem_roots(app_root: nil, registry: true)
         specs = defined?(Bundler) ? Bundler.load.specs : Gem::Specification.to_a
         roots = specs.map { |spec| Pathname.new(spec.full_gem_path) }.uniq.sort
-                     .select { |root| published_at?(root) }
-        roots << Pathname.new(app_root) if app_root && published_at?(app_root)
+        roots = roots.select { |root| published_at?(root) } if registry
+        roots << Pathname.new(app_root) if app_root && (!registry || published_at?(app_root))
         roots
       end
 

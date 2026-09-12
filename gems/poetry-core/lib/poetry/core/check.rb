@@ -1045,7 +1045,9 @@ module Poetry
         # finding, not this rule's. Classes and outlets: no poetry
         # controller declares any, so there is nothing to check yet.
         def value_attribute_findings(name, value, line)
-          return [] unless name.start_with?("data-#{POETRY_PREFIX}") && name.end_with?("-value")
+          # Any registered controller's value (a host manifest registers the
+          # app's); an unregistered host controller yields no identifier.
+          return [] unless name.start_with?("data-") && name.end_with?("-value")
 
           identifier = Stimulus::Manifest.catalog.keys.select { |id| name.start_with?("data-#{id}-") }.max_by(&:length)
           definition = identifier && definition(identifier)

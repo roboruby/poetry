@@ -47,6 +47,30 @@ module Poetry
           catalog.merge!(JSON.parse(File.read(path)))
         end
 
+        # Registers the committed manifest of every root that has one -
+        # engines' and the app's (`bin/rails poetry:stimulus:manifest`) -
+        # skipping poetry-core's own, which the catalog starts from.
+        #
+        # @param roots [Array<String, Pathname>]
+        # @return [Array<Pathname>] the manifests registered
+        def register_roots(roots)
+          roots.map { |root| Pathname.new(root) }.uniq.filter_map do |root|
+            path = root.join("config/controllers_manifest.json")
+            next unless path.exist? && root.to_s != Poetry::Core.root.to_s
+
+            register(path.to_s)
+            path
+          end
+        end
+
+        # Removes one controller from the catalog (tests).
+        #
+        # @param identifier [String]
+        # @return [Hash, nil] the definition removed
+        def forget(identifier)
+          catalog.delete(identifier)
+        end
+
         # The catalog definition of one controller.
         #
         # @param identifier [String] the full Stimulus identifier

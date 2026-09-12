@@ -21,6 +21,16 @@ module Poetry
       config.autoload_paths << "#{Poetry::Core.root}/app/components"
       config.eager_load_paths << "#{Poetry::Core.root}/app/components"
 
+      # Controllers manifests by convention: every loaded engine's and the
+      # app's own (`bin/rails poetry:stimulus:manifest`), before components
+      # load, so `use_stimulus` validates host controllers at class load
+      # exactly like poetry's.
+      initializer "poetry_core.controllers_manifests", before: :eager_load! do
+        roots = Rails::Engine.subclasses.map(&:root)
+        roots << Rails.root if defined?(Rails.root) && Rails.root
+        Poetry::Core::Stimulus::Manifest.register_roots(roots)
+      end
+
       initializer "poetry_core.stable_id" do
         ActiveSupport.on_load(:action_controller) do
           include Poetry::Core::StableId::Controller
