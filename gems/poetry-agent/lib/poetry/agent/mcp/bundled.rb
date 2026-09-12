@@ -23,6 +23,11 @@ module Poetry
         def server(root: nil, app_root: Dir.pwd)
           ui = soft_require("poetry/ui")
           roots = Poetry::Core::Registry.gem_roots(app_root: app_root).map(&:to_s)
+          # Controllers manifests by the same convention, boot-free: every
+          # bundled gem's and the app's own, so the check tool validates
+          # chart, agent and host controllers like core's.
+          manifest_roots = Poetry::Core::Registry.gem_roots(app_root: app_root, registry: false)
+          Poetry::Core::Stimulus::Manifest.register_roots(manifest_roots)
           roots.unshift(root) if root && !roots.include?(root)
           raise ArgumentError, "no published component registry in the bundle - pass a root" if roots.empty?
 
