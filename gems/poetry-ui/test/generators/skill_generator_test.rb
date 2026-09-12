@@ -11,6 +11,29 @@ module Poetry
     destination File.expand_path("../tmp/skill-dest", __dir__)
     setup :prepare_destination
 
+    # The destination sits inside the gem's own checkout, whose .gitignore
+    # covers test/tmp - `git init` makes it a repository of its own, so
+    # the answer is the destination's, not the gem's.
+    def test_says_so_when_the_host_ignores_the_skills_directory
+      system("git", "init", "-q", destination_root, out: File::NULL, err: File::NULL)
+      File.write(File.join(destination_root, ".gitignore"), ".claude/\n")
+
+      output = run_generator
+
+      assert_match(/\.claude\/skills is gitignored here/, output)
+      assert_match(%r{bin/rails g poetry:skill}, output)
+      assert_file ".claude/skills/poetry/SKILL.md"
+    end
+
+    def test_stays_quiet_when_the_skills_directory_is_tracked
+      system("git", "init", "-q", destination_root, out: File::NULL, err: File::NULL)
+      File.write(File.join(destination_root, ".gitignore"), "/tmp/\n")
+
+      output = run_generator
+
+      refute_match(/gitignored/, output)
+    end
+
     def test_installs_every_skill
       run_generator
 

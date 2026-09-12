@@ -4,6 +4,8 @@
 
 ### Added
 
+- `poetry:install` and `poetry:skill` say so when the host gitignores `.claude/skills`: the skills still serve that checkout, and the note names the refresh command teammates and CI run (`bin/rails g poetry:skill`) or the alternative of un-ignoring the directory. Asked of git only; no git, no repository, or a tracked directory stay silent.
+
 - App components are first-class on the booted surfaces. A component the app defines on the DSL with `helper :name` renders through that helper, `poetry:check` lints it under that name with its own contract, `/poetry/llms.txt` and `llms-full.txt` list it under an App components section with its agent rules, and `poetry:skill` writes a `references/app.md` with a menu line. The AGENTS.md section and the poetry-component skill teach the declaration. The MCP server's `check` tool learns the declared helpers from source, so it agrees the helper exists; its contracts and the runtime skill map stay gem-only (boot-free by design).
 
 - `poetry:install --no-preflight`, for an app that imports Tailwind without preflight: vendors the reset floor (`poetry/reset.css`, Tailwind's preflight at zero specificity, generated from the pinned binary and gated against it) into `layer(base)` ahead of the theme, and on a fresh entry writes the split no-preflight import. A plain re-run keeps the floor once installed. Measured against the golden corpus: without preflight two thirds of the components render differently even behind a modern reset, so the floor is what keeps them whole; `POETRY_PREFLIGHT=0 rake test:visual` proves it. The installer and `poetry:check` warn (`preflight-missing`) when an entry imports neither preflight nor the floor.
