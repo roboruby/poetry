@@ -17,6 +17,8 @@
 
 ### Changed
 
+- The form builder's agent rules say which parts a builder field renders (`field-label`, `field-description` for the hint, `field-error`), so llms.txt's Forms section, the registry, the MCP server and the skill all name the slots a wiring test asserts on; the Testing guide says the same.
+
 - `poetry:check` treats mailer templates as email, not pages: under a `*_mailer/` directory or in the mailer layout the raw-color rule stays quiet (an inline hex is the only paint a mail client honours) and the design tier skips them; every other rule runs there as before. The AGENTS.md section says so.
 
 - An off-list variant or a missing required option now raises at construction in development and test (poetry-core's runtime values tier) instead of rendering unstyled; the AGENTS.md section says so beside the check.

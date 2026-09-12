@@ -12383,6 +12383,10 @@ form_builder:
     true/false) overrides the presence inference (aria only).'
   - 'Hints/placeholders resolve from poetry_form.* i18n (simple_form.* keys keep working
     as a fallback); pass hint:/placeholder: to override.'
+  - 'Every builder field renders a Field, so wiring tests assert on its parts: the
+    label is data-slot=field-label, the hint data-slot=field-description, the error
+    data-slot=field-error, with the control inside (never a bare hint or description
+    slot).'
   - 'f.submit renders a poetry Button with the Rails i18n label; f.fieldset(legend:)/f.group
     lay out sections; boolean f.input renders the horizontal Field (switch: true ->
     the setting row).'
