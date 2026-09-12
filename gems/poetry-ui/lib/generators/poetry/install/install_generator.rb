@@ -215,9 +215,16 @@ module Poetry
       # (force) - a host restyles by overriding .cn-* rules in its OWN css
       # (any utilities-layer or unlayered rule beats layer(base)), never by
       # editing this file, so theme updates keep flowing on re-install.
-      # --theme swaps the CONTENT; the slot filename stays put.
-      create_file "app/assets/tailwind/poetry/style-default.css",
-                  ui_theme_path.read, force: true
+      # --theme swaps the CONTENT; the slot filename stays put - and since
+      # the name never says which theme fills it, the install does, on a
+      # first install or an explicit --theme (a plain re-run already
+      # reports the theme it keeps).
+      announce_slot = options[:theme] || !File.exist?(File.join(destination_root, STYLE_SLOT))
+      create_file STYLE_SLOT, ui_theme_path.read, force: true
+      if announce_slot
+        say_status :theme, "#{resolved_theme.inspect} fills #{STYLE_SLOT} - the slot name never changes, " \
+                           "the file's first line names the theme (--theme <name> switches)", :cyan
+      end
       # The reset floor: preflight at zero specificity, for hosts without
       # preflight (--no-preflight, remembered while the file is present).
       create_file RESET_FILE, Poetry::Ui.root.join(Poetry::Ui::ResetFloor::RELATIVE_PATH).read, force: true if floor?

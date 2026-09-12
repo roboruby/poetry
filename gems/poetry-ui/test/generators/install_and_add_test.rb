@@ -480,8 +480,10 @@ module Poetry
     end
 
     def test_theme_vega_fills_the_same_slot_and_switching_back_is_an_explicit_rerun
-      run_generator %w[--theme vega]
+      stdout = run_generator %w[--theme vega]
 
+      # The name never says which theme fills the slot, so the install does.
+      assert_match(/"vega" fills app\/assets\/tailwind\/poetry\/style-default\.css/, stdout)
       # The SLOT filename never changes - only the content swaps.
       assert_file "app/assets/tailwind/poetry/style-default.css", /poetry vega theme/
       assert_file "app/assets/tailwind/poetry/style-default.css", /rounded-4xl/
@@ -531,6 +533,7 @@ module Poetry
 
       assert_file "app/assets/tailwind/poetry/style-default.css", /poetry vega theme/
       assert_match(/keeping installed theme "vega"/, stdout)
+      refute_match(/fills app/, stdout, "a plain re-run reports the kept theme once, not twice")
     end
 
     def test_unidentifiable_slot_falls_back_to_default_with_a_warning

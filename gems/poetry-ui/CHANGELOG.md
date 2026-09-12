@@ -4,6 +4,8 @@
 
 ### Added
 
+- The install names the theme it puts in the slot: on a first install or an explicit `--theme`, one line says which theme fills `poetry/style-default.css`, that the slot name never changes, and that the file's first line names the theme. The Theming and Installation guides say the same, for the reader who opens a file called default and finds vega.
+
 - `poetry:install` and `poetry:skill` say so when the host gitignores `.claude/skills`: the skills still serve that checkout, and the note names the refresh command teammates and CI run (`bin/rails g poetry:skill`) or the alternative of un-ignoring the directory. Asked of git only; no git, no repository, or a tracked directory stay silent.
 
 - App components are first-class on the booted surfaces. A component the app defines on the DSL with `helper :name` renders through that helper, `poetry:check` lints it under that name with its own contract, `/poetry/llms.txt` and `llms-full.txt` list it under an App components section with its agent rules, and `poetry:skill` writes a `references/app.md` with a menu line. The AGENTS.md section and the poetry-component skill teach the declaration. The MCP server's `check` tool learns the declared helpers from source, so it agrees the helper exists; its contracts and the runtime skill map stay gem-only (boot-free by design).
