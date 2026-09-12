@@ -298,7 +298,9 @@ module Poetry
       #
       # @api private
       class Linter
-        ACTION_TOKEN = /(?:[\w.:@-]+->)?(?<identifier>poetry--[\w-]+)#(?<method>\w+)/
+        # Any identifier: the definition lookup keeps the rule to registered
+        # controllers (poetry's, and a host's once its manifest is registered).
+        ACTION_TOKEN = /(?:[\w.:@-]+->)?(?<identifier>[a-z][\w-]*)#(?<method>\w+)/
         # Chrome's guidance for a registered tool name is 30 characters;
         # the composed poetry.{instance}.{tool} name is what an agent reads.
         WEBMCP_NAME_BUDGET = 30
