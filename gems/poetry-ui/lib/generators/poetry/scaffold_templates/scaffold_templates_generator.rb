@@ -9,9 +9,11 @@ module Poetry
   # poetry. This copies scaffold view templates - and a matching scaffold
   # controller template - so the STANDARD `rails g scaffold` produces
   # poetry-composed output: a DataTable index with sanitized URL state
-  # (sortable whitelist, filter, pagination), Field-composed forms with
-  # attribute-type -> component mapping (plus column-name -> input-type
-  # heuristics and `null: false` -> required), a MetadataList show, and a
+  # (sortable whitelist, filter, pagination), forms on the poetry form
+  # builder (one f.input per attribute - the builder infers the control
+  # from the column, the name and the validations; the template adds only
+  # what the generator knows and the model cannot say: rich_text, multiple
+  # attachments, `null: false` -> required), a MetadataList show, and a
   # destructive-variant delete. The copies are the app's to edit; re-runs
   # never overwrite (skip-if-exists, the poetry:add contract).
   #

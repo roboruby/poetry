@@ -17,6 +17,8 @@
 
 ### Changed
 
+- The scaffold form template is the form builder's: `form_with(model:, builder: Poetry::Ui::FormBuilder)` and one `f.input` per attribute, the control inferred from the column, the name and the validations, with the template adding only what the generator knows and the model cannot say (`as: :text` for rich text, `multiple: true` for many attachments, `required: true` from `null: false`). The gem's reference CRUD form now follows the gem's own first rule about forms. A host that installed the templates before keeps its copy (re-runs never overwrite); delete `lib/templates/erb/scaffold/_form.html.erb.tt` and re-run `poetry:scaffold_templates` for the builder version. On the way, two inference gaps in the builder: `has_many_attached` attributes infer a file input (the plural responder), and `website` / `permalink` infer a URL input like `url` does.
+
 - The form builder's agent rules say which parts a builder field renders (`field-label`, `field-description` for the hint, `field-error`), so llms.txt's Forms section, the registry, the MCP server and the skill all name the slots a wiring test asserts on; the Testing guide says the same.
 
 - `poetry:check` treats mailer templates as email, not pages: under a `*_mailer/` directory or in the mailer layout the raw-color rule stays quiet (an inline hex is the only paint a mail client honours) and the design tier skips them; every other rule runs there as before. The AGENTS.md section says so.

@@ -17,7 +17,7 @@ module Poetry
         STRING_HEURISTICS = {
           /password/ => :password,
           /email/ => :email,
-          /\burl\b|_url\b/ => :url,
+          /\burl\b|_url\b|website|permalink/ => :url,
           /phone|\btel\b/ => :tel,
           /search|query/ => :search
         }.freeze
@@ -43,9 +43,11 @@ module Poetry
           COLUMN_TYPES.fetch(column, :string)
         end
 
+        # has_one_attached answers to <name>_attachment, has_many_attached
+        # to <name>_attachments; the other two are the classic uploaders.
         def attachment_attribute?(method)
-          object.respond_to?("#{method}_attachment") || object.respond_to?("#{method}_attacher") ||
-            object.respond_to?("remote_#{method}_url")
+          object.respond_to?("#{method}_attachment") || object.respond_to?("#{method}_attachments") ||
+            object.respond_to?("#{method}_attacher") || object.respond_to?("remote_#{method}_url")
         end
 
         def enum_attribute?(method)

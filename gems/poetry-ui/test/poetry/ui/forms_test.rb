@@ -34,6 +34,42 @@ module Poetry
         <% end %>
       ERB
 
+      # The inference probes' model (Profile below is another test's).
+      class Site
+        include ActiveModel::Model
+
+        def self.model_name = ActiveModel::Name.new(self, nil, "Site")
+
+        attr_accessor :website, :permalink, :documents
+
+        # has_many_attached's responder shape.
+        def documents_attachments = []
+      end
+
+      def test_website_and_permalink_infer_a_url_input
+        html = ApplicationController.renderer.render(
+          inline: %(<%= form_with(model: model, url: "/p", builder: Poetry::Ui::FormBuilder) do |form| %><%= form.input :website %><%= form.input :permalink %><% end %>),
+          locals: { model: Site.new }, layout: false
+        )
+
+        doc = Nokogiri::HTML5.fragment(html)
+
+        assert_equal "url", doc.at_css("input[name='site[website]']")["type"]
+        assert_equal "url", doc.at_css("input[name='site[permalink]']")["type"]
+      end
+
+      def test_has_many_attached_infers_a_file_input
+        html = ApplicationController.renderer.render(
+          inline: %(<%= form_with(model: model, url: "/p", builder: Poetry::Ui::FormBuilder) do |form| %><%= form.input :documents, multiple: true %><% end %>),
+          locals: { model: Site.new }, layout: false
+        )
+
+        input = Nokogiri::HTML5.fragment(html).at_css("input[name='site[documents][]']")
+
+        assert_equal "file", input["type"], "the plural responder infers a file input"
+        assert input["multiple"]
+      end
+
       def test_webmcp_form_declares_the_tool_and_parameter_overrides
         html = ApplicationController.renderer.render(inline: WEBMCP_FORM_ERB,
                                                      locals: { model: Contact.new }, layout: false)

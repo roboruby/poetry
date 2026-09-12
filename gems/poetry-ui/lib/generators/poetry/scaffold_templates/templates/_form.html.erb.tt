@@ -1,4 +1,4 @@
-<%%= form_with(model: <%= model_resource_name %>, class: "flex max-w-xl flex-col gap-4") do |form| %>
+<%%= form_with(model: <%= model_resource_name %>, builder: Poetry::Ui::FormBuilder, class: "flex max-w-xl flex-col gap-4") do |form| %>
   <%% if <%= singular_table_name %>.errors.any? %>
     <%%= poetry_alert(variant: :destructive) do |alert| %>
       <%% alert.with_title { "#{pluralize(<%= singular_table_name %>.errors.count, "error")} prohibited this <%= human_name.downcase %> from being saved" } %>
@@ -11,67 +11,21 @@
   <%% end %>
 
 <% attributes.each do |attribute| -%>
-<% required = attribute.attr_options[:null] == false -%>
+<% required = attribute.attr_options[:null] == false ? ", required: true" : "" -%>
 <% if attribute.password_digest? -%>
-  <%%= poetry_field(id: form.field_id(:password), label_text: "Password",
-                   error: <%= singular_table_name %>.errors[:password].first) do |field| %>
-    <%%= poetry_input(type: "password", name: form.field_name(:password),
-                     **field.control_attributes.transform_keys(&:to_sym)) %>
-  <%% end %>
-
-  <%%= poetry_field(id: form.field_id(:password_confirmation), label_text: "Password confirmation") do |field| %>
-    <%%= poetry_input(type: "password", name: form.field_name(:password_confirmation),
-                     **field.control_attributes.transform_keys(&:to_sym)) %>
-  <%% end %>
-<% elsif attribute.type.to_s == "boolean" -%>
-  <%%= poetry_checkbox(label: "<%= attribute.human_name %>", name: form.field_name(:<%= attribute.column_name %>),
-                      checked: <%= model_resource_name %>.<%= attribute.column_name %>?, value: "1", unchecked_value: "0") %>
-<% elsif %w[integer decimal float].include?(attribute.type.to_s) -%>
-  <%%= poetry_number_field(label: "<%= attribute.human_name %>", name: form.field_name(:<%= attribute.column_name %>),
-                          value: <%= model_resource_name %>.<%= attribute.column_name %><%= attribute.type.to_s == "integer" ? ", step: 1" : "" %><%= ", required: true" if required %>) %>
-<% elsif attribute.type.to_s == "date" -%>
-  <%%= poetry_date_field(label: "<%= attribute.human_name %>", name: form.field_name(:<%= attribute.column_name %>),
-                        value: <%= model_resource_name %>.<%= attribute.column_name %><%= ", required: true" if required %>) %>
-<% elsif %w[text rich_text].include?(attribute.type.to_s) -%>
-  <%%= poetry_field(id: form.field_id(:<%= attribute.column_name %>), label_text: "<%= attribute.human_name %>",<%= " required: true," if required %>
-                   error: <%= singular_table_name %>.errors[:<%= attribute.column_name %>].first) do |field| %>
-    <%%= poetry_textarea(name: form.field_name(:<%= attribute.column_name %>),
-                        value: <%= model_resource_name %>.<%= attribute.column_name %>,
-                        **field.control_attributes.transform_keys(&:to_sym)) %>
-  <%% end %>
-<% elsif attribute.attachment? || attribute.attachments? -%>
-  <%%= poetry_field(id: form.field_id(:<%= attribute.column_name %>), label_text: "<%= attribute.human_name %>") do |field| %>
-    <%%= poetry_input(type: "file", name: form.field_name(:<%= attribute.column_name %><%= attribute.attachments? ? ", multiple: true" : "" %>),
-                     <%= attribute.attachments? ? "multiple: true, " : "" %>**field.control_attributes.transform_keys(&:to_sym)) %>
-  <%% end %>
+  <%%= form.input :password %>
+  <%%= form.input :password_confirmation %>
+<% elsif attribute.rich_text? -%>
+  <%%= form.input :<%= attribute.column_name %>, as: :text<%= required %> %>
+<% elsif attribute.attachments? -%>
+  <%%= form.input :<%= attribute.column_name %>, multiple: true<%= required %> %>
 <% else -%>
-<% value_expr = case attribute.type.to_s
-                when "datetime" then "#{model_resource_name}.#{attribute.column_name}&.strftime(\"%Y-%m-%dT%H:%M\")"
-                when "time" then "#{model_resource_name}.#{attribute.column_name}&.strftime(\"%H:%M\")"
-                else "#{model_resource_name}.#{attribute.column_name}"
-                end
-   input_type = if attribute.type.to_s != "string"
-                  { "datetime" => "datetime-local", "time" => "time" }.fetch(attribute.type.to_s, "text")
-                elsif %w[email email_address].include?(attribute.column_name)
-                  "email"
-                elsif %w[phone phone_number].include?(attribute.column_name)
-                  "tel"
-                elsif %w[url website permalink].include?(attribute.column_name)
-                  "url"
-                else
-                  "text"
-                end -%>
-  <%%= poetry_field(id: form.field_id(:<%= attribute.column_name %>), label_text: "<%= attribute.human_name %>",<%= " required: true," if required %>
-                   error: <%= singular_table_name %>.errors[:<%= attribute.column_name %>].first) do |field| %>
-    <%%= poetry_input(type: "<%= input_type %>", name: form.field_name(:<%= attribute.column_name %>),
-                     value: <%= value_expr %>,
-                     **field.control_attributes.transform_keys(&:to_sym)) %>
-  <%% end %>
+  <%%= form.input :<%= attribute.column_name %><%= required %> %>
 <% end -%>
 <% end -%>
 
   <div class="flex items-center gap-3">
-    <%%= poetry_button(type: :submit) { <%= model_resource_name %>.persisted? ? "Update <%= human_name.downcase %>" : "Create <%= human_name.downcase %>" } %>
+    <%%= form.submit %>
     <%%= poetry_button(tag: :a, variant: :ghost, href: <%= index_helper(type: :path) %>) { "Cancel" } %>
   </div>
 <%% end %>

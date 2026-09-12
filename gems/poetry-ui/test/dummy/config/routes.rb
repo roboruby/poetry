@@ -22,6 +22,9 @@ Rails.application.routes.draw do
   # and additive draws from test setup get wiped by later route reloads.
   # The controller is defined by the test file; the routes are inert
   # otherwise (drawing to an undefined controller only fails at dispatch).
+  # The scaffold form render test (test/generators/scaffold_templates_test.rb):
+  # the generated form needs posts_path; no controller, routes only.
+  resources :posts, only: %i[index create]
   # The StableId architectural gate (rake test:morph_identity) - permanent
   # for the same reload-safety reason as /phost below.
   get "/sgate" => "stable_id_gate#index"

@@ -63,7 +63,7 @@ module Poetry
       "title:string", "body:text", "price:decimal", "quantity:integer",
       "published:boolean", "published_on:date", "starts_at:datetime",
       "password:digest", "photo:attachment", "documents:attachments",
-      "email:string!", "website:string", "seats:integer!"
+      "email:string!", "website:string", "seats:integer!", "summary:rich_text"
     ].freeze
 
     def self.expanded(name)
@@ -100,25 +100,77 @@ module Poetry
       refute_includes expanded, "password", "password digests never render in the table"
     end
 
-    def test_the_expanded_form_maps_column_names_to_input_types
+    # The form is the builder's: one f.input per attribute, the control
+    # inferred at render time; the template adds only what the generator
+    # knows and the model cannot say.
+    def test_the_expanded_form_is_one_builder_call_per_attribute
       expanded = self.class.expanded("_form")
 
-      assert_includes expanded, 'poetry_input(type: "email", name: form.field_name(:email)',
-                      "an email column renders a type=email input (the column-name heuristics)"
-      assert_includes expanded, 'poetry_input(type: "url", name: form.field_name(:website)'
-      assert_includes expanded, 'poetry_input(type: "text", name: form.field_name(:title)',
-                      "names outside the heuristic lists stay text"
+      assert_includes expanded, "form_with(model: post, builder: Poetry::Ui::FormBuilder"
+      assert_includes expanded, "<%= form.input :title %>", "a plain column carries nothing - the builder infers"
+      assert_includes expanded, "<%= form.input :email, required: true %>", "null: false -> required"
+      assert_includes expanded, "<%= form.input :seats, required: true %>"
+      assert_includes expanded, "<%= form.input :summary, as: :text %>", "rich_text is not a column: as: :text"
+      assert_includes expanded, "<%= form.input :documents, multiple: true %>", "has_many_attached: multiple"
+      assert_includes expanded, "<%= form.input :photo %>", "has_one_attached: inferred"
+      assert_includes expanded, "<%= form.input :password %>"
+      assert_includes expanded, "<%= form.input :password_confirmation %>"
+      assert_includes expanded, "<%= form.submit %>"
+      refute_includes expanded, "poetry_field(", "no hand-wired Field remains"
+      refute_includes expanded, "poetry_input(", "no hand-wired Input remains"
     end
 
-    def test_the_expanded_form_carries_required_from_null_false
-      expanded = self.class.expanded("_form")
+    # The generated form, rendered: an ActiveModel post with the scaffold's
+    # attribute shapes (the dummy draws resources :posts for the URLs).
+    class ScaffoldPost
+      include ActiveModel::Model
+      include ActiveModel::Attributes
 
-      assert_includes expanded, 'label_text: "Email", required: true',
-                      "a bang column (null: false) marks its Field required"
-      assert_includes expanded, "value: post.seats, step: 1, required: true",
-                      "composite fields carry required directly"
-      refute_includes expanded, 'label_text: "Title", required: true',
-                      "nullable columns stay unrequired"
+      def self.model_name = ActiveModel::Name.new(self, nil, "Post")
+
+      # ActiveModel registers no :text type; the builder reads the type's
+      # name, so a text column is an ActiveRecord-shaped :text here.
+      class TextType < ActiveModel::Type::String
+        def type = :text
+      end
+
+      attribute :title, :string
+      attribute :body, TextType.new
+      attribute :price, :decimal
+      attribute :quantity, :integer
+      attribute :published, :boolean
+      attribute :published_on, :date
+      attribute :starts_at, :datetime
+      attribute :email, :string
+      attribute :website, :string
+      attribute :seats, :integer
+      attr_accessor :password, :password_confirmation, :photo, :documents, :summary
+
+      def photo_attachment = nil
+      def documents_attachments = []
+      def persisted? = false
+    end
+
+    def test_the_expanded_form_renders_every_attribute_through_the_builder
+      html = ApplicationController.renderer.render(inline: self.class.expanded("_form"),
+                                                   locals: { post: ScaffoldPost.new }, layout: false)
+      doc = Nokogiri::HTML5.fragment(html)
+      controls = doc.css("input[name], textarea[name]").to_h { |el| [el["name"], el] }
+
+      assert_equal "url", controls.fetch("post[website]")["type"]
+      assert_equal "email", controls.fetch("post[email]")["type"]
+      assert_equal "true", controls.fetch("post[email]")["aria-required"], "required: true rides through"
+      assert_equal "password", controls.fetch("post[password]")["type"]
+      assert_equal "password", controls.fetch("post[password_confirmation]")["type"]
+      assert_equal "textarea", controls.fetch("post[body]").name, "a text column is a textarea"
+      assert_equal "textarea", controls.fetch("post[summary]").name, "rich_text is a textarea"
+      assert_equal "checkbox", controls.fetch("post[published]")["type"]
+      assert_equal "date", controls.fetch("post[published_on]")["type"]
+      assert_equal "file", controls.fetch("post[photo]")["type"]
+      assert controls.fetch("post[documents][]")["multiple"], "has_many_attached: multiple"
+      assert_equal 15, doc.css("[data-slot=field-label]").size, "one Field per attribute (digest = two)"
+      assert_equal "Create Post", doc.at_css("button[type=submit]").text.strip
+      assert_empty doc.css("[data-slot=alert]"), "no errors, no summary"
     end
 
     def test_the_controller_template_whitelists_only_real_columns
