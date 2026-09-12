@@ -221,13 +221,14 @@ module Poetry
       # The reset floor: preflight at zero specificity, for hosts without
       # preflight (--no-preflight, remembered while the file is present).
       create_file RESET_FILE, Poetry::Ui.root.join(Poetry::Ui::ResetFloor::RELATIVE_PATH).read, force: true if floor?
-      create_file "app/assets/tailwind/poetry/base.css", BASE_CSS, skip: true
+      seed_file "app/assets/tailwind/poetry/base.css", BASE_CSS
       # poetry/typeset (the vendored prose-styling port - provenance in
       # THIRD_PARTY_NOTICES.md): prose styling for
-      # rendered markdown. App-OWNED like base.css (skip, never force) -
-      # the whole point of the artifact is that the file is yours to tune.
-      create_file "app/assets/tailwind/poetry/typeset.css",
-                  Poetry::Ui.root.join("typeset/typeset.css").read, skip: true
+      # rendered markdown. App-OWNED like base.css (seeded once, never
+      # rewritten) - the whole point of the artifact is that the file is
+      # yours to tune.
+      seed_file "app/assets/tailwind/poetry/typeset.css",
+                Poetry::Ui.root.join("typeset/typeset.css").read
     end
 
     # Step: writes the dictionary + template-class safelist.
@@ -265,7 +266,7 @@ module Poetry
     # Step: writes the commented configuration initializer.
     # @api private
     def create_initializer
-      create_file "config/initializers/poetry.rb", <<~RUBY, skip: true
+      seed_file "config/initializers/poetry.rb", <<~RUBY
         # frozen_string_literal: true
 
         # poetry configuration. Defaults shown commented.
@@ -281,7 +282,7 @@ module Poetry
     # Step: writes the empty copy-in manifest.
     # @api private
     def create_manifest
-      create_file "config/poetry_components.yml", "components: {}\n", skip: true
+      seed_file "config/poetry_components.yml", "components: {}\n"
     end
 
     # Pins alone don't register controllers: without this call every poetry
@@ -499,6 +500,20 @@ module Poetry
       return if File.exist?(path) && File.read(path).include?(line)
 
       append_to_file relative, "#{line}\n"
+    end
+
+    # A host-owned file, seeded once: the file is the host's to edit from
+    # the moment it exists, so a re-run never rewrites it - not under
+    # --force either. (Thor's skip: yields to --force, which is right for a
+    # template the flag is meant to refresh and wrong for a manifest of the
+    # host's own declarations; the vendored artifacts are force: true on
+    # every run, so the flag has nothing left to add here.)
+    def seed_file(relative, content)
+      if File.exist?(File.join(destination_root, relative))
+        say_status :exists, relative, :blue
+      else
+        create_file relative, content
+      end
     end
 
     # Injects a line before an anchor line (appends when the anchor is

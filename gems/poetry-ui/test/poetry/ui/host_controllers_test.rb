@@ -83,7 +83,9 @@ module Poetry
         assert_equal ["pulse"], entry["controllers"].first["actions"]
         assert_equal ["demo:badge:pulse"], entry["controllers"].first["events"]
       ensure
-        Poetry::Core::HostHelpers.sync!([]) if defined?(Poetry::Core::HostHelpers)
+        # Back to the app's real set: an empty sync here left every later
+        # host-helper render in the run without demo_badge (order-dependent).
+        Poetry::Core::HostHelpers.sync!(Poetry::Core::HostComponents.discover)
       end
     end
   end

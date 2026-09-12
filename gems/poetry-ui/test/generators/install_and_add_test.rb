@@ -498,6 +498,30 @@ module Poetry
                    "switching themes never accretes entry lines"
     end
 
+    def test_force_rerun_never_rewrites_host_owned_files_but_refreshes_vendored_ones
+      run_generator %w[--skip-bundle]
+      manifest = File.join(destination_root, "config/poetry_components.yml")
+      File.write(manifest, "components: {}\noverrides:\n  - path: app/assets/tailwind/mine.css\n    reason: declared on purpose\n")
+      initializer = File.join(destination_root, "config/initializers/poetry.rb")
+      File.write(initializer, "Poetry::Core::Config.current.icon_library = :heroicons\n")
+      base = File.join(destination_root, "app/assets/tailwind/poetry/base.css")
+      File.write(base, "@layer base { body { color: red; } }\n")
+      typeset = File.join(destination_root, "app/assets/tailwind/poetry/typeset.css")
+      File.write(typeset, ".typeset { color: red; }\n")
+      safelist = File.join(destination_root, "app/assets/tailwind/poetry/safelist.txt")
+      File.write(safelist, "stale\n")
+
+      run_generator %w[--skip-bundle --force]
+
+      assert_file "config/poetry_components.yml", /declared on purpose/
+      assert_file "config/initializers/poetry.rb", /heroicons/
+      assert_file "app/assets/tailwind/poetry/base.css", /color: red/
+      assert_file "app/assets/tailwind/poetry/typeset.css", /color: red/
+      assert_file "app/assets/tailwind/poetry/safelist.txt" do |text|
+        refute_equal "stale\n", text, "a vendored artifact refreshes"
+      end
+    end
+
     def test_rerun_without_the_flag_keeps_the_installed_theme
       run_generator %w[--theme vega]
 

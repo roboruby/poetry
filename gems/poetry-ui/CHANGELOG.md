@@ -23,6 +23,7 @@
 
 ### Fixed
 
+- `poetry:install --force` no longer rewrites the four files the install seeds once for the host to own (`config/poetry_components.yml`, the initializer, `poetry/base.css`, `poetry/typeset.css`); a re-run with the flag used to reset a host's override declarations and settings to the seed. The vendored artifacts refresh on every run, so the flag is never needed on an upgrade.
 - `poetry:install` no longer adds a second `herb` declaration when the gem is declared in a file the Gemfile pulls in with `eval_gemfile` (a shared Gemfile).
 
 ## [0.1.1] - 2026-09-08
