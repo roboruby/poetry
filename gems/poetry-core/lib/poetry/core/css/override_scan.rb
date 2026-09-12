@@ -17,10 +17,19 @@ module Poetry
       # it. Declaration rules: `reason` is required; `cn: "*"` must be
       # file-scoped - a repo-wide blanket cannot happen by accident.
       #
+      # An override is a rule against a class the THEME owns: the cn-* names
+      # the gem dictionaries emit plus the ones the installed fragment
+      # defines on purpose (the same two sets the theme-coverage gate holds
+      # against each other). A host's own cn-* classes - a kit's dictionary,
+      # a page's helper class - are the host's business and never findings.
+      # The task passes that set as `owned:`; nil (the gem's own tests) means
+      # every cn-* name is owned.
+      #
       # @example
       #   scan = Poetry::Core::CSS::OverrideScan.new(
       #     sources: { "app/assets/site.css" => css },
-      #     declarations: YAML.load_file("config/poetry_components.yml")["overrides"]
+      #     declarations: YAML.load_file("config/poetry_components.yml")["overrides"],
+      #     owned: theme_owned_names
       #   )
       #   scan.ok? || scan.undeclared # => [["app/assets/site.css", ["cn-button"]]]
       #
@@ -42,7 +51,12 @@ module Poetry
 
         attr_reader :undeclared, :invalid, :stale, :declared_count
 
-        def initialize(sources:, declarations:)
+        # @param sources [Hash{String => String}] relative path => host CSS
+        # @param declarations [Array<Hash>] the raw `overrides:` entries
+        # @param owned [Enumerable<String>, nil] the theme-owned cn-* names;
+        #   nil treats every cn-* name as owned
+        def initialize(sources:, declarations:, owned: nil)
+          @owned = owned&.to_set(&:to_s)
           @declarations, @invalid = normalize(Array(declarations))
           @undeclared = []
           @declared_count = 0
@@ -93,6 +107,7 @@ module Poetry
         def scan(sources)
           sources.each do |path, css|
             classes = css.gsub(COMMENT, "").scan(CN_TOKEN).flatten.uniq.sort
+            classes = classes.select { |cn_class| @owned.include?(cn_class) } if @owned
             next if classes.empty?
 
             open = classes.reject do |cn_class|

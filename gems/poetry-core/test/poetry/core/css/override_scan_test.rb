@@ -41,6 +41,25 @@ module Poetry
           assert_empty scan.stale
         end
 
+        # Ownership, not authorship: a host's own cn-* classes (a kit's
+        # dictionary, a page helper) are never overrides; a rule against a
+        # theme-owned name is, whoever wrote it.
+        def test_only_theme_owned_names_are_overrides_when_the_owned_set_is_given
+          css = ".cn-button { color: red; } .cn-acme-pill { color: blue; } .cn-page-hero { margin: 0; }"
+          scan = OverrideScan.new(sources: { "app/assets/kit.css" => css }, declarations: [],
+                                  owned: %w[cn-button cn-card])
+
+          assert_equal [["app/assets/kit.css", ["cn-button"]]], scan.undeclared
+          only_host = OverrideScan.new(sources: { "app/assets/kit.css" => ".cn-acme-pill { color: blue; }" },
+                                       declarations: [], owned: %w[cn-button])
+
+          assert_predicate only_host, :ok?
+          assert_empty only_host.undeclared
+          everything = OverrideScan.new(sources: { "app/assets/kit.css" => css }, declarations: [])
+
+          assert_equal %w[cn-acme-pill cn-button cn-page-hero], everything.undeclared.first.last, "nil owned: all cn-*"
+        end
+
         def test_wildcard_without_files_is_invalid
           scan = OverrideScan.new(sources: {},
                                   declarations: [{ "cn" => "*", "reason" => "everything" }])
