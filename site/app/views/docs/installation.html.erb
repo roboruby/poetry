@@ -175,7 +175,9 @@
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <p>
         A plain re-run keeps the theme already installed (it reads the
-        fragment header back); passing <code>--theme</code> is how you
+        fragment header back: the slot is always
+        <code>poetry/style-default.css</code>, and its first line names the
+        theme that fills it); passing <code>--theme</code> is how you
         switch. Files you own (<code>base.css</code>,
         <code>typeset.css</code>, the initializer, the component manifest,
         and everything copied in) are never rewritten.

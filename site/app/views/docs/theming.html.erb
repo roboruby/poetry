@@ -84,7 +84,10 @@
         An app carries <strong>one</strong> theme. The installer copies the
         chosen fragment into a fixed slot; re-run with a different
         <code>--theme</code> to switch; the slot filename never changes, so
-        nothing else in your app moves.
+        nothing else in your app moves. That is why the file is called
+        <code>style-default.css</code> whichever theme you picked: the name is
+        the slot, and the file&#39;s first line names the theme inside it (the
+        install prints the same line, and a re-run reads it back).
       </p>
     <% end %>
     <%= poetry_code_block(code: install_theme_source, language: "shell", label: "Theme install") %>
