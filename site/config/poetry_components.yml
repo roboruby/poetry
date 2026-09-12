@@ -1,5 +1,10 @@
 components: {}
 overrides:
+  - cn: "*"
+    files:
+      - "app/assets/tailwind/styles/*.css"
+    reason: "The docs style switcher: the nine theme fragments, each scoped under .style-<name>, so every page renders in any theme. The theme rules are the theme, copied, not restyled (script/build_style_registry.rb keeps them in sync with the gem)."
+    created: 2026-09-11
   - cn: "cn-navigation-menu-popup"
     files: ["app/assets/tailwind/landing-brand.css"]
     reason: "Landing mega bar goes frosted glass over the hero art - translucent popover plus backdrop blur, scoped to html.brand-aurum so the docs shell keeps the solid popover."
