@@ -44,6 +44,8 @@ module Poetry
 
     # The host's Tailwind entry stylesheet (import/@source injection).
     TAILWIND_ENTRY = "app/assets/tailwind/application.css"
+    # poetry-agent's stylesheet, vendored when the gem is bundled.
+    AGENT_LINE = %(@import "./poetry/agent.css" layer(base);)
     # The reset floor, vendored only for hosts that opted out of preflight.
     RESET_FILE = "app/assets/tailwind/poetry/reset.css"
     RESET_LINE = %(@import "./poetry/reset.css" layer(base);)
@@ -333,6 +335,20 @@ module Poetry
         import { registerPoetryChartsControllers } from "@poetry/charts"
         registerPoetryChartsControllers(application)
       JS
+    end
+
+    # poetry-agent's stylesheet (the WebMCP agent-focus states) rides along
+    # when the gem is bundled: vendored like charts.css, imported into
+    # layer(base) beside the theme. Hosts without the gem carry neither the
+    # rules nor the two warnings the CSS optimizer prints for the origin-trial
+    # pseudo-classes on every minified build.
+    # @api private
+    def wire_agent_stylesheet
+      return unless agent_available? && Poetry::Agent.respond_to?(:root)
+
+      create_file "app/assets/tailwind/poetry/agent.css",
+                  Poetry::Agent.root.join("app/assets/stylesheets/poetry-agent.css").read, force: true
+      inject_line_before(TAILWIND_ENTRY, AGENT_LINE, %(@import "./poetry/base.css";))
     end
 
     # poetry:check parses ERB with herb, which stays out of poetry's runtime

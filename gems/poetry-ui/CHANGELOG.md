@@ -19,6 +19,8 @@
 - `poetry:install` imports `tokens.css` into `layer(theme)`, so a token the host already declares (`--primary`, `--accent`, `--muted`, ...) keeps its value whatever the order in the Tailwind entry, and that value now reaches Poetry's components too. Before, the appended import landed after the host's own `:root` and took the same names over: an app's brand color vanished before a single Poetry component rendered. A re-run rewrites the earlier unlayered import line in place.
 - `poetry:install` reports, before writing anything, every Poetry token name and theme key the app's stylesheets already declare, with the file and line and what Poetry paints with that role. It never blocks. `poetry:check` repeats the report as `token-collision` warnings.
 
+- The WebMCP agent-focus rules (`:tool-form-active`, `:tool-submit-active`) leave the nine theme fragments, where they were identical, for poetry-agent's own stylesheet; `poetry:install` vendors it into `layer(base)` when that gem is bundled. A host without poetry-agent no longer carries them, nor the two warnings the CSS optimizer printed for the origin-trial pseudo-classes on every minified build (the Rails Tailwind task minifies by default, so every build and watch run).
+
 ### Fixed
 
 - `poetry:install` no longer adds a second `herb` declaration when the gem is declared in a file the Gemfile pulls in with `eval_gemfile` (a shared Gemfile).

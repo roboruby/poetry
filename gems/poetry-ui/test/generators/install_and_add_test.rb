@@ -180,6 +180,37 @@ module Poetry
       assert_includes content, %(import { registerPoetryAgent } from "@poetry/agent")
     end
 
+    def test_agent_stylesheet_is_vendored_into_layer_base_when_the_gem_is_bundled
+      Dir.mktmpdir do |gem_root|
+        FileUtils.mkdir_p(File.join(gem_root, "app/assets/stylesheets"))
+        File.write(File.join(gem_root, "app/assets/stylesheets/poetry-agent.css"), ":where(form:tool-form-active) { outline: 2px dashed red; }\n")
+        Poetry::Agent.const_set(:Engine, Class.new) unless defined?(Poetry::Agent::Engine)
+        Poetry::Agent.define_singleton_method(:root) { Pathname.new(gem_root) }
+        run_generator %w[--skip-bundle]
+        run_generator %w[--skip-bundle]
+
+        assert_file "app/assets/tailwind/poetry/agent.css", /tool-form-active/
+        assert_file "app/assets/tailwind/application.css" do |entry|
+          assert_equal 1, entry.scan(InstallGenerator::AGENT_LINE).size, "once, layered"
+          lines = entry.lines.map(&:strip)
+
+          assert_operator lines.index(InstallGenerator::AGENT_LINE), :<, lines.index(%(@import "./poetry/base.css";))
+        end
+      ensure
+        Poetry::Agent.singleton_class.remove_method(:root)
+        Poetry::Agent.send(:remove_const, :Engine) if defined?(Poetry::Agent::Engine)
+      end
+    end
+
+    def test_agent_stylesheet_is_not_vendored_without_the_gem
+      run_generator %w[--skip-bundle]
+
+      assert_no_file "app/assets/tailwind/poetry/agent.css"
+      assert_file "app/assets/tailwind/application.css" do |entry|
+        refute_includes entry, "agent.css"
+      end
+    end
+
     def test_agent_runtime_is_not_registered_without_the_gem
       index = File.join(destination_root, "app/javascript/controllers/index.js")
       FileUtils.mkdir_p(File.dirname(index))
