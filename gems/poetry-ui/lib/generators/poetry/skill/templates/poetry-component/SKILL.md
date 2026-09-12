@@ -64,6 +64,11 @@ surface.
   the events it dispatches); a parent that is another app controller or a
   poetry controller is merged, a library parent is skipped and named -
   add that entry by hand in the same file.
+- A dictionary of your own uses names of your own: prefix its `cn-*`
+  classes with the kit (`cn-acme-pill`), never a name a Poetry dictionary
+  emits, so the override audit reads your rules as yours and a future
+  theme name cannot collide with them. Reusing a theme class as a base is
+  fine; writing CSS against it is an override and must be declared.
 - Inner classes that exist only to serve a family (item builders,
   internal wrappers) declare `internal_component!` so the registry and
   every surface derived from it skip them.

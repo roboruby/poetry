@@ -176,6 +176,21 @@ module Poetry
         ).files
       end
 
+      # The cn-* names the theme owns: every name a gem dictionary emits
+      # (Style classes under the Poetry namespace) plus every name the
+      # installed fragment defines on purpose - the two sets the
+      # theme-coverage gate holds against each other. The override audit
+      # counts only a rule against one of these as an override; a host's
+      # own cn-* classes are its business.
+      #
+      # @param theme_css [String] the installed theme fragment's text
+      # @return [Array<String>] sorted, unique
+      def theme_owned_names(theme_css:)
+        styles = Poetry::Core::Style.descendants.select(&:name).select { |style| style.name.start_with?("Poetry::") }
+        coverage = Poetry::Core::CSS::ThemeCoverage.new(theme_css: theme_css, style_classes: styles)
+        (coverage.dictionary_names + coverage.theme_names).uniq.sort
+      end
+
       # The app's own components, for the generators that run inside a
       # host. nil outside Rails.
       def host_registry

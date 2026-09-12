@@ -42,9 +42,13 @@ namespace :poetry do
     desc "Report host CSS overriding theme-owned .cn-* classes against the declared contract " \
          "(config/poetry_components.yml `overrides:`; STRICT=1 exits nonzero on undeclared/invalid)"
     task overrides: :environment do
+      # Only a rule against a theme-owned name is an override; a host's
+      # own cn-* classes (its kit's dictionary, a page helper) are not.
+      Rails.application.eager_load!
       scan = Poetry::Core::CSS::OverrideScan.new(
         sources: poetry_design_host_css_sources,
-        declarations: poetry_design_declared_overrides
+        declarations: poetry_design_declared_overrides,
+        owned: Poetry::Ui.theme_owned_names(theme_css: poetry_design_installed_theme_css)
       )
 
       scan.invalid.each { |message| puts "  INVALID   #{message}" }
@@ -156,6 +160,13 @@ end
 # The installed theme, recovered from the slot bytes themselves (the
 # installer vendors the chosen fragment verbatim into the style-default.css
 # slot) - "custom" when the slot was hand-edited past recognition.
+# The installed fragment's text (empty before an install: then only the
+# dictionaries decide ownership).
+def poetry_design_installed_theme_css
+  slot = Rails.root.join("app/assets/tailwind/poetry/style-default.css")
+  slot.exist? ? slot.read : ""
+end
+
 def poetry_design_installed_theme
   slot = Rails.root.join("app/assets/tailwind/poetry/style-default.css")
   abort "poetry:design:export: no poetry install found (#{slot} missing) - run `bin/rails g poetry:install`" \
