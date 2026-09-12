@@ -99,6 +99,17 @@ namespace :poetry do
       )
     end
 
+    # The app's controllers manifest (poetry:stimulus:manifest) against
+    # the sources: stale means validation runs against controllers the
+    # app no longer has. Missing is not a finding (opt-in).
+    if Poetry::Core::Stimulus::HostManifest.state(root: Rails.root) == :stale
+      findings << Poetry::Core::Check::Finding.new(
+        rule: "manifest-stale", severity: :warning, file: Poetry::Core::Stimulus::HostManifest::RELATIVE_PATH,
+        message: "the app's controllers manifest no longer matches app/javascript/controllers - run " \
+                 "`bin/rails poetry:stimulus:manifest` and commit (poetry:verify fails on this)"
+      )
+    end
+
     if ENV["POETRY_CHECK_JSON"] == "1"
       puts Poetry::Core::Check.to_json(findings)
     else

@@ -35,6 +35,10 @@ namespace :poetry do
       failures << "#{Poetry::Core::Registry::RELATIVE_PATH}: stale app registry - " \
                   "run `bin/rails poetry:registry` and commit"
     end
+    if Poetry::Core::Stimulus::HostManifest.state(root: Rails.root) == :stale
+      failures << "#{Poetry::Core::Stimulus::HostManifest::RELATIVE_PATH}: stale controllers manifest - " \
+                  "run `bin/rails poetry:stimulus:manifest` and commit"
+    end
     abort "poetry:verify failed:\n#{failures.join("\n")}" if failures.any?
 
     puts "poetry:verify: clean"
