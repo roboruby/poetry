@@ -104,7 +104,11 @@
         an off-list variant or a missing required option raises at
         construction in development and test, naming the allowed values
         with a did-you-mean, and logs in production while rendering as
-        before. It
+        before. Mailer templates are the one exception to the raw-color
+        rule: under a <code>*_mailer/</code> directory or in the mailer
+        layout an inline hex is the only paint a mail client honours (no
+        stylesheet, no tokens), so the check leaves those colors alone and
+        runs every other rule there as usual. It
         parses templates with the <code>herb</code> gem, which
         <code>poetry:install</code> adds to your development group; an app
         installed before that only needs
