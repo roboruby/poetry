@@ -123,7 +123,8 @@ refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
   components in cache blocks and loops. Full story: the Stable IDs guide on the poetry docs site.
 - Upgrading poetry gems: after `bundle update`, re-run
   `bin/rails g poetry:install` - the vendored token/theme/safelist
-  files refresh (the installed theme sticks; `--theme` switches),
+  files refresh (the installed theme sticks; `--theme` switches;
+  never `--force`: the four host-owned seed files are left alone),
   new wiring appends, this section and the skills regenerate. Then
   rebuild CSS and run the suite. `bin/rails g poetry:diff` reports
   where copied-in components drift from the installed gems.

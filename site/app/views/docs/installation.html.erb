@@ -161,7 +161,11 @@
         MCP surface) upgrades with <code>bundle update</code> alone. The
         vendored CSS files and the safelist upgrade only when the generator
         re-runs: new components ship their theme rules and classes there, so
-        skipping the re-run leaves them unstyled.
+        skipping the re-run leaves them unstyled. Never pass
+        <code>--force</code>: the vendored files refresh on every run without
+        it, and the four files the install seeds for you to own (the
+        components manifest, the initializer, <code>base.css</code>,
+        <code>typeset.css</code>) are never rewritten once they exist.
       </p>
     <% end %>
     <%= poetry_code_block(code: upgrade_source, language: "shell", label: "Upgrade") %>
