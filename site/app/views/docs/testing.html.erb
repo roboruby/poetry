@@ -131,7 +131,11 @@
       <p>
         Render the view and assert the contract: the <code>data-slot</code>
         parts, the ARIA attributes, the form participants, and the Stimulus
-        wiring. These run in milliseconds and catch the bulk of UI bugs.
+        wiring. These run in milliseconds and catch the bulk of UI bugs. A
+        form-builder field renders a Field, so its parts are the ones to
+        assert on: <code>[data-slot=field-label]</code>, the hint at
+        <code>[data-slot=field-description]</code>, the error at
+        <code>[data-slot=field-error]</code>, the control inside.
       </p>
     <% end %>
     <%= poetry_code_block(code: wiring_source, language: "ruby", label: "Wiring test") %>

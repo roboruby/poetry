@@ -879,6 +879,7 @@ Inside `form_with(model:, builder:)` forms the builder derives label, hint, erro
 - RULE: f.association(:company) reflects the association - belongs_to renders a Combobox on the foreign key, has_many the select-all checkbox group on singular_ids.
 - RULE: Validations become attributes: presence -> aria-required (NEVER native required), length -> maxlength/minlength, numericality -> min/max/step; f.input(required: true/false) overrides the presence inference (aria only).
 - RULE: Hints/placeholders resolve from poetry_form.* i18n (simple_form.* keys keep working as a fallback); pass hint:/placeholder: to override.
+- RULE: Every builder field renders a Field, so wiring tests assert on its parts: the label is data-slot=field-label, the hint data-slot=field-description, the error data-slot=field-error, with the control inside (never a bare hint or description slot).
 - RULE: f.submit renders a poetry Button with the Rails i18n label; f.fieldset(legend:)/f.group lay out sections; boolean f.input renders the horizontal Field (switch: true -> the setting row).
 - RULE: Apps on simple_form: add poetry-simple_form instead of rewriting views - Poetry::SimpleForm.activate! maps every simple_form type onto this builder (poetry-only controls via as: :switch/:slider/:otp/:sensitive/:tag_group/:date_picker/:calendar/:combobox/:autocomplete/:native_select; poetry: options merge last). The bridge is the migration path, form_with(builder:) the end state.
 
