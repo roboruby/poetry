@@ -110,8 +110,22 @@
         When the wiring is part of a component's contract rather than
         something to repeat at every call site, subclass the component and
         declare it with the same DSL Poetry uses. Symbols resolve against
-        Poetry's manifest and are validated at class load; a String is your
-        own identifier and passes through verbatim. <code>extend: true</code>
+        the controllers manifest and are validated at class load. Your own
+        controllers join that manifest with <code>bin/rails poetry:stimulus:manifest</code>,
+        which reads <code>app/javascript/controllers</code> and writes
+        <code>config/controllers_manifest.json</code>, the file a gem commits;
+        registered at boot, a host controller then validates exactly like
+        Poetry's: values, targets, actions and events at class load,
+        template wiring in <code>poetry:check</code>, and its API in the
+        registry for llms.txt and the MCP server. An entry is complete or
+        absent: a controller extending another of yours or a Poetry
+        controller merges its parent; one extending a library class the
+        reader cannot follow is named by the task and stays unvalidated
+        until you write its entry by hand in the same file. Once written,
+        <code>poetry:check</code> warns and <code>poetry:verify</code> fails
+        when the file no longer matches the sources. A String identifier
+        still passes through verbatim for a controller you do not want
+        validated. <code>extend: true</code>
         appends to the inherited element; redeclaring an element without it
         replaces the element wholesale, which is how Sheet and Drawer put
         their own controllers on Dialog's root.

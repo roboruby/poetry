@@ -307,6 +307,14 @@
         host that bundles it, with nothing to configure.
       </p>
       <p>
+        Controllers of your own that the component wires join the same
+        surfaces through <code>bin/rails poetry:stimulus:manifest</code>
+        (the <a href="<%= stimulus_path %>#declare">Stimulus guide</a>);
+        an engine that ships controllers commits its
+        <code>config/controllers_manifest.json</code> the way poetry-charts
+        does and every host that bundles it validates them.
+      </p>
+      <p>
         Pick a distinctive helper name: a name any view helper already owns
         raises at boot, and a generic word would make ordinary method calls
         look like component calls to the check. Components copied in with
