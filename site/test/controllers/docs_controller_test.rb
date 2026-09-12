@@ -325,4 +325,21 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
       assert_response :success, "#{entry.path} failed to render"
     end
   end
+  test "a guessed /docs/<page> address redirects permanently to the canonical page" do
+    get "/docs/installation"
+
+    assert_response :moved_permanently
+    assert_redirected_to "/installation"
+
+    get "/docs/components/button"
+
+    assert_redirected_to "/components/button"
+  end
+
+  test "an unknown /docs/ path stays a 404" do
+    get "/docs/no-such-page"
+
+    assert_response :not_found
+  end
+
 end

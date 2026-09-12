@@ -113,6 +113,14 @@ Rails.application.routes.draw do
   post "demos/a2ui-surface/action" => "a2ui_surface#action", as: :a2ui_surface_action, format: false
   get "demos/:slug" => "demos#show", as: :demo
 
+  # A guessed address: the docs index lives at /docs and the guides at the
+  # root, so /docs/<page> is the natural miss (nothing the site publishes
+  # links there). A path the catalog knows answers with a permanent
+  # redirect to its canonical address - a guide, a component, a block -
+  # and anything else stays a 404, so the glob swallows nothing.
+  get "docs/*rest" => redirect { |params, _request| "/#{params[:rest]}" }, format: false,
+      constraints: ->(request) { DocsCatalog.all.any? { |entry| entry.path == "/#{request.path_parameters[:rest]}" } }
+
   # The marketing landing page owns the root; the docs shell starts at /docs.
   root "landing#show"
 end

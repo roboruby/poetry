@@ -12,6 +12,30 @@
     "path": "/installation#install"
   },
   {
+    "title": "Installing into an app that already has CSS",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#existing-css"
+  },
+  {
+    "title": "Your unlayered CSS beats the theme",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#unlayered-css"
+  },
+  {
+    "title": "Tokens you already own keep winning",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#existing-tokens"
+  },
+  {
+    "title": "Preflight, and the app that has its own reset",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#preflight"
+  },
+  {
     "title": "Upgrade an existing app",
     "page": "Installation",
     "section": "docs",
@@ -52,6 +76,12 @@
     "page": "Theming",
     "section": "docs",
     "path": "/theming#installing-a-theme"
+  },
+  {
+    "title": "Your tokens win",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#your-tokens-win"
   },
   {
     "title": "Owning the design outright",
@@ -814,6 +844,12 @@
     "page": "Rails Engines",
     "section": "docs",
     "path": "/engines#customizing-components"
+  },
+  {
+    "title": "Your own components",
+    "page": "Rails Engines",
+    "section": "docs",
+    "path": "/engines#your-own-components"
   },
   {
     "title": "Keep one theme contract",
