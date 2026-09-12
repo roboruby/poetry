@@ -4,6 +4,7 @@
 @import "./poetry/animate.css";
 @import "./poetry/utilities.css";
 @import "./poetry/aliases.css";
+@import "./poetry/agent.css" layer(base);
 @import "./poetry/base.css";
 @source "./poetry/safelist.txt";
 @import "./poetry/charts.css";

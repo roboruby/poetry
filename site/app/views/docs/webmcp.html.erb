@@ -292,6 +292,22 @@
     <%= poetry_code_block(code: config_source, language: "ruby", label: "Origin trial") %>
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <p>
+        The two agent-focus states the browser marks - the form an agent is
+        filling (<code>:tool-form-active</code>) and its submit
+        (<code>:tool-submit-active</code>) - are styled by a small stylesheet
+        this gem ships, drawn on your theme&#39;s tokens. <code>bin/rails g
+        poetry:install</code> vendors it to
+        <code>app/assets/tailwind/poetry/agent.css</code> and imports it into
+        <code>layer(base)</code> when the gem is bundled, so a host without
+        poetry-agent never carries the rules; restyle them with any rule of
+        your own, the two are <code>:where()</code>-wrapped. One thing to
+        expect: the CSS optimizer does not yet know these origin-trial
+        pseudo-classes and prints two warnings about them on every minified
+        build, which the Rails Tailwind task runs by default
+        (<code>TAILWINDCSS_DEBUG=1</code> skips the minify). That is the
+        optimizer, not the CSS - the rules compile and ship.
+      </p>
+      <p>
         Two constraints of the host page. The API needs an origin-isolated
         document, so never send <code>Origin-Agent-Cluster: ?0</code> or
         set <code>document.domain</code>. And imperative tools register

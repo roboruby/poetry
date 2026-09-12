@@ -1,0 +1,24 @@
+/* poetry-agent: the WebMCP agent-focus states. The browser applies
+   :tool-form-active to the form an agent is filling through a declarative
+   tool and :tool-submit-active to its submit; these rules make that a
+   designed state on the theme's tokens instead of the browser's default.
+   :where() keeps both rules forgiving (zero specificity, and a browser
+   without the pseudo-classes drops the argument, not the rule), so a host
+   restyles them with any rule of its own. Plain CSS on purpose: the file
+   is vendored into the host's Tailwind entry (`poetry:install` when this
+   gem is bundled) and imported into layer(base) beside the theme.
+
+   A production build's optimizer does not yet know these origin-trial
+   pseudo-classes and warns twice per build; that is the optimizer, not
+   the CSS - the rules compile and ship. Hosts without poetry-agent never
+   carry them. */
+:where(form:tool-form-active) {
+  border-radius: var(--radius);
+  outline: 2px dashed color-mix(in oklab, var(--ring) 60%, transparent);
+  outline-offset: 4px;
+}
+
+:where(:tool-submit-active) {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent);
+}
