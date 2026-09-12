@@ -16,6 +16,8 @@
 
 ### Changed
 
+- `poetry check` leaves a mailer template's colors alone: under a `*_mailer/` directory or in the mailer layout, an inline hex or a color literal in a utility class is the only paint an email client honours (no stylesheet, no tokens), so the raw-color rule stays quiet there while every other rule runs as on a page. `Check.lint` takes `mail:` for a source string; the runner derives it from the path (`Check.mail_template?`).
+
 - The generated Tailwind theme mapping is `@theme inline default`. A host `@theme` value for the same key (its own `--color-primary`, a `--radius-sm` it set before Poetry arrived) wins whether it is declared before or after the mapping; Poetry's value still applies wherever the host set nothing. Before, the mapping replaced the host's keys wholesale, so every `rounded-sm` in an existing app changed size.
 
 ## [0.1.1] - 2026-09-08

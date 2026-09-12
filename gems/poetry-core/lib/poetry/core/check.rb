@@ -318,9 +318,15 @@ module Poetry
           @catalog = catalog
         end
 
-        def lint(source)
+        # @param source [String] the ERB template source
+        # @param mail [Boolean] a mailer template: email has no stylesheet
+        #   and no tokens (mail clients drop var()), so a color literal is
+        #   the only paint there is and the raw-color rule stays quiet;
+        #   every other rule runs as on a page.
+        def lint(source, mail: false)
           require "herb"
           require "prism"
+          @mail = mail
           # Every block-param binding this lint opens, in document order -
           # each accumulates the setters actually called on it so the
           # required-slot accounting can run once the whole template has
@@ -1100,7 +1106,7 @@ module Poetry
         # utilities off the tokens, and the important modifier forcing a
         # cascade the class merge already resolves.
         def class_findings(value, line)
-          colors = @catalog.raw_colors(value).uniq.map do |token|
+          colors = (@mail ? [] : @catalog.raw_colors(value).uniq).map do |token|
             Finding.new(rule: "raw-color", severity: :warning,
                         message: "raw color class #{token.inspect} - use a semantic token " \
                                  "(bg-primary, text-destructive, ...) or add one to the theme", line: line)
@@ -1117,6 +1123,8 @@ module Poetry
         # A literal style string: a color literal here is the one exit no
         # dictionary or theme rule reaches.
         def style_findings(value, line)
+          return [] if @mail
+
           @catalog.style_colors(value).uniq.map do |literal|
             Finding.new(rule: "raw-color", severity: :warning,
                         message: "inline style paints #{literal.inspect} - use a token (var(--primary)) " \
@@ -1435,7 +1443,11 @@ module Poetry
         def run(paths)
           paths.flat_map do |path|
             source = File.read(path)
-            findings = linter_for(path).lint(source)
+            findings = if path.end_with?(".rb")
+                         @declarations.lint(source)
+                       else
+                         @linter.lint(source, mail: Check.mail_template?(path))
+                       end
             # The StableId heuristics ride every ERB pass (warnings only -
             # they never flip the exit code).
             findings += @stable_identity.lint(source) unless path.end_with?(".rb")
@@ -1443,14 +1455,24 @@ module Poetry
           end
         end
 
-        private
-
-        def linter_for(path)
-          path.end_with?(".rb") ? @declarations : @linter
-        end
       end
 
+      # A mailer template by Rails convention: a view under a `*_mailer/`
+      # directory, or the mailer layout. Email is the one surface with no
+      # stylesheet and no tokens, so the raw-color rule and the design tier
+      # leave these alone.
+      MAIL_TEMPLATE = %r{(?:\A|/)(?:[a-z0-9_]+_mailer|layouts/mailer)(?:/|\.)}
+
       module_function
+
+      # Whether a template path is a mailer template by convention.
+      #
+      # @param path [String]
+      # @return [Boolean]
+      def mail_template?(path)
+        MAIL_TEMPLATE.match?(path.to_s)
+      end
+
 
       # Lint file paths against a registry root.
       #
@@ -1465,9 +1487,10 @@ module Poetry
       #
       # @param source [String] the ERB template source
       # @param catalog [Catalog] the component catalog to validate against
+      # @param mail [Boolean] a mailer template (the raw-color rule stays quiet)
       # @return [Array<Finding>]
-      def lint(source, catalog:)
-        Linter.new(catalog).lint(source)
+      def lint(source, catalog:, mail: false)
+        Linter.new(catalog).lint(source, mail: mail)
       end
 
       def to_json(findings)

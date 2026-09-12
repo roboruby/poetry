@@ -1075,6 +1075,43 @@ module Poetry
         assert_includes finding.message, "bg-red-500"
       end
 
+      def test_a_mailer_template_keeps_its_inline_colors_and_every_other_rule
+        source = %(<td style="color:#18181b"><span class="text-[#6366f1]">hi</span></td>\n<%= poetry_nope %>)
+
+        assert_includes rules(source), "raw-color"
+        mail = Check.lint(source, catalog: CATALOG, mail: true).map(&:rule)
+
+        refute_includes mail, "raw-color"
+        assert_includes mail, "unknown-component"
+      end
+
+      def test_the_runner_recognises_mailer_templates_by_convention
+        Dir.mktmpdir("check-mail") do |dir|
+          source = %(<td style="color:#18181b">hi</td>)
+          mailer = File.join(dir, "app/views/welcome_mailer/hello.html.erb")
+          layout = File.join(dir, "app/views/layouts/mailer.html.erb")
+          page = File.join(dir, "app/views/welcome/show.html.erb")
+          [mailer, layout, page].each do |path|
+            FileUtils.mkdir_p(File.dirname(path))
+            File.write(path, source)
+          end
+
+          by_file = Check::Runner.new(CATALOG).run([mailer, layout, page]).group_by(&:file)
+
+          assert_nil by_file[mailer]
+          assert_nil by_file[layout]
+          assert_equal ["raw-color"], by_file.fetch(page).map(&:rule)
+        end
+      end
+
+      def test_mail_template_convention
+        assert Check.mail_template?("app/views/user_mailer/welcome.html.erb")
+        assert Check.mail_template?("app/views/layouts/mailer.text.erb")
+        assert Check.mail_template?("/srv/app/app/views/layouts/mailer/index.html.erb")
+        refute Check.mail_template?("app/views/mailer_settings/show.html.erb")
+        refute Check.mail_template?("app/views/layouts/mailers.html.erb")
+      end
+
       def test_semantic_tokens_are_clean
         refute_includes rules(%(<div class="bg-primary text-muted-foreground border-input"></div>)), "raw-color"
       end
