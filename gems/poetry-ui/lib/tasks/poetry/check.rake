@@ -52,8 +52,10 @@ namespace :poetry do
     # to be applied) - poetry's own export IS the current state.
     if ENV["POETRY_CHECK_DESIGN"] == "1"
       # DesignLint herb-parses templates - the .rb paths in the sweep are
-      # the declaration tier's, not its.
-      findings += paths.grep(/\.erb\z/).flat_map { |path| Poetry::Core::DesignLint.lint(File.read(path), file: path) }
+      # the declaration tier's, not its; mailer templates are not pages
+      # (no stylesheet, no tokens) and skip the taste tier too.
+      findings += paths.grep(/\.erb\z/).reject { |path| Poetry::Core::Check.mail_template?(path) }
+                       .flat_map { |path| Poetry::Core::DesignLint.lint(File.read(path), file: path) }
       design_md = Rails.root.join("DESIGN.md")
       foreign = design_md.exist? && Poetry::Core::DesignMd.parse(design_md.read)["theme"].nil?
       findings += Poetry::Core::DesignLint.lint_dom(

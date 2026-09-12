@@ -13,6 +13,8 @@
 
 ### Changed
 
+- `poetry:check` treats mailer templates as email, not pages: under a `*_mailer/` directory or in the mailer layout the raw-color rule stays quiet (an inline hex is the only paint a mail client honours) and the design tier skips them; every other rule runs there as before. The AGENTS.md section says so.
+
 - An off-list variant or a missing required option now raises at construction in development and test (poetry-core's runtime values tier) instead of rendering unstyled; the AGENTS.md section says so beside the check.
 - poetry-ui pins its components to `css_mode :tailwind`, and the class-name merger follows: a host's global `BemMerger` (for a kit of its own) never reaches poetry-ui's utility conflict resolution. A host's global `css_mode = :bem` (for a kit of its own on the DSL) no longer strips poetry-ui's styling; the two render side by side. The seeded initializer's comment says so instead of offering `:bem` as a poetry-ui option.
 - `poetry:check` and the AGENTS.md census find registry roots by convention (every loaded engine with a published registry, then the app's own file) and name no gem; poetry-charts is no longer special-cased, and any engine built on the DSL that commits a registry joins the check the same way.
