@@ -72,7 +72,10 @@
         imports line by line, registers the Stimulus controllers, mounts the
         engine (llms.txt), adds the <code>herb</code> gem to your development
         group (the parser behind <code>poetry:check</code>) and bundles it, and
-        writes the <code>AGENTS.md</code> section and the Claude Code skills.
+        writes the <code>AGENTS.md</code> section and the Claude Code skills
+        (when your repository ignores <code>.claude/skills</code> the install
+        says so: the skills still serve that checkout, and teammates and CI
+        get theirs with <code>bin/rails g poetry:skill</code>).
         Add <code>--charts</code> to wire
         poetry-charts, and <code>--no-preflight</code> when your Tailwind entry
         omits preflight (see
