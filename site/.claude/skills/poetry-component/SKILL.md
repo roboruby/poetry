@@ -55,6 +55,15 @@ surface.
   `bin/rails poetry:registry` and commit the file so the MCP server (which
   never boots the app) describes and checks it too; `poetry:verify` fails
   when that file is stale.
+- A controller of the app's own that a component wires joins the
+  controllers manifest with `bin/rails poetry:stimulus:manifest` (commit
+  the file). Then `use_stimulus` validates it by Symbol at class load,
+  `poetry:check` validates its wiring in templates, and the registry
+  carries its API. Write the controller with literal statics (`static
+  targets = [...]`, `static values = {...}`, `static events = [...]` for
+  the events it dispatches); a parent that is another app controller or a
+  poetry controller is merged, a library parent is skipped and named -
+  add that entry by hand in the same file.
 - Inner classes that exist only to serve a family (item builders,
   internal wrappers) declare `internal_component!` so the registry and
   every surface derived from it skip them.

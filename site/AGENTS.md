@@ -81,7 +81,11 @@ refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
 - An app component written on the DSL declares `helper :name`; that makes it
   first-class on check, llms.txt and the skill. `bin/rails poetry:registry`
   (commit the file) exposes it to the MCP server too; `poetry:verify` fails
-  when that file is stale.
+  when that file is stale. The app's own Stimulus controllers join the same
+  way: `bin/rails poetry:stimulus:manifest` (commit the file) makes them
+  validate like poetry's - `use_stimulus` by Symbol, template wiring in
+  check, their API in the registry; a controller the reader cannot
+  describe is named in the task output and needs its entry written by hand.
 - Machine catalog: `/poetry/llms.txt` (index + blocks) and `/poetry/llms-full.txt`
   (full contracts + Stimulus wiring: targets / values / actions / events).
 - Check comes LAST: `bin/rails poetry:check` as the FINAL action, after
@@ -89,7 +93,9 @@ refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
   enum values, typed-slot props, helper + setter arity, yield-less
   blocks, setter keywords, required content blocks, required slots,
   did-you-mean, `--json`; `poetry:install` adds the `herb` gem it parses with). An edit
-  made after your last check is unverified markup - re-run it.
+  made after your last check is unverified markup - re-run it. Values that
+  arrive from data meet a runtime tier: an off-list variant or a missing
+  required option raises at construction in development and test.
 - Faster: the `poetry` MCP server (`.mcp.json`: command `bundle`, args
   `["exec", "poetry-agent"]`, the poetry-agent gem) serves ten tools from the live registry
   with no app boot - `compose`, `build_page`, `list_components`,
