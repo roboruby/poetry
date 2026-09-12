@@ -229,6 +229,13 @@
         <code>config/poetry_components.yml</code>.
       </p>
       <p>
+        An override is a rule against a class the theme owns: a name a
+        Poetry dictionary emits, or one the installed fragment defines on
+        purpose. Classes of your own in the <code>cn-*</code> namespace, a
+        kit's dictionary or a page helper, are yours and never findings;
+        a class you reuse from the theme, such as a subclass keeping
+        <code>cn-badge</code> as its base, is still the theme's, because a
+        rule against it restyles every Badge on the page.
         <code>bin/rails poetry:design:overrides</code> reports both
         directions: undeclared <code>cn-*</code> rules (drift; the report
         prints a paste-ready declaration) and stale declarations that no
