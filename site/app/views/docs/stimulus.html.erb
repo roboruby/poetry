@@ -117,15 +117,27 @@
         registered at boot, a host controller then validates exactly like
         Poetry's: values, targets, actions and events at class load,
         template wiring in <code>poetry:check</code>, and its API in the
-        registry for llms.txt and the MCP server. An entry is complete or
-        absent: a controller extending another of yours or a Poetry
-        controller merges its parent; one extending a library class the
-        reader cannot follow is named by the task and stays unvalidated
-        until you write its entry by hand in the same file. Once written,
-        <code>poetry:check</code> warns and <code>poetry:verify</code> fails
-        when the file no longer matches the sources. A String identifier
-        still passes through verbatim for a controller you do not want
-        validated. <code>extend: true</code>
+        registry for llms.txt and the MCP server. Generate the manifest
+        before you declare a controller by Symbol: a Symbol the manifest
+        does not know fails at class load, and the task needs the app to
+        boot. The reader takes controllers as they are written: comments
+        and strings anywhere, one-line methods, arrow-function class
+        fields, Windows line endings. An entry is complete or absent: a
+        controller extending another of yours or a Poetry controller merges
+        its parent; one extending a library class, or declaring a computed
+        static (a getter, a spread), is named by the task and stays
+        unvalidated until you write its entry by hand in the same file,
+        where regeneration keeps it. The staleness gate looks only at the
+        controllers the reader read: <code>poetry:check</code> warns and
+        <code>poetry:verify</code> fails when those drift from the sources,
+        never because of an entry you wrote. Events are validated only when
+        the controller declares <code>static events</code>; one that only
+        calls <code>dispatch()</code> keeps its events unvalidated rather
+        than wrong. A String identifier still passes through verbatim for
+        a controller you do not want validated, and it is also how a host
+        controller that shares a bare name with a Poetry one (your own
+        <code>tabs_controller.js</code>) is addressed: a Symbol always
+        resolves to the Poetry controller first. <code>extend: true</code>
         appends to the inherited element; redeclaring an element without it
         replaces the element wholesale, which is how Sheet and Drawer put
         their own controllers on Dialog's root.

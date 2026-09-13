@@ -84,8 +84,10 @@ refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
   when that file is stale. The app's own Stimulus controllers join the same
   way: `bin/rails poetry:stimulus:manifest` (commit the file) makes them
   validate like poetry's - `use_stimulus` by Symbol, template wiring in
-  check, their API in the registry; a controller the reader cannot
-  describe is named in the task output and needs its entry written by hand.
+  check, their API in the registry; generate the manifest BEFORE declaring
+  a controller by Symbol (a Symbol not in the manifest fails at class load).
+  A controller the reader cannot describe is named in the task output; an
+  entry written by hand in the same file is kept across regenerations.
 - Machine catalog: `/poetry/llms.txt` (index + blocks) and `/poetry/llms-full.txt`
   (full contracts + Stimulus wiring: targets / values / actions / events).
 - Check comes LAST: `bin/rails poetry:check` as the FINAL action, after

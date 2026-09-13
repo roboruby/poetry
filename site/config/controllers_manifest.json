@@ -1,0 +1,224 @@
+{
+  "agent-demo": {
+    "targets": [
+      "model",
+      "baseUrl",
+      "apiKey",
+      "status"
+    ],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "connect",
+      "activate",
+      "deactivate",
+      "note"
+    ]
+  },
+  "demo-chat": {
+    "targets": [
+      "empty",
+      "chat",
+      "turn",
+      "send",
+      "queue"
+    ],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "send",
+      "reset"
+    ]
+  },
+  "demo-copy-tooltip": {
+    "targets": [
+      "trigger"
+    ],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "copy",
+      "disconnect"
+    ]
+  },
+  "demo-dismiss": {
+    "targets": [],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "dismiss"
+    ]
+  },
+  "demo-font-weight": {
+    "targets": [
+      "readout"
+    ],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "update"
+    ]
+  },
+  "demo-progress": {
+    "targets": [
+      "progress"
+    ],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "update"
+    ]
+  },
+  "demo-scroller-commands": {
+    "targets": [
+      "scroller"
+    ],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "toStart",
+      "toEnd"
+    ]
+  },
+  "demo-select-align": {
+    "targets": [
+      "select"
+    ],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "toggle"
+    ]
+  },
+  "demo-slider-value": {
+    "targets": [
+      "output"
+    ],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "update"
+    ]
+  },
+  "demo-toast": {
+    "targets": [
+      "toaster",
+      "loading",
+      "settled"
+    ],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "disconnect",
+      "create"
+    ]
+  },
+  "docs-search": {
+    "targets": [],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "go"
+    ]
+  },
+  "hello": {
+    "targets": [],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "connect"
+    ]
+  },
+  "hero-media": {
+    "targets": [
+      "video"
+    ],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "connect"
+    ]
+  },
+  "newsletter": {
+    "targets": [
+      "form",
+      "email",
+      "error",
+      "success",
+      "submit"
+    ],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "submit",
+      "showError"
+    ]
+  },
+  "reveal": {
+    "targets": [],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect"
+    ]
+  },
+  "sidebar-sections": {
+    "targets": [],
+    "values": {
+      "links": {
+        "type": "Object"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "remember",
+      "open"
+    ]
+  },
+  "style": {
+    "targets": [],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "connect",
+      "apply",
+      "current"
+    ]
+  },
+  "theme": {
+    "targets": [],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "toggle"
+    ]
+  },
+  "webmcp-inspector": {
+    "targets": [
+      "status",
+      "list",
+      "log"
+    ],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "refresh"
+    ]
+  },
+  "word-reveal": {
+    "targets": [],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect"
+    ]
+  }
+}
