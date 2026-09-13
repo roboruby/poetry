@@ -320,7 +320,13 @@ module Poetry
     # idempotent primitives as the core wiring.
     # @api private
     def wire_charts
-      return unless options[:charts]
+      return unless charts?
+
+      unless defined?(Poetry::Charts) && Poetry::Charts.respond_to?(:root)
+        say_status :note, "poetry/charts.css is installed but poetry-charts is not in the bundle - " \
+                          "the chart files were not refreshed (add the gem, or delete the file)", :yellow
+        return
+      end
 
       create_file "app/assets/tailwind/poetry/charts.css",
                   Poetry::Charts.root.join("app/assets/stylesheets/poetry-charts.css").read,
@@ -432,6 +438,13 @@ module Poetry
 
     # Whether this install vendors the reset floor: asked for now, or
     # installed by an earlier run (the file is present).
+    # --charts, or a charts stylesheet already vendored: a plain re-run
+    # (the upgrade path) refreshes the chart files like every other
+    # vendored artifact, and a theme switch swaps the chart fragment too.
+    def charts?
+      options[:charts] || File.exist?(File.join(destination_root, "app/assets/tailwind/poetry/charts.css"))
+    end
+
     def floor?
       options[:preflight] == false || File.exist?(File.join(destination_root, RESET_FILE))
     end
@@ -483,8 +496,15 @@ module Poetry
     # declared, and the install must not add it a second time.
     def gemfile_sources(gemfile)
       text = File.read(gemfile)
-      pattern = /^\s*eval_gemfile\s+(?:File\.expand_path\()?["']([^"']+)["']/
-      evaluated = text.scan(pattern).flatten.filter_map do |relative|
+      # Any spelling: `eval_gemfile "x"`, `eval_gemfile("x")`,
+      # `File.expand_path("x", __dir__)`, `File.join(__dir__, "x")`,
+      # `"#{__dir__}/x"` - the quoted path on the line, relative to the
+      # Gemfile.
+      evaluated = text.each_line.grep(/^\s*eval_gemfile\b/).filter_map do |line|
+        quoted = line.scan(/["']([^"']+)["']/).flatten.reject { |piece| piece == "__dir__" }.last
+        next unless quoted
+
+        relative = quoted.sub(%r{\A\#\{__dir__\}/}, "")
         path = File.expand_path(relative, File.dirname(gemfile))
         File.read(path) if File.exist?(path)
       end
@@ -542,10 +562,13 @@ module Poetry
       path = File.join(destination_root, relative)
       return unless File.exist?(path)
 
-      pattern = /^#{Regexp.escape(old)}[ \t]*$/
+      # Indented, annotated, or carriage-returned (a checkout through
+      # autocrlf), the old line still converges; the line ending it had is
+      # the one it keeps.
+      pattern = %r{^[ \t]*#{Regexp.escape(old)}[ \t]*(?:/\*.*?\*/)?[ \t]*(\r?)$}
       return unless File.read(path).match?(pattern)
 
-      gsub_file relative, pattern, current
+      gsub_file relative, pattern, "#{current}\\1"
     end
   end
 end

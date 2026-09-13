@@ -17,6 +17,8 @@
 
 ### Changed
 
+- The upgrade path holds on real hosts: `--charts` is remembered by the vendored `poetry/charts.css`, so a plain re-run refreshes the chart files and a theme switch swaps the chart fragment with the theme; the superseded 0.1.1 tokens import converges however it was written (indented, annotated, or with a carriage return, which it keeps); every `eval_gemfile` spelling is read before `herb` is added; the Claude Code skills are refreshed like the vendored CSS, without an overwrite prompt (`--skip` keeps a hand-edited one); an AGENTS.md begin marker without its end is an error naming the file, a byte-identical section reports `identical`, the section is written in the file's own line endings, and only the first section is replaced.
+
 - `poetry:check` hands the runner the app root, so the mailer exemption and the design tier judge a template by its path inside the app; an unreadable file is a warning in the report, not a crash of the task.
 
 - `poetry:check` reports `registry-invalid` when `config/component_registry.yml` exists but is not a registry (empty, malformed, the wrong shape), naming `bin/rails poetry:registry` as the fix; the committed registry regenerates with every helper named.

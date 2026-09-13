@@ -26,14 +26,20 @@ module Poetry
       # points every agent at them, so a teammate's or CI's clone needs
       # the refresh command (or the directory un-ignored).
       def apply_poetry_skills
+        # Generated artifacts, refreshed like the vendored CSS: no overwrite
+        # prompt (an upgrade re-run asked four questions, and a piped stdin
+        # answered yes). `--skip` keeps a file that exists, for a host that
+        # hand-edited one - a config force would beat that flag, so it is
+        # passed only when --skip was not.
+        force = !options[:skip]
         Poetry::Ui.skill_files(host_registry: Poetry::Ui.host_registry).each do |relative, content|
-          create_file ".claude/skills/poetry/#{relative}", content
+          create_file ".claude/skills/poetry/#{relative}", content, force: force
         end
         design_skill_files.each do |relative, content|
-          create_file ".claude/skills/poetry-design/#{relative}", content
+          create_file ".claude/skills/poetry-design/#{relative}", content, force: force
         end
         component_skill_files.each do |relative, content|
-          create_file ".claude/skills/poetry-component/#{relative}", content
+          create_file ".claude/skills/poetry-component/#{relative}", content, force: force
         end
         announce_ignored_skills if skills_ignored?
       end

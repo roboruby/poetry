@@ -443,6 +443,103 @@ module Poetry
       assert_includes content, %(import { registerPoetryChartsControllers } from "@poetry/charts")
     end
 
+    def test_charts_are_remembered_by_the_vendored_file_on_a_plain_rerun_and_a_theme_switch
+      with_charts_stub do
+        run_generator %w[--charts --skip-bundle]
+        File.write(File.join(destination_root, "app/assets/tailwind/poetry/charts.css"), "/* stale */\n")
+        File.write(File.join(destination_root, "app/assets/tailwind/poetry/style-charts.css"), "/* stale */\n")
+
+        run_generator %w[--skip-bundle]
+
+        assert_file "app/assets/tailwind/poetry/charts.css", /#{Regexp.escape(CHARTS_CSS_MARKER)}/o
+        assert_file "app/assets/tailwind/poetry/style-charts.css", /cn-chart-tick/
+        Poetry::Charts.root.join("themes/vega.css").write(".cn-chart-tick { @apply fill-primary; }\n")
+        begin
+          run_generator %w[--theme vega --skip-bundle]
+
+          # (a theme switch swaps the chart fragment too)
+          assert_file "app/assets/tailwind/poetry/style-charts.css", /fill-primary/
+          assert_file "app/assets/tailwind/poetry/style-default.css", /poetry vega theme/
+        ensure
+          Poetry::Charts.root.join("themes/vega.css").delete # the stub is shared
+        end
+      end
+    end
+
+    def test_a_superseded_tokens_line_converges_however_it_was_written
+      { "crlf" => "@import \"./poetry/tokens.css\";\r\n", "comment" => "@import \"./poetry/tokens.css\"; /* poetry tokens */\n",
+        "indent" => "  @import \"./poetry/tokens.css\";\n" }.each do |label, line|
+        prepare_destination
+        entry = File.join(destination_root, InstallGenerator::TAILWIND_ENTRY)
+        FileUtils.mkdir_p(File.dirname(entry))
+        File.write(entry, "@import \"tailwindcss\";\n#{line}@import \"./poetry/theme.css\";\n")
+
+        run_generator %w[--skip-bundle]
+        run_generator %w[--skip-bundle]
+
+        text = File.read(entry)
+        assert_equal 1, text.scan(%r{@import "\./poetry/tokens\.css"}).size, "#{label}: one tokens import"
+        assert_includes text, %(@import "./poetry/tokens.css" layer(theme);), label
+        assert_includes text, "layer(theme);\r\n", "crlf: the line keeps its ending" if label == "crlf"
+      end
+    end
+
+    def test_skills_refresh_without_a_prompt_and_skip_keeps_a_hand_edit
+      run_generator %w[--skip-bundle]
+      skill = File.join(destination_root, ".claude/skills/poetry/SKILL.md")
+      File.write(skill, "# mine\n")
+
+      output = run_generator %w[--skip-bundle]
+
+      refute_match(/Overwrite/, output, "no interactive question on an upgrade")
+      assert_file ".claude/skills/poetry/SKILL.md", /^name: poetry$/
+      File.write(skill, "# mine\n")
+      run_generator %w[--skip-bundle --skip]
+
+      assert_equal "# mine\n", File.read(skill), "--skip keeps the hand edit"
+    end
+
+    def test_install_sees_herb_in_every_eval_gemfile_spelling
+      { "join" => %(eval_gemfile File.join(__dir__, "Gemfile.shared")\n),
+        "parens" => %(eval_gemfile("Gemfile.shared")\n),
+        "interpolated" => %(eval_gemfile "\#{__dir__}/Gemfile.shared"\n) }.each do |label, line|
+        prepare_destination
+        File.write(File.join(destination_root, "Gemfile"), %(source "https://rubygems.org"\n#{line}))
+        File.write(File.join(destination_root, "Gemfile.shared"), %(gem "herb", ">= 0.10.3", require: false\n))
+
+        run_generator %w[--skip-bundle]
+
+        refute_match(/gem "herb", group: :development/, File.read(File.join(destination_root, "Gemfile")), label)
+      end
+    end
+
+    def test_agents_markers_are_checked_kept_in_their_line_endings_and_never_swallow_host_text
+      run_generator %w[--skip-bundle]
+      path = File.join(destination_root, "AGENTS.md")
+      section = File.read(path)[/#{Regexp.escape(Generators::AgentsSection::BEGIN_MARKER)}.*?#{Regexp.escape(Generators::AgentsSection::END_MARKER)}/m]
+
+      File.write(path, "# App\n\n#{Generators::AgentsSection::BEGIN_MARKER}\nzz-stale-zz\n")
+      stderr = capture(:stderr) { run_generator %w[--skip-bundle] }
+
+      assert_match(/without/, stderr, "a begin marker without its end is an error, not a silent no-op")
+      assert_includes File.read(path), "zz-stale-zz", "nothing rewritten"
+      File.write(path, "# App\r\n\r\nabove\r\n\r\n#{section.gsub("\n", "\r\n")}\r\n\r\nbelow\r\n")
+      output = run_generator %w[--skip-bundle]
+
+      assert_match(/identical\s+AGENTS\.md/, output)
+      File.write(path, "# App\r\n\r\n#{Generators::AgentsSection::BEGIN_MARKER}\r\nzz-stale-zz\r\n#{Generators::AgentsSection::END_MARKER}\r\nbelow\r\n")
+      run_generator %w[--skip-bundle]
+      text = File.read(path)
+
+      refute_includes text, "zz-stale-zz"
+      assert_includes text, "## Building UI with poetry", "refreshed"
+      refute_match(/[^\r]\n/, text, "the file keeps its CRLF endings throughout")
+      File.write(path, "#{section}\nhost text between\n#{section}\n")
+      run_generator %w[--skip-bundle]
+
+      assert_includes File.read(path), "host text between", "the first section is replaced, host text between two stays"
+    end
+
     def test_charts_flag_without_the_gem_fails_fast_before_any_file_lands
       # Thor rescues its own error class inside .start (prints, aborts the
       # command chain), so the observable contract is the stderr hint plus

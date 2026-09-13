@@ -28,14 +28,29 @@ module Poetry
       # host's AGENTS.md.
       def apply_agents_section
         path = File.join(destination_root, "AGENTS.md")
-        if File.exist?(path) && File.read(path).include?(BEGIN_MARKER)
-          gsub_file "AGENTS.md",
-                    /#{Regexp.escape(BEGIN_MARKER)}.*#{Regexp.escape(END_MARKER)}/mo,
-                    agents_section.chomp
-        elsif File.exist?(path)
-          append_to_file "AGENTS.md", "\n#{agents_section}"
+        return create_file("AGENTS.md", agents_section) unless File.exist?(path)
+
+        text = File.read(path)
+        return append_to_file("AGENTS.md", "\n#{agents_section}") unless text.include?(BEGIN_MARKER)
+
+        # A begin marker needs its end, after it: anything else is a file
+        # to fix by hand, never a silent rewrite of nothing.
+        first = text.index(BEGIN_MARKER)
+        last = text.index(END_MARKER, first)
+        if last.nil?
+          raise Thor::Error, "AGENTS.md has #{BEGIN_MARKER} without #{END_MARKER} after it - restore the markers, " \
+                             "or delete the poetry section and re-run"
+        end
+
+        # The first section only (non-greedy), in the file's own line
+        # endings; byte-identical is reported as such and left alone.
+        newline = text.include?("\r\n") ? "\r\n" : "\n"
+        section = agents_section.chomp.gsub("\n", newline)
+        pattern = /#{Regexp.escape(BEGIN_MARKER)}.*?#{Regexp.escape(END_MARKER)}/m
+        if text[pattern] == section
+          say_status :identical, "AGENTS.md", :blue
         else
-          create_file "AGENTS.md", agents_section
+          gsub_file "AGENTS.md", pattern, section
         end
       end
 
