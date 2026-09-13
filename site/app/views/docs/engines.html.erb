@@ -252,7 +252,15 @@
         <code>helper</code>, and it is first-class on the surfaces that
         read the registry too. Nothing to register, no manifest to keep
         fresh: discovery is by convention, a published Component under
-        <code>app/</code> outside the <code>poetry/</code> namespace.
+        <code>app/</code> outside the <code>poetry/</code> namespace. One
+        helper name per component: two components declaring the same
+        name, or a name Rails, Poetry, or your own
+        <code>ApplicationHelper</code> already defines (private methods
+        included), fail at boot naming the clash, and a clash on a reload
+        leaves nothing half-defined. A component that declares no helper
+        is still catalogued, by class: every surface says
+        <code>render Acme::Pill::Component</code>, and none invents a
+        <code>poetry_</code> name for it.
       </p>
     <% end %>
     <%= poetry_code_block(code: own_component_source, language: "ruby", label: "An app component") %>
@@ -293,9 +301,16 @@
           describes, checks and composes them with full contracts, and the
           runtime skill carries the same <code>references/app.md</code>.
           Without the file, the check tool still knows the declared helper
-          names from source. Once written it is a build artifact:
-          <code>poetry:check</code> warns and <code>poetry:verify</code>
-          fails when it no longer matches the classes.
+          names by parsing the component sources; once the file exists it
+          is the truth and the sources are not read. It is a build
+          artifact: <code>poetry:check</code> warns and
+          <code>poetry:verify</code> fails when it no longer matches the
+          classes, and a file that is not a registry at all (empty,
+          malformed, hand-edited into the wrong shape) is reported as
+          <code>registry-invalid</code> and ignored by the boot-free
+          surfaces rather than crashing them. An engine's own components
+          are left to the engine's registry, not written into the app's
+          file.
         </li>
       </ul>
       <p>
