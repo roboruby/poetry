@@ -27,12 +27,12 @@ module Poetry
       # The serverInfo payload returned by the initialize handshake.
       SERVER_INFO = { "name" => "poetry-agent", "version" => Poetry::Agent::VERSION }.freeze
 
-      # The tool roster the server advertises (tools/list): MCP Tool-shaped
-      # definitions, read-only by construction.
       # Tools that answer a blank brief with guidance of their own (the
       # block catalog, what to send) rather than a pass.
       TOLERATES_BLANK = %w[compose build_page].freeze
 
+      # The tool roster the server advertises (tools/list): MCP Tool-shaped
+      # definitions, read-only by construction.
       TOOLS = [
         {
           "name" => "compose",
