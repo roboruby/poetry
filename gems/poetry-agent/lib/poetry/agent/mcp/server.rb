@@ -29,6 +29,10 @@ module Poetry
 
       # The tool roster the server advertises (tools/list): MCP Tool-shaped
       # definitions, read-only by construction.
+      # Tools that answer a blank brief with guidance of their own (the
+      # block catalog, what to send) rather than a pass.
+      TOLERATES_BLANK = %w[compose build_page].freeze
+
       TOOLS = [
         {
           "name" => "compose",
@@ -345,10 +349,6 @@ module Poetry
           tool_content(text)
         end
 
-        # Tools that answer a blank brief with guidance of their own (the
-        # block catalog, what to send) rather than a pass.
-        TOLERATES_BLANK = %w[compose build_page].freeze
-
         # The tool's declared required arguments that are absent or blank -
         # a wrong key never reaches a tool as an empty value it would pass.
         def missing_arguments(name, arguments)
@@ -480,7 +480,9 @@ module Poetry
         def component_route(scored, components)
           lines = ["No block covers this brief - component-scale work."]
           lines << if components.any?
-                     "Matched components: #{components.map { |name| "#{name} (#{helper_label(path_for(name))})" }.join(", ")} - " \
+                     "Matched components: #{components.map do |name|
+                       "#{name} (#{helper_label(path_for(name))})"
+                     end.join(", ")} - " \
                        "describe_component for the contracts."
                    else
                      "No component name matched either - list_components for the catalog."
