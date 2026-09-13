@@ -27,7 +27,36 @@ module Poetry
         #
         # @return [CSS::Resolver]
         def resolver
-          @resolver ||= superclass.respond_to?(:resolver) ? superclass.resolver.dup : CSS::Resolver.new
+          @resolver ||= (superclass.respond_to?(:resolver) ? superclass.resolver.dup : CSS::Resolver.new).tap do |dictionary|
+            dictionary.owner = self
+          end
+        end
+
+        # The class merger for this dictionary's mode: the sidecar
+        # component's resolved `css_mode` (its own declaration, its kit's
+        # pin, or the global), else this class's own namespace pin, else the
+        # global mode - so `Acme::Pill::Style` under a `:bem` pin merges like
+        # BEM while poetry-ui's dictionaries merge like Tailwind whatever the
+        # host set globally.
+        #
+        # @return [Object] a class-name merger
+        def merger
+          component = sidecar_component
+          mode = if component.respond_to?(:css_mode)
+                   component.css_mode
+                 else
+                   CSS::Modes.for(self) || Poetry::Core::Config.current.css_mode
+                 end
+          CSS::Modes.merger_for(mode)
+        end
+
+        # The `X::Component` beside this `X::Style`, when it exists.
+        def sidecar_component
+          return nil unless name&.end_with?("::Style")
+
+          Object.const_get("#{name.delete_suffix("::Style")}::Component")
+        rescue NameError
+          nil
         end
 
         # -- The dictionary DSL (delegates to the resolver) --------------------

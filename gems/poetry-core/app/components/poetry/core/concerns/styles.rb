@@ -169,7 +169,12 @@ module Poetry
             style_class_name = component_module + STYLE_CLASS_SUFFIX
             style_class_name.constantize
           rescue NameError => e
-            log_style_class_not_found(style_class_name, e) if defined?(Rails)
+            # Once per class: a component with no dictionary (Icon) is a
+            # design, not a line per render in the development log.
+            unless @style_class_miss_logged
+              @style_class_miss_logged = true
+              log_style_class_not_found(style_class_name, e) if defined?(Rails)
+            end
             nil
           end
 
@@ -201,7 +206,8 @@ module Poetry
           # @param variants [Object] the allowed variants
           # @param required [Boolean] whether the attribute is required
           def add_style_validations(name, type, variants, required)
-            record_declared_value(name, variants: type == :boolean ? nil : variants, required: required)
+            record_declared_value(name, variants: type == :boolean ? nil : variants, required: required,
+                                        open: type != :boolean && variants.nil?)
             # nil is an omitted value, not an off-list one; `required` adds
             # presence for the styles that may not be omitted.
             if type == :boolean

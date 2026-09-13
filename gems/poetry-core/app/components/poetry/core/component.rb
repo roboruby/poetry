@@ -98,6 +98,11 @@ module Poetry
                 next unless names.include?(attribute)
 
                 spec = vocabulary[attribute] || { variants: nil, required: false }
+                # A style declared open (no variants) stays open: an inherited
+                # inclusion validator from a parent's closed declaration never
+                # narrows it again.
+                next if spec[:open]
+
                 vocabulary[attribute] = spec.merge(variants: allowed).freeze unless spec[:variants]
               end
             end
@@ -113,8 +118,8 @@ module Poetry
         # @param required [Boolean]
         # @return [void]
         # @api private
-        def record_declared_value(name, variants:, required:)
-          spec = { variants: variants, required: required }.freeze
+        def record_declared_value(name, variants:, required:, open: false)
+          spec = { variants: variants, required: required, open: open }.freeze
           self.declared_values = declared_values.merge(name.to_sym => spec).freeze
         end
 

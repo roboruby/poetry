@@ -36,6 +36,9 @@ module Poetry
         Compound = Struct.new(:criteria, :classes)
 
         attr_reader :bases, :elements, :variants, :compounds
+        # The Style class this dictionary belongs to; its mode decides the
+        # class merger (nil answers with the global merger).
+        attr_accessor :owner
 
         def initialize
           @bases = []
@@ -163,8 +166,11 @@ module Poetry
           classes
         end
 
+        # The merger every element-level join goes through: the owner's, by
+        # its CSS mode, so a host's global BEM merger never reaches a
+        # Tailwind kit's utility conflicts (the root and the elements alike).
         def merger
-          Poetry::Core::Config.current.classname_merger
+          owner&.merger || Poetry::Core::Config.current.classname_merger
         end
       end
     end

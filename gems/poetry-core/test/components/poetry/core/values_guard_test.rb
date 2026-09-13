@@ -60,6 +60,47 @@ module Poetry
         end
       end
 
+      module Closed
+        class Component < Poetry::Core::Component
+          style :tone, default: :sky, variants: %i[sky rose]
+
+          def call = "c"
+        end
+      end
+
+      module Opened
+        class Component < Closed::Component
+          # Redeclared without variants: open, whatever the parent listed.
+          style :tone, default: :any
+
+          def call = "o"
+        end
+      end
+
+      def test_a_subclass_that_redeclares_a_style_without_variants_is_open
+        assert_equal :whatever, Opened::Component.new(tone: :whatever).tone
+        assert_nil Opened::Component.runtime_vocabulary.fetch(:tone)[:variants]
+        assert_raises(ArgumentError) { Closed::Component.new(tone: :whatever) }
+      end
+
+      module Dictionaryless
+        class Component < Poetry::Core::Component
+          def call = "d"
+        end
+      end
+
+      def test_a_missing_style_class_is_logged_once_per_class
+        log = StringIO.new
+        original = Rails.logger
+        Rails.logger = Logger.new(log)
+        Rails.logger.level = Logger::DEBUG
+        3.times { Dictionaryless::Component.style_class }
+
+        assert_equal 1, log.string.scan("Style class not found").size
+      ensure
+        Rails.logger = original
+      end
+
       def test_production_logs_and_renders
         log = StringIO.new
         original = Rails.logger
