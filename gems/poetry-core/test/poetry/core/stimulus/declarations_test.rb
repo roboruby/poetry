@@ -16,6 +16,27 @@ module Poetry
           assert_equal "poetry--core--action-bar", Declarations.resolve_identifier(:action_bar)
         end
 
+        test "a gem's namespaced controller wins over a host controller with the same bare name" do
+          catalog = Manifest.instance_variable_get(:@catalog)
+          Manifest.instance_variable_set(:@catalog, {
+            "poetry--core--tabs" => { "targets" => [], "values" => {}, "classes" => [], "methods" => ["pick"], "events" => [] },
+            "tabs" => { "targets" => [], "values" => {}, "classes" => [], "methods" => ["other"] },
+            "acme-badge" => { "targets" => [], "values" => {}, "classes" => [], "methods" => ["pulse"] }
+          })
+
+          assert_equal "poetry--core--tabs", Declarations.resolve_identifier(:tabs), "the host's tabs_controller.js does not hijack the gem"
+          assert_equal "acme-badge", Declarations.resolve_identifier(:acme_badge), "a host-only name resolves bare"
+          assert_equal "tabs", Declarations.resolve_identifier("tabs"), "the String names the host's"
+        ensure
+          Manifest.instance_variable_set(:@catalog, catalog)
+        end
+
+        test "the unknown-symbol message names the manifest task" do
+          error = assert_raises(Declarations::DeclarationError) { Declarations.resolve_identifier(:no_such_thing) }
+
+          assert_match(/poetry:stimulus:manifest/, error.message)
+        end
+
         test "unknown symbols raise listing the catalog" do
           error = assert_raises(Declarations::DeclarationError) do
             Declarations.resolve_identifier(:zzz_missing)

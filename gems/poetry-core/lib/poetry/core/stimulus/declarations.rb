@@ -72,15 +72,20 @@ module Poetry
 
           dashed = identifier.to_s.tr("_", "-")
           catalog = Manifest.catalog.keys
-          return dashed if catalog.include?(dashed)
-
+          # A gem's namespaced controller first (:tabs is poetry--core--tabs
+          # even when the host registered its own tabs_controller.js); the
+          # bare host identifier only when no gem carries the suffix.
           matches = catalog.select { |key| key.end_with?("--#{dashed}") }
+          return dashed if matches.empty? && catalog.include?(dashed)
+
           case matches.size
           when 1 then matches.first
           when 0
             raise DeclarationError,
                   "unknown stimulus controller #{identifier.inspect} - known: " \
-                  "#{catalog.sort.join(", ")}. Pass a String for a host-app controller."
+                  "#{catalog.sort.join(", ")}. A host-app controller joins the manifest with " \
+                  "`bin/rails poetry:stimulus:manifest` (run it before declaring by Symbol), " \
+                  "or pass its identifier as a String to leave it unvalidated."
           else
             raise DeclarationError,
                   "ambiguous stimulus controller #{identifier.inspect}: " \

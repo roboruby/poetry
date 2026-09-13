@@ -10,6 +10,10 @@ module Poetry
       # absent, merged child-first, registered like a gem's.
       class HostManifestTest < Minitest::Test
         FIXTURE_ROOT = Pathname.new(File.expand_path("../../../fixtures/host_app", __dir__))
+        # The shapes host controllers are actually written in (one-line
+        # bodies, arrow fields, braces inside literals and comments, comments
+        # inside statics, CRLF, a BOM, a helper class above the export).
+        SHAPES_ROOT = Pathname.new(File.expand_path("../../../fixtures/host_shapes", __dir__))
 
         def test_identifiers_follow_the_stimulus_convention
           assert_equal "demo-badge", HostManifest.identifier_for("demo_badge_controller.js")
@@ -79,6 +83,112 @@ module Poetry
             JS
 
             assert_equal :stale, HostManifest.state(root: root)
+          end
+        end
+
+        def test_reads_the_shapes_controllers_are_written_in
+          read = HostManifest.scan(root: SHAPES_ROOT).definitions
+
+          assert_equal %w[a b], read.fetch("one-line")["targets"], "one-line statics"
+          assert_equal ["pulse"], read.fetch("one-line")["methods"], "a one-line method body"
+          methods = read.fetch("methods")["methods"]
+          %w[connect pulse fetchIt arrow arrowWithArgs allman multiParam].each do |name|
+            assert_includes methods, name
+          end
+          refute_includes methods, "count", "an accessor is not an action"
+          refute_includes methods, "tick", "a private #method is not an action"
+          %w[brace-in-comment brace-in-string regex-brace].each do |id|
+            assert_equal %w[before after], read.fetch(id)["methods"], "#{id}: a brace inside a literal or a comment"
+          end
+          assert_equal({ "tone" => { "type" => "String" }, "limit" => { "type" => "Number", "default" => 3 },
+                         "url" => { "type" => "String" } },
+                       read.fetch("values-comment")["values"], "comments inside static values")
+          assert_equal "}", read.fetch("values-string-brace")["values"]["open"]["default"]
+          assert_equal ["pulse"], read.fetch("crlf")["methods"]
+          assert_equal ["pulse"], read.fetch("bom")["methods"]
+          assert_equal ["pulse"], read.fetch("class-then-export")["methods"]
+          assert_equal %w[ping pulse], read.fetch("two-classes")["methods"], "the default export, not the helper class above it"
+          assert_equal %w[submit pulse], read.fetch("comment-extends")["methods"], "the real parent, not one named in a comment"
+          refute read.fetch("dispatcher").key?("events"), "no static events: events stay unknown, never []"
+        end
+
+        def test_a_static_the_reader_cannot_read_is_a_named_skip_never_a_partial_entry
+          result = HostManifest.scan(root: SHAPES_ROOT)
+          reasons = result.skipped.to_h { |skip| [skip.identifier, skip.reason] }
+
+          assert_match(/getter/, reasons.fetch("getter-targets"))
+          assert_match(/spread or a template/, reasons.fetch("spread"))
+          assert_match(/spread or a template/, reasons.fetch("template-literal"))
+          %w[getter-targets spread template-literal].each { |id| refute result.definitions.key?(id) }
+        end
+
+        # The gem's own controllers against the manifest the Node generator
+        # introspected from the real classes: everything the classes carry,
+        # the reader carries (accessors and Stimulus's own callbacks aside,
+        # by policy; a computed `static events` stays unknown).
+        def test_reads_the_gem_s_own_controllers_like_the_generator_does
+          truth = JSON.parse(Poetry::Core.root.join("config/controllers_manifest.json").read)
+          dir = Poetry::Core.root.join("app/javascript/poetry/core")
+          compared = 0
+          Dir.glob(dir.join("*_controller.js").to_s).sort.each do |file|
+            identifier = "poetry--core--#{HostManifest.identifier_for(File.basename(file))}"
+            expected = truth[identifier]
+            next unless expected
+
+            compared += 1
+            read = HostManifest.resolve(file, [])
+
+            assert_equal expected["targets"].sort, read["targets"].sort, "#{identifier} targets"
+            assert_equal expected["classes"].sort, read["classes"].sort, "#{identifier} classes"
+            assert_equal expected["values"], read["values"], "#{identifier} values"
+            missing = expected["methods"].reject { |m| m.match?(HostManifest::CALLBACK) } - read["methods"]
+            assert_empty missing, "#{identifier} methods the generator found and the reader did not"
+            assert_equal expected["events"].sort, read["events"].sort, "#{identifier} events" if read.key?("events")
+          end
+          assert_operator compared, :>=, 50
+        end
+
+        def test_a_hand_written_entry_survives_regeneration_and_never_reads_stale
+          Dir.mktmpdir do |root|
+            dir = File.join(root, HostManifest::CONTROLLERS_DIR)
+            FileUtils.mkdir_p(dir)
+            FileUtils.cp(FIXTURE_ROOT.join("app/javascript/controllers/demo_badge_controller.js"), dir)
+            HostManifest.generate!(root: root)
+            path = Pathname.new(root).join(HostManifest::RELATIVE_PATH)
+            entries = JSON.parse(path.read)
+            entries["fancy"] = { "targets" => ["panel"], "values" => {}, "classes" => [], "methods" => ["open"] }
+            path.write(JSON.pretty_generate(entries, indent: "    ") + "\r\n")
+
+            assert_equal :fresh, HostManifest.state(root: root), "a hand entry, re-indented and CRLF, is not staleness"
+            HostManifest.generate!(root: root)
+
+            assert_equal ["open"], JSON.parse(path.read).fetch("fancy")["methods"], "regeneration keeps the hand entry"
+            assert_equal %w[demo-badge fancy], JSON.parse(path.read).keys
+          end
+        end
+
+        def test_an_unreadable_committed_file_reads_stale_and_regenerates
+          Dir.mktmpdir do |root|
+            FileUtils.mkdir_p(File.join(root, HostManifest::CONTROLLERS_DIR))
+            path = Pathname.new(root).join(HostManifest::RELATIVE_PATH)
+            path.dirname.mkpath
+            path.write("{ not json")
+
+            assert_equal :stale, HostManifest.state(root: root)
+            HostManifest.generate!(root: root)
+
+            assert_equal({}, JSON.parse(path.read))
+          end
+        end
+
+        def test_a_stray_byte_does_not_abort_the_read
+          Dir.mktmpdir do |root|
+            dir = File.join(root, HostManifest::CONTROLLERS_DIR)
+            FileUtils.mkdir_p(dir)
+            File.binwrite(File.join(dir, "latin_controller.js"),
+                          "import { Controller } from \"@hotwired/stimulus\"\n// caf\xE9\nexport default class extends Controller {\n  pulse() {}\n}\n")
+
+            assert_equal ["pulse"], HostManifest.scan(root: root).definitions.fetch("latin")["methods"]
           end
         end
 
