@@ -15,7 +15,10 @@ namespace :poetry do
       verifier = Poetry::Core::CSS::Verifier.new(compiled_css: File.read(compiled))
       Rails.application.eager_load!
       Poetry::Core::Style.descendants.select(&:name).each do |style|
-        verifier.verify_style(style).each { |unknown| failures << "#{style.name}: #{unknown}" }
+        verifier.verify_style(style).each do |unknown|
+          remedy = style.name.start_with?("Poetry::") ? "" : " (a class of your own: define it in your CSS, or drop it from the dictionary)"
+          failures << "#{style.name}: #{unknown}#{remedy}"
+        end
       end
     else
       puts "poetry:verify: no compiled CSS at #{compiled} - class verification skipped " \

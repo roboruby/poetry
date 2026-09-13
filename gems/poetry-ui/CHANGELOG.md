@@ -17,6 +17,8 @@
 
 ### Changed
 
+- The reset floor's header and the Installation guide say exactly what wins: an unlayered host rule always, a host rule in `layer(base)` when it comes after the floor's import, and `[hidden]` keeps preflight's `!important` on purpose. `poetry:verify` names the remedy when a kit's own `cn-*` class is not in the compiled CSS. The AGENTS.md section spells JSON output as `POETRY_CHECK_JSON=1`.
+
 - The upgrade path holds on real hosts: `--charts` is remembered by the vendored `poetry/charts.css`, so a plain re-run refreshes the chart files and a theme switch swaps the chart fragment with the theme; the superseded 0.1.1 tokens import converges however it was written (indented, annotated, or with a carriage return, which it keeps); every `eval_gemfile` spelling is read before `herb` is added; the Claude Code skills are refreshed like the vendored CSS, without an overwrite prompt (`--skip` keeps a hand-edited one); an AGENTS.md begin marker without its end is an error naming the file, a byte-identical section reports `identical`, the section is written in the file's own line endings, and only the first section is replaced.
 
 - `poetry:check` hands the runner the app root, so the mailer exemption and the design tier judge a template by its path inside the app; an unreadable file is a warning in the report, not a crash of the task.

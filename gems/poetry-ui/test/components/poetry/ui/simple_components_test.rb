@@ -164,6 +164,13 @@ module Poetry
 
         assert_includes html, "p-2"
         refute_includes html, "p-4", "utility conflicts still resolve"
+        # The elements too, not only the root the component re-merges:
+        # the dictionary merges by its own mode.
+        header = Accordion::Style.css(:header, class: "block").split
+
+        assert_includes header, "block"
+        refute_includes header, "flex", "an element-level join resolves the display conflict under a global BEM merger"
+        assert_equal ["size-6"], Button::Style.css(:icon, class: "size-6").split
       ensure
         Poetry::Core::Config.current.classname_merger = Poetry::Core::CSS::TailwindMerger.new
       end
