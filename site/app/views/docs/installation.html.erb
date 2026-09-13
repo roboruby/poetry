@@ -174,7 +174,11 @@
     <%= poetry_code_block(code: upgrade_source, language: "shell", label: "Upgrade") %>
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <p>
-        A plain re-run keeps the theme already installed (it reads the
+        A plain re-run refreshes every vendored file, the chart files
+        included once they are installed, and the Claude Code skills, which
+        are generated and are replaced without a question; pass
+        <code>--skip</code> to keep a skill file you edited by hand. It
+        keeps the theme already installed (it reads the
         fragment header back: the slot is always
         <code>poetry/style-default.css</code>, and its first line names the
         theme that fills it); passing <code>--theme</code> is how you
