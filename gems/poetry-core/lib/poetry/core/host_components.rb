@@ -127,6 +127,40 @@ module Poetry
         end.uniq.sort
       end
 
+      # The app's own `poetry_*` view helper METHODS, boot-free: a source
+      # scan of app/helpers for instance-method definitions under the
+      # prefix (the adapter `poetry:pagination` copies in, a wrapper the
+      # host wrote). They join `poetry check`'s valid names - the MCP
+      # server's check tool and `bin/rails poetry:check` alike - with
+      # contracts of their own, which no registry describes.
+      #
+      # @param root [String, Pathname] the app root
+      # @return [Array<String>] sorted, unique
+      def helper_methods(root:)
+        Dir.glob(Pathname.new(root).join("app/helpers/**/*.rb").to_s).flat_map do |file|
+          result = Prism.parse(File.read(file))
+          result.success? ? HelperMethods.new.tap { |finder| result.value.accept(finder) }.names : []
+        end.uniq.sort
+      end
+
+      # The `def poetry_*` instance methods, from the syntax tree - a
+      # singleton method, a mention in a string or a comment is not one.
+      class HelperMethods < Prism::Visitor
+        PREFIX = "poetry_"
+
+        attr_reader :names
+
+        def initialize
+          super
+          @names = []
+        end
+
+        def visit_def_node(node)
+          @names << node.name.to_s if node.receiver.nil? && node.name.start_with?(PREFIX)
+          super
+        end
+      end
+
       # The `helper :name` / `helper("name")` calls in class bodies, from
       # the syntax tree - a mention inside a string, a heredoc or a comment
       # is not a declaration.

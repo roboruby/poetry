@@ -173,6 +173,25 @@ module Poetry
         HostHelpers.sync!([])
       end
 
+      def test_helper_methods_reads_the_app_s_prefixed_helper_methods_from_source
+        Dir.mktmpdir do |root|
+          dir = File.join(root, "app/helpers")
+          FileUtils.mkdir_p(dir)
+          File.write(File.join(dir, "poetry_pagy_helper.rb"), <<~RUBY)
+            # def poetry_in_a_comment
+            module PoetryPagyHelper
+              def poetry_pagy_nav(pagy, **options) = "nav"
+              def self.poetry_on_the_module = "no"
+              def plain_helper = "no"
+              DOC = "def poetry_in_a_string"
+            end
+          RUBY
+
+          assert_equal ["poetry_pagy_nav"], HostComponents.helper_methods(root: root)
+        end
+        assert_empty HostComponents.helper_methods(root: Dir.mktmpdir), "no app/helpers, no names"
+      end
+
       def test_declared_helpers_parses_rather_than_greps
         Dir.mktmpdir do |root|
           dir = File.join(root, "app/components/acme/pill")

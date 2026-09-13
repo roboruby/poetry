@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3]
+
+### Fixed
+
+- `poetry check` no longer flags `with_trigger(compose: true) do |wiring|` (any composed slot) as a yieldless block: `compose: true` is the slot's other contract, and the setter yields the wiring for the caller's own control.
+- The app's own `poetry_*` helper methods are valid names for `poetry check` and the MCP `check` tool: `Poetry::Core::HostComponents.helper_methods` reads `def poetry_*` from `app/helpers` boot-free (the adapter `poetry:pagination` copies in, a wrapper the host wrote), and such a call is linted for its wiring only, since no registry describes its options or its block. A registry helper of the same name keeps the registry's contract.
+
 ## [0.1.2] - 2026-09-13
 
 ### Added

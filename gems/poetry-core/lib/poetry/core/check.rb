@@ -71,8 +71,8 @@ module Poetry
         # rgb(...)) - a url(#fragment) is not a color.
         STYLE_COLOR = /(?<!url\()#\h{3,8}\b|\b(?:#{COLOR_FUNCTIONS.join("|")})\([^)]*\)/i
 
-        def self.from_registry(root, helpers: nil, icon_names: nil)
-          from_registries([root], helpers: helpers, icon_names: icon_names)
+        def self.from_registry(root, helpers: nil, icon_names: nil, host_helpers: nil)
+          from_registries([root], helpers: helpers, icon_names: icon_names, host_helpers: host_helpers)
         end
 
         # A host catalog spans every installed poetry gem (ui + charts): a
@@ -82,7 +82,7 @@ module Poetry
         # host_registry: the app's own components (HostComponents.registry),
         # merged in beside the gem registries - their declared helpers join
         # the valid set and their contracts are checked like any other.
-        def self.from_registries(roots, helpers: nil, icon_names: nil, host_registry: nil)
+        def self.from_registries(roots, helpers: nil, icon_names: nil, host_registry: nil, host_helpers: nil)
           payloads = roots.map do |root|
             YAML.load_file(Pathname.new(root).join(Registry::RELATIVE_PATH), aliases: true)
           end
@@ -96,7 +96,8 @@ module Poetry
               helpers: helpers,
               helper_entries: payloads.map { |payload| payload["helpers"] || {} }.reduce({}, :merge),
               icon_names: icon_names,
-              helper_args: helper_args)
+              helper_args: helper_args,
+              host_helpers: host_helpers)
         end
 
         # helpers: the FULL set of valid poetry_* helper method names (from
@@ -110,11 +111,16 @@ module Poetry
         # helpers (poetry_input_group_addon align: et al). icon_names: the
         # active icon set's valid names - when given, icon-formatted option
         # values are checked for membership, not just shape.
-        def initialize(components, helpers: nil, helper_entries: nil, icon_names: nil, helper_args: nil)
+        def initialize(components, helpers: nil, helper_entries: nil, icon_names: nil, helper_args: nil,
+                       host_helpers: nil)
           @components = components
           @helper_entries = helper_entries || {}
           @helper_args = helper_args || {}
           @icon_names = icon_names&.to_set(&:to_s)
+          # The app's own poetry_* helper METHODS (HostComponents.helper_methods:
+          # a pagination adapter, a wrapper of the host's own) - valid by
+          # name, contracts their own.
+          @host_helpers = (host_helpers || []).to_set(&:to_s)
           # helper name -> registry path: poetry_ + the path under the gem
           # namespace (poetry/ui/command/dialog -> poetry_command_dialog,
           # avoiding the last-segment collision with poetry/ui/dialog). The
@@ -131,6 +137,7 @@ module Poetry
           end.to_h
           @helper_by_path = @path_by_helper.invert
           @helper_names = ((helpers&.map(&:to_s) || @path_by_helper.keys) + @helper_entries.keys).to_set
+          @helper_names.merge(@host_helpers)
         end
 
         attr_reader :icon_names
@@ -138,6 +145,15 @@ module Poetry
         def helper_names = @helper_names.to_a
 
         def helper?(name) = @helper_names.include?(name)
+
+        # A helper method the app defines under the prefix and no registry
+        # describes: the name is valid, its contract is the app's own. A
+        # registry entry of the same name (a gem helper the app redefines)
+        # keeps the registry's contract.
+        def host_helper?(name)
+          @host_helpers.include?(name) && !@path_by_helper.key?(name) && !@helper_entries.key?(name)
+        end
+
         def path_for(helper) = @path_by_helper[helper]
         # The helper that renders a registry path (the declared name, or the
         # poetry_ convention).
@@ -426,6 +442,14 @@ module Poetry
             suggestion = suggest(helper, @catalog.helper_names)
             return [Finding.new(rule: "unknown-component", severity: :error,
                                 message: "no poetry component #{helper}", line: line, suggestion: suggestion)]
+          end
+
+          # A helper method of the app's own under the prefix (a pagination
+          # adapter poetry:pagination copied in, a wrapper the host wrote):
+          # no registry knows its options or whether it yields, so only the
+          # wiring rules apply.
+          if @catalog.host_helper?(helper)
+            return passthrough_findings(keyword_pairs(call), base_line) + data_findings(call, base_line, helper)
           end
 
           # A valid helper with no component mapping (group / provider / item
@@ -854,7 +878,7 @@ module Poetry
         # WITHOUT a block (Carousel with_item).
         def setter_block_findings(entry, slot_name, call, line)
           findings = []
-          if (entry["yieldless"] || []).include?(slot_name) && block_param_name(call)
+          if (entry["yieldless"] || []).include?(slot_name) && !composed?(call) && block_param_name(call)
             findings << Finding.new(rule: "yieldless-block", severity: :error,
                                     message: "with_#{slot_name} yields nothing to its block - the param " \
                                              "will be nil; remove it and write the content directly",
@@ -921,6 +945,19 @@ module Poetry
 
           arguments.reject do |argument|
             argument.is_a?(Prism::KeywordHashNode) || argument.is_a?(Prism::BlockArgumentNode)
+          end
+        end
+
+        # A setter called with `compose: true` is the slot's other
+        # contract: it yields the wiring for the caller's own control, so
+        # the block param is the point, not a mistake.
+        def composed?(call)
+          hash = call.arguments&.arguments&.find { |argument| argument.is_a?(Prism::KeywordHashNode) }
+          return false unless hash
+
+          hash.elements.any? do |element|
+            element.is_a?(Prism::AssocNode) && element.key.respond_to?(:unescaped) &&
+              element.key.unescaped == "compose" && element.value.is_a?(Prism::TrueNode)
           end
         end
 

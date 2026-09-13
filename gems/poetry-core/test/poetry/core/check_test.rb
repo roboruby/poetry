@@ -596,6 +596,36 @@ module Poetry
 
       # --- composition contracts (the block-seam crash classes) ---
 
+      def test_a_composed_slot_block_param_is_not_yieldless
+        composed = <<~ERB
+          <%= poetry_carousel(label: "x") do |carousel| %>
+            <% carousel.with_item(compose: true) do |wiring| %><span <%= wiring %>>x</span><% end %>
+          <% end %>
+        ERB
+
+        refute_includes rules(composed), "yieldless-block", "compose: true yields the wiring by contract"
+        plain = composed.sub("(compose: true)", "")
+
+        assert_includes rules(plain), "yieldless-block", "without compose the setter yields nothing"
+        assert_includes rules(composed.sub("compose: true", "compose: false")), "yieldless-block"
+      end
+
+      def test_the_app_s_own_prefixed_helper_method_is_a_valid_name_with_its_own_contract
+        source = %(<%= poetry_pagy_nav(@pagy, edges: :icons) do |nav| %>x<% end %>)
+
+        assert_includes rules(source), "unknown-component", "unknown to every registry"
+        catalog = Check::Catalog.new(CATALOG.instance_variable_get(:@components), host_helpers: ["poetry_pagy_nav"])
+        findings = Check.lint(source, catalog: catalog)
+
+        assert_empty findings.map(&:rule) & %w[unknown-component yieldless-block helper-arity],
+                     "a host helper method is valid by name; its options and block are its own"
+        assert catalog.host_helper?("poetry_pagy_nav")
+        shadowing = Check::Catalog.new({ "poetry/ui/button" => {} }, host_helpers: ["poetry_button"])
+
+        refute shadowing.host_helper?("poetry_button"),
+               "a registry entry of the same name keeps the registry's contract"
+      end
+
       def test_a_declared_yielding_dispatcher_block_param_is_not_yieldless
         refute_includes rules(%(<%= poetry_chart :line, data: rows do |chart| %>x<% end %>)),
                         "yieldless-block",
