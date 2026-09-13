@@ -1,5 +1,5 @@
 {
-  "poetry_version": "0.1.2",
+  "poetry_version": "0.1.3",
   "gem": "poetry-core",
   "objects": [
     {
@@ -186,7 +186,7 @@
       "constants": [
         {
           "name": "VERSION",
-          "value": "\"0.1.2\"",
+          "value": "\"0.1.3\"",
           "docstring": "The gem version. Every gem in the family carries the same version\nand pins poetry-core to it exactly."
         }
       ]
