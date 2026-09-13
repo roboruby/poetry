@@ -1029,9 +1029,11 @@ module Poetry
       # --- host controllers: the wiring rules with a registered manifest ---
 
       HOST_CONTROLLERS = {
-        "foo" => { "targets" => ["label"], "values" => { "bar" => { "type" => "String" }, "count" => { "type" => "Number" } },
+        "foo" => { "targets" => ["label"],
+                   "values" => { "bar" => { "type" => "String" }, "count" => { "type" => "Number" } },
                    "classes" => [], "methods" => %w[connect save] },
-        "foo-bar" => { "targets" => [], "values" => { "baz" => { "type" => "String" } }, "classes" => [], "methods" => ["go"] }
+        "foo-bar" => { "targets" => [], "values" => { "baz" => { "type" => "String" } }, "classes" => [],
+                       "methods" => ["go"] }
       }.freeze
 
       def with_host_controllers
@@ -1042,20 +1044,26 @@ module Poetry
       end
 
       def test_every_action_descriptor_is_validated_not_only_the_last
-        findings = lint(%(<div data-action="click->poetry--core--dialog#nope keydown->poetry--core--dialog#close"></div>))
+        two = %(<div data-action="click->poetry--core--dialog#nope keydown->poetry--core--dialog#close"></div>)
+        findings = lint(two)
+
         assert_equal ["poetry--core--dialog has no action #nope"], findings.map(&:message)
 
-        three = %(<div data-action="click->poetry--core--dialog#open keydown->poetry--core--dialog#bogus keyup->poetry--core--dialog#bogus2"></div>)
-        assert_equal ["#bogus", "#bogus2"], lint(three).map { |f| f.message[/#\w+/] }
+        three = %(<div data-action="click->poetry--core--dialog#open keydown->poetry--core--dialog#bogus ) +
+                %(keyup->poetry--core--dialog#bogus2"></div>)
+
+        assert_equal(["#bogus", "#bogus2"], lint(three).map { |f| f.message[/#\w+/] })
         with_host_controllers do
           assert_equal ["foo has no action #nope"],
-                       lint(%(<%= poetry_button(data: { action: "click->foo#nope keydown->foo#save" }) do %>x<% end %>)).map(&:message)
+                       lint(%(<%= poetry_button(data: { action: "click->foo#nope keydown->foo#save" }) do %>x<% end %>))
+                         .map(&:message)
         end
       end
 
       def test_a_value_attribute_resolves_to_the_controller_the_element_declares
         with_host_controllers do
-          assert_empty rules(%(<div data-controller="foo" data-foo-bar-value="x"></div>)), "foo's bar value, not foo-bar's"
+          assert_empty rules(%(<div data-controller="foo" data-foo-bar-value="x"></div>)),
+                       "foo's bar value, not foo-bar's"
           assert_empty rules(%(<div data-controller="foo-bar" data-foo-bar-baz-value="x"></div>))
           assert_equal ["unknown-value"], rules(%(<div data-controller="foo" data-foo-nope-value="x"></div>))
           assert_empty rules(%(<div data-controller="foo" data-foo-value="x"></div>)), "data-foo-value names no value"
@@ -1067,7 +1075,8 @@ module Poetry
         with_host_controllers do
           assert_empty rules(%(<div data-controller="foo" data-foo-count-value="<%= n %>px"></div>))
           assert_empty rules(%(<div data-action="click-><%= ns %>foo#nope"></div>))
-          assert_equal ["value-type"], rules(%(<div data-controller="foo" data-foo-count-value="3px"></div>)), "a literal still is"
+          assert_equal ["value-type"], rules(%(<div data-controller="foo" data-foo-count-value="3px"></div>)),
+                       "a literal still is"
         end
       end
 
@@ -1080,7 +1089,8 @@ module Poetry
       end
 
       def test_a_declared_helper_matches_bare_calls_only
-        assert_equal ["unknown-variant"], Check.lint(%(<%= demo_badge(tone: :nope) %>), catalog: HOST_CATALOG).map(&:rule)
+        assert_equal ["unknown-variant"],
+                     Check.lint(%(<%= demo_badge(tone: :nope) %>), catalog: HOST_CATALOG).map(&:rule)
         assert_empty Check.lint(%(<%= u.demo_badge(tone: :nope) %>), catalog: HOST_CATALOG)
         assert_empty Check.lint(%(<% demo_badge = fetch %><%= demo_badge %>), catalog: HOST_CATALOG)
       end
@@ -1341,7 +1351,8 @@ module Poetry
 
         assert_empty Check::StableIdentity.new(CATALOG).lint(erb)
         assert_equal ["stable-identity/collection"],
-                     Check::StableIdentity.new(CATALOG).lint(%(<% users.each do |u| %><%= poetry_button(label: u.name) %><% end %>)).map(&:rule)
+                     stable_identity_findings(%(<% users.each do |u| %><%= poetry_button(label: u.name) %><% end %>))
+                       .map(&:rule)
       end
 
       def test_cache_block_component_without_identity_warns

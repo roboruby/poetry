@@ -66,7 +66,7 @@ module Poetry
         # @param klass [Class] a component class (named)
         # @return [Symbol, nil]
         def inherited_for(klass)
-          chain = klass.ancestors.select { |ancestor| ancestor.is_a?(Class) }
+          chain = klass.ancestors.grep(Class)
                        .take_while { |ancestor| ancestor != Poetry::Core::Component }
           chain.reverse_each do |ancestor|
             mode = self.for(ancestor)

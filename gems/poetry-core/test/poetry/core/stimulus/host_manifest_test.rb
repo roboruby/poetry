@@ -92,6 +92,7 @@ module Poetry
           assert_equal %w[a b], read.fetch("one-line")["targets"], "one-line statics"
           assert_equal ["pulse"], read.fetch("one-line")["methods"], "a one-line method body"
           methods = read.fetch("methods")["methods"]
+
           %w[connect pulse fetchIt arrow arrowWithArgs allman multiParam].each do |name|
             assert_includes methods, name
           end
@@ -107,8 +108,10 @@ module Poetry
           assert_equal ["pulse"], read.fetch("crlf")["methods"]
           assert_equal ["pulse"], read.fetch("bom")["methods"]
           assert_equal ["pulse"], read.fetch("class-then-export")["methods"]
-          assert_equal %w[ping pulse], read.fetch("two-classes")["methods"], "the default export, not the helper class above it"
-          assert_equal %w[submit pulse], read.fetch("comment-extends")["methods"], "the real parent, not one named in a comment"
+          assert_equal %w[ping pulse], read.fetch("two-classes")["methods"],
+                       "the default export, not the helper class above it"
+          assert_equal %w[submit pulse], read.fetch("comment-extends")["methods"],
+                       "the real parent, not one named in a comment"
           refute read.fetch("dispatcher").key?("events"), "no static events: events stay unknown, never []"
         end
 
@@ -130,7 +133,7 @@ module Poetry
           truth = JSON.parse(Poetry::Core.root.join("config/controllers_manifest.json").read)
           dir = Poetry::Core.root.join("app/javascript/poetry/core")
           compared = 0
-          Dir.glob(dir.join("*_controller.js").to_s).sort.each do |file|
+          Dir.glob(dir.join("*_controller.js").to_s).each do |file|
             identifier = "poetry--core--#{HostManifest.identifier_for(File.basename(file))}"
             expected = truth[identifier]
             next unless expected
@@ -141,10 +144,12 @@ module Poetry
             assert_equal expected["targets"].sort, read["targets"].sort, "#{identifier} targets"
             assert_equal expected["classes"].sort, read["classes"].sort, "#{identifier} classes"
             assert_equal expected["values"], read["values"], "#{identifier} values"
-            missing = expected["methods"].reject { |m| m.match?(HostManifest::CALLBACK) } - read["methods"]
+            missing = expected["methods"].grep_v(HostManifest::CALLBACK) - read["methods"]
+
             assert_empty missing, "#{identifier} methods the generator found and the reader did not"
             assert_equal expected["events"].sort, read["events"].sort, "#{identifier} events" if read.key?("events")
           end
+
           assert_operator compared, :>=, 50
         end
 
@@ -157,7 +162,7 @@ module Poetry
             path = Pathname.new(root).join(HostManifest::RELATIVE_PATH)
             entries = JSON.parse(path.read)
             entries["fancy"] = { "targets" => ["panel"], "values" => {}, "classes" => [], "methods" => ["open"] }
-            path.write(JSON.pretty_generate(entries, indent: "    ") + "\r\n")
+            path.write("#{JSON.pretty_generate(entries, indent: "    ")}\r\n")
 
             assert_equal :fresh, HostManifest.state(root: root), "a hand entry, re-indented and CRLF, is not staleness"
             HostManifest.generate!(root: root)
@@ -186,7 +191,8 @@ module Poetry
             dir = File.join(root, HostManifest::CONTROLLERS_DIR)
             FileUtils.mkdir_p(dir)
             File.binwrite(File.join(dir, "latin_controller.js"),
-                          "import { Controller } from \"@hotwired/stimulus\"\n// caf\xE9\nexport default class extends Controller {\n  pulse() {}\n}\n")
+                          "import { Controller } from \"@hotwired/stimulus\"\n// caf\xE9\n" \
+                          "export default class extends Controller {\n  pulse() {}\n}\n")
 
             assert_equal ["pulse"], HostManifest.scan(root: root).definitions.fetch("latin")["methods"]
           end

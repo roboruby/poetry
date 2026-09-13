@@ -1523,7 +1523,6 @@ module Poetry
         rescue SystemCallError, IOError, ArgumentError, Encoding::CompatibilityError => e
           [Finding.new(rule: "unreadable", severity: :warning, message: "#{e.class}: #{e.message} - skipped")]
         end
-
       end
 
       # A mailer template by Rails convention: a view under a `*_mailer/`
@@ -1551,7 +1550,6 @@ module Poetry
         end
         MAIL_TEMPLATE.match?(path)
       end
-
 
       # Lint file paths against a registry root.
       #

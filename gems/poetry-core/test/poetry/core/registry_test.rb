@@ -99,13 +99,15 @@ module Poetry
         Dir.mktmpdir do |root|
           path = Pathname.new(root).join(Registry::RELATIVE_PATH)
           path.dirname.mkpath
+
           refute Registry.invalid_at?(root), "no file is not invalid"
-          { "empty" => "", "bad yaml" => "components: [\n", "nil components" => "components:\n",
-            "wrong shape" => "components: [a, b]\n", "nil entry" => "components:\n  demo/badge:\n" }.each do |label, text|
+          shapes = { "empty" => "", "bad yaml" => "components: [\n", "nil components" => "components:\n",
+                     "wrong shape" => "components: [a, b]\n", "nil entry" => "components:\n  demo/badge:\n" }
+          shapes.each do |label, text|
             path.write(text)
 
             assert_nil Registry.read_file(root), label
-            assert Registry.invalid_at?(root), label
+            assert Registry.invalid_at?(root), "#{label}: invalid"
             refute Registry.published_at?(root), label
             refute_includes Registry.gem_roots(app_root: root).map(&:to_s), root, label
           end
@@ -113,7 +115,8 @@ module Poetry
 
           assert_equal ["demo/badge"], Registry.read_file(root)["components"].keys
           assert Registry.published_at?(root)
-          error = assert_raises(Poetry::Core::Error) { path.write("nope"); Registry.committed(root) }
+          path.write("nope")
+          error = assert_raises(Poetry::Core::Error) { Registry.committed(root) }
           assert_match(/not a poetry registry/, error.message)
         end
       end

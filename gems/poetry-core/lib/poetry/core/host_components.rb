@@ -149,10 +149,7 @@ module Poetry
         def visit_call_node(node)
           if @depth.positive? && node.name == DECLARATION && (node.receiver.nil? || node.receiver.is_a?(Prism::SelfNode))
             argument = node.arguments&.arguments&.first
-            case argument
-            when Prism::SymbolNode then @names << argument.unescaped
-            when Prism::StringNode then @names << argument.unescaped
-            end
+            @names << argument.unescaped if argument.is_a?(Prism::SymbolNode) || argument.is_a?(Prism::StringNode)
           end
           super
         end

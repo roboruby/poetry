@@ -98,7 +98,7 @@ module Poetry
           dir = root.join(CONTROLLERS_DIR)
           definitions = {}
           skipped = []
-          Dir.glob(dir.join("**/*_controller.js").to_s).sort.each do |file|
+          Dir.glob(dir.join("**/*_controller.js").to_s).each do |file|
             identifier = identifier_for(Pathname.new(file).relative_path_from(dir).to_s)
             definitions[identifier] = resolve(file, [])
           rescue Unresolved => e
@@ -150,7 +150,10 @@ module Poetry
           if path.start_with?("./", "../")
             candidate = File.expand_path(path, File.dirname(file))
             candidate += ".js" unless candidate.end_with?(".js")
-            candidate = File.join(candidate.delete_suffix(".js"), "index.js") if !File.exist?(candidate) && File.directory?(candidate.delete_suffix(".js"))
+            if !File.exist?(candidate) && File.directory?(candidate.delete_suffix(".js"))
+              candidate = File.join(candidate.delete_suffix(".js"),
+                                    "index.js")
+            end
             raise Unresolved, "extends #{name} from #{path}, which does not exist" unless File.exist?(candidate)
 
             return resolve(candidate, seen)
@@ -174,7 +177,12 @@ module Poetry
           return nil unless package
 
           rest = path.delete_prefix(package).delete_prefix("/").delete_prefix("core/").delete_suffix(".js")
-          base = rest.empty? ? name.delete_suffix("Controller").gsub(/([a-z\d])([A-Z])/, '\1_\2').downcase : rest.delete_suffix("_controller")
+          base = if rest.empty?
+                   name.delete_suffix("Controller").gsub(/([a-z\d])([A-Z])/,
+                                                         '\1_\2').downcase
+                 else
+                   rest.delete_suffix("_controller")
+                 end
           prefix + base.tr("_", "-")
         end
 
@@ -253,7 +261,7 @@ module Poetry
               j = j ? j + 2 : n
               blank(out, i, j)
               i = j
-            elsif c == '"' || c == "'"
+            elsif ['"', "'"].include?(c)
               j = literal_end(source, i, c)
               blank(out, i + 1, j - 1) if !keep && j - 1 > i + 1
               last = c
@@ -321,11 +329,11 @@ module Poetry
         # Whether a `/` at `i` starts a regex literal: it does after an
         # operator, an opening bracket, a separator, a keyword, or at the
         # start; it divides after a value.
-        def regex_start?(last, source, i)
+        def regex_start?(last, source, position)
           return true if last.nil? || REGEX_PRECEDERS.include?(last)
           return false unless last.match?(/[\w$]/)
 
-          word = source[0...i].rstrip[/[\w$]+\z/]
+          word = source[0...position].rstrip[/[\w$]+\z/]
           REGEX_KEYWORDS.include?(word)
         end
 
@@ -340,6 +348,7 @@ module Poetry
           open = match.end(0)
           unless masked[open] == "["
             return computed if computed
+
             raise Unresolved, "static #{name} is computed, not a literal array - write this entry by hand"
           end
 
@@ -348,6 +357,7 @@ module Poetry
           inner = source[(open + 1)...close]
           if inner_masked.match?(/\.\.\.|`/)
             return computed if computed
+
             raise Unresolved, "static #{name} holds a spread or a template entry - write this entry by hand"
           end
 
@@ -372,10 +382,14 @@ module Poetry
           return {} unless match
 
           open = match.end(0)
-          raise Unresolved, "static values is computed, not an object literal - write this entry by hand" unless masked[open] == "{"
+          unless masked[open] == "{"
+            raise Unresolved,
+                  "static values is computed, not an object literal - write this entry by hand"
+          end
 
           close = closing(masked, open, "{", "}")
-          entries(masked[(open + 1)...close], source[(open + 1)...close]).each_with_object({}) do |(name, spec_masked, spec), values|
+          entries(masked[(open + 1)...close],
+                  source[(open + 1)...close]).each_with_object({}) do |(name, spec_masked, spec), values|
             values[name] = if spec_masked.lstrip.start_with?("{")
                              value_spec(spec_masked, spec)
                            else
@@ -418,7 +432,9 @@ module Poetry
         def value_spec(spec_masked, spec)
           open = spec_masked.index("{")
           close = closing(spec_masked, open, "{", "}")
-          props = entries(spec_masked[(open + 1)...close], spec[(open + 1)...close]).to_h { |name, _, text| [name, text.strip] }
+          props = entries(spec_masked[(open + 1)...close], spec[(open + 1)...close]).to_h do |name, _, text|
+            [name, text.strip]
+          end
           result = { "type" => props["type"]&.[](/\w+/) }
           if props.key?("default")
             parsed = literal(props["default"])

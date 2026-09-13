@@ -27,8 +27,10 @@ module Poetry
         #
         # @return [CSS::Resolver]
         def resolver
-          @resolver ||= (superclass.respond_to?(:resolver) ? superclass.resolver.dup : CSS::Resolver.new).tap do |dictionary|
+          @resolver ||= begin
+            dictionary = superclass.respond_to?(:resolver) ? superclass.resolver.dup : CSS::Resolver.new
             dictionary.owner = self
+            dictionary
           end
         end
 

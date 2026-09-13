@@ -114,7 +114,7 @@ module Poetry
 
         payload = YAML.safe_load_file(path, aliases: true, permitted_classes: [Symbol])
         return nil unless payload.is_a?(Hash) && payload["components"].is_a?(Hash)
-        return nil unless payload["components"].values.all? { |entry| entry.is_a?(Hash) }
+        return nil unless payload["components"].values.all?(Hash)
 
         payload
       rescue Psych::Exception, ArgumentError
