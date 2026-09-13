@@ -213,7 +213,9 @@ module Poetry
           # `bin/rails poetry:check` that the helper exists (their option
           # contracts are only known to the booted check).
           helper_entries = (committed.helpers || {}).dup
-          if app_root
+          # Only for an app that never committed its registry: once the
+          # file exists it is the truth (helpers, contracts), not the scan.
+          if app_root && !Poetry::Core::Registry.published_at?(app_root)
             Poetry::Core::HostComponents.declared_helpers(root: app_root).each { |name| helper_entries[name] ||= {} }
           end
           helpers = (helpers + mapped_helpers(committed.entries)).uniq if helpers
@@ -225,13 +227,11 @@ module Poetry
               root: committed.source_root.to_s, skills: skills, app_root: app_root, recipes: recipes)
         end
 
-        # The helper each entry maps to (its declared name or the poetry_
-        # convention), so an explicit helper list never hides another
-        # root's components.
+        # The helper each entry names, so an explicit helper list never
+        # hides another root's components (an entry without one has no
+        # helper to map).
         def self.mapped_helpers(entries)
-          entries.map do |path, entry|
-            entry["helper"] || "poetry_#{path.sub(%r{\Apoetry/[^/]+/}, "").tr("/", "_")}"
-          end
+          entries.filter_map { |path, entry| Poetry::Core::Registry.helper_for(path, entry) }
         end
 
         # app_root: the HOST app directory (where `bundle exec poetry-agent`
@@ -346,7 +346,7 @@ module Poetry
         def list_components
           @entries.map do |path, entry|
             interactive = entry["controllers"]&.any? ? " [interactive]" : ""
-            "- #{title(path)} (`#{helper(path)}`)#{interactive}: #{summary(entry)}"
+            "- #{title(path)} (#{helper_label(path)})#{interactive}: #{summary(entry)}"
           end.join("\n")
         end
 
@@ -356,7 +356,7 @@ module Poetry
 
           entry = @entries.fetch(path)
           detail = arguments.fetch("detail", "detailed")
-          lines = ["# #{title(path)} (`#{helper(path)}`)", summary(entry)]
+          lines = ["# #{title(path)} (#{helper_label(path)})", summary(entry)]
           lines.concat(surface_lines(entry)) if %w[detailed full].include?(detail)
           lines.concat(full_lines(entry)) if detail == "full"
           # The block back-reference: a screen containing this
@@ -463,7 +463,7 @@ module Poetry
         def component_route(scored, components)
           lines = ["No block covers this brief - component-scale work."]
           lines << if components.any?
-                     "Matched components: #{components.map { |name| "#{name} (`poetry_#{name}`)" }.join(", ")} - " \
+                     "Matched components: #{components.map { |name| "#{name} (#{helper_label(path_for(name))})" }.join(", ")} - " \
                        "describe_component for the contracts."
                    else
                      "No component name matched either - list_components for the catalog."
@@ -889,7 +889,7 @@ module Poetry
               convention = args && slot["types"].all? { |type| args[type]&.zero? } ? " - options as keywords" : ""
               facets << "types #{slot["types"].join("|")}#{convention}"
             end
-            facets << "takes #{helper(slot["component"])} props, not a block" if slot["component"]
+            facets << "takes #{helper_text(slot["component"])} props, not a block" if slot["component"]
             # The render-crash seams, stated where agents read them.
             if (yieldless = slot["yieldless"])
               setters = yieldless.map { |name| "with_#{name}" }.join("/")
@@ -975,8 +975,14 @@ module Poetry
 
         # A gem path drops its poetry/<gem>/ prefix; an app path is its own.
         def title(path) = (path.start_with?("poetry/") ? path.split("/").drop(2) : path.split("/")).join("_")
-        # The declared helper (an app component), or the poetry_ convention.
-        def helper(path) = @entries.dig(path, "helper") || "poetry_#{title(path)}"
+        # The helper the registry names for the entry, nil for an app
+        # component that declared none (it renders by class).
+        def helper(path) = Poetry::Core::Registry.helper_for(path, @entries[path] || {})
+        # The helper to render the entry by, or the class when it has none.
+        def helper_text(path) = helper(path) || "render #{@entries.dig(path, "class_name") || path}"
+        # The same, the helper in backticks.
+        def helper_label(path) = (name = helper(path)) ? "`#{name}`" : helper_text(path)
+        def path_for(name) = @entries.keys.find { |path| title(path) == name }
 
         def result(id, value) = { "jsonrpc" => "2.0", "id" => id, "result" => value }
 

@@ -438,6 +438,52 @@ module Poetry
       # The app's own components declare their helpers in source; the
       # boot-free scan of app_root adds those names, so the check tool
       # agrees with `bin/rails poetry:check` that the helper exists.
+      def test_compose_names_an_app_component_s_declared_helper_and_never_invents_one
+        require "tmpdir"
+        Dir.mktmpdir("host-app") do |app_root|
+          FileUtils.mkdir_p(File.join(app_root, "config"))
+          File.write(File.join(app_root, "config/component_registry.yml"), <<~YAML)
+            components:
+              demo/badge:
+                class_name: Demo::Badge::Component
+                helper: demo_badge
+                description: A demo badge label.
+                styles: []
+                options: []
+                slots: []
+              demo/pill:
+                class_name: Demo::Pill::Component
+                description: A pill.
+                styles: []
+                options: []
+                slots: []
+          YAML
+          target = MCP::Server.from_registries([Poetry::Core.root, app_root], app_root: app_root)
+          text = call_on(target, "compose", "brief" => "A demo badge and a demo pill")
+
+          assert_includes text, "demo_badge (`demo_badge`)"
+          assert_includes text, "demo_pill (render Demo::Pill::Component)"
+          refute_includes text, "poetry_demo"
+          listing = call_on(target, "list_components", {})
+
+          assert_includes listing, "- demo_pill (render Demo::Pill::Component)"
+        end
+      end
+
+      def test_an_invalid_committed_app_registry_is_not_a_root_and_does_not_crash_the_server
+        require "tmpdir"
+        Dir.mktmpdir("host-app") do |app_root|
+          FileUtils.mkdir_p(File.join(app_root, "config"))
+          File.write(File.join(app_root, "config/component_registry.yml"), "components: [\n")
+          roots = Poetry::Core::Registry.gem_roots(app_root: app_root)
+
+          refute_includes roots.map(&:to_s), app_root
+          target = MCP::Server.from_registries([Poetry::Core.root], app_root: app_root)
+
+          assert_includes call_on(target, "list_components", {}), "- "
+        end
+      end
+
       def test_check_knows_the_app_s_declared_helpers_from_source
         require "tmpdir"
         Dir.mktmpdir("host-app") do |app_root|
