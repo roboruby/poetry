@@ -37,8 +37,8 @@ module Poetry
         end
       end
 
-      # `helper :name` lands in the entry; its absence keeps gem entries
-      # byte-identical.
+      # `helper :name` lands in the entry; a gem entry carries the
+      # convention, so no consumer guesses.
       module HelperProbe
         class Component < Poetry::Core::Component
           helper :probe_thing
@@ -89,11 +89,43 @@ module Poetry
         assert_kind_of Array, Registry.gem_roots(app_root: Dir.pwd)
       end
 
+      def test_helper_for_never_invents_a_helper_for_an_app_entry
+        assert_equal "poetry_data_table_row", Registry.helper_for("poetry/ui/data_table/row")
+        assert_equal "demo_badge", Registry.helper_for("demo/badge", "helper" => "demo_badge")
+        assert_nil Registry.helper_for("demo/pill", "class_name" => "Demo::Pill::Component")
+      end
+
+      def test_read_file_answers_nil_for_anything_that_is_not_a_registry
+        Dir.mktmpdir do |root|
+          path = Pathname.new(root).join(Registry::RELATIVE_PATH)
+          path.dirname.mkpath
+          refute Registry.invalid_at?(root), "no file is not invalid"
+          { "empty" => "", "bad yaml" => "components: [\n", "nil components" => "components:\n",
+            "wrong shape" => "components: [a, b]\n", "nil entry" => "components:\n  demo/badge:\n" }.each do |label, text|
+            path.write(text)
+
+            assert_nil Registry.read_file(root), label
+            assert Registry.invalid_at?(root), label
+            refute Registry.published_at?(root), label
+            refute_includes Registry.gem_roots(app_root: root).map(&:to_s), root, label
+          end
+          path.write("components:\n  demo/badge:\n    class_name: Demo::Badge::Component\n")
+
+          assert_equal ["demo/badge"], Registry.read_file(root)["components"].keys
+          assert Registry.published_at?(root)
+          error = assert_raises(Poetry::Core::Error) { path.write("nope"); Registry.committed(root) }
+          assert_match(/not a poetry registry/, error.message)
+        end
+      end
+
       def test_a_declared_helper_is_the_entry_s_helper_key
         entries = Registry.new(components: [HelperProbe::Component, ContentProbe::Component]).entries
 
         assert_equal "probe_thing", entries.fetch(HelperProbe::Component.component_path)["helper"]
-        refute entries.fetch(ContentProbe::Component.component_path).key?("helper")
+        # A gem-namespace entry carries the convention: every registry names its helpers.
+        expected = "poetry_#{ContentProbe::Component.component_path.split("/").drop(2).join("_")}"
+
+        assert_equal expected, entries.fetch(ContentProbe::Component.component_path)["helper"]
       end
 
       # use_stimulus declarations feed the registry's controllers section

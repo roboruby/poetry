@@ -73,24 +73,72 @@ module Poetry
       # @return [Committed]
       def self.committed(root)
         source_root = Pathname.new(root)
-        payload = YAML.load_file(source_root.join(RELATIVE_PATH), aliases: true)
+        payload = read_file(source_root)
+        raise Poetry::Core::Error, "#{source_root.join(RELATIVE_PATH)} is not a poetry registry" if payload.nil?
+
         Committed.new(entries: payload.fetch("components"), blocks: payload["blocks"],
                       helpers: payload["helpers"], helper_args: payload["helper_args"],
                       form_builder: payload["form_builder"], source_root: source_root,
                       internal: payload["internal"] == true)
       end
 
+      # The view helper for a registry entry: the name the entry carries
+      # (every registry built since 0.1.2 names it), else the poetry_
+      # convention for a gem path (poetry/ui/data_table/row ->
+      # poetry_data_table_row, which every gem helper module follows), else
+      # nil: an app component that declared no helper renders by class and
+      # no surface invents one for it.
+      #
+      # @param path [String] the component path
+      # @param entry [Hash] the registry entry
+      # @return [String, nil]
+      def self.helper_for(path, entry = {})
+        return entry["helper"] if entry["helper"]
+        return nil unless path.start_with?("poetry/") && path.count("/") >= 2
+
+        "poetry_#{path.split("/").drop(2).join("_")}"
+      end
+
+      # The committed registry file of a root as data, validated: a Hash
+      # whose "components" is a Hash of Hash entries. nil for a file that
+      # is empty, unparseable, or not that shape - the one answer every
+      # reader shares, so a hand-edited file degrades to "no registry here"
+      # (and `poetry:check` says so) instead of a crash in whichever
+      # surface opened it first.
+      #
+      # @param root [String, Pathname]
+      # @return [Hash, nil]
+      def self.read_file(root)
+        path = Pathname.new(root).join(RELATIVE_PATH)
+        return nil unless path.file?
+
+        payload = YAML.safe_load_file(path, aliases: true, permitted_classes: [Symbol])
+        return nil unless payload.is_a?(Hash) && payload["components"].is_a?(Hash)
+        return nil unless payload["components"].values.all? { |entry| entry.is_a?(Hash) }
+
+        payload
+      rescue Psych::Exception, ArgumentError
+        nil
+      end
+
+      # Whether the file exists but is not a registry (empty, malformed, or
+      # the wrong shape) - what `poetry:check` reports as registry-invalid.
+      #
+      # @param root [String, Pathname]
+      # @return [Boolean]
+      def self.invalid_at?(root)
+        Pathname.new(root).join(RELATIVE_PATH).file? && read_file(root).nil?
+      end
+
       # Whether a root carries a committed registry meant for consumers: the
-      # file exists and does not mark itself internal (poetry-core's own is
-      # a gate artifact for building blocks that have no helpers).
+      # file exists, reads, and does not mark itself internal (poetry-core's
+      # own is a gate artifact for building blocks that have no helpers).
       #
       # @param root [String, Pathname]
       # @return [Boolean]
       def self.published_at?(root)
-        path = Pathname.new(root).join(RELATIVE_PATH)
-        return false unless path.exist?
-
-        YAML.load_file(path, aliases: true)["internal"] != true
+        payload = read_file(root)
+        !payload.nil? && payload["internal"] != true
       end
 
       # The registry roots of a booted host, by convention: every loaded
@@ -277,6 +325,13 @@ module Poetry
         end
       end
 
+      # The component's view helper name: the declaration when there is
+      # one, else the poetry_ convention for a gem path, else nil.
+      def conventional_helper(component)
+        declared = component.respond_to?(:helper_name) ? component.helper_name : nil
+        declared || Registry.helper_for(component.component_path)
+      end
+
       # Whether the component's rendered output can carry a poetry-minted
       # id. An IDENTITY constant declared on the component's own ancestry
       # wins (composition: a component whose DOM carries ids minted by
@@ -315,10 +370,13 @@ module Poetry
           "options" => plain(props[:options]),
           "slots" => plain(props[:slots])
         }
-        # The declared view helper (an app component's `helper :name`);
-        # absent for the gems' components, whose helpers follow the
-        # poetry_<name> convention - so gem registries are byte-identical.
-        entry["helper"] = component.helper_name if component.respond_to?(:helper_name) && component.helper_name
+        # The view helper that renders the component, named here so no
+        # consumer guesses: a gem component's follows the poetry_ convention
+        # (poetry/ui/data_table/row -> poetry_data_table_row); an app
+        # component's is what it declared with `helper :name`, and an app
+        # component that declared none has none (rendered by class).
+        helper = conventional_helper(component)
+        entry["helper"] = helper if helper
         # The one-line human description (editorial, merged from the gem's
         # component_descriptions.yml) - the summary llms.txt / describe_component
         # / the docs page read from this single source.

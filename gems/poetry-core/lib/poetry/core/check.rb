@@ -122,11 +122,13 @@ module Poetry
           # merged catalog carries poetry/charts/* too, and a chart helper
           # that fails to map here reads as a yielding wrapper (the chart
           # yieldless-block false positives).
-          # An entry that names its helper (an app component's `helper
-          # :name`) maps by that name; the gems' entries map by convention.
-          @path_by_helper = components.to_h do |path, entry|
-            [entry["helper"] || "poetry_#{path.sub(%r{\Apoetry/[^/]+/}, "").tr("/", "_")}", path]
-          end
+          # Every entry names its helper (the registry stamps the gems'
+          # convention and an app component's declaration); an entry with
+          # none has no helper to lint, so it maps nowhere.
+          @path_by_helper = components.filter_map do |path, entry|
+            helper = Registry.helper_for(path, entry)
+            [helper, path] if helper
+          end.to_h
           @helper_by_path = @path_by_helper.invert
           @helper_names = ((helpers&.map(&:to_s) || @path_by_helper.keys) + @helper_entries.keys).to_set
         end
@@ -1289,7 +1291,7 @@ module Poetry
           DidYouMean::SpellChecker.new(dictionary: dictionary.map(&:to_s)).correct(input.to_s).first
         end
 
-        def helper_of(path) = @catalog.helper_for(path) || "poetry_#{path.delete_prefix("poetry/ui/").tr("/", "_")}"
+        def helper_of(path) = @catalog.helper_for(path) || path
         def line_of(node) = node.location.start.line
 
         def attribute_name(node)

@@ -112,8 +112,10 @@ module Poetry
       # poetry_dialog, which collides with the top-level dialog).
       # A gem path drops its poetry/<gem>/ prefix; an app path is its own.
       def title(path) = (path.start_with?("poetry/") ? path.split("/").drop(2) : path.split("/")).join("_")
-      # The declared helper (an app component), or the poetry_ convention.
-      def helper(path, entry = {}) = entry["helper"] || "poetry_#{title(path)}"
+      # The helper the registry names for the entry (Registry.helper_for);
+      # an app component that declared none renders by class, and the
+      # catalog says so.
+      def helper(path, entry = {}) = Registry.helper_for(path, entry) || "render #{entry["class_name"] || path}"
 
       def surface_summary(entry)
         parts = entry["styles"].map do |style|

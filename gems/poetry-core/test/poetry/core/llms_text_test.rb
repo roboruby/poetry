@@ -71,6 +71,18 @@ module Poetry
         end
       end
 
+      PILL_ENTRY = APP_ENTRY.merge("class_name" => "Demo::Pill::Component", "bem_block" => "demo-pill").except("helper").freeze
+
+      def test_an_app_component_without_a_helper_is_listed_by_class_never_a_phantom_helper
+        with_registry do |registry|
+          host = FakeRegistry.new(entries: { "demo/pill" => PILL_ENTRY }, blocks: nil, source_root: registry.source_root)
+          text = LlmsText.new(registry: registry, host_registry: host)
+
+          assert_includes text.index, "- demo_pill: `render Demo::Pill::Component` - tone: neutral|loud"
+          refute_includes text.full, "poetry_demo_pill"
+        end
+      end
+
       def test_index_lists_blocks_with_the_decision_hierarchy
         with_registry do |registry|
           index = LlmsText.new(registry: registry).index

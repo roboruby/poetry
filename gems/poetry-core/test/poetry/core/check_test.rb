@@ -125,6 +125,14 @@ module Poetry
         helper_args: { "demo_badge" => 0 }
       )
 
+      def test_an_app_entry_without_a_helper_maps_to_no_helper
+        catalog = Check::Catalog.new({ "demo/pill" => { "class_name" => "Demo::Pill::Component", "styles" => [],
+                                                        "options" => [], "slots" => [] } })
+
+        refute catalog.helper?("poetry_demo_pill"), "no phantom helper"
+        assert_nil catalog.helper_for("demo/pill")
+      end
+
       def test_a_declared_helper_maps_its_entry_both_ways
         assert HOST_CATALOG.helper?("demo_badge")
         assert_equal "demo/badge", HOST_CATALOG.path_for("demo_badge")

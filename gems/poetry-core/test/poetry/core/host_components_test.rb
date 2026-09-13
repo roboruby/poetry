@@ -114,6 +114,88 @@ module Poetry
         assert_empty HostHelpers.owned
       end
 
+      module TwinA
+        class Component < Poetry::Core::Component
+          helper :twin
+
+          def call = "a"
+        end
+      end
+
+      module TwinB
+        class Component < Poetry::Core::Component
+          helper :twin
+
+          def call = "b"
+        end
+      end
+
+      module PrivateClashProbe
+        class Component < Poetry::Core::Component
+          helper :format
+
+          def call = "f"
+        end
+      end
+
+      def test_two_components_declaring_one_helper_raise_naming_both
+        error = assert_raises(Poetry::Core::Error) { HostHelpers.sync!([TwinA::Component, TwinB::Component]) }
+
+        assert_match(/TwinB::Component and .*TwinA::Component both declare helper :twin/, error.message)
+        refute_includes HostHelpers.owned, "twin"
+      end
+
+      def test_a_private_view_method_counts_as_taken
+        error = assert_raises(Poetry::Core::Error) { HostHelpers.sync!([PrivateClashProbe::Component]) }
+
+        assert_match(/helper :format, but a view helper named format already exists \(Action View\)/, error.message)
+      end
+
+      def test_the_app_s_own_helpers_count_as_taken
+        helpers = Module.new { def demo_badge = "shadow" }
+        controller = Class.new { define_singleton_method(:_helpers) { helpers } }
+        Object.const_set(:ApplicationController, controller)
+        error = assert_raises(Poetry::Core::Error) { HostHelpers.sync!([Demo::Badge::Component]) }
+
+        assert_match(/named demo_badge already exists \(the app's helpers\)/, error.message)
+      ensure
+        Object.send(:remove_const, :ApplicationController) if Object.const_defined?(:ApplicationController, false)
+      end
+
+      def test_a_clash_leaves_nothing_half_defined_and_the_next_sync_recovers
+        HostHelpers.sync!([])
+        assert_raises(Poetry::Core::Error) { HostHelpers.sync!([Demo::Badge::Component, ClashProbe::Component]) }
+
+        assert_empty HostHelpers.owned, "nothing was defined before the clash raised"
+        refute_respond_to View.new, :demo_badge
+        assert_equal ["demo_badge"], HostHelpers.sync!([Demo::Badge::Component]), "the reload after the fix is clean"
+      ensure
+        HostHelpers.sync!([])
+      end
+
+      def test_declared_helpers_parses_rather_than_greps
+        Dir.mktmpdir do |root|
+          dir = File.join(root, "app/components/acme/pill")
+          FileUtils.mkdir_p(dir)
+          File.write(File.join(dir, "component.rb"), <<~RUBY)
+            module Acme::Pill
+              # helper :in_a_comment
+              class Component < Poetry::Core::Component
+                helper(:parenthesised)
+                self.helper "as_string"
+                DOC = <<~MD
+                  helper :in_a_heredoc
+                MD
+                def call = "helper :in_a_string"
+              end
+            end
+            helper :outside_any_class
+          RUBY
+
+          assert_equal %w[as_string parenthesised], HostComponents.declared_helpers(root: root)
+        end
+      end
+
       # A named probe (an anonymous class with a stubbed name would sit in
       # `descendants` with a constant that resolves to nothing).
       module ClashProbe

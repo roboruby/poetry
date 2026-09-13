@@ -14,6 +14,7 @@ components:
       description: The element to render ('div', 'section', 'span', ...); void elements
         (br, hr, img, ...) self-close and take no content block.
     slots: []
+    helper: poetry_box
     identity: false
     parts:
     - name: box
