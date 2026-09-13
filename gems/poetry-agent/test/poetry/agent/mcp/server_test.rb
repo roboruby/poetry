@@ -484,6 +484,19 @@ module Poetry
         end
       end
 
+      def test_a_tool_called_without_a_required_argument_errors_instead_of_passing
+        with_blocks_server do |server|
+          result = server.send(:call_tool, { "name" => "check", "arguments" => { "erb" => "<%= poetry_nope %>" } })
+
+          assert result["isError"], "a wrong key is not an empty source that passes"
+          assert_includes result["content"].first["text"], "missing required argument source"
+          blank = server.send(:call_tool, { "name" => "describe_component", "arguments" => { "name" => "  " } })
+
+          assert blank["isError"]
+          assert_includes call_on(server, "check", "source" => "<%= poetry_nope %>"), "FAIL"
+        end
+      end
+
       def test_check_knows_the_app_s_declared_helpers_from_source
         require "tmpdir"
         Dir.mktmpdir("host-app") do |app_root|

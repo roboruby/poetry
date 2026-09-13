@@ -324,6 +324,10 @@ module Poetry
         def call_tool(params)
           name = params["name"]
           arguments = params["arguments"] || {}
+          if !TOLERATES_BLANK.include?(name) && (missing = missing_arguments(name, arguments)).any?
+            return tool_content("#{name}: missing required argument#{"s" if missing.size > 1} " \
+                                "#{missing.join(", ")} (see tools/list for the schema)", error: true)
+          end
           text =
             case name
             when "compose" then compose(arguments)
@@ -339,6 +343,19 @@ module Poetry
             else return tool_content("unknown tool: #{name}", error: true)
             end
           tool_content(text)
+        end
+
+        # Tools that answer a blank brief with guidance of their own (the
+        # block catalog, what to send) rather than a pass.
+        TOLERATES_BLANK = %w[compose build_page].freeze
+
+        # The tool's declared required arguments that are absent or blank -
+        # a wrong key never reaches a tool as an empty value it would pass.
+        def missing_arguments(name, arguments)
+          tool = TOOLS.find { |candidate| candidate["name"] == name }
+          return [] unless tool
+
+          Array(tool.dig("inputSchema", "required")).select { |key| arguments[key].to_s.strip.empty? }
         end
 
         # --- the tools (project the built surfaces) ---
