@@ -45,7 +45,7 @@ module Poetry
           mode = if component.respond_to?(:css_mode)
                    component.css_mode
                  else
-                   CSS::Modes.for(self) || Poetry::Core::Config.current.css_mode
+                   CSS::Modes.inherited_for(self) || Poetry::Core::Config.current.css_mode
                  end
           CSS::Modes.merger_for(mode)
         end

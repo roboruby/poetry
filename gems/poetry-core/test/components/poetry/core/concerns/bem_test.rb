@@ -168,6 +168,43 @@ module Poetry
           assert_includes Kit::Tag::Component.new(tone: :rose).css(css_mode: :tailwind), "bg-rose-100"
         end
 
+        module Vendor
+          class Widget < Poetry::Core::Component
+            def call = "w"
+          end
+        end
+
+        module Acme
+          class Pill < Poetry::Core::Component
+            def call = "p"
+          end
+
+          # A host subclass of a kit's component: the kit's dictionary,
+          # the kit's mode.
+          class Widget2 < Vendor::Widget
+            def call = "w2"
+          end
+
+          class Widget3 < Vendor::Widget
+            css_mode :bem
+
+            def call = "w3"
+          end
+        end
+
+        def test_a_subclass_keeps_the_mode_of_the_kit_that_originated_its_dictionary
+          Poetry::Core::CSS::Modes.pin("Poetry::Core::Concerns::BemTest::Vendor", :tailwind)
+          Poetry::Core::CSS::Modes.pin("Poetry::Core::Concerns::BemTest::Acme", :bem)
+
+          assert_equal :bem, Acme::Pill.css_mode, "a kit written on the DSL takes its own pin"
+          assert_equal :tailwind, Acme::Widget2.css_mode, "a subclass of a Tailwind kit's component stays Tailwind"
+          assert_equal :bem, Acme::Widget3.css_mode, "a declaration beats every pin"
+          assert_instance_of Poetry::Core::CSS::TailwindMerger, Acme::Widget2.new.classname_merger
+        ensure
+          Poetry::Core::CSS::Modes.unpin("Poetry::Core::Concerns::BemTest::Vendor")
+          Poetry::Core::CSS::Modes.unpin("Poetry::Core::Concerns::BemTest::Acme")
+        end
+
         def test_an_unknown_declared_mode_raises
           assert_raises(Poetry::Core::Error) { Class.new(Poetry::Core::Component) { css_mode :sass } }
           assert_raises(Poetry::Core::Error) { Poetry::Core::CSS::Modes.pin("X", :sass) }

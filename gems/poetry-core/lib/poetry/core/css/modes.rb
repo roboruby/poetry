@@ -55,6 +55,26 @@ module Poetry
           namespace && pins[namespace]
         end
 
+        # The pinned mode a component class inherits: the pin of the
+        # root-most pinned ancestor below Poetry::Core::Component, the class
+        # itself included. The dictionary a subclass inherits was written by
+        # the kit that originated it, so that kit's mode wins: a host
+        # `Acme::Badge2 < Poetry::Ui::Badge::Component` stays Tailwind under
+        # an `Acme` BEM pin, while a host `Acme::Pill < Poetry::Core::Component`
+        # takes the pin. A declaration (`css_mode :bem`) beats every pin.
+        #
+        # @param klass [Class] a component class (named)
+        # @return [Symbol, nil]
+        def inherited_for(klass)
+          chain = klass.ancestors.select { |ancestor| ancestor.is_a?(Class) }
+                       .take_while { |ancestor| ancestor != Poetry::Core::Component }
+          chain.reverse_each do |ancestor|
+            mode = self.for(ancestor)
+            return mode if mode
+          end
+          nil
+        end
+
         # @return [Hash{String => Symbol}] namespace => mode
         def pins
           @pins ||= {}

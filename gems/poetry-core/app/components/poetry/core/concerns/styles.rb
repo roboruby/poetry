@@ -81,7 +81,7 @@ module Poetry
           def css_mode(mode = nil)
             return self.declared_css_mode = Poetry::Core::CSS::Modes.validate!(mode) unless mode.nil?
 
-            declared_css_mode || Poetry::Core::CSS::Modes.for(self) || Poetry::Core::Config.current.css_mode
+            declared_css_mode || Poetry::Core::CSS::Modes.inherited_for(self) || Poetry::Core::Config.current.css_mode
           end
 
           # Defines a style attribute for the component.
