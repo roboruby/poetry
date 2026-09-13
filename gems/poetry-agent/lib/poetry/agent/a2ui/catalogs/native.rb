@@ -97,6 +97,10 @@ module Poetry
             by_name[component["component"].to_s] || [nil, nil]
           end
 
+          def option_required?(entry, name)
+            Array(entry["options"]).any? { |option| option["name"] == name && option["required"] }
+          end
+
           def attributes(component, entry, scope, renderer)
             attributes = {}
             Array(entry["styles"]).each do |axis|
@@ -109,6 +113,10 @@ module Poetry
 
               attributes[name.to_sym] = renderer.resolve(component[name], scope)
             end
+            # An id the component requires (Field: the control its label
+            # names) is not the agent's to set, so the render-stable key
+            # stands in and the component builds instead of vanishing.
+            attributes[:id] = renderer.stable_key if option_required?(entry, "id") && !attributes.key?(:id)
             bound = BOUND_OPTIONS.find { |name| renderer.surface.binding?(component[name]) }
             if bound && option_names.include?("name") && !component.key?("name")
               attributes[:name] = renderer.input_name(component[bound]["path"], scope)

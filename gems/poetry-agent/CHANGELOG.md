@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3]
+
+### Fixed
+
+- A2UI's native catalog supplies the render-stable key as `id:` to a component that requires one (Field, MessageScroller), since an agent never sets ids. On 0.1.2 the values tier refused the missing option and the renderer swallowed the error as a warning, so a Field rendered nothing.
+- The MCP `check` tool knows the app's own `poetry_*` helper methods (`app/helpers`, read boot-free), committed registry or not: the adapter `poetry:pagination` copies in no longer reads as an unknown component.
+
 ## [0.1.2] - 2026-09-13
 
 ### Changed

@@ -470,6 +470,27 @@ module Poetry
         end
       end
 
+      # The app's own poetry_* helper methods (the pagination adapter
+      # poetry:pagination copies in) are valid names for the check tool,
+      # committed registry or not; their block and options are their own.
+      def test_check_knows_the_app_s_own_prefixed_helper_methods
+        require "tmpdir"
+        Dir.mktmpdir("host-app") do |app_root|
+          FileUtils.mkdir_p(File.join(app_root, "app/helpers"))
+          File.write(File.join(app_root, "app/helpers/poetry_pagy_helper.rb"), <<~RUBY)
+            module PoetryPagyHelper
+              def poetry_pagy_nav(pagy, **options) = "nav"
+            end
+          RUBY
+          source = %(<%= poetry_pagy_nav(@pagy, edges: :icons) %>)
+
+          assert_includes call("check", "source" => source), "FAIL", "unknown without the app root"
+          target = MCP::Server.from_registries([Poetry::Core.root], app_root: app_root)
+
+          assert_includes call_on(target, "check", "source" => source), "PASS"
+        end
+      end
+
       def test_an_invalid_committed_app_registry_is_not_a_root_and_does_not_crash_the_server
         require "tmpdir"
         Dir.mktmpdir("host-app") do |app_root|

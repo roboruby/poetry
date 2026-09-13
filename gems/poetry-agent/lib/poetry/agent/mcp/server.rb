@@ -223,10 +223,15 @@ module Poetry
             Poetry::Core::HostComponents.declared_helpers(root: app_root).each { |name| helper_entries[name] ||= {} }
           end
           helpers = (helpers + mapped_helpers(committed.entries)).uniq if helpers
+          # The app's own poetry_* helper methods (app/helpers, boot-free):
+          # valid names with contracts of their own, whether or not the
+          # registry is committed - no registry lists a helper method.
+          host_helpers = app_root ? Poetry::Core::HostComponents.helper_methods(root: app_root) : nil
           catalog = Poetry::Core::Check::Catalog.new(committed.entries, helpers: helpers,
                                                                         helper_entries: helper_entries,
                                                                         icon_names: icon_names,
-                                                                        helper_args: committed.helper_args)
+                                                                        helper_args: committed.helper_args,
+                                                                        host_helpers: host_helpers)
           new(entries: committed.entries, catalog: catalog, blocks: committed.blocks || {},
               root: committed.source_root.to_s, skills: skills, app_root: app_root, recipes: recipes)
         end

@@ -387,6 +387,29 @@ class RendererTest < Minitest::Test
     assert_equal({ "seats" => "12" }, action.to_h.dig("action", "context"))
   end
 
+  # A required option an agent never sets (Field's id, the control its
+  # label names) builds on the render-stable key instead of vanishing
+  # into a warning - the values tier refuses a Field without one.
+  def test_the_native_catalog_supplies_a_required_id_the_agent_never_sets
+    session = A2UI::Session.new
+    session.apply({ "createSurface" => {
+                    "surfaceId" => "plan", "catalogId" => A2UI::Catalog::DEFAULT_ID,
+                    "dataModel" => { "seats" => 5 },
+                    "components" => [
+                      { "id" => "root", "component" => "Field", "label_text" => "Seats", "children" => ["seats"] },
+                      { "id" => "seats", "component" => "Input", "type" => "number",
+                        "value" => { "path" => "/seats" } }
+                    ]
+                  } })
+
+    assert_empty session.errors
+    html, renderer = render(session.surface("plan"), action_url: "/a2ui")
+
+    assert_empty renderer.warnings
+    assert_match(%r{<label[^>]* for="a2ui-plan-root"[^>]*>.*?Seats.*?</label>}m, html)
+    assert_match(%r{<input[^>]* type="number"[^>]* name="a2ui\[values\]\[/seats\]" value="5"}, html)
+  end
+
   def test_the_native_catalog_warns_on_unknown_components
     session = A2UI::Session.new
     session.apply({ "createSurface" => { "surfaceId" => "n", "catalogId" => A2UI::Catalog::DEFAULT_ID,
