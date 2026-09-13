@@ -50,6 +50,7 @@ components:
       required: true
       description: The chart type carried in the spec (see Spec::TYPES).
     slots: []
+    helper: poetry_adapter_chart
     description: 'The bring-your-own-engine path: a themed mount and chart-spec JSON
       for a client library (Chart.js, etc.) to draw, instead of poetry''s server-side
       SVG.'
@@ -261,6 +262,7 @@ components:
       many: false
       setter_args:
         tooltip: 0
+    helper: poetry_area_chart
     description: An area chart for volume or cumulative totals over a continuous axis.
     elements:
     - frame
@@ -692,6 +694,7 @@ components:
       many: false
       setter_args:
         tooltip: 0
+    helper: poetry_bar_chart
     description: A bar chart for comparing values across categories.
     elements:
     - frame
@@ -1107,6 +1110,7 @@ components:
       many: false
       setter_args:
         tooltip: 0
+    helper: poetry_composed_chart
     description: A composed chart layering bars, lines, and areas on shared axes.
     elements:
     - frame
@@ -1311,6 +1315,7 @@ components:
       description: Explicit DOM id token, stable across renders; otherwise the frame
         gets a unique per-render id.
     slots: []
+    helper: poetry_container
     elements: []
     capsule: 7b90eeaff974
     agent_rules:
@@ -1370,6 +1375,7 @@ components:
       description: 'Interactive legend: items render as buttons that toggle their
         series through the live controller (the host chart guards that live: is on).'
     slots: []
+    helper: poetry_legend_content
     elements:
     - item
     - swatch
@@ -1555,6 +1561,7 @@ components:
       many: false
       setter_args:
         tooltip: 0
+    helper: poetry_line_chart
     description: A line chart for trends over a continuous axis.
     elements:
     - frame
@@ -1907,6 +1914,7 @@ components:
         defaults on.
       setter_args:
         tooltip: 0
+    helper: poetry_pie_chart
     description: A pie chart for showing parts of a whole.
     slot_extras:
     - py
@@ -2159,6 +2167,7 @@ components:
       description: The hover tooltip - multi-series rows under the category label.
       setter_args:
         tooltip: 0
+    helper: poetry_radar_chart
     description: A radar chart for comparing several variables on radial axes.
     elements:
     - frame
@@ -2444,6 +2453,7 @@ components:
         defaults on.
       setter_args:
         tooltip: 0
+    helper: poetry_radial_bar_chart
     description: A radial bar chart with bars wrapped around a circular axis.
     elements:
     - frame
@@ -2753,6 +2763,7 @@ components:
       description: The hover tooltip - per-point x/y(/z) rows under the series name.
       setter_args:
         tooltip: 0
+    helper: poetry_scatter_chart
     description: A scatter chart for the relationship between two variables.
     elements:
     - frame
@@ -2936,6 +2947,7 @@ components:
       type: string
       description: The category label above the rows, resolved through the config.
     slots: []
+    helper: poetry_tooltip_content
     elements:
     - label
     - inner
@@ -3012,6 +3024,7 @@ components:
       required: true
       description: The series keys to pre-render rows for.
     slots: []
+    helper: poetry_tooltip_layer
     elements: []
     capsule: 3aa9cd90e2e1
     controllers:
