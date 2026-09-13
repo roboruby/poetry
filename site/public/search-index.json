@@ -54,6 +54,12 @@
     "path": "/installation#copy-ins"
   },
   {
+    "title": "Two notes from a fresh Rails 8.1 host",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#fresh-host-notes"
+  },
+  {
     "title": "Scaffold templates",
     "page": "Installation",
     "section": "docs",

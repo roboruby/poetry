@@ -8,10 +8,11 @@
    is vendored into the host's Tailwind entry (`poetry:install` when this
    gem is bundled) and imported into layer(base) beside the theme.
 
-   A production build's optimizer does not yet know these origin-trial
-   pseudo-classes and warns twice per build; that is the optimizer, not
-   the CSS - the rules compile and ship. Hosts without poetry-agent never
-   carry them. */
+   The CSS optimizer that runs on every minified build (the Rails
+   Tailwind task minifies by default; TAILWINDCSS_DEBUG=1 skips it) does
+   not yet know these origin-trial pseudo-classes and warns twice; that is
+   the optimizer, not the CSS - the rules compile and ship. Hosts without
+   poetry-agent never carry them. */
 :where(form:tool-form-active) {
   border-radius: var(--radius);
   outline: 2px dashed color-mix(in oklab, var(--ring) 60%, transparent);

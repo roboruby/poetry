@@ -29,7 +29,7 @@
       #{o}= f.association :company #{e}
     #{o} end #{e}
   CODE
-poetry_only_source = <<~CODE
+only_source = <<~CODE
   #{o}= f.input :code, as: :otp, poetry: { length: 4 } #{e}
   #{o}= f.input :api_key, as: :sensitive #{e}
   #{o}= f.input :volume, as: :slider, poetry: { min: 0, max: 11 } #{e}
@@ -142,7 +142,7 @@ native_source = <<~CODE
       through <code>as:</code>.
     </p>
   <% end %>
-  <%= poetry_code_block(code: poetry_only_source, language: "erb", label: "Poetry-only types") %>
+  <%= poetry_code_block(code: only_source, language: "erb", label: "Poetry-only types") %>
   <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
     <p>
       <code>f.association</code> works unchanged: Simple Form fetches the
