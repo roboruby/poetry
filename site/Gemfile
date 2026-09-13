@@ -15,3 +15,6 @@ poetry_version = File.read(File.expand_path(".poetry-version", __dir__)).strip
 gem "poetry", poetry_version
 gem "poetry-charts", poetry_version
 gem "poetry-agent", poetry_version # the MCP server exe + the WebMCP runtime
+
+# Rails 8.1.3 and json 3.0 disagree on JSON.parse's arity in the session decode (a 500 on the second request).
+gem "json", "< 3"
