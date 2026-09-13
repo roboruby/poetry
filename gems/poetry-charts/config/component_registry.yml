@@ -583,7 +583,9 @@ components:
       default: vertical
       description: ":vertical = columns (the default); :horizontal = bars growing
         rightward - the category axis moves to the Y side (with_y_axis data_key:)
-        and the numeric axis hides."
+        and the numeric axis hides. The category strip widens to fit the longest label
+        (up to 40% of the width; longer labels end in an ellipsis) unless margin:
+        sets left: yourself."
     - name: sync
       type: string
     - name: width

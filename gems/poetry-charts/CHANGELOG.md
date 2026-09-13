@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.4]
+
+### Changed
+
+- A horizontal bar chart's category strip fits its labels. The reserved left strip held about eight characters at the tick size, so a merchant name or a title was cut at the SVG edge. The strip now grows through the left margin to fit the longest formatted label (estimated by character count, capped at forty percent of the width), labels past the cap end in an ellipsis, and a live chart's recompute prints the same. An explicit `margin: { left: }` is the caller's layout and keeps the reserved strip.
+
 ## [0.1.3] - 2026-09-13
 
 Lockstep release with the family; no changes in this gem.

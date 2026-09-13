@@ -86,6 +86,20 @@ module Poetry
         assert_equal "horizontal", parsed.dig("frame", "layout")
       end
 
+      def test_a_horizontal_chart_s_grown_strip_and_label_cut_ride_the_frame
+        long = [{ name: "A" * 80, v: 1 }, { name: "Collins, Norris and Nelson", v: 2 }]
+        html = render_inline(BarChart::Component.new(data: long, config: { v: { label: "V" } }, id: "lv",
+                                                     live: true, orientation: :horizontal)) do |chart|
+          chart.with_y_axis(data_key: :name)
+          chart.with_bar(data_key: :v)
+        end
+
+        frame = payload(html)["frame"]
+
+        assert_equal 201, frame.dig("margin", "left"), "5 + (256 cap - 60 reserved): the client recompute agrees"
+        assert_equal 38, frame["categoryLabelMaxChars"]
+      end
+
       def test_without_live_nothing_is_embedded
         html = render_inline(LineChart::Component.new(data: DATA, config: CONFIG, id: "lv")) do |chart|
           chart.with_line(data_key: :desktop)

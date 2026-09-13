@@ -179,6 +179,74 @@ module Poetry
         assert_in_delta 55.0, Float(texts.first["x"]), 0.02, "labels end tick_margin left of the plot"
       end
 
+      LONG_NAMES = [
+        { name: "Collins, Norris and Nelson", volume: 1_285_077 },
+        { name: "Smith Inc", volume: 1_275_019 },
+        { name: "Mckinney, English and Moon", volume: 1_230_000 }
+      ].freeze
+
+      def render_named(data, **)
+        render_inline(BarChart::Component.new(data: data, config: { volume: { label: "Volume" } }, id: "n",
+                                              orientation: :horizontal, **)) do |chart|
+          chart.with_y_axis(data_key: :name)
+          chart.with_bar(data_key: :volume)
+        end
+      end
+
+      def test_the_horizontal_category_strip_widens_to_fit_long_labels
+        html = render_named(LONG_NAMES)
+
+        # 26 characters at 6.4px + the 8px tick margin = 174.4 -> a 175px strip
+        # in place of the reserved 60: plot_left = 5 + 175.
+        first_x = Float(html.css('[data-slot="chart-bar"]').first["d"][/M([\d.-]+),/, 1])
+
+        assert_in_delta 180.0, first_x, 0.02
+        texts = html.css('[data-slot="chart-y-axis"] text')
+
+        assert_equal ["Collins, Norris and Nelson", "Smith Inc", "Mckinney, English and Moon"], texts.map(&:text),
+                     "labels that fit are printed whole"
+        assert_in_delta 172.0, Float(texts.first["x"]), 0.02, "labels end tick_margin left of the plot"
+      end
+
+      def test_the_category_strip_caps_at_forty_percent_and_cuts_the_rest_with_an_ellipsis
+        data = [{ name: "A" * 80, volume: 10 }, { name: "Short", volume: 5 }]
+        html = render_named(data)
+
+        first_x = Float(html.css('[data-slot="chart-bar"]').first["d"][/M([\d.-]+),/, 1])
+
+        assert_in_delta 261.0, first_x, 0.02, "5 + the 256px cap (40% of 640)"
+        labels = html.css('[data-slot="chart-y-axis"] text').map(&:text)
+
+        assert_equal "Short", labels.last
+        assert labels.first.end_with?("…"), "the label past the cap ends in an ellipsis"
+        assert_equal 38, labels.first.length, "(256 - 8) / 6.4 = 38 characters, ellipsis included"
+      end
+
+      def test_short_labels_and_an_explicit_left_margin_keep_the_reserved_strip
+        short = LONG_NAMES.map { |row| row.merge(name: row[:name][0, 3]) }
+        first_x = Float(render_named(short).css('[data-slot="chart-bar"]').first["d"][/M([\d.-]+),/, 1])
+
+        assert_in_delta 65.0, first_x, 0.02, "three-character labels fit the reserved 60"
+        explicit = render_named(LONG_NAMES, margin: { left: 0 })
+        first_x = Float(explicit.css('[data-slot="chart-bar"]').first["d"][/M([\d.-]+),/, 1])
+
+        assert_in_delta 60.0, first_x, 0.02, "margin left: is the caller's layout, no estimate"
+        assert_equal "Collins, Norris and Nelson", explicit.css('[data-slot="chart-y-axis"] text').first.text,
+                     "no ellipsis either"
+      end
+
+      def test_the_tick_formatter_is_what_the_strip_measures
+        html = render_inline(BarChart::Component.new(data: LONG_NAMES, config: { volume: { label: "Volume" } }, id: "f",
+                                                     orientation: :horizontal)) do |chart|
+          chart.with_y_axis(data_key: :name, tick_formatter: ->(v) { v[0, 3] })
+          chart.with_bar(data_key: :volume)
+        end
+        first_x = Float(html.css('[data-slot="chart-bar"]').first["d"][/M([\d.-]+),/, 1])
+
+        # Three characters each after the formatter: 3 * 6.4 + 8 = 27.2 < 60, the reserved strip stands.
+        assert_in_delta 65.0, first_x, 0.02
+      end
+
       def test_horizontal_coordinates_embed_the_y_layout_for_the_tooltip
         html = render_horizontal { |chart| chart.with_bar(data_key: :desktop) }
 

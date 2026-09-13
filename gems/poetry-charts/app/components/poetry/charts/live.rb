@@ -136,11 +136,20 @@ module Poetry
       # bottom margin the cartesian sees.
       # @api private
       def live_margin
-        base = (margin || {}).to_h.symbolize_keys
+        base = axis_margin
         return base unless brush_config
 
         bottom = (base[:bottom] || Cartesian::DEFAULT_MARGIN[:bottom]).to_f
         base.merge(bottom: bottom + brush_config[:height] + BRUSH_GAP)
+      end
+
+      # Hook: the caller's margin, before the brush reserve - a family
+      # that sizes an axis strip from its labels (the bar chart's
+      # horizontal category strip) grows a side here, so the server
+      # geometry and the client recompute read the same margin.
+      # @api private
+      def axis_margin
+        (margin || {}).to_h.symbolize_keys
       end
 
       # The brush strip's y position - below the plot, above the reserved
@@ -288,7 +297,7 @@ module Poetry
         series_entries.any? { |entry| entry.respond_to?(:labels) && entry.labels }
       end
 
-      private :brush_config, :zoom?, :window_features?, :live_margin, :brush_top, :brush_svg
+      private :brush_config, :zoom?, :window_features?, :live_margin, :axis_margin, :brush_top, :brush_svg
       private :zoom_selection_svg, :window_plot_json, :window_brush_json, :live_payload, :live_payload_json, :live_spec
       private :live_frame, :live_frame_extras, :ensure_live_compatible!, :live_labels_configured?
     end

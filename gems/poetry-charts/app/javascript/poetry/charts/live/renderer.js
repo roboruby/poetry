@@ -29,6 +29,11 @@ import {
 const X_AXIS_HEIGHT = 30
 const Y_AXIS_WIDTH = 60
 
+// The server cuts a horizontal chart's category labels to the auto-sized
+// strip with an ellipsis; a recompute prints them the same way.
+const categoryLabel = (label, maxChars) =>
+  maxChars && label.length > maxChars ? `${label.slice(0, maxChars - 1)}…` : label
+
 const CURVES = {
   linear: curveLinear,
   natural: curveNatural,
@@ -413,7 +418,7 @@ function applyAxes(svg, geometry, payload) {
       reconcile(yAxis.querySelectorAll("text"), geometry.categories.length).forEach((text, i) => {
         text.setAttribute("x", fnum(geometry.plotLeft - (frame.yTickMargin ?? 8)))
         text.setAttribute("y", fnum(geometry.xCenters[i]))
-        text.textContent = String(geometry.categories[i])
+        text.textContent = categoryLabel(String(geometry.categories[i]), frame.categoryLabelMaxChars)
       })
     } else {
       reconcile(yAxis.querySelectorAll("text"), geometry.yTicks.length).forEach((text, i) => {

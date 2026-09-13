@@ -72,7 +72,9 @@ module Poetry
         option :orientation, :symbol, default: :vertical,
                                       doc: ":vertical = columns (the default); :horizontal = bars growing rightward " \
                                            "- the category axis moves to the Y side (with_y_axis data_key:) and the " \
-                                           "numeric axis hides."
+                                           "numeric axis hides. The category strip widens to fit the longest label " \
+                                           "(up to 40% of the width; longer labels end in an ellipsis) unless " \
+                                           "margin: sets left: yourself."
 
         validates :offset, inclusion: { in: Cartesian::OFFSETS }
         validates :orientation, inclusion: { in: Cartesian::LAYOUTS }
@@ -242,9 +244,69 @@ module Poetry
           formatter ? formatter.call(category).to_s : category.to_s
         end
 
-        # The horizontal layout's category labels (the Y side).
+        # The horizontal layout's category labels (the Y side), cut to the
+        # strip with an ellipsis when the strip is auto-sized and capped.
         # @api private
         def category_tick_label(category)
+          label = formatted_category_label(category)
+          limit = category_label_max_chars
+          limit && label.length > limit ? "#{label[0, limit - 1]}…" : label
+        end
+
+        # The reserved left strip (Cartesian::Y_AXIS_WIDTH) fits about
+        # eight characters at the 12px tick size. In the horizontal layout
+        # the strip grows through the left margin to fit the longest
+        # formatted label - estimated by character count, capped at
+        # CATEGORY_STRIP_SHARE of the width - so merchant names and titles
+        # are not clipped at the SVG edge. An explicit margin left: is the
+        # caller's layout and switches the estimate (and the ellipsis) off.
+        CATEGORY_LABEL_CHAR_WIDTH = 6.4
+        # The widest the auto-sized strip may grow, as a share of the width.
+        CATEGORY_STRIP_SHARE = 0.4
+
+        # @api private
+        def axis_margin
+          base = super
+          allowance = category_strip_allowance
+          allowance.positive? ? base.merge(left: Cartesian::DEFAULT_MARGIN[:left] + allowance) : base
+        end
+
+        # @api private
+        def auto_category_strip?
+          horizontal? && y_axis? && !(margin || {}).to_h.symbolize_keys.key?(:left)
+        end
+
+        # Pixels the left margin grows by so the strip fits the labels.
+        # @api private
+        def category_strip_allowance
+          return 0 unless auto_category_strip?
+
+          needed = (longest_category_label * CATEGORY_LABEL_CHAR_WIDTH) + y_axis_config.tick_margin.to_f
+          [[needed, category_strip_cap].min - Cartesian::Y_AXIS_WIDTH, 0].max.ceil
+        end
+
+        # @api private
+        def category_strip_cap
+          (width * CATEGORY_STRIP_SHARE).floor
+        end
+
+        # Characters a label may keep before the ellipsis, nil when the
+        # strip is not auto-sized.
+        # @api private
+        def category_label_max_chars
+          return nil unless auto_category_strip?
+
+          [((category_strip_cap - y_axis_config.tick_margin.to_f) / CATEGORY_LABEL_CHAR_WIDTH).floor, 2].max
+        end
+
+        # @api private
+        def longest_category_label
+          key = y_axis_config.data_key
+          data.map { |row| formatted_category_label(row.to_h[key] || row.to_h[key.to_sym]).length }.max || 0
+        end
+
+        # @api private
+        def formatted_category_label(category)
           formatter = y_axis_config&.tick_formatter
           formatter ? formatter.call(category).to_s : category.to_s
         end
@@ -305,12 +367,15 @@ module Poetry
           {
             "barGap" => bar_gap,
             "barCategoryGap" => bar_category_gap,
+            "categoryLabelMaxChars" => category_label_max_chars,
             "series" => series_entries.to_h { |e| [e.key, { "radius" => e.radius }] }
           }
         end
 
         private :cartesian, :bar_slots, :cells, :bar_path, :cell_fill, :active?
         private :cell_label, :x_tick_label, :category_tick_label, :y_tick_label, :svg_label_prefix, :coordinates_json
+        private :axis_margin, :auto_category_strip?, :category_strip_allowance, :category_strip_cap
+        private :category_label_max_chars, :longest_category_label, :formatted_category_label
         private :live_type, :live_series, :live_axes, :live_x_scale_type, :live_category_axis?, :live_frame_extras
       end
     end
