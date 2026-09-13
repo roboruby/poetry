@@ -347,8 +347,12 @@ module Poetry
           # `alert.with_icon` chunk), so slot calls resolve across ERB tag
           # boundaries.
           bindings = {}
+          @element_controllers = []
           walk(document.value) do |node|
             findings.concat(ruby_findings(node, bindings)) if erb?(node)
+            # The open tag is visited before its attributes: its controller
+            # list is the context every attribute below it is read in.
+            @element_controllers = element_controllers(node) if node.class.name.to_s.end_with?("HTMLOpenTagNode")
             findings.concat(attribute_findings(node)) if node.is_a?(Herb::AST::HTMLAttributeNode)
             findings.concat(form_autosubmit_findings(node)) if open_tag?(node, "form")
             findings.concat(fake_button_findings(node)) if INERT_TAGS.include?(open_tag_name(node))
@@ -403,7 +407,9 @@ module Poetry
         def collect_calls(node, into)
           return unless node
 
-          into << node if node.is_a?(Prism::CallNode) && helper_call?(node.name.to_s)
+          # A bare call only: `u.badge` or `Foo.badge` is somebody's method,
+          # not the view helper the catalog declares.
+          into << node if node.is_a?(Prism::CallNode) && node.receiver.nil? && helper_call?(node.name.to_s)
           node.compact_child_nodes.each { |child| collect_calls(child, into) } if node.respond_to?(:compact_child_nodes)
         end
 
@@ -961,19 +967,41 @@ module Poetry
           case name
           when "class" then class_findings(value, line_of(node))
           when "style" then style_findings(value, line_of(node))
-          else stimulus_findings(name, value, line_of(node))
+          else
+            # A value with ERB inside is not a literal: its fragments would
+            # type-check as garbage, so the wiring rules leave it alone.
+            dynamic_attribute?(node) ? [] : stimulus_findings(name, value, line_of(node), @element_controllers)
           end
+        end
+
+        # The identifiers an open tag declares in its data-controller
+        # literal (none when the attribute is absent or dynamic).
+        def element_controllers(open_tag)
+          attribute = open_tag.child_nodes.compact.grep(Herb::AST::HTMLAttributeNode)
+                              .find { |node| attribute_name(node) == "data-controller" }
+          return [] unless attribute && !dynamic_attribute?(attribute)
+
+          attribute_value(attribute).to_s.split
         end
 
         # The Stimulus wiring rules on one rendered attribute, whether it
         # was hand-written in the markup or arrives through a `data:` hash.
-        def stimulus_findings(name, value, line)
+        def stimulus_findings(name, value, line, controllers = [])
           case name
           when "data-controller" then controller_findings(value, line)
           when "data-action" then action_findings(value, line)
-          when /\Adata-(poetry--[\w-]+)-target\z/ then target_findings(Regexp.last_match(1), value, line)
-          else value_attribute_findings(name, value, line)
+          when /\Adata-[\w-]+-target\z/ then target_attribute_findings(name, value, line, controllers)
+          else value_attribute_findings(name, value, line, controllers)
           end
+        end
+
+        # The registered identifier a `data-<identifier>-<rest>` attribute
+        # names: one the element declares when several fit (`foo` and
+        # `foo-bar` both registered), else the longest fit; nil for an
+        # unregistered controller, which is not this rule's finding.
+        def attribute_identifier(name, controllers)
+          candidates = Stimulus::Manifest.catalog.keys.select { |id| name.start_with?("data-#{id}-") }
+          candidates.find { |id| controllers.include?(id) } || candidates.max_by(&:length)
         end
 
         # `poetry_button(data: { action: "click->poetry--core--sheet#close" })`
@@ -988,14 +1016,17 @@ module Poetry
           hash = hash_argument(call, "data")
           return [] unless hash
 
-          hash_pairs(hash).flat_map do |key, node|
+          pairs = hash_pairs(hash)
+          controllers = pairs.filter_map { |key, node| literal_value(node) if key == "controller" }
+                             .grep(String).flat_map(&:split)
+          pairs.flat_map do |key, node|
             line = base_line + node.location.start_line - 1
             next [reserved_finding("data: { component: }", helper, line)] if key == "component"
 
             value = literal_value(node)
             next [] unless value.is_a?(String)
 
-            stimulus_findings("data-#{key.tr("_", "-")}", value, line)
+            stimulus_findings("data-#{key.tr("_", "-")}", value, line, controllers)
           end
         end
 
@@ -1019,7 +1050,9 @@ module Poetry
         end
 
         def action_findings(value, line)
-          value.scan(ACTION_TOKEN).filter_map do
+          # scan with a block: each descriptor is validated as it is matched
+          # (without the block, every iteration would read the last match).
+          value.to_enum(:scan, ACTION_TOKEN).filter_map do
             identifier = Regexp.last_match(:identifier)
             method = Regexp.last_match(:method)
             definition = definition(identifier)
@@ -1030,6 +1063,14 @@ module Poetry
                         message: "#{identifier} has no action ##{method}", line: line,
                         suggestion: suggest(method, definition["methods"] - %w[connect disconnect]))
           end
+        end
+
+        # `data-<identifier>-target`, any registered controller's.
+        def target_attribute_findings(name, value, line, controllers)
+          identifier = attribute_identifier(name, controllers)
+          return [] unless identifier && name == "data-#{identifier}-target"
+
+          target_findings(identifier, value, line)
         end
 
         def target_findings(identifier, value, line)
@@ -1054,14 +1095,17 @@ module Poetry
         # the attribute starts with; an unknown one is data-controller's
         # finding, not this rule's. Classes and outlets: no poetry
         # controller declares any, so there is nothing to check yet.
-        def value_attribute_findings(name, value, line)
+        def value_attribute_findings(name, value, line, controllers = [])
           # Any registered controller's value (a host manifest registers the
           # app's); an unregistered host controller yields no identifier.
           return [] unless name.start_with?("data-") && name.end_with?("-value")
 
-          identifier = Stimulus::Manifest.catalog.keys.select { |id| name.start_with?("data-#{id}-") }.max_by(&:length)
+          identifier = attribute_identifier(name, controllers)
           definition = identifier && definition(identifier)
           return [] unless definition
+
+          # `data-foo-value` names no value: an attribute of the host's own.
+          return [] if name == "data-#{identifier}-value"
 
           value_name = name.delete_prefix("data-#{identifier}-").delete_suffix("-value")
           declared = (definition["values"] || {}).to_h { |key, spec| [dasherize_value(key), spec] }
@@ -1302,6 +1346,15 @@ module Poetry
           first.content if first.respond_to?(:content)
         end
 
+        # Whether the attribute's value carries ERB (its literal fragments
+        # alone do not describe it).
+        def dynamic_attribute?(node)
+          value = node.value
+          return false unless value
+
+          value.child_nodes.compact.any? { |chunk| !chunk.is_a?(Herb::AST::LiteralNode) }
+        end
+
         def attribute_value(node)
           value = node.value
           return unless value
@@ -1442,19 +1495,33 @@ module Poetry
           @stable_identity = StableIdentity.new(catalog)
         end
 
-        def run(paths)
+        # @param paths [Array<String>] the files to lint
+        # @param root [String, Pathname, nil] the app root the paths sit
+        #   under, so a template is read as a mailer's by its path inside
+        #   the app, never by a folder above it
+        def run(paths, root: nil)
           paths.flat_map do |path|
-            source = File.read(path)
-            findings = if path.end_with?(".rb")
-                         @declarations.lint(source)
-                       else
-                         @linter.lint(source, mail: Check.mail_template?(path))
-                       end
-            # The StableId heuristics ride every ERB pass (warnings only -
-            # they never flip the exit code).
-            findings += @stable_identity.lint(source) unless path.end_with?(".rb")
+            findings = run_one(path, root)
             findings.each { |finding| finding.file = path }
           end
+        end
+
+        # One file's findings; a file that cannot be read or decoded is one
+        # warning naming it, never the end of the sweep.
+        def run_one(path, root)
+          source = File.read(path, encoding: "UTF-8")
+          unless source.valid_encoding?
+            return [Finding.new(rule: "unreadable", severity: :warning,
+                                message: "not valid UTF-8 - skipped (re-encode the file to lint it)")]
+          end
+          return @declarations.lint(source) if path.end_with?(".rb")
+
+          findings = @linter.lint(source, mail: Check.mail_template?(path, root: root))
+          # The StableId heuristics ride every ERB pass (warnings only -
+          # they never flip the exit code).
+          findings + @stable_identity.lint(source)
+        rescue SystemCallError, IOError, ArgumentError, Encoding::CompatibilityError => e
+          [Finding.new(rule: "unreadable", severity: :warning, message: "#{e.class}: #{e.message} - skipped")]
         end
 
       end
@@ -1463,16 +1530,26 @@ module Poetry
       # directory, or the mailer layout. Email is the one surface with no
       # stylesheet and no tokens, so the raw-color rule and the design tier
       # leave these alone.
-      MAIL_TEMPLATE = %r{(?:\A|/)(?:[a-z0-9_]+_mailer|layouts/mailer)(?:/|\.)}
+      MAIL_TEMPLATE = %r{(?:\A|/)(?:[a-z0-9_]+_mailer|layouts/mailer|devise/mailer)(?:/|\.)}
 
       module_function
 
-      # Whether a template path is a mailer template by convention.
+      # Whether a template path is a mailer template by convention: a view
+      # under a `*_mailer/` directory (Devise's `devise/mailer/` included)
+      # or the mailer layout. With a root, only the path inside it counts,
+      # so an app checked out under a folder called `acme_mailer` keeps its
+      # pages.
       #
       # @param path [String]
+      # @param root [String, Pathname, nil] the app root
       # @return [Boolean]
-      def mail_template?(path)
-        MAIL_TEMPLATE.match?(path.to_s)
+      def mail_template?(path, root: nil)
+        path = path.to_s
+        if root
+          prefix = "#{Pathname.new(root)}/"
+          path = path.delete_prefix(prefix) if path.start_with?(prefix)
+        end
+        MAIL_TEMPLATE.match?(path)
       end
 
 

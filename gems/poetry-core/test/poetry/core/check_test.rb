@@ -1026,6 +1026,87 @@ module Poetry
         assert_empty rules(dynamic)
       end
 
+      # --- host controllers: the wiring rules with a registered manifest ---
+
+      HOST_CONTROLLERS = {
+        "foo" => { "targets" => ["label"], "values" => { "bar" => { "type" => "String" }, "count" => { "type" => "Number" } },
+                   "classes" => [], "methods" => %w[connect save] },
+        "foo-bar" => { "targets" => [], "values" => { "baz" => { "type" => "String" } }, "classes" => [], "methods" => ["go"] }
+      }.freeze
+
+      def with_host_controllers
+        Stimulus::Manifest.catalog.merge!(HOST_CONTROLLERS)
+        yield
+      ensure
+        HOST_CONTROLLERS.each_key { |identifier| Stimulus::Manifest.forget(identifier) }
+      end
+
+      def test_every_action_descriptor_is_validated_not_only_the_last
+        findings = lint(%(<div data-action="click->poetry--core--dialog#nope keydown->poetry--core--dialog#close"></div>))
+        assert_equal ["poetry--core--dialog has no action #nope"], findings.map(&:message)
+
+        three = %(<div data-action="click->poetry--core--dialog#open keydown->poetry--core--dialog#bogus keyup->poetry--core--dialog#bogus2"></div>)
+        assert_equal ["#bogus", "#bogus2"], lint(three).map { |f| f.message[/#\w+/] }
+        with_host_controllers do
+          assert_equal ["foo has no action #nope"],
+                       lint(%(<%= poetry_button(data: { action: "click->foo#nope keydown->foo#save" }) do %>x<% end %>)).map(&:message)
+        end
+      end
+
+      def test_a_value_attribute_resolves_to_the_controller_the_element_declares
+        with_host_controllers do
+          assert_empty rules(%(<div data-controller="foo" data-foo-bar-value="x"></div>)), "foo's bar value, not foo-bar's"
+          assert_empty rules(%(<div data-controller="foo-bar" data-foo-bar-baz-value="x"></div>))
+          assert_equal ["unknown-value"], rules(%(<div data-controller="foo" data-foo-nope-value="x"></div>))
+          assert_empty rules(%(<div data-controller="foo" data-foo-value="x"></div>)), "data-foo-value names no value"
+          assert_empty rules(%(<%= poetry_button(data: { controller: "foo", foo_bar_value: "x" }) do %>x<% end %>))
+        end
+      end
+
+      def test_an_interpolated_attribute_value_is_not_type_checked_on_its_fragments
+        with_host_controllers do
+          assert_empty rules(%(<div data-controller="foo" data-foo-count-value="<%= n %>px"></div>))
+          assert_empty rules(%(<div data-action="click-><%= ns %>foo#nope"></div>))
+          assert_equal ["value-type"], rules(%(<div data-controller="foo" data-foo-count-value="3px"></div>)), "a literal still is"
+        end
+      end
+
+      def test_a_host_controller_s_targets_are_validated_like_poetry_s
+        with_host_controllers do
+          assert_equal ["unknown-target"], rules(%(<div data-controller="foo" data-foo-target="nope"></div>))
+          assert_empty rules(%(<div data-controller="foo" data-foo-target="label"></div>))
+          assert_empty rules(%(<div data-unregistered-target="nope"></div>))
+        end
+      end
+
+      def test_a_declared_helper_matches_bare_calls_only
+        assert_equal ["unknown-variant"], Check.lint(%(<%= demo_badge(tone: :nope) %>), catalog: HOST_CATALOG).map(&:rule)
+        assert_empty Check.lint(%(<%= u.demo_badge(tone: :nope) %>), catalog: HOST_CATALOG)
+        assert_empty Check.lint(%(<% demo_badge = fetch %><%= demo_badge %>), catalog: HOST_CATALOG)
+      end
+
+      def test_mail_template_is_judged_inside_the_app_root
+        assert Check.mail_template?("app/views/user_mailer/welcome.html.erb")
+        assert Check.mail_template?("app/views/devise/mailer/confirmation_instructions.html.erb")
+        refute Check.mail_template?("/srv/acme_mailer/app/views/home/index.html.erb", root: "/srv/acme_mailer")
+        assert Check.mail_template?("/srv/acme_mailer/app/views/user_mailer/hi.html.erb", root: "/srv/acme_mailer")
+        assert Check.mail_template?("/srv/acme_mailer/app/views/home/index.html.erb"), "no root: the old answer"
+      end
+
+      def test_the_runner_reports_an_unreadable_file_and_keeps_going
+        Dir.mktmpdir("check-unreadable") do |dir|
+          bad = File.join(dir, "bad.html.erb")
+          File.binwrite(bad, "<div class=\"bg-red-500\">caf\xE9</div>")
+          good = File.join(dir, "good.html.erb")
+          File.write(good, %(<div class="bg-red-500"></div>))
+          findings = Check::Runner.new(CATALOG).run([bad, good])
+
+          assert_equal ["unreadable"], findings.select { |f| f.file == bad }.map(&:rule)
+          assert_equal :warning, findings.find { |f| f.file == bad }.severity
+          assert_equal ["raw-color"], findings.select { |f| f.file == good }.map(&:rule)
+        end
+      end
+
       # --- Stimulus values (typed, from the manifest) ---
 
       def test_unknown_value_errors_with_did_you_mean
@@ -1253,6 +1334,14 @@ module Poetry
 
       def stable_identity_findings(erb)
         Check::StableIdentity.new(CATALOG).lint(erb)
+      end
+
+      def test_stable_identity_ignores_a_helper_name_behind_a_receiver
+        erb = %(<% users.each do |u| %><%= u.poetry_button(label: u.name) %><% end %>)
+
+        assert_empty Check::StableIdentity.new(CATALOG).lint(erb)
+        assert_equal ["stable-identity/collection"],
+                     Check::StableIdentity.new(CATALOG).lint(%(<% users.each do |u| %><%= poetry_button(label: u.name) %><% end %>)).map(&:rule)
       end
 
       def test_cache_block_component_without_identity_warns

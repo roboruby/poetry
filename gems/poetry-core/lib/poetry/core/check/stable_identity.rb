@@ -74,7 +74,8 @@ module Poetry
         def helper_pattern
           @helper_pattern ||= begin
             declared = @catalog.helper_names.reject { |name| name.start_with?("poetry_") }
-            Regexp.union(/\b(poetry_[a-z0-9_]+)\b/, *declared.map { |name| /\b(#{Regexp.escape(name)})\b/ })
+            # A bare call: not after a dot or a colon (`u.badge`, `Foo::badge`).
+            Regexp.union(/(?<![\w.:])(poetry_[a-z0-9_]+)\b/, *declared.map { |name| /(?<![\w.:])(#{Regexp.escape(name)})\b/ })
           end
         end
 
