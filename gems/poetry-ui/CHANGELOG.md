@@ -17,6 +17,8 @@
 
 ### Changed
 
+- `poetry:check` hands the runner the app root, so the mailer exemption and the design tier judge a template by its path inside the app; an unreadable file is a warning in the report, not a crash of the task.
+
 - `poetry:check` reports `registry-invalid` when `config/component_registry.yml` exists but is not a registry (empty, malformed, the wrong shape), naming `bin/rails poetry:registry` as the fix; the committed registry regenerates with every helper named.
 
 - The scaffold form template is the form builder's: `form_with(model:, builder: Poetry::Ui::FormBuilder)` and one `f.input` per attribute, the control inferred from the column, the name and the validations, with the template adding only what the generator knows and the model cannot say (`as: :text` for rich text, `multiple: true` for many attachments, `required: true` from `null: false`). The gem's reference CRUD form now follows the gem's own first rule about forms. A host that installed the templates before keeps its copy (re-runs never overwrite); delete `lib/templates/erb/scaffold/_form.html.erb.tt` and re-run `poetry:scaffold_templates` for the builder version. On the way, two inference gaps in the builder: `has_many_attached` attributes infer a file input (the plural responder), and `website` / `permalink` infer a URL input like `url` does.

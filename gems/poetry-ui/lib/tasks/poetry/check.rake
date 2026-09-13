@@ -44,7 +44,7 @@ namespace :poetry do
     # gems' - built live from the loaded classes, never a committed file.
     host = Poetry::Core::HostComponents.registry(root: Rails.root)
     catalog = Poetry::Core::Check::Catalog.from_registries(roots, icon_names: icon_names, host_registry: host)
-    findings = Poetry::Core::Check::Runner.new(catalog).run(paths)
+    findings = Poetry::Core::Check::Runner.new(catalog).run(paths, root: Rails.root)
 
     # The taste tier: design-slop warnings join the mechanical
     # findings on request - same vocabulary, same JSON/text output. The
@@ -54,7 +54,7 @@ namespace :poetry do
       # DesignLint herb-parses templates - the .rb paths in the sweep are
       # the declaration tier's, not its; mailer templates are not pages
       # (no stylesheet, no tokens) and skip the taste tier too.
-      findings += paths.grep(/\.erb\z/).reject { |path| Poetry::Core::Check.mail_template?(path) }
+      findings += paths.grep(/\.erb\z/).reject { |path| Poetry::Core::Check.mail_template?(path, root: Rails.root) }
                        .flat_map { |path| Poetry::Core::DesignLint.lint(File.read(path), file: path) }
       design_md = Rails.root.join("DESIGN.md")
       foreign = design_md.exist? && Poetry::Core::DesignMd.parse(design_md.read)["theme"].nil?
