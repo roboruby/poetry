@@ -12155,7 +12155,10 @@ helpers:
   poetry_table_header: {}
   poetry_table_row: {}
   poetry_tooltip_provider: {}
-  poetry_webmcp_form: {}
+  poetry_webmcp_form:
+    yields: 'the form builder (Poetry::Ui::FormBuilder unless builder: says otherwise)
+      - form.field and form.input author the tool''s parameters; every standard field
+      helper works'
 blocks:
   action-bar:
     title: Action bar

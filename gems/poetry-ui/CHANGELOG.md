@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3]
+
+### Fixed
+
+- `poetry_webmcp_form ... do |form|` is no longer a yieldless block to `poetry check`: the registry's helpers section now says the helper yields the form builder, as the helper's own example always showed.
+- `bin/rails poetry:check` accepts the app's own `poetry_*` helper methods (the adapter `poetry:pagination` copies in, a wrapper of the host's own): their names come from `app/helpers` boot-free, their options and blocks are their own, and the wiring rules still apply. A composed trigger's `do |wiring|` is no longer flagged either (poetry-core 0.1.3).
+
 ## [0.1.2] - 2026-09-13
 
 ### Added

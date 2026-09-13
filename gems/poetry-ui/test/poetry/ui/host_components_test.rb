@@ -17,6 +17,34 @@ module Poetry
         assert_includes html, "bg-primary"
       end
 
+      # The three shapes 0.1.2's check misread on a real host: a composed
+      # trigger's wiring param, the webmcp form's builder, and a helper
+      # method the app defines under the prefix.
+      def test_poetry_check_reads_the_composed_trigger_the_webmcp_form_and_a_host_helper_method
+        catalog = Poetry::Core::Check::Catalog.from_registry(Poetry::Ui.root, host_helpers: ["poetry_pagy_nav"])
+        findings = Poetry::Core::Check.lint(<<~ERB, catalog: catalog)
+          <%= poetry_tooltip do |tooltip| %>
+            <% tooltip.with_trigger(compose: true) do |wiring| %><span <%= wiring %>>x</span><% end %>
+          <% end %>
+          <%= poetry_webmcp_form(url: "/q", method: :get, tool: { name: "search", description: "Search.", autosubmit: true }) do |form| %>
+            <%= form.field(:q) %>
+          <% end %>
+          <%= poetry_pagy_nav(@pagy, edges: :icons) %>
+        ERB
+
+        assert_empty findings.map(&:message).grep(/yields nothing|no poetry component/)
+        findings = Poetry::Core::Check.lint(<<~ERB, catalog: Poetry::Core::Check::Catalog.from_registry(Poetry::Ui.root))
+          <%= poetry_tooltip do |tooltip| %>
+            <% tooltip.with_trigger do |wiring| %>x<% end %>
+          <% end %>
+          <%= poetry_pagy_nav(@pagy) %>
+        ERB
+
+        heads = findings.map(&:message).grep(/yields nothing|no poetry component/).map { |m| m[/^[^-(]+/].strip }
+
+        assert_equal ["with_trigger yields nothing to its block", "no poetry component poetry_pagy_nav"], heads
+      end
+
       def test_poetry_check_lints_the_app_component_under_its_own_name
         host = Poetry::Core::HostComponents.registry(root: Rails.root)
         catalog = Poetry::Core::Check::Catalog.from_registries([Poetry::Ui.root],

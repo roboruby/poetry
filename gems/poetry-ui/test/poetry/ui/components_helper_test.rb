@@ -83,10 +83,16 @@ module Poetry
         # shape, and their count must match the declared yielders exactly.
         declared_yielders = ComponentsHelper::HELPER_CONTRACTS.count { |_name, contract| contract["yields"] }
         with_args = source.scan(/capture\((?!&)[^)]*\)/)
+        # The other yielding shape: the block handed to form_with, which
+        # yields the builder itself (poetry_webmcp_form).
+        delegated = source.scan("form_with(**options, &)")
 
-        assert_equal(["capture(form, &)"] * declared_yielders, with_args,
+        assert_equal(["capture(form, &)"], with_args,
                      "capture takes only the block - unless the helper declares \"yields\" " \
                      "in HELPER_CONTRACTS and passes exactly the form builder")
+        assert_equal(declared_yielders, with_args.size + delegated.size,
+                     "every wrapper that yields the form builder declares \"yields\" in HELPER_CONTRACTS, " \
+                     "and only those")
         refute_match(/block\.call\(.+\)/, source, "blocks must not be called with arguments")
       end
 

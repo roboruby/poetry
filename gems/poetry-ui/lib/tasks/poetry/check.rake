@@ -43,7 +43,12 @@ namespace :poetry do
     # helpers join the valid set and their contracts are checked like the
     # gems' - built live from the loaded classes, never a committed file.
     host = Poetry::Core::HostComponents.registry(root: Rails.root)
-    catalog = Poetry::Core::Check::Catalog.from_registries(roots, icon_names: icon_names, host_registry: host)
+    # The app's own poetry_* helper METHODS (app/helpers: the adapter
+    # poetry:pagination copies in, a wrapper the host wrote) are valid
+    # names with contracts of their own - the wiring rules still apply.
+    host_helpers = Poetry::Core::HostComponents.helper_methods(root: Rails.root)
+    catalog = Poetry::Core::Check::Catalog.from_registries(roots, icon_names: icon_names, host_registry: host,
+                                                                  host_helpers: host_helpers)
     findings = Poetry::Core::Check::Runner.new(catalog).run(paths, root: Rails.root)
 
     # The taste tier: design-slop warnings join the mechanical

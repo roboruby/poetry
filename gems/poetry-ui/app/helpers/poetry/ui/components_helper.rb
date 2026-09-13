@@ -982,6 +982,10 @@ module Poetry
             { "name" => "value", "type" => "object" }
           ]
         },
+        "poetry_webmcp_form" => {
+          "yields" => "the form builder (Poetry::Ui::FormBuilder unless builder: says otherwise) - " \
+                      "form.field and form.input author the tool's parameters; every standard field helper works"
+        },
         "poetry_input_group_addon" => {
           "options" => [{ "name" => "align", "type" => "symbol", "default" => "inline-start",
                           "variants" => INPUT_GROUP_ALIGNS.map(&:to_s) }]
