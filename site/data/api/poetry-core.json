@@ -1,5 +1,5 @@
 {
-  "poetry_version": "0.1.1",
+  "poetry_version": "0.1.2",
   "gem": "poetry-core",
   "objects": [
     {
@@ -186,7 +186,7 @@
       "constants": [
         {
           "name": "VERSION",
-          "value": "\"0.1.1\"",
+          "value": "\"0.1.2\"",
           "docstring": "The gem version. Every gem in the family carries the same version\nand pins poetry-core to it exactly."
         }
       ]
@@ -359,7 +359,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 107
+          "line": 195
         },
         {
           "name": "component_module",
@@ -381,7 +381,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 96
+          "line": 184
         },
         {
           "name": "component_path",
@@ -403,7 +403,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 87
+          "line": 175
         },
         {
           "name": "component_title",
@@ -425,7 +425,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 117
+          "line": 205
         },
         {
           "name": "config",
@@ -442,7 +442,56 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 76
+          "line": 164
+        },
+        {
+          "name": "helper",
+          "scope": "class",
+          "group": null,
+          "signature": "helper(name)",
+          "docstring": "Names the view helper that renders this component - for a\ncomponent the host application (or an engine) defines on the\nDSL. The poetry-core engine defines the method on Action View at\nboot and on every reload, and the app's registry carries the name\nso `poetry check`, llms.txt and the generated skill know the\nhelper. Own-class only: a subclass declares its own or has none.\nThe gems' components do not declare one; their helpers follow the\n`poetry_<name>` convention.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol",
+                "String"
+              ],
+              "text": "a Ruby method name"
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [
+            {
+              "title": "",
+              "text": "class Demo::Badge::Component < Poetry::Core::Component\n  helper :demo_badge\nend\n# <%= demo_badge(tone: :loud) { \"New\" } %>"
+            }
+          ],
+          "file": "app/components/poetry/core/component.rb",
+          "line": 143
+        },
+        {
+          "name": "helper_name",
+          "scope": "class",
+          "group": null,
+          "signature": "helper_name",
+          "docstring": "The declared helper name, or nil (the gems' components; a\nsubclass that declares none).",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/component.rb",
+          "line": 156
         },
         {
           "name": "internal_component!",
@@ -464,7 +513,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 66
+          "line": 74
         },
         {
           "name": "required_content",
@@ -482,7 +531,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 141
+          "line": 229
         },
         {
           "name": "requires_content",
@@ -512,7 +561,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 134
+          "line": 222
         },
         {
           "name": "attributes",
@@ -529,14 +578,31 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 359
+          "line": 494
+        },
+        {
+          "name": "classname_merger",
+          "scope": "instance",
+          "group": null,
+          "signature": "classname_merger",
+          "docstring": "The class-name merger this component merges with: the one that\nmatches its CSS mode ({Poetry::Core::CSS::Modes.merger_for}).",
+          "params": [],
+          "return": {
+            "types": [
+              "#merge"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/component.rb",
+          "line": 575
         },
         {
           "name": "classnames",
           "scope": "instance",
           "group": null,
           "signature": "classnames(*classnames)",
-          "docstring": "Merges multiple class name values into a single string.\n\nUses the configured classname merger (typically Tailwind Merge) to\nintelligently combine CSS class names, handling conflicts and duplicates.",
+          "docstring": "Merges multiple class name values into a single string.\n\nUses the kit's classname merger (Tailwind Merge in :tailwind mode,\nthe BEM merger in :bem mode - {Poetry::Core::CSS::Modes.merger_for})\nto combine CSS class names, handling conflicts and duplicates.",
           "params": [
             {
               "name": "classnames",
@@ -559,7 +625,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 431
+          "line": 567
         },
         {
           "name": "component_data_attributes",
@@ -576,7 +642,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 176
+          "line": 264
         },
         {
           "name": "dom_id_token",
@@ -602,7 +668,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 465
+          "line": 609
         },
         {
           "name": "ensure_content!",
@@ -619,7 +685,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 196
+          "line": 284
         },
         {
           "name": "html_attributes",
@@ -641,7 +707,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 385
+          "line": 520
         },
         {
           "name": "initialize",
@@ -679,7 +745,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 235
+          "line": 323
         },
         {
           "name": "persisted?",
@@ -696,7 +762,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 207
+          "line": 295
         },
         {
           "name": "poetry_instance_id",
@@ -721,7 +787,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 409
+          "line": 544
         },
         {
           "name": "script_json",
@@ -747,7 +813,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 451
+          "line": 595
         },
         {
           "name": "slot_data_attributes",
@@ -773,7 +839,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 185
+          "line": 273
         },
         {
           "name": "stable_key",
@@ -791,7 +857,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 398
+          "line": 533
         },
         {
           "name": "to_html",
@@ -813,7 +879,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 478
+          "line": 622
         }
       ],
       "constants": [
@@ -2114,7 +2180,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 230
+          "line": 231
         },
         {
           "name": "option_attribute?",
@@ -2140,7 +2206,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 216
+          "line": 217
         },
         {
           "name": "option_attribute_initialized?",
@@ -2166,7 +2232,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 238
+          "line": 239
         },
         {
           "name": "option_attributes",
@@ -2183,7 +2249,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 223
+          "line": 224
         },
         {
           "name": "option_attributes_status",
@@ -2200,7 +2266,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 245
+          "line": 246
         },
         {
           "name": "options",
@@ -2217,7 +2283,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 254
+          "line": 255
         }
       ],
       "constants": [
@@ -2641,6 +2707,37 @@
       "file": "app/components/poetry/core/concerns/styles.rb",
       "methods": [
         {
+          "name": "css_mode",
+          "scope": "class",
+          "group": null,
+          "signature": "css_mode(mode = nil)",
+          "docstring": "The CSS mode this component renders in, declared per kit\n(inherited by subclasses): `css_mode :bem` on a kit's base\nclass, and every component in it emits the BEM token IR. With\nno argument, the resolved mode: the declaration, else the mode\npinned for the namespace ({Poetry::Core::CSS::Modes} - poetry-ui\npins `:tailwind`), else the global\n`Poetry::Core::Config.current.css_mode`. A `css_mode:` keyword\non a `css` call still wins over all of them.",
+          "params": [
+            {
+              "name": "mode",
+              "types": [
+                "Symbol",
+                "nil"
+              ],
+              "text": ":tailwind or :bem to declare; nil to read"
+            }
+          ],
+          "return": {
+            "types": [
+              "Symbol"
+            ],
+            "text": "the declared or resolved mode"
+          },
+          "examples": [
+            {
+              "title": "A kit that brings its own CSS",
+              "text": "class Acme::Ui::Base < Poetry::Core::Component\n  css_mode :bem\nend"
+            }
+          ],
+          "file": "app/components/poetry/core/concerns/styles.rb",
+          "line": 81
+        },
+        {
           "name": "has_style_attribute?",
           "scope": "class",
           "group": null,
@@ -2664,7 +2761,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 136
+          "line": 160
         },
         {
           "name": "style",
@@ -2714,7 +2811,7 @@
             }
           ],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 83
+          "line": 107
         },
         {
           "name": "style_attributes",
@@ -2731,7 +2828,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 120
+          "line": 144
         },
         {
           "name": "style_attributes_with_defaults",
@@ -2748,7 +2845,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 98
+          "line": 122
         },
         {
           "name": "style_attributes_with_proc_defaults",
@@ -2765,7 +2862,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 113
+          "line": 137
         },
         {
           "name": "style_attributes_with_static_defaults",
@@ -2782,7 +2879,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 105
+          "line": 129
         },
         {
           "name": "style_class",
@@ -2800,7 +2897,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 144
+          "line": 168
         },
         {
           "name": "style_docs",
@@ -2817,7 +2914,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 128
+          "line": 152
         },
         {
           "name": "bem",
@@ -2850,7 +2947,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 311
+          "line": 352
         },
         {
           "name": "bem_block",
@@ -2867,7 +2964,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 299
+          "line": 340
         },
         {
           "name": "css",
@@ -2901,7 +2998,24 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 276
+          "line": 309
+        },
+        {
+          "name": "css_mode",
+          "scope": "instance",
+          "group": null,
+          "signature": "css_mode",
+          "docstring": "The CSS mode this instance renders in (the class's resolved mode;\nsee the class-level `css_mode`).",
+          "params": [],
+          "return": {
+            "types": [
+              "Symbol"
+            ],
+            "text": ":tailwind or :bem"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/styles.rb",
+          "line": 332
         },
         {
           "name": "initialized_style_attributes",
@@ -2918,7 +3032,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 223
+          "line": 256
         },
         {
           "name": "style_attribute?",
@@ -2944,7 +3058,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 209
+          "line": 242
         },
         {
           "name": "style_attribute_initialized?",
@@ -2970,7 +3084,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 231
+          "line": 264
         },
         {
           "name": "style_attributes",
@@ -2987,7 +3101,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 216
+          "line": 249
         },
         {
           "name": "style_attributes_status",
@@ -3004,7 +3118,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 238
+          "line": 271
         },
         {
           "name": "styler",
@@ -3022,7 +3136,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 256
+          "line": 289
         },
         {
           "name": "styles",
@@ -3039,7 +3153,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 247
+          "line": 280
         }
       ],
       "constants": [
@@ -3104,7 +3218,7 @@
             }
           ],
           "file": "lib/poetry/core/config.rb",
-          "line": 146
+          "line": 153
         },
         {
           "name": "default",
@@ -3133,7 +3247,7 @@
           "scope": "class",
           "group": null,
           "signature": "defaults",
-          "docstring": "Returns the default configuration values.\n\nThese defaults are used when initializing new configuration instances and\ndefine the standard behavior for all Poetry::Core components.\n\nThe keys and their defaults:\n\n- `classname_merger` ({Poetry::Core::CSS::TailwindMerger}) - resolves\n  conflicting utility classes when caller classes meet component\n  classes.\n- `stimulus_merger` ({Poetry::Core::Stimulus::Merger}) - combines\n  Stimulus data attributes without duplicating controllers or\n  actions.\n- `css_mode` (`:tailwind`) - `:tailwind` emits resolved utility\n  classes; `:bem` emits the BEM token IR for bring-your-own-CSS\n  kits authored on this DSL (poetry-ui is Tailwind-native and is\n  not a `:bem` consumer).\n- `icon_library` (`:lucide`) - the active icon set, by the key it\n  registered under ({Poetry::Core::Icons.register}).\n- `raise_on_missing_icon` (`nil`) - the policy for a dynamic icon\n  name that resolves to nothing: nil raises in local environments\n  and degrades to the fallback elsewhere; true/false force one\n  behavior.\n- `icon_fallback` (`:\"circle-question-mark\"`) - rendered instead\n  of a missing icon when not raising; nil re-raises.\n- `on_missing_icon` (`nil`) - an optional callable\n  `(name:, library:, error:)` fired before the fallback renders.\n- `webmcp_registration_budget` (`20`) - the per-document cap on\n  WebMCP tool registrations a page's opted-in instances may make;\n  poetry-agent's `registration_budget` setting writes through.\n- `stable_id_mode` (`:off`) - the opt-in `:sequence` mode seeds a\n  per-request deterministic id sequence (read the hazards in\n  StableId before enabling).\n- `stable_id_seed` - the request-to-seed callable for that mode\n  (defaults to the request path).",
+          "docstring": "Returns the default configuration values.\n\nThese defaults are used when initializing new configuration instances and\ndefine the standard behavior for all Poetry::Core components.\n\nThe keys and their defaults:\n\n- `classname_merger` ({Poetry::Core::CSS::TailwindMerger}) - resolves\n  conflicting utility classes when caller classes meet component\n  classes. Each kit merges with the merger of its CSS mode\n  ({Poetry::Core::CSS::Modes.merger_for}): this global serves every\n  kit whose mode matches its kind (a customised Tailwind merger\n  reaches poetry-ui; a {Poetry::Core::CSS::BemMerger} reaches a BEM\n  kit), and a kit of the other kind uses the stock merger instead.\n- `stimulus_merger` ({Poetry::Core::Stimulus::Merger}) - combines\n  Stimulus data attributes without duplicating controllers or\n  actions.\n- `css_mode` (`:tailwind`) - the default mode for component kits\n  authored on this DSL: `:tailwind` resolves the Style dictionary\n  to utilities; `:bem` emits the BEM token IR for a kit that brings\n  its own CSS. A kit declares its own (`css_mode :bem` on its base)\n  or pins its namespace ({Poetry::Core::CSS::Modes}); poetry-ui and\n  poetry-charts pin `:tailwind`, so this global never reaches them\n  and a BEM kit renders beside them.\n- `icon_library` (`:lucide`) - the active icon set, by the key it\n  registered under ({Poetry::Core::Icons.register}).\n- `raise_on_missing_icon` (`nil`) - the policy for a dynamic icon\n  name that resolves to nothing: nil raises in local environments\n  and degrades to the fallback elsewhere; true/false force one\n  behavior.\n- `icon_fallback` (`:\"circle-question-mark\"`) - rendered instead\n  of a missing icon when not raising; nil re-raises.\n- `on_missing_icon` (`nil`) - an optional callable\n  `(name:, library:, error:)` fired before the fallback renders.\n- `webmcp_registration_budget` (`20`) - the per-document cap on\n  WebMCP tool registrations a page's opted-in instances may make;\n  poetry-agent's `registration_budget` setting writes through.\n- `stable_id_mode` (`:off`) - the opt-in `:sequence` mode seeds a\n  per-request deterministic id sequence (read the hazards in\n  StableId before enabling).\n- `stable_id_seed` - the request-to-seed callable for that mode\n  (defaults to the request path).",
           "params": [],
           "return": {
             "types": [
@@ -3148,7 +3262,7 @@
             }
           ],
           "file": "lib/poetry/core/config.rb",
-          "line": 86
+          "line": 93
         },
         {
           "name": "classname_merger",
@@ -3165,7 +3279,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "classname_merger=",
@@ -3190,7 +3304,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "css_mode",
@@ -3207,7 +3321,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "css_mode=",
@@ -3232,7 +3346,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "icon_fallback",
@@ -3250,7 +3364,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "icon_fallback=",
@@ -3277,7 +3391,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "icon_library",
@@ -3294,7 +3408,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "icon_library=",
@@ -3321,7 +3435,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "initialize",
@@ -3343,7 +3457,7 @@
             }
           ],
           "file": "lib/poetry/core/config.rb",
-          "line": 284
+          "line": 291
         },
         {
           "name": "on_missing_icon",
@@ -3361,7 +3475,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "on_missing_icon=",
@@ -3388,7 +3502,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "raise_on_missing_icon",
@@ -3406,7 +3520,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "raise_on_missing_icon=",
@@ -3433,7 +3547,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "stable_id_mode",
@@ -3450,7 +3564,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "stable_id_mode=",
@@ -3475,7 +3589,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "stable_id_seed",
@@ -3492,7 +3606,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "stable_id_seed=",
@@ -3517,7 +3631,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "stimulus_merger",
@@ -3534,7 +3648,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "stimulus_merger=",
@@ -3559,7 +3673,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "webmcp_registration_budget",
@@ -3576,7 +3690,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         },
         {
           "name": "webmcp_registration_budget=",
@@ -3601,7 +3715,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 151
+          "line": 158
         }
       ],
       "constants": [
@@ -3748,6 +3862,57 @@
           "examples": [],
           "file": "lib/poetry/core/html/attributes.rb",
           "line": 45
+        },
+        {
+          "name": "classname_merger",
+          "scope": "instance",
+          "group": null,
+          "signature": "classname_merger",
+          "docstring": "The merger every class merge on this object uses: the one the\nowning component assigned (its kit's, from its CSS mode), else\nthe configured global.",
+          "params": [],
+          "return": {
+            "types": [
+              "#merge"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/html/attributes.rb",
+          "line": 388
+        },
+        {
+          "name": "classname_merger=",
+          "scope": "instance",
+          "group": null,
+          "signature": "classname_merger=(value)",
+          "docstring": "Assigns the merger (the component does this for its root\nattributes, from its CSS mode).",
+          "params": [],
+          "return": {
+            "types": [
+              "#merge"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/html/attributes.rb",
+          "line": 396
+        },
+        {
+          "name": "dup",
+          "scope": "instance",
+          "group": null,
+          "signature": "dup",
+          "docstring": "A copy keeps the assigned merger. The base class copies through a\nplain constructor, and every non-mutating merge (`merge`,\n`deep_dup`, `merge_classes`) copies first - without this the\nkit's merger would silently revert to the global on those paths.",
+          "params": [],
+          "return": {
+            "types": [
+              "Poetry::Core::HTML::Attributes"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/html/attributes.rb",
+          "line": 404
         },
         {
           "name": "get_attribute",
@@ -4554,7 +4719,197 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 68
+          "line": 74
+        },
+        {
+          "name": "gem_roots",
+          "scope": "class",
+          "group": null,
+          "signature": "gem_roots(app_root: nil, registry: true)",
+          "docstring": "The registry roots visible without booting: every gem in the bundle\n(or installed) whose root carries a published registry, plus\napp_root when it committed one - what the MCP server assembles from.\n\nregistry: false lists every bundled gem root (plus app_root) whatever\nit carries - the manifest registration walks the same roots.",
+          "params": [
+            {
+              "name": "app_root",
+              "types": [
+                "String",
+                "Pathname",
+                "nil"
+              ],
+              "text": "the host app directory"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Pathname>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry.rb",
+          "line": 165
+        },
+        {
+          "name": "helper_for",
+          "scope": "class",
+          "group": null,
+          "signature": "helper_for(path, entry = {})",
+          "docstring": "The view helper for a registry entry: the name the entry carries\n(every registry built since 0.1.2 names it), else the poetry_\nconvention for a gem path (poetry/ui/data_table/row ->\npoetry_data_table_row, which every gem helper module follows), else\nnil: an app component that declared no helper renders by class and\nno surface invents one for it.",
+          "params": [
+            {
+              "name": "path",
+              "types": [
+                "String"
+              ],
+              "text": "the component path"
+            },
+            {
+              "name": "entry",
+              "types": [
+                "Hash"
+              ],
+              "text": "the registry entry"
+            }
+          ],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry.rb",
+          "line": 95
+        },
+        {
+          "name": "invalid_at?",
+          "scope": "class",
+          "group": null,
+          "signature": "invalid_at?(root)",
+          "docstring": "Whether the file exists but is not a registry (empty, malformed, or\nthe wrong shape) - what `poetry:check` reports as registry-invalid.",
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "String",
+                "Pathname"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry.rb",
+          "line": 129
+        },
+        {
+          "name": "merged",
+          "scope": "class",
+          "group": null,
+          "signature": "merged(roots, source_root: nil)",
+          "docstring": "One Committed view over several roots: entries, helpers and arity\nmaps merge (later roots win), block templates are resolved to\nabsolute paths so any source_root reads them, and the form builder\nis the first one found.",
+          "params": [
+            {
+              "name": "roots",
+              "types": [
+                "Array<String, Pathname>"
+              ],
+              "text": "published registry roots"
+            },
+            {
+              "name": "source_root",
+              "types": [
+                "String",
+                "Pathname",
+                "nil"
+              ],
+              "text": "the root the view resolves\nagainst (defaults to the first)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Committed"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry.rb",
+          "line": 183
+        },
+        {
+          "name": "published_at?",
+          "scope": "class",
+          "group": null,
+          "signature": "published_at?(root)",
+          "docstring": "Whether a root carries a committed registry meant for consumers: the\nfile exists, reads, and does not mark itself internal (poetry-core's\nown is a gate artifact for building blocks that have no helpers).",
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "String",
+                "Pathname"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry.rb",
+          "line": 139
+        },
+        {
+          "name": "read_file",
+          "scope": "class",
+          "group": null,
+          "signature": "read_file(root)",
+          "docstring": "The committed registry file of a root as data, validated: a Hash\nwhose \"components\" is a Hash of Hash entries. nil for a file that\nis empty, unparseable, or not that shape - the one answer every\nreader shares, so a hand-edited file degrades to \"no registry here\"\n(and `poetry:check` says so) instead of a crash in whichever\nsurface opened it first.",
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "String",
+                "Pathname"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry.rb",
+          "line": 111
+        },
+        {
+          "name": "roots",
+          "scope": "class",
+          "group": null,
+          "signature": "roots",
+          "docstring": "The registry roots of a booted host, by convention: every loaded\nengine whose root carries a published registry (poetry-ui,\npoetry-charts, any engine built on the DSL that committed one), then\nthe app itself when `bin/rails poetry:registry` wrote its file. No\ngem is named; later roots win a path collision on merge.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Pathname>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry.rb",
+          "line": 151
         },
         {
           "name": "blocks",
@@ -4566,7 +4921,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 125
+          "line": 256
         },
         {
           "name": "components",
@@ -4578,7 +4933,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 121
+          "line": 252
         },
         {
           "name": "entries",
@@ -4595,7 +4950,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 135
+          "line": 269
         },
         {
           "name": "form_builder",
@@ -4607,7 +4962,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 129
+          "line": 263
         },
         {
           "name": "generate!",
@@ -4633,13 +4988,25 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 157
+          "line": 292
+        },
+        {
+          "name": "helper_args",
+          "scope": "instance",
+          "group": null,
+          "signature": "helper_args",
+          "docstring": "The helper arity map (optional section).",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/core/registry.rb",
+          "line": 259
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(components: nil, source_root: Poetry::Core.root, # rubocop:disable Metrics/ParameterLists helpers: nil, blocks: nil, helper_args: nil, descriptions: nil, form_builder: nil)",
+          "signature": "initialize(components: nil, source_root: Poetry::Core.root, # rubocop:disable Metrics/ParameterLists helpers: nil, blocks: nil, helper_args: nil, descriptions: nil, form_builder: nil, internal: false, banner: HEADER)",
           "docstring": "",
           "params": [
             {
@@ -4697,6 +5064,20 @@
                 "nil"
               ],
               "text": "the gem's FormBuilder surface\n({\"rules\" => [...], \"methods\" => {name => one-liner}, \"input_types\"\n=> [...]}) - emitted as the registry's \"form_builder\" section so\nllms.txt, the MCP server, and skills can teach the model-bound\nform story without booting the gem. Optional like every other\nsection: absent -> the registry stays byte-identical."
+            },
+            {
+              "name": "internal",
+              "types": [
+                "Boolean"
+              ],
+              "text": "mark the file internal: a gate artifact\nconsumers skip ({.roots}, {.gem_roots}) - poetry-core's own\nregistry of helperless building blocks"
+            },
+            {
+              "name": "banner",
+              "types": [
+                "String"
+              ],
+              "text": "the do-not-edit header written at the top"
             }
           ],
           "return": {
@@ -4707,7 +5088,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 109
+          "line": 237
         },
         {
           "name": "source_root",
@@ -4719,7 +5100,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 125
+          "line": 256
         },
         {
           "name": "to_yaml",
@@ -4736,7 +5117,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 144
+          "line": 278
         },
         {
           "name": "verified?",
@@ -4762,7 +5143,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 168
+          "line": 303
         }
       ],
       "constants": [
@@ -4860,7 +5241,7 @@
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(entries:, blocks:, helpers:, helper_args:, source_root:, form_builder: nil)",
+          "signature": "initialize(entries:, blocks:, helpers:, helper_args:, source_root:, form_builder: nil, internal: false)",
           "docstring": "Holds the sections of one committed registry file;\n{Registry.committed} is the loader.",
           "params": [
             {
@@ -4908,6 +5289,13 @@
                 "nil"
               ],
               "text": "the \"form_builder\" section"
+            },
+            {
+              "name": "internal",
+              "types": [
+                "Boolean"
+              ],
+              "text": "the file's internal marker"
             }
           ],
           "return": {
@@ -4918,7 +5306,19 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 54
+          "line": 59
+        },
+        {
+          "name": "internal",
+          "scope": "instance",
+          "group": null,
+          "signature": "internal",
+          "docstring": "Whether the file marks itself internal (a gem's own gate\nartifact, never a consumer surface) - see {Registry.roots}.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/core/registry.rb",
+          "line": 47
         },
         {
           "name": "source_root",
@@ -5845,7 +6245,7 @@
             }
           ],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 102
+          "line": 107
         },
         {
           "name": "resolve_identifier",
@@ -6112,7 +6512,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 313
+          "line": 318
         },
         {
           "name": "event",
@@ -6146,7 +6546,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 329
+          "line": 334
         },
         {
           "name": "initialize",
@@ -6178,7 +6578,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 300
+          "line": 305
         }
       ],
       "constants": []
@@ -6464,7 +6864,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 245
+          "line": 250
         },
         {
           "name": "event",
@@ -6498,7 +6898,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 289
+          "line": 294
         },
         {
           "name": "initialize",
@@ -6523,7 +6923,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 251
+          "line": 256
         },
         {
           "name": "on",
@@ -6568,7 +6968,7 @@
             }
           ],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 274
+          "line": 279
         }
       ],
       "constants": []
@@ -6767,7 +7167,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 407
+          "line": 412
         },
         {
           "name": "event",
@@ -6801,7 +7201,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 429
+          "line": 434
         },
         {
           "name": "initialize",
@@ -6833,7 +7233,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 344
+          "line": 349
         },
         {
           "name": "register",
@@ -6858,7 +7258,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 356
+          "line": 361
         },
         {
           "name": "target",
@@ -6890,7 +7290,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 418
+          "line": 423
         },
         {
           "name": "value",
@@ -6937,7 +7337,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 378
+          "line": 383
         }
       ],
       "constants": []
@@ -6991,7 +7391,33 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/manifest.rb",
-          "line": 58
+          "line": 82
+        },
+        {
+          "name": "forget",
+          "scope": "class",
+          "group": null,
+          "signature": "forget(identifier)",
+          "docstring": "Removes one controller from the catalog (tests).",
+          "params": [
+            {
+              "name": "identifier",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash",
+              "nil"
+            ],
+            "text": "the definition removed"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/stimulus/manifest.rb",
+          "line": 70
         },
         {
           "name": "register",
@@ -7018,6 +7444,31 @@
           "examples": [],
           "file": "lib/poetry/core/stimulus/manifest.rb",
           "line": 46
+        },
+        {
+          "name": "register_roots",
+          "scope": "class",
+          "group": null,
+          "signature": "register_roots(roots)",
+          "docstring": "Registers the committed manifest of every root that has one -\nengines' and the app's (`bin/rails poetry:stimulus:manifest`) -\nskipping poetry-core's own, which the catalog starts from.",
+          "params": [
+            {
+              "name": "roots",
+              "types": [
+                "Array<String, Pathname>"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Pathname>"
+            ],
+            "text": "the manifests registered"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/stimulus/manifest.rb",
+          "line": 56
         }
       ],
       "constants": [
@@ -7265,7 +7716,7 @@
             }
           ],
           "file": "app/components/poetry/core/style.rb",
-          "line": 42
+          "line": 73
         },
         {
           "name": "bem_block",
@@ -7283,7 +7734,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/style.rb",
-          "line": 129
+          "line": 160
         },
         {
           "name": "capsule",
@@ -7300,7 +7751,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/style.rb",
-          "line": 136
+          "line": 167
         },
         {
           "name": "component_class",
@@ -7318,7 +7769,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/style.rb",
-          "line": 119
+          "line": 150
         },
         {
           "name": "compound",
@@ -7355,7 +7806,7 @@
             }
           ],
           "file": "app/components/poetry/core/style.rb",
-          "line": 80
+          "line": 111
         },
         {
           "name": "css",
@@ -7388,7 +7839,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/style.rb",
-          "line": 102
+          "line": 133
         },
         {
           "name": "defaults",
@@ -7405,7 +7856,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/style.rb",
-          "line": 89
+          "line": 120
         },
         {
           "name": "element",
@@ -7442,7 +7893,24 @@
             }
           ],
           "file": "app/components/poetry/core/style.rb",
-          "line": 54
+          "line": 85
+        },
+        {
+          "name": "merger",
+          "scope": "class",
+          "group": null,
+          "signature": "merger",
+          "docstring": "The class merger for this dictionary's mode: the sidecar\ncomponent's resolved `css_mode` (its own declaration, its kit's\npin, or the global), else this class's own namespace pin, else the\nglobal mode - so `Acme::Pill::Style` under a `:bem` pin merges like\nBEM while poetry-ui's dictionaries merge like Tailwind whatever the\nhost set globally.",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "a class-name merger"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/style.rb",
+          "line": 45
         },
         {
           "name": "resolver",
@@ -7460,6 +7928,18 @@
           "examples": [],
           "file": "app/components/poetry/core/style.rb",
           "line": 29
+        },
+        {
+          "name": "sidecar_component",
+          "scope": "class",
+          "group": null,
+          "signature": "sidecar_component",
+          "docstring": "The `X::Component` beside this `X::Style`, when it exists.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/core/style.rb",
+          "line": 56
         },
         {
           "name": "variant",
@@ -7496,7 +7976,7 @@
             }
           ],
           "file": "app/components/poetry/core/style.rb",
-          "line": 67
+          "line": 98
         },
         {
           "name": "variant_options",
@@ -7513,7 +7993,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/style.rb",
-          "line": 111
+          "line": 142
         },
         {
           "name": "css",
@@ -7530,7 +8010,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/style.rb",
-          "line": 145
+          "line": 176
         }
       ],
       "constants": []

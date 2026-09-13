@@ -1,5 +1,5 @@
 {
-  "poetry_version": "0.1.1",
+  "poetry_version": "0.1.2",
   "gem": "poetry-charts",
   "objects": [
     {
@@ -35,7 +35,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 104
+          "line": 108
         },
         {
           "name": "registry",
@@ -47,7 +47,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 55
+          "line": 59
         },
         {
           "name": "registry_descriptions",
@@ -59,7 +59,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 70
+          "line": 74
         },
         {
           "name": "registry_items",
@@ -71,7 +71,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 78
+          "line": 82
         },
         {
           "name": "root",
@@ -83,7 +83,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 45
+          "line": 49
         }
       ],
       "constants": [
@@ -99,7 +99,7 @@
         },
         {
           "name": "VERSION",
-          "value": "\"0.1.1\"",
+          "value": "\"0.1.2\"",
           "docstring": "The gem version."
         }
       ]
@@ -655,7 +655,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 38
+          "line": 42
         },
         {
           "name": "tick_count",
@@ -672,7 +672,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 38
+          "line": 42
         },
         {
           "name": "tick_formatter",
@@ -689,7 +689,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 38
+          "line": 42
         },
         {
           "name": "tick_margin",
@@ -706,7 +706,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 38
+          "line": 42
         }
       ],
       "constants": []
@@ -4270,7 +4270,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 41
+          "line": 45
         },
         {
           "name": "vertical",
@@ -4287,7 +4287,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 41
+          "line": 45
         }
       ],
       "constants": []

@@ -1,5 +1,5 @@
 {
-  "poetry_version": "0.1.1",
+  "poetry_version": "0.1.2",
   "gem": "poetry-agent",
   "objects": [
     {
@@ -80,7 +80,7 @@
       "constants": [
         {
           "name": "VERSION",
-          "value": "\"0.1.1\"",
+          "value": "\"0.1.2\"",
           "docstring": "The gem version (lockstep with the poetry family)."
         }
       ]
@@ -6471,6 +6471,11 @@
           "docstring": "The serverInfo payload returned by the initialize handshake."
         },
         {
+          "name": "TOLERATES_BLANK",
+          "value": "%w[compose build_page].freeze",
+          "docstring": "Tools that answer a blank brief with guidance of their own (the\nblock catalog, what to send) rather than a pass."
+        },
+        {
           "name": "TOOLS",
           "value": "[\n  {\n    \"name\" => \"compose\",\n    \"description\" => \"CALL THIS FIRST for every brief, before writing any ERB. Give it the task \" \\\n                     \"text; it routes to the right starting point: a ",
           "docstring": "The tool roster the server advertises (tools/list): MCP Tool-shaped\ndefinitions, read-only by construction."
@@ -6495,7 +6500,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/bundled.rb",
-          "line": 36
+          "line": 50
         },
         {
           "name": "server",
@@ -6510,14 +6515,14 @@
                 "String",
                 "nil"
               ],
-              "text": "a registry root; defaults to poetry-ui"
+              "text": "one more registry root to serve (the\nbundle's published registries and the app's committed one are\nfound on their own)"
             },
             {
               "name": "app_root",
               "types": [
                 "String"
               ],
-              "text": "the host app (build_page's probe/direct\nsteps read its config/theme)"
+              "text": "the host app (its committed registry, when\n`bin/rails poetry:registry` wrote one; build_page's probe/direct\nsteps read its config/theme)"
             }
           ],
           "return": {
@@ -6528,7 +6533,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/bundled.rb",
-          "line": 20
+          "line": 23
         }
       ],
       "constants": []
@@ -6621,6 +6626,18 @@
       "file": "lib/poetry/agent/mcp/server.rb",
       "methods": [
         {
+          "name": "from_registries",
+          "scope": "class",
+          "group": null,
+          "signature": "from_registries(roots, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [])",
+          "docstring": "Several registry roots as one catalog (Registry.merged: later\nroots win a path collision, block templates resolve to absolute\npaths): the gems' published registries and, when the app\ncommitted its own with `bin/rails poetry:registry`, the app's -\nits components then describe, check and compose like a gem's.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/server.rb",
+          "line": 212
+        },
+        {
           "name": "from_registry",
           "scope": "class",
           "group": null,
@@ -6630,7 +6647,19 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 198
+          "line": 202
+        },
+        {
+          "name": "mapped_helpers",
+          "scope": "class",
+          "group": null,
+          "signature": "mapped_helpers(entries)",
+          "docstring": "The helper each entry names, so an explicit helper list never\nhides another root's components (an entry without one has no\nhelper to map).",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/agent/mcp/server.rb",
+          "line": 237
         },
         {
           "name": "handle",
@@ -6656,7 +6685,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 252
+          "line": 285
         },
         {
           "name": "initialize",
@@ -6673,7 +6702,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 215
+          "line": 248
         },
         {
           "name": "serve",
@@ -6685,7 +6714,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 267
+          "line": 300
         }
       ],
       "constants": [
