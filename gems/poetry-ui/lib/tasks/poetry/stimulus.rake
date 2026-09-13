@@ -7,9 +7,11 @@
 # `poetry:check` in templates, the registry's controllers section for
 # llms.txt and the MCP server. Complete or absent per controller; a
 # controller the reader cannot describe is named here and stays
-# unvalidated until the entry is written by hand in the same file. Once
-# written it is a build artifact: `poetry:check` warns and `poetry:verify`
-# fails when it no longer matches the sources.
+# unvalidated until its entry is written by hand in the same file, where
+# regeneration keeps it. The file is a build artifact for the controllers
+# the reader read: `poetry:check` warns and `poetry:verify` fails when
+# those entries no longer match the sources; hand-written entries are the
+# app's own and never count as drift.
 # Loaded automatically by the engine (lib/tasks).
 namespace :poetry do
   namespace :stimulus do
@@ -20,7 +22,7 @@ namespace :poetry do
       puts "poetry:stimulus:manifest: wrote #{result.path.relative_path_from(Rails.root)} " \
            "(#{count} controller#{"s" unless count == 1}) - commit it; re-run after changing controllers"
       result.skipped.each do |skip|
-        puts "  skipped #{skip.identifier}: #{skip.reason} (unvalidated; add its entry by hand to keep it)"
+        puts "  skipped #{skip.identifier}: #{skip.reason} (unvalidated; an entry written by hand in the file is kept)"
       end
     end
   end

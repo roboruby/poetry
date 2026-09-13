@@ -62,8 +62,11 @@ surface.
   carries its API. Write the controller with literal statics (`static
   targets = [...]`, `static values = {...}`, `static events = [...]` for
   the events it dispatches); a parent that is another app controller or a
-  poetry controller is merged, a library parent is skipped and named -
-  add that entry by hand in the same file.
+  poetry controller is merged, a library parent (or a computed static) is
+  skipped and named - add that entry by hand in the same file; regeneration
+  keeps it. Generate the manifest before declaring the controller by
+  Symbol; a controller that dispatches events without `static events`
+  leaves its events unvalidated, never wrong.
 - A dictionary of your own uses names of your own: prefix its `cn-*`
   classes with the kit (`cn-acme-pill`), never a name a Poetry dictionary
   emits, so the override audit reads your rules as yours and a future
