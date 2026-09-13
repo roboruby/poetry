@@ -46,7 +46,7 @@ module Poetry
         # endings; byte-identical is reported as such and left alone.
         newline = text.include?("\r\n") ? "\r\n" : "\n"
         section = agents_section.chomp.gsub("\n", newline)
-        pattern = /#{Regexp.escape(BEGIN_MARKER)}.*?#{Regexp.escape(END_MARKER)}/m
+        pattern = /#{Regexp.escape(BEGIN_MARKER)}.*?#{Regexp.escape(END_MARKER)}/mo
         if text[pattern] == section
           say_status :identical, "AGENTS.md", :blue
         else

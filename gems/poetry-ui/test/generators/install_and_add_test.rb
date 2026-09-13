@@ -183,7 +183,8 @@ module Poetry
     def test_agent_stylesheet_is_vendored_into_layer_base_when_the_gem_is_bundled
       Dir.mktmpdir do |gem_root|
         FileUtils.mkdir_p(File.join(gem_root, "app/assets/stylesheets"))
-        File.write(File.join(gem_root, "app/assets/stylesheets/poetry-agent.css"), ":where(form:tool-form-active) { outline: 2px dashed red; }\n")
+        File.write(File.join(gem_root, "app/assets/stylesheets/poetry-agent.css"),
+                   ":where(form:tool-form-active) { outline: 2px dashed red; }\n")
         Poetry::Agent.const_set(:Engine, Class.new) unless defined?(Poetry::Agent::Engine)
         Poetry::Agent.define_singleton_method(:root) { Pathname.new(gem_root) }
         run_generator %w[--skip-bundle]
@@ -467,7 +468,8 @@ module Poetry
     end
 
     def test_a_superseded_tokens_line_converges_however_it_was_written
-      { "crlf" => "@import \"./poetry/tokens.css\";\r\n", "comment" => "@import \"./poetry/tokens.css\"; /* poetry tokens */\n",
+      { "crlf" => "@import \"./poetry/tokens.css\";\r\n",
+        "comment" => "@import \"./poetry/tokens.css\"; /* poetry tokens */\n",
         "indent" => "  @import \"./poetry/tokens.css\";\n" }.each do |label, line|
         prepare_destination
         entry = File.join(destination_root, InstallGenerator::TAILWIND_ENTRY)
@@ -478,6 +480,7 @@ module Poetry
         run_generator %w[--skip-bundle]
 
         text = File.read(entry)
+
         assert_equal 1, text.scan(%r{@import "\./poetry/tokens\.css"}).size, "#{label}: one tokens import"
         assert_includes text, %(@import "./poetry/tokens.css" layer(theme);), label
         assert_includes text, "layer(theme);\r\n", "crlf: the line keeps its ending" if label == "crlf"
@@ -516,7 +519,7 @@ module Poetry
     def test_agents_markers_are_checked_kept_in_their_line_endings_and_never_swallow_host_text
       run_generator %w[--skip-bundle]
       path = File.join(destination_root, "AGENTS.md")
-      section = File.read(path)[/#{Regexp.escape(Generators::AgentsSection::BEGIN_MARKER)}.*?#{Regexp.escape(Generators::AgentsSection::END_MARKER)}/m]
+      section = File.read(path)[/#{Regexp.escape(Generators::AgentsSection::BEGIN_MARKER)}.*?#{Regexp.escape(Generators::AgentsSection::END_MARKER)}/mo]
 
       File.write(path, "# App\n\n#{Generators::AgentsSection::BEGIN_MARKER}\nzz-stale-zz\n")
       stderr = capture(:stderr) { run_generator %w[--skip-bundle] }
@@ -580,7 +583,7 @@ module Poetry
       stdout = run_generator %w[--theme vega]
 
       # The name never says which theme fills the slot, so the install does.
-      assert_match(/"vega" fills app\/assets\/tailwind\/poetry\/style-default\.css/, stdout)
+      assert_match(%r{"vega" fills app/assets/tailwind/poetry/style-default\.css}, stdout)
       # The SLOT filename never changes - only the content swaps.
       assert_file "app/assets/tailwind/poetry/style-default.css", /poetry vega theme/
       assert_file "app/assets/tailwind/poetry/style-default.css", /rounded-4xl/
@@ -600,7 +603,9 @@ module Poetry
     def test_force_rerun_never_rewrites_host_owned_files_but_refreshes_vendored_ones
       run_generator %w[--skip-bundle]
       manifest = File.join(destination_root, "config/poetry_components.yml")
-      File.write(manifest, "components: {}\noverrides:\n  - path: app/assets/tailwind/mine.css\n    reason: declared on purpose\n")
+      File.write(manifest,
+                 "components: {}\noverrides:\n  - path: app/assets/tailwind/mine.css\n    " \
+                 "reason: declared on purpose\n")
       initializer = File.join(destination_root, "config/initializers/poetry.rb")
       File.write(initializer, "Poetry::Core::Config.current.icon_library = :heroicons\n")
       base = File.join(destination_root, "app/assets/tailwind/poetry/base.css")

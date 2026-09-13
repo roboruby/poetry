@@ -504,7 +504,7 @@ module Poetry
         quoted = line.scan(/["']([^"']+)["']/).flatten.reject { |piece| piece == "__dir__" }.last
         next unless quoted
 
-        relative = quoted.sub(%r{\A\#\{__dir__\}/}, "")
+        relative = quoted.delete_prefix("\#{__dir__}/")
         path = File.expand_path(relative, File.dirname(gemfile))
         File.read(path) if File.exist?(path)
       end

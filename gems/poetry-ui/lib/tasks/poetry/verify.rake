@@ -16,7 +16,11 @@ namespace :poetry do
       Rails.application.eager_load!
       Poetry::Core::Style.descendants.select(&:name).each do |style|
         verifier.verify_style(style).each do |unknown|
-          remedy = style.name.start_with?("Poetry::") ? "" : " (a class of your own: define it in your CSS, or drop it from the dictionary)"
+          remedy = if style.name.start_with?("Poetry::")
+                     ""
+                   else
+                     " (a class of your own: define it in your CSS, or drop it from the dictionary)"
+                   end
           failures << "#{style.name}: #{unknown}#{remedy}"
         end
       end

@@ -21,7 +21,8 @@ module Poetry
         elapsed = (Process.clock_gettime(Process::CLOCK_MONOTONIC) - start) * 1000
 
         assert_operator elapsed, :<, BOUND_MS,
-                        "200 buttons took #{elapsed.round}ms - a step change; run poetry-benchmark's rake bench:render for the breakdown"
+                        "200 buttons took #{elapsed.round}ms - a step change; " \
+                        "run poetry-benchmark's rake bench:render for the breakdown"
       end
     end
   end

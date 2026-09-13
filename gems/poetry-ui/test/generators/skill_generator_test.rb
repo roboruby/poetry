@@ -20,7 +20,7 @@ module Poetry
 
       output = run_generator
 
-      assert_match(/\.claude\/skills is gitignored here/, output)
+      assert_match(%r{\.claude/skills is gitignored here}, output)
       assert_match(%r{bin/rails g poetry:skill}, output)
       assert_file ".claude/skills/poetry/SKILL.md"
     end

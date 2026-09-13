@@ -48,7 +48,8 @@ module Poetry
 
       def test_website_and_permalink_infer_a_url_input
         html = ApplicationController.renderer.render(
-          inline: %(<%= form_with(model: model, url: "/p", builder: Poetry::Ui::FormBuilder) do |form| %><%= form.input :website %><%= form.input :permalink %><% end %>),
+          inline: %(<%= form_with(model: model, url: "/p", builder: Poetry::Ui::FormBuilder) do |form| %>) +
+                  %(<%= form.input :website %><%= form.input :permalink %><% end %>),
           locals: { model: Site.new }, layout: false
         )
 
@@ -60,7 +61,8 @@ module Poetry
 
       def test_has_many_attached_infers_a_file_input
         html = ApplicationController.renderer.render(
-          inline: %(<%= form_with(model: model, url: "/p", builder: Poetry::Ui::FormBuilder) do |form| %><%= form.input :documents, multiple: true %><% end %>),
+          inline: %(<%= form_with(model: model, url: "/p", builder: Poetry::Ui::FormBuilder) do |form| %>) +
+                  %(<%= form.input :documents, multiple: true %><% end %>),
           locals: { model: Site.new }, layout: false
         )
 
