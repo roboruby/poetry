@@ -13,6 +13,12 @@ the swappability door.
 - `bundle exec rake` — the default chain: `test`, `test:dommy`, `rubocop`,
   `css:verify_theme`, `css:verify_rendered`, `herb:compile`, `yard:verify`,
   `yard:coverage`. Green before every commit.
+- `bundle exec rake test:visual` — the golden screenshots of every preview
+  (`test/visual_baselines`, 69 of them). A browser's work, so it is not in
+  CI: the family's release ritual runs it before anything is pushed. When a
+  frame change is intended, re-record with `VISUAL_REBASELINE=1` in the
+  same commit; the goldens drifted for two months once because nothing
+  ran them.
 - `npm test` — verifies the vendored d3 kernel build (`vendor:d3:verify`),
   then vitest (+ the drift gates: controllers_manifest, events_declaration).
 - `npm run manifest` — regenerate `config/controllers_manifest.json`;
