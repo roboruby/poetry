@@ -48,6 +48,7 @@ module Poetry
     AGENT_LINE = %(@import "./poetry/agent.css" layer(base);)
     # The reset floor, vendored only for hosts that opted out of preflight.
     RESET_FILE = "app/assets/tailwind/poetry/reset.css"
+    # The entry line that imports the floor, beside the theme in layer(base).
     RESET_LINE = %(@import "./poetry/reset.css" layer(base);)
     # The theme slot: --theme swaps its CONTENT, the filename stays put.
     STYLE_SLOT = "app/assets/tailwind/poetry/style-default.css"
