@@ -400,7 +400,14 @@
         poetry-ui and a BEM merger of your own still reaches your kit. The
         mode is decided per kit: a kit declares it once
         on its base class (<code>css_mode :bem</code>, inherited) or pins
-        its namespace (<code>Poetry::Core::CSS::Modes.pin("Acme::Ui", :bem)</code>);
+        its namespace (<code>Poetry::Core::CSS::Modes.pin("Acme::Ui", :bem)</code>).
+        A pin follows the dictionary: a subclass of a Poetry component
+        keeps Poetry's Tailwind mode even inside a BEM-pinned namespace,
+        because the dictionary it inherits was written that way, and a
+        declaration on the class beats every pin. Give such a subclass its
+        own <code>Style</code> sidecar (<code>Acme::Badge2::Style &lt;
+        Poetry::Ui::Badge::Style</code>): a bare subclass has no dictionary
+        and renders no classes at all;
         the global <code>Poetry::Core::Config.current.css_mode</code> is the
         default for kits that declare nothing, and a <code>css_mode:</code>
         keyword on a <code>css</code> call wins over all of them. There is
