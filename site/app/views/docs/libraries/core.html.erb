@@ -127,17 +127,17 @@
   CODE
   bem_classes_source = <<~CODE
     pill = MyKit::Pill::Component.new(variant: :danger, interactive: true)
-    pill.css        # => "my-kit-pill my-kit-pill--interactive my-kit-pill--variant-danger"
-    pill.css(:icon) # => "my-kit-pill__icon"
+    pill.css        # => "my_kit-pill my_kit-pill--interactive my_kit-pill--variant-danger"
+    pill.css(:icon) # => "my_kit-pill__icon"
   CODE
   bem_reference_source = <<~CODE
-    /* poetry BEM reference for `.my-kit-pill` - capsule 1a2b3c...
+    /* poetry BEM reference for `.my_kit-pill` - capsule 1a2b3c...
        Generated from the Style dictionary; consumers on css_mode = :bem
        style these selectors with their own CSS. */
-    .my-kit-pill { /* tailwind-equivalent: inline-flex items-center gap-1 rounded-full ... */ }
-    .my-kit-pill__icon { /* tailwind-equivalent: size-3 shrink-0 */ }
-    .my-kit-pill--variant-danger { /* tailwind-equivalent: bg-destructive/10 text-destructive */ }
-    .my-kit-pill--interactive { /* tailwind-equivalent: cursor-pointer hover:opacity-80 ... */ }
+    .my_kit-pill { /* tailwind-equivalent: inline-flex items-center gap-1 rounded-full ... */ }
+    .my_kit-pill__icon { /* tailwind-equivalent: size-3 shrink-0 */ }
+    .my_kit-pill--variant-danger { /* tailwind-equivalent: bg-destructive/10 text-destructive */ }
+    .my_kit-pill--interactive { /* tailwind-equivalent: cursor-pointer hover:opacity-80 ... */ }
   CODE
   tokens_source = <<~CODE
     :root {

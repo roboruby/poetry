@@ -94,7 +94,7 @@ refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
   the last edit (unknown components/slots/variants/wiring, icon names,
   enum values, typed-slot props, helper + setter arity, yield-less
   blocks, setter keywords, required content blocks, required slots,
-  did-you-mean, `--json`; `poetry:install` adds the `herb` gem it parses with). An edit
+  did-you-mean, `POETRY_CHECK_JSON=1` for JSON; `poetry:install` adds the `herb` gem it parses with). An edit
   made after your last check is unverified markup - re-run it. Mailer
   templates (`*_mailer/`, the mailer layout) keep their inline colors:
   email has no tokens, so the raw-color rule is quiet there. Values that

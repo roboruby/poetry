@@ -40,9 +40,10 @@
       <h2 id="server">The server</h2>
       <p>
         <code>poetry-agent</code> is a standard stdio MCP server with no SDK
-        dependency. It is boot-free: it reads the registries committed in the
-        gems (and your app's own, once <code>bin/rails poetry:registry</code>
-        and <code>poetry:stimulus:manifest</code> have written them) rather
+        dependency. It is boot-free: it reads the registries and controllers
+        manifests committed in the gems (and your app's own registry and
+        manifest, once <code>bin/rails poetry:registry</code> and
+        <code>poetry:stimulus:manifest</code> have written them) rather
         than booting Rails, so it starts instantly. And it is
         read-only by design: every tool describes or verifies, none can edit
         your app.

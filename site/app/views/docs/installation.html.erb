@@ -80,8 +80,10 @@
         poetry-charts, and <code>--no-preflight</code> when your Tailwind entry
         omits preflight (see
         <a href="#preflight">Installing into an app that already has CSS</a>).
-        File creations skip what exists; injections append
-        only missing lines. Before writing anything it lists every Poetry
+        Vendored files refresh on every run, the four files you own
+        (<code>base.css</code>, <code>typeset.css</code>, the initializer,
+        the components manifest) are seeded once and never rewritten, and
+        injections append only missing lines. Before writing anything it lists every Poetry
         token name your stylesheets already declare; those keep their values
         (the Theming guide, "Your tokens win").
       </p>
@@ -144,9 +146,13 @@
       <p>
         The floor is preflight itself, generated from the pinned Tailwind
         and gated against it, with every selector wrapped in
-        <code>:where()</code>. It has zero specificity, so your own reset
-        wins wherever it speaks and the floor fills only what nothing else
-        declared. On a fresh entry the flag also writes the split
+        <code>:where()</code>. It has zero specificity, so the floor fills
+        only what nothing else declared: an unlayered rule of yours always
+        wins, and a rule you import into <code>layer(base)</code> wins when
+        it comes after the floor's import (same layer, same zero
+        specificity, later wins). One deliberate exception:
+        <code>[hidden]</code> keeps preflight's <code>!important</code>, so
+        a hidden element stays hidden under any utility. On a fresh entry the flag also writes the split
         no-preflight import; on an existing entry it never touches your
         import lines. A plain re-run keeps the floor once installed. If an
         entry imports neither preflight nor the floor, the installer and
@@ -241,6 +247,17 @@
 
   <section class="flex flex-col gap-4">
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="fresh-host-notes">Two notes from a fresh Rails 8.1 host</h2>
+      <p>
+        Neither is Poetry's, both cost an hour if unknown. Rails 8.1.3 with
+        the json gem at 3.0 returns 500 on every request after the first in
+        a process (the session cookie decode calls <code>JSON.parse</code>
+        with two arguments, which json 3 rejects); pin
+        <code>gem "json", "&lt; 3"</code> until Rails ships the fix. And
+        <code>rails g scaffold ... password:digest</code> needs
+        <code>bcrypt</code> enabled in the Gemfile before it runs; the
+        generator's own fixture template references it.
+      </p>
       <h2 id="scaffold-templates">Scaffold templates</h2>
       <p>
         Rails lets an app override its generator templates from
