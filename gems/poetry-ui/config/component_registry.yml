@@ -44,6 +44,7 @@ components:
         item: 0
       yieldless:
       - item
+    helper: poetry_accordion
     description: A vertically stacked set of interactive headings that each reveal
       a section of content.
     elements:
@@ -188,6 +189,7 @@ components:
       many: false
       description: Optional corner action (a dismiss button or link), pinned to the
         top-right.
+    helper: poetry_alert
     description: A callout that highlights an important inline message.
     elements:
     - title
@@ -273,6 +275,7 @@ components:
         cancel: 0
       yieldless:
       - cancel
+    helper: poetry_alert_dialog
     description: A modal dialog that interrupts the user and expects a response.
     elements:
     - content
@@ -388,6 +391,7 @@ components:
       description: 'A CSS <ratio>: "16/9", "1", "1.5" - kept a string so the fraction
         survives verbatim into the --ratio custom property.'
     slots: []
+    helper: poetry_aspect_ratio
     description: Locks its content to a fixed width-to-height ratio.
     elements: []
     capsule: e82cf8a38845
@@ -473,6 +477,7 @@ components:
         trigger: 0
       yieldless:
       - trigger
+    helper: poetry_attachment
     description: A file or image chip showing its name, type, and size.
     elements:
     - media
@@ -577,6 +582,7 @@ components:
       type: string
       description: The initial input text.
     slots: []
+    helper: poetry_autocomplete
     description: An input that suggests options as you type - the text itself is the
       value.
     slot_extras:
@@ -747,6 +753,7 @@ components:
       many: false
       description: Decorative presence dot, bottom-right; keep the status meaning
         in label:.
+    helper: poetry_avatar
     description: A user's image with an initials fallback.
     elements:
     - image
@@ -811,6 +818,7 @@ components:
       description: Renders the pill as a real <a> - a navigational chip; the theme's
         link hover treatments activate on exactly this element.
     slots: []
+    helper: poetry_badge
     description: A small count or status descriptor.
     elements: []
     capsule: 393fe8c869c4
@@ -873,6 +881,7 @@ components:
         - icon
       yieldless:
       - separator
+    helper: poetry_breadcrumb
     description: Shows the path to the current page as a trail of links.
     slot_extras:
     - ellipsis
@@ -970,6 +979,7 @@ components:
         - align
       yieldless:
       - reactions
+    helper: poetry_bubble
     description: A chat message bubble aligned to its sender.
     elements:
     - group
@@ -1086,6 +1096,7 @@ components:
     - name: trailing
       many: false
       description: Optional trailing visual, rendered inside the icon span.
+    helper: poetry_button
     description: Triggers an action or event, such as submitting a form or opening
       a dialog.
     elements: []
@@ -1160,6 +1171,7 @@ components:
       description: The join axis - a horizontal row or a vertical stack.
     options: []
     slots: []
+    helper: poetry_button_group
     description: Visually joins adjacent buttons and controls into one group.
     elements:
     - text
@@ -1217,6 +1229,7 @@ components:
       default: 0
       description: The first weekday column (0 = Sunday .. 6 = Saturday).
     slots: []
+    helper: poetry_calendar
     description: A month grid for selecting single dates or ranges.
     elements:
     - nav
@@ -1458,6 +1471,7 @@ components:
         footer: 0
       yieldless:
       - footer
+    helper: poetry_card
     description: A container that groups related content and actions.
     elements:
     - header
@@ -1531,6 +1545,7 @@ components:
       - item
       required_content:
         item: the slide
+    helper: poetry_carousel
     description: A slideshow for cycling through content, built on native scroll-snap.
     elements:
     - content
@@ -1663,6 +1678,7 @@ components:
       default: '1'
       description: The value submitted when checked (the Rails check_box "1").
     slots: []
+    helper: poetry_checkbox
     description: A control for toggling a single value on or off.
     elements:
     - indicator
@@ -1773,6 +1789,7 @@ components:
       description: 'The displayed text - also what copies, unless text_to_copy: overrides
         it.'
     slots: []
+    helper: poetry_clipboard_text
     description: A read-only value with a button to copy it to the clipboard.
     elements:
     - input
@@ -1872,6 +1889,7 @@ components:
       description: Renders CSS-counter line numbers - never part of selection or copied
         text.
     slots: []
+    helper: poetry_code_block
     description: A syntax-highlighted code panel with a copy button and optional line
       numbers.
     elements:
@@ -1959,6 +1977,7 @@ components:
         trigger: 0
       yieldless:
       - trigger
+    helper: poetry_collapsible
     description: An interactive element that expands and collapses a section of content.
     controllers:
     - identifier: poetry--core--state
@@ -2159,6 +2178,7 @@ components:
         item: 0
         group: 0
         separator: 0
+    helper: poetry_combobox
     description: A text input with an autocomplete popover for picking from a list.
     elements:
     - trigger
@@ -2623,6 +2643,7 @@ components:
         item: 0
         group: 0
         separator: 0
+    helper: poetry_command
     description: A command palette for fast, keyboard-driven search and actions.
     elements:
     - input_wrapper
@@ -2835,6 +2856,7 @@ components:
         trigger: 0
       yieldless:
       - trigger
+    helper: poetry_command_dialog
     description: The command palette in a modal dialog, summonable from anywhere.
     slot_extras:
     - empty
@@ -3242,6 +3264,7 @@ components:
         trigger: 0
       yieldless:
       - trigger
+    helper: poetry_context_menu
     description: A menu of actions revealed by right-clicking an element.
     elements:
     - content
@@ -3615,6 +3638,7 @@ components:
         column: 1
       required_content:
         column: the cell renderer - { |row| ... }
+    helper: poetry_data_table
     description: A table with sorting, row selection, and sticky headers.
     elements:
     - toolbar
@@ -3745,6 +3769,7 @@ components:
       type:
       description: Date, or an ISO yyyy-mm-dd string; nil renders empty.
     slots: []
+    helper: poetry_date_field
     description: A segmented input for typing a date one part at a time.
     elements:
     - group
@@ -3861,6 +3886,7 @@ components:
         a typed date (parseable text re-selects the calendar) with a calendar icon-button
         opening the popover. Single mode only."
     slots: []
+    helper: poetry_date_picker
     description: A date field that opens a calendar popover for selection.
     elements:
     - trigger_single
@@ -3989,6 +4015,7 @@ components:
       type:
       description: Date, or an ISO yyyy-mm-dd string; nil renders empty.
     slots: []
+    helper: poetry_date_time_field
     description: A segmented input for typing a date and a time one part at a time.
     elements:
     - group
@@ -4092,6 +4119,7 @@ components:
       required: true
       description: The URL to fetch - required; rendering without it raises.
     slots: []
+    helper: poetry_deferred
     description: A region that lazily loads its content on visibility, with skeleton
       and error states.
     controllers:
@@ -4187,6 +4215,7 @@ components:
     - name: footer
       many: false
       description: The action row at the bottom of the panel.
+    helper: poetry_dialog
     description: A window overlaid on the page for content that requires attention.
     elements:
     - content
@@ -4350,6 +4379,7 @@ components:
     - name: footer
       many: false
       description: The action row at the bottom of the panel.
+    helper: poetry_drawer
     description: A gesture-driven panel that slides in from a screen edge.
     elements:
     - content
@@ -4840,6 +4870,7 @@ components:
         trigger: 0
       yieldless:
       - trigger
+    helper: poetry_dropdown_menu
     description: A menu of actions or options triggered by a button.
     elements:
     - content
@@ -5158,6 +5189,7 @@ components:
     - name: description
       many: false
       description: Muted copy under the title.
+    helper: poetry_empty
     description: An empty-state placeholder with an icon, message, and actions.
     elements:
     - header
@@ -5258,6 +5290,7 @@ components:
       description: Marks the control required via aria-required only - never the native
         required attribute.
     slots: []
+    helper: poetry_field
     description: Wraps a form control with its label, hint, and validation message.
     slot_extras:
     - hint
@@ -5328,6 +5361,7 @@ components:
       description: ":choices packs a run of horizontal checkbox/switch fields tighter."
     options: []
     slots: []
+    helper: poetry_field_group
     elements: []
     capsule: 3a6d6c901a2d
     agent_rules:
@@ -5349,6 +5383,7 @@ components:
     styles: []
     options: []
     slots: []
+    helper: poetry_field_separator
     elements:
     - content
     - line
@@ -5394,6 +5429,7 @@ components:
       description: ":label renders the legend at label size - for a group that is
         one setting explained by its rows (checkbox/switch runs)."
     slots: []
+    helper: poetry_fieldset
     elements:
     - legend
     - hint
@@ -5467,6 +5503,7 @@ components:
       type: string
       description: The dropzone's instruction line - overrides the translated default.
     slots: []
+    helper: poetry_file_input
     description: A control for selecting, previewing, and removing files to upload.
     elements:
     - dropzone
@@ -5645,6 +5682,7 @@ components:
         trigger: 0
       yieldless:
       - trigger
+    helper: poetry_hover_card
     description: A card that reveals preview content when its trigger is hovered.
     elements:
     - content
@@ -5814,6 +5852,7 @@ components:
         are validated against the icon set statically - a misspelled name is caught
         before it can crash a render.'
     slots: []
+    helper: poetry_icon
     description: Renders an inline SVG icon from the icon set.
     agent_rules:
     - 'Icons are decorative by default (aria-hidden); pass label: when the icon stands
@@ -5857,6 +5896,7 @@ components:
       type: string
       description: The current value.
     slots: []
+    helper: poetry_input
     description: A form control for entering a single line of text.
     elements: []
     capsule: 6c6f930e4e44
@@ -5898,6 +5938,7 @@ components:
     styles: []
     options: []
     slots: []
+    helper: poetry_input_group
     description: One bordered surface combining an input with buttons, icons, or add-ons.
     elements:
     - addon
@@ -5985,6 +6026,7 @@ components:
       description: Current code (server-rendered into the input AND the cells). The
         FormBuilder deliberately never round-trips it (a rejected code is dead).
     slots: []
+    helper: poetry_input_otp
     description: A fixed-length, segmented input for one-time passcodes.
     elements:
     - input
@@ -6130,6 +6172,7 @@ components:
     - name: footer
       many: false
       description: Full-width row below the media/content columns.
+    helper: poetry_item
     description: A generic list row with media, content, and actions.
     elements:
     - media
@@ -6199,6 +6242,7 @@ components:
     styles: []
     options: []
     slots: []
+    helper: poetry_kbd
     description: Displays a keyboard key or shortcut.
     elements: []
     capsule: 27e02c8d2d38
@@ -6221,6 +6265,7 @@ components:
       description: The id of the control this label names; omit it for a group label
         (the group then points at this label via aria-labelledby).
     slots: []
+    helper: poetry_label
     description: An accessible caption bound to a form control.
     elements: []
     capsule: b19260dfcda4
@@ -6260,6 +6305,7 @@ components:
       required: true
       description: The destination URL.
     slots: []
+    helper: poetry_link
     description: A styled navigational hyperlink.
     elements: []
     capsule: e25343f18116
@@ -6312,6 +6358,7 @@ components:
         icon: 0
       yieldless:
       - icon
+    helper: poetry_marker
     description: A transcript divider or inline status marker for chat UIs.
     elements:
     - icon
@@ -6650,6 +6697,7 @@ components:
           required_slots:
             trigger: the top-level menu button
             item: at least one item
+    helper: poetry_menubar
     description: A horizontal bar of menus, like a desktop application menu.
     elements:
     - menu
@@ -7009,6 +7057,7 @@ components:
     - name: footer
       many: false
       description: Timestamps / delivery state below the bubbles.
+    helper: poetry_message
     description: A chat row pairing an author and avatar with message content.
     elements:
     - group
@@ -7087,6 +7136,7 @@ components:
       description: Opt-in observation of which rows are on screen - emits a visibility
         event as the visible set changes.
     slots: []
+    helper: poetry_message_scroller
     description: A streaming-aware transcript that keeps the latest message in view.
     elements:
     - viewport
@@ -7245,6 +7295,7 @@ components:
         item: 0
       yieldless:
       - item
+    helper: poetry_metadata_list
     description: A key-value list for labeled attributes on detail pages.
     elements:
     - item
@@ -7316,6 +7367,7 @@ components:
         readout. Visible readout only - ARIA 1.2 deprecated aria-valuetext on role=meter,
         so aria-valuenow carries the value.
     slots: []
+    helper: poetry_meter
     description: A gauge that shows a quantity within a known range.
     elements: []
     capsule: 328a98df3a37
@@ -7378,6 +7430,7 @@ components:
       default: default
       description: The control size axis; :sm suits dense toolbars and table rows.
     slots: []
+    helper: poetry_native_select
     description: A styled wrapper around the real native select control.
     elements:
     - select
@@ -7445,6 +7498,7 @@ components:
         item: 1
       yieldless:
       - item
+    helper: poetry_navigation_menu
     description: A site-navigation bar with links and optional dropdown panels.
     slot_extras:
     - link
@@ -7710,6 +7764,7 @@ components:
       default: false
       description: Opt-in wheel stepping while the input is focused.
     slots: []
+    helper: poetry_number_field
     description: A numeric input with increment and decrement steppers.
     elements: []
     capsule: 992ce89b2903
@@ -7898,6 +7953,7 @@ components:
       required: true
       description: The total page count.
     slots: []
+    helper: poetry_pagination
     description: Navigation for moving between pages of content.
     elements:
     - content
@@ -8012,6 +8068,7 @@ components:
     - name: description
       many: false
       description: Supporting text - presence wires the content's aria-describedby.
+    helper: poetry_popover
     description: Rich floating content anchored to a trigger.
     elements:
     - content
@@ -8179,6 +8236,7 @@ components:
       required: true
       description: The current progress, clamped into 0..max:.
     slots: []
+    helper: poetry_progress
     description: A determinate progress bar toward task completion.
     elements:
     - track
@@ -8257,6 +8315,7 @@ components:
         with_progress { custom } replaces it (marked data-custom so the controller
         leaves it alone). class: merges onto the progress element (e.g. w-full for
         a full-width segment bar over the base w-fit).'
+    helper: poetry_questionnaire
     description: A one-question-at-a-time survey flow with choices, free answers,
       and validation.
     slot_extras:
@@ -8523,6 +8582,7 @@ components:
         inside a selectable bordered label, the radio pinned to the right.'
       setter_args:
         item: 0
+    helper: poetry_radio_group
     description: A set of options where only one can be selected at a time.
     elements:
     - item
@@ -8677,6 +8737,7 @@ components:
       - panel
       required_content:
         panel: the panel content
+    helper: poetry_resizable
     description: Panels with draggable handles for resizing adjacent regions.
     elements:
     - panel
@@ -8757,6 +8818,7 @@ components:
       description: The region's accessible name (role=region + aria-label) - required,
         because a focusable region must be named.
     slots: []
+    helper: poetry_scroll_area
     description: A bounded, keyboard-reachable scroll region with styled scrollbars.
     elements:
     - viewport
@@ -8821,6 +8883,7 @@ components:
       type: string
       description: The pre-filled query; presence unhides the clear affordance.
     slots: []
+    helper: poetry_search_field
     description: A search input with clear and search affordances.
     elements:
     - input
@@ -9005,6 +9068,7 @@ components:
         item: 0
         group: 0
         separator: 0
+    helper: poetry_select
     description: A dropdown for choosing one option from a list.
     elements:
     - trigger
@@ -9305,6 +9369,7 @@ components:
       description: The secret's current value; present = first paint is masked, blank
         = the empty state.
     slots: []
+    helper: poetry_sensitive_input
     description: A masked secret field with a reveal toggle and a copy button.
     elements:
     - group
@@ -9475,6 +9540,7 @@ components:
       default: horizontal
       description: The divider's axis.
     slots: []
+    helper: poetry_separator
     description: A thin divider between content, decorative or semantic.
     elements: []
     capsule: 359c514388a3
@@ -9542,6 +9608,7 @@ components:
     - name: footer
       many: false
       description: The action row at the bottom of the panel.
+    helper: poetry_sheet
     description: A dialog that slides in from a screen edge.
     elements:
     - content
@@ -9685,6 +9752,7 @@ components:
     - name: inset
       many: false
       description: The page area beside the column - rendered as the <main> inset.
+    helper: poetry_sidebar
     description: A collapsible app-shell navigation column.
     elements:
     - wrapper
@@ -9918,6 +9986,7 @@ components:
     styles: []
     options: []
     slots: []
+    helper: poetry_skeleton
     description: A pulsing placeholder shown while content loads.
     elements: []
     capsule: f4b0700a6dec
@@ -10000,6 +10069,7 @@ components:
       description: 'Range mode: [low, high] -> two thumbs, sorted. ArgumentError if
         given with value:, unsorted, or length != 2.'
     slots: []
+    helper: poetry_slider
     description: An input for selecting a value or range along a track.
     elements:
     - track
@@ -10159,6 +10229,7 @@ components:
       default: Loading
       description: What assistive tech announces - name the loading context.
     slots: []
+    helper: poetry_spinner
     description: An indeterminate loading indicator that announces itself.
     elements: []
     capsule: 547c232b9575
@@ -10208,6 +10279,7 @@ components:
       many: false
       description: The trend-visual slot (sparkline, chart, glyph) below the text
         stack.
+    helper: poetry_stat
     description: 'A single KPI: a muted label over a large metric value.'
     elements:
     - label
@@ -10303,6 +10375,7 @@ components:
       default: '1'
       description: Submitted when the switch is on. Ignored without name:.
     slots: []
+    helper: poetry_switch
     description: A toggle for turning a setting on or off.
     elements:
     - thumb
@@ -10390,6 +10463,7 @@ components:
       description: Pins the <thead> while the container scrolls; needs a height cap
         (container_class:) to take effect, and requires scroll_label:.
     slots: []
+    helper: poetry_table
     description: A semantic table for rows and columns of data.
     elements:
     - container
@@ -10478,6 +10552,7 @@ components:
         tab: 1
       yieldless:
       - tab
+    helper: poetry_tabs
     description: A tablist of triggers that switch between content panels.
     elements:
     - list
@@ -10625,6 +10700,7 @@ components:
         tag: 0
       yieldless:
       - tag
+    helper: poetry_tag_group
     description: A set of removable chips or tokens.
     elements:
     - label
@@ -10737,6 +10813,7 @@ components:
       type: string
       description: The initial text, rendered as the element's content.
     slots: []
+    helper: poetry_textarea
     description: A form control for entering multiple lines of text.
     elements: []
     capsule: ccb23b46547a
@@ -10815,6 +10892,7 @@ components:
       type:
       description: Date, or an ISO yyyy-mm-dd string; nil renders empty.
     slots: []
+    helper: poetry_time_field
     description: A segmented input for typing a time one part at a time.
     elements:
     - group
@@ -10923,6 +11001,7 @@ components:
         item: 0
       yieldless:
       - item
+    helper: poetry_timeline
     description: A sequence of dated events as an ordered list.
     elements:
     - item
@@ -11029,6 +11108,7 @@ components:
         action: 0
       yieldless:
       - action
+    helper: poetry_toast
     description: A brief, auto-dismissing notification message.
     elements:
     - icon
@@ -11156,6 +11236,7 @@ components:
       default: outline
       description: The Button variant the trigger renders at.
     slots: []
+    helper: poetry_toast_trigger
     controllers:
     - identifier: poetry--core--toast-trigger
       targets: []
@@ -11228,6 +11309,7 @@ components:
       description: The maximum visible toasts; overflow queues hidden with timers
         held.
     slots: []
+    helper: poetry_toaster
     description: The region that stacks and manages toast notifications.
     elements: []
     capsule: 62bf4faba383
@@ -11316,6 +11398,7 @@ components:
       default: false
       description: The server-rendered pressed state.
     slots: []
+    helper: poetry_toggle
     description: A two-state button that can be pressed on or off.
     elements: []
     capsule: a33e1008fa61
@@ -11438,6 +11521,7 @@ components:
         item: 0
       yieldless:
       - item
+    helper: poetry_toggle_group
     description: A set of toggle buttons for single or multiple selection.
     elements:
     - item
@@ -11591,6 +11675,7 @@ components:
         button: 0
         input: 0
         separator: 0
+    helper: poetry_toolbar
     description: A horizontal group of controls that acts as one keyboard tab stop
       - Tab passes over the group, Arrow keys move between its controls.
     elements: []
@@ -11696,6 +11781,7 @@ components:
         trigger: 0
       yieldless:
       - trigger
+    helper: poetry_tooltip
     description: A floating label describing an element on hover or focus.
     elements:
     - content
@@ -11872,6 +11958,7 @@ components:
       required: true
       description: The tree's accessible name. Required.
     slots: []
+    helper: poetry_tree
     description: A hierarchical list of expandable, selectable nodes.
     slot_extras:
     - item
@@ -11968,6 +12055,7 @@ components:
       description: Appends typeset-<preset> - a tiny class in the app's own CSS retuning
         the rhythm variables (e.g. "docs").
     slots: []
+    helper: poetry_typeset
     description: Prose styling for long-form and rendered-markdown content.
     elements: []
     capsule: d236e8297167

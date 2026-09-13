@@ -80,7 +80,13 @@ namespace :poetry do
     # The committed app registry (poetry:registry) against the live
     # classes: stale means the MCP server describes components the app no
     # longer has, or misses new ones. Missing is not a finding (opt-in).
-    if Poetry::Core::HostComponents.committed_state(root: Rails.root) == :stale
+    if Poetry::Core::Registry.invalid_at?(Rails.root)
+      findings << Poetry::Core::Check::Finding.new(
+        rule: "registry-invalid", severity: :warning, file: Poetry::Core::Registry::RELATIVE_PATH,
+        message: "the committed app registry is not a registry file (empty, malformed, or the wrong shape) - " \
+                 "run `bin/rails poetry:registry` to rewrite it; until then the boot-free surfaces ignore it"
+      )
+    elsif Poetry::Core::HostComponents.committed_state(root: Rails.root) == :stale
       findings << Poetry::Core::Check::Finding.new(
         rule: "registry-stale", severity: :warning, file: Poetry::Core::Registry::RELATIVE_PATH,
         message: "the committed app registry no longer matches app/components - run " \
