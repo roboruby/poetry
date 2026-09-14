@@ -341,5 +341,4 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
-
 end
