@@ -578,6 +578,11 @@ components:
     - name: placeholder
       type: string
       description: Placeholder text shown while the input is empty.
+    - name: side_offset
+      type: integer
+      default: 4
+      description: Gap in px between the input and the suggestion popup (Combobox's
+        default).
     - name: value
       type: string
       description: The initial input text.
@@ -682,6 +687,8 @@ components:
           conditional: if
       - identifier: poetry--core--popper
         registers: true
+        values:
+        - name: side_offset
     - element: input
       controllers:
       - identifier: poetry--core--autocomplete

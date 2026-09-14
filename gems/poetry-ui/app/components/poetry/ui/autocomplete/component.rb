@@ -34,7 +34,10 @@ module Poetry
               register
               value :open_on_focus, "false", if: -> { !open_on_focus }
             end
-            controller(:popper) { register }
+            controller :popper do
+              register
+              value :side_offset
+            end
           end
           on :input do
             controller :autocomplete do
@@ -73,6 +76,8 @@ module Poetry
                                      doc: "The no-matches message; hidden while anything matches."
         option :open, :boolean, default: false, doc: "Server-renders the suggestion popup open."
         option :open_on_focus, :boolean, default: true, doc: "Opens the suggestions on focus; false waits for typing."
+        option :side_offset, :integer, default: 4,
+                                       doc: "Gap in px between the input and the suggestion popup (Combobox's default)."
 
         part "autocomplete", "Root wrapper carrying the controller + popper pair"
         part "autocomplete-input", "The REAL text input - role=combobox with aria-expanded " \

@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.4]
+
+### Fixed
+
+- The Autocomplete popup opens 4 pixels below the input, like Combobox, Select and the menus, instead of flush against it; `side_offset:` sets the gap.
+
 ## [0.1.3] - 2026-09-13
 
 ### Fixed
