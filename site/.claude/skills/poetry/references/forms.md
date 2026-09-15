@@ -15,6 +15,7 @@ Class: Poetry::Ui::Autocomplete::Component - BEM block `poetry-ui-autocomplete`.
 - `open:` (boolean) - default false - Server-renders the suggestion popup open.
 - `open_on_focus:` (boolean) - default true - Opens the suggestions on focus; false waits for typing.
 - `placeholder:` (string) - Placeholder text shown while the input is empty.
+- `side_offset:` (integer) - default 4 - Gap in px between the input and the suggestion popup (Combobox's default).
 - `value:` (string) - The initial input text.
 - PART `autocomplete` - Root wrapper carrying the controller + popper pair
 - PART `autocomplete-input` - The REAL text input - role=combobox with aria-expanded tracking the popup, the form value itself
@@ -22,7 +23,7 @@ Class: Poetry::Ui::Autocomplete::Component - BEM block `poetry-ui-autocomplete`.
 - PART `autocomplete-list` - role=listbox holding the options
 - PART `autocomplete-item` - One suggestion - role=option; commit writes its label (or value:) into the input | states: data-label (always - what filtering matches and commit writes); data-value (value: given - overrides the committed text); data-highlighted (the keyboard/pointer highlight); data-disabled (disabled: - skipped by filtering and commit)
 - PART `autocomplete-empty` - The no-matches message (hidden while anything matches)
-- WIRING root: `poetry--core--autocomplete` registers; values open_on_focus (if) | `poetry--core--popper` registers
+- WIRING root: `poetry--core--autocomplete` registers; values open_on_focus (if) | `poetry--core--popper` registers; values side_offset
 - WIRING input: `poetry--core--autocomplete` actions input on input, focus on focus, blurred on focusout, keydown on keydown; targets input | `poetry--core--popper` targets anchor
 - WIRING content: `poetry--core--autocomplete` targets content | `poetry--core--popper` targets content
 - WIRING list: `poetry--core--autocomplete` targets list

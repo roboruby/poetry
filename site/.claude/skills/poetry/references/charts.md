@@ -98,7 +98,7 @@ Class: Poetry::Charts::BarChart::Component - BEM block `poetry-charts-bar_chart`
 - `live:` (boolean) - default false - Embeds the {spec, frame} payload so the client renderer can recompute geometry when data changes without a server round-trip.
 - `margin:` () - Plot margin overrides ({ top:, right:, bottom:, left: }), merged over the defaults.
 - `offset:` (symbol) - one of none|expand, default "none" - Stack baseline mode - :expand normalizes each stack to percentages.
-- `orientation:` (symbol) - one of vertical|horizontal, default "vertical" - :vertical = columns (the default); :horizontal = bars growing rightward - the category axis moves to the Y side (with_y_axis data_key:) and the numeric axis hides.
+- `orientation:` (symbol) - one of vertical|horizontal, default "vertical" - :vertical = columns (the default); :horizontal = bars growing rightward - the category axis moves to the Y side (with_y_axis data_key:) and the numeric axis hides. The category strip widens to fit the longest label (up to 40% of the width; longer labels end in an ellipsis) unless margin: sets left: yourself.
 - `sync:` (string)
 - `width:` (integer) - default 640 - ViewBox width in pixels; the rendered chart scales to its container.
 - `zoom:` (boolean) - default false - Drag-to-zoom on the plot; slices the data client-side, so it needs live: true.
