@@ -1,5 +1,5 @@
 {
-  "poetry_version": "0.1.3",
+  "poetry_version": "0.1.4",
   "gem": "@poetry/charts",
   "objects": [
     {
@@ -180,7 +180,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/charts/live/renderer.js",
-          "line": 58
+          "line": 63
         },
         {
           "name": "computeCartesian",
@@ -205,7 +205,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/charts/live/renderer.js",
-          "line": 78
+          "line": 83
         },
         {
           "name": "applyCartesian",
@@ -237,7 +237,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/charts/live/renderer.js",
-          "line": 272
+          "line": 277
         }
       ],
       "constants": []
