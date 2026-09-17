@@ -7,6 +7,9 @@ unless ENV["COVERAGE"] == "0"
     enable_coverage :branch
     skip %r{^/test/}
     cover "{app,lib}/**/*.rb"
+    # The floor: one point under the measured value, identical on both CI
+    # Rubies. Raise it when coverage climbs; never lower it in a feature commit.
+    minimum_coverage line: 97, branch: 78
   end
 end
 

@@ -24,6 +24,7 @@ gem "rubocop", "~> 1.21"
 gem "rubocop-minitest", require: false
 gem "rubocop-performance", require: false
 gem "rubocop-rake", require: false
+gem "rubocop-yard", require: false
 
 gem "bundler-audit", require: false
 gem "herb", ">= 0.10.3" # herb:compile gate - every template must compile under the Rails Herb engine

@@ -2,6 +2,7 @@ plugins:
   - rubocop-performance
   - rubocop-minitest
   - rubocop-rake
+  - rubocop-yard
 
 AllCops:
   TargetRubyVersion: 3.4
@@ -85,3 +86,8 @@ Naming/FileName:
   # the Poetry::Charts namespace; its name must match the gem, not snake_case.
   Exclude:
     - "lib/poetry-charts.rb"
+
+# YARD tags are the contract the docs, the skill and the agents read;
+# the long collection form (Array<String>) is the house style.
+YARD/CollectionStyle:
+  EnforcedStyle: long
