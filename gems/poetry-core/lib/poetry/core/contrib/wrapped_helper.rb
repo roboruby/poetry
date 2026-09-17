@@ -13,6 +13,7 @@ module Poetry
       # enables adding custom HTML around a component without modifying the
       # component itself, and respects the component's `render?` conditional logic.
       #
+      # @see Poetry::Core::Wrapper::Component
       # @example Basic usage
       #   class MyComponent < Poetry::Core::Component
       #     # WrappedHelper is already included via Poetry::Core::Component
@@ -44,8 +45,6 @@ module Poetry
       #   <%= render component.wrapped do |wrapper| %>
       #     <div class="wrapper"><%= wrapper.component %></div>
       #   <% end %>
-      #
-      # @see Poetry::Core::Wrapper::Component
       module WrappedHelper
         # Wraps the current component instance in a {Poetry::Core::Wrapper::Component}.
         #

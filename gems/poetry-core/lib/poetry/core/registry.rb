@@ -55,7 +55,8 @@ module Poetry
         # @param helper_args [Hash, nil] the "helper_args" section
         # @param source_root [Pathname] the gem root the paths resolve against
         # @param form_builder [Hash, nil] the "form_builder" section
-        # @param internal [Boolean] the file's internal marker
+        # @param internal [Boolean] true for a registry the family ships for its own tooling,
+        #   never merged into a host catalog
         def initialize(entries:, blocks:, helpers:, helper_args:, source_root:, form_builder: nil, internal: false) # rubocop:disable Metrics/ParameterLists
           @form_builder = form_builder
           @internal = internal

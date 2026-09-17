@@ -51,7 +51,6 @@ module Poetry
       #       render_component(component)
       #     end
       #   end
-      #
       class Base < ViewComponent::Preview
         self.abstract_class = true
 

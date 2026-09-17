@@ -127,11 +127,11 @@ module Poetry
         #   selects the set by
         # @param set [Object] the icon set (a {FileSet} over a directory of
         #   vendored SVGs, or any object honoring the same contract)
+        # @return [Object] the set, now registered
         # @example Register a vendored set and select it
         #   Poetry::Core::Icons.register(:my_icons,
         #     Poetry::Core::Icons::FileSet.new(dir: root.join("icons")))
         #   # config/initializers/poetry.rb: config.icon_library = :my_icons
-        # @return [Object] the set, now registered
         def register(key, set)
           registry[key.to_sym] = set
         end

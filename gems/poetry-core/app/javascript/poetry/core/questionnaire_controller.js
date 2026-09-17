@@ -57,6 +57,8 @@ export default class QuestionnaireController extends Controller {
   /**
    * The next button's click action: validate-gated advance - an invalid
    * active item takes focus instead.
+   *
+   * @returns {void} early exits hand a helper's (undefined) result back
    */
   next() {
     const items = this.#enabledItems()
@@ -72,6 +74,8 @@ export default class QuestionnaireController extends Controller {
   /**
    * The skip button's click action (optional items only): stamps skipped,
    * then advances - or submits from the last item.
+   *
+   * @returns {void} early exits hand a helper's (undefined) result back
    */
   skip() {
     const items = this.#enabledItems()

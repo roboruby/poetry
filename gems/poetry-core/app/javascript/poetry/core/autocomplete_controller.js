@@ -67,6 +67,7 @@ export default class AutocompleteController extends Controller {
    * ignored.
    *
    * @param {KeyboardEvent} event
+   * @returns {void} early exits hand a helper's (undefined) result back
    */
   keydown(event) {
     if (event.isComposing || event.keyCode === 229) return

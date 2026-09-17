@@ -58,7 +58,6 @@ module Poetry
       #
       # @note This module is automatically applied to ViewComponent::Preview when Poetry::Core::Preview::Base
       #   is loaded, so abstract_class functionality is available throughout the preview system.
-      #
       module Abstract
         # Hook method called when this module is extended into a class.
         #

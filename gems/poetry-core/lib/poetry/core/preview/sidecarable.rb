@@ -44,7 +44,6 @@ module Poetry
       #
       # @note Preview files are discovered using the glob pattern `**/{preview.rb,*_preview.rb}`,
       #   which matches both standalone `preview.rb` files and files ending with `_preview.rb`.
-      #
       module Sidecarable
         # Glob pattern for discovering preview files.
         #

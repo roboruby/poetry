@@ -216,6 +216,7 @@ export default class DrawerController extends DialogController {
    * snap back; snap-pointed sheets settle between their points instead.
    *
    * @param {PointerEvent} event
+   * @returns {void} early exits hand a helper's (undefined) result back
    */
   swipeEnd(event) {
     const swipe = this.#swipe

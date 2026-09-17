@@ -12,6 +12,8 @@ module Poetry
     # The configuration system is designed to be easily extensible while providing sensible
     # defaults for all Poetry::Core components.
     #
+    # @see Poetry::Core::CSS::TailwindMerger
+    # @see Poetry::Core::Stimulus::Merger
     # @example Accessing global configuration
     #   Poetry::Core::Config.current.classname_merger
     #   # => #<Poetry::Core::CSS::TailwindMerger:0x00007f8b1c0a3b40>
@@ -26,9 +28,6 @@ module Poetry
     # @example Using hash-style access
     #   Poetry::Core::Config.current[:classname_merger]
     #   Poetry::Core::Config.current[:custom_setting] = "value"
-    #
-    # @see Poetry::Core::CSS::TailwindMerger
-    # @see Poetry::Core::Stimulus::Merger
     class Config
       class << self
         # Creates a new configuration instance with default settings.
@@ -267,14 +266,7 @@ module Poetry
 
       delegate(*SETTINGS, *SETTINGS.map { |key| :"#{key}=" }, to: :@config)
 
-      # Delegates all method calls to the internal configuration object.
-      #
-      # This allows the Config instance to act as a transparent wrapper around
-      # ActiveSupport::OrderedOptions, supporting both method-style and hash-style
-      # access to configuration values.
-      #
-      # @api private
-      delegate_missing_to :@config
+      delegate_missing_to :@config # unknown keys flow through to the options, method- or hash-style
 
       # Initializes a new configuration instance with default values.
       #

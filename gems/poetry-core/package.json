@@ -19,6 +19,7 @@
     "@eslint/js": "^9.39.5",
     "@hotwired/stimulus": "^3.2.2",
     "eslint": "^9.39.5",
+    "eslint-plugin-jsdoc": "^63.0.0",
     "globals": "^16.0.0",
     "jsdom": "^30.0.1",
     "vitest": "^4.1.11"
@@ -26,6 +27,7 @@
   "scripts": {
     "test": "eslint app/javascript && vitest run",
     "manifest": "MANIFEST_WRITE=1 vitest run test/javascript/controllers_manifest.test.js test/javascript/state_vocabulary_manifest.test.js",
-    "lint": "eslint app/javascript"
+    "lint": "eslint app/javascript",
+    "jsdoc:floor": "JSDOC_FLOOR_WRITE=1 vitest run test/javascript/jsdoc_floor.test.js"
   }
 }

@@ -158,6 +158,7 @@ export default class CalendarController extends Controller {
    * by month, Home/End to the week edges.
    *
    * @param {KeyboardEvent} event
+   * @returns {void} early exits hand a helper's (undefined) result back
    */
   keydown(event) {
     const current = event.target.closest(DAY_SELECTOR)

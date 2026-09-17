@@ -417,6 +417,9 @@ export default class ComboboxController extends Controller {
    * the value empties, and a focused hidden button would drop focus to
    * body). Single mode only (the component raises on multiple; the guard
    * here is belt and braces).
+   *
+   * @returns {{value: (string|Array<string>), changed: boolean}} the value
+   *   after the clear and whether it moved (multiple mode: untouched, false)
    */
   clear() {
     if (this.multipleValue) return { value: [...this.#applied], changed: false }

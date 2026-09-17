@@ -29,7 +29,6 @@ module Poetry
       #     actions: { show: :mouseenter, hide: :mouseleave },
       #     classes: { active: "bg-blue-500" }
       #   )
-      #
       class Builder
         # Event aliases for common event combinations
         # @example Using hover_in alias

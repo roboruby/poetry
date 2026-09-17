@@ -19,6 +19,7 @@ module Poetry
       # 3. Preview-level template: `preview_name/preview.html.*`
       # 4. Default template (configurable, defaults to "poetry/core/preview")
       #
+      # @see Poetry::Core::Preview::Base
       # @example Basic usage with default template
       #   class ButtonPreview < Poetry::Core::Preview::Base
       #     # Uses the default template (poetry/core/preview)
@@ -65,8 +66,6 @@ module Poetry
       #       render_component
       #     end
       #   end
-      #
-      # @see Poetry::Core::Preview::Base
       module Template
         # The default template path used when no specific template is found.
         #

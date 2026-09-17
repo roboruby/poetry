@@ -23,11 +23,10 @@ module Poetry
       #   merger.merge('p-4', nil, '', 'rounded')
       #   # => 'p-4 rounded' (nil and blank values are filtered out)
       #
+      # @see Poetry::Core::CSS::BemMerger (the css_mode = :bem counterpart)
       # @example Working with symbols
       #   merger.merge(:rounded, :'text-center')
       #   # => 'rounded text-center' (symbols converted to strings)
-      #
-      # @see Poetry::Core::CSS::BemMerger (the css_mode = :bem counterpart)
       # @api private
       class TailwindMerger
         # Bounded FIFO cache over merge results: components render the same
