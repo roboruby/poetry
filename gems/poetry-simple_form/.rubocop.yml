@@ -2,6 +2,7 @@ plugins:
   - rubocop-performance
   - rubocop-minitest
   - rubocop-rake
+  - rubocop-yard
 
 AllCops:
   TargetRubyVersion: 3.4
@@ -49,3 +50,8 @@ Metrics/ClassLength:
 # Comprehensive, multi-assertion unit tests are intentional.
 Minitest/MultipleAssertions:
   Enabled: false
+
+# YARD tags are the contract the docs, the skill and the agents read;
+# the long collection form (Array<String>) is the house style.
+YARD/CollectionStyle:
+  EnforcedStyle: long
