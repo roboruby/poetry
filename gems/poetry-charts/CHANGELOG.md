@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.5]
+
+### Changed
+
+- The container, legend, tooltip and tooltip layer roots ride the core default `root_attributes`, passing only their own markup up; the rendered attributes are unchanged apart from their order on the element.
+
 ## [0.1.4] - 2026-09-15
 
 ### Changed

@@ -63,17 +63,16 @@ module Poetry
 
         # The frame div's attributes: part self-identification plus the
         # data-chart scope.
-        # @api private
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             {
               "data-slot" => "chart",
               "data-chart" => chart_id
-            }.merge(component_data_attributes)
+            }
           )
         end
 
-        private :chart_config, :chart_id, :theme_css, :root_attributes
+        private :chart_config, :chart_id, :theme_css
       end
     end
   end

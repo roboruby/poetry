@@ -110,7 +110,6 @@ module Poetry
         end
 
         # The box's attributes with the part self-identification.
-        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "chart-tooltip-content" }.merge(component_data_attributes)
@@ -161,7 +160,6 @@ module Poetry
         end
 
         private :chart_config, :rows, :nest_label?, :label_text, :row_classes, :indicator_classes, :value_wrap_classes
-        private :root_attributes
       end
     end
   end

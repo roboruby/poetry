@@ -43,18 +43,16 @@ module Poetry
 
         # The hidden box's attributes: part self-identification plus the
         # parent frame controller's tooltip target.
-        # @api private
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             {
               "data-slot" => "chart-tooltip",
               "hidden" => ""
-            }.merge(stimulus_attributes_for(:root))
-              .merge(component_data_attributes)
+            }
           )
         end
 
-        private :chart_config, :items, :root_attributes
+        private :chart_config, :items
       end
     end
   end

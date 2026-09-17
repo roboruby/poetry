@@ -80,11 +80,8 @@ module Poetry
         end
 
         # The legend row's attributes with the part self-identification.
-        # @api private
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "chart-legend-content" }.merge(component_data_attributes)
-          )
+          super({ "data-slot" => "chart-legend-content" })
         end
 
         # A swatch's guarded inline background (colors reaching a style
@@ -115,7 +112,7 @@ module Poetry
           }
         end
 
-        private :chart_config, :rows, :toggle_attributes, :root_attributes, :swatch_style
+        private :chart_config, :rows, :toggle_attributes, :swatch_style
       end
     end
   end
