@@ -45,10 +45,6 @@
 
           private
 
-          def root_attributes
-            html_attributes.merge_if_not_set(component_data_attributes)
-          end
-
           def count_tag
             tag.span(count, class: css(:count)) if count
           end
@@ -297,6 +293,18 @@
           over your defaults, with class conflicts resolved by the
           configured merger. Attributes not on the declared surface flow
           here automatically.
+        </li>
+        <li>
+          <code>root_attributes</code> is the root element's attributes,
+          ready to splat: <code>html_attributes</code> over the component's
+          own root markup, the <code>data-slot</code> and
+          <code>data-component</code> identity, and the root's Stimulus
+          wiring when a <code>use_stimulus</code> block declares
+          <code>:root</code>. A component with more to say on its root
+          overrides it and passes that markup up
+          (<code>super("role" => "status")</code>); a part's attributes
+          come from <code>element_attributes</code>, which merges the
+          part's wiring beneath the markup instead of clobbering it.
         </li>
         <li>
           Declarations double as ActiveModel validations: variant
