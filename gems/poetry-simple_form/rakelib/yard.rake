@@ -41,6 +41,44 @@ namespace :yard do
     puts "yard:coverage: #{count} undocumented (floor #{floor})"
   end
 
+  # yard-lint over the documented surface. YARD hides @api private objects
+  # from the reference (--hide-api private in .yardopts) and yard:coverage
+  # counts only what the reference shows; yard-lint has no such switch, so
+  # its offenses are filtered here against the YARD registry: an offense on
+  # an object inside an @api private class or module is not a finding.
+  desc "Fail on any yard-lint offense on the documented surface (missing @param lines, tag order, types)"
+  task :lint do
+    require "json"
+    require "yard"
+    system("bundle exec yard doc --no-output --no-progress --no-stats > /dev/null 2>&1")
+    YARD::Registry.load!(".yardoc")
+    private_api = lambda do |object|
+      node = object
+      until node.nil? || node.root?
+        return true if node.has_tag?(:api) && node.tag(:api).text == "private"
+
+        node = node.namespace
+      end
+      false
+    end
+    by_location = YARD::Registry.all.select(&:file).to_h { |o| [[File.expand_path(o.file.to_s), o.line], o] }
+    raw = `bundle exec yard-lint --no-progress --format json lib app 2>/dev/null`
+    start = raw.index(/[\[{]/) or abort "yard:lint: no JSON from yard-lint"
+    offenses = JSON.parse(raw[start..]).fetch("offenses", [])
+    surface = offenses.reject do |o|
+      object = by_location[[File.expand_path(o["location"]), o["line"]]]
+      object && private_api.call(object)
+    end
+    hidden = "#{offenses.size - surface.size} inside @api private, not counted"
+    if surface.any?
+      surface.each do |o|
+        puts "#{o["location"].sub("#{Dir.pwd}/", "")}:#{o["line"]} #{o["validator"]}: #{o["message"]}"
+      end
+      abort "yard:lint: #{surface.size} offense(s) on the documented surface (#{hidden})"
+    end
+    puts "yard:lint: clean (#{hidden})"
+  end
+
   namespace :coverage do
     desc "Record the current undocumented-object count as the floor"
     task :record do

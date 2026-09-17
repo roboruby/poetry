@@ -9,6 +9,7 @@ module Poetry
         # Render :date/:time/:datetime attributes as poetry DateField /
         # TimeField / DateTimeField - one control each, ISO on the wire.
         #
+        # @param _wrapper_options [Hash, nil] Simple Form's wrapper options, unused: the Field is the wrapper
         # @return [String] the rendered HTML
         def input(_wrapper_options = nil)
           Poetry::Ui::FormBuilder.new(object_name, object, template, {})

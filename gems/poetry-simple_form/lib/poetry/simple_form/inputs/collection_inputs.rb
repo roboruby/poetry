@@ -39,6 +39,7 @@ module Poetry
         # Render the collection as a Field-wrapped Select;
         # include_blank/prompt becomes the placeholder option.
         #
+        # @param _wrapper_options [Hash, nil] Simple Form's wrapper options, unused: the Field is the wrapper
         # @return [String] the rendered Field HTML
         def input(_wrapper_options = nil)
           poetry_builder.poetry_select(attribute_name, label_value_pairs,
@@ -52,6 +53,7 @@ module Poetry
       class CollectionRadioButtonsInput < CollectionBase
         # Render the collection as a Field-wrapped RadioGroup.
         #
+        # @param _wrapper_options [Hash, nil] Simple Form's wrapper options, unused: the Field is the wrapper
         # @return [String] the rendered Field HTML
         def input(_wrapper_options = nil)
           pairs = label_value_pairs.map { |label, value| [value, label] }
@@ -64,6 +66,7 @@ module Poetry
       class CollectionCheckBoxesInput < CollectionBase
         # Render the collection as a Field-wrapped checkbox group.
         #
+        # @param _wrapper_options [Hash, nil] Simple Form's wrapper options, unused: the Field is the wrapper
         # @return [String] the rendered Field HTML
         def input(_wrapper_options = nil)
           pairs = label_value_pairs.map { |label, value| [value, label] }
@@ -74,6 +77,7 @@ module Poetry
       # Serves `as: :native_select`: a poetry Field wrapping the styled
       # native <select> (the no-JS picker).
       class NativeSelectInput < CollectionBase
+        # @param _wrapper_options [Hash, nil] Simple Form's wrapper options, unused: the Field is the wrapper
         # @return [String] the rendered Field HTML
         def input(_wrapper_options = nil)
           poetry_builder.native_select(attribute_name, label_value_pairs,
@@ -84,6 +88,7 @@ module Poetry
 
       # Serves `as: :combobox`: a poetry Field wrapping the filterable Combobox.
       class ComboboxInput < CollectionBase
+        # @param _wrapper_options [Hash, nil] Simple Form's wrapper options, unused: the Field is the wrapper
         # @return [String] the rendered Field HTML
         def input(_wrapper_options = nil)
           poetry_builder.poetry_combobox(attribute_name, label_value_pairs,
@@ -95,6 +100,7 @@ module Poetry
       # Serves `as: :autocomplete`: a poetry Field wrapping the Autocomplete;
       # the collection becomes its suggestions.
       class AutocompleteInput < CollectionBase
+        # @param _wrapper_options [Hash, nil] Simple Form's wrapper options, unused: the Field is the wrapper
         # @return [String] the rendered Field HTML
         def input(_wrapper_options = nil)
           poetry_builder.autocomplete(attribute_name, label_value_pairs, **poetry_options)
@@ -105,6 +111,7 @@ module Poetry
       # group_label_method resolve the groups, poetry's Select renders them
       # as labelled groups.
       class GroupedCollectionSelectInput < CollectionBase
+        # @param _wrapper_options [Hash, nil] Simple Form's wrapper options, unused: the Field is the wrapper
         # @return [String] the rendered Field HTML
         def input(_wrapper_options = nil)
           poetry_builder.poetry_select(attribute_name, grouped_pairs,
@@ -135,6 +142,7 @@ module Poetry
       # Select, the priority zones (priority: or SimpleForm.time_zone_priority)
       # listed first.
       class TimeZoneInput < CollectionBase
+        # @param _wrapper_options [Hash, nil] Simple Form's wrapper options, unused: the Field is the wrapper
         # @return [String] the rendered Field HTML
         def input(_wrapper_options = nil)
           poetry_builder.poetry_select(attribute_name, zone_pairs,
