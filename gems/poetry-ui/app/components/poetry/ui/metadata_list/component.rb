@@ -73,15 +73,13 @@ module Poetry
           content_tag(:dl, safe_join(items.map(&:to_s)), **root_attributes.to_attributes)
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "metadata-list", "data-orientation" => orientation,
-              "data-columns" => columns }.merge(component_data_attributes)
+          super(
+            { "data-orientation" => orientation,
+              "data-columns" => columns }
           )
         end
-
-        private :root_attributes
       end
     end
   end

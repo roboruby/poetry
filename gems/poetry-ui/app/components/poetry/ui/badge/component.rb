@@ -59,14 +59,12 @@ module Poetry
           content_tag(href.present? ? :a : :span, content, **root_attributes.to_attributes)
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          attrs = { "data-slot" => "badge", "data-variant" => variant }
+          attrs = { "data-variant" => variant }
           attrs["href"] = href if href.present?
-          html_attributes.merge_if_not_set(attrs.merge(component_data_attributes))
+          super(attrs)
         end
-
-        private :root_attributes
       end
     end
   end

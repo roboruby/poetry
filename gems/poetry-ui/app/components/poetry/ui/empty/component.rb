@@ -65,14 +65,8 @@ module Poetry
         end
 
         # The empty-state root's attributes.
-        # @api private
-        def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "empty" }.merge(component_data_attributes)
-          )
-        end
 
-        private :header?, :media_classes, :root_attributes
+        private :header?, :media_classes
       end
     end
   end

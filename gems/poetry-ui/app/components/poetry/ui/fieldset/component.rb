@@ -62,11 +62,8 @@ module Poetry
         end
 
         # The <fieldset> root's attributes.
-        # @api private
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "field-set" }.merge(component_data_attributes)
-          )
+          super({ "data-slot" => "field-set" })
         end
 
         private
@@ -82,8 +79,6 @@ module Poetry
 
           content_tag(:p, hint, "data-slot" => "field-set-hint", "class" => css(:hint))
         end
-
-        private :root_attributes
       end
     end
   end

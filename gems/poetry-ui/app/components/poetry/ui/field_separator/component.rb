@@ -38,15 +38,13 @@ module Poetry
         end
 
         # The divider row's attributes.
-        # @api private
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             # Normalized to "true"/"false": ViewComponent's content? is
             # truthy/falsy, not boolean (defined?-strings, blocks), Rails
             # drops false attribute values, and the declared-state
             # contract wants the pair always visible.
-            { "data-slot" => "field-separator", "data-content" => (content? ? "true" : "false") }
-              .merge(component_data_attributes)
+            { "data-content" => (content? ? "true" : "false") }
           )
         end
 
@@ -62,8 +60,6 @@ module Poetry
           content_tag(:span, content, "data-slot" => "field-separator-content",
                                       "class" => css(:content))
         end
-
-        private :root_attributes
       end
     end
   end

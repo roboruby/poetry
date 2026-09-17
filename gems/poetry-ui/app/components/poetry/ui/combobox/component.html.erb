@@ -17,12 +17,12 @@
   <% else %>
     <%= multiple ? chips_frame : trigger_button %>
   <% end %>
-  <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(content_attributes).to_attributes) do %>
+  <%= content_tag(:div, **content_attributes.to_attributes) do %>
     <% if multiple %>
       <%# MULTIPLE: the popup holds ONLY the listbox (the input lives
           inline in the chips frame; the command engine rides the ROOT so
           it scopes over both - no command part in here). %>
-      <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(list_attributes).to_attributes) do %>
+      <%= content_tag(:div, **list_attributes.to_attributes) do %>
         <%= empty_part %>
         <%= loading_part %>
         <%= list_body %>
@@ -32,12 +32,12 @@
     <%# The EMBEDDED Command anatomy (Command::Style + the engine
         controller reused verbatim; chrome flattened - rounded/border ride
         the content). %>
-    <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(command_attributes).to_attributes) do %>
+    <%= content_tag(:div, **command_attributes.to_attributes) do %>
       <div data-slot="combobox-input-wrapper" class="<%= Poetry::Ui::Command::Style.css(:input_wrapper) %>">
         <span data-slot="combobox-search-icon"><%= render(Poetry::Ui::Icon::Component.new(name: :search, class: Poetry::Ui::Command::Style.css(:search_icon))) %></span>
-        <%= tag.input(**Poetry::Core::HTML::Attributes.new(input_attributes).to_attributes) %>
+        <%= tag.input(**input_attributes.to_attributes) %>
       </div>
-      <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(list_attributes).to_attributes) do %>
+      <%= content_tag(:div, **list_attributes.to_attributes) do %>
         <%= empty_part %>
         <%= loading_part %>
         <%= list_body %>

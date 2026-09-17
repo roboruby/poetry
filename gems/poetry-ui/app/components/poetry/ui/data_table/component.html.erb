@@ -23,7 +23,7 @@
           <tr data-slot="table-row" class="<%= Poetry::Ui::Table::Style.css(:row) %>">
             <% if selectable? %>
               <th data-slot="table-head" class="<%= Poetry::Ui::Table::Style.css(:head) %> <%= css(:select_cell) %>">
-                <%= tag.input(**Poetry::Core::HTML::Attributes.new(select_all_attributes).to_attributes) %>
+                <%= tag.input(**select_all_attributes.to_attributes) %>
               </th>
             <% end %>
             <% column_defs.each do |column| %>
@@ -46,7 +46,7 @@
               <tr data-slot="table-row" class="<%= Poetry::Ui::Table::Style.css(:row) %>">
                 <% if selectable? %>
                   <td data-slot="table-cell" class="<%= Poetry::Ui::Table::Style.css(:cell) %> <%= css(:select_cell) %>">
-                    <%= tag.input(**Poetry::Core::HTML::Attributes.new(select_row_attributes(row)).to_attributes) %>
+                    <%= tag.input(**select_row_attributes(row).to_attributes) %>
                   </td>
                 <% end %>
                 <% column_defs.each do |column| %>

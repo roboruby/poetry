@@ -47,14 +47,6 @@ module Poetry
         end
 
         # The container's attributes.
-        # @api private
-        def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "field-group" }.merge(component_data_attributes)
-          )
-        end
-
-        private :root_attributes
       end
     end
   end

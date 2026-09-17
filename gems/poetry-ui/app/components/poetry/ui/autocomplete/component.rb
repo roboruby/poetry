@@ -137,13 +137,9 @@ module Poetry
         # @api private
         def list_id = "#{autocomplete_id}-list"
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "class" => css, "data-slot" => "autocomplete", "id" => autocomplete_id }
-              .merge(stimulus_attributes_for(:root))
-              .merge(component_data_attributes)
-          )
+          super({ "class" => css, "id" => autocomplete_id })
         end
 
         # @api private
@@ -190,7 +186,7 @@ module Poetry
         # @api private
         Item = Struct.new(:label, :value, :disabled, :highlighted, keyword_init: true)
 
-        private :item_models, :autocomplete_id, :list_id, :root_attributes, :input_attributes, :content_attributes
+        private :item_models, :autocomplete_id, :list_id, :input_attributes, :content_attributes
         private :item_attributes
       end
     end

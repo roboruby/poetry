@@ -157,22 +157,18 @@ module Poetry
         end
 
         # Attributes for the visual button[role=checkbox].
-        # @api private
         def root_attributes
           attrs = {
             "type" => "button", "role" => "checkbox", "id" => control_id,
             "aria-checked" => aria_checked, "data-#{state}" => "",
-            "data-slot" => "checkbox", "disabled" => disabled
+            "disabled" => disabled
           }
           attrs["aria-required"] = true if required
           attrs["aria-label"] = label if label.present?
-          html_attributes.merge_if_not_set(
-            attrs.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
-          )
+          super(attrs)
         end
 
         private :indeterminate?, :checked?, :state, :aria_checked, :control_id, :input_id, :form_participant?
-        private :root_attributes
       end
     end
   end

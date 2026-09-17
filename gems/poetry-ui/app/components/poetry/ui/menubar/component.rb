@@ -257,20 +257,6 @@ module Poetry
         # @api private
         def value_string = value.to_s
 
-        # @api private
-        def root_attributes
-          root = {
-            "data-slot" => "menubar", "role" => "menubar", "aria-label" => label,
-            # The bar ROOT keeps the open/closed pair so themes can key
-            # on bar-wide state.
-            (value.present? ? "data-open" : "data-closed") => ""
-          }
-          root["dir"] = dir.to_s if dir
-          html_attributes.merge_if_not_set(
-            root.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
-          )
-        end
-
         # The bar-level tab stop is server-rendered (exactly one tabindex=0
         # before any JS): the open menu's trigger when value: matches,
         # otherwise the first enabled trigger.
@@ -292,6 +278,18 @@ module Poetry
           menu_parts.size
         end
 
+        # The root's attributes: this component's markup over the core default.
+        def root_attributes
+          root = {
+            "role" => "menubar", "aria-label" => label,
+            # The bar ROOT keeps the open/closed pair so themes can key
+            # on bar-wide state.
+            (value.present? ? "data-open" : "data-closed") => ""
+          }
+          root["dir"] = dir.to_s if dir
+          super(root)
+        end
+
         private
 
         def menu_parts
@@ -303,7 +301,7 @@ module Poetry
             menu_parts.find { |menu| !menu.disabled } || menu_parts.first
         end
 
-        private :value_string, :root_attributes
+        private :value_string
       end
 
       # One logical menu: the trigger + content pair, hosted on a

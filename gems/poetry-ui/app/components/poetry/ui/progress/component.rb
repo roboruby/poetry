@@ -58,14 +58,14 @@ module Poetry
           "#{percent.round}%"
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             {
-              "data-slot" => "progress", "role" => "progressbar",
+              "role" => "progressbar",
               "aria-valuemin" => 0, "aria-valuemax" => max, "aria-valuenow" => value.clamp(0, max),
               "aria-label" => label
-            }.merge(component_data_attributes)
+            }
           )
         end
 
@@ -88,7 +88,7 @@ module Poetry
           end
         end
 
-        private :percent, :percent_text, :root_attributes
+        private :percent, :percent_text
       end
     end
   end

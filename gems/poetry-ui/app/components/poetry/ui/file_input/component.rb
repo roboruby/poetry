@@ -148,12 +148,8 @@ module Poetry
         end
 
         # The dropzone root's attributes.
-        # @api private
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "file-input", "data-variant" => variant }
-              .merge(component_data_attributes).merge(stimulus_attributes_for(:root))
-          )
+          super({ "data-variant" => variant })
         end
 
         # The <label> drop surface's attributes.
@@ -180,7 +176,7 @@ module Poetry
             .merge(stimulus_attributes_for(:clear))
         end
 
-        private :prompt_text, :input_variant_component, :control_attributes, :root_attributes, :dropzone_attributes
+        private :prompt_text, :input_variant_component, :control_attributes, :dropzone_attributes
         private :list_attributes, :clear_attributes
       end
     end

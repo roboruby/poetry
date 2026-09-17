@@ -182,12 +182,12 @@ module Poetry
           render(Poetry::Ui::Deferred::Component.new(src: tab.defer)) { tab.panel ? capture(&tab.panel) : nil }
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             {
-              "data-slot" => "tabs", "data-orientation" => orientation
-            }.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
+              "data-orientation" => orientation
+            }
           )
         end
 
@@ -245,7 +245,7 @@ module Poetry
           @instance_id ||= poetry_instance_id("poetry-tabs")
         end
 
-        private :tab_defs, :active_value, :active?, :trigger_id, :panel_id, :panel_body, :root_attributes
+        private :tab_defs, :active_value, :active?, :trigger_id, :panel_id, :panel_body
         private :list_attributes, :trigger_attributes, :panel_attributes
       end
     end

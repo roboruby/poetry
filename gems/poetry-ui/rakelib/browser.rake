@@ -91,6 +91,11 @@ end
 def poetry_ui_visit_preview(session, url)
   session.visit(url)
   raise "HTTP #{session.status_code} at #{url}" unless session.status_code == 200
+
+  # The opening-position hold (a message scroller renders data-pending-scroll
+  # until its controller applies the end position): let it release, so the
+  # shot shows the settled thread, not the top of it caught mid-walk.
+  session.has_no_css?("[data-pending-scroll]", wait: 5)
   raise "Stimulus never booted at #{url}" unless session.has_css?("html[data-poetry-ready]", wait: 10)
 end
 

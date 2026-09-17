@@ -87,11 +87,10 @@ module Poetry
           content_tag(:button, content, **root_attributes.to_attributes)
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
           attrs = {
-            "type" => "button", "data-slot" => "toggle",
-            "aria-pressed" => pressed.to_s,
+            "type" => "button", "aria-pressed" => pressed.to_s,
             "data-variant" => variant, "data-size" => size,
             "disabled" => disabled
           }
@@ -102,9 +101,7 @@ module Poetry
           # styling-hook parity (and the group-context roving filter).
           attrs["data-disabled"] = "" if disabled
           attrs["aria-label"] = label if label.present?
-          html_attributes.merge_if_not_set(
-            attrs.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
-          )
+          super(attrs)
         end
 
         private
@@ -112,8 +109,6 @@ module Poetry
         def visible_text?
           content? && content.to_s.gsub(/<[^>]+>/, " ").strip.present?
         end
-
-        private :root_attributes
       end
     end
   end

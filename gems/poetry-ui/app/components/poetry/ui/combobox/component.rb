@@ -691,16 +691,6 @@ module Poetry
           option_set.label_for(selected_value) if !multiple && selected_value.present?
         end
 
-        # Attributes for the root wrapper.
-        # @api private
-        def root_attributes
-          root = { "data-slot" => "combobox" }
-          root["dir"] = dir.to_s if dir
-          html_attributes.merge_if_not_set(
-            root.merge(root_stimulus_attributes).merge(component_data_attributes)
-          )
-        end
-
         # The serialization truth: a real <select> carrying
         # name/required/disabled and ALL options with selected - visually
         # hidden (sr-only, painted) and out of both trees (aria-hidden +
@@ -799,7 +789,8 @@ module Poetry
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
             "class" => css(:content)
-          }.merge(stimulus_attributes_for(:content))
+          }
+          attrs = element_attributes(attrs, stimulus: :content)
           attrs["hidden"] = true unless open
           attrs
         end
@@ -816,8 +807,8 @@ module Poetry
         # each item, and could not retune the input's height.
         # @api private
         def command_attributes
-          { "data-slot" => "combobox-command", "class" => Command::Style.css }
-            .merge(stimulus_attributes_for(:command_part))
+          element_attributes({ "data-slot" => "combobox-command", "class" => Command::Style.css },
+                             stimulus: :command_part)
         end
 
         # The popup's filter input (Command's contract, retuned to h-9):
@@ -834,6 +825,7 @@ module Poetry
             "spellcheck" => "false", "aria-label" => t("poetry.combobox.filter_label"),
             "class" => Command::Style.css(:input, class: css(:input_fill))
           }
+          attrs = element_attributes(attrs)
           # The source stamps chips mode on the popup (its min-width follows the field).
           attrs["data-chips"] = "true" if multiple
           attrs["placeholder"] = search_placeholder if search_placeholder.present?
@@ -855,6 +847,7 @@ module Poetry
             "tabindex" => "-1", "aria-label" => t("poetry.command.list_label"),
             "class" => css(:list)
           }
+          attrs = element_attributes(attrs)
           attrs["aria-multiselectable"] = "true" if multiple
           attrs
         end
@@ -888,6 +881,13 @@ module Poetry
                       "data-zero" => t("poetry.command.results", count: 0),
                       "data-one" => t("poetry.command.results", count: 1),
                       "data-other" => t("poetry.command.results.other", count: "%{count}")) # rubocop:disable Style/FormatStringToken
+        end
+
+        # Attributes for the root wrapper.
+        def root_attributes
+          root = {}
+          root["dir"] = dir.to_s if dir
+          super(root)
         end
 
         private
@@ -994,7 +994,7 @@ module Poetry
         end
 
         def inline_input
-          tag.input(**Poetry::Core::HTML::Attributes.new(inline_input_attributes).to_attributes)
+          tag.input(**inline_input_attributes.to_attributes)
         end
 
         # The inline filter input (multiple): the ONE typing surface - the
@@ -1009,6 +1009,7 @@ module Poetry
             "aria-haspopup" => "listbox", "aria-autocomplete" => "list", "autocomplete" => "off",
             "autocorrect" => "off", "spellcheck" => "false", "class" => css(:chip_input)
           }
+          attrs = element_attributes(attrs)
           # The input state: bare data-popup-open while open, NO
           # attribute while closed (absence IS the state).
           attrs["data-popup-open"] = "" if open
@@ -1080,7 +1081,7 @@ module Poetry
         end
 
         private :trigger_id, :content_id, :list_id, :native_id, :input_id, :option_set
-        private :selected_label, :root_attributes, :native_select, :width_classes, :trigger_button
+        private :selected_label, :native_select, :width_classes, :trigger_button
         private :leading_content, :chips_frame, :content_attributes, :value_payload, :command_attributes
         private :input_attributes, :list_attributes, :empty_part, :loading_part, :status_part
       end

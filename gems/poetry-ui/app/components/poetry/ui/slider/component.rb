@@ -219,16 +219,14 @@ module Poetry
           value_text.respond_to?(:call) ? value_text.call(value) : I18n.t(value_text, value: value)
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
           attrs = {
-            "data-slot" => "slider", "id" => control_id,
+            "id" => control_id,
             "data-orientation" => orientation, "style" => geometry_style
           }
           attrs["data-disabled"] = "" if disabled
-          html_attributes.merge_if_not_set(
-            attrs.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
-          )
+          super(attrs)
         end
 
         # @api private
@@ -352,7 +350,7 @@ module Poetry
         def value_numbers = thumb_values.map { |item| number(item) }
 
         private :thumb_values, :range?, :input_name, :control_id, :thumb_id, :thumb_min, :thumb_max, :thumb_label
-        private :thumb_text, :root_attributes, :track_attributes, :range_attributes, :anchor_attributes
+        private :thumb_text, :track_attributes, :range_attributes, :anchor_attributes
         private :thumb_attributes, :input_attributes, :number
       end
     end

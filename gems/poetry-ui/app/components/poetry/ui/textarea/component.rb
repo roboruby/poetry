@@ -46,18 +46,16 @@ module Poetry
           content_tag(:textarea, value, **root_attributes.to_attributes)
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          attrs = { "data-slot" => "textarea" }.merge(component_data_attributes)
+          attrs = {}
           attrs["name"] = name if name.present?
           attrs["placeholder"] = placeholder if placeholder.present?
           attrs["rows"] = rows if rows.present?
           attrs["disabled"] = true if disabled
           attrs["aria-invalid"] = true if invalid
-          html_attributes.merge_if_not_set(attrs)
+          super(attrs)
         end
-
-        private :root_attributes
       end
     end
   end

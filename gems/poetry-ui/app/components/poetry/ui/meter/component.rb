@@ -72,17 +72,16 @@ module Poetry
         # The role is the single token "meter" - a two-token fallback
         # ("meter progressbar") makes checkers treat the element as generic
         # and flag every aria-value* attribute.
-        # @api private
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             {
-              "data-slot" => "meter", "role" => "meter",
+              "role" => "meter",
               # No aria-valuetext: ARIA 1.2 deprecated it on role=meter -
               # the visible readout carries the human string, aria-valuenow
               # the value.
               "aria-valuemin" => min, "aria-valuemax" => max, "aria-valuenow" => clamped,
               "aria-label" => label
-            }.merge(component_data_attributes)
+            }
           )
         end
 
@@ -110,7 +109,7 @@ module Poetry
           end
         end
 
-        private :percent, :readout, :root_attributes
+        private :percent, :readout
       end
     end
   end

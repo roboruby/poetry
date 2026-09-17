@@ -160,26 +160,22 @@ module Poetry
         end
 
         # Attributes for the root wrapper.
-        # @api private
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "command-dialog" }
-              .merge(stimulus_attributes_for(:root))
-              .merge(component_data_attributes)
-          )
+          super("data-slot" => "command-dialog")
         end
 
         # Dialog's content chrome retuned for the palette (overflow-hidden
         # p-0 win on conflicts); labelled/described by the sr-only header.
         # @api private
         def dialog_attributes
-          {
+          attrs = {
             "class" => Poetry::Ui::Dialog::Style.css(:content, class: Style.css(:dialog_content)),
             "data-slot" => "dialog-content",
             "data-closed" => "",
             "aria-labelledby" => title_id,
             "aria-describedby" => description_id
-          }.merge(stimulus_attributes_for(:content))
+          }
+          element_attributes(attrs, stimulus: :content)
         end
 
         # Validated action descriptor for the template's close button.
@@ -199,7 +195,7 @@ module Poetry
           @instance_id ||= poetry_instance_id("poetry-command-dialog")
         end
 
-        private :command, :close_button, :title_id, :description_id, :root_attributes, :dialog_attributes, :close_action
+        private :command, :close_button, :title_id, :description_id, :dialog_attributes, :close_action
       end
     end
   end

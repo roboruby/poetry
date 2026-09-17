@@ -51,16 +51,15 @@ module Poetry
         end
 
         # The <input> element's attributes.
-        # @api private
         def root_attributes
-          attrs = { "type" => type, "data-slot" => "input" }.merge(component_data_attributes)
+          attrs = { "type" => type }
           attrs["name"] = name if name.present?
           attrs["value"] = value if value.present?
           attrs["placeholder"] = placeholder if placeholder.present?
           attrs["disabled"] = true if disabled
           attrs["aria-invalid"] = true if invalid
           attrs.merge!(mask_attributes) if mask.present?
-          html_attributes.merge_if_not_set(attrs)
+          super(attrs)
         end
 
         private
@@ -72,8 +71,6 @@ module Poetry
           masked.with_value(:mask, mask)
           attrs.to_attributes
         end
-
-        private :root_attributes
       end
     end
   end

@@ -190,15 +190,14 @@ module Poetry
           @entries ||= []
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             {
-              "aria-label" => label, "data-slot" => "navigation-menu",
-              # The mode marker the dictionary's group-data-[viewport=false]
+              "aria-label" => label, # The mode marker the dictionary's group-data-[viewport=false]
               # chrome keys on.
               "data-viewport" => viewport.to_s
-            }.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
+            }
           )
         end
 
@@ -262,7 +261,7 @@ module Poetry
           @instance_id ||= poetry_instance_id("poetry-nav")
         end
 
-        private :entries, :root_attributes, :item_attributes, :trigger_attributes, :panel_attributes
+        private :entries, :item_attributes, :trigger_attributes, :panel_attributes
         private :positioner_attributes, :panel_id
       end
     end

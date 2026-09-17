@@ -108,11 +108,9 @@ module Poetry
           "#{instance_id}-label"
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "tag-group", "class" => css }.merge(component_data_attributes)
-          )
+          super({ "class" => css })
         end
 
         # @api private
@@ -129,9 +127,10 @@ module Poetry
             "aria-atomic" => "false",
             "aria-relevant" => "additions"
           }
+          attrs = element_attributes(attrs)
           attrs["data-empty"] = "" if tags.none?
           attrs["tabindex"] = "0" if tags.none?
-          attrs.merge(stimulus_attributes_for(:grid))
+          element_attributes(attrs, stimulus: :grid)
         end
 
         # Built here (not in the template) so the slot lambda can compose
@@ -196,7 +195,7 @@ module Poetry
           tag.input(type: "hidden", name: "#{name}[]", value: value)
         end
 
-        private :instance_id, :label_id, :root_attributes, :grid_attributes, :tag_row
+        private :instance_id, :label_id, :grid_attributes, :tag_row
       end
     end
   end

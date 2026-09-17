@@ -112,12 +112,12 @@ module Poetry
           panel.default_size || (100.0 / panel_defs.size).round(2)
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             {
               "data-slot" => "resizable-panel-group", "data-orientation" => direction
-            }.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
+            }
           )
         end
 
@@ -171,7 +171,7 @@ module Poetry
           @instance_id ||= poetry_instance_id("poetry-resizable")
         end
 
-        private :panel_defs, :size_of, :root_attributes, :panel_attributes, :handle_attributes, :panel_id
+        private :panel_defs, :size_of, :panel_attributes, :handle_attributes, :panel_id
       end
     end
   end

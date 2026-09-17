@@ -168,15 +168,14 @@ module Poetry
         end
 
         # The quartet root's attributes.
-        # @api private
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "field", "data-invalid" => invalid?,
-              "data-orientation" => orientation }.merge(component_data_attributes)
+          super(
+            { "data-invalid" => invalid?,
+              "data-orientation" => orientation }
           )
         end
 
-        private :hint_present?, :root_attributes
+        private :hint_present?
       end
     end
   end

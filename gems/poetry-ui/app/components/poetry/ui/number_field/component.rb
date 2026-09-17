@@ -155,16 +155,15 @@ module Poetry
           raise ArgumentError, "format: takes an Intl.NumberFormatOptions Hash"
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
           attrs = {
-            "data-slot" => "number-field",
             "class" => css
-          }.merge(component_data_attributes)
+          }
           attrs["data-disabled"] = "" if disabled
           attrs["data-invalid"] = "" if invalid
           attrs["data-filled"] = "" if value.present?
-          html_attributes.merge_if_not_set(attrs.merge(stimulus_attributes_for(:root)))
+          super(attrs)
         end
 
         # @api private
@@ -255,7 +254,7 @@ module Poetry
         def small_step_number = number(small_step)
         def format_json = format.to_json
 
-        private :root_attributes, :input_attributes, :hidden_attributes, :stepper, :stepper_icon
+        private :input_attributes, :hidden_attributes, :stepper, :stepper_icon
       end
     end
   end

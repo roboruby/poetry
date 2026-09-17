@@ -21,21 +21,23 @@ module Poetry
       # The bordered role=group shell wearing InputGroup's chrome.
       # @api private
       def group_attributes
-        {
+        attrs = {
           "role" => "group",
           "data-slot" => "#{family_slot_prefix}-group",
           "class" => InputGroup::Style.css
         }
+        element_attributes(attrs)
       end
 
       # One addon cell aligned inline-start or inline-end on the group row.
       # @api private
       def addon_attributes(align)
-        {
+        attrs = {
           "data-slot" => "input-group-addon",
           "data-align" => "inline-#{align}",
           "class" => InputGroup::Style.css(:addon, class: InputGroup::Style.css(:"addon_inline_#{align}"))
         }
+        element_attributes(attrs)
       end
 
       private

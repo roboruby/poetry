@@ -86,14 +86,13 @@ module Poetry
         # tabindex -1 (Escape is the keyboard path), hidden while empty,
         # never steals focus.
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
           attrs = {
-            "data-slot" => "search-field",
             "class" => css
-          }.merge(component_data_attributes)
+          }
           attrs["data-empty"] = "" if value.blank?
-          html_attributes.merge_if_not_set(attrs.merge(stimulus_attributes_for(:root)))
+          super(attrs)
         end
 
         # @api private
@@ -130,7 +129,7 @@ module Poetry
                             wiring: stimulus_attributes_for(:clear))
         end
 
-        private :root_attributes, :input_attributes, :clear_button
+        private :input_attributes, :clear_button
       end
     end
   end

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5]
+
+### Changed
+
+- Every component's root rides the core default: `root_attributes` is the public `Poetry::Core::Component` method, and a component's override passes only its own markup up (`super("data-variant" => variant)`); the slot name, `data-component` and the root's Stimulus wiring come from the default. Twelve overrides that added nothing are gone, and the shared `FamilyIdentity` override passes the family's slot prefix the same way. The rendered attributes are unchanged apart from their order on the element.
+- The part builders (a popup's content, a field's group, a tree row, a dialog panel, and the rest) return `element_attributes(...)`, one merge-aware `Attributes` with the part's Stimulus wiring merged safely, and the templates splat `to_attributes` on it; the `Poetry::Core::HTML::Attributes.new(...)` wrap at every call site is gone.
+
 ## [0.1.4] - 2026-09-15
 
 ### Fixed

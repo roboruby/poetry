@@ -190,14 +190,14 @@ module Poetry
           %i[floating inset].include?(variant)
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             {
               "data-slot" => "sidebar-wrapper",
               "style" => "--sidebar-width: #{WIDTH}; --sidebar-width-icon: #{WIDTH_ICON};",
               "class" => css(:wrapper)
-            }.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
+            }
           )
         end
 
@@ -241,7 +241,7 @@ module Poetry
           @mobile_title_id ||= poetry_instance_id("poetry-sidebar-mobile")
         end
 
-        private :data_state, :data_collapsible, :inset_variant?, :root_attributes, :peer_attributes, :gap_classes
+        private :data_state, :data_collapsible, :inset_variant?, :peer_attributes, :gap_classes
         private :container_classes, :mobile_dialog_attributes, :mobile_title_id
       end
     end

@@ -76,12 +76,9 @@ module Poetry
           ensure_content!
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "bubble", "data-variant" => variant, "data-align" => align }
-              .merge(component_data_attributes)
-          )
+          super({ "data-variant" => variant, "data-align" => align })
         end
 
         # href: implies the anchor - an href on the default :div would
@@ -99,7 +96,7 @@ module Poetry
           attrs
         end
 
-        private :root_attributes, :content_tag_name, :content_attributes
+        private :content_tag_name, :content_attributes
       end
     end
   end

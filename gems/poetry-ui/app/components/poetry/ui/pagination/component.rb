@@ -149,12 +149,9 @@ module Poetry
         # @api private
         def next_options = edge_options(current + 1, "Go to next page", css(:edge_next))
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "role" => "navigation", "aria-label" => label, "data-slot" => "pagination" }
-              .merge(component_data_attributes)
-          )
+          super({ "role" => "navigation", "aria-label" => label })
         end
 
         private
@@ -175,7 +172,7 @@ module Poetry
         end
 
         private :show_edges?, :icon_edges?, :current?, :path_for, :page_variant, :page_options, :edge_options
-        private :previous_options, :next_options, :root_attributes
+        private :previous_options, :next_options
       end
     end
   end

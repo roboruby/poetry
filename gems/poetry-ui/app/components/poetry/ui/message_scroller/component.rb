@@ -130,14 +130,9 @@ module Poetry
         part "message-scroller-spacer", "Tail spacer faking scroll room below a short " \
                                         "anchored turn - hidden at height 0"
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "message-scroller" }
-              .merge(stimulus_attributes_for(:root))
-              .merge(component_data_attributes)
-              .merge(pending_scroll_attributes)
-          )
+          super(pending_scroll_attributes)
         end
 
         # @api private
@@ -179,7 +174,7 @@ module Poetry
           }.merge(stimulus_attributes_for(:jump_button))
         end
 
-        private :root_attributes, :viewport_attributes, :content_attributes, :spacer_attributes, :button_attributes,
+        private :viewport_attributes, :content_attributes, :spacer_attributes, :button_attributes,
                 :pending_scroll_attributes
       end
     end

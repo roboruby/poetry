@@ -266,13 +266,9 @@ module Poetry
         # @api private
         def input_type(item) = item.multiple ? "checkbox" : "radio"
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "questionnaire", "id" => questionnaire_id }
-              .merge(stimulus_attributes_for(:root))
-              .merge(component_data_attributes)
-          )
+          super({ "id" => questionnaire_id })
         end
 
         # @api private

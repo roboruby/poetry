@@ -64,13 +64,13 @@ module Poetry
           end
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             {
-              "data-slot" => "avatar", "data-size" => size,
+              "data-size" => size,
               "role" => "img", "aria-label" => label
-            }.merge(component_data_attributes)
+            }
           )
         end
 
@@ -95,8 +95,6 @@ module Poetry
 
           content_tag(:span, badge, "data-slot" => "avatar-badge", "aria-hidden" => "true", class: css(:badge))
         end
-
-        private :root_attributes
       end
     end
   end

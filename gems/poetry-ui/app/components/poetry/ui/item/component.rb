@@ -83,16 +83,15 @@ module Poetry
         end
 
         # The row root's attributes.
-        # @api private
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             {
-              "data-slot" => "item", "data-variant" => variant, "data-size" => size
-            }.merge(component_data_attributes)
+              "data-variant" => variant, "data-size" => size
+            }
           )
         end
 
-        private :content_column?, :media_classes, :root_attributes
+        private :content_column?, :media_classes
       end
     end
   end

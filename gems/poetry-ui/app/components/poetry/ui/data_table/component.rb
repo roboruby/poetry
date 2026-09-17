@@ -146,12 +146,6 @@ module Poetry
         end
 
         # Attributes for the root surface.
-        # @api private
-        def root_attributes
-          attrs = { "data-slot" => "data-table" }.merge(component_data_attributes)
-          attrs = attrs.merge(stimulus_attributes_for(:root))
-          html_attributes.merge_if_not_set(attrs)
-        end
 
         # Whether row selection is on (selectable: present).
         # @api private
@@ -162,22 +156,24 @@ module Poetry
         # Attributes for the select-all header checkbox.
         # @api private
         def select_all_attributes
-          {
+          attrs = {
             "type" => "checkbox", "data-slot" => "data-table-select-all",
             "class" => css(:checkbox),
             "aria-label" => t("poetry.data_table.select_all")
-          }.merge(stimulus_attributes_for(:select_all))
+          }
+          element_attributes(attrs, stimulus: :select_all)
         end
 
         # Attributes for one row's selection checkbox - the form value.
         # @api private
         def select_row_attributes(row)
-          {
+          attrs = {
             "type" => "checkbox", "data-slot" => "data-table-select-row",
             "name" => "#{selection_name}[]", "value" => selectable.call(row),
             "class" => css(:checkbox),
             "aria-label" => t("poetry.data_table.select_row")
-          }.merge(stimulus_attributes_for(:row_checkbox))
+          }
+          element_attributes(attrs, stimulus: :row_checkbox)
         end
 
         # The localized count-announcement template.
@@ -268,7 +264,7 @@ module Poetry
           values.compact.join(" ")
         end
 
-        private :column_defs, :root_attributes, :selectable?, :select_all_attributes, :select_row_attributes
+        private :column_defs, :selectable?, :select_all_attributes, :select_row_attributes
         private :selected_count_label, :path_for, :head_attributes, :cell_attributes, :sort_link_options, :sort_icon
         private :filter_id, :filter_form_action, :pagination?
       end

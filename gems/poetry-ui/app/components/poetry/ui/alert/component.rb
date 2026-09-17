@@ -43,18 +43,15 @@ module Poetry
                              "pinned to the top-right by the theme"
         part "alert-description", "The body copy - the content block renders here"
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             {
-              "data-slot" => "alert",
               "data-variant" => variant,
               "role" => (variant == :destructive ? "alert" : "status")
-            }.merge(component_data_attributes)
+            }
           )
         end
-
-        private :root_attributes
       end
     end
   end

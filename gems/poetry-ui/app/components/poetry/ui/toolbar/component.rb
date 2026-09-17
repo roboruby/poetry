@@ -87,13 +87,13 @@ module Poetry
           content_tag(:div, safe_join(items.map(&:to_s)), **root_attributes.to_attributes)
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             {
               "role" => "toolbar", "aria-label" => label, "aria-orientation" => orientation,
-              "data-slot" => "toolbar", "data-orientation" => orientation
-            }.merge(component_data_attributes).merge(roving_attributes)
+              "data-orientation" => orientation
+            }.merge(roving_attributes)
           )
         end
 
@@ -117,8 +117,6 @@ module Poetry
           roving.with_action(:keydown, on: :keydown)
           attrs.to_attributes
         end
-
-        private :root_attributes
       end
     end
   end

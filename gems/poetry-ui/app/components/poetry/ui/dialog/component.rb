@@ -145,7 +145,8 @@ module Poetry
             **panel_stamps,
             "data-closed" => "",
             "aria-labelledby" => title_id
-          }.merge(stimulus_attributes_for(:content))
+          }
+          attrs = element_attributes(attrs, stimulus: :content)
           attrs["aria-describedby"] = description_id if description?
           attrs
         end

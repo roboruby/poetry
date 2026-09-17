@@ -115,21 +115,19 @@ module Poetry
           name.present?
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
           attrs = {
             "type" => "button", "role" => "switch", "id" => control_id,
             "aria-checked" => checked.to_s, "data-#{state}" => "",
-            "data-slot" => "switch", "data-size" => size, "disabled" => disabled
+            "data-size" => size, "disabled" => disabled
           }
           attrs["aria-required"] = true if required
           attrs["aria-label"] = label if label.present?
-          html_attributes.merge_if_not_set(
-            attrs.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
-          )
+          super(attrs)
         end
 
-        private :state, :control_id, :input_id, :form_participant?, :root_attributes
+        private :state, :control_id, :input_id, :form_participant?
       end
     end
   end

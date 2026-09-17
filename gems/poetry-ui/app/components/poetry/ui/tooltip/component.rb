@@ -173,7 +173,8 @@ module Poetry
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
             "class" => css(:content, class: content_class)
-          }.merge(stimulus_attributes_for(:content))
+          }
+          attrs = element_attributes(attrs, stimulus: :content)
           attrs["hidden"] = true unless open
           attrs
         end

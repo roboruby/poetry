@@ -194,19 +194,16 @@ module Poetry
           @pressed_values ||= (single? ? Array(value) : Array(values)).compact.map(&:to_s)
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
           attrs = {
             "role" => single? ? "radiogroup" : "toolbar",
-            "data-slot" => "toggle-group",
             "data-variant" => variant, "data-size" => size, "data-spacing" => spacing,
             "data-orientation" => orientation, "style" => "--gap: #{spacing}"
           }
           attrs["aria-label"] = label if label.present?
           attrs["data-disabled"] = "" if disabled
-          html_attributes.merge_if_not_set(
-            attrs.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
-          )
+          super(attrs)
         end
 
         private
@@ -245,7 +242,7 @@ module Poetry
           classnames(Toggle::Style.css(variant: variant, size: size), css(:item), extra)
         end
 
-        private :single?, :pressed_values, :root_attributes
+        private :single?, :pressed_values
       end
     end
   end

@@ -73,17 +73,14 @@ module Poetry
         # the controllers module graph to the frame (Turbo 8's
         # frame-missing default would promote that race to a full-page
         # visit).
-        # @api private
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             {
               "id" => "poetry-deferred-#{Digest::MD5.hexdigest(src.to_s).first(8)}",
-              "loading" => loading, "data-slot" => "deferred"
-            }.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
+              "loading" => loading
+            }
           )
         end
-
-        private :root_attributes
       end
     end
   end

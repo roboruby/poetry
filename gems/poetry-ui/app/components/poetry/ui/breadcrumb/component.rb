@@ -84,18 +84,16 @@ module Poetry
           @entries ||= []
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "aria-label" => "breadcrumb", "data-slot" => "breadcrumb" }.merge(component_data_attributes)
-          )
+          super({ "aria-label" => "breadcrumb" })
         end
 
         # One declared crumb.
         # @api private
         Entry = Data.define(:label, :href, :ellipsis, :block)
 
-        private :entries, :root_attributes
+        private :entries
       end
     end
   end

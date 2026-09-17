@@ -55,14 +55,9 @@ module Poetry
         end
 
         # The group surface's attributes.
-        # @api private
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "role" => "group", "data-slot" => "input-group" }.merge(component_data_attributes)
-          )
+          super({ "role" => "group" })
         end
-
-        private :root_attributes
       end
     end
   end

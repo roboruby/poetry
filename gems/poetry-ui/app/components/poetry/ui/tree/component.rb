@@ -118,13 +118,13 @@ module Poetry
           @rows ||= flatten(root_items, level: 1, hidden: false)
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             {
-              "data-slot" => "tree", "role" => "treegrid",
+              "role" => "treegrid",
               "aria-label" => label, "class" => css
-            }.merge(component_data_attributes).merge(stimulus_attributes_for(:root))
+            }
           )
         end
 
@@ -139,6 +139,7 @@ module Poetry
             "style" => "--poetry-tree-level: #{row.level}",
             "class" => css(:item)
           }
+          attrs = element_attributes(attrs)
           attrs["aria-expanded"] = row.expanded.to_s if row.expandable
           attrs["data-expanded"] = "" if row.expandable && row.expanded
           if row.disabled
@@ -151,7 +152,7 @@ module Poetry
 
         # @api private
         def toggle_attributes(row, index)
-          {
+          attrs = {
             "type" => "button", "tabindex" => "-1",
             "data-slot" => "tree-item-toggle", "class" => css(:toggle),
             "aria-label" => row.expanded ? t("poetry.tree.collapse") : t("poetry.tree.expand"),
@@ -159,7 +160,8 @@ module Poetry
             "id" => "#{row_id(index)}-toggle",
             "data-expand-label" => t("poetry.tree.expand"),
             "data-collapse-label" => t("poetry.tree.collapse")
-          }.merge(stimulus_attributes_for(:toggle))
+          }
+          element_attributes(attrs, stimulus: :toggle)
         end
 
         # @api private
@@ -225,7 +227,7 @@ module Poetry
           end
         end
 
-        private :root_items, :rows, :root_attributes, :row_attributes, :toggle_attributes, :row_id, :tree_id
+        private :root_items, :rows, :row_attributes, :toggle_attributes, :row_id, :tree_id
         private :first_visible_index
       end
     end

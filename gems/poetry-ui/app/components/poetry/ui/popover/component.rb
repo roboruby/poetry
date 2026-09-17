@@ -181,7 +181,8 @@ module Poetry
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
             "class" => css(:content, class: content_class)
-          }.merge(stimulus_attributes_for(:content))
+          }
+          attrs = element_attributes(attrs, stimulus: :content)
           if title?
             attrs["aria-labelledby"] = title_id
           elsif label.present?

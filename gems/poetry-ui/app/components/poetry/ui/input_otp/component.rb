@@ -154,7 +154,6 @@ module Poetry
         end
 
         # The row container's attributes.
-        # @api private
         def root_attributes
           attrs = {
             "data-slot" => "input-otp-container",
@@ -242,7 +241,7 @@ module Poetry
 
         def pattern_js = pattern_spec[:js]
 
-        private :group_sizes, :display_value, :char_at, :input_id, :complete?, :root_attributes, :input_attributes
+        private :group_sizes, :display_value, :char_at, :input_id, :complete?, :input_attributes
         private :slot_attributes
       end
     end

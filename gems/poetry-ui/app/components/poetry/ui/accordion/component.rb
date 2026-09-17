@@ -132,13 +132,9 @@ module Poetry
           Array(open).map(&:to_s)
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "accordion", "data-orientation" => "vertical" }
-              .merge(stimulus_attributes_for(:root))
-              .merge(component_data_attributes)
-          )
+          super({ "data-orientation" => "vertical" })
         end
 
         private
@@ -190,7 +186,7 @@ module Poetry
                                      data: { slot: "accordion-trigger-icon" }))
         end
 
-        private :open_values, :root_attributes
+        private :open_values
       end
     end
   end

@@ -417,16 +417,6 @@ module Poetry
           @item_set ||= ItemSet.new(base_id: base_id, highlight_value: value)
         end
 
-        # Attributes for the palette root.
-        # @api private
-        def root_attributes
-          html_attributes.merge_if_not_set(
-            { "id" => base_id, "data-slot" => "command" }
-              .merge(stimulus_attributes_for(:root))
-              .merge(component_data_attributes)
-          )
-        end
-
         # THE combobox: aria-expanded is STATICALLY true - the listbox is
         # always rendered and visible in bare Command (Combobox flips it on
         # its trigger instead). The activedescendant is server-rendered
@@ -439,6 +429,7 @@ module Poetry
             "aria-autocomplete" => "list", "autocomplete" => "off", "autocorrect" => "off",
             "spellcheck" => "false", "class" => css(:input)
           }
+          attrs = element_attributes(attrs)
           attrs["placeholder"] = placeholder if placeholder.present?
           attrs["disabled"] = true if disabled
           attrs["aria-activedescendant"] = item_set.highlighted_id if item_set.highlighted_id
@@ -450,10 +441,11 @@ module Poetry
         # Attributes for the role=listbox list.
         # @api private
         def list_attributes
-          {
+          attrs = {
             "id" => list_id, "data-slot" => "command-list", "role" => "listbox",
             "tabindex" => "-1", "aria-label" => list_label, "class" => css(:list)
           }
+          element_attributes(attrs)
         end
 
         # Zero-matches message - rendered hidden; the controller unhides it
@@ -490,6 +482,11 @@ module Poetry
                       "data-other" => t("poetry.command.results.other", count: "%{count}")) # rubocop:disable Style/FormatStringToken
         end
 
+        # Attributes for the palette root.
+        def root_attributes
+          super({ "id" => base_id })
+        end
+
         private
 
         def named?
@@ -519,7 +516,7 @@ module Poetry
           @item_wiring ||= stimulus_attributes_for(:item)
         end
 
-        private :base_id, :input_id, :list_id, :item_set, :root_attributes, :input_attributes, :list_attributes
+        private :base_id, :input_id, :list_id, :item_set, :input_attributes, :list_attributes
         private :empty_part, :loading_part, :status_part
       end
     end

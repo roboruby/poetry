@@ -88,14 +88,7 @@ module Poetry
           TREND_ICON.fetch(trend)
         end
 
-        # @api private
-        def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "stat" }.merge(component_data_attributes)
-          )
-        end
-
-        private :resolved_sentiment, :delta_classes, :trend_icon, :root_attributes
+        private :resolved_sentiment, :delta_classes, :trend_icon
       end
     end
   end

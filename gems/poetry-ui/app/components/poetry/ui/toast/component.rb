@@ -152,17 +152,17 @@ module Poetry
           VARIANT_ICONS[variant]
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             {
-              "data-slot" => "toast", "data-variant" => variant, "data-open" => "",
+              "data-variant" => variant, "data-open" => "",
               # aria-live=off ON PURPOSE: the announce singleton does the
               # talking, exactly once (an item that is itself a live
               # region would announce a second time).
               "role" => "status", "aria-live" => "off", "aria-atomic" => "true",
               "tabindex" => "0"
-            }.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
+            }
           )
         end
 
@@ -171,7 +171,7 @@ module Poetry
           stimulus_attributes_for(:close).merge("data-slot" => "toast-close")
         end
 
-        private :effective_duration, :variant_icon, :root_attributes, :close_button_attributes
+        private :effective_duration, :variant_icon, :close_button_attributes
       end
     end
   end

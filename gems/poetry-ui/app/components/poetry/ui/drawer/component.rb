@@ -175,7 +175,8 @@ module Poetry
             "data-swipe-direction" => direction,
             "data-closed" => "",
             "aria-labelledby" => title_id
-          }.merge(stimulus_attributes_for(:content))
+          }
+          attrs = element_attributes(attrs, stimulus: :content)
           # The attribute drives the dictionary's full-height sizing; the
           # controller reads the value for the offset physics.
           attrs["data-snap-points"] = "" if snap_points.present?

@@ -74,12 +74,11 @@ module Poetry
                                                        "dismisses the overlay under it" }
              }
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             {
-              "id" => DEFAULT_ID, "data-slot" => "toaster",
-              "role" => "region", "aria-label" => t("poetry.toast.region_label", hotkey: hotkey),
+              "id" => DEFAULT_ID, "role" => "region", "aria-label" => t("poetry.toast.region_label", hotkey: hotkey),
               "tabindex" => "-1", "data-turbo-permanent" => "",
               # The dismissal layer's top-layer exemption: presses inside
               # the toaster are never "outside" an open overlay.
@@ -88,11 +87,9 @@ module Poetry
               # group-data selector (items render independently of the
               # region - a streamed toast cannot know the corner).
               "data-position" => position
-            }.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
+            }
           )
         end
-
-        private :root_attributes
       end
     end
   end

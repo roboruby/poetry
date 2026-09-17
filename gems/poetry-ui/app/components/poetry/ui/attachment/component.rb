@@ -122,17 +122,17 @@ module Poetry
           ANNOUNCED_STATES.include?(state)
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             {
-              "data-slot" => "attachment", "data-upload-state" => state,
+              "data-upload-state" => state,
               "data-size" => size, "data-orientation" => orientation
-            }.merge(component_data_attributes)
+            }
           )
         end
 
-        private :announced?, :root_attributes
+        private :announced?
       end
     end
   end

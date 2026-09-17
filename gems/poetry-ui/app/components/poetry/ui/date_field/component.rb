@@ -102,15 +102,14 @@ module Poetry
                                  "modes; tabindex -1 + aria-hidden once segments exist"
 
         # Attributes for the field root.
-        # @api private
         def root_attributes
           attrs = {
             "data-slot" => slot_prefix,
             "class" => css
-          }.merge(component_data_attributes)
+          }
           attrs["data-disabled"] = "" if disabled
           attrs["data-invalid"] = "" if invalid
-          html_attributes.merge_if_not_set(attrs.merge(stimulus_attributes_for(:root)))
+          super(attrs)
         end
 
         # Attributes for the segment row the controller fills.
@@ -121,10 +120,11 @@ module Poetry
             "data-slot" => "#{slot_prefix}-group",
             "class" => group_classes
           }
+          attrs = element_attributes(attrs)
           attrs["aria-label"] = label if label.present?
           attrs["data-invalid"] = "" if invalid
           attrs["data-disabled"] = "" if disabled
-          attrs.merge(stimulus_attributes_for(:group))
+          element_attributes(attrs, stimulus: :group)
         end
 
         # Attributes for the native input - the form value.
@@ -202,7 +202,7 @@ module Poetry
         def segment_labels_json = segment_labels.to_json
         def segment_placeholders_json = segment_placeholders.to_json
 
-        private :root_attributes, :group_attributes, :input_attributes
+        private :group_attributes, :input_attributes
       end
     end
   end

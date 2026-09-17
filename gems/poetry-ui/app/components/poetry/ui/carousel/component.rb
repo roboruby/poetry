@@ -121,13 +121,12 @@ module Poetry
         def vertical? = orientation == :vertical
 
         # Attributes for the role=region root.
-        # @api private
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             {
               "role" => "region", "aria-roledescription" => "carousel", "aria-label" => label,
-              "data-slot" => "carousel", "data-orientation" => orientation
-            }.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
+              "data-orientation" => orientation
+            }
           )
         end
 
@@ -172,7 +171,7 @@ module Poetry
         # @api private
         Slide = Data.define(:classes, :block)
 
-        private :slides, :vertical?, :root_attributes, :viewport_attributes, :item_attributes, :control_options
+        private :slides, :vertical?, :viewport_attributes, :item_attributes, :control_options
       end
     end
   end

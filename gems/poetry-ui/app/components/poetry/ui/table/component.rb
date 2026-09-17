@@ -79,14 +79,7 @@ module Poetry
           attrs
         end
 
-        # @api private
-        def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "table" }.merge(component_data_attributes)
-          )
-        end
-
-        private :container_attributes, :root_attributes
+        private :container_attributes
       end
     end
   end

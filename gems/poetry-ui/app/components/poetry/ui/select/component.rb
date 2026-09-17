@@ -419,15 +419,6 @@ module Poetry
           option_set.label_for(selected_value) if selected_value.present?
         end
 
-        # @api private
-        def root_attributes
-          root = { "data-slot" => "select" }
-          root["dir"] = dir.to_s if dir
-          html_attributes.merge_if_not_set(
-            root.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
-          )
-        end
-
         # The serialization truth: a real <select> carrying name/required/
         # disabled and ALL options with selected - visually hidden (sr-only,
         # painted) and out of both trees (aria-hidden + tabindex=-1). Its
@@ -477,7 +468,8 @@ module Poetry
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
             "class" => css(:content)
-          }.merge(stimulus_attributes_for(:content))
+          }
+          attrs = element_attributes(attrs, stimulus: :content)
           attrs["hidden"] = true unless open
           attrs
         end
@@ -505,6 +497,13 @@ module Poetry
           content_tag(:div, attrs) do
             render(Icon::Component.new(name: :"chevron-#{direction}", class: Style.css(:scroll_icon)))
           end
+        end
+
+        # The root's attributes: this component's markup over the core default.
+        def root_attributes
+          root = {}
+          root["dir"] = dir.to_s if dir
+          super(root)
         end
 
         private
@@ -571,7 +570,7 @@ module Poetry
           @item_wiring ||= stimulus_attributes_for(:item)
         end
 
-        private :trigger_id, :content_id, :native_id, :option_set, :selected_value, :selected_label, :root_attributes
+        private :trigger_id, :content_id, :native_id, :option_set, :selected_value, :selected_label
         private :native_select, :trigger_button, :content_attributes, :viewport_attributes, :scroll_button
       end
 

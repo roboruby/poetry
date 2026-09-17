@@ -76,14 +76,7 @@ module Poetry
           title? || description? || action?
         end
 
-        # @api private
-        def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "card" }.merge(component_data_attributes)
-          )
-        end
-
-        private :footer_attributes, :header?, :root_attributes
+        private :footer_attributes, :header?
       end
     end
   end

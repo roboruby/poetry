@@ -253,12 +253,9 @@ module Poetry
                         cells.find { |date| in_month?(date) && !disabled?(date) }
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "calendar", "class" => css }.merge(stimulus_attributes_for(:root))
-                                                          .merge(component_data_attributes)
-          )
+          super({ "class" => css })
         end
 
         # aria-selected lives on the role=gridcell (the ARIA grid contract -
@@ -359,7 +356,7 @@ module Poetry
 
         private :range?, :range_complete?, :in_span?, :cells, :weekday_labels, :in_month?, :selected?, :today?
         private :disabled?, :caption, :dropdown_caption?, :month_options, :year_options, :iso_week, :tab_stop
-        private :root_attributes, :cell_attributes, :day_attributes, :previous_options, :next_options
+        private :cell_attributes, :day_attributes, :previous_options, :next_options
       end
     end
   end

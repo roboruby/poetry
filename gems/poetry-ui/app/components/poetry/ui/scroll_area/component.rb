@@ -54,13 +54,6 @@ module Poetry
         end
 
         # @api private
-        def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "scroll-area" }.merge(component_data_attributes)
-          )
-        end
-
-        # @api private
         def viewport_attributes
           {
             "data-slot" => "scroll-area-viewport", "tabindex" => "0",
@@ -69,7 +62,7 @@ module Poetry
           }
         end
 
-        private :root_attributes, :viewport_attributes
+        private :viewport_attributes
       end
     end
   end

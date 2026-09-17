@@ -85,27 +85,26 @@ module Poetry
         end
 
         # Attributes for the panel root.
-        # @api private
         def root_attributes
           attrs = {
-            "data-slot" => "code-block",
             "data-language" => language,
             "class" => css
-          }.merge(component_data_attributes)
+          }
           attrs["data-line-numbers"] = "" if line_numbers
-          html_attributes.merge_if_not_set(attrs.merge(stimulus_attributes_for(:root)))
+          super(attrs)
         end
 
         # Attributes for the scrollable <pre> region.
         # @api private
         def pre_attributes
-          {
+          attrs = {
             "data-slot" => "code-block-pre",
             "tabindex" => "0",
             "role" => "region",
             "aria-label" => label.presence || t("poetry.code_block.label"),
             "class" => css(:pre)
           }
+          element_attributes(attrs)
         end
 
         # Attributes for the <code> element.
@@ -134,7 +133,7 @@ module Poetry
 
         def copied_message_text = t("poetry.clipboard_text.copied")
 
-        private :highlighted, :root_attributes, :pre_attributes, :code_attributes, :copy_button
+        private :highlighted, :pre_attributes, :code_attributes, :copy_button
       end
     end
   end

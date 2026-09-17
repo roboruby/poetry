@@ -11,7 +11,7 @@
         <span class="<%= css(:mask_reveal) %>"><%= t("poetry.sensitive_input.reveal_hint") %></span>
       </span>
     <% end %>
-    <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(addon_attributes).to_attributes) do %>
+    <%= content_tag(:div, **addon_attributes.to_attributes) do %>
       <%= render toggle_button do %>
         <%= render Poetry::Ui::Icon::Component.new(name: :"eye-off") %>
       <% end %>

@@ -50,13 +50,6 @@ module Poetry
           content_tag(:div, content, **root_attributes.to_attributes)
         end
 
-        # @api private
-        def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "typeset" }.merge(component_data_attributes)
-          )
-        end
-
         # The preset rides the root class list (the caller's class: still
         # wins conflicts through the merger, as everywhere).
         # @api private
@@ -66,7 +59,7 @@ module Poetry
           classnames(super, ("typeset-#{preset}" if preset.present?))
         end
 
-        private :root_attributes, :css
+        private :css
       end
     end
   end

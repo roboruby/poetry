@@ -10,15 +10,10 @@ module Poetry
     # and the instance-id seed; a family with a different root or id
     # shape simply overrides.
     module FamilyIdentity
-      # The family root's data-slot, Stimulus, and self-identification
-      # attributes, merged under any caller-passed HTML attributes.
-      # @api private
-      def root_attributes
-        html_attributes.merge_if_not_set(
-          { "data-slot" => family_slot_prefix }
-            .merge(stimulus_attributes_for(:root))
-            .merge(component_data_attributes)
-        )
+      # The family root's attributes: the core default under the family's
+      # data-slot prefix (a family with a different root shape overrides).
+      def root_attributes(extra = {})
+        super({ "data-slot" => family_slot_prefix }.merge(extra))
       end
 
       private
@@ -45,8 +40,6 @@ module Poetry
       def instance_id
         @instance_id ||= poetry_instance_id("poetry-#{family_slot_prefix}")
       end
-
-      private :root_attributes
     end
   end
 end

@@ -46,17 +46,14 @@ module Poetry
           content_tag(:div, content, **root_attributes.to_attributes)
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             {
-              "data-slot" => "aspect-ratio",
               "style" => "--ratio: #{ratio}"
-            }.merge(component_data_attributes)
+            }
           )
         end
-
-        private :root_attributes
       end
     end
   end

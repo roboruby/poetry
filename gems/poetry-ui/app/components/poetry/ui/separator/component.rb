@@ -37,9 +37,9 @@ module Poetry
           content_tag(:div, nil, **root_attributes.to_attributes)
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          attrs = { "data-slot" => "separator", "data-orientation" => orientation }
+          attrs = { "data-orientation" => orientation }
           if decorative
             attrs["aria-hidden"] = "true"
           else
@@ -47,10 +47,8 @@ module Poetry
             # ARIA default orientation is horizontal; only mark the exception.
             attrs["aria-orientation"] = "vertical" if orientation == :vertical
           end
-          html_attributes.merge_if_not_set(attrs.merge(component_data_attributes))
+          super(attrs)
         end
-
-        private :root_attributes
       end
     end
   end

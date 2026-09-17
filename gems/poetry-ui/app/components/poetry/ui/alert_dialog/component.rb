@@ -160,7 +160,7 @@ module Poetry
 
         # @api private
         def dialog_attributes
-          {
+          attrs = {
             "class" => css(:content, class: content_class),
             # Explicit role: overrides the implicit dialog role (aria-modal
             # still comes from showModal).
@@ -170,7 +170,8 @@ module Poetry
             "data-closed" => "",
             "aria-labelledby" => title_id,
             "aria-describedby" => description_id
-          }.merge(stimulus_attributes_for(:content))
+          }
+          element_attributes(attrs, stimulus: :content)
         end
 
         # The media/size layout branches emitted as explicit server-side

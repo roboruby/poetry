@@ -81,33 +81,33 @@ module Poetry
         end
 
         # Attributes for the root wrapper.
-        # @api private
         def root_attributes
           attrs = {
-            "data-slot" => "clipboard-text",
             "class" => css
-          }.merge(component_data_attributes)
-          html_attributes.merge_if_not_set(attrs.merge(stimulus_attributes_for(:root)))
+          }
+          super(attrs)
         end
 
         # Attributes for the bordered field surface.
         # @api private
         def group_attributes
-          {
+          attrs = {
             "role" => "group",
             "data-slot" => "clipboard-text-group",
             "class" => InputGroup::Style.css
           }
+          element_attributes(attrs)
         end
 
         # Attributes for the trailing addon cell.
         # @api private
         def addon_attributes
-          {
+          attrs = {
             "data-slot" => "input-group-addon",
             "data-align" => "inline-end",
             "class" => InputGroup::Style.css(:addon, class: InputGroup::Style.css(:addon_inline_end))
           }
+          element_attributes(attrs)
         end
 
         # Attributes for the readonly value input.
@@ -147,7 +147,7 @@ module Poetry
 
         def copied_message_text = t("poetry.clipboard_text.copied")
 
-        private :control_id, :root_attributes, :group_attributes, :addon_attributes, :input_attributes, :copy_button
+        private :control_id, :group_attributes, :addon_attributes, :input_attributes, :copy_button
       end
     end
   end

@@ -67,14 +67,12 @@ module Poetry
           ensure_content!
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          attrs = { "data-slot" => "marker", "data-variant" => variant }.merge(component_data_attributes)
+          attrs = { "data-variant" => variant }
           attrs["role"] = "status" if announce == :status
-          html_attributes.merge_if_not_set(attrs)
+          super(attrs)
         end
-
-        private :root_attributes
       end
     end
   end

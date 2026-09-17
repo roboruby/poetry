@@ -188,17 +188,15 @@ module Poetry
           @control_id ||= poetry_instance_id("poetry-radio-group")
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
           attrs = {
-            "role" => "radiogroup", "data-slot" => "radio-group", "id" => control_id
+            "role" => "radiogroup", "id" => control_id
           }
           attrs["aria-required"] = true if required
           attrs["aria-label"] = label if label.present?
           attrs["data-disabled"] = "" if disabled
-          html_attributes.merge_if_not_set(
-            attrs.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
-          )
+          super(attrs)
         end
 
         private
@@ -316,7 +314,7 @@ module Poetry
         def value_string = value.to_s
         def value? = value.present?
 
-        private :checked?, :control_id, :root_attributes
+        private :checked?, :control_id
       end
     end
   end

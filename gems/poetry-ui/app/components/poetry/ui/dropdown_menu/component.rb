@@ -258,13 +258,10 @@ module Poetry
         end
 
         # The root wrapper's attributes.
-        # @api private
         def root_attributes
-          root = { "data-slot" => "dropdown-menu" }
+          root = {}
           root["dir"] = dir.to_s if dir
-          html_attributes.merge_if_not_set(
-            root.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
-          )
+          super(root)
         end
 
         # The role=menu panel's attributes.
@@ -277,7 +274,8 @@ module Poetry
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
             "class" => css(:content, class: content_class)
-          }.merge(stimulus_attributes_for(:content))
+          }
+          attrs = element_attributes(attrs, stimulus: :content)
           attrs["hidden"] = true unless open
           attrs
         end
@@ -295,7 +293,7 @@ module Poetry
           @instance_id ||= poetry_instance_id("poetry-dropdown-menu")
         end
 
-        private :trigger_id, :content_id, :root_attributes, :content_attributes
+        private :trigger_id, :content_id, :content_attributes
       end
 
       # role=group semantic grouping between separators - the shared kernel

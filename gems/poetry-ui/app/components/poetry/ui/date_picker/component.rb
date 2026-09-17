@@ -142,12 +142,8 @@ module Poetry
         end
 
         # Attributes for the root wrapper.
-        # @api private
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "date-picker", "class" => css }
-              .merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
-          )
+          super({ "class" => css })
         end
 
         # Button options for the field-shaped trigger.
@@ -233,7 +229,7 @@ module Poetry
           end
         end
 
-        private :range?, :input_variant?, :formatted, :calendar_options, :root_attributes, :trigger_options
+        private :range?, :input_variant?, :formatted, :calendar_options, :trigger_options
         private :label_target_attributes, :input_attributes, :input_trigger_options
         private :popover_options, :popover_key
       end

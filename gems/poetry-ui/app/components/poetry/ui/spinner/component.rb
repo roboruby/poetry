@@ -36,12 +36,12 @@ module Poetry
           content_tag(:svg, glyph, **root_attributes.to_attributes)
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
+          super(
             SVG_BOX.merge(
-              "data-slot" => "spinner", "role" => "status", "aria-label" => label
-            ).merge(component_data_attributes)
+              "role" => "status", "aria-label" => label
+            )
           )
         end
 
@@ -50,8 +50,6 @@ module Poetry
         def glyph
           Poetry::Core::Icons.set(nil).fetch(GLYPH).html_safe
         end
-
-        private :root_attributes
       end
     end
   end

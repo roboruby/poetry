@@ -50,14 +50,10 @@ module Poetry
         part "message-footer", "Timestamps / delivery state below the bubbles (footer slot - " \
                                "it lifts the avatar)"
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "message", "data-align" => align }.merge(component_data_attributes)
-          )
+          super({ "data-align" => align })
         end
-
-        private :root_attributes
       end
     end
   end

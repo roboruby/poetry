@@ -102,13 +102,8 @@ module Poetry
         end
 
         # Attributes for the disclosure root.
-        # @api private
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "collapsible", "data-#{state}" => "" }
-              .merge(stimulus_attributes_for(:root))
-              .merge(component_data_attributes)
-          )
+          super({ "data-#{state}" => "" })
         end
 
         # Attributes for the content panel.
@@ -116,7 +111,8 @@ module Poetry
         def content_attributes
           attrs = {
             "id" => content_id, "data-slot" => "collapsible-content", "data-#{state}" => ""
-          }.merge(stimulus_attributes_for(:content))
+          }
+          attrs = element_attributes(attrs, stimulus: :content)
           attrs["hidden"] = true unless open
           attrs
         end
@@ -127,7 +123,7 @@ module Poetry
           @instance_id ||= poetry_instance_id("poetry-collapsible")
         end
 
-        private :state, :content_id, :root_attributes, :content_attributes
+        private :state, :content_id, :content_attributes
       end
     end
   end

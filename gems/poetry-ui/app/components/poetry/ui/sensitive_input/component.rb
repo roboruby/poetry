@@ -148,25 +148,23 @@ module Poetry
           state == "masked"
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
           attrs = {
-            "data-slot" => "sensitive-input",
             "data-state" => state,
             "class" => css
-          }.merge(component_data_attributes)
+          }
           attrs["data-disabled"] = "" if disabled
-          html_attributes.merge_if_not_set(attrs.merge(stimulus_attributes_for(:root)))
+          super(attrs)
         end
 
         # @api private
         def group_attributes
-          attrs = Poetry::Core::HTML::Attributes.new(
+          attrs = {
             "data-slot" => "sensitive-input-group",
             "class" => InputGroup::Style.css(class: css(:group))
-          )
-          attrs.merge!(stimulus_attributes_for(:group))
-          attrs
+          }
+          element_attributes(attrs, stimulus: :group)
         end
 
         # Fixed inline-end - the reveal/copy cell.
@@ -266,7 +264,7 @@ module Poetry
         def hidden_message_text = t("poetry.sensitive_input.hidden")
         def copied_message_text = t("poetry.clipboard_text.copied")
 
-        private :hint_id, :state, :masked?, :root_attributes, :group_attributes, :addon_attributes, :mask_attributes
+        private :hint_id, :state, :masked?, :group_attributes, :addon_attributes, :mask_attributes
         private :input_attributes, :toggle_button, :copy_button, :masked_label, :hint_attributes
       end
     end

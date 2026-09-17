@@ -33,14 +33,6 @@ module Poetry
         end
 
         # The <kbd> element's attributes.
-        # @api private
-        def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "kbd" }.merge(component_data_attributes)
-          )
-        end
-
-        private :root_attributes
       end
     end
   end

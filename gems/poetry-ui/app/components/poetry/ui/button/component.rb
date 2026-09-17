@@ -118,7 +118,7 @@ module Poetry
           link_tag? ? :a : :button
         end
 
-        # @api private
+        # The root's attributes: the base and the tag's own, over the caller's.
         def root_attributes
           html_attributes.merge_if_not_set(base_attributes.merge(tag_attributes))
         end
@@ -159,9 +159,7 @@ module Poetry
           attrs
         end
 
-        private :icon_only?, :link_tag?, :root_tag, :root_attributes
-
-        private :icon_only?, :link_tag?, :root_tag, :root_attributes
+        private :icon_only?, :link_tag?, :root_tag
       end
     end
   end

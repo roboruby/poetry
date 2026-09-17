@@ -32,14 +32,12 @@ module Poetry
           content_tag(:label, content, **root_attributes.to_attributes)
         end
 
-        # @api private
+        # The root's attributes: this component's markup over the core default.
         def root_attributes
-          attrs = { "data-slot" => "label" }
+          attrs = {}
           attrs["for"] = for_id if for_id.present?
-          html_attributes.merge_if_not_set(attrs.merge(component_data_attributes))
+          super(attrs)
         end
-
-        private :root_attributes
       end
     end
   end
