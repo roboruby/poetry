@@ -18,6 +18,10 @@ module Poetry
         # The response header the browsers read (Rack 3 lowercases names).
         HEADER = "origin-trial"
 
+        # The middleware.
+        #
+        # @param app [#call] the next Rack app
+        # @param tokens [Array<String>, String, nil] the origin-trial tokens to send; nil reads the configuration
         def initialize(app, tokens: nil)
           @app = app
           @tokens = tokens

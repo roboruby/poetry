@@ -199,6 +199,15 @@ module Poetry
         # {relative path => content} file map (the get_skill tool).
         # Lazy because the usage skill is generated from the registry on
         # first fetch - server boot stays instant.
+        #
+        # @param root [String, Pathname] the registry root
+        # @param helpers [Array<String>, nil] the full set of valid poetry_* helper names;
+        #   nil derives it from the registries
+        # @param icon_names [Array<String>, nil] the active icon set's names, for icon-value checks
+        # @param skills [Hash{String => #call}] skill name => a zero-arg callable returning
+        #   the skill's file map (see above)
+        # @param app_root [String, nil] the host app directory (Dir.pwd for the exe)
+        # @param recipes [Array<Hash>] registry-item summaries from the owning gem
         def self.from_registry(root, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [])
           from_registries([root], helpers: helpers, icon_names: icon_names, skills: skills,
                                   app_root: app_root, recipes: recipes)
@@ -209,6 +218,15 @@ module Poetry
         # paths): the gems' published registries and, when the app
         # committed its own with `bin/rails poetry:registry`, the app's -
         # its components then describe, check and compose like a gem's.
+        #
+        # @param roots [Array<String, Pathname>] the registry roots, later ones winning a path collision
+        # @param helpers [Array<String>, nil] the full set of valid poetry_* helper names;
+        #   nil derives it from the registries
+        # @param icon_names [Array<String>, nil] the active icon set's names, for icon-value checks
+        # @param skills [Hash{String => #call}] skill name => a zero-arg callable returning
+        #   the skill's file map (see above)
+        # @param app_root [String, nil] the host app directory (Dir.pwd for the exe)
+        # @param recipes [Array<Hash>] registry-item summaries from the owning gem
         def self.from_registries(roots, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [])
           committed = Poetry::Core::Registry.merged(roots, source_root: roots.first)
           # The app's own components declare their helpers in source
@@ -239,6 +257,8 @@ module Poetry
         # The helper each entry names, so an explicit helper list never
         # hides another root's components (an entry without one has no
         # helper to map).
+        #
+        # @param entries [Hash{String => Hash}] registry entries by path
         def self.mapped_helpers(entries)
           entries.filter_map { |path, entry| Poetry::Core::Registry.helper_for(path, entry) }
         end
@@ -250,6 +270,14 @@ module Poetry
         # recipes: registry-item SUMMARIES (content-free) from the owning
         # gem's RecipeItems projection - the exe passes them so this class
         # stays poetry-ui-free.
+        #
+        # @param entries [Hash{String => Hash}] registry entries by path
+        # @param catalog [Poetry::Core::Check::Catalog] the check catalog over those entries
+        # @param blocks [Hash] the block recipes keyed by name, as the registry's blocks section lists them
+        # @param root [String, nil] the registry root, for boot-free source reads
+        # @param skills [Hash{String => #call}] skill name => a zero-arg callable returning the skill's file map
+        # @param app_root [String, nil] the host app directory (see above)
+        # @param recipes [Array<Hash>] registry-item summaries (see above)
         def initialize(entries:, catalog:, blocks: {}, root: nil, skills: {}, app_root: nil, recipes: []) # rubocop:disable Metrics/ParameterLists
           @entries = entries
           @catalog = catalog
@@ -302,6 +330,9 @@ module Poetry
 
         # The thin stdio loop: newline-delimited JSON-RPC in, replies out.
         # A malformed line yields a parse error, never a crashed server.
+        #
+        # @param input [IO] where requests arrive, one JSON-RPC message per line
+        # @param output [IO] where replies go
         def serve(input: $stdin, output: $stdout)
           input.each_line do |line|
             line = line.strip

@@ -17,6 +17,10 @@ module Poetry
           # @return [Integer]
           attr_reader :status
 
+          # An HTTP failure, with its status.
+          #
+          # @param message [String] the error message
+          # @param status [Integer] the HTTP status the relay answered with
           def initialize(message, status:)
             super(message)
             @status = status
