@@ -53,6 +53,7 @@ module Poetry
 
       # Reduce a URL or bare domain to its lowercase host.
       #
+      # @param domain [String] a URL or a bare host
       # @return [String]
       def normalize_domain(domain)
         domain.to_s.strip.downcase
@@ -62,6 +63,9 @@ module Poetry
       # The composed document must at least parse as DESIGN.md; a missing
       # frontmatter is a warning, not a failure - prose-only documents
       # still carry the body sections, and import will say so again.
+      #
+      # @param design_md [String] the composed DESIGN.md document
+      # @param io [IO] where warnings are printed
       def validate!(design_md, io)
         parsed = Poetry::Core::DesignMd.parse(design_md)
         io.puts "note: composed DESIGN.md has no frontmatter tokens" unless parsed.is_a?(Hash) && parsed.any?

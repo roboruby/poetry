@@ -25,3 +25,4 @@ gem "rubocop-rake", require: false
 gem "rubocop-yard", require: false
 gem "simplecov", require: false
 gem "yard", require: false
+gem "yard-lint", require: false
