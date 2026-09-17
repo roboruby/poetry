@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5]
+
+### Added
+
+- `Poetry::Core::Component#root_attributes`, the root element's attributes as one merge-aware `Attributes`: the caller's `html_attributes` (classes already merged with the dictionary's) over the component's own root markup - `data-slot` (`root_slot`, the component title in kebab form, or the one passed), `data-component`, and the root's Stimulus wiring whenever a `use_stimulus` block declares `:root`. A component adds its markup by overriding and passing it up (`super("role" => "status")`); the template splats `root_attributes.to_attributes`. The private `root_attributes` every component and the guide's sample wrote by hand is the default now.
+- `Poetry::Core::Component#element_attributes(attrs, stimulus:)`, the builder for a part's attributes: the given markup as an `Attributes` with a declared element's Stimulus wiring merged beneath it. Plain `Hash#merge` of markup with wiring dropped one side's `data-controller` or `data-action` when both carried one; this concatenates them. Build every part here and splat `to_attributes` in the template, instead of wrapping a plain hash in `Poetry::Core::HTML::Attributes.new` at the call site.
+
 ## [0.1.4] - 2026-09-15
 
 Lockstep release with the family; no changes in this gem.

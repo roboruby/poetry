@@ -276,6 +276,63 @@ module Poetry
         { "data-slot" => part.to_s }
       end
 
+      # The root element's attributes: the caller's {#html_attributes} (its
+      # classes already merged with the dictionary's) with the component's
+      # own root markup set beneath them - `data-slot` (the component title,
+      # or the one in +extra+), `data-component`, and the root's Stimulus
+      # wiring when a `use_stimulus` block declares `:root`. The caller's
+      # attributes win: a class, id or data-* passed in is kept and the
+      # component's default fills the gaps.
+      #
+      # A component adds its own root markup by overriding and passing it up;
+      # the template splats the result.
+      #
+      # @example A component's override
+      #   def root_attributes
+      #     super("role" => "status", "data-variant" => variant)
+      #   end
+      # @example The template
+      #   <%= tag.div(**root_attributes.to_attributes) do %>
+      #
+      # @param extra [Hash] the component's own root attributes; a
+      #   `"data-slot"` here replaces the default
+      # @return [Poetry::Core::HTML::Attributes] the root's attributes
+      def root_attributes(extra = {})
+        own = { "data-slot" => root_slot }.merge(extra).merge(component_data_attributes)
+        wired = self.class.stimulus_elements.key?(:root) ? :root : nil
+        html_attributes.merge_if_not_set(element_attributes(own, stimulus: wired))
+      end
+
+      # The root's `data-slot`: the component title in kebab form (a
+      # ToggleGroup roots as "toggle-group").
+      #
+      # @return [String] the slot name
+      def root_slot
+        self.class.component_title.to_s.tr("_", "-")
+      end
+
+      # An element's attributes as one merge-aware {Poetry::Core::HTML::Attributes}:
+      # the given markup with a declared element's Stimulus wiring merged
+      # beneath it. Plain `Hash#merge` of markup with wiring drops one
+      # side's `data-controller` or `data-action` when both carry one; this
+      # concatenates them. Build every part's attributes here and splat
+      # `to_attributes` in the template.
+      #
+      # @example A part builder
+      #   def content_attributes
+      #     element_attributes({ "id" => content_id, "role" => "menu" }, stimulus: :content)
+      #   end
+      #
+      # @param attrs [Hash] the element's markup, in braces (a braceless hash
+      #   would read as the keyword that follows)
+      # @param stimulus [Symbol, String, nil] a `use_stimulus` element whose
+      #   wiring joins the markup; nil for an unwired element
+      # @return [Poetry::Core::HTML::Attributes] the element's attributes
+      def element_attributes(attrs = {}, stimulus: nil)
+        attributes = Poetry::Core::HTML::Attributes.new(attrs)
+        stimulus ? attributes.merge(stimulus_attributes_for(stimulus)) : attributes
+      end
+
       # Enforces the class-level requires_content declaration - call from
       # before_render. The message is built from the declaration so the
       # runtime raise and the registry's static contract can never disagree.
