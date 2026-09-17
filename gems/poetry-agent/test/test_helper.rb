@@ -1,7 +1,18 @@
 # frozen_string_literal: true
 
-require "simplecov"
-SimpleCov.start { add_filter "/test/" }
+# Start coverage before the code under test loads. Disable with COVERAGE=0
+# for fast focused runs.
+unless ENV["COVERAGE"] == "0"
+  require "simplecov"
+  SimpleCov.start do
+    enable_coverage :branch
+    skip %r{^/test/}
+    cover "{app,lib}/**/*.rb"
+    # The floor: one point under the measured value. Raise it when coverage
+    # climbs; never lower it in a feature commit.
+    minimum_coverage line: 95, branch: 79
+  end
+end
 
 require "minitest/autorun"
 require "poetry/agent"

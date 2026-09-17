@@ -16,12 +16,16 @@
     "@hotwired/stimulus": ">= 3.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
     "@hotwired/stimulus": "^3.2.2",
+    "eslint": "^9.39.5",
+    "globals": "^16.0.0",
     "jsdom": "^30.0.1",
     "vitest": "^4.1.11"
   },
   "scripts": {
-    "test": "vitest run",
-    "manifest": "MANIFEST_WRITE=1 vitest run test/javascript/controllers_manifest.test.js"
+    "test": "eslint app/javascript && vitest run",
+    "manifest": "MANIFEST_WRITE=1 vitest run test/javascript/controllers_manifest.test.js",
+    "lint": "eslint app/javascript"
   }
 }

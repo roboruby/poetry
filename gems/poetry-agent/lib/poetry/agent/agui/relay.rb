@@ -36,6 +36,8 @@ module Poetry
         # @param append_render [#call, nil] `(message, version) -> String` the HTML a
         #   first appearance appends - the row inside its list wrapper (a scroller
         #   item); defaults to `render`
+        # @param morph [Boolean] update a row by morphing it (the stream's
+        #   `method="morph"`) instead of replacing the element
         def initialize(transcript:, render:, container: nil, target: ->(message) { "row-#{message.id}" }, # rubocop:disable Metrics/ParameterLists
                        action: "vreplace", append_render: nil, morph: false)
           @transcript = transcript
