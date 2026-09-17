@@ -264,6 +264,8 @@ module Poetry
       #
       # @param method [Symbol] the model attribute
       # @param hint [String, nil] hint text
+      # @param options [Hash] the DateTimeField's own options (seconds:, hour_cycle:)
+      #   and HTML attributes, passed through to the control
       # @return [ActiveSupport::SafeBuffer]
       def datetime_field(method, hint: nil, **options)
         field_component = field_for(method, hint: hint)
@@ -416,6 +418,8 @@ module Poetry
       # @param hint [String, nil] hint text (overrides the i18n chain)
       # @param required [Boolean, nil] overrides the presence-validator inference for this
       #   call (aria-required only, never the native attribute)
+      # @param options [Hash] passed through to the control the type resolves to
+      #   (placeholder:, HTML attributes, the control's own options)
       # @return [ActiveSupport::SafeBuffer] the rendered Field
       def input(method, as: nil, collection: nil, hint: nil, required: nil, **options)
         unless required.nil?
