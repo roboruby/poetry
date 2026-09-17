@@ -31,6 +31,8 @@ module Poetry
       # and flat or themed color.
       Entry = Data.define(:key, :label, :icon, :color, :theme) do
         # The per-theme color: the flat color, or the theme map's value.
+        #
+        # @param theme_name [String, Symbol] the theme to answer for
         def color_for(theme_name)
           theme ? theme[theme_name] : color
         end

@@ -29,6 +29,9 @@ module Poetry
         end
 
         # Starts a new subpath at (x, y).
+        #
+        # @param x [Numeric] the x coordinate
+        # @param y [Numeric] the y coordinate
         def move_to(x, y)
           x = x.to_f
           y = y.to_f
@@ -38,6 +41,9 @@ module Poetry
         end
 
         # A straight segment to (x, y).
+        #
+        # @param x [Numeric] the x coordinate
+        # @param y [Numeric] the y coordinate
         def line_to(x, y)
           x = x.to_f
           y = y.to_f
@@ -47,6 +53,11 @@ module Poetry
         end
 
         # A quadratic curve to (x, y) with one control point.
+        #
+        # @param cpx [Numeric] the control point's x
+        # @param cpy [Numeric] the control point's y
+        # @param x [Numeric] the end x
+        # @param y [Numeric] the end y
         def quadratic_curve_to(cpx, cpy, x, y)
           x = x.to_f
           y = y.to_f
@@ -56,6 +67,13 @@ module Poetry
         end
 
         # A cubic curve to (x, y) with two control points.
+        #
+        # @param cp1x [Numeric] the first control point's x
+        # @param cp1y [Numeric] the first control point's y
+        # @param cp2x [Numeric] the second control point's x
+        # @param cp2y [Numeric] the second control point's y
+        # @param x [Numeric] the end x
+        # @param y [Numeric] the end y
         def bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
           x = x.to_f
           y = y.to_f

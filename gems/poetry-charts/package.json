@@ -29,6 +29,7 @@
     "decimal.js-light": "^2.5.1",
     "esbuild": "^0.28.1",
     "eslint": "^9.39.5",
+    "eslint-plugin-jsdoc": "^63.0.0",
     "globals": "^16.0.0",
     "jsdom": "^30.0.1",
     "vitest": "^4.1.11"
@@ -38,6 +39,7 @@
     "manifest": "MANIFEST_WRITE=1 vitest run test/javascript/controllers_manifest.test.js",
     "vendor:d3": "node vendor/d3-kernel/build.mjs",
     "vendor:d3:verify": "node vendor/d3-kernel/build.mjs --verify",
-    "lint": "eslint app/javascript"
+    "lint": "eslint app/javascript",
+    "jsdoc:floor": "JSDOC_FLOOR_WRITE=1 vitest run test/javascript/jsdoc_floor.test.js"
   }
 }

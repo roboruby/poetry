@@ -16,6 +16,8 @@ module Poetry
       module_function
 
       # -1, 0, or 1 by the value's sign.
+      #
+      # @param value [Numeric] the number
       def sign(value)
         return 0 if value.zero?
 
@@ -24,16 +26,28 @@ module Poetry
 
       # The [x, y] point at (radius, angle) from the center, in SVG's
       # y-down plane.
+      #
+      # @param cx [Numeric] the center x
+      # @param cy [Numeric] the center y
+      # @param radius [Numeric] the distance from the center
+      # @param angle [Numeric] degrees
       def polar_to_cartesian(cx, cy, radius, angle)
         [cx + (Math.cos(-RADIAN * angle) * radius), cy + (Math.sin(-RADIAN * angle) * radius)]
       end
 
       # The largest radius fitting the plot: half the shorter side.
+      #
+      # @param width [Numeric] the plot width
+      # @param height [Numeric] the plot height
       def max_radius(width, height)
         [width, height].min / 2.0
       end
 
       # "80%" of the max radius, or a plain number.
+      #
+      # @param value [String, Numeric, nil] a percent string or a plain number
+      # @param total [Numeric] what a percent is taken of
+      # @param default [Numeric] the answer when value is nil
       def percent_value(value, total, default = 0)
         return default if value.nil?
 
@@ -45,6 +59,12 @@ module Poetry
       # collapse (and skip padding); paddings live BETWEEN non-zero
       # slices (full circles pad after the last slice too, closing the
       # ring).
+      #
+      # @param values [Array<Numeric>] the slice values
+      # @param start_angle [Numeric] degrees
+      # @param end_angle [Numeric] degrees
+      # @param padding_angle [Numeric] degrees between non-zero slices
+      # @param min_angle [Numeric] the smallest angle a non-zero slice may take
       def pie_sectors(values, start_angle: 0, end_angle: 360, padding_angle: 0, min_angle: 0)
         numeric = values.map { |value| value.is_a?(Numeric) ? value.to_f : 0.0 }
         sum = numeric.sum
@@ -86,6 +106,14 @@ module Poetry
       # The corner circle tangent to an arc (at `radius`) and a radial
       # edge (at `angle`) - the rounded-corner primitive for the radial
       # bar's corner_radius.
+      #
+      # @param cx [Numeric] the center x
+      # @param cy [Numeric] the center y
+      # @param radius [Numeric] the distance from the center to the arc
+      # @param angle [Numeric] the radial edge's angle, degrees
+      # @param sign [Integer] which side of the edge the corner turns: 1 or -1
+      # @param corner_radius [Numeric] the corner's radius
+      # @param external [Boolean] whether the circle sits outside the arc
       def tangent_circle(cx:, cy:, radius:, angle:, sign:, corner_radius:, external: false)
         center_radius = (corner_radius * (external ? 1 : -1)) + radius
         theta = Math.asin(corner_radius / center_radius) / RADIAN
@@ -100,6 +128,15 @@ module Poetry
       # The ring segment with all four corners rounded by tangent
       # circles. Falls back to the plain path when the sweep is too small
       # to fit the corners.
+      #
+      # @param cx [Numeric] the center x
+      # @param cy [Numeric] the center y
+      # @param inner_radius [Numeric] the ring's inner radius (0 for a wedge)
+      # @param outer_radius [Numeric] the ring's outer radius
+      # @param start_angle [Numeric] degrees
+      # @param end_angle [Numeric] degrees
+      # @param corner_radius [Numeric] the corners' radius
+      # @param fmt [Proc, nil] the number formatter for the path data
       def sector_path_with_corners(cx:, cy:, inner_radius:, outer_radius:, start_angle:, end_angle:,
                                    corner_radius:, fmt: nil)
         fmt ||= ->(v) { Geometry.js_number((v * 10_000).round / 10_000.0) }
@@ -146,6 +183,14 @@ module Poetry
 
       # The wedge/ring path. The delta clamps at 359.999 so a full
       # circle's endpoints never coincide.
+      #
+      # @param cx [Numeric] the center x
+      # @param cy [Numeric] the center y
+      # @param inner_radius [Numeric] the ring's inner radius (0 for a wedge)
+      # @param outer_radius [Numeric] the ring's outer radius
+      # @param start_angle [Numeric] degrees
+      # @param end_angle [Numeric] degrees
+      # @param fmt [Proc, nil] the number formatter for the path data
       def sector_path(cx:, cy:, inner_radius:, outer_radius:, start_angle:, end_angle:, fmt: nil)
         # 4-decimal precision: a full circle's 359.999-degree endpoints
         # differ only past the 2nd decimal - rounding coarser would collapse

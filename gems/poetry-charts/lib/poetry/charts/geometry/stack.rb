@@ -19,6 +19,8 @@ module Poetry
         # points.
         Series = ::Struct.new(:key, :index, :points) do
           # The [base, top] pair at one row index.
+          #
+          # @param index [Integer] the row index
           def [](index)
             points[index]
           end
@@ -29,6 +31,11 @@ module Poetry
           end
         end
 
+        # A stack generator: rows and keys to per-series [base, top] pairs.
+        #
+        # @param keys [Array<String, Symbol>] the series keys, in stacking order
+        # @param value [Proc, nil] the value accessor (row, key) -> Numeric; nil reads row[key]
+        # @param offset [Symbol] :none, or :expand for 100%-normalized
         def initialize(keys:, value: nil, offset: :none)
           @keys = keys.to_a
           @value = value || ->(d, key) { d[key] }

@@ -12,6 +12,15 @@ module Poetry
       # @example
       #   Poetry::Charts::Geometry::Line.new(curve: :monotone_x).path(points)
       class Line
+        # A line generator over a point list.
+        #
+        # @param x [Proc, Symbol, String, Numeric, nil] the accessor:
+        #   a (d, i) lambda, a hash key, or a constant; defaults to d[0]
+        # @param y [Proc, Symbol, String, Numeric, nil] the accessor:
+        #   a (d, i) lambda, a hash key, or a constant; defaults to d[1]
+        # @param curve [Symbol] the curve name
+        # @param defined [Proc, nil] the defined predicate (d, i) -> Boolean; nil for every point
+        # @param digits [Integer] path coordinate precision
         def initialize(x: nil, y: nil, curve: :linear, defined: nil, digits: 3)
           @x = Accessor.wrap(x) { |d, _i| d[0] }
           @y = Accessor.wrap(y) { |d, _i| d[1] }
@@ -48,6 +57,9 @@ module Poetry
           module_function
 
           # A (d, i) lambda from a lambda, key, constant, or the default.
+          #
+          # @param value [Proc, Symbol, String, Numeric, nil] the accessor:
+          #   a (d, i) lambda, a hash key, or a constant, as given
           def wrap(value, &default)
             case value
             when nil then default

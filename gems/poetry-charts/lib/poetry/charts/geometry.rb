@@ -22,6 +22,8 @@ module Poetry
 
       # JS Math.round: floor(x + 0.5) - differs from Float#round at negative
       # halves (JS rounds -2.5 to -2; Ruby to -3).
+      #
+      # @param value [Numeric] the number to round
       def js_round(value)
         (value + 0.5).floor
       end
@@ -31,6 +33,8 @@ module Poetry
       # everything else uses shortest round-trip decimal (Ruby and V8 agree
       # on shortest-repr in the post-rounding magnitude range; the exponent
       # guard covers the sub-1e-4 corner where Ruby switches early).
+      #
+      # @param value [Numeric] the number to print
       def js_number(value)
         return "0" if value.zero?
 
@@ -45,6 +49,8 @@ module Poetry
 
       # JS truthiness for the curve state machines (the line state flag
       # runs nil | 0 | 1 | NaN): nil, 0, and NaN are falsy.
+      #
+      # @param value [Object] the flag
       def js_truthy?(value)
         return false if value.nil?
         return false if value.is_a?(Float) && value.nan?

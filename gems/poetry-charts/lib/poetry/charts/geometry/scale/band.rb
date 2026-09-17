@@ -17,6 +17,14 @@ module Poetry
         class Band
           attr_reader :domain, :range, :padding_inner, :padding_outer, :align, :step, :bandwidth, :positions
 
+          # A band scale: categories to equal-width bands across the range.
+          #
+          # @param domain [Array] the categories, in order
+          # @param range [Array(Numeric, Numeric)] the pixel extent
+          # @param padding_inner [Float] the fraction of each band left between bands
+          # @param padding_outer [Float] the fraction of a band left at each range edge
+          # @param align [Float] where leftover space goes: 0 at the start, 1 at the end
+          # @param round [Boolean] round positions and widths to integers
           def initialize(domain:, range:, padding_inner: 0.0, padding_outer: 0.0, align: 0.5, round: false)
             @domain = domain.to_a
             @range = range.map(&:to_f)
@@ -29,12 +37,20 @@ module Poetry
 
           # Convenience for the common single padding: knob - one value
           # sets inner AND outer padding.
+          #
+          # @param domain [Array] the categories, in order
+          # @param range [Array(Numeric, Numeric)] the pixel extent
+          # @param padding [Float] the inner and outer padding at once
+          # @param align [Float] where leftover space goes: 0 at the start, 1 at the end
+          # @param round [Boolean] round positions and widths to integers
           def self.padded(domain:, range:, padding: 0.0, align: 0.5, round: false)
             new(domain:, range:, padding_inner: padding, padding_outer: padding, align:, round:)
           end
 
           # The band's leading-edge position for a category (nil when the
           # category is unknown).
+          #
+          # @param value [Object] the category
           def call(value)
             index = domain.index(value)
             index && @positions[index]
@@ -71,6 +87,13 @@ module Poetry
         #   Poetry::Charts::Geometry::Scale::Point
         #     .new(domain: %w[a b c], range: [0, 300]).positions
         class Point < Band
+          # A point scale: a band scale whose bands have no width.
+          #
+          # @param domain [Array] the categories, in order
+          # @param range [Array(Numeric, Numeric)] the pixel extent
+          # @param padding [Float] the outer padding as a fraction of a step
+          # @param align [Float] where leftover space goes: 0 at the start, 1 at the end
+          # @param round [Boolean] round positions to integers
           def initialize(domain:, range:, padding: 0.0, align: 0.5, round: false)
             super(domain:, range:, padding_inner: 1.0, padding_outer: padding.to_f, align:, round:)
           end

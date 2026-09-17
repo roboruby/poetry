@@ -105,6 +105,8 @@ module Poetry
       # The tooltip display string shared by every chart family (matches
       # TooltipContent's Row: delimited numerics from RAW values so
       # integers stay integers, verbatim strings, nil for missing).
+      #
+      # @param value [Object] the raw datum value
       def display_value(value)
         return nil if value.nil?
         return ActiveSupport::NumberHelper.number_to_delimited(value) if value.is_a?(Numeric)

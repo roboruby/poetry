@@ -63,6 +63,7 @@ module Poetry
 
           # Float-exact ticks across the domain.
           #
+          # @param count [Integer] the ticks wanted
           # @return [Array<Numeric>]
           def ticks(count = 10)
             Ticks.ticks(domain.first, domain.last, count)
@@ -72,6 +73,7 @@ module Poetry
           # until the increment is stable. Returns a NEW scale (poetry
           # immutability).
           #
+          # @param count [Integer] the ticks the nice step is chosen for
           # @return [Linear]
           def nice(count = 10)
             d = domain.dup

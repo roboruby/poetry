@@ -25,6 +25,9 @@ module Poetry
         module_function
 
         # A curve state machine writing into the given path context.
+        #
+        # @param name [Symbol] the curve name
+        # @param context [Path] the path context the curve writes into
         def build(name, context)
           builder = REGISTRY[name.to_sym] or
             raise ArgumentError, "unknown curve #{name.inspect} (one of #{REGISTRY.keys.join(", ")})"
@@ -32,6 +35,8 @@ module Poetry
         end
 
         # JS `1 - line` where line may be undefined (nil) or NaN.
+        #
+        # @param line [Numeric, nil] the line state flag
         def self.js_flip(line)
           return Float::NAN if line.nil? || (line.is_a?(Float) && line.nan?)
 

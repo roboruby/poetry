@@ -63,6 +63,9 @@ module Poetry
         # About `count` evenly stepped, float-exact values covering
         # [start, stop].
         #
+        # @param start [Numeric] where the run begins
+        # @param stop [Numeric] where the run ends
+        # @param count [Integer] the ticks wanted
         # @return [Array<Numeric>]
         def ticks(start, stop, count)
           start = start.to_f
@@ -83,12 +86,20 @@ module Poetry
         end
 
         # The raw increment for the run - negative encodes a divisor.
+        #
+        # @param start [Numeric] where the run begins
+        # @param stop [Numeric] where the run ends
+        # @param count [Integer] the ticks wanted
         def tick_increment(start, stop, count)
           tick_spec(start.to_f, stop.to_f, count.to_f)[2]
         end
 
         # The absolute step size for the run (the increment decoded,
         # signed by direction).
+        #
+        # @param start [Numeric] where the run begins
+        # @param stop [Numeric] where the run ends
+        # @param count [Integer] the ticks wanted
         def tick_step(start, stop, count)
           start = start.to_f
           stop = stop.to_f

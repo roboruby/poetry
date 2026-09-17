@@ -28,12 +28,16 @@ module Poetry
         module_function
 
         # Coerce to BigDecimal via the double's shortest decimal string.
+        #
+        # @param value [Numeric] the double to coerce
         def dec(value)
           value.is_a?(BigDecimal) ? value : BigDecimal(value.to_f.to_s)
         end
 
         # Digit count: 1 for [1,10), 0 for [0.1,1), -1 for [0.01,0.1)...
         # BigDecimal#exponent IS floor(log10(|v|)) + 1, exactly.
+        #
+        # @param value [BigDecimal] the value to count
         def digit_count(value)
           return 1 if value.zero?
 
@@ -41,6 +45,10 @@ module Poetry
         end
 
         # [start, end) with a fixed decimal step.
+        #
+        # @param start [BigDecimal] the first value
+        # @param stop [BigDecimal] the exclusive end
+        # @param step [BigDecimal] the increment
         def range_step(start, stop, step)
           num = start
           result = []
@@ -54,12 +62,19 @@ module Poetry
         end
 
         # The interval sorted ascending.
+        #
+        # @param min [Numeric] one end of the interval
+        # @param max [Numeric] the other end
         def valid_interval(min, max)
           min > max ? [max, min] : [min, max]
         end
 
         # The default step function: amend the rough step to a value that
         # reads well at its order of magnitude.
+        #
+        # @param rough_step [BigDecimal] the unrounded step
+        # @param allow_decimals [Boolean] whether a fractional step is acceptable
+        # @param correction_factor [Integer] the widening pass the caller is on
         def adaptive_step(rough_step, allow_decimals, correction_factor)
           return BigDecimal(0) if rough_step <= 0
 
@@ -76,6 +91,10 @@ module Poetry
 
         # The opt-in snap125 step: snap to 1 / 2 / 2.5 / 5 at each order of
         # magnitude.
+        #
+        # @param rough_step [BigDecimal] the unrounded step
+        # @param allow_decimals [Boolean] whether a fractional step is acceptable
+        # @param correction_factor [Integer] the widening pass the caller is on
         def snap125_step(rough_step, allow_decimals, correction_factor)
           return BigDecimal(0) if rough_step <= 0
 
@@ -102,11 +121,17 @@ module Poetry
         end
 
         # The step function a mode selects.
+        #
+        # @param mode [Symbol] :auto or :snap125
         def step_function(mode)
           mode == :snap125 ? method(:snap125_step) : method(:adaptive_step)
         end
 
         # Ticks when min == max: center a window of tickCount steps on the value.
+        #
+        # @param value [Numeric] the single value
+        # @param tick_count [Integer] the ticks wanted
+        # @param allow_decimals [Boolean] whether a fractional step is acceptable
         def ticks_of_single_value(value, tick_count, allow_decimals)
           step = BigDecimal(1)
           middle = dec(value)
@@ -131,6 +156,13 @@ module Poetry
 
         # The step + tick bounds for an interval (recursive: a correction
         # factor grows the step until tickCount ticks cover the interval).
+        #
+        # @param min [Numeric] the interval's low end
+        # @param max [Numeric] the interval's high end
+        # @param tick_count [Integer] the ticks wanted
+        # @param allow_decimals [Boolean] whether a fractional step is acceptable
+        # @param correction_factor [Integer] the current widening pass
+        # @param step_fn [Method, Proc] the step function (adaptive_step by default)
         def calculate_step(min, max, tick_count, allow_decimals, correction_factor = 0, step_fn: method(:adaptive_step))
           unless ((max - min) / (tick_count - 1)).finite?
             return { step: BigDecimal(0), tick_min: BigDecimal(0), tick_max: BigDecimal(0) }
@@ -168,6 +200,11 @@ module Poetry
 
         # Nice ticks for [min, max] - ticks may run OUTSIDE the interval
         # to stay round.
+        #
+        # @param domain [Array(Numeric, Numeric)] [min, max]
+        # @param tick_count [Integer] the ticks wanted
+        # @param allow_decimals [Boolean] whether a fractional step is acceptable
+        # @param mode [Symbol] :auto or :snap125
         def nice_ticks(domain, tick_count = 6, allow_decimals: true, mode: :auto)
           min, max = domain
           count = [tick_count, 2].max
@@ -194,6 +231,11 @@ module Poetry
 
         # Nice-stepped ticks CONSTRAINED to [min, max] - the domain
         # boundary always closes the list.
+        #
+        # @param domain [Array(Numeric, Numeric)] [min, max]
+        # @param tick_count [Integer] the ticks wanted
+        # @param allow_decimals [Boolean] whether a fractional step is acceptable
+        # @param mode [Symbol] :auto or :snap125
         def fixed_domain_ticks(domain, tick_count, allow_decimals: true, mode: :auto)
           min, max = domain
           cormin, cormax = valid_interval(min, max)

@@ -12,6 +12,19 @@ module Poetry
       # @example A simple area over a constant baseline
       #   Poetry::Charts::Geometry::Area.new(y0: 250.0).path(points)
       class Area
+        # An area generator over a point list.
+        #
+        # @param x [Proc, Symbol, String, Numeric, nil] the accessor:
+        #   a (d, i) lambda, a hash key, or a constant; defaults to d[0]
+        # @param x1 [Proc, Symbol, String, Numeric, nil] the accessor:
+        #   a (d, i) lambda, a hash key, or a constant; defaults to x
+        # @param y0 [Proc, Symbol, String, Numeric, nil] the accessor:
+        #   a (d, i) lambda, a hash key, or a constant for the baseline
+        # @param y1 [Proc, Symbol, String, Numeric, nil] the accessor:
+        #   a (d, i) lambda, a hash key, or a constant for the topline
+        # @param curve [Symbol] the curve name
+        # @param defined [Proc, nil] the defined predicate (d, i) -> Boolean; nil for every point
+        # @param digits [Integer] path coordinate precision
         def initialize(x: nil, x1: nil, y0: nil, y1: nil, curve: :linear, defined: nil, digits: 3)
           @x0 = Line::Accessor.wrap(x) { |d, _i| d[0] }
           @x1 = x1.nil? ? nil : Line::Accessor.wrap(x1) { |d, _i| d[0] }

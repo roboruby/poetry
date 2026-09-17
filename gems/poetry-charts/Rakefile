@@ -21,4 +21,4 @@ RuboCop::RakeTask.new
 # ride the default gate; css:verify_compiled stays explicit like the
 # browser suites.
 task default: %i[test test:dommy rubocop css:verify_theme css:verify_rendered herb:compile version:verify
-                 yard:verify yard:coverage]
+                 yard:verify yard:coverage yard:lint]
