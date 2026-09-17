@@ -2,6 +2,7 @@ plugins:
   - rubocop-performance
   - rubocop-minitest
   - rubocop-rake
+  - rubocop-yard
 
 AllCops:
   TargetRubyVersion: 3.4
@@ -83,3 +84,8 @@ Minitest/MultipleAssertions:
 Style/OneClassPerFile:
   Exclude:
     - "yard/poetry_yard.rb" # the doc-build handler kit is one deliberate file
+
+# YARD tags are the contract the docs, the skill and the agents read;
+# the long collection form (Array<String>) is the house style.
+YARD/CollectionStyle:
+  EnforcedStyle: long

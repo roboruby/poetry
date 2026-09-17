@@ -116,6 +116,8 @@ module Poetry
         # @param name [Symbol]
         # @param variants [Array, nil] the closed vocabulary, nil for open values
         # @param required [Boolean]
+        # @param open [Boolean] a style redeclared without variants: any value passes,
+        #   the vocabulary is not enforced
         # @return [void]
         # @api private
         def record_declared_value(name, variants:, required:, open: false)

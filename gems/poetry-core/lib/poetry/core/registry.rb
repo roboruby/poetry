@@ -159,9 +159,10 @@ module Poetry
       # app_root when it committed one - what the MCP server assembles from.
       #
       # @param app_root [String, Pathname, nil] the host app directory
+      # @param registry [Boolean] true lists only roots carrying a published
+      #   registry; false lists every bundled gem root (plus app_root) whatever
+      #   it carries - the manifest registration walks the same roots
       # @return [Array<Pathname>]
-      # registry: false lists every bundled gem root (plus app_root) whatever
-      # it carries - the manifest registration walks the same roots.
       def self.gem_roots(app_root: nil, registry: true)
         specs = defined?(Bundler) ? Bundler.load.specs : Gem::Specification.to_a
         roots = specs.map { |spec| Pathname.new(spec.full_gem_path) }.uniq.sort

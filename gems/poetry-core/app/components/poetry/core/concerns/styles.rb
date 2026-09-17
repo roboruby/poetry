@@ -183,7 +183,7 @@ module Poetry
           # Extracts and processes style-specific options from the options hash.
           #
           # @param options [Hash] the original options hash
-          # @return [Array<(Object, Boolean, Object)>] variants, required, and default_value
+          # @return [Array(Object, Boolean, Object)] variants, required, and default_value
           def extract_style_options(options)
             variants = options.delete(:variants)
             required, default_value = extract_declared_defaults(options)

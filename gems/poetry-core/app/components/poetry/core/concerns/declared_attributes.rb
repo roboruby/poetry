@@ -62,7 +62,7 @@ module Poetry
           # stays in the hash for `attribute` to install.
           #
           # @param options [Hash] the original options hash
-          # @return [Array<(Boolean, Object)>] required and default_value
+          # @return [Array(Boolean, Object)] required and default_value
           def extract_declared_defaults(options)
             default_value = options[:default]
             options.delete(:default) if default_value.is_a?(Proc)

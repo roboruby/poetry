@@ -68,7 +68,6 @@ export default class CommandController extends Controller {
     debounce: { type: Number, default: 0 }
   }
 
-  #connected = false
   #passTimer = null
   #statusTimer = null
   #delegatedList = null
@@ -104,13 +103,10 @@ export default class CommandController extends Controller {
       this.#delegatedList = list
     }
 
-    this.#connected = true
   }
 
   /** Clears the timers and unwires the list delegation. */
   disconnect() {
-    this.#connected = false
-
     if (this.#passTimer !== null) window.clearTimeout(this.#passTimer)
     if (this.#statusTimer !== null) window.clearTimeout(this.#statusTimer)
 

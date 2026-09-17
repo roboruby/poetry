@@ -324,7 +324,7 @@ module Poetry
         # - Skips nil values for all attributes
         # - Converts complex values to JSON strings when appropriate
         #
-        # @return [Hash<String, String>] A flat hash of HTML attribute names to values
+        # @return [Hash{String => String}] A flat hash of HTML attribute names to values
         #
         # @example Convert to HTML attributes
         #   attrs = Poetry::Core::HTML::Attributes.new(
