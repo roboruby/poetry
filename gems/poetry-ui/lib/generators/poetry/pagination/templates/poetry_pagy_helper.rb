@@ -11,6 +11,10 @@
 # redesign: instance-method navs, page_url); pagy's *_js navs are
 # deliberately not adapted - their token protocol couples to pagy.js.
 module PoetryPagyHelper
+  # The Poetry pagination for a pagy page: renders nothing at a single page.
+  #
+  # @param pagy [Pagy] the page object the controller set (`@pagy`)
+  # @param options [Hash] the window (siblings:, edges:) and any attributes for the nav, passed to poetry_pagination
   def poetry_pagy_nav(pagy, **options)
     unless Pagy::VERSION.to_i >= 43
       raise "poetry_pagy_nav needs pagy >= 43 (found #{Pagy::VERSION}) - " \

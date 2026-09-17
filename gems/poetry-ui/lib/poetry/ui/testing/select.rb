@@ -24,6 +24,7 @@ module Poetry
       class Select < Tester
         # Whether the listbox is currently open.
         #
+        # @param wait [Numeric] seconds to wait for the state before answering
         # @return [Boolean]
         def open?(wait: 0)
           session.has_selector?("##{content_id}[data-open]", visible: :all, wait: wait)
@@ -34,6 +35,7 @@ module Poetry
         # Opens the listbox (no-op when already open). via: :keyboard
         # focuses the trigger and presses ArrowDown; :mouse presses it.
         #
+        # @param via [Symbol] :mouse presses the trigger, :keyboard focuses it and presses the key that opens
         # @return [Select] self
         def open(via: :mouse)
           return self if open?
@@ -62,6 +64,8 @@ module Poetry
         # Opens first when closed; exact visible-text match; waits for the
         # commit to land on the native select before returning.
         #
+        # @param text [String] the option's exact visible text
+        # @param via [Symbol] :mouse presses the trigger, :keyboard focuses it and presses the key that opens
         # @return [Select] self
         def select_option(text, via: :mouse)
           self.open(via: via)

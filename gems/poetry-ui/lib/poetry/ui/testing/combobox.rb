@@ -23,6 +23,7 @@ module Poetry
       class Combobox < Tester
         # Whether the popup is currently open.
         #
+        # @param wait [Numeric] seconds to wait for the state before answering
         # @return [Boolean]
         def open?(wait: 0)
           session.has_selector?("##{content_id}[data-open]", visible: :all, wait: wait)
@@ -33,6 +34,7 @@ module Poetry
         # Opens the popup (no-op when already open). via: :keyboard focuses
         # the trigger and presses ArrowDown; :mouse presses it.
         #
+        # @param via [Symbol] :mouse presses the trigger, :keyboard focuses it and presses the key that opens
         # @return [Combobox] self
         def open(via: :mouse)
           return self if open?
@@ -62,6 +64,7 @@ module Poetry
         # keeps the input inside the (portaled) popup; multiple keeps it
         # inline in the chips field at home.
         #
+        # @param query [String] the text to type into the filter
         # @return [Combobox] self
         def filter(query)
           open
@@ -72,6 +75,8 @@ module Poetry
         # Commit by exact visible text; single-select waits for the close,
         # multiple leaves the popover up (assert on values/chips instead).
         #
+        # @param text [String] the option's exact visible text
+        # @param via [Symbol] :mouse presses the trigger, :keyboard focuses it and presses the key that opens
         # @return [Combobox] self
         def select_option(text, via: :mouse)
           self.open(via: via)
@@ -103,6 +108,7 @@ module Poetry
 
         # Remove a chip by its accessible text (multiple mode).
         #
+        # @param text [String] the chip's accessible text
         # @return [Combobox] self
         def remove_chip(text)
           press(root.find("[data-slot='combobox-chip']", text: text).find("button"))

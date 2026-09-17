@@ -26,6 +26,10 @@ module Poetry
       # -> html_safe highlighted markup - every line wrapped in .line (the
       # counter hook), the requested ones also .hll (the theme's tint hook) -
       # or nil when rouge is absent. Unknown languages lex as plain text.
+      #
+      # @param code [String] the source to highlight
+      # @param language [String, Symbol, nil] the rouge lexer name; unknown or nil lexes as plain text
+      # @param highlight_lines [Array<Integer>] 1-based line numbers to tint
       def highlight(code, language:, highlight_lines: [])
         return nil unless available?
 

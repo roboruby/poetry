@@ -39,6 +39,8 @@ module Poetry
       # cn-* selectors participate; comments are stripped; a .dark ancestor
       # scopes the key with a "[dark] " prefix so both sides stay keyed
       # identically.
+      #
+      # @param text [String] the stylesheet source
       def parse_css(text)
         text = text.gsub(%r{/\*.*?\*/}m, " ")
         rules = Hash.new { |h, k| h[k] = { "apply" => Set.new, "raw" => Set.new } }
@@ -78,6 +80,9 @@ module Poetry
       # selectors only one side has, and per shared selector the dropped
       # (source-only) and added (poetry-only) utilities and raw
       # declarations. Selectors with no difference are omitted.
+      #
+      # @param upstream [Hash] the source theme's parse (parse_css)
+      # @param poetry [Hash] poetry's theme parse (parse_css)
       def diff(upstream, poetry)
         result = {
           "missing_selectors" => (upstream.keys - poetry.keys).sort,
@@ -102,6 +107,8 @@ module Poetry
       end
 
       # Every theme's diff against the committed snapshot.
+      #
+      # @param root [String] the gem root
       def current_diffs(root)
         snapshot = JSON.parse(File.read(snapshot_path(root)))
         THEMES.to_h do |theme|
@@ -114,6 +121,8 @@ module Poetry
 
       # Exact two-way reconciliation against deviations.yml. Returns a list
       # of finding strings; empty means the contract holds.
+      #
+      # @param root [String] the gem root
       def verify(root)
         deviations = YAML.load_file(File.join(root, DIR, "deviations.yml"))
         findings = []
@@ -168,6 +177,10 @@ module Poetry
 
       # Writes the frozen source snapshot from a pinned checkout - the
       # pin-bump ceremony's first step.
+      #
+      # @param root [String] the gem root
+      # @param checkout [String] the pinned source checkout the themes are read from
+      # @param pin [String] the pinned version the snapshot file is named after
       def write_snapshot(root, checkout:, pin:)
         themes = THEMES.to_h do |theme|
           css = `cd #{checkout} && git show #{pin}:apps/v4/registry/styles/style-#{theme}.css`
@@ -182,6 +195,7 @@ module Poetry
 
       # The committed snapshot's path - exactly one may exist.
       #
+      # @param root [String] the gem root
       # @return [String]
       def snapshot_path(root)
         candidates = Dir.glob(File.join(root, DIR, "upstream-*.json"))

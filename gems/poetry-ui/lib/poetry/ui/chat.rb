@@ -52,6 +52,12 @@ module Poetry
         # text, and the AssistantTurn (assistant segments only).
         attr_reader :kind, :id, :text, :turn
 
+        # A segment of the scripted conversation.
+        #
+        # @param kind [Symbol] :user or :assistant
+        # @param id [String] the deterministic DOM id
+        # @param text [String, nil] the user text (user segments)
+        # @param turn [AssistantTurn, nil] the turn (assistant segments)
         def initialize(kind:, id:, text: nil, turn: nil)
           @kind = kind
           @id = id
@@ -78,6 +84,7 @@ module Poetry
 
         # The final resting parts (approval segments resolve per decision).
         #
+        # @param approved [Boolean] how an approval segment resolved: true approves, false denies
         # @return [Array<Hash>] the part list as last rendered
         def final_parts(approved: true)
           return [{ kind: :text, text: text }] if kind == :user
@@ -238,6 +245,9 @@ module Poetry
       # The builder handed to `assistant do |w| ... end` - each call
       # appends one part (text / reasoning / tool) to the turn, in order.
       class Writer
+        # The writer over one assistant turn's parts.
+        #
+        # @param parts [Array<Hash>] the turn's part list, appended to in order
         def initialize(parts)
           @parts = parts
         end

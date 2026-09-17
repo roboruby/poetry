@@ -93,6 +93,9 @@ module Poetry
         # theme name -> serialized DESIGN.md, for every shipped theme - the
         # single builder rake design:export_all, the drift gate, and the
         # tests all share.
+        #
+        # @param components_count [Integer] the component count stamped into every export
+        # @param generator [String] the command each export names as its generator
         def design_md_exports(components_count:, generator: "bin/rake design:export_all")
           tokens = Poetry::Core::Tokens.load
           names.to_h do |name|

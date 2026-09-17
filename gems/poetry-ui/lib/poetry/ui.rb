@@ -169,6 +169,8 @@ module Poetry
       # running inside a host (references/app.md + the menu line); absent
       # by default, so this set stays the gem's and equals the boot-free
       # runtime map the MCP server serves.
+      #
+      # @param host_registry [Poetry::Core::Registry, nil] the app's own components (see above)
       def skill_files(host_registry: nil)
         Poetry::Core::SkillText.new(
           registry: registry, families: SKILL_FAMILIES, charts_registry: charts_registry,
@@ -222,6 +224,8 @@ module Poetry
       # when `bin/rails poetry:registry` committed the app's registry there,
       # the usage skill carries references/app.md too - boot-free, from the
       # committed file, like every other registry it reads.
+      #
+      # @param app_root [String, nil] the host app directory (see above)
       def agent_skills(app_root: nil)
         {
           "poetry" => -> { runtime_skill_files(app_root: app_root) },
@@ -283,6 +287,8 @@ module Poetry
       # maps to no component - group/provider/item wrappers - each carrying
       # its declared value contract (ComponentsHelper::HELPER_CONTRACTS) or
       # {} for a plain wrapper.
+      #
+      # @param component_paths [Array<String>] the registry's component paths
       def registry_helpers(component_paths:)
         mapped = component_paths.map { |path| "poetry_#{path.delete_prefix("poetry/ui/").tr("/", "_")}" }
         (helper_names - mapped).sort.to_h do |name|
@@ -297,6 +303,8 @@ module Poetry
       # template's own poetry_* calls (longest-prefix fold:
       # sidebar_menu_button counts as sidebar), the gem-relative template
       # path for boot-free source reads. No hand-authored catalog to drift.
+      #
+      # @param component_paths [Array<String>] the registry's component paths
       def registry_blocks(component_paths:)
         titles = component_paths.map { |path| path.delete_prefix("poetry/ui/").tr("/", "_") }
         Dir.glob(root.join(BLOCKS_DIR, "*.html.erb").to_s).to_h do |file|
@@ -320,6 +328,9 @@ module Poetry
       # -> table); calls matching no component (pure wrapper helpers like
       # poetry_input_group_addon fold through input_group) are dropped
       # rather than guessed.
+      #
+      # @param source [String] the block template's source
+      # @param titles [Array<String>] the component titles the calls fold onto
       def block_components(source, titles:)
         source.scan(/\bpoetry_([a-z0-9_]+)/).flatten.uniq.filter_map do |called|
           titles.select { |title| called == title || called.start_with?("#{title}_") }.max_by(&:length)

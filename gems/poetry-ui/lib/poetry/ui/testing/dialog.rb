@@ -16,6 +16,7 @@ module Poetry
       class Dialog < Tester
         # Whether the dialog is currently open.
         #
+        # @param wait [Numeric] seconds to wait for the state before answering
         # @return [Boolean]
         def open?(wait: 0)
           part?("dialog-content", wait: wait) &&
@@ -27,6 +28,7 @@ module Poetry
         # Opens the dialog (no-op when already open). via: :keyboard
         # focuses the trigger and presses Enter; :mouse presses it.
         #
+        # @param via [Symbol] :mouse presses the trigger, :keyboard focuses it and presses the key that opens
         # @return [Dialog] self
         def open(via: :mouse)
           return self if open?

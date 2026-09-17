@@ -10,6 +10,10 @@ module Poetry
         # @return [Capybara::Session] the session driving the browser
         attr_reader :session
 
+        # A tester over one component root.
+        #
+        # @param root [String, Capybara::Node::Element] the component's root: a CSS locator or the node itself
+        # @param session [Capybara::Session] the session driving the browser
         def initialize(root, session:)
           @session = session
           @root_locator = root
