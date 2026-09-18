@@ -86,6 +86,7 @@ Naming/FileName:
   # the Poetry::Charts namespace; its name must match the gem, not snake_case.
   Exclude:
     - "lib/poetry-charts.rb"
+    - Archspec.rb # ArchSpec reads the spec by that name
 
 # YARD tags are the contract the docs, the skill and the agents read;
 # the long collection form (Array<String>) is the house style.
