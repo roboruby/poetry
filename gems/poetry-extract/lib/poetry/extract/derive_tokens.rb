@@ -23,6 +23,12 @@ module Poetry
     module DeriveTokens
       WHITE = { r: 255.0, g: 255.0, b: 255.0 }.freeze
       BLACK = { r: 0.0, g: 0.0, b: 0.0 }.freeze
+      # The dark mode canvas.
+      DARK_BACKGROUND = { r: 23.0, g: 23.0, b: 21.0 }.freeze
+      # The light mode text color.
+      LIGHT_FOREGROUND = { r: 10.0, g: 10.0, b: 10.0 }.freeze
+      # The dark mode text color.
+      DARK_FOREGROUND = { r: 245.0, g: 245.0, b: 244.0 }.freeze
 
       SANS_FALLBACKS = %w[ui-sans-serif system-ui sans-serif].freeze
       SERIF_FALLBACKS = %w[ui-serif Georgia serif].freeze
@@ -526,118 +532,129 @@ module Poetry
 
       # --- Palette ---------------------------------------------------------
 
-      # The semantic palette for one mode from the brand colors and the styleguide, derived when the source is the
-      # other mode.
+      # The semantic palette for one mode from the brand colors and the
+      # styleguide: the source colors read once, the roles taken directly
+      # when the styleguide describes this mode and derived when it
+      # describes the other, then the palette written out as hex.
       def build_palette(brand, styleguide, mode)
-        sg_mode = styleguide&.dig("mode")
-        source_is_light = sg_mode != "dark"
+        sources = palette_sources(brand, styleguide)
+        source_is_light = styleguide&.dig("mode") != "dark"
         direct = mode == (source_is_light ? "light" : "dark")
+        roles = direct ? direct_roles(sources, mode) : derived_roles(sources, mode)
+        palette_hash(roles, mode, chart_series(roles, sources[:brand_colors]))
+      end
 
-        brand_colors = (brand&.dig("colors") || []).filter_map { |c| parse_hex(c["hex"]) }
-        named_brand_accent = parse_hex(
-          (brand&.dig("colors") || []).find do |c|
-            /accent|secondary|highlight|support/i.match?(c["name"] || "")
-          end&.dig("hex")
-        )
-
-        sg_bg = parse_hex(styleguide&.dig("colors", "background"))
-        sg_fg = parse_hex(styleguide&.dig("colors", "text"))
-        sg_accent = parse_hex(styleguide&.dig("colors", "accent"))
-
-        btn_primary = styleguide&.dig("components", "button", "primary")
-        btn_secondary = styleguide&.dig("components", "button", "secondary")
-        btn_link = styleguide&.dig("components", "button", "link")
+      # The colors the brand and the styleguide supply, parsed, with the
+      # source accent resolved: the styleguide's, else the link button's,
+      # else a brand color named as one, else the second brand color.
+      def palette_sources(brand, styleguide)
+        colors = brand&.dig("colors") || []
+        button = ->(kind, key) { parse_hex(styleguide&.dig("components", "button", kind, key)) }
         card = styleguide&.dig("components", "card")
+        named = colors.find { |c| /accent|secondary|highlight|support/i.match?(c["name"] || "") }
+        brand_colors = colors.filter_map { |c| parse_hex(c["hex"]) }
+        { brand_colors: brand_colors,
+          bg: parse_hex(styleguide&.dig("colors", "background")), fg: parse_hex(styleguide&.dig("colors", "text")),
+          primary_bg: button.call("primary", "backgroundColor"), primary_fg: button.call("primary", "color"),
+          secondary_bg: button.call("secondary", "backgroundColor"), secondary_fg: button.call("secondary", "color"),
+          card_bg: parse_hex(card&.dig("backgroundColor")), card_fg: parse_hex(card&.dig("textColor")),
+          card_border: parse_hex(card&.dig("borderColor")),
+          button_border: button.call("secondary", "borderColor") || button.call("primary", "borderColor"),
+          accent: parse_hex(styleguide&.dig("colors", "accent")) ||
+            button.call("link", "backgroundColor") || button.call("link", "color") ||
+            parse_hex(named&.dig("hex")) || brand_colors[1] }
+      end
 
-        sg_primary_bg = parse_hex(btn_primary&.dig("backgroundColor"))
-        sg_primary_fg = parse_hex(btn_primary&.dig("color"))
-        sg_secondary_bg = parse_hex(btn_secondary&.dig("backgroundColor"))
-        sg_secondary_fg = parse_hex(btn_secondary&.dig("color"))
-        sg_link_accent = parse_hex(btn_link&.dig("backgroundColor") || btn_link&.dig("color"))
-        sg_card_bg = parse_hex(card&.dig("backgroundColor"))
-        sg_card_fg = parse_hex(card&.dig("textColor"))
-        sg_card_border = parse_hex(card&.dig("borderColor"))
-        sg_btn_border = parse_hex(btn_secondary&.dig("borderColor") || btn_primary&.dig("borderColor"))
-        source_accent = sg_accent || sg_link_accent || named_brand_accent || brand_colors[1]
+      # The mode's default canvas.
+      def mode_background(mode) = mode == "light" ? WHITE : DARK_BACKGROUND
 
-        if direct
-          background = sg_bg || (mode == "light" ? WHITE : { r: 23.0, g: 23.0, b: 21.0 })
-          foreground = sg_fg || (mode == "light" ? { r: 10.0, g: 10.0, b: 10.0 } : { r: 245.0, g: 245.0, b: 244.0 })
-          primary = sg_primary_bg || brand_colors[0] || source_accent || foreground
-          primary_foreground = sg_primary_bg ? sg_primary_fg : nil
-          accent = source_accent || primary
-          secondary = sg_secondary_bg ||
-                      (source_accent ? mix(background, source_accent, 0.16) : nil) ||
-                      mix(background, primary, 0.18)
-          secondary_foreground = sg_secondary_bg ? sg_secondary_fg : nil
-          card_bg = sg_card_bg || mix(background, foreground, 0.03)
-          card_fg = sg_card_fg
-          border = sg_card_border || sg_btn_border
-        else
-          if mode == "light"
-            background = WHITE
-            foreground = { r: 10.0, g: 10.0, b: 10.0 }
-          else
-            background = { r: 23.0, g: 23.0, b: 21.0 }
-            foreground = { r: 245.0, g: 245.0, b: 244.0 }
-          end
-          base_primary = sg_primary_bg || brand_colors[0] || source_accent || foreground
-          primary = if mode == "dark" && dark?(base_primary) then mix(base_primary, WHITE, 0.3)
-                    elsif mode == "light" && !dark?(base_primary) then mix(base_primary, BLACK, 0.15)
-                    else base_primary
-                    end
-          primary_foreground = sg_primary_bg ? sg_primary_fg : nil
-          base_accent = source_accent || primary
-          accent = if mode == "dark" && dark?(base_accent) then mix(base_accent, WHITE, 0.25)
-                   elsif mode == "light" && !dark?(base_accent) then mix(base_accent, BLACK, 0.12)
-                   else base_accent
-                   end
-          secondary = sg_secondary_bg || mix(background, accent, mode == "light" ? 0.16 : 0.24)
-          secondary_foreground = sg_secondary_bg ? sg_secondary_fg : nil
-          card_bg = mix(background, foreground, mode == "light" ? 0.03 : 0.07)
-          card_fg = nil
-          border = nil
+      # The mode's default text color.
+      def mode_foreground(mode) = mode == "light" ? LIGHT_FOREGROUND : DARK_FOREGROUND
+
+      # The roles when the styleguide describes this very mode: what it
+      # says, the gaps filled from the brand and by mixing.
+      def direct_roles(sources, mode)
+        background = sources[:bg] || mode_background(mode)
+        foreground = sources[:fg] || mode_foreground(mode)
+        primary = sources[:primary_bg] || sources[:brand_colors][0] || sources[:accent] || foreground
+        secondary = sources[:secondary_bg] ||
+                    (sources[:accent] ? mix(background, sources[:accent], 0.16) : nil) ||
+                    mix(background, primary, 0.18)
+        { background: background, foreground: foreground, primary: primary,
+          primary_foreground: sources[:primary_bg] ? sources[:primary_fg] : nil,
+          accent: sources[:accent] || primary, secondary: secondary,
+          secondary_foreground: sources[:secondary_bg] ? sources[:secondary_fg] : nil,
+          card_bg: sources[:card_bg] || mix(background, foreground, 0.03), card_fg: sources[:card_fg],
+          border: sources[:card_border] || sources[:button_border] }
+      end
+
+      # The roles when the styleguide describes the other mode: this mode's
+      # own canvas, the primary and accent pulled toward it, the rest mixed.
+      def derived_roles(sources, mode)
+        background = mode_background(mode)
+        foreground = mode_foreground(mode)
+        base_primary = sources[:primary_bg] || sources[:brand_colors][0] || sources[:accent] || foreground
+        primary = toward_mode(base_primary, mode, 0.3, 0.15)
+        accent = toward_mode(sources[:accent] || primary, mode, 0.25, 0.12)
+        { background: background, foreground: foreground, primary: primary,
+          primary_foreground: sources[:primary_bg] ? sources[:primary_fg] : nil,
+          accent: accent,
+          secondary: sources[:secondary_bg] || mix(background, accent, mode == "light" ? 0.16 : 0.24),
+          secondary_foreground: sources[:secondary_bg] ? sources[:secondary_fg] : nil,
+          card_bg: mix(background, foreground, mode == "light" ? 0.03 : 0.07), card_fg: nil, border: nil }
+      end
+
+      # A color pulled toward the mode's canvas when it would sink into it:
+      # lightened on a dark mode when it is dark, darkened on a light mode
+      # when it is light, else as it is.
+      def toward_mode(color, mode, dark_share, light_share)
+        if mode == "dark" && dark?(color) then mix(color, WHITE, dark_share)
+        elsif mode == "light" && !dark?(color) then mix(color, BLACK, light_share)
+        else color
         end
+      end
 
-        muted = mix(background, foreground, mode == "light" ? 0.05 : 0.1)
-        muted_fg = mix(foreground, background, 0.4)
-        final_border = border || mix(background, foreground, mode == "light" ? 0.12 : 0.2)
-        sidebar = mix(background, foreground, mode == "light" ? 0.04 : 0.05)
-
-        chart_candidates = [accent, primary, secondary] + brand_colors
+      # Five chart colors: the accent, primary, secondary and brand colors
+      # without repeats, padded with tints and shades of the primary.
+      def chart_series(roles, brand_colors)
         seen = {}
-        unique_chart = chart_candidates.select do |color|
+        unique = ([roles[:accent], roles[:primary], roles[:secondary]] + brand_colors).select do |color|
           hex = to_hex(color)
           next false if seen[hex]
 
           seen[hex] = true
         end
-        chart = [
-          unique_chart[0] || primary,
-          unique_chart[1] || mix(primary, WHITE, 0.3),
-          unique_chart[2] || mix(primary, BLACK, 0.25),
-          unique_chart[3] || mix(primary, WHITE, 0.55),
-          unique_chart[4] || mix(primary, BLACK, 0.45)
-        ]
+        primary = roles[:primary]
+        [unique[0] || primary, unique[1] || mix(primary, WHITE, 0.3), unique[2] || mix(primary, BLACK, 0.25),
+         unique[3] || mix(primary, WHITE, 0.55), unique[4] || mix(primary, BLACK, 0.45)]
+      end
 
+      # The palette as hex: the roles, the muted, border and sidebar tones
+      # mixed from the canvas, and the readable foregrounds.
+      def palette_hash(roles, mode, chart)
+        background, foreground, primary, accent, secondary =
+          roles.values_at(:background, :foreground, :primary, :accent, :secondary)
+        light = mode == "light"
+        border = roles[:border] || mix(background, foreground, light ? 0.12 : 0.2)
+        card_fg = roles[:card_fg] || foreground
+        primary_fg = roles[:primary_foreground] ? to_hex(roles[:primary_foreground]) : readable(primary)
+        secondary_fg = roles[:secondary_foreground] ? to_hex(roles[:secondary_foreground]) : readable(secondary)
         { background: to_hex(background), foreground: to_hex(foreground),
-          card: to_hex(card_bg), card_foreground: to_hex(card_fg || foreground),
-          popover: to_hex(card_bg), popover_foreground: to_hex(card_fg || foreground),
-          primary: to_hex(primary),
-          primary_foreground: primary_foreground ? to_hex(primary_foreground) : readable(primary),
+          card: to_hex(roles[:card_bg]), card_foreground: to_hex(card_fg),
+          popover: to_hex(roles[:card_bg]), popover_foreground: to_hex(card_fg),
+          primary: to_hex(primary), primary_foreground: primary_fg,
           secondary: to_hex(secondary),
-          secondary_foreground: secondary_foreground ? to_hex(secondary_foreground) : readable(secondary),
-          muted: to_hex(muted), muted_foreground: to_hex(muted_fg),
+          secondary_foreground: secondary_fg,
+          muted: to_hex(mix(background, foreground, light ? 0.05 : 0.1)),
+          muted_foreground: to_hex(mix(foreground, background, 0.4)),
           accent: to_hex(accent), accent_foreground: readable(accent),
-          destructive: mode == "light" ? "#dc2626" : "#ef4444",
-          destructive_foreground: "#ffffff",
-          border: to_hex(final_border), input: to_hex(final_border), ring: to_hex(accent),
+          destructive: light ? "#dc2626" : "#ef4444", destructive_foreground: "#ffffff",
+          border: to_hex(border), input: to_hex(border), ring: to_hex(accent),
           chart: chart.map { |color| to_hex(color) },
-          sidebar: to_hex(sidebar), sidebar_foreground: to_hex(foreground),
-          sidebar_primary: to_hex(primary),
-          sidebar_primary_foreground: primary_foreground ? to_hex(primary_foreground) : readable(primary),
+          sidebar: to_hex(mix(background, foreground, light ? 0.04 : 0.05)), sidebar_foreground: to_hex(foreground),
+          sidebar_primary: to_hex(primary), sidebar_primary_foreground: primary_fg,
           sidebar_accent: to_hex(accent), sidebar_accent_foreground: readable(accent),
-          sidebar_border: to_hex(final_border), sidebar_ring: to_hex(accent) }
+          sidebar_border: to_hex(border), sidebar_ring: to_hex(accent) }
       end
 
       # --- Output formatting -----------------------------------------------
@@ -725,6 +742,8 @@ module Poetry
       private_class_method :split_shadow_layers, :find_color_snippet, :parse_box_shadow, :color_with_opacity
       private_class_method :fallback_shadow_color, :build_shadow_tokens, :pick_shadows, :pick_spacing
       private_class_method :pick_tracking_normal, :build_palette, :palette_lines, :non_color_lines
+      private_class_method :palette_sources, :mode_background, :mode_foreground, :direct_roles, :derived_roles
+      private_class_method :toward_mode, :chart_series, :palette_hash
       private_class_method :theme_inline_block, :layer_base
     end
   end
