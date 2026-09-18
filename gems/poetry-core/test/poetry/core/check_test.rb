@@ -58,6 +58,14 @@ module Poetry
             ],
             "slot_extras" => ["link"]
           },
+          "poetry/ui/kbd" => {
+            "styles" => [], "options" => [],
+            "requires_any" => [{ "hint" => "a key", "slots" => %w[key] }]
+          },
+          "poetry/ui/toolbar" => {
+            "styles" => [], "options" => [],
+            "slots" => [{ "name" => "shortcut", "many" => false, "component" => "poetry/ui/kbd" }]
+          },
           "poetry/ui/avatar" => {
             "options" => [{ "name" => "src" }, { "name" => "label" }],
             "requires_content" => "the initials fallback"
@@ -792,6 +800,21 @@ module Poetry
                         "requires-any"
         refute_includes rules(%(<%= poetry_alert do |alert| %><% alert.with_confirm(loading: true) %><% end %>)),
                         "requires-any"
+      end
+
+      def test_a_typed_slot_call_with_a_splat_stands_down
+        source = %(<%= poetry_alert do |alert| %><% alert.with_confirm(**options) %><% end %>)
+
+        refute_includes rules(source), "requires-any", "a splat may carry any of the keys"
+        refute_includes rules(source), "missing-option"
+      end
+
+      def test_a_typed_slot_names_the_whole_group_when_only_sub_slots_satisfy_it
+        source = %(<%= poetry_toolbar do |bar| %><% bar.with_shortcut { "K" } %><% end %>)
+        finding = first(source, "requires-any")
+
+        assert_includes finding.message, "with_shortcut renders poetry_kbd"
+        assert_includes finding.message, "one of with_key (a key)"
       end
 
       # --- the required-slot tier (the menu crash class - required slots the contract kept silent) ---

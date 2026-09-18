@@ -726,41 +726,54 @@ module Poetry
           end
         end
 
-        # The findings for one slot setter call: unknown slot, arity, keywords and a nested binding.
+        # The findings for one slot setter call: an unknown slot, else its
+        # arity, block, keywords and wiring, and the component rules when
+        # the slot renders one.
         def slot_call_findings(call, instance, base_line, bindings)
           owner = instance[:owner]
-          label = instance[:label]
           slot_name = call.name.to_s.delete_prefix("with_")
           instance[:called] << slot_name
           line = base_line + (call.location.start_line - 1)
           entry = @catalog.slot_entry(owner, slot_name)
-          unless entry
-            return [] if @catalog.slot_extra?(owner, slot_name)
+          return unknown_slot_findings(owner, slot_name, instance[:label], line) unless entry
 
-            return [Finding.new(rule: "unknown-slot", severity: :error,
-                                message: "#{label} has no slot #{slot_name}", line: line,
-                                suggestion: suggest(slot_name, @catalog.slot_call_names(owner)))]
-          end
-
-          # A setter opening a block over a declared builder binds the
-          # nested surface (menubar.with_menu do |menu| - menu's own items
-          # then lint at this same depth).
-          if (surface = entry.dig("builders", slot_name)) && (param = block_param_name(call))
-            bindings[param] = track_instance(owner: surface, label: "with_#{slot_name}", line: line)
-          end
-
+          bind_builder_surface(call, entry, slot_name, bindings, line)
           findings = arity_findings(entry, slot_name, call, line) +
                      setter_block_findings(entry, slot_name, call, line) +
                      setter_keyword_findings(entry, slot_name, call, base_line) +
-                     passthrough_findings(keyword_pairs(call), base_line) + data_findings(call, base_line, label)
+                     passthrough_findings(keyword_pairs(call), base_line) +
+                     data_findings(call, base_line, instance[:label])
           component = entry["component"]
           return findings unless component
 
-          # A typed slot IS a component call: same option/value rules, plus
-          # the block-form trap (with_icon do ... end builds the component
-          # with no props at all).
+          findings + typed_slot_findings(call, component, slot_name, base_line, line)
+        end
+
+        # The finding for a setter naming no slot; none when the slot is a declared extra.
+        def unknown_slot_findings(owner, slot_name, label, line)
+          return [] if @catalog.slot_extra?(owner, slot_name)
+
+          [Finding.new(rule: "unknown-slot", severity: :error, message: "#{label} has no slot #{slot_name}",
+                       line: line, suggestion: suggest(slot_name, @catalog.slot_call_names(owner)))]
+        end
+
+        # A setter opening a block over a declared builder binds the nested
+        # surface (menubar.with_menu do |menu| - menu's own items then lint
+        # at this same depth).
+        def bind_builder_surface(call, entry, slot_name, bindings, line)
+          surface = entry.dig("builders", slot_name)
+          param = surface && block_param_name(call)
+          return unless param
+
+          bindings[param] = track_instance(owner: surface, label: "with_#{slot_name}", line: line)
+        end
+
+        # A typed slot IS a component call: the option and value rules, the
+        # block-form trap (with_icon do ... end builds the component with no
+        # props at all), the content-block requirement and the any-of groups.
+        def typed_slot_findings(call, component, slot_name, base_line, line)
           pairs = keyword_pairs(call)
-          findings += pairs.flat_map do |key, value, kw_line|
+          findings = pairs.flat_map do |key, value, kw_line|
             option_findings(component, key, value, base_line + kw_line - 1)
           end
           unless splatted?(call)
@@ -775,27 +788,29 @@ module Poetry
                                     message: "with_#{slot_name} renders #{helper_of(component)}, which " \
                                              "requires a content block (#{hint})", line: line)
           end
-          # The any-of contracts ride the component fact too
-          # (e.g. with_action(label:) - a Button through a
-          # forwarding lambda, nothing visible). At a slot site the block
-          # IS the content; sub-slot alternatives are unreachable and drop
-          # out of the satisfiable set.
-          unless splatted?(call) || positional_arguments(call).nil? || positional_arguments(call).any?
-            keys = pairs.map(&:first)
-            @catalog.requires_any(component).each do |group|
-              next if call.block && group["content"]
-              next if (group["options"] || []).intersect?(keys)
+          findings + slot_requires_any_findings(call, component, slot_name, pairs, line)
+        end
 
-              # Sub-slot alternatives are unreachable through a slot call -
-              # the phrase names only what THIS site can still do.
-              reachable = group.slice("hint", "content", "options")
-              reachable = group unless reachable["content"] || reachable["options"]
-              findings << Finding.new(rule: "requires-any", severity: :error,
-                                      message: "with_#{slot_name} renders #{helper_of(component)}, which " \
-                                               "requires #{RequiresAny.phrase(reachable)}", line: line)
-            end
+        # The any-of contracts ride the component fact too (e.g.
+        # with_action(label:) - a Button through a forwarding lambda, nothing
+        # visible). At a slot site the block IS the content; sub-slot
+        # alternatives are unreachable and drop out of the satisfiable set,
+        # so the phrase names only what THIS site can still do. A splat or a
+        # positional argument is an unknowable path, and stands down.
+        def slot_requires_any_findings(call, component, slot_name, pairs, line)
+          return [] if splatted?(call) || positional_arguments(call).nil? || positional_arguments(call).any?
+
+          keys = pairs.map(&:first)
+          @catalog.requires_any(component).filter_map do |group|
+            next if call.block && group["content"]
+            next if (group["options"] || []).intersect?(keys)
+
+            reachable = group.slice("hint", "content", "options")
+            reachable = group unless reachable["content"] || reachable["options"]
+            Finding.new(rule: "requires-any", severity: :error,
+                        message: "with_#{slot_name} renders #{helper_of(component)}, which " \
+                                 "requires #{RequiresAny.phrase(reachable)}", line: line)
           end
-          findings
         end
 
         # --- the required-slot tier (setters a call cannot omit) ---
