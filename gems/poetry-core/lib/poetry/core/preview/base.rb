@@ -164,6 +164,7 @@ module Poetry
         # @param component [ViewComponent::Base] the component instance to render
         # @return [String] the rendered HTML
         def embed(component, &)
+          # archspec:disable-next-line constants.forbid -- previews render through the host controller
           ApplicationController.new.view_context.render(component, &)
         end
 

@@ -88,6 +88,7 @@ module Poetry
           if (app = app_helpers) && (app.method_defined?(name) || app.private_method_defined?(name))
             return "the app's helpers"
           end
+          # archspec:disable-next-line constants.forbid -- a defined? probe, never a dependency
           if defined?(Poetry::Ui::ComponentsHelper) && Poetry::Ui::ComponentsHelper.method_defined?(name)
             return "poetry-ui"
           end

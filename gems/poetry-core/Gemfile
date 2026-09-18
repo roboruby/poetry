@@ -16,6 +16,9 @@ gem "rubocop-performance", require: false
 gem "rubocop-rake", require: false
 gem "rubocop-yard", require: false
 gem "yard-lint", require: false
+# Architecture gates: archspec check and the Rubydex linter rules (rake arch:*).
+gem "archspec", require: false
+gem "rubydex", require: false
 
 # Lookbook is a development dependency (previews/docs), never a runtime dep.
 gem "lookbook", "~> 2.3"

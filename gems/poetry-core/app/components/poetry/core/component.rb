@@ -62,6 +62,11 @@ module Poetry
       # Button's render when it ran through `valid?`.
       class_attribute :declared_values, instance_accessor: false, default: {}.freeze
 
+      # The caller-supplied semantic identity (key:), if any.
+      #
+      # @return [Object, nil]
+      attr_reader :stable_key
+
       class << self
         # Marks this class (and its descendants) as an implementation
         # detail - full machinery, no registry entry.
@@ -615,11 +620,6 @@ module Poetry
         attributes[:class] = classnames(css, @html_attributes[:class])
         attributes
       end
-
-      # The caller-supplied semantic identity (key:), if any.
-      #
-      # @return [Object, nil]
-      attr_reader :stable_key
 
       # The instance-id ladder: an explicit caller root id wins; a key:
       # derives a stable component-namespaced token (Turbo morph pairs it
