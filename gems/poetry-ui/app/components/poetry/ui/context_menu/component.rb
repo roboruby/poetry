@@ -330,6 +330,7 @@ module Poetry
       # REQUIRED_SLOTS states the same facts the before_render
       # raises enforce, so static checks can flag omissions without
       # rendering.
+      # @api private
       module ItemSlots
         # Nested-slot recursion map for the registry projection.
         SLOT_BUILDERS = { sub: Sub, group: Group, radio_group: RadioGroup }.freeze
