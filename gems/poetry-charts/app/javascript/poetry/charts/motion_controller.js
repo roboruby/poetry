@@ -3,35 +3,6 @@ import { tween } from "@poetry/charts/motion/tween"
 import { sectorPath } from "@poetry/charts/motion/sector"
 import { captureGeometry, matchJobs, applyJobs, finishJobs } from "@poetry/charts/motion/flip"
 
-// The chart motion engine: the JS half of the entrance tier plus
-// the cross-render morph. Cartesian + radar entrances are pure CSS (the
-// motion stylesheet); this controller adds what CSS cannot do - the polar
-// fan-out and the FLIP morph between server renders - and stamps a
-// data-motion lifecycle attribute ("entrance" / "morph" -> "settled") on
-// the SVG so tests and hosts can observe the engine.
-//
-// ENTRANCE. The fan-out is a step accumulator: every sector's
-// angular width interpolates 0 -> final
-// simultaneously, re-accumulated end-to-end each frame from the group's
-// first startAngle, with the FINAL-geometry gaps preserved as constant
-// padding. Sectors carry their server-computed params in
-// data-motion-sector and their sweep group in data-motion-group (pie: one
-// group per ring; radial: one per band). Mid-sweep paths are plain
-// sectors; the exact server d (corner rounding included) is restored on
-// the final frame.
-//
-// MORPH. Charts with a stable id keep their last geometry in a
-// module registry when they disconnect; when a same-id chart connects
-// within the freshness window (any same-context DOM swap - Turbo Drive /
-// Frames / Streams / morph), the new render starts FROM the old geometry
-// and tweens to its own via the shared FLIP machinery (motion/flip.js -
-// the live tier rides the same module). Any structure change
-// aborts the morph and the normal entrance replays instead - added or
-// removed data never morphs.
-//
-// prefers-reduced-motion (or animate: false) settles immediately - the
-// server-rendered chart is already the finished state.
-
 const MORPH_WINDOW_MS = 5000
 
 // chartId -> { at, entries } across controller lifetimes (module-scoped:
@@ -39,6 +10,36 @@ const MORPH_WINDOW_MS = 5000
 // reads it on connect - same JS context, so Turbo swaps carry it over).
 const registry = new Map()
 
+/**
+ * The chart motion engine: the JS half of the entrance tier plus
+ * the cross-render morph. Cartesian + radar entrances are pure CSS (the
+ * motion stylesheet); this controller adds what CSS cannot do - the polar
+ * fan-out and the FLIP morph between server renders - and stamps a
+ * data-motion lifecycle attribute ("entrance" / "morph" -> "settled") on
+ * the SVG so tests and hosts can observe the engine.
+ *
+ * ENTRANCE. The fan-out is a step accumulator: every sector's
+ * angular width interpolates 0 -> final
+ * simultaneously, re-accumulated end-to-end each frame from the group's
+ * first startAngle, with the FINAL-geometry gaps preserved as constant
+ * padding. Sectors carry their server-computed params in
+ * data-motion-sector and their sweep group in data-motion-group (pie: one
+ * group per ring; radial: one per band). Mid-sweep paths are plain
+ * sectors; the exact server d (corner rounding included) is restored on
+ * the final frame.
+ *
+ * MORPH. Charts with a stable id keep their last geometry in a
+ * module registry when they disconnect; when a same-id chart connects
+ * within the freshness window (any same-context DOM swap - Turbo Drive /
+ * Frames / Streams / morph), the new render starts FROM the old geometry
+ * and tweens to its own via the shared FLIP machinery (motion/flip.js -
+ * the live tier rides the same module). Any structure change
+ * aborts the morph and the normal entrance replays instead - added or
+ * removed data never morphs.
+ *
+ * prefers-reduced-motion (or animate: false) settles immediately - the
+ * server-rendered chart is already the finished state.
+ */
 export default class ChartMotionController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).

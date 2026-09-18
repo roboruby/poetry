@@ -1,20 +1,25 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The chart tooltip engine: ZERO chart math in the
-// browser. The server embeds per-category pixel centers, per-series pixel
-// extents, and PRE-FORMATTED value strings in a JSON script; this
-// controller bisects the pointer against those numbers, swaps text into
-// the server-rendered TooltipContent chrome, positions the box, and
-// reflects data-active onto the marked cells/dots. Keyboard access is
-// the accessibility-layer floor: the SVG is focusable, arrows walk the
-// categories, Escape dismisses.
+/**
+ * The chart tooltip engine: ZERO chart math in the
+ * browser. The server embeds per-category pixel centers, per-series pixel
+ * extents, and PRE-FORMATTED value strings in a JSON script; this
+ * controller bisects the pointer against those numbers, swaps text into
+ * the server-rendered TooltipContent chrome, positions the box, and
+ * reflects data-active onto the marked cells/dots. Keyboard access is
+ * the accessibility-layer floor: the SVG is focusable, arrows walk the
+ * categories, Escape dismisses.
+ */
 export default class ChartTooltipController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry--charts--tooltip:hide", "poetry--charts--tooltip:show"]
 
   static targets = ["svg", "tooltip", "data"]
-  static values = { sync: String }
+  static values = {
+    // The sync group id; charts sharing one follow each other's active index.
+    sync: String
+  }
 
   /**
    * Parses the embedded coordinates payload and (once) wires the sync
@@ -53,7 +58,11 @@ export default class ChartTooltipController extends Controller {
     }
   }
 
-  /** @returns {number} the category (or slice) count */
+  /**
+   * The category (or slice) count.
+   *
+   * @returns {number} the count
+   */
   get count() {
     return this.anchors ? this.anchors.length : this.centers.length
   }

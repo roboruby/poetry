@@ -1,17 +1,21 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The window controller: brush + zoom over the live
-// renderer. One concept drives both - frame.window = [start, end]
-// (inclusive indices into the FULL data) slices the data before the
-// kernel computes. The brush drags the window (handles resize it, the
-// body shifts it); zoom drag-selects a range on the plot; double-click
-// resets. Window changes go through the live controller's setWindow
-// (instant renders - no tween mid-drag), and this controller repaints
-// the strip visuals from index fractions of the server-computed rects
-// (its Stimulus values) - no chart math.
+/**
+ * The window controller: brush + zoom over the live
+ * renderer. One concept drives both - frame.window = [start, end]
+ * (inclusive indices into the FULL data) slices the data before the
+ * kernel computes. The brush drags the window (handles resize it, the
+ * body shifts it); zoom drag-selects a range on the plot; double-click
+ * resets. Window changes go through the live controller's setWindow
+ * (instant renders - no tween mid-drag), and this controller repaints
+ * the strip visuals from index fractions of the server-computed rects
+ * (its Stimulus values) - no chart math.
+ */
 export default class ChartWindowController extends Controller {
   static values = {
+    // Whether a drag on the plot zooms the window into the dragged span.
     zoom: Boolean,
+    // The plot's left and right edges in SVG units, the range a drag maps onto.
     plot: Array, // [left, right, top, bottom] in viewBox units
     brush: Array, // [x, y, width, height] in viewBox units
   }

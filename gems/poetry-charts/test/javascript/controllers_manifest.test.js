@@ -8,6 +8,7 @@ import ChartAdapterController from "../../app/javascript/poetry/charts/adapter_c
 import ChartMotionController from "../../app/javascript/poetry/charts/motion_controller.js"
 import ChartLiveController from "../../app/javascript/poetry/charts/live_controller.js"
 import ChartWindowController from "../../app/javascript/poetry/charts/window_controller.js"
+import { mergedDocs, withDocs } from "./support/controller_docs.js"
 
 // The controllers manifest, self-drift-gating (the poetry-core
 // pattern, charts-sized): the JS surface (targets / values / public
@@ -44,16 +45,21 @@ const serializeValues = (values = {}) =>
     }]
   }))
 
+// The prose rides along from each controller's file (poetry--charts--tooltip
+// is tooltip_controller.js).
+const fileFor = (identifier) =>
+  path.join(ROOT, "app/javascript/poetry/charts", `${identifier.replace("poetry--charts--", "").replace(/-/g, "_")}_controller.js`)
+
 function introspect() {
   return Object.fromEntries(
     Object.entries(CONTROLLERS).map(([identifier, klass]) => [
       identifier,
-      {
+      withDocs({
         targets: [...(klass.targets ?? [])].sort(),
         values: serializeValues(klass.values),
         methods: publicMethods(klass),
         events: [...(klass.events ?? [])].sort(),
-      },
+      }, mergedDocs([fileFor(identifier)])),
     ])
   )
 }

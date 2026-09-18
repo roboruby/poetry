@@ -1,5 +1,6 @@
 {
   "poetry--charts--tooltip": {
+    "doc": "The chart tooltip engine: ZERO chart math in the browser. The server embeds per-category pixel centers, per-series pixel extents, and PRE-FORMATTED value strings in a JSON script; this controller bisects the pointer against those numbers, swaps text into the server-rendered TooltipContent chrome, positions the box, and reflects data-active onto the marked cells/dots. Keyboard access is the accessibility-layer floor: the SVG is focusable, arrows walk the categories, Escape dismisses.",
     "targets": [
       "data",
       "svg",
@@ -7,7 +8,8 @@
     ],
     "values": {
       "sync": {
-        "type": "String"
+        "type": "String",
+        "doc": "The sync group id; charts sharing one follow each other's active index."
       }
     },
     "methods": [
@@ -26,16 +28,31 @@
     "events": [
       "poetry--charts--tooltip:hide",
       "poetry--charts--tooltip:show"
-    ]
+    ],
+    "method_docs": {
+      "blur": "The SVG's blur action: dismisses.",
+      "connect": "Parses the embedded coordinates payload and (once) wires the sync listener. refresh() re-enters here when the live renderer rewrites the payload.",
+      "count": "The category (or slice) count.",
+      "disconnect": "Unwires the sync listener.",
+      "enter": "The SVG's pointerover action (polar): the hovered slice carries its index - no geometry at all.",
+      "focus": "The SVG's focus action: entering by keyboard shows the first category.",
+      "keydown": "The SVG's keydown action - the accessibility floor: arrows walk the categories, Home/End jump, Escape dismisses.",
+      "leave": "Hides the tooltip and clears every active reflection (the pointerleave action and Escape's landing).",
+      "move": "The SVG's pointermove action (cartesian): converts the pointer to viewBox units and shows the nearest category.",
+      "refresh": "The live-updated action: the live renderer rewrote the embedded coordinates; re-read them and keep serving the active index if it still exists (the tooltip follows the stream).",
+      "show": "Shows the tooltip for a category/slice index: swaps the pre-formatted strings into the server-rendered chrome, positions the box, reflects data-active, and broadcasts to synced charts."
+    }
   },
   "poetry--charts--adapter": {
+    "doc": "The adapter mount: reads the FROZEN chart-spec v1 the server embedded, hands it to the registered engine adapter, and owns the lifecycle - render on connect, destroy on disconnect (Turbo-safe), themeChanged on dark-mode flips. The helpers close the canvas gap: resolveColor turns var(--color-key)/var(--chart-N) into concrete values at paint time (CSS variables cannot reach a canvas).",
     "targets": [
       "mount",
       "spec"
     ],
     "values": {
       "engine": {
-        "type": "String"
+        "type": "String",
+        "doc": "The registered engine adapter that renders the embedded spec."
       }
     },
     "methods": [
@@ -44,9 +61,14 @@
     ],
     "events": [
       "poetry--charts--adapter:rendered"
-    ]
+    ],
+    "method_docs": {
+      "connect": "Mounts the declared engine: parses the embedded spec, validates the adapter and its type support (console errors, never throws - a chart must not take the page down), renders, and arms the dark-mode observer.",
+      "disconnect": "Destroys the engine instance and stops the theme observer."
+    }
   },
   "poetry--charts--motion": {
+    "doc": "The chart motion engine: the JS half of the entrance tier plus the cross-render morph. Cartesian + radar entrances are pure CSS (the motion stylesheet); this controller adds what CSS cannot do - the polar fan-out and the FLIP morph between server renders - and stamps a data-motion lifecycle attribute (\"entrance\" / \"morph\" -> \"settled\") on the SVG so tests and hosts can observe the engine.\n\nENTRANCE. The fan-out is a step accumulator: every sector's angular width interpolates 0 -> final simultaneously, re-accumulated end-to-end each frame from the group's first startAngle, with the FINAL-geometry gaps preserved as constant padding. Sectors carry their server-computed params in data-motion-sector and their sweep group in data-motion-group (pie: one group per ring; radial: one per band). Mid-sweep paths are plain sectors; the exact server d (corner rounding included) is restored on the final frame.\n\nMORPH. Charts with a stable id keep their last geometry in a module registry when they disconnect; when a same-id chart connects within the freshness window (any same-context DOM swap - Turbo Drive / Frames / Streams / morph), the new render starts FROM the old geometry and tweens to its own via the shared FLIP machinery (motion/flip.js - the live tier rides the same module). Any structure change aborts the morph and the normal entrance replays instead - added or removed data never morphs.\n\nprefers-reduced-motion (or animate: false) settles immediately - the server-rendered chart is already the finished state.",
     "targets": [],
     "values": {},
     "methods": [
@@ -55,9 +77,14 @@
     ],
     "events": [
       "poetry--charts--motion:settled"
-    ]
+    ],
+    "method_docs": {
+      "connect": "Resolves the SVG, wires the Turbo page-morph hooks (the body comment holds the blank-entrance rule), and starts the entrance or morph.",
+      "disconnect": "Unwires the Turbo hooks, abandons any tween, and parks the current geometry in the registry for a same-id successor."
+    }
   },
   "poetry--charts--live": {
+    "doc": "The live channel: a chart rendered with live: true carries its {spec, frame} payload in the DOM; this controller re-renders client-side (the kernel renderer, in-place attribute updates) whenever new data arrives - no server round trip. Two channels feed one path:\n\n1. Replace the payload script's JSON - exactly what a turbo_stream.replace/update does. A MutationObserver picks it up. 2. The JS/event API: dispatch `poetry-chart:update` with { detail: { data } } on the frame, or call update(data) on the controller instance.\n\nUpdates animate through the shared FLIP machinery (old geometry -> new, the same cross-render morph); a structure change (window growth, series change) snaps instead of morphing. The tooltip's embedded coordinates are regenerated by the renderer and a live:updated dispatch tells the tooltip controller to re-read them, so it serves fresh values mid-stream. prefers-reduced-motion snaps every update.",
     "targets": [
       "payload"
     ],
@@ -73,19 +100,31 @@
     "events": [
       "poetry--charts--live:settled",
       "poetry--charts--live:updated"
-    ]
+    ],
+    "method_docs": {
+      "connect": "Finds the SVG and starts the payload observer (the script-replacement channel).",
+      "disconnect": "Stops the observer and abandons any in-flight tween.",
+      "receive": "The event channel's action: a poetry-chart:update event's detail.data re-renders.",
+      "setWindow": "Applies a window: [start, end] inclusive indices into the FULL data; the renderer slices before computing. Instant renders - a drag should track the pointer, not tween behind it.",
+      "toggleSeries": "The interactive legend's click action (the series key rides an action param): hidden series leave the domain (the chart rescales on hide), their marks hide, their legend item dims.",
+      "update": "The JS API: hosts hand over the new data rows; the payload script is rewritten first (the DOM always holds current state), then rendered."
+    }
   },
   "poetry--charts--window": {
+    "doc": "The window controller: brush + zoom over the live renderer. One concept drives both - frame.window = [start, end] (inclusive indices into the FULL data) slices the data before the kernel computes. The brush drags the window (handles resize it, the body shifts it); zoom drag-selects a range on the plot; double-click resets. Window changes go through the live controller's setWindow (instant renders - no tween mid-drag), and this controller repaints the strip visuals from index fractions of the server-computed rects (its Stimulus values) - no chart math.",
     "targets": [],
     "values": {
       "zoom": {
-        "type": "Boolean"
+        "type": "Boolean",
+        "doc": "Whether a drag on the plot zooms the window into the dragged span."
       },
       "plot": {
-        "type": "Array"
+        "type": "Array",
+        "doc": "The plot's left and right edges in SVG units, the range a drag maps onto."
       },
       "brush": {
-        "type": "Array"
+        "type": "Array",
+        "doc": "[left, right, top, bottom] in viewBox units"
       }
     },
     "methods": [
@@ -95,6 +134,13 @@
       "startBrush",
       "startZoom"
     ],
-    "events": []
+    "events": [],
+    "method_docs": {
+      "connect": "Resolves the SVG/selection nodes and paints the initial brush.",
+      "disconnect": "Unbinds any in-flight drag listeners.",
+      "reset": "The SVG's dblclick action: restores the full window.",
+      "startBrush": "The strip's pointerdown action: begins a brush drag - a handle resizes its edge, the body shifts the whole window.",
+      "startZoom": "The SVG's pointerdown action (skips brush drags): begins a drag-select zoom on the plot."
+    }
   }
 }

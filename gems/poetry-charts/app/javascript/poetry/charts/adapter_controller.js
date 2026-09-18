@@ -1,19 +1,24 @@
 import { Controller } from "@hotwired/stimulus"
 import { chartAdapter } from "@poetry/charts/adapter_registry"
 
-// The adapter mount: reads the FROZEN chart-spec v1 the
-// server embedded, hands it to the registered engine adapter, and owns
-// the lifecycle - render on connect, destroy on disconnect (Turbo-safe),
-// themeChanged on dark-mode flips. The helpers close the canvas gap:
-// resolveColor turns var(--color-key)/var(--chart-N) into concrete
-// values at paint time (CSS variables cannot reach a canvas).
+/**
+ * The adapter mount: reads the FROZEN chart-spec v1 the
+ * server embedded, hands it to the registered engine adapter, and owns
+ * the lifecycle - render on connect, destroy on disconnect (Turbo-safe),
+ * themeChanged on dark-mode flips. The helpers close the canvas gap:
+ * resolveColor turns var(--color-key)/var(--chart-N) into concrete
+ * values at paint time (CSS variables cannot reach a canvas).
+ */
 export default class ChartAdapterController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry--charts--adapter:rendered"]
 
   static targets = ["mount", "spec"]
-  static values = { engine: String }
+  static values = {
+    // The registered engine adapter that renders the embedded spec.
+    engine: String
+  }
 
   /**
    * Mounts the declared engine: parses the embedded spec, validates the
