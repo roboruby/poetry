@@ -2,6 +2,7 @@
 
 require "json"
 require "yaml"
+require_relative "fidelity"
 
 module Poetry
   module Ui
@@ -163,12 +164,7 @@ module Poetry
         end
 
         (actual_rules.keys & recorded_rules.keys).each do |sel|
-          DIFF_KINDS.each do |kind|
-            missing = (actual_rules[sel][kind] || []) - (recorded_rules[sel][kind] || [])
-            stale = (recorded_rules[sel][kind] || []) - (actual_rules[sel][kind] || [])
-            findings << "#{theme}: #{sel} #{kind} not recorded: #{missing.join(" ")}" if missing.any?
-            findings << "#{theme}: #{sel} recorded #{kind} now stale: #{stale.join(" ")}" if stale.any?
-          end
+          Fidelity.reconcile_kinds("#{theme}: #{sel}", DIFF_KINDS, actual_rules[sel], recorded_rules[sel], findings)
           findings << "#{theme}: #{sel} needs a reason" if recorded_rules[sel]["reason"].to_s.strip.empty?
         end
       end

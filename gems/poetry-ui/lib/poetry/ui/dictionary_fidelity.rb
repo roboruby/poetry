@@ -2,6 +2,7 @@
 
 require "json"
 require "yaml"
+require_relative "fidelity"
 
 module Poetry
   module Ui
@@ -289,12 +290,7 @@ module Poetry
           findings << "#{name}/#{slot}: recorded deviation no longer exists - stale entry"
         end
         (actual_slots.keys & recorded_slots.keys).each do |slot|
-          DIFF_KINDS.each do |kind|
-            missing = (actual_slots[slot][kind] || []) - (recorded_slots[slot][kind] || [])
-            stale = (recorded_slots[slot][kind] || []) - (actual_slots[slot][kind] || [])
-            findings << "#{name}/#{slot} #{kind} not recorded: #{missing.join(" ")}" if missing.any?
-            findings << "#{name}/#{slot} recorded #{kind} now stale: #{stale.join(" ")}" if stale.any?
-          end
+          Fidelity.reconcile_kinds("#{name}/#{slot}", DIFF_KINDS, actual_slots[slot], recorded_slots[slot], findings)
           if actual_slots[slot]["tag"] != recorded_slots[slot]["tag"]
             findings << "#{name}/#{slot} tag: actual #{actual_slots[slot]["tag"].inspect}, " \
                         "recorded #{recorded_slots[slot]["tag"].inspect}"

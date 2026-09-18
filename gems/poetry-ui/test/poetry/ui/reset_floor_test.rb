@@ -43,6 +43,14 @@ module Poetry
         refute_includes floor, "banner"
       end
 
+      test "a brace inside a comment does not open or close a rule" do
+        css = "h1 {\n  /* not a } close */\n  font-size: 2rem;\n}\nh2 { color: red; }\n"
+        floor = ResetFloor.floor(css)
+
+        assert_includes floor, ":where(h1) {\n  /* not a } close */\n  font-size: 2rem;\n}"
+        assert_includes floor, ":where(h2) { color: red; }"
+      end
+
       test "the committed floor matches the pinned preflight" do
         assert_predicate ResetFloor, :verified?, "run `bin/rake reset:generate` and commit"
         text = ResetFloor.path.read
