@@ -48,6 +48,7 @@ module Poetry
         ].join("\n")
       end
 
+      # The vanilla CSS token sheet for a domain: a :root block and a .dark block from the brand and styleguide.
       def derive_css_variables(domain, brand = nil, styleguide = nil)
         root_body, dark_body = bodies(brand, styleguide)
         [
@@ -103,6 +104,7 @@ module Poetry
           b: from[:b] + ((to[:b] - from[:b]) * amount) }
       end
 
+      # The relative luminance of an RGB color, per the WCAG formula.
       def luminance(color)
         f = lambda do |c|
           s = c / 255.0
@@ -111,11 +113,13 @@ module Poetry
         (0.2126 * f.call(color[:r])) + (0.7152 * f.call(color[:g])) + (0.0722 * f.call(color[:b]))
       end
 
+      # Whether a color is dark enough to want a light foreground.
       def dark?(color) = luminance(color) < 0.5
 
       # The foreground that reads on a background: white on dark, near-black on light.
       def readable(background) = dark?(background) ? "#ffffff" : "#0a0a0a"
 
+      # A number held between min and max.
       def clamp(number, min, max) = number.clamp(min, max)
 
       # JS parseFloat: leading number or nil - "5.9%" => 5.9, "abc" => nil.
@@ -468,6 +472,7 @@ module Poetry
         )
       end
 
+      # The median of a list of numbers, nil for an empty one.
       def median(values)
         return nil if values.empty?
 
@@ -674,6 +679,7 @@ module Poetry
         lines
       end
 
+      # The lines indented by two spaces and joined.
       def indent(lines)
         lines.map { |line| "  #{line}" }.join("\n")
       end
