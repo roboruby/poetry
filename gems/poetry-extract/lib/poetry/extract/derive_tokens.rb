@@ -57,6 +57,7 @@ module Poetry
         ].join("\n")
       end
 
+      # The light and dark token bodies: each palette's lines plus the fonts, radius, shadows, tracking and spacing.
       def bodies(brand, styleguide)
         light = build_palette(brand, styleguide, "light")
         dark = build_palette(brand, styleguide, "dark")
@@ -73,6 +74,7 @@ module Poetry
 
       # --- Color utilities -------------------------------------------------
 
+      # An RGB hash from a hex color in three, six or eight digits; nil for anything else.
       def parse_hex(hex)
         return nil unless hex
 
@@ -88,11 +90,13 @@ module Poetry
         end
       end
 
+      # An RGB hash as a six-digit hex color.
       def to_hex(color)
         hx = ->(n) { format("%02x", n.round.clamp(0, 255)) }
         "##{hx.call(color[:r])}#{hx.call(color[:g])}#{hx.call(color[:b])}"
       end
 
+      # The linear mix of two RGB colors by an amount from zero to one.
       def mix(from, to, amount)
         { r: from[:r] + ((to[:r] - from[:r]) * amount),
           g: from[:g] + ((to[:g] - from[:g]) * amount),
@@ -109,6 +113,7 @@ module Poetry
 
       def dark?(color) = luminance(color) < 0.5
 
+      # The foreground that reads on a background: white on dark, near-black on light.
       def readable(background) = dark?(background) ? "#ffffff" : "#0a0a0a"
 
       def clamp(number, min, max) = number.clamp(min, max)
@@ -132,6 +137,7 @@ module Poetry
         js_to_fixed(number, decimals).sub(/\.?0+\z/, "")
       end
 
+      # An RGB hash as an hsl() token with one decimal on each channel.
       def rgb_to_hsl_token(color)
         rr = color[:r] / 255.0
         gg = color[:g] / 255.0
@@ -156,6 +162,7 @@ module Poetry
         "hsl(#{format_number(h, 1)} #{format_number(s * 100, 1)}% #{format_number(l * 100, 1)}%)"
       end
 
+      # A CSS color as an hsl() token: hex directly, hsl and rgb functions through their parsers; nil otherwise.
       def normalize_css_color(raw)
         return nil unless raw
 
@@ -166,6 +173,7 @@ module Poetry
         normalize_hsl(value) || normalize_rgb(value)
       end
 
+      # An hsl() or hsla() string as an hsl() token with its alpha, or nil when it does not parse.
       def normalize_hsl(value)
         m = value.match(/\Ahsla?\((.+)\)\z/i)
         return nil unless m
@@ -182,6 +190,7 @@ module Poetry
           opacity: alpha && clamp(alpha, 0, 1) }.compact
       end
 
+      # An rgb() or rgba() string as an hsl() token with its alpha, or nil when it does not parse.
       def normalize_rgb(value)
         m = value.match(/\Argba?\((.+)\)\z/i)
         return nil unless m
@@ -199,12 +208,14 @@ module Poetry
           opacity: alpha && clamp(alpha, 0, 1) }.compact
       end
 
+      # A color function's body split into its channels and the slash alpha, when one is written.
       def split_channels(body)
         body.include?("/") ? body.split("/", 2) : [body, nil]
       end
 
       # --- Length utilities ------------------------------------------------
 
+      # A length in pixels from a px, rem or em value; nil when it is not a length.
       def to_px(value)
         return nil unless value
 
@@ -216,18 +227,21 @@ module Poetry
         %w[rem em].include?(unit) ? n * 16 : n
       end
 
+      # The positive pixel lengths in a space-separated value.
       def to_px_list(value)
         return [] unless value
 
         value.to_s.strip.split(/\s+/).filter_map { |part| to_px(part) }.select(&:positive?)
       end
 
+      # A pixel length as a rem string with trailing zeros trimmed.
       def px_to_rem(pixels)
         "#{js_to_fixed(pixels / 16.0, 4).sub(/\.?0+\z/, "")}rem"
       end
 
       # --- Font utilities --------------------------------------------------
 
+      # A font family name quoted when it carries characters a bare CSS identifier cannot.
       def quote_if_needed(name)
         trimmed = name.strip.gsub(/\A["']|["']\z/, "")
         return trimmed if trimmed.empty?
@@ -236,6 +250,7 @@ module Poetry
         trimmed
       end
 
+      # A font stack from the primary family, its fallbacks and the generic family, deduplicated case-insensitively.
       def build_font_stack(primary, fallbacks, generic)
         seen = {}
         stack = []
@@ -255,6 +270,7 @@ module Poetry
         stack.join(", ")
       end
 
+      # A font family's class, sans, serif, mono or unknown, from the font links or the family name.
       def classify_family(family, font_links)
         return "unknown" unless family
 
@@ -274,6 +290,7 @@ module Poetry
         "unknown"
       end
 
+      # The first font link whose category reads as monospace, or nil.
       def find_mono_family(font_links)
         font_links&.each do |name, link|
           return name if link["category"]&.downcase&.include?("mono")
@@ -281,6 +298,7 @@ module Poetry
         nil
       end
 
+      # The first font link whose category reads as serif, skipping the excluded names, or nil.
       def find_serif_family(font_links, exclude)
         font_links&.each do |name, link|
           next if exclude.include?(name.downcase)
@@ -291,6 +309,7 @@ module Poetry
         nil
       end
 
+      # The sans, serif and mono stacks for a styleguide, from its body and heading fonts and its font links.
       def pick_fonts(styleguide)
         body = styleguide&.dig("typography", "p")
         h1 = styleguide&.dig("typography", "headings", "h1")
@@ -324,6 +343,7 @@ module Poetry
 
       # --- Radius / shadows / spacing --------------------------------------
 
+      # The radius token from a styleguide's card or button, clamped between two and sixteen pixels.
       def pick_radius(styleguide)
         card_radius = to_px(styleguide&.dig("components", "card", "borderRadius"))
         button_radius = to_px(styleguide&.dig("components", "button", "primary", "borderRadius"))
@@ -333,11 +353,13 @@ module Poetry
         px_to_rem(px.clamp(2, 16))
       end
 
+      # A length as a px token, or the fallback when it is not a length.
       def normalize_px_token(value, fallback)
         px = to_px(value)
         px.nil? ? fallback : "#{format_number(px, 2)}px"
       end
 
+      # A box-shadow value split into its comma-separated layers, commas inside functions kept.
       def split_shadow_layers(value)
         layers = []
         depth = 0
@@ -354,10 +376,12 @@ module Poetry
         layers.reject(&:empty?)
       end
 
+      # The color function or hex color inside one shadow layer, or nil.
       def find_color_snippet(layer)
         layer[/\b(?:rgba?|hsla?)\([^)]+\)/i] || layer[/#[0-9a-f]{3,8}\b/i]
       end
 
+      # The first layer of a box-shadow value as offsets, blur, spread, color and opacity; nil when unusable.
       def parse_box_shadow(value)
         return nil if !value || value.strip.downcase == "none"
 
@@ -379,6 +403,7 @@ module Poetry
           opacity: color && color[:opacity] }
       end
 
+      # An hsl() or rgb() token with the opacity written as its alpha.
       def color_with_opacity(color, opacity)
         alpha = format_number(clamp(opacity, 0, 1), 4)
         if (m = color.match(/\Ahsl\((.+)\)\z/i))
@@ -390,6 +415,7 @@ module Poetry
         end
       end
 
+      # The shadow color when the styleguide gives none: a foreground tint on light, near-black on dark.
       def fallback_shadow_color(palette, mode)
         bg = parse_hex(palette[:background])
         fg = parse_hex(palette[:foreground])
@@ -399,6 +425,7 @@ module Poetry
         fg ? rgb_to_hsl_token(fg) : "hsl(0 0% 5%)"
       end
 
+      # The shadow token set from one base shadow: the base parts and the size ramp at quiet, main and loud opacities.
       def build_shadow_tokens(base)
         half = base[:opacity] * 0.5
         heavy = [base[:opacity] * 2.5, 0.75].min
@@ -420,6 +447,7 @@ module Poetry
           shadow2xl: "#{first} #{loud}" }
       end
 
+      # The shadow tokens for a styleguide and palette, from the first parsable shadow among its candidates.
       def pick_shadows(styleguide, palette, mode)
         s = styleguide&.dig("shadows")
         candidates = [
@@ -450,6 +478,7 @@ module Poetry
         (sorted[mid - 1] + sorted[mid]) / 2.0
       end
 
+      # The spacing base unit implied by a styleguide's element spacing, or nil when none reads.
       def pick_spacing(styleguide)
         sp = styleguide&.dig("elementSpacing")
         divided = lambda do |value, divisor|
@@ -474,6 +503,7 @@ module Poetry
         px_to_rem(safe_unit)
       end
 
+      # The normal letter spacing as an em token, from the body or heading tracking.
       def pick_tracking_normal(styleguide)
         values = [styleguide&.dig("typography", "p", "letterSpacing"),
                   styleguide&.dig("typography", "headings", "h1", "letterSpacing")]
@@ -491,6 +521,8 @@ module Poetry
 
       # --- Palette ---------------------------------------------------------
 
+      # The semantic palette for one mode from the brand colors and the styleguide, derived when the source is the
+      # other mode.
       def build_palette(brand, styleguide, mode)
         sg_mode = styleguide&.dig("mode")
         source_is_light = sg_mode != "dark"
@@ -605,6 +637,7 @@ module Poetry
 
       # --- Output formatting -----------------------------------------------
 
+      # A palette as CSS custom property declarations.
       def palette_lines(palette)
         ["--background: #{palette[:background]};", "--foreground: #{palette[:foreground]};",
          "--card: #{palette[:card]};", "--card-foreground: #{palette[:card_foreground]};",
@@ -625,6 +658,7 @@ module Poetry
          "--sidebar-border: #{palette[:sidebar_border]};", "--sidebar-ring: #{palette[:sidebar_ring]};"]
       end
 
+      # The font, radius, shadow, tracking and spacing declarations.
       def non_color_lines(fonts, radius, shadows, tracking_normal = nil, spacing = nil)
         lines = ["--font-sans: #{fonts[:sans]};", "--font-serif: #{fonts[:serif]};",
                  "--font-mono: #{fonts[:mono]};", "--radius: #{radius};",
@@ -644,6 +678,7 @@ module Poetry
         lines.map { |line| "  #{line}" }.join("\n")
       end
 
+      # The inline theme block mapping the color, font and radius tokens onto the framework's names.
       def theme_inline_block
         pairs = %w[background foreground card card-foreground popover popover-foreground
                    primary primary-foreground secondary secondary-foreground muted
@@ -663,6 +698,7 @@ module Poetry
         "@theme inline {\n#{indent(lines)}\n}"
       end
 
+      # The base layer applying the border, outline, background and foreground defaults.
       def layer_base
         <<~CSS.strip
           @layer base {
