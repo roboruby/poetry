@@ -207,57 +207,21 @@ module Poetry
       # a NumberField, label/error/required from the object. The
       # hidden <input type=number> submits the raw value; format: only
       # shapes the display.
-      def number_field(method, hint: nil, **options)
-        field_component = field_for(method, hint: hint)
-        describedby = field_component.control_attributes["aria-describedby"]
-        @template.render(field_component) do
-          @template.render NumberField::Component.new(
-            name: field_name(method),
-            value: object.public_send(method),
-            required: required?(method),
-            invalid: field_component.invalid?,
-            id: field_component.control_attributes["id"],
-            **(describedby ? { described_by: describedby } : {}),
-            **options.transform_keys(&:to_sym)
-          )
-        end
+      def number_field(method, hint: nil, **)
+        control_field(method, NumberField::Component, hint: hint, **)
       end
 
       # form.date_field(:due_on) - a Field wrapping a DateField;
       # params arrive as ISO yyyy-mm-dd with or without JS. OVERRIDES
       # ActionView's date_field (the number_field precedent).
-      def date_field(method, hint: nil, **options)
-        field_component = field_for(method, hint: hint)
-        describedby = field_component.control_attributes["aria-describedby"]
-        @template.render(field_component) do
-          @template.render DateField::Component.new(
-            name: field_name(method),
-            value: object.public_send(method),
-            required: required?(method),
-            invalid: field_component.invalid?,
-            id: field_component.control_attributes["id"],
-            **(describedby ? { described_by: describedby } : {}),
-            **options.transform_keys(&:to_sym)
-          )
-        end
+      def date_field(method, hint: nil, **)
+        control_field(method, DateField::Component, hint: hint, **)
       end
 
       # form.time_field(:starts_at) - a Field wrapping a TimeField;
       # params arrive as HH:MM (HH:MM:SS with seconds: true).
-      def time_field(method, hint: nil, **options)
-        field_component = field_for(method, hint: hint)
-        describedby = field_component.control_attributes["aria-describedby"]
-        @template.render(field_component) do
-          @template.render TimeField::Component.new(
-            name: field_name(method),
-            value: object.public_send(method),
-            required: required?(method),
-            invalid: field_component.invalid?,
-            id: field_component.control_attributes["id"],
-            **(describedby ? { described_by: describedby } : {}),
-            **options.transform_keys(&:to_sym)
-          )
-        end
+      def time_field(method, hint: nil, **)
+        control_field(method, TimeField::Component, hint: hint, **)
       end
 
       # A Field-wrapped DateTimeField (one control, one datetime-local value; seconds:/hour_cycle: pass through).
@@ -267,20 +231,9 @@ module Poetry
       # @param options [Hash] the DateTimeField's own options (seconds:, hour_cycle:)
       #   and HTML attributes, passed through to the control
       # @return [ActiveSupport::SafeBuffer]
+      # rubocop:disable-next Style/ArgumentsForwarding -- the reference names the options hash
       def datetime_field(method, hint: nil, **options)
-        field_component = field_for(method, hint: hint)
-        describedby = field_component.control_attributes["aria-describedby"]
-        @template.render(field_component) do
-          @template.render DateTimeField::Component.new(
-            name: field_name(method),
-            value: object.public_send(method),
-            required: required?(method),
-            invalid: field_component.invalid?,
-            id: field_component.control_attributes["id"],
-            **(describedby ? { described_by: describedby } : {}),
-            **options.transform_keys(&:to_sym)
-          )
-        end
+        control_field(method, DateTimeField::Component, hint: hint, **options)
       end
 
       # form.file_input(:document) / form.file_input(:photos, variant: :dropzone,
@@ -799,6 +752,26 @@ module Poetry
         field_component.control_attributes
                        .slice("id", "aria-describedby", "aria-labelledby")
                        .transform_keys(&:to_sym)
+      end
+
+      # A Field wrapping one value control (NumberField, DateField, TimeField,
+      # DateTimeField): name, value and required from the object, the Field's
+      # control id, invalid state and aria-describedby handed to the control,
+      # the caller's options last.
+      def control_field(method, component, hint:, **options)
+        field_component = field_for(method, hint: hint)
+        describedby = field_component.control_attributes["aria-describedby"]
+        @template.render(field_component) do
+          @template.render component.new(
+            name: field_name(method),
+            value: object.public_send(method),
+            required: required?(method),
+            invalid: field_component.invalid?,
+            id: field_component.control_attributes["id"],
+            **(describedby ? { described_by: describedby } : {}),
+            **options.transform_keys(&:to_sym)
+          )
+        end
       end
 
       # -- one keyword per Field surface
