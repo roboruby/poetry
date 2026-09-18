@@ -331,6 +331,29 @@ module Poetry
           attrs
         end
 
+        # The native radio or checkbox behind a choice: its type, name and
+        # value, checked and disabled as the choice and its item say, and the
+        # checked pair the dictionary keys on.
+        def choice_input_attributes(item, choice)
+          attrs = {
+            "type" => input_type(item), "name" => field_name(item), "value" => choice.value,
+            "checked" => choice.checked, "disabled" => choice.disabled || item.disabled,
+            (choice.checked ? "data-checked" : "data-unchecked") => ""
+          }
+          element_attributes(:choice_input, attrs)
+        end
+
+        # The free-text answer input: named after its item, labelled and
+        # placed by the declaration, and marked filled or empty.
+        def input_attributes(item)
+          attrs = {
+            "type" => "text", "name" => field_name(item), "autocomplete" => "off",
+            "aria-label" => item.input.label, "placeholder" => item.input.placeholder, "value" => item.input.value,
+            (item.input.value.present? ? "data-filled" : "data-empty") => ""
+          }
+          element_attributes(:input, attrs)
+        end
+
         # One answer row's data, built via Item#with_choice.
         # @api private
         Choice = Struct.new(:value, :label, :description, :checked, :disabled, keyword_init: true)
@@ -403,7 +426,8 @@ module Poetry
         end
 
         private :progress_class, :questionnaire_id, :enabled_items, :active_item, :progress_label, :shortcut_for
-        private :item_dom_id, :field_name, :input_type, :nav_button_options, :choice_attributes, :progress_attributes
+        private :item_dom_id, :field_name, :input_type, :nav_button_options, :choice_attributes, :progress_attributes,
+                :choice_input_attributes, :input_attributes
       end
     end
   end

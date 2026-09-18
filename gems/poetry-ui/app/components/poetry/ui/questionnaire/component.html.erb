@@ -15,11 +15,7 @@
       <div data-slot="questionnaire-choices" class="<%= css(:choices) %>">
         <% item.choices.each_with_index do |choice, index| %>
           <%= content_tag(:label, **choice_attributes(item, choice, index)) do %>
-            <input type="<%= input_type(item) %>" name="<%= field_name(item) %>"
-                   value="<%= choice.value %>" data-slot="questionnaire-choice-input"
-                   class="<%= css(:choice_input) %>"
-                   <% if choice.checked %>checked<% end %> <% if choice.disabled || item.disabled %>disabled<% end %>
-                   <%= tag.attributes({ (choice.checked ? "data-checked" : "data-unchecked") => "" }) %>>
+            <%= tag.input(**choice_input_attributes(item, choice)) %>
             <span aria-hidden="true" data-slot="questionnaire-choice-indicator" class="<%= css(:choice_indicator) %>">
               <span data-slot="questionnaire-choice-indicator-dot" class="<%= css(:choice_indicator_dot) %>"></span>
               <%= render Poetry::Ui::Icon::Component.new(name: :check, class: css(:choice_indicator_check),
@@ -38,10 +34,7 @@
         <% end %>
         <% if item.input %>
           <div data-slot="questionnaire-input-wrapper" class="<%= css(:input_wrapper) %>">
-            <input type="text" name="<%= field_name(item) %>" data-slot="questionnaire-input" autocomplete="off"
-                   class="<%= css(:input) %>" aria-label="<%= item.input.label %>"
-                   placeholder="<%= item.input.placeholder %>" value="<%= item.input.value %>"
-                   <%= tag.attributes({ (item.input.value.present? ? "data-filled" : "data-empty") => "" }) %>>
+            <%= tag.input(**input_attributes(item)) %>
           </div>
         <% end %>
       </div>
