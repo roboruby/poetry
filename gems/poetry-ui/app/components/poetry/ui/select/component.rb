@@ -464,12 +464,11 @@ module Poetry
           # viewport, the options' actual parent.
           attrs = {
             "id" => content_id,
-            "tabindex" => "-1", "data-slot" => "select-content", (open ? "data-open" : "data-closed") => "",
+            "tabindex" => "-1", (open ? "data-open" : "data-closed") => "",
             # Initial placement, re-resolved live by popper on open.
-            "data-side" => side, "data-align" => align,
-            "class" => css(:content)
+            "data-side" => side, "data-align" => align
           }
-          attrs = element_attributes(attrs, stimulus: :content)
+          attrs = element_attributes(:content, attrs)
           attrs["hidden"] = true unless open
           attrs
         end

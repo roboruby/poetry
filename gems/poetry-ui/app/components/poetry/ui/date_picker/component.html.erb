@@ -1,4 +1,4 @@
-<%= content_tag(:div, **root_attributes.to_attributes) do %>
+<%= content_tag(:div, **root_attributes) do %>
   <% if input_variant? %>
     <%= render Poetry::Ui::InputGroup::Component.new do %>
       <%= helpers.poetry_input_group_input(**input_attributes.symbolize_keys) %>

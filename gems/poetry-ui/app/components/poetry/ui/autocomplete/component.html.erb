@@ -1,4 +1,4 @@
-<%= content_tag(:div, **root_attributes.to_attributes) do %>
+<%= content_tag(:div, **root_attributes) do %>
   <%= tag.input(**input_attributes, class: Poetry::Ui::Input::Style.css) %>
   <%= tag.div(**content_attributes) do %>
     <div data-slot="autocomplete-list" role="listbox" id="<%= list_id %>"

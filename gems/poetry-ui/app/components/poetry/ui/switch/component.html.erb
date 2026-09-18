@@ -1,7 +1,7 @@
 <%# Fragment - button + input(s) as SIBLINGS, no wrapper (the peer
     contract; Checkbox-identical). The thumb slide is pure CSS off the
     checked pair; the controller reflects it on every part. %>
-<%= content_tag(:button, **root_attributes.to_attributes) do %>
+<%= content_tag(:button, **root_attributes) do %>
   <span data-slot="switch-thumb" <% if checked %>data-checked=""<% else %>data-unchecked=""<% end %> aria-hidden="true" class="<%= css(:thumb) %>"></span>
 <% end %>
 <% if form_participant? %>

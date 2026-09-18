@@ -1,4 +1,4 @@
-<%= content_tag(:nav, **root_attributes.to_attributes) do %>
+<%= content_tag(:nav, **root_attributes) do %>
   <ul data-slot="pagination-content" class="<%= css(:content) %>">
     <% if show_edges? %>
       <li data-slot="pagination-item">

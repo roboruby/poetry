@@ -165,12 +165,12 @@ module Poetry
         def content_attributes
           attrs = {
             "id" => content_id,
-            "data-slot" => "hover-card-content", (open ? "data-open" : "data-closed") => "",
+            (open ? "data-open" : "data-closed") => "",
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
             "class" => css(:content, class: content_class)
           }
-          attrs = element_attributes(attrs, stimulus: :content)
+          attrs = element_attributes(:content, attrs)
           attrs["hidden"] = true unless open
           attrs
         end

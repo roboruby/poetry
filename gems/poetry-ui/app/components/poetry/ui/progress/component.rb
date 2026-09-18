@@ -43,7 +43,7 @@ module Poetry
 
         # @api private
         def call
-          content_tag(:div, root_attributes.to_attributes) do
+          content_tag(:div, root_attributes) do
             safe_join([label_part, value_part, track].compact)
           end
         end

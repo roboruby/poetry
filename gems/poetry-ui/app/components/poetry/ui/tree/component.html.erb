@@ -1,12 +1,12 @@
 <%# The flat treegrid: every row a sibling, hierarchy in aria-* computed
     server-side, rows under collapsed ancestors hidden. %>
-<%= content_tag(:div, **root_attributes.to_attributes) do %>
+<%= content_tag(:div, **root_attributes) do %>
   <% if rows.any? %>
     <% rows.each_with_index do |row, index| %>
-      <%= content_tag(:div, **row_attributes(row, index).to_attributes) do %>
+      <%= content_tag(:div, **row_attributes(row, index)) do %>
         <span role="gridcell" class="<%= css(:cell) %>">
           <% if row.expandable %>
-            <%= content_tag(:button, **toggle_attributes(row, index).to_attributes) do %>
+            <%= content_tag(:button, **toggle_attributes(row, index)) do %>
               <%= render Poetry::Ui::Icon::Component.new(name: :"chevron-right") %>
             <% end %>
           <% else %>

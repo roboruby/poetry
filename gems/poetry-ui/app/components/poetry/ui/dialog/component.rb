@@ -141,12 +141,11 @@ module Poetry
         def dialog_attributes
           attrs = {
             "class" => css(:content, class: panel_classes),
-            "data-slot" => "#{family_slot_prefix}-content",
             **panel_stamps,
             "data-closed" => "",
             "aria-labelledby" => title_id
           }
-          attrs = element_attributes(attrs, stimulus: :content)
+          attrs = element_attributes(:content, attrs)
           attrs["aria-describedby"] = description_id if description?
           attrs
         end

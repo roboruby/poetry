@@ -1,4 +1,4 @@
-<%= content_tag(:"turbo-frame", **root_attributes.to_attributes) do %>
+<%= content_tag(:"turbo-frame", **root_attributes) do %>
   <div <%= tag.attributes(**stimulus_attributes_for(:placeholder)) %>>
     <%= content.presence || render(Poetry::Ui::Skeleton::Component.new(class: "h-24 w-full")) %>
   </div>

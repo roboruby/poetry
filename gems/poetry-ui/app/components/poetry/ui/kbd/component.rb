@@ -29,7 +29,7 @@ module Poetry
         # Renders the <kbd> element.
         # @api private
         def call
-          content_tag(:kbd, content, **root_attributes.to_attributes)
+          content_tag(:kbd, content, **root_attributes)
         end
 
         # The <kbd> element's attributes.

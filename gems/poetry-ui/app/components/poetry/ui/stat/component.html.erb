@@ -1,4 +1,4 @@
-<%= content_tag(:div, **root_attributes.to_attributes) do %>
+<%= content_tag(:div, **root_attributes) do %>
   <div data-slot="stat-label" class="<%= css(:label) %>"><%= label %></div>
   <div class="<%= css(:row) %>">
     <div data-slot="stat-value" class="<%= css(:value) %>"><%= content %></div>

@@ -1,4 +1,4 @@
-<%= content_tag(:div, **root_attributes.to_attributes) do %>
+<%= content_tag(:div, **root_attributes) do %>
   <% if header? %>
     <div data-slot="card-header" class="<%= css(:header, class: header_class) %>">
       <% if title? %><%= content_tag(title_tag, title, "data-slot" => "card-title", class: css(:title)) %><% end %>

@@ -168,7 +168,7 @@ module Poetry
 
         # @api private
         def input_attributes
-          attrs = Poetry::Core::HTML::Attributes.new(
+          attrs = {
             "type" => "text",
             "id" => control_id,
             "data-slot" => "input-group-control",
@@ -178,7 +178,7 @@ module Poetry
             "autocorrect" => "off",
             "spellcheck" => "false",
             "aria-roledescription" => t("poetry.number_field.roledescription")
-          )
+          }
           attrs["placeholder"] = placeholder if placeholder.present?
           attrs["value"] = number(value) if value.present?
           attrs["aria-label"] = label if label.present?
@@ -187,29 +187,27 @@ module Poetry
           attrs["disabled"] = "" if disabled
           attrs["readonly"] = "" if readonly
           attrs["required"] = "" if required
-          attrs.merge!(stimulus_attributes_for(:input))
-          attrs
+          element_attributes(:input, attrs)
         end
 
         # The form/validation truth: raw number out, native constraint
         # validation on. Focus never lands here (tabindex -1, aria-hidden).
         # @api private
         def hidden_attributes
-          attrs = Poetry::Core::HTML::Attributes.new(
+          attrs = {
             "type" => "number",
             "name" => name,
             "class" => "sr-only",
             "tabindex" => "-1",
             "aria-hidden" => "true"
-          )
+          }
           attrs["value"] = number(value) if value.present?
           attrs["min"] = number(min) if min.present?
           attrs["max"] = number(max) if max.present?
           attrs["step"] = number(step)
           attrs["disabled"] = "" if disabled
           attrs["required"] = "" if required
-          attrs.merge!(stimulus_attributes_for(:hidden))
-          attrs
+          element_attributes(attrs, stimulus: :hidden)
         end
 
         # The stepper Buttons (ghost, icon-xs, InputGroup's tiny-button

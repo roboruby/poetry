@@ -1,4 +1,4 @@
-<%= content_tag(:nav, **root_attributes.to_attributes) do %>
+<%= content_tag(:nav, **root_attributes) do %>
   <ol data-slot="breadcrumb-list" class="<%= css(:list) %>">
     <% entries.each_with_index do |entry, index| %>
       <li data-slot="breadcrumb-item" class="<%= css(:item) %>">

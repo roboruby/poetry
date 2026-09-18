@@ -47,7 +47,7 @@ module Poetry
         # Renders the <input> element.
         # @api private
         def call
-          tag.input(**root_attributes.to_attributes)
+          tag.input(**root_attributes)
         end
 
         # The <input> element's attributes.

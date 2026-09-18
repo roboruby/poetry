@@ -424,16 +424,15 @@ module Poetry
         # @api private
         def input_attributes
           attrs = {
-            "type" => "text", "id" => input_id, "data-slot" => "command-input",
-            "role" => "combobox", "aria-expanded" => "true", "aria-controls" => list_id,
+            "type" => "text", "id" => input_id, "role" => "combobox", "aria-expanded" => "true",
+            "aria-controls" => list_id,
             "aria-autocomplete" => "list", "autocomplete" => "off", "autocorrect" => "off",
-            "spellcheck" => "false", "class" => css(:input)
+            "spellcheck" => "false"
           }
-          attrs = element_attributes(attrs)
+          attrs = element_attributes(:input, attrs)
           attrs["placeholder"] = placeholder if placeholder.present?
           attrs["disabled"] = true if disabled
           attrs["aria-activedescendant"] = item_set.highlighted_id if item_set.highlighted_id
-          attrs.merge!(stimulus_attributes_for(:input))
           attrs.merge!(input_aria_attributes)
           attrs
         end
@@ -442,10 +441,10 @@ module Poetry
         # @api private
         def list_attributes
           attrs = {
-            "id" => list_id, "data-slot" => "command-list", "role" => "listbox",
-            "tabindex" => "-1", "aria-label" => list_label, "class" => css(:list)
+            "id" => list_id, "role" => "listbox",
+            "tabindex" => "-1", "aria-label" => list_label
           }
-          element_attributes(attrs)
+          element_attributes(:list, attrs)
         end
 
         # Zero-matches message - rendered hidden; the controller unhides it

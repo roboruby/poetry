@@ -97,7 +97,7 @@ module Poetry
 
         # @api private
         def input_attributes
-          attrs = Poetry::Core::HTML::Attributes.new(
+          attrs = {
             "type" => "search",
             "name" => name,
             "id" => control_id,
@@ -106,7 +106,7 @@ module Poetry
             "autocomplete" => "off",
             "autocorrect" => "off",
             "spellcheck" => "false"
-          )
+          }
           attrs["value"] = value if value.present?
           attrs["placeholder"] = placeholder if placeholder.present?
           attrs["aria-label"] = label if label.present?
@@ -115,8 +115,7 @@ module Poetry
           attrs["disabled"] = "" if disabled
           attrs["readonly"] = "" if readonly
           attrs["required"] = "" if required
-          attrs.merge!(stimulus_attributes_for(:input))
-          attrs
+          element_attributes(:input, attrs)
         end
 
         # The clear affordance: a ghost icon Button that is NEVER a tab

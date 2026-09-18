@@ -1,4 +1,4 @@
-<%= content_tag(:div, **root_attributes.to_attributes) do %>
+<%= content_tag(:div, **root_attributes) do %>
   <% if header? %>
     <div data-slot="empty-header" class="<%= css(:header) %>">
       <% if media? %><div data-slot="empty-icon" data-variant="<%= media_variant %>" class="<%= media_classes %>"><%= media %></div><% end %>

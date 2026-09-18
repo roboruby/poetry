@@ -157,23 +157,21 @@ module Poetry
         # @api private
         def select_all_attributes
           attrs = {
-            "type" => "checkbox", "data-slot" => "data-table-select-all",
-            "class" => css(:checkbox),
+            "type" => "checkbox", "class" => css(:checkbox),
             "aria-label" => t("poetry.data_table.select_all")
           }
-          element_attributes(attrs, stimulus: :select_all)
+          element_attributes(:select_all, attrs)
         end
 
         # Attributes for one row's selection checkbox - the form value.
         # @api private
         def select_row_attributes(row)
           attrs = {
-            "type" => "checkbox", "data-slot" => "data-table-select-row",
-            "name" => "#{selection_name}[]", "value" => selectable.call(row),
+            "type" => "checkbox", "name" => "#{selection_name}[]", "value" => selectable.call(row),
             "class" => css(:checkbox),
             "aria-label" => t("poetry.data_table.select_row")
           }
-          element_attributes(attrs, stimulus: :row_checkbox)
+          element_attributes(:select_row, attrs, stimulus: :row_checkbox)
         end
 
         # The localized count-announcement template.

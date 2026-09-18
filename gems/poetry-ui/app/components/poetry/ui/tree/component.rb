@@ -131,15 +131,13 @@ module Poetry
         # @api private
         def row_attributes(row, index)
           attrs = {
-            "id" => row_id(index), "role" => "row", "data-slot" => "tree-item",
-            "data-value" => row.value, "data-level" => row.level,
+            "id" => row_id(index), "role" => "row", "data-value" => row.value, "data-level" => row.level,
             "aria-level" => row.level, "aria-posinset" => row.posinset,
             "aria-setsize" => row.setsize,
             "tabindex" => index == first_visible_index ? "0" : "-1",
-            "style" => "--poetry-tree-level: #{row.level}",
-            "class" => css(:item)
+            "style" => "--poetry-tree-level: #{row.level}"
           }
-          attrs = element_attributes(attrs)
+          attrs = element_attributes(:item, attrs)
           attrs["aria-expanded"] = row.expanded.to_s if row.expandable
           attrs["data-expanded"] = "" if row.expandable && row.expanded
           if row.disabled
@@ -154,14 +152,14 @@ module Poetry
         def toggle_attributes(row, index)
           attrs = {
             "type" => "button", "tabindex" => "-1",
-            "data-slot" => "tree-item-toggle", "class" => css(:toggle),
+            "data-slot" => "tree-item-toggle",
             "aria-label" => row.expanded ? t("poetry.tree.collapse") : t("poetry.tree.expand"),
             "aria-labelledby" => "#{row_id(index)}-toggle #{row_id(index)}",
             "id" => "#{row_id(index)}-toggle",
             "data-expand-label" => t("poetry.tree.expand"),
             "data-collapse-label" => t("poetry.tree.collapse")
           }
-          element_attributes(attrs, stimulus: :toggle)
+          element_attributes(:toggle, attrs)
         end
 
         # @api private

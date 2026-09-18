@@ -33,7 +33,7 @@ module Poetry
 
         # @api private
         def call
-          content_tag(:svg, glyph, **root_attributes.to_attributes)
+          content_tag(:svg, glyph, **root_attributes)
         end
 
         # The root's attributes: this component's markup over the core default.

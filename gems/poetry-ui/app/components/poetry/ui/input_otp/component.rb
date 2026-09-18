@@ -163,7 +163,7 @@ module Poetry
           }
           container_attributes.merge_if_not_set(
             attrs.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
-          )
+          ).to_attributes
         end
 
         # The real native input's attributes.
@@ -185,7 +185,7 @@ module Poetry
           attrs["aria-required"] = true if required
           attrs["aria-invalid"] = true if invalid
           Poetry::Core::HTML::Attributes.new(html_attributes.slice(*INPUT_FACING))
-                                        .merge_if_not_set(attrs.merge(stimulus_attributes_for(:input)))
+                                        .merge_if_not_set(attrs.merge(stimulus_attributes_for(:input))).to_attributes
         end
 
         # One mirror cell's attributes.

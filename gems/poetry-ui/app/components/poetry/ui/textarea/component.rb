@@ -43,7 +43,7 @@ module Poetry
         def call
           # value as CONTENT (escaped by content_tag - the </textarea>
           # injection surface).
-          content_tag(:textarea, value, **root_attributes.to_attributes)
+          content_tag(:textarea, value, **root_attributes)
         end
 
         # The root's attributes: this component's markup over the core default.

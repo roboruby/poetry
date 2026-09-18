@@ -32,7 +32,7 @@ module Poetry
         # Renders the divider row (rule + optional caption).
         # @api private
         def call
-          content_tag(:div, **root_attributes.to_attributes) do
+          content_tag(:div, **root_attributes) do
             safe_join([rule, caption].compact)
           end
         end

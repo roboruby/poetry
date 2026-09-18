@@ -1,4 +1,4 @@
-<%= content_tag(:div, **root_attributes.to_attributes) do %>
+<%= content_tag(:div, **root_attributes) do %>
   <%= content_tag(:div, viewport_attributes) do %>
     <div class="<%= css(:track, class: [css(vertical? ? :track_vertical : :track_horizontal), track_classes].compact) %>">
       <% slides.each do |slide| %>

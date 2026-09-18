@@ -1,6 +1,6 @@
-<%= content_tag(:div, **root_attributes.to_attributes) do %>
+<%= content_tag(:div, **root_attributes) do %>
   <%= trigger %>
-  <%= content_tag(:dialog, **dialog_attributes.to_attributes) do %>
+  <%= content_tag(:dialog, **dialog_attributes) do %>
     <div data-slot="dialog-header" class="<%= css(:header) %>">
       <h2 id="<%= title_id %>" data-slot="dialog-title" class="<%= css(:title) %>"><%= title %></h2>
       <% if description? %>

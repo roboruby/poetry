@@ -171,12 +171,11 @@ module Poetry
             # exactly as they do in the top layer.
             "class" => css(:content, class: [Style.direction(direction),
                                              (css(:nonmodal) unless modal)].compact.join(" ")),
-            "data-slot" => "drawer-content",
             "data-swipe-direction" => direction,
             "data-closed" => "",
             "aria-labelledby" => title_id
           }
-          attrs = element_attributes(attrs, stimulus: :content)
+          attrs = element_attributes(:content, attrs)
           # The attribute drives the dictionary's full-height sizing; the
           # controller reads the value for the offset physics.
           attrs["data-snap-points"] = "" if snap_points.present?

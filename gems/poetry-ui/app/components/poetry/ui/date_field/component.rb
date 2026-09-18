@@ -120,23 +120,22 @@ module Poetry
             "data-slot" => "#{slot_prefix}-group",
             "class" => group_classes
           }
-          attrs = element_attributes(attrs)
           attrs["aria-label"] = label if label.present?
           attrs["data-invalid"] = "" if invalid
           attrs["data-disabled"] = "" if disabled
-          element_attributes(attrs, stimulus: :group)
+          element_attributes(:group, attrs)
         end
 
         # Attributes for the native input - the form value.
         # @api private
         def input_attributes
-          attrs = Poetry::Core::HTML::Attributes.new(
+          attrs = {
             "type" => input_type,
             "name" => name,
             "id" => control_id,
             "data-slot" => "#{slot_prefix}-input",
             "class" => "#{Input::Style.css} #{css(:input)}"
-          )
+          }
           attrs["value"] = iso(value) if value.present?
           attrs["min"] = iso(min) if min.present?
           attrs["max"] = iso(max) if max.present?
@@ -146,8 +145,7 @@ module Poetry
           attrs["required"] = "" if required
           attrs["disabled"] = "" if disabled
           attrs["readonly"] = "" if readonly
-          attrs.merge!(stimulus_attributes_for(:input))
-          attrs
+          element_attributes(:input, attrs)
         end
 
         private

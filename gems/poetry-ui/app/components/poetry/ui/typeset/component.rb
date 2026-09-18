@@ -47,7 +47,7 @@ module Poetry
 
         # @api private
         def call
-          content_tag(:div, content, **root_attributes.to_attributes)
+          content_tag(:div, content, **root_attributes)
         end
 
         # The preset rides the root class list (the caller's class: still

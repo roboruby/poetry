@@ -23,10 +23,9 @@ module Poetry
       def group_attributes
         attrs = {
           "role" => "group",
-          "data-slot" => "#{family_slot_prefix}-group",
           "class" => InputGroup::Style.css
         }
-        element_attributes(attrs)
+        element_attributes(:group, attrs)
       end
 
       # One addon cell aligned inline-start or inline-end on the group row.

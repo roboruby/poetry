@@ -98,24 +98,18 @@ module Poetry
         # @api private
         def pre_attributes
           attrs = {
-            "data-slot" => "code-block-pre",
             "tabindex" => "0",
             "role" => "region",
-            "aria-label" => label.presence || t("poetry.code_block.label"),
-            "class" => css(:pre)
+            "aria-label" => label.presence || t("poetry.code_block.label")
           }
-          element_attributes(attrs)
+          element_attributes(:pre, attrs)
         end
 
         # Attributes for the <code> element.
         # @api private
         def code_attributes
-          attrs = Poetry::Core::HTML::Attributes.new(
-            "data-slot" => "code-block-code",
-            "class" => css(:code)
-          )
-          attrs.merge!(stimulus_attributes_for(:source))
-          attrs
+          attrs = {}
+          element_attributes(:code, attrs, stimulus: :source)
         end
 
         # The corner copy affordance: a ghost icon Button.

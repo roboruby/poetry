@@ -1,5 +1,5 @@
 <% surface = capture do %>
-  <%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= content_tag(:div, **root_attributes) do %>
     <% if filter %>
       <div data-slot="data-table-toolbar" class="<%= css(:toolbar) %>">
         <form method="get" action="<%= filter_form_action %>" role="search" aria-label="<%= filter_label %>" data-slot="data-table-filter">
@@ -23,7 +23,7 @@
           <tr data-slot="table-row" class="<%= Poetry::Ui::Table::Style.css(:row) %>">
             <% if selectable? %>
               <th data-slot="table-head" class="<%= Poetry::Ui::Table::Style.css(:head) %> <%= css(:select_cell) %>">
-                <%= tag.input(**select_all_attributes.to_attributes) %>
+                <%= tag.input(**select_all_attributes) %>
               </th>
             <% end %>
             <% column_defs.each do |column| %>
@@ -46,7 +46,7 @@
               <tr data-slot="table-row" class="<%= Poetry::Ui::Table::Style.css(:row) %>">
                 <% if selectable? %>
                   <td data-slot="table-cell" class="<%= Poetry::Ui::Table::Style.css(:cell) %> <%= css(:select_cell) %>">
-                    <%= tag.input(**select_row_attributes(row).to_attributes) %>
+                    <%= tag.input(**select_row_attributes(row)) %>
                   </td>
                 <% end %>
                 <% column_defs.each do |column| %>

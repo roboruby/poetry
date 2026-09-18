@@ -51,7 +51,7 @@ module Poetry
         # Renders the group surface around the content.
         # @api private
         def call
-          content_tag(:div, content, **root_attributes.to_attributes)
+          content_tag(:div, content, **root_attributes)
         end
 
         # The group surface's attributes.

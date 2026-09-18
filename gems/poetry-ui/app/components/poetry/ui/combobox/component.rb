@@ -784,13 +784,12 @@ module Poetry
         # @api private
         def content_attributes
           attrs = {
-            "id" => content_id, "data-slot" => "combobox-content", "tabindex" => "-1",
+            "id" => content_id, "tabindex" => "-1",
             (open ? "data-open" : "data-closed") => "",
             # Initial placement, re-resolved live by popper on open.
-            "data-side" => side, "data-align" => align,
-            "class" => css(:content)
+            "data-side" => side, "data-align" => align
           }
-          attrs = element_attributes(attrs, stimulus: :content)
+          attrs = element_attributes(:content, attrs)
           attrs["hidden"] = true unless open
           attrs
         end
@@ -807,8 +806,7 @@ module Poetry
         # each item, and could not retune the input's height.
         # @api private
         def command_attributes
-          element_attributes({ "data-slot" => "combobox-command", "class" => Command::Style.css },
-                             stimulus: :command_part)
+          element_attributes(:command, { "class" => Command::Style.css }, stimulus: :command_part)
         end
 
         # The popup's filter input (Command's contract, retuned to h-9):
@@ -819,19 +817,18 @@ module Poetry
         # @api private
         def input_attributes
           attrs = {
-            "type" => "text", "id" => input_id, "data-slot" => "combobox-input",
-            "role" => "combobox", "aria-expanded" => "true", "aria-controls" => list_id,
+            "type" => "text", "id" => input_id, "role" => "combobox", "aria-expanded" => "true",
+            "aria-controls" => list_id,
             "aria-autocomplete" => "list", "autocomplete" => "off", "autocorrect" => "off",
             "spellcheck" => "false", "aria-label" => t("poetry.combobox.filter_label"),
             "class" => Command::Style.css(:input, class: css(:input_fill))
           }
-          attrs = element_attributes(attrs)
+          attrs = element_attributes(:input, attrs)
           # The source stamps chips mode on the popup (its min-width follows the field).
           attrs["data-chips"] = "true" if multiple
           attrs["placeholder"] = search_placeholder if search_placeholder.present?
           attrs["disabled"] = true if disabled
           attrs["aria-activedescendant"] = option_set.highlighted_id if option_set.highlighted_id
-          attrs.merge!(stimulus_attributes_for(:input))
           attrs
         end
 
@@ -843,11 +840,10 @@ module Poetry
         # @api private
         def list_attributes
           attrs = {
-            "id" => list_id, "data-slot" => "combobox-list", "role" => "listbox",
-            "tabindex" => "-1", "aria-label" => t("poetry.command.list_label"),
-            "class" => css(:list)
+            "id" => list_id, "role" => "listbox",
+            "tabindex" => "-1", "aria-label" => t("poetry.command.list_label")
           }
-          attrs = element_attributes(attrs)
+          attrs = element_attributes(:list, attrs)
           attrs["aria-multiselectable"] = "true" if multiple
           attrs
         end
@@ -994,7 +990,7 @@ module Poetry
         end
 
         def inline_input
-          tag.input(**inline_input_attributes.to_attributes)
+          tag.input(**inline_input_attributes)
         end
 
         # The inline filter input (multiple): the ONE typing surface - the
@@ -1004,12 +1000,12 @@ module Poetry
         # text (the placeholder rides it; chips are the value display).
         def inline_input_attributes
           attrs = {
-            "type" => "text", "id" => trigger_id, "data-slot" => "combobox-chip-input",
-            "role" => "combobox", "aria-expanded" => open.to_s, "aria-controls" => list_id,
+            "type" => "text", "id" => trigger_id, "role" => "combobox", "aria-expanded" => open.to_s,
+            "aria-controls" => list_id,
             "aria-haspopup" => "listbox", "aria-autocomplete" => "list", "autocomplete" => "off",
-            "autocorrect" => "off", "spellcheck" => "false", "class" => css(:chip_input)
+            "autocorrect" => "off", "spellcheck" => "false"
           }
-          attrs = element_attributes(attrs)
+          attrs = element_attributes(:chip_input, attrs)
           # The input state: bare data-popup-open while open, NO
           # attribute while closed (absence IS the state).
           attrs["data-popup-open"] = "" if open

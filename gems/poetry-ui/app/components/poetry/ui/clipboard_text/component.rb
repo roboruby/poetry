@@ -93,10 +93,9 @@ module Poetry
         def group_attributes
           attrs = {
             "role" => "group",
-            "data-slot" => "clipboard-text-group",
             "class" => InputGroup::Style.css
           }
-          element_attributes(attrs)
+          element_attributes(:group, attrs)
         end
 
         # Attributes for the trailing addon cell.
@@ -113,7 +112,7 @@ module Poetry
         # Attributes for the readonly value input.
         # @api private
         def input_attributes
-          attrs = Poetry::Core::HTML::Attributes.new(
+          attrs = {
             "type" => "text",
             "readonly" => "",
             "id" => control_id,
@@ -122,12 +121,11 @@ module Poetry
             "class" => "#{Input::Style.css(class: InputGroup::Style.css(:control_input))} #{css(:input)}",
             "autocomplete" => "off",
             "spellcheck" => "false"
-          )
+          }
           attrs["aria-label"] = label if label.present?
           attrs["aria-describedby"] = described_by if described_by.present?
           attrs["disabled"] = "" if disabled
-          attrs.merge!(stimulus_attributes_for(:input))
-          attrs
+          element_attributes(:input, attrs)
         end
 
         # The copy affordance: a ghost icon Button, a real tab stop (it IS

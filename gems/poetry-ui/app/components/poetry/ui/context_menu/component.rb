@@ -275,12 +275,12 @@ module Poetry
             # delta): the menu's name is label: -> the i18n fallback.
             "aria-label" => label.presence || t("poetry.context_menu.menu_label_fallback"),
             "tabindex" => "-1",
-            "data-slot" => "context-menu-content", (open ? "data-open" : "data-closed") => "",
+            (open ? "data-open" : "data-closed") => "",
             # The initial placement (side: option; re-resolved live by popper).
             "data-side" => side.to_s, "data-align" => "start",
             "class" => css(:content, class: content_class)
           }
-          attrs = element_attributes(attrs, stimulus: :content)
+          attrs = element_attributes(:content, attrs)
           attrs["hidden"] = true unless open
           attrs
         end

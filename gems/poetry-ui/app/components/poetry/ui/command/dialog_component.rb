@@ -175,7 +175,7 @@ module Poetry
             "aria-labelledby" => title_id,
             "aria-describedby" => description_id
           }
-          element_attributes(attrs, stimulus: :content)
+          element_attributes(:content, attrs)
         end
 
         # Validated action descriptor for the template's close button.

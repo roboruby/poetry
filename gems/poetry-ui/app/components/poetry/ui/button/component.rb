@@ -120,7 +120,7 @@ module Poetry
 
         # The root's attributes: the base and the tag's own, over the caller's.
         def root_attributes
-          html_attributes.merge_if_not_set(base_attributes.merge(tag_attributes))
+          html_attributes.merge_if_not_set(base_attributes.merge(tag_attributes)).to_attributes
         end
 
         private

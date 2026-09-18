@@ -165,13 +165,12 @@ module Poetry
             # Explicit role: overrides the implicit dialog role (aria-modal
             # still comes from showModal).
             "role" => "alertdialog",
-            "data-slot" => "alert-dialog-content",
             "data-size" => size,
             "data-closed" => "",
             "aria-labelledby" => title_id,
             "aria-describedby" => description_id
           }
-          element_attributes(attrs, stimulus: :content)
+          element_attributes(:content, attrs)
         end
 
         # The media/size layout branches emitted as explicit server-side

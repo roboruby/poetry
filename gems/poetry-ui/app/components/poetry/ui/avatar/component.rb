@@ -59,7 +59,7 @@ module Poetry
 
         # @api private
         def call
-          content_tag(:span, root_attributes.to_attributes) do
+          content_tag(:span, root_attributes) do
             safe_join([fallback, image, badge_part].compact)
           end
         end

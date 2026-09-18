@@ -2,16 +2,16 @@
     the aria-hidden mask overlay (dots swapping to the reveal hint on
     hover/focus), the trailing eye (revealed-only) and copy: affordance,
     and the sr hint the masked group is described by. %>
-<%= content_tag(:div, **root_attributes.to_attributes) do %>
-  <%= content_tag(:div, **group_attributes.to_attributes) do %>
-    <%= tag.input(**input_attributes.to_attributes) %>
-    <%= content_tag(:span, **mask_attributes.to_attributes) do %>
+<%= content_tag(:div, **root_attributes) do %>
+  <%= content_tag(:div, **group_attributes) do %>
+    <%= tag.input(**input_attributes) %>
+    <%= content_tag(:span, **mask_attributes) do %>
       <span class="relative">
         <span class="<%= css(:mask_dots) %>">••••••••</span>
         <span class="<%= css(:mask_reveal) %>"><%= t("poetry.sensitive_input.reveal_hint") %></span>
       </span>
     <% end %>
-    <%= content_tag(:div, **addon_attributes.to_attributes) do %>
+    <%= content_tag(:div, **addon_attributes) do %>
       <%= render toggle_button do %>
         <%= render Poetry::Ui::Icon::Component.new(name: :"eye-off") %>
       <% end %>
@@ -25,5 +25,5 @@
       <% end %>
     <% end %>
   <% end %>
-  <%= content_tag(:span, t("poetry.sensitive_input.hint"), **hint_attributes.to_attributes) %>
+  <%= content_tag(:span, t("poetry.sensitive_input.hint"), **hint_attributes) %>
 <% end %>

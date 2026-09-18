@@ -161,10 +161,9 @@ module Poetry
         # @api private
         def group_attributes
           attrs = {
-            "data-slot" => "sensitive-input-group",
             "class" => InputGroup::Style.css(class: css(:group))
           }
-          element_attributes(attrs, stimulus: :group)
+          element_attributes(:group, attrs)
         end
 
         # Fixed inline-end - the reveal/copy cell.
@@ -179,23 +178,19 @@ module Poetry
         # out of the a11y tree.
         # @api private
         def mask_attributes
-          attrs = Poetry::Core::HTML::Attributes.new(
-            "data-slot" => "sensitive-input-mask",
-            "class" => css(:mask)
-          )
+          attrs = {}
           if masked?
             attrs["role"] = "button"
             attrs["tabindex"] = disabled ? "-1" : "0"
             attrs["aria-label"] = masked_label
             attrs["aria-describedby"] = hint_id
           end
-          attrs.merge!(stimulus_attributes_for(:mask))
-          attrs
+          element_attributes(:mask, attrs)
         end
 
         # @api private
         def input_attributes
-          attrs = Poetry::Core::HTML::Attributes.new(
+          attrs = {
             "type" => "password",
             "name" => name,
             "id" => control_id,
@@ -203,7 +198,7 @@ module Poetry
             "class" => "#{Input::Style.css(class: InputGroup::Style.css(:control_input))} #{css(:input)}",
             "autocomplete" => "off",
             "spellcheck" => "false"
-          )
+          }
           attrs["value"] = value if value.present?
           attrs["placeholder"] = placeholder if placeholder.present?
           attrs["aria-label"] = label if label.present?
@@ -218,8 +213,7 @@ module Poetry
           elsif readonly
             attrs["readonly"] = ""
           end
-          attrs.merge!(stimulus_attributes_for(:input))
-          attrs
+          element_attributes(:input, attrs)
         end
 
         # The eye: exists only while revealed (the masked group is the
@@ -254,9 +248,7 @@ module Poetry
         # only referenced while masked).
         # @api private
         def hint_attributes
-          attrs = Poetry::Core::HTML::Attributes.new("id" => hint_id, "class" => "sr-only")
-          attrs.merge!(stimulus_attributes_for(:hint))
-          attrs
+          element_attributes({ "id" => hint_id, "class" => "sr-only" }, stimulus: :hint)
         end
 
         private

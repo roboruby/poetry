@@ -48,7 +48,7 @@ module Poetry
 
         # @api private
         def call
-          content_tag(:div, root_attributes.to_attributes) do
+          content_tag(:div, root_attributes) do
             content_tag(:div, content, viewport_attributes)
           end
         end

@@ -117,8 +117,6 @@ module Poetry
         def grid_attributes
           attrs = {
             "role" => tags.any? ? "grid" : "group",
-            "data-slot" => "tag-group-grid",
-            "class" => css(:grid),
             "aria-labelledby" => label_id,
             **(described_by.present? ? { "aria-describedby" => described_by } : {}),
             # Polite only while focus is within (controller-flipped): SRs
@@ -127,7 +125,7 @@ module Poetry
             "aria-atomic" => "false",
             "aria-relevant" => "additions"
           }
-          attrs = element_attributes(attrs)
+          attrs = element_attributes(:grid, attrs)
           attrs["data-empty"] = "" if tags.none?
           attrs["tabindex"] = "0" if tags.none?
           element_attributes(attrs, stimulus: :grid)

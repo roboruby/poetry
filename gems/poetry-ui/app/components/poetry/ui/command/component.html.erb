@@ -5,13 +5,13 @@
 <% list_body = capture do %>
   <% items.each do |item| %><%= item %><% end %>
 <% end %>
-<%= content_tag(:div, **root_attributes.to_attributes) do %>
+<%= content_tag(:div, **root_attributes) do %>
   <div data-slot="command-input-wrapper" class="<%= css(:input_wrapper) %>">
     <span data-slot="command-search-icon"><%= render(Poetry::Ui::Icon::Component.new(name: :search, class: css(:search_icon))) %></span>
-    <%= tag.input(**input_attributes.to_attributes) %>
+    <%= tag.input(**input_attributes) %>
     <%= input_trailing_html %>
   </div>
-  <%= content_tag(:div, **list_attributes.to_attributes) do %>
+  <%= content_tag(:div, **list_attributes) do %>
     <%= empty_part %>
     <%= loading_part %>
     <%= list_body %>

@@ -1,9 +1,9 @@
 <%# InputGroup anatomy: the readonly mono control, trailing copy
     affordance with stacked copy/check glyphs swapping on data-copied. %>
-<%= content_tag(:div, **root_attributes.to_attributes) do %>
-  <%= content_tag(:div, **group_attributes.to_attributes) do %>
-    <%= tag.input(**input_attributes.to_attributes) %>
-    <%= content_tag(:div, **addon_attributes.to_attributes) do %>
+<%= content_tag(:div, **root_attributes) do %>
+  <%= content_tag(:div, **group_attributes) do %>
+    <%= tag.input(**input_attributes) %>
+    <%= content_tag(:div, **addon_attributes) do %>
       <%= render copy_button do %>
         <span class="<%= css(:icon_stack) %>">
           <%= render Poetry::Ui::Icon::Component.new(name: :copy, class: css(:icon_copy)) %>

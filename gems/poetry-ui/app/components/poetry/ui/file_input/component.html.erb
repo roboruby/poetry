@@ -1,7 +1,7 @@
 <% if variant == :input %>
   <%= render input_variant_component %>
 <% else %>
-  <%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= content_tag(:div, **root_attributes) do %>
     <%= content_tag(:label, dropzone_attributes) do %>
       <%= tag(:input, control_attributes) %>
       <%= render Poetry::Ui::Icon::Component.new(name: :upload, class: css(:icon)) %>

@@ -56,7 +56,7 @@ module Poetry
         # Renders the <fieldset> (legend, optional hint, then the fields).
         # @api private
         def call
-          content_tag(:fieldset, **root_attributes.to_attributes) do
+          content_tag(:fieldset, **root_attributes) do
             safe_join([legend_tag, hint_tag, content].compact)
           end
         end

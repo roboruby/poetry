@@ -43,7 +43,7 @@ module Poetry
         # Renders the stacking container around the content.
         # @api private
         def call
-          content_tag(:div, content, **root_attributes.to_attributes)
+          content_tag(:div, content, **root_attributes)
         end
 
         # The container's attributes.
