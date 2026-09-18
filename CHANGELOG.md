@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.5] - 2026-09-18
+
+Lockstep release with the family; no changes in this gem.
+
 ## [0.1.4] - 2026-09-15
 
 Lockstep release with the family; no changes in this gem.
