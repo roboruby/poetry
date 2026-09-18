@@ -72,6 +72,7 @@ module Poetry
         end
       end
 
+      # The digest of each watched file under the root, nil where a file is missing.
       def scan_watched_files(root)
         WATCHED_FILES.each_with_object({}) do |path, hashes|
           file = File.join(root, path)

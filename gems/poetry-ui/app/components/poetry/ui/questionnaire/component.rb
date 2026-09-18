@@ -212,6 +212,7 @@ module Poetry
         # @api private
         def item_models = (@item_models ||= [])
 
+        # The root form's DOM id: the given id as a token, else a stable instance id.
         def questionnaire_id
           @questionnaire_id ||= if (token = dom_id_token(id))
                                   "questionnaire-#{token}"
@@ -220,8 +221,10 @@ module Poetry
                                 end
         end
 
+        # The items that are not disabled, in document order.
         def enabled_items = item_models.reject(&:disabled)
 
+        # The item open first: the default item when it names an enabled one, else the first enabled item.
         def active_item
           @active_item ||= enabled_items.find { |item| item.name == default_item } ||
                            enabled_items.first
@@ -235,6 +238,7 @@ module Poetry
         # @api private
         def last? = active_index >= enabled_items.size - 1
 
+        # The live progress text, question X of Y.
         def progress_label
           "Question #{active_index + 1} of #{enabled_items.size}"
         end
@@ -250,12 +254,15 @@ module Poetry
           SHORTCUT_KEYS.fetch(shortcuts)[index]
         end
 
+        # A DOM id under the questionnaire for one of an item's parts.
         def item_dom_id(item, suffix)
           "#{questionnaire_id}-#{item.name.to_s.parameterize}-#{suffix}"
         end
 
+        # The form field name for an item, with the array suffix when it takes several answers.
         def field_name(item) = item.multiple ? "#{item.name}[]" : item.name.to_s
 
+        # The native input type for an item: a checkbox when it takes several answers, else a radio.
         def input_type(item) = item.multiple ? "checkbox" : "radio"
 
         # The root's attributes: this component's markup over the core default.
@@ -295,6 +302,7 @@ module Poetry
           attrs
         end
 
+        # One choice label's attributes: the slot and input type, the checked pair, disabled, and its shortcut key.
         def choice_attributes(item, choice, index)
           attrs = {
             "class" => css(:choice), "data-slot" => "questionnaire-choice",
@@ -356,6 +364,7 @@ module Poetry
             self
           end
 
+          # The validation message for an item without one of its own, depending on whether it is required.
           def default_error
             if required
               "Choose an answer to continue."
