@@ -1,35 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { supported, registerTool, validToolName } from "@poetry/agent/adapter"
 
-// The registrar: one controller on an opted-in component root
-// (`webmcp: "country"` on the helper call renders it beside the
-// component's own controllers) registers that instance's declared tools
-// with document.modelContext on connect and aborts them on disconnect.
-// Components gain zero runtime code - each tool dispatches to the
-// component's OWN controller action (the `executes` descriptor the Ruby
-// contract validated at class load), passing the tool's parameters
-// positionally in declared order.
-//
-// Correctness rules the spec makes load-bearing:
-// - Re-registration is skipped while the payload is unchanged (the spec
-//   documents an unregister/quick-re-register race where in-flight args
-//   for the old tool can hit the new tool's schema).
-// - Never register under Turbo's cache preview.
-// - Duplicate names are rejected by the browser; we warn and skip.
-// - A per-document budget caps registrations (each tool costs the agent
-//   context; overlap confuses tool choice).
-// - Errors come back as descriptive result strings (granular exceptions
-//   are still open spec issues; a string lets the agent self-correct):
-//   a missing or unknown parameter, a value of the wrong type or outside
-//   the enum, a missing action, a throwing action.
-// - A result is the action's return value when it is JSON-serializable
-//   (the contract's actions return their resulting state, so an answer
-//   says what happened rather than "done"); the done marker covers
-//   actions that return nothing.
-// - Parameters map positionally onto the action in declared order; the
-//   execute callback's {signal} is not forwarded (the actions are
-//   synchronous UI operations).
-
 // element -> { hash, controller: AbortController, names: string[] }
 const registrations = new Map()
 
@@ -41,10 +12,45 @@ const instances = new Map()
 const registeredCount = () =>
   [...registrations.values()].reduce((sum, entry) => sum + entry.names.length, 0)
 
+/**
+ * The registrar: one controller on an opted-in component root
+ * (`webmcp: "country"` on the helper call renders it beside the
+ * component's own controllers) registers that instance's declared tools
+ * with document.modelContext on connect and aborts them on disconnect.
+ * Components gain zero runtime code - each tool dispatches to the
+ * component's OWN controller action (the `executes` descriptor the Ruby
+ * contract validated at class load), passing the tool's parameters
+ * positionally in declared order.
+ *
+ * Correctness rules the spec makes load-bearing:
+ * - Re-registration is skipped while the payload is unchanged (the spec
+ *   documents an unregister/quick-re-register race where in-flight args
+ *   for the old tool can hit the new tool's schema).
+ * - Never register under Turbo's cache preview.
+ * - Duplicate names are rejected by the browser; we warn and skip.
+ * - A per-document budget caps registrations (each tool costs the agent
+ *   context; overlap confuses tool choice).
+ * - Errors come back as descriptive result strings (granular exceptions
+ *   are still open spec issues; a string lets the agent self-correct):
+ *   a missing or unknown parameter, a value of the wrong type or outside
+ *   the enum, a missing action, a throwing action.
+ * - A result is the action's return value when it is JSON-serializable
+ *   (the contract's actions return their resulting state, so an answer
+ *   says what happened rather than "done"); the done marker covers
+ *   actions that return nothing.
+ * - Parameters map positionally onto the action in declared order; the
+ *   execute callback's {signal} is not forwarded (the actions are
+ *   synchronous UI operations).
+ */
 export default class extends Controller {
   static values = {
+    // The instance name the tools register under (poetry.<name>.<tool>).
     name: String,
+    // The tool definitions this instance registers, as the component declared
+    // them.
     tools: Array,
+    // The most tools one page registers; past it, further registrations are
+    // dropped with a console warning.
     budget: { type: Number, default: 20 }
   }
 
@@ -54,11 +60,17 @@ export default class extends Controller {
     "poetry:webmcp:unregistered"
   ]
 
+  /**
+   * Registers this instance's tools and records it for the executor.
+   */
   connect() {
     instances.set(this.element, this)
     this.register()
   }
 
+  /**
+   * Forgets the instance and aborts its registrations.
+   */
   disconnect() {
     instances.delete(this.element)
     this.unregister()
@@ -72,7 +84,10 @@ export default class extends Controller {
     if (this.#connected) this.register()
   }
 
-  // Registers this instance's tools; idempotent for an unchanged payload.
+  /**
+   * Registers every declared tool with the browser under the instance name,
+   * within the page budget; skipped when unsupported or in a preview.
+   */
   register() {
     this.#connected = true
     if (!supported()) return
@@ -128,10 +143,14 @@ export default class extends Controller {
     })
   }
 
-  // Executes one of this instance's declared tools by its full registered
-  // name (`poetry.{instance}.{tool}`) or its bare tool name, with the same
-  // validation and dispatch a WebMCP call takes; unknown names answer with
-  // an error string like any other problem.
+  /**
+   * Runs one of this instance's tools by its registered or short name; an
+   * unknown name resolves to an error message.
+   *
+   * @param {string} name the registered or short tool name
+   * @param {Object} args the tool's arguments
+   * @returns {Promise<*>} the tool's result, or an error message for an unknown name
+   */
   execute(name, args = {}) {
     const tool = this.toolsValue.find((candidate) =>
       `poetry.${this.nameValue}.${candidate.name}` === name || candidate.name === name)
@@ -139,7 +158,9 @@ export default class extends Controller {
     return this.#execute(tool, args ?? {})
   }
 
-  // Aborts every registration of this instance.
+  /**
+   * Aborts every registration of this instance and announces it.
+   */
   unregister() {
     const entry = registrations.get(this.element)
     if (!entry) return

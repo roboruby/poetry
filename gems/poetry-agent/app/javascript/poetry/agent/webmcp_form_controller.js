@@ -1,31 +1,39 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The declarative-form companion: a form declared with poetry_webmcp_form
-// (toolname/tooldescription on the <form>) is registered by the BROWSER;
-// this controller only answers an agent-invoked submit with the outcome.
-// Chrome's SubmitEvent carries agentInvoked + respondWith(promise): we
-// submit the form ourselves (fetch, same method/action, Turbo-Stream
-// accepting) and respond with a short descriptive result instead of
-// navigating, so the agent learns whether the submission succeeded and
-// what the server said (validation errors included - it can self-correct).
-//
-// The person's page then catches up with the answer (a beat after the
-// result is handed to the browser, so a navigation can never swallow
-// it): a GET answer is the page at that URL - a Turbo visit, or a plain
-// navigation without Turbo; a Turbo-Stream answer renders; a redirected
-// POST (redirect-after-create) visits where the redirect went. An HTML
-// re-render of a failed POST stays put - the agent already holds the
-// errors, and the person keeps their filled form.
-//
-// Submits without agentInvoked (a person pressed Submit) pass through
-// untouched: the human path stays the human path.
+/**
+ * The declarative-form companion: a form declared with poetry_webmcp_form
+ * (toolname/tooldescription on the <form>) is registered by the BROWSER;
+ * this controller only answers an agent-invoked submit with the outcome.
+ * Chrome's SubmitEvent carries agentInvoked + respondWith(promise): we
+ * submit the form ourselves (fetch, same method/action, Turbo-Stream
+ * accepting) and respond with a short descriptive result instead of
+ * navigating, so the agent learns whether the submission succeeded and
+ * what the server said (validation errors included - it can self-correct).
+ *
+ * The person's page then catches up with the answer (a beat after the
+ * result is handed to the browser, so a navigation can never swallow
+ * it): a GET answer is the page at that URL - a Turbo visit, or a plain
+ * navigation without Turbo; a Turbo-Stream answer renders; a redirected
+ * POST (redirect-after-create) visits where the redirect went. An HTML
+ * re-render of a failed POST stays put - the agent already holds the
+ * errors, and the person keeps their filled form.
+ *
+ * Submits without agentInvoked (a person pressed Submit) pass through
+ * untouched: the human path stays the human path.
+ */
 export default class extends Controller {
   static events = ["poetry:webmcp:form-submitted"]
 
+  /**
+   * Listens for the form's submit.
+   */
   connect() {
     this.element.addEventListener("submit", this.submit)
   }
 
+  /**
+   * Stops listening for the form's submit.
+   */
   disconnect() {
     this.element.removeEventListener("submit", this.submit)
   }

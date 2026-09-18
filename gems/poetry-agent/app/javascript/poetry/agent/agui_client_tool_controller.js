@@ -1,23 +1,33 @@
 import { Controller } from "@hotwired/stimulus"
 import { executeRegisteredTool } from "@poetry/agent/webmcp_controller"
 
-// The AG-UI client-tool bridge: the relay appends one of these (hidden)
-// per tool call the agent made to a FRONTEND tool - a component tool the
-// page declared - and this controller executes it through the registrar
-// (the same dispatch a WebMCP call takes, so it works in every browser,
-// modelContext or not), then POSTs the result to the continue URL. The
-// server folds the tool message into the transcript and answers with the
-// next run's streams, which Turbo renders. One element, one execution:
-// the done flag makes a Turbo re-render inert.
+/**
+ * The AG-UI client-tool bridge: the relay appends one of these (hidden)
+ * per tool call the agent made to a FRONTEND tool - a component tool the
+ * page declared - and this controller executes it through the registrar
+ * (the same dispatch a WebMCP call takes, so it works in every browser,
+ * modelContext or not), then POSTs the result to the continue URL. The
+ * server folds the tool message into the transcript and answers with the
+ * next run's streams, which Turbo renders. One element, one execution:
+ * the done flag makes a Turbo re-render inert.
+ */
 export default class extends Controller {
   static values = {
+    // The pending tool call: its id, name and arguments.
     call: Object,
+    // Where the tool result is posted.
     url: String,
+    // Whether the call has already been answered (a restored snapshot must not
+    // answer twice).
     done: Boolean
   }
 
   static events = ["poetry:agui:client-tool-executed"]
 
+  /**
+   * Runs the pending client tool once, posts its result, and marks the call
+   * done.
+   */
   async connect() {
     if (this.doneValue) return
     this.doneValue = true

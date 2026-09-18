@@ -8,6 +8,7 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { Controller } from "@hotwired/stimulus"
 import { controllers } from "@poetry/agent"
+import { mergedDocs, withDocs } from "./support/controller_docs.js"
 
 const MANIFEST_PATH = path.join(path.dirname(fileURLToPath(import.meta.url)), "../../config/controllers_manifest.json")
 
@@ -31,14 +32,20 @@ const instanceMethods = (controller) => {
   return []
 }
 
+// The prose rides along from each controller's file (poetry--agent--webmcp-form
+// is webmcp_form_controller.js).
+const fileFor = (identifier) =>
+  path.join(path.dirname(fileURLToPath(import.meta.url)), "../../app/javascript/poetry/agent",
+    `${identifier.replace("poetry--agent--", "").replace(/-/g, "_")}_controller.js`)
+
 const introspect = () =>
-  Object.fromEntries(Object.entries(controllers).map(([identifier, controller]) => [identifier, {
+  Object.fromEntries(Object.entries(controllers).map(([identifier, controller]) => [identifier, withDocs({
     targets: [...(controller.targets ?? [])].sort(),
     values: serializeValues(controller.values),
     classes: [...(controller.classes ?? [])].sort(),
     methods: [...new Set([...methods(controller), ...instanceMethods(controller), ...(controller.publicMethods ?? [])])].sort(),
     events: [...(controller.events ?? [])].sort()
-  }]))
+  }, mergedDocs([fileFor(identifier)]))]))
 
 describe("controllers manifest", () => {
   it("matches the committed manifest (npm run manifest to regenerate)", () => {

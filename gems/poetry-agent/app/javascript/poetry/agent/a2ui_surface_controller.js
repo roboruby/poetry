@@ -1,22 +1,33 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The client side of an A2UI surface's checks: the server renders the
-// program (every checked component's rules with absolute bindings, the
-// bound inputs by path with their kinds, and the data model) and this
-// controller evaluates it as the user types - a button whose own checks
-// fail is disabled, a failing input is marked invalid and its error slot
-// carries the message. The five validators and the three combinators are
-// the checks vocabulary; anything else passes here and is judged by the
-// server, which re-runs every rule on the action.
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+/**
+ * The client side of an A2UI surface's checks: the server renders the
+ * program (every checked component's rules with absolute bindings, the
+ * bound inputs by path with their kinds, and the data model) and this
+ * controller evaluates it as the user types - a button whose own checks
+ * fail is disabled, a failing input is marked invalid and its error slot
+ * carries the message. The five validators and the three combinators are
+ * the checks vocabulary; anything else passes here and is judged by the
+ * server, which re-runs every rule on the action.
+ */
 export default class extends Controller {
-  static values = { program: Object }
+  static values = {
+    // The check program the server compiled: the checks, the bound inputs by path, and the data model.
+    program: Object
+  }
 
+  /**
+   * Evaluates every check once at mount.
+   */
   connect() {
     this.evaluate()
   }
 
+  /**
+   * Runs every check in the program and applies its failures.
+   */
   evaluate() {
     const checks = this.programValue?.checks || {}
     for (const [key, entry] of Object.entries(checks)) {
@@ -25,7 +36,13 @@ export default class extends Controller {
     }
   }
 
-  // The message of a failing rule, or null when it passes.
+  /**
+   * A rule's failure message, or null when it passes or cannot be decided
+   * here.
+   *
+   * @param {Object} rule the check rule with its condition and message
+   * @returns {string|null} the failure message, or null
+   */
   failure(rule) {
     const result = this.resolve(rule.condition)
     if (result === null) return null // unknown here; the server decides
@@ -34,6 +51,14 @@ export default class extends Controller {
     return (result && typeof result === "object" && result.message) || rule.message || "Check failed"
   }
 
+  /**
+   * Reflects a check's failures on the elements bound to a key: a button
+   * disables, an input turns invalid.
+   *
+   * @param {string} key the bound key the elements carry
+   * @param {string} kind the control kind: button or input
+   * @param {string[]} failures the failure messages, empty when the check passes
+   */
   apply(key, kind, failures) {
     for (const element of this.element.querySelectorAll(`[data-a2ui-key="${escapeAttribute(key)}"]`)) {
       if (kind === "button") {
@@ -49,6 +74,12 @@ export default class extends Controller {
     }
   }
 
+  /**
+   * A value with its bindings read and its calls run, recursively.
+   *
+   * @param {*} value a literal, a binding, a call, or an array of them
+   * @returns {*} the resolved value
+   */
   resolve(value) {
     if (value === null || typeof value !== "object") return value
     if (Array.isArray(value)) return value.map((item) => this.resolve(item))
@@ -57,6 +88,14 @@ export default class extends Controller {
     return value
   }
 
+  /**
+   * Runs a catalog function by name with its arguments resolved; an unknown
+   * name resolves to null.
+   *
+   * @param {string} name the catalog function
+   * @param {Object} rawArgs the arguments, bindings and calls unresolved
+   * @returns {*} the function's result, or null for an unknown name
+   */
   call(name, rawArgs) {
     const fn = FUNCTIONS[name]
     if (!fn) return null
@@ -65,8 +104,13 @@ export default class extends Controller {
     return fn(args)
   }
 
-  // The current value of a bound path: the form control first, the
-  // server's model when no control carries it.
+  /**
+   * The current value of a bound path from the form's inputs, falling back to
+   * the data model.
+   *
+   * @param {string} path the bound pointer
+   * @returns {*} the input's current value, or the model's
+   */
   read(path) {
     const kind = this.programValue?.inputs?.[path]
     const name = `a2ui[values][${path}]`

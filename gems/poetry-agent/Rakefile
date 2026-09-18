@@ -7,4 +7,4 @@ Minitest::TestTask.create
 require "rubocop/rake_task"
 RuboCop::RakeTask.new
 task default: %i[test rubocop version:verify yard:verify yard:coverage
-                 yard:coverage:all yard:lint arch:check arch:order arch:lint]
+                 yard:coverage:all yard:lint stimulus:docs arch:check arch:order arch:lint]
