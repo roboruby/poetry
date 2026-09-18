@@ -167,8 +167,6 @@ module Poetry
           ei = tangent_circle(cx:, cy:, radius: inner_radius, angle: end_angle, sign: -s,
                               corner_radius: corner, external: true)
           inner_arc = (start_angle - end_angle).abs - si[:theta] - ei[:theta]
-          return "#{path}L#{fmt.call(cx)},#{fmt.call(cy)}Z" if inner_arc.negative? && corner.zero?
-
           path << "L#{p.call(ei[:line_tangency])}" \
                   "A#{fmt.call(corner)},#{fmt.call(corner)},0,0,#{ccw},#{p.call(ei[:circle_tangency])}" \
                   "A#{fmt.call(inner_radius)},#{fmt.call(inner_radius)},0,#{inner_arc > 180 ? 1 : 0}," \

@@ -21,6 +21,26 @@ module Poetry
         assert_in_delta(-100, y, 1e-9, "90deg points UP (SVG y-down negation)")
       end
 
+      def test_a_corner_too_big_for_the_sweep_falls_back_to_the_plain_sector
+        args = { cx: 100, cy: 100, inner_radius: 0, outer_radius: 100, start_angle: 0, end_angle: 30 }
+
+        assert_equal Polar.sector_path(**args), Polar.sector_path_with_corners(**args, corner_radius: 40),
+                     "two 40px corners need more than 30 degrees of arc"
+        assert_equal Polar.sector_path(**args), Polar.sector_path_with_corners(**args, corner_radius: 0)
+      end
+
+      def test_a_ring_with_corners_rounds_all_four_and_a_wedge_closes_at_the_center
+        ring = Polar.sector_path_with_corners(cx: 100, cy: 100, inner_radius: 40, outer_radius: 100,
+                                              start_angle: 0, end_angle: 120, corner_radius: 8)
+        wedge = Polar.sector_path_with_corners(cx: 100, cy: 100, inner_radius: 0, outer_radius: 100,
+                                               start_angle: 0, end_angle: 120, corner_radius: 8)
+
+        assert_equal 6, ring.count("A"), "three arcs out, three arcs back"
+        assert ring.end_with?("Z")
+        assert_equal 3, wedge.count("A")
+        assert wedge.end_with?("L100,100Z")
+      end
+
       def test_pie_sectors_split_proportionally_over_the_full_circle
         sectors = Polar.pie_sectors([1, 1, 2])
 
