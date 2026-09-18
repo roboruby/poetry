@@ -109,46 +109,35 @@ end
 # persist every finished task to the partial file (crash insurance). Task
 # failures become error-verdict records - the blast-radius rule.
 def poetry_ui_eval_judge_run(names:, card:, captures_root:, judge:, partial:)
-  queue = Queue.new
-  names.each { |task| queue << task }
+  require_relative "../eval/parallel"
+
   results = {}
-  mutex = Mutex.new
+  concurrency = Integer(ENV.fetch("POETRY_JUDGE_CONCURRENCY", "4"))
+  Poetry::Eval::Parallel.each(names, concurrency: concurrency) do |task, lock|
+    spec = card["tasks"].fetch(task)
+    arms = spec["arms"].keys.sort.to_h do |arm|
+      png = captures_root.join(task, "#{arm}.png")
+      abort "missing capture #{png} - run the capture task first" unless png.exist?
 
-  workers = Array.new([Integer(ENV.fetch("POETRY_JUDGE_CONCURRENCY", "4")), names.size].min) do
-    Thread.new do
-      loop do
-        task = begin
-          queue.pop(true)
-        rescue ThreadError
-          break
-        end
-        spec = card["tasks"].fetch(task)
-        arms = spec["arms"].keys.sort.to_h do |arm|
-          png = captures_root.join(task, "#{arm}.png")
-          abort "missing capture #{png} - run the capture task first" unless png.exist?
-
-          [arm, { "capture" => png.to_s, "ledger" => spec["arms"][arm]["cross_arm"] }]
-        end
-        record = begin
-          judge.judge_pair(task: task, brief: spec["description"], arms: arms)
-        rescue Poetry::Eval::Judge::Error => e
-          # A task-level failure is a reported verdict class, not a run
-          # killer (the blast-radius lesson: call ~180 of 186 once raised
-          # and took the whole run's verdicts with it).
-          { "brief" => spec["description"], "arms" => arms.keys, "votes" => [],
-            "verdict" => "error", "surviving_votes" => 0, "swap_consistency" => 0.0,
-            "malformed_votes" => 0, "error" => e.message }
-        end
-        mutex.synchronize do
-          results[task] = record
-          Poetry::Ui.root.join(partial).write(JSON.pretty_generate(results.sort.to_h))
-          puts format("  %<task>-19s %<verdict>-14s swap-consistency %<swap>.2f",
-                      task: task, verdict: record["verdict"], swap: record["swap_consistency"])
-        end
-      end
+      [arm, { "capture" => png.to_s, "ledger" => spec["arms"][arm]["cross_arm"] }]
+    end
+    record = begin
+      judge.judge_pair(task: task, brief: spec["description"], arms: arms)
+    rescue Poetry::Eval::Judge::Error => e
+      # A task-level failure is a reported verdict class, not a run
+      # killer (the blast-radius lesson: call ~180 of 186 once raised
+      # and took the whole run's verdicts with it).
+      { "brief" => spec["description"], "arms" => arms.keys, "votes" => [],
+        "verdict" => "error", "surviving_votes" => 0, "swap_consistency" => 0.0,
+        "malformed_votes" => 0, "error" => e.message }
+    end
+    lock.synchronize do
+      results[task] = record
+      Poetry::Ui.root.join(partial).write(JSON.pretty_generate(results.sort.to_h))
+      puts format("  %<task>-19s %<verdict>-14s swap-consistency %<swap>.2f",
+                  task: task, verdict: record["verdict"], swap: record["swap_consistency"])
     end
   end
-  workers.each(&:join)
   results
 end
 
@@ -203,6 +192,7 @@ namespace :eval do
     poetry_ui_boot!
     require_relative "../eval/runner"
     require_relative "../eval/judge"
+    require_relative "../eval/verdicts"
     require "json"
     require "date"
 
@@ -229,19 +219,10 @@ namespace :eval do
     dir.mkpath
     path = dir.join("judge-verdicts.json")
 
-    usage = { "judge_calls" => judge.calls, "total_cost_usd" => judge.total_cost_usd.round(4) }
     # A subset run (POETRY_JUDGE_TASKS) MERGES into the same-date file:
     # re-judged tasks replace their records, the rest stand, usage
     # accumulates - a single-task re-run never clobbers a calibration.
-    if path.exist?
-      previous = JSON.parse(path.read)
-      results = previous.fetch("tasks", {}).merge(results)
-      before = previous.dig("summary", "usage") || {}
-      usage = {
-        "judge_calls" => before.fetch("judge_calls", 0) + usage["judge_calls"],
-        "total_cost_usd" => (before.fetch("total_cost_usd", 0.0) + usage["total_cost_usd"]).round(4)
-      }
-    end
+    results, usage = Poetry::Eval::Verdicts.merge(path, results, Poetry::Eval::Verdicts.usage_of(judge))
 
     decided = results.reject { |_, record| POETRY_JUDGE_UNDECIDED.include?(record["verdict"]) }
     agreement = decided.count { |_, record| record["verdict"] == "poetry" }
@@ -252,12 +233,7 @@ namespace :eval do
       "votes_per_order" => judge.votes_per_order,
       "axes" => Poetry::Eval::Judge::AXES,
       "tasks" => results.sort.to_h,
-      "summary" => {
-        "verdicts" => results.values.group_by { |record| record["verdict"] }.transform_values(&:size),
-        "mean_swap_consistency" =>
-          (results.values.sum { |record| record["swap_consistency"] } / results.size).round(3),
-        "usage" => usage
-      },
+      "summary" => Poetry::Eval::Verdicts.summary(results, usage),
       "calibration" => {
         "note" => "Frozen arms have known intended winners (the raw arms were authored WITH " \
                   "failure modes): the intended winner is the poetry arm on every task.",
@@ -332,18 +308,17 @@ namespace :eval do
       poetry_ui_boot!
       require_relative "../eval/runner"
       require_relative "../eval/benchmark"
-      require "json"
+      require_relative "../eval/manifest"
+      require_relative "../eval/parallel"
 
       bench = Poetry::Eval::Benchmark.new(results_root: poetry_bench_results_root)
       bench.build_hosts!
-      manifest_path = poetry_bench_results_root.join("generation-manifest.json")
-      manifest = manifest_path.exist? ? JSON.parse(manifest_path.read) : {}
-      manifest["units"] ||= {}
-      manifest["config"] = { "model" => bench.model, "max_turns" => bench.max_turns,
-                             "guided" => Poetry::Eval::Benchmark.guided?,
-                             "build_page_available" => Poetry::Eval::Benchmark.build_page_available?,
-                             "toolbelts" => Poetry::Eval::Benchmark.resolved_toolbelts }
-      prior_receipted = manifest.dig("usage", "receipted_cost_usd") || 0.0
+      manifest = Poetry::Eval::Manifest.new(poetry_bench_results_root.join("generation-manifest.json"))
+      manifest.config = { "model" => bench.model, "max_turns" => bench.max_turns,
+                          "guided" => Poetry::Eval::Benchmark.guided?,
+                          "build_page_available" => Poetry::Eval::Benchmark.build_page_available?,
+                          "toolbelts" => Poetry::Eval::Benchmark.resolved_toolbelts }
+      prior_receipted = manifest.prior_receipted
 
       units = poetry_bench_task_names.flat_map do |task|
         Poetry::Eval::Benchmark::ARM_HOSTS.keys.map { |arm| [task, arm] }
@@ -357,61 +332,39 @@ namespace :eval do
         abort "unknown POETRY_BENCH_ARMS: #{unknown.join(", ")}" unless unknown.empty?
         units = units.select { |_task, arm| arms.include?(arm) }
       end
-      unless ENV["POETRY_BENCH_FORCE"] == "1"
-        units = units.reject do |task, arm|
-          entry = manifest["units"].dig(task, arm)
-          # An error entry only has a placeholder artifact - a plain re-run
-          # must retry it, not skip it.
-          entry && !entry.key?("error") &&
-            poetry_bench_results_root.join("generated", task, "#{arm}.html.erb").exist?
-        end
+      units = manifest.pending(units, force: ENV["POETRY_BENCH_FORCE"] == "1") do |task, arm|
+        poetry_bench_results_root.join("generated", task, "#{arm}.html.erb").exist?
       end
       puts "generating #{units.size} units (model #{bench.model}, max-turns #{bench.max_turns}, " \
            "hosts #{bench.hosts_root}, results #{poetry_bench_results_root})..."
 
-      queue = Queue.new
-      units.each { |unit| queue << unit }
-      mutex = Mutex.new
-      workers = Array.new([Integer(ENV.fetch("POETRY_BENCH_CONCURRENCY", "4")), units.size].min) do
-        Thread.new do
-          loop do
-            task, arm = begin
-              queue.pop(true)
-            rescue ThreadError
-              break
-            end
-            entry = begin
-              bench.generate_unit(task: task, arm: arm,
-                                  brief: poetry_bench_spec_tasks.fetch(task)["description"])
-            rescue Poetry::Eval::Benchmark::HermeticityError
-              raise # experiment-invalidating - the join re-raises and kills the run
-            rescue Poetry::Eval::Benchmark::Error => e
-              { "error" => e.message[0, 300], "artifact" => false }
-            end
-            mutex.synchronize do
-              manifest["units"][task] ||= {}
-              manifest["units"][task][arm] = entry
-              manifest["usage"] = poetry_bench_manifest_usage(manifest, bench, prior_receipted)
-              manifest_path.dirname.mkpath
-              manifest_path.write(JSON.pretty_generate(manifest))
-              status = if entry["error"]
-                         "ERROR #{entry["error"][0, 60]}"
-                       else
-                         format("$%<cost>.2f  %<turns>2d turns  %<dur>4.0fs",
-                                cost: entry["cost_usd"], turns: entry["num_turns"].to_i,
-                                dur: entry["duration_s"])
-                       end
-              puts format("  %<task>-19s %<arm>-13s %<status>s", task: task, arm: arm, status: status)
-            end
-          end
+      concurrency = Integer(ENV.fetch("POETRY_BENCH_CONCURRENCY", "4"))
+      Poetry::Eval::Parallel.each(units, concurrency: concurrency) do |(task, arm), lock|
+        entry = begin
+          bench.generate_unit(task: task, arm: arm,
+                              brief: poetry_bench_spec_tasks.fetch(task)["description"])
+        rescue Poetry::Eval::Benchmark::HermeticityError
+          raise # experiment-invalidating - the join re-raises and kills the run
+        rescue Poetry::Eval::Benchmark::Error => e
+          { "error" => e.message[0, 300], "artifact" => false }
+        end
+        lock.synchronize do
+          manifest.record(task, arm, entry, poetry_bench_manifest_usage(manifest, bench, prior_receipted))
+          status = if entry["error"]
+                     "ERROR #{entry["error"][0, 60]}"
+                   else
+                     format("$%<cost>.2f  %<turns>2d turns  %<dur>4.0fs",
+                            cost: entry["cost_usd"], turns: entry["num_turns"].to_i,
+                            dur: entry["duration_s"])
+                   end
+          puts format("  %<task>-19s %<arm>-13s %<status>s", task: task, arm: arm, status: status)
         end
       end
-      workers.each(&:join)
 
-      usage = manifest["usage"] || {}
+      usage = manifest.usage
       puts "generation: #{usage["units_recorded"]} units recorded, " \
            "$#{usage["unit_cost_sum_usd"]} unit-sum, $#{usage["receipted_cost_usd"]} receipted; " \
-           "manifest: #{manifest_path}"
+           "manifest: #{manifest.path}"
     end
 
     desc "Run the mechanical gate array over the generated arms -> generated-scorecard.json"
@@ -497,6 +450,7 @@ namespace :eval do
       poetry_ui_boot!
       require_relative "../eval/runner"
       require_relative "../eval/judge"
+      require_relative "../eval/verdicts"
       require_relative "../eval/benchmark"
       require "json"
       require "date"
@@ -533,16 +487,7 @@ namespace :eval do
         names: names, card: card, captures_root: captures,
         judge: judge, partial: "tmp/eval-bench-judge-partial-#{path.basename(".json")}.json"
       )
-      usage = { "judge_calls" => judge.calls, "total_cost_usd" => judge.total_cost_usd.round(4) }
-      if path.exist?
-        previous = JSON.parse(path.read)
-        results = previous.fetch("tasks", {}).merge(results)
-        before = previous.dig("summary", "usage") || {}
-        usage = {
-          "judge_calls" => before.fetch("judge_calls", 0) + usage["judge_calls"],
-          "total_cost_usd" => (before.fetch("total_cost_usd", 0.0) + usage["total_cost_usd"]).round(4)
-        }
-      end
+      results, usage = Poetry::Eval::Verdicts.merge(path, results, Poetry::Eval::Verdicts.usage_of(judge))
 
       payload = {
         "schema" => Poetry::Eval::Judge::SCHEMA,
@@ -553,12 +498,7 @@ namespace :eval do
         "votes_per_order" => judge.votes_per_order,
         "axes" => Poetry::Eval::Judge::AXES,
         "tasks" => results.sort.to_h,
-        "summary" => {
-          "verdicts" => results.values.group_by { |record| record["verdict"] }.transform_values(&:size),
-          "mean_swap_consistency" =>
-            (results.values.sum { |record| record["swap_consistency"] } / results.size).round(3),
-          "usage" => usage
-        }
+        "summary" => Poetry::Eval::Verdicts.summary(results, usage)
       }
       path.write(JSON.pretty_generate(payload))
 
@@ -635,18 +575,19 @@ namespace :eval do
       require_relative "../eval/degradation"
       require "json"
 
+      require_relative "../eval/manifest"
+      require_relative "../eval/parallel"
+
       deg = Poetry::Eval::Degradation.new(results_root: poetry_degradation_root)
       deg.build_hosts!
-      manifest_path = poetry_degradation_root.join("degradation-manifest.json")
-      manifest = manifest_path.exist? ? JSON.parse(manifest_path.read) : {}
-      manifest["units"] ||= {}
-      manifest["config"] = {
+      manifest = Poetry::Eval::Manifest.new(poetry_degradation_root.join("degradation-manifest.json"))
+      manifest.config = {
         "model" => deg.model, "sample" => Poetry::Eval::Degradation::SAMPLE,
         "budgets" => Poetry::Eval::Degradation::BUDGETS,
         "sequence" => Poetry::Eval::Degradation::SEQUENCE.map { |step| step.compact.join(":") },
         "toolbelts" => Poetry::Eval::Degradation::TOOLBELTS
       }
-      prior_receipted = manifest.dig("usage", "receipted_cost_usd") || 0.0
+      prior_receipted = manifest.prior_receipted
 
       # POETRY_BENCH_TASKS chunks the run (long
       # CLI-spawning rakes die to SIGTERM in the background - foreground
@@ -661,58 +602,38 @@ namespace :eval do
       units = sample.flat_map do |task|
         Poetry::Eval::Degradation::ARM_HOSTS.keys.map { |arm| [task, arm] }
       end
-      unless ENV["POETRY_BENCH_FORCE"] == "1"
-        units = units.reject do |task, arm|
-          entry = manifest["units"].dig(task, arm)
-          entry && !entry.key?("error") &&
-            Poetry::Eval::Degradation::PROBES.all? do |probe|
-              poetry_degradation_root.join(probe, "generated", task, "#{arm}.html.erb").exist?
-            end
+      units = manifest.pending(units, force: ENV["POETRY_BENCH_FORCE"] == "1") do |task, arm|
+        Poetry::Eval::Degradation::PROBES.all? do |probe|
+          poetry_degradation_root.join(probe, "generated", task, "#{arm}.html.erb").exist?
         end
       end
       puts "degradation: #{units.size} conversations (model #{deg.model}, " \
            "#{Poetry::Eval::Degradation::SEQUENCE.count { |step, _k, _i| step == :message }} messages each) " \
            "-> #{poetry_degradation_root}..."
 
-      queue = Queue.new
-      units.each { |unit| queue << unit }
-      mutex = Mutex.new
-      workers = Array.new([Integer(ENV.fetch("POETRY_BENCH_CONCURRENCY", "4")), units.size].min) do
-        Thread.new do
-          loop do
-            task_name, arm = begin
-              queue.pop(true)
-            rescue ThreadError
-              break
-            end
-            entry = begin
-              deg.degrade_unit(task: task_name, arm: arm,
-                               brief: Poetry::Eval::Runner::TASKS.fetch(task_name)["description"])
-            rescue Poetry::Eval::Benchmark::HermeticityError
-              raise
-            rescue Poetry::Eval::Benchmark::Error => e
-              { "error" => e.message[0, 300] }
-            end
-            mutex.synchronize do
-              manifest["units"][task_name] ||= {}
-              manifest["units"][task_name][arm] = entry
-              manifest["usage"] = poetry_degradation_usage(manifest, deg, prior_receipted)
-              manifest_path.dirname.mkpath
-              manifest_path.write(JSON.pretty_generate(manifest))
-              status = if entry["error"]
-                         "ERROR #{entry["error"][0, 60]}"
-                       else
-                         cost = entry["messages"].sum { |message| message["cost_usd"].to_f }
-                         format("$%<cost>.2f  probes %<probes>s", cost: cost,
-                                                                  probes: entry["probes"].values.join("/"))
-                       end
-              puts format("  %<task>-19s %<arm>-13s %<status>s", task: task_name, arm: arm, status: status)
-            end
-          end
+      concurrency = Integer(ENV.fetch("POETRY_BENCH_CONCURRENCY", "4"))
+      Poetry::Eval::Parallel.each(units, concurrency: concurrency) do |(task_name, arm), lock|
+        entry = begin
+          deg.degrade_unit(task: task_name, arm: arm,
+                           brief: Poetry::Eval::Runner::TASKS.fetch(task_name)["description"])
+        rescue Poetry::Eval::Benchmark::HermeticityError
+          raise
+        rescue Poetry::Eval::Benchmark::Error => e
+          { "error" => e.message[0, 300] }
+        end
+        lock.synchronize do
+          manifest.record(task_name, arm, entry, poetry_degradation_usage(manifest, deg, prior_receipted))
+          status = if entry["error"]
+                     "ERROR #{entry["error"][0, 60]}"
+                   else
+                     cost = entry["messages"].sum { |message| message["cost_usd"].to_f }
+                     format("$%<cost>.2f  probes %<probes>s", cost: cost,
+                                                              probes: entry["probes"].values.join("/"))
+                   end
+          puts format("  %<task>-19s %<arm>-13s %<status>s", task: task_name, arm: arm, status: status)
         end
       end
-      workers.each(&:join)
-      puts "degradation manifest: #{manifest_path} ($#{manifest.dig("usage", "receipted_cost_usd")} receipted)"
+      puts "degradation manifest: #{manifest.path} ($#{manifest.usage["receipted_cost_usd"]} receipted)"
     end
 
     desc "Score all three probes through the benchmark score stage"
@@ -833,7 +754,7 @@ end
 # total (which includes retried attempts' spend, accumulated across
 # resumed runs).
 def poetry_bench_manifest_usage(manifest, bench, prior_receipted)
-  entries = manifest["units"].values.flat_map(&:values)
+  entries = manifest.entries
   {
     "units_recorded" => entries.size,
     "unit_cost_sum_usd" => entries.sum { |entry| entry["cost_usd"].to_f }.round(4),
@@ -850,7 +771,7 @@ def poetry_degradation_root
 end
 
 def poetry_degradation_usage(manifest, deg, prior_receipted)
-  entries = manifest["units"].values.flat_map(&:values)
+  entries = manifest.entries
   {
     "units_recorded" => entries.size,
     "unit_cost_sum_usd" => entries.sum do |entry|
