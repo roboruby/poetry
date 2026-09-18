@@ -1,0 +1,94 @@
+<% content_for :title, "Controllers" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Controllers") %>
+  <% end %>
+<% end %>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Controllers</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      Every Poetry Stimulus controller, read from the committed controllers
+      manifests: what it is for, the values it reads from its
+      <code>data-*-value</code> attributes, the actions your markup may
+      point a <code>data-action</code> at, and the events it dispatches.
+      The <%= link_to "Stimulus guide", stimulus_path, class: "underline" %>
+      shows how to attach, drive and extend them.
+    </p>
+  </header>
+
+  <% @families.each do |gem, controllers| %>
+    <section class="flex flex-col gap-6">
+      <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+        <h2 id="<%= gem %>">poetry-<%= gem %></h2>
+        <p><%= controllers.size %> controllers, identifiers <code>poetry--<%= gem %>--*</code>.</p>
+      <% end %>
+      <% controllers.each do |identifier, definition| %>
+        <article id="<%= identifier %>" class="flex flex-col gap-4 rounded-lg border p-6">
+          <h3 class="font-mono text-base font-medium"><%= identifier %></h3>
+          <% if definition["doc"].present? %>
+            <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+              <% definition["doc"].split("\n\n").each do |paragraph| %>
+                <p><%= paragraph %></p>
+              <% end %>
+            <% end %>
+          <% end %>
+          <% if definition["targets"].any? %>
+            <p class="text-sm text-muted-foreground">
+              Targets: <%= definition["targets"].map { |target| tag.code(target) }.to_sentence.html_safe %>
+            </p>
+          <% end %>
+          <% if definition["values"].any? %>
+            <div class="overflow-x-auto">
+              <%= poetry_table do %>
+                <%= poetry_table_header do %>
+                  <%= poetry_table_row do %>
+                    <%= poetry_table_head { "Value" } %>
+                    <%= poetry_table_head { "Type" } %>
+                    <%= poetry_table_head { "Default" } %>
+                    <%= poetry_table_head { "Meaning" } %>
+                  <% end %>
+                <% end %>
+                <%= poetry_table_body do %>
+                  <% definition["values"].each do |name, value| %>
+                    <%= poetry_table_row do %>
+                      <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { name } %>
+                      <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { value["type"] } %>
+                      <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") do %>
+                        <%= value.key?("default") ? value["default"].inspect : "" %>
+                      <% end %>
+                      <%= poetry_table_cell(class: "text-muted-foreground") { value["doc"] } %>
+                    <% end %>
+                  <% end %>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+          <% actions = definition["methods"] - %w[connect disconnect] %>
+          <% if actions.any? %>
+            <div class="flex flex-col gap-2">
+              <h4 class="text-sm font-medium">Actions</h4>
+              <ul class="flex flex-col gap-1 text-sm">
+                <% actions.each do |method| %>
+                  <li>
+                    <code><%= identifier %>#<%= method %></code>
+                    <% if (summary = definition.dig("method_docs", method)) %>
+                      <span class="text-muted-foreground"><%= summary %></span>
+                    <% end %>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+          <% if definition["events"].any? %>
+            <p class="text-sm text-muted-foreground">
+              Events: <%= definition["events"].map { |event| tag.code(event) }.to_sentence.html_safe %>
+            </p>
+          <% end %>
+        </article>
+      <% end %>
+    </section>
+  <% end %>
+</div>

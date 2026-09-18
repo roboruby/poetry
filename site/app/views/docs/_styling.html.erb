@@ -156,23 +156,30 @@
                     <%= element["element"] %><%= " (#{element["conditional"]})" if element["conditional"] %>
                   <% end %>
                   <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") do %>
-                    <%= controller["identifier"] %><%= " (#{controller["conditional"]})" if controller["conditional"] %>
+                    <%= link_to controller["identifier"], controllers_reference_path(anchor: controller["identifier"]), class: "underline" %><%= " (#{controller["conditional"]})" if controller["conditional"] %>
                   <% end %>
                   <%= poetry_table_cell(class: "text-muted-foreground") do %>
+                    <% definition = DocsCatalog.controller_definition(controller["identifier"]) || {} %>
                     <% facets = [] %>
-                    <% facets << (controller["registers"] == true ? "registers" : "registers (#{controller["registers"]})") if controller["registers"] %>
+                    <% facets << [(controller["registers"] == true ? "registers" : "registers (#{controller["registers"]})"), nil] if controller["registers"] %>
                     <% (controller["values"] || []).each do |value| %>
-                      <% facets << "value #{value["name"]}#{" (#{value["conditional"]})" if value["conditional"]}" %>
+                      <% facets << ["value #{value["name"]}#{" (#{value["conditional"]})" if value["conditional"]}",
+                                    definition.dig("values", value["name"].to_s.camelize(:lower), "doc")] %>
                     <% end %>
                     <% (controller["actions"] || []).each do |action| %>
                       <% events = Array(action["on"]).join("/") %>
                       <% events = "#{events}@#{action["at"]}" if action["at"] %>
-                      <% facets << "#{action["method"]}#{" on #{events}" if events.present?}#{" (#{action["conditional"]})" if action["conditional"]}" %>
+                      <% facets << ["#{action["method"]}#{" on #{events}" if events.present?}#{" (#{action["conditional"]})" if action["conditional"]}",
+                                    definition.dig("method_docs", action["method"].to_s.camelize(:lower))] %>
                     <% end %>
                     <% (controller["targets"] || []).each do |target| %>
-                      <% facets << "target #{target["name"]}#{" (#{target["conditional"]})" if target["conditional"]}" %>
+                      <% facets << ["target #{target["name"]}#{" (#{target["conditional"]})" if target["conditional"]}", nil] %>
                     <% end %>
-                    <%= facets.join(" · ") %>
+                    <ul class="flex flex-col gap-1">
+                      <% facets.each do |facet, meaning| %>
+                        <li><span class="font-mono text-xs text-foreground"><%= facet %></span><% if meaning %>: <%= meaning %><% end %></li>
+                      <% end %>
+                    </ul>
                   <% end %>
                 <% end %>
               <% end %>
