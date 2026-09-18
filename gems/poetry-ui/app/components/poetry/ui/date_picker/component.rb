@@ -19,6 +19,8 @@ module Poetry
       #     name: "due_on", label: "Due date", value: Date.new(2026, 6, 5)
       #   )
       class Component < Poetry::Core::Component
+        include DateParsing
+
         # Composition: every DatePicker renders a Popover, whose minted
         # trigger/content ids ride this DOM - a cached or looped
         # DatePicker without identity freezes them, so the stable-identity
@@ -204,30 +206,6 @@ module Poetry
         # @api private
         def popover_key
           stable_key || html_attributes["id"].presence
-        end
-
-        private
-
-        # A value as a Date, parsed from text; nil stays nil.
-        def to_date(value)
-          return if value.nil?
-          return value if value.is_a?(Date)
-
-          Date.parse(value.to_s)
-        end
-
-        # A preselected range: Date..Date, [start, end], or {start:, end:}.
-        def parse_range(value)
-          case value
-          when nil then [nil, nil]
-          when Range then [to_date(value.first), to_date(value.last)]
-          when Array then [to_date(value[0]), to_date(value[1])]
-          when Hash
-            pair = value.symbolize_keys
-            [to_date(pair[:start]), to_date(pair[:end])]
-          else
-            [to_date(value), nil]
-          end
         end
 
         private :range?, :input_variant?, :formatted, :calendar_options, :trigger_options

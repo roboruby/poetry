@@ -17,6 +17,8 @@ module Poetry
       # @example A form-posting date pick
       #   render Poetry::Ui::Calendar::Component.new(name: "event[date]", selected: "2026-07-04")
       class Component < Poetry::Core::Component
+        include DateParsing
+
         # The date-valued keywords, parsed to Date (or nil) for the template.
         # @api private
         attr_reader :selected, :today, :min, :max, :range_start, :range_end
@@ -318,28 +320,6 @@ module Poetry
           {
             variant: :ghost, size: :icon, label: label, class: css(:nav_button)
           }.merge(stimulus_attributes_for(element))
-        end
-
-        # A value as a Date, parsed from text; nil stays nil.
-        def to_date(value)
-          return if value.nil?
-          return value if value.is_a?(Date)
-
-          Date.parse(value.to_s)
-        end
-
-        # A preselected range: Date..Date, [start, end], or {start:, end:}.
-        def parse_range(value)
-          case value
-          when nil then [nil, nil]
-          when Range then [to_date(value.first), to_date(value.last)]
-          when Array then [to_date(value[0]), to_date(value[1])]
-          when Hash
-            pair = value.symbolize_keys
-            [to_date(pair[:start]), to_date(pair[:end])]
-          else
-            [to_date(value), nil] # a single value starts the range
-          end
         end
 
         # The selection vocabulary per day: a COMPLETE range wears
