@@ -16,6 +16,7 @@
 
 - 133 methods the reference already hid with `@api private` are Ruby-private now: each was called only by its own class or template, so the runtime enforces what the tag only stated. A host that reached one gets a NoMethodError instead of an internal that may change without notice. The tag remains on the internals the family shares between its gems and on whole internal classes.
 - Every class, module and method carries a one-sentence description, private helpers included: `rake yard:coverage:all` measures the whole tree (a tag-only docstring counts as blank) and the committed floor now stands at zero.
+- `Poetry::Core::RequiresAny.phrase` states an any-of contract once for `poetry check`, llms.txt and the MCP server; the registry entry builder, the slot surface builder and the host manifest's literal scanner are split into named steps with no change in output (the committed registries rebuild byte for byte).
 
 ## [0.1.4] - 2026-09-15
 
