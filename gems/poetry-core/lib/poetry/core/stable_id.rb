@@ -79,6 +79,7 @@ module Poetry
 
         private
 
+        # Runs the block under a per-request stable id seed when the mode asks for one.
         def poetry_stable_id_sequence(&)
           config = Poetry::Core::Config.current
           return yield unless config.stable_id_mode == :sequence

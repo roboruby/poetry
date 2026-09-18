@@ -26,12 +26,15 @@ module Poetry
       # copied verbatim into hosts. Rails renders both through the engine.
       DEFAULT_GLOBS = ["app/**/*.erb", "lib/generators/**/templates/**/*.erb"].freeze
 
+      # A template Herb's engine could not compile, with its message.
       CompileError = Struct.new(:path, :message) do
+        # The path and the message.
         def to_s
           "#{path}: #{message}"
         end
       end
 
+      # The compiled count and the errors met.
       Result = Struct.new(:compiled, :errors)
 
       class << self
@@ -62,6 +65,7 @@ module Poetry
 
         private
 
+        # Requires the herb gem, raising a clear error when it is missing.
         def herb!
           require "herb"
         rescue LoadError

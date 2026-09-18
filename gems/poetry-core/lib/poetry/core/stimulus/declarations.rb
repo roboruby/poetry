@@ -149,11 +149,13 @@ module Poetry
           validate_name!(identifier, definition&.fetch("values", {})&.keys, name, "value")
         end
 
+        # Raises when the target is not one the controller declares.
         # @api private
         def validate_target!(identifier, definition, name)
           validate_name!(identifier, definition&.fetch("targets", []), name, "target")
         end
 
+        # Raises when the action method is not one the controller declares.
         # @api private
         def validate_action!(identifier, definition, name)
           validate_name!(identifier, definition&.fetch("methods", []), name, "action method")
@@ -434,8 +436,10 @@ module Poetry
 
           private
 
+          # The declaring element and controller, for messages.
           def context = "#{@declaring} controller #{@wiring.identifier}"
 
+          # Adds one entry to the wiring with its conditions extracted.
           def push(kind:, options:, name: nil, source: nil, on: nil, at: nil)
             conditions = Declarations.extract_conditions!("#{context} #{kind}", options)
             @wiring.entries << Entry.new(kind: kind, name: name, source: source,

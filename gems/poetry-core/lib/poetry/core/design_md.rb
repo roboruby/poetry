@@ -88,10 +88,12 @@ module Poetry
           }.compact
         end
 
+        # A parsed document back as DESIGN.md text.
         def serialize(doc)
           "#{front_matter(doc)}#{body(doc)}"
         end
 
+        # A DESIGN.md document parsed: Poetry's own front matter directly, anything else tolerantly.
         def parse(markdown)
           fm, prose = split_front_matter(markdown.to_s)
           return from_poetry_front_matter(fm) if fm&.key?("poetry")
@@ -144,6 +146,7 @@ module Poetry
           end
         end
 
+        # A radius value in pixels, rem converted, or nil.
         def radius_px(radius)
           number = radius.to_s[/[\d.]+/]&.to_f
           return unless number
@@ -151,6 +154,7 @@ module Poetry
           radius.to_s.include?("rem") ? number * 16 : number
         end
 
+        # The prose sections of a document, joined.
         def body(doc)
           [overview_section(doc), colors_section(doc), typography_section(doc),
            layout_section, elevation_section(doc), shapes_section(doc),

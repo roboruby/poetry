@@ -563,6 +563,7 @@ module Poetry
           "#{allowed.map(&:inspect).join(", ")}#{variant_suggestion(value, allowed)}"
       end
 
+      # The did-you-mean suffix for an off-list value, or an empty string.
       def variant_suggestion(value, allowed)
         return "" if allowed.empty? || value.nil?
 

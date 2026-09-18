@@ -174,11 +174,13 @@ module Poetry
           normalize(role)
         end
 
+        # The color mode a token path names, light by default.
         def detect_mode(path)
           hit = path.filter_map { |s| MODES[s.to_s.downcase] }.last
           hit || "light"
         end
 
+        # A token name as a kebab-case key.
         def normalize(name)
           name.to_s.strip.downcase.gsub(/[^a-z0-9]+/, "-").gsub(/\A-+|-+\z/, "")
         end
@@ -200,14 +202,17 @@ module Poetry
           end
         end
 
+        # Whether a node is a token leaf.
         def token?(node)
           node.is_a?(Hash) && (node.key?("$value") || (node.key?("value") && node.key?("type")))
         end
 
+        # A token leaf's value, from either key spelling.
         def token_value(node)
           node.key?("$value") ? node["$value"] : node["value"]
         end
 
+        # A token leaf's type, from either key spelling.
         def token_type(node)
           node["$type"] || node["type"]
         end
@@ -244,6 +249,7 @@ module Poetry
           end
         end
 
+        # A color from a DTCG color object: oklch, srgb components, or a hex string; nil otherwise.
         def color_object(obj)
           space = obj["colorSpace"] || obj["$colorSpace"]
           if space == "oklch"
@@ -257,6 +263,7 @@ module Poetry
           nil
         end
 
+        # A dimension token as CSS text: a value with its unit, a bare number in pixels, or the string as given.
         def dimension_css(value)
           case value
           when Hash
@@ -267,6 +274,7 @@ module Poetry
           end
         end
 
+        # A token value as text for a drop message.
         def raw_value(value)
           value.is_a?(String) ? value.strip : value.inspect
         end
@@ -285,6 +293,7 @@ module Poetry
           end
         end
 
+        # The mode a CSS selector block addresses: dark, light, or nil for neither.
         def block_mode(selector)
           lower = selector.downcase
           return "dark" if lower.include?(".dark") || lower.include?("data-theme=\"dark\"") ||
@@ -301,6 +310,7 @@ module Poetry
           normalize(var.delete_prefix("color-"))
         end
 
+        # A CSS value with its var() references followed through the block, up to a depth cap.
         def resolve_css_value(raw, vars, depth = 0)
           return nil if depth > 12
 

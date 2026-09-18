@@ -38,6 +38,7 @@ module Poetry
           /\.(?:each|each_with_index|each_with_object|each_slice|map|collect|flat_map)\b.*\bdo\b|\Afor\s.+\sin\s/
         IDENTITY_ARG = /(?:\bkey:|\bid:|["']key["']\s*=>|["']id["']\s*=>)/
 
+        # A stable-identity linter over the catalog.
         def initialize(catalog)
           @catalog = catalog
         end
@@ -81,6 +82,7 @@ module Poetry
           end
         end
 
+        # The kind of block a chunk opens: a cache, a loop, or something else.
         def frame_for(code)
           return :cache if code.match?(CACHE_OPENER)
           return :loop if code.match?(LOOP_OPENER)
@@ -88,6 +90,7 @@ module Poetry
           :other
         end
 
+        # The findings for helper calls rendered inside an open cache or loop frame without a key.
         def flag_helpers(code, line, stack, findings)
           code.scan(helper_pattern) do |(helper)|
             next unless @catalog.helper?(helper)

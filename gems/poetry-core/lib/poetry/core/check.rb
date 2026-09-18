@@ -30,11 +30,13 @@ module Poetry
       #
       # @api private
       Finding = Struct.new(:rule, :severity, :message, :line, :suggestion, :file, keyword_init: true) do
+        # The finding as a hash with its nil fields dropped.
         def to_h
           { rule: rule, severity: severity, message: message,
             line: line, suggestion: suggestion, file: file }.compact
         end
 
+        # The finding as one line: location, severity, rule, message and the suggestion.
         def to_s
           location = [file, line].compact.join(":")
           hint = suggestion ? " (did you mean #{suggestion}?)" : ""
@@ -71,6 +73,7 @@ module Poetry
         # rgb(...)) - a url(#fragment) is not a color.
         STYLE_COLOR = /(?<!url\()#\h{3,8}\b|\b(?:#{COLOR_FUNCTIONS.join("|")})\([^)]*\)/i
 
+        # A catalog over one registry root.
         def self.from_registry(root, helpers: nil, icon_names: nil, host_helpers: nil)
           from_registries([root], helpers: helpers, icon_names: icon_names, host_helpers: host_helpers)
         end
@@ -149,6 +152,7 @@ module Poetry
           @helper_names.merge(@host_helpers)
         end
 
+        # The active icon set's names, or nil when membership is not checked.
         attr_reader :icon_names
 
         # The family's `@api private` namespaces (the registries' "internals"
@@ -163,8 +167,10 @@ module Poetry
         # @return [Boolean]
         def internal?(path) = ApiInternals.internal?(path, @internals)
 
+        # Every valid helper name.
         def helper_names = @helper_names.to_a
 
+        # Whether the name is a valid helper.
         def helper?(name) = @helper_names.include?(name)
 
         # A helper method the app defines under the prefix and no registry
@@ -175,6 +181,7 @@ module Poetry
           @host_helpers.include?(name) && !@path_by_helper.key?(name) && !@helper_entries.key?(name)
         end
 
+        # The registry path a helper renders, or nil.
         def path_for(helper) = @path_by_helper[helper]
         # The helper that renders a registry path (the declared name, or the
         # poetry_ convention).
@@ -213,6 +220,7 @@ module Poetry
           @components.dig(path, "tools") || []
         end
 
+        # Every option and style name a component declares.
         def option_names(path)
           entry = @components.fetch(path, {})
           (entry["options"] || []).map { |option| option["name"] } +
@@ -356,10 +364,12 @@ module Poetry
         # (dynamic values return plain nil and are left alone).
         NIL_LITERAL = Object.new.tap { |sentinel| sentinel.define_singleton_method(:inspect) { "nil" } }.freeze
 
+        # A template linter over the catalog.
         def initialize(catalog)
           @catalog = catalog
         end
 
+        # Lints one ERB template; a mailer template keeps its raw colors.
         # @param source [String] the ERB template source
         # @param mail [Boolean] a mailer template: email has no stylesheet
         #   and no tokens (mail clients drop var()), so a color literal is
@@ -403,6 +413,7 @@ module Poetry
 
         private
 
+        # Whether a Herb node is an ERB tag with code, not a comment.
         def erb?(node)
           node.respond_to?(:content) && node.content.respond_to?(:value) &&
             node.class.name.include?("ERB") && !erb_comment?(node)
@@ -446,6 +457,7 @@ module Poetry
           into
         end
 
+        # Collects the receiverless helper calls under a node into the list.
         def collect_calls(node, into)
           return unless node
 
@@ -460,6 +472,7 @@ module Poetry
         # app component's declared helper).
         def helper_call?(name) = name.start_with?("poetry_") || @catalog.helper?(name)
 
+        # The findings for one helper call: an unknown helper, or its arity, block, options, values and content.
         def call_findings(call, base_line, bindings, content_fed = Set.new)
           helper = call.name.to_s
           line = base_line + (call.location.start_line - 1)
@@ -544,6 +557,7 @@ module Poetry
                        message: "#{helper} takes #{limit}", line: line)]
         end
 
+        # The finding for a block parameter on a helper that yields nothing.
         def yieldless_findings(helper, call, line)
           return [] if @catalog.helper_yields?(helper)
 
@@ -555,6 +569,7 @@ module Poetry
                                 "remove it and write the content directly", line: line)]
         end
 
+        # The findings for one keyword on a helper call: reserved, unknown, or an off-contract value.
         def option_findings(path, key, value, line)
           findings = []
           known = @catalog.option_names(path)
@@ -662,12 +677,14 @@ module Poetry
           bindings[name] = track_instance(owner: path, label: helper_of(path), line: line) if name
         end
 
+        # Records a block-param binding for the required-slot accounting.
         def track_instance(owner:, label:, line:)
           instance = { owner: owner, label: label, line: line, called: Set.new, escaped: false }
           @instances << instance
           instance
         end
 
+        # The first block parameter's name, or nil when the block has none or Prism could not read it.
         def block_param_name(call)
           block_parameters = call.block&.parameters&.parameters
           name = block_parameters && block_parameters.requireds.first&.name
@@ -676,6 +693,7 @@ module Poetry
           nil # a block shape Prism could not recover fully never blocks linting
         end
 
+        # The findings for every slot setter called on a tracked binding.
         def slot_findings(root, bindings, base_line)
           slot_calls = []
           collect_slot_calls(root, slot_calls)
@@ -685,6 +703,7 @@ module Poetry
           end
         end
 
+        # Collects the with_ setter calls with a receiver under a node into the list.
         def collect_slot_calls(node, into)
           return unless node
 
@@ -707,6 +726,7 @@ module Poetry
           end
         end
 
+        # The findings for one slot setter call: unknown slot, arity, keywords and a nested binding.
         def slot_call_findings(call, instance, base_line, bindings)
           owner = instance[:owner]
           label = instance[:label]
@@ -830,6 +850,7 @@ module Poetry
           end
         end
 
+        # The any-of contract as a phrase naming the block, slots and options that satisfy it.
         def any_of_phrase(group)
           parts = []
           parts << "a content block" if group["content"]
@@ -888,6 +909,7 @@ module Poetry
           end
         end
 
+        # Yields every Prism node under the node, depth first.
         def walk_prism(node, &)
           return unless node
 
@@ -1093,6 +1115,7 @@ module Poetry
           end
         end
 
+        # The finding for a caller overriding a component's identity attribute.
         def reserved_finding(spelling, helper, line)
           Finding.new(rule: "reserved-attribute", severity: :error,
                       message: "#{spelling} is #{helper}'s own identity attribute and is never overridable " \
@@ -1101,6 +1124,7 @@ module Poetry
                       line: line)
         end
 
+        # The findings for data-controller tokens naming no poetry controller.
         def controller_findings(value, line)
           value.split.filter_map do |identifier|
             next unless identifier.start_with?(POETRY_PREFIX)
@@ -1112,6 +1136,7 @@ module Poetry
           end
         end
 
+        # The findings for data-action descriptors naming an unknown controller method or event.
         def action_findings(value, line)
           # scan with a block: each descriptor is validated as it is matched
           # (without the block, every iteration would read the last match).
@@ -1136,6 +1161,7 @@ module Poetry
           target_findings(identifier, value, line)
         end
 
+        # The finding for a target name a controller does not declare.
         def target_findings(identifier, value, line)
           definition = definition(identifier)
           return [] unless definition
@@ -1182,6 +1208,7 @@ module Poetry
           value_type_findings(identifier, value_name, spec["type"], value, line)
         end
 
+        # The finding for a value literal that cannot be its declared type.
         def value_type_findings(identifier, value_name, type, value, line)
           problem = case type
                     when "Boolean"
@@ -1204,6 +1231,7 @@ module Poetry
           key.to_s.gsub(/([A-Z])/) { "-#{Regexp.last_match(1).downcase}" }
         end
 
+        # The value parsed as JSON, or nil when it is not.
         def json_literal(value)
           JSON.parse(value)
         rescue JSON::ParserError
@@ -1365,6 +1393,7 @@ module Poetry
           node.tag_name.value.to_s.downcase
         end
 
+        # Whether the Herb node opens the named element.
         def open_tag?(node, name) = open_tag_name(node) == name.downcase
 
         # The Prism::HashNode passed as a keyword argument, or nil.
@@ -1393,14 +1422,18 @@ module Poetry
           nil # unknown poetry controller is reported by controller_findings
         end
 
+        # The closest dictionary entry to the input, or nil.
         def suggest(input, dictionary)
           require "did_you_mean"
           DidYouMean::SpellChecker.new(dictionary: dictionary.map(&:to_s)).correct(input.to_s).first
         end
 
+        # The helper for a registry path, or the path itself.
         def helper_of(path) = @catalog.helper_for(path) || path
+        # A Herb node's starting line.
         def line_of(node) = node.location.start.line
 
+        # A Herb attribute's literal name, or nil when it is dynamic.
         def attribute_name(node)
           name_node = node.name
           return unless name_node
@@ -1418,6 +1451,7 @@ module Poetry
           value.child_nodes.compact.any? { |chunk| !chunk.is_a?(Herb::AST::LiteralNode) }
         end
 
+        # A Herb attribute's literal value chunks joined, with the ERB chunks noted.
         def attribute_value(node)
           value = node.value
           return unless value
@@ -1429,6 +1463,7 @@ module Poetry
           joined.empty? ? nil : joined
         end
 
+        # Yields every Herb node under the node, depth first.
         def walk(node, &)
           return unless node
 
@@ -1461,6 +1496,7 @@ module Poetry
         # (spaces, slashes), paths, and interpolation.
         NAME_SHAPED = /\A[a-z][a-z0-9_-]*\z/
 
+        # An icon-declaration linter over the catalog.
         def initialize(catalog)
           @catalog = catalog
         end
@@ -1481,6 +1517,7 @@ module Poetry
 
         private
 
+        # Harvests icon-shaped literals from icon keys and constants under the node, recursing.
         def walk(node, findings, names, seen)
           case node
           when Prism::AssocNode
@@ -1511,6 +1548,7 @@ module Poetry
           end
         end
 
+        # The value node behind a freeze call or single-statement parentheses.
         def unwrap(value_node)
           while value_node.is_a?(Prism::CallNode) && value_node.name == :freeze && value_node.receiver &&
                 (value_node.arguments.nil? || value_node.arguments.arguments.empty?)
@@ -1522,6 +1560,7 @@ module Poetry
           value_node
         end
 
+        # The finding for one icon-shaped literal that is not in the set, once per line and name.
         def check(literal, owner, findings, names, seen)
           raw = literal.unescaped
           return unless raw.is_a?(String) && raw.match?(NAME_SHAPED)
@@ -1610,6 +1649,7 @@ module Poetry
       #
       # @api private
       class Runner
+        # A runner over the catalog's linters.
         def initialize(catalog)
           @linter = Linter.new(catalog)
           @declarations = IconDeclarations.new(catalog)
@@ -1617,6 +1657,7 @@ module Poetry
           @stable_identity = StableIdentity.new(catalog)
         end
 
+        # Every finding across the paths, each stamped with its file.
         # @param paths [Array<String>] the files to lint
         # @param root [String, Pathname, nil] the app root the paths sit
         #   under, so a template is read as a mailer's by its path inside
@@ -1694,10 +1735,12 @@ module Poetry
         Linter.new(catalog).lint(source, mail: mail)
       end
 
+      # The findings as pretty JSON.
       def to_json(findings)
         JSON.pretty_generate(findings.map(&:to_h))
       end
 
+      # The findings as text, one per line, with the error and warning counts.
       def to_text(findings)
         return "poetry check: no issues found" if findings.empty?
 

@@ -56,11 +56,13 @@ module Poetry
 
         ARTIFACTS = ["tokens/tokens.css", "tokens/tailwind-theme.css", "DESIGN.md"].freeze
 
+        # A generator over a token set, writing under the root.
         def initialize(tokens: Tokens.load, root: Poetry::Core.root)
           @tokens = tokens
           @root = Pathname.new(root)
         end
 
+        # The tokens stylesheet: a light root block and a dark block, each carrying its color-scheme.
         def tokens_css
           # color-scheme travels with the mode blocks: UA scrollbars,
           # form-control chrome, and canvas defaults follow the app's mode
@@ -80,6 +82,7 @@ module Poetry
           "#{lines.join("\n")}\n"
         end
 
+        # The Tailwind theme stylesheet: the dark variant remap and the token mappings.
         def tailwind_theme_css
           lines = ["/* #{HEADER} */", ""]
           # poetry dark mode is the .dark CLASS convention. Without
@@ -107,6 +110,7 @@ module Poetry
           "#{lines.join("\n")}\n"
         end
 
+        # The DESIGN.md text: the generated front matter over the body.
         def design_md
           "#{front_matter}#{design_md_body}"
         end
@@ -132,6 +136,7 @@ module Poetry
 
         private
 
+        # Each generated artifact's relative path and content.
         def artifact_contents
           {
             "tokens/tokens.css" => tokens_css,
@@ -169,6 +174,7 @@ module Poetry
           "#{YAML.dump(data)}---\n"
         end
 
+        # The existing DESIGN.md body when there is one, else the starter body.
         def design_md_body
           existing = @root.join("DESIGN.md")
           if existing.exist? && (body = existing.read[/\A---\n.*?\n---\n(.*)\z/m, 1])

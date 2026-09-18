@@ -33,13 +33,16 @@ module Poetry
       #
       # @api private
       class Resolver
+        # Classes applied when several variant criteria match at once.
         Compound = Struct.new(:criteria, :classes)
 
+        # The dictionary's bases, elements, variants and compounds.
         attr_reader :bases, :elements, :variants, :compounds
         # The Style class this dictionary belongs to; its mode decides the
         # class merger (nil answers with the global merger).
         attr_accessor :owner
 
+        # An empty dictionary with its caches.
         def initialize
           @bases = []
           @elements = {}
@@ -70,12 +73,14 @@ module Poetry
           self
         end
 
+        # Adds classes for a named element.
         def element(name, classes)
           @root_cache.clear
           (@elements[name.to_sym] ||= []) << classes.to_s
           self
         end
 
+        # Adds classes per value for a variant axis.
         def variant(attr, mapping)
           @root_cache.clear
           bucket = (@variants[attr.to_sym] ||= {})
@@ -83,6 +88,7 @@ module Poetry
           self
         end
 
+        # Adds classes applied when at least two variant criteria match.
         def compound(criteria, classes)
           @root_cache.clear
           raise ArgumentError, "compound criteria must name at least two variant keys" if criteria.size < 2
@@ -148,10 +154,12 @@ module Poetry
           }
         end
 
+        # The root classes for the criteria, memoized under a mutex.
         def cached_root_classes(criteria)
           @root_cache[criteria] || @root_mutex.synchronize { @root_cache[criteria] ||= root_classes(criteria).freeze }
         end
 
+        # The root classes for the criteria: the bases, then each matching variant and compound.
         def root_classes(criteria)
           classes = @bases.dup
           @variants.each do |attr, mapping|

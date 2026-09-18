@@ -51,6 +51,7 @@ module Poetry
           @owned ||= []
         end
 
+        # Raises when a declared helper name is already taken by a view helper the module does not own.
         # @api private
         def check!(name, class_name)
           return if owned.include?(name) || !taken?(name)
@@ -60,6 +61,7 @@ module Poetry
                 "(#{owner_of(name)}) - choose a name no gem or app helper uses"
         end
 
+        # Defines the view helper that renders the component class.
         # @api private
         def define(name, class_name)
           define_method(name) do |**attrs, &block|

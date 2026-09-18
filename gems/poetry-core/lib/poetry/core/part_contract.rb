@@ -71,6 +71,7 @@ module Poetry
       #   pre-parsed Nokogiri nodes)
       # @param sources [String] the component's own source text plus the
       #   JS corpus - the second source for JS-applied states and vars
+      # The findings for a component's part contract against its rendered previews.
       # @return [Array<Check::Finding>]
       def verify(title:, parts:, docs:, sources: "")
         observed = observe(title, docs, parts.map { |part| part["name"] })

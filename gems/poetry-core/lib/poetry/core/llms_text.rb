@@ -118,6 +118,7 @@ module Poetry
       # catalog says so.
       def helper(path, entry = {}) = Registry.helper_for(path, entry) || "render #{entry["class_name"] || path}"
 
+      # The style surface in one line: each axis with its variants or type.
       def surface_summary(entry)
         parts = entry["styles"].map do |style|
           values = style["variants"] ? style["variants"].join("|") : style["type"]
@@ -126,6 +127,7 @@ module Poetry
         parts.empty? ? "no style attributes" : parts.join("; ")
       end
 
+      # One component's section: title, description, class, requirements, props, slots and wiring.
       def component_section(path, entry)
         lines = ["## #{title(path)} (`#{helper(path, entry)}`)", ""]
         lines << "#{entry["description"]}\n" if entry["description"]
@@ -192,6 +194,7 @@ module Poetry
         end
       end
 
+      # A part state as text: the attribute, its values and its condition.
       def state_phrase(state)
         values = state["values"] ? "=#{state["values"].join("|")}" : ""
         "#{state["attr"]}#{values} (#{state["condition"]})"
@@ -238,6 +241,7 @@ module Poetry
         end
       end
 
+      # One WIRING line per declared element.
       def element_wiring_lines(entry)
         entry["stimulus"].map do |element|
           phrases = element["controllers"].map { |wiring| wiring_phrase(wiring) }
@@ -246,6 +250,7 @@ module Poetry
         end
       end
 
+      # One controller's wiring as a phrase: registers, values, actions and targets.
       def wiring_phrase(wiring)
         facets = []
         facets << "registers#{" (#{wiring["registers"]})" unless wiring["registers"] == true}" if wiring["registers"]
@@ -262,6 +267,7 @@ module Poetry
         "`#{wiring["identifier"]}`#{suffix} #{facets.join("; ")}".strip
       end
 
+      # An action as text: the method, its events, and its condition.
       def action_phrase(action)
         phrase = action["method"]
         if (on = action["on"])
@@ -272,10 +278,12 @@ module Poetry
         action["conditional"] ? "#{phrase} (#{action["conditional"]})" : phrase
       end
 
+      # An item's name with its condition appended when it has one.
       def conditional_name(item, key)
         item["conditional"] ? "#{item[key]} (#{item["conditional"]})" : item[key]
       end
 
+      # One line per style and option: type, variants, default, required and format.
       def prop_lines(entry)
         (entry["styles"] + entry["options"]).map do |prop|
           details = []
@@ -328,6 +336,7 @@ module Poetry
         "#{slot["name"]}#{" (#{qualifiers.join("; ")})" if qualifiers.any?}"
       end
 
+      # Whether every setter of a slot takes keywords only.
       def kwargs_only_setters?(slot)
         args = slot["setter_args"]
         # A type with no tracked arity (rest-signature) is unknowable - the
@@ -367,6 +376,7 @@ module Poetry
         TEXT
       end
 
+      # The blocks catalog with each template's source.
       def blocks_full
         blocks = @registry.blocks
         return "" if blocks.nil? || blocks.empty?

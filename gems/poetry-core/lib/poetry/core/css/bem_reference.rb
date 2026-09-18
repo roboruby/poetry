@@ -20,6 +20,7 @@ module Poetry
       #
       # @api private
       class BemReference
+        # The BEM reference for a Style class's dictionary under its block name.
         def initialize(style_class, block: style_class.bem_block)
           raise ArgumentError, "#{style_class} has no derivable BEM block" unless block
 
@@ -27,6 +28,7 @@ module Poetry
           @block = block
         end
 
+        # The reference stylesheet text.
         def css
           [header, root_rule, element_rules, variant_rules, compound_rules]
             .flatten.compact.join("\n")
@@ -34,6 +36,7 @@ module Poetry
 
         private
 
+        # The comment heading the reference.
         def header
           <<~CSS
             /* poetry BEM reference for `.#{@block}` - capsule #{@resolver.digest}
@@ -44,22 +47,26 @@ module Poetry
           CSS
         end
 
+        # The block's own rule.
         def root_rule
           rule(".#{@block}", @resolver.bases.join(" "))
         end
 
+        # One rule per element.
         def element_rules
           @resolver.elements.map do |name, classes|
             rule(".#{@block}__#{name}", classes.join(" "))
           end
         end
 
+        # One rule per variant value.
         def variant_rules
           @resolver.variants.flat_map do |attr, mapping|
             mapping.map { |value, classes| rule(modifier_selector(attr, value), classes) }
           end.compact
         end
 
+        # One rule per compound, its modifiers chained.
         def compound_rules
           @resolver.compounds.map do |compound|
             selector = compound.criteria.map { |attr, value| modifier_selector(attr, value) }.join
@@ -75,6 +82,7 @@ module Poetry
           value == true ? ".#{@block}--#{attr}" : ".#{@block}--#{attr}-#{value}"
         end
 
+        # A rule whose body names the tailwind-equivalent classes, or nil for no selector.
         def rule(selector, classes)
           return nil if selector.nil?
 

@@ -75,6 +75,7 @@ module Poetry
           nil
         end
 
+        # The namespace pins recorded so far.
         # @return [Hash{String => Symbol}] namespace => mode
         def pins
           @pins ||= {}
@@ -112,6 +113,7 @@ module Poetry
           @stock_mergers[mode] ||= mode == :bem ? Poetry::Core::CSS::BemMerger.new : Poetry::Core::CSS::TailwindMerger.new
         end
 
+        # The mode as a known symbol, raising otherwise.
         # @param mode [Symbol, String]
         # @return [Symbol]
         # @raise [Poetry::Core::Error] for anything but :tailwind or :bem

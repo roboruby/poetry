@@ -91,6 +91,7 @@ module Poetry
 
           private
 
+          # Raises unless the part name is a kebab-case data-slot value.
           def validate_name!(klass, name)
             return if name.is_a?(String) && name.match?(PART_NAME)
 
@@ -98,6 +99,7 @@ module Poetry
                   "#{klass}: part name #{name.inspect} must be a kebab-case data-slot value"
           end
 
+          # One declared state for a part: the data attribute, its condition and its values, validated.
           def build_state(klass, part, attr, spec)
             unless attr.is_a?(String) && attr.match?(STATE_ATTRIBUTE)
               raise Poetry::Core::Error,
@@ -122,6 +124,7 @@ module Poetry
             state
           end
 
+          # A state spec's condition and values, from a bare condition or a hash.
           def unpack_state(spec)
             return [spec, nil] unless spec.is_a?(Hash)
 
@@ -129,6 +132,7 @@ module Poetry
             [normalized["condition"], normalized["values"]]
           end
 
+          # One declared custom property for a part, validated with its description.
           def build_var(klass, part, var, description)
             unless var.is_a?(String) && var.match?(VAR_NAME)
               raise Poetry::Core::Error,

@@ -18,6 +18,7 @@ module Poetry
     #
     # @api private
     class RegistryClient
+      # A registry client failure.
       class Error < Poetry::Core::Error; end
 
       MAX_BYTES = 1_048_576
@@ -25,6 +26,7 @@ module Poetry
       LOCAL_HOSTS = %w[localhost 127.0.0.1 ::1 [::1]].freeze
       NAME_FORMAT = /\A[a-z0-9][a-z0-9._-]*\z/
 
+      # A client over the configured registries, with an optional directory and fetcher.
       # @param registries [Hash] "@ns" => a url template String containing
       #   "{name}", or {"url" => template, "headers" => {header => value}}
       # @param directory [String, nil] a registries.json URL for resolving
@@ -54,6 +56,7 @@ module Poetry
 
       private
 
+      # The URL and headers for a namespace address, raising for an unknown namespace.
       def namespace_request(address)
         entry = @registries[address.namespace] || directory_entry(address.namespace)
         unless entry
@@ -66,6 +69,7 @@ module Poetry
         [template.sub("{name}", address.name), expand_env(headers)]
       end
 
+      # A registries entry as a URL template and headers, raising when it has no name placeholder.
       def normalize_registry_entry(namespace, entry)
         template, headers =
           case entry
@@ -103,11 +107,13 @@ module Poetry
         end
       end
 
+      # The parsed JSON at a URL, its scheme validated.
       def fetch_json(url, headers = {})
         validate_scheme!(url)
         parse_json(@fetcher.call(url, headers), source: url)
       end
 
+      # The parsed JSON in a local file, within the size cap.
       def read_json(location)
         path = File.expand_path(location, @base_dir)
         raise Error, "no registry item file at #{path}" unless File.file?(path)
@@ -116,6 +122,7 @@ module Poetry
         parse_json(File.read(path), source: location)
       end
 
+      # The body parsed as JSON, within the size cap.
       def parse_json(body, source:)
         raise Error, "#{source} exceeds the #{MAX_BYTES}-byte item cap" if body.bytesize > MAX_BYTES
 
@@ -124,6 +131,7 @@ module Poetry
         raise Error, "#{source} is not valid JSON: #{e.message}"
       end
 
+      # Raises unless the URL is https, or http on localhost.
       def validate_scheme!(url)
         uri = URI.parse(url)
         return if uri.scheme == "https"
@@ -132,6 +140,7 @@ module Poetry
         raise Error, "refusing #{url.inspect}: registries must be https (plain http is allowed for localhost only)"
       end
 
+      # Fetches a URL, following redirects within the hop limit.
       def default_fetch(url, headers, hops = 0)
         response = perform_get(URI.parse(url), headers)
         case response
@@ -148,6 +157,7 @@ module Poetry
         raise Error, "could not fetch #{url}: #{e.message}"
       end
 
+      # One GET request with the headers.
       def perform_get(uri, headers)
         Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https",
                                             open_timeout: 5, read_timeout: 10) do |http|
@@ -157,6 +167,7 @@ module Poetry
         end
       end
 
+      # Fetches a redirect's target, validated, counting the hop.
       def follow_redirect(url, headers, response, hops)
         raise Error, "too many redirects fetching #{url}" if hops >= MAX_REDIRECTS
 
@@ -165,6 +176,7 @@ module Poetry
         default_fetch(target, headers, hops + 1)
       end
 
+      # The payload as a registry item, raising on a bad identity, files or extras.
       def validate_item!(payload, source:)
         raise Error, "#{source} is not a registry item (expected a JSON object)" unless payload.is_a?(Hash)
 
@@ -174,6 +186,7 @@ module Poetry
         payload
       end
 
+      # Raises unless the item's name and type are valid.
       def validate_identity!(payload, source:)
         name = payload["name"]
         unless name.is_a?(String) && name.match?(NAME_FORMAT)
@@ -187,6 +200,7 @@ module Poetry
         raise Error, "#{source}: item type #{type.inspect} is invalid (expected registry:*)"
       end
 
+      # Raises unless every file has a path and content.
       def validate_files!(payload, source:)
         files = payload.fetch("files", [])
         raise Error, "#{source}: files must be an array" unless files.is_a?(Array)
@@ -200,6 +214,7 @@ module Poetry
         end
       end
 
+      # Raises unless the dependency lists and the css are the right shapes.
       def validate_extras!(payload, source:)
         %w[registryDependencies dependencies].each do |key|
           value = payload[key]

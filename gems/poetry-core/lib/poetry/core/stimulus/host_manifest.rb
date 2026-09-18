@@ -76,6 +76,7 @@ module Poetry
 
         # One controller the reader could not describe, and why.
         Skip = Struct.new(:identifier, :reason, keyword_init: true) do
+          # The skip as one line.
           def to_s = "#{identifier}: #{reason}"
         end
 
@@ -284,6 +285,7 @@ module Poetry
           out
         end
 
+        # Blanks a range of the masked source, keeping its newlines.
         def blank(out, from, to)
           (from...to).each { |k| out[k] = " " unless out[k] == "\n" }
         end
@@ -419,6 +421,7 @@ module Poetry
           triples.compact
         end
 
+        # One property entry's name and text from a masked object body, or nil.
         def entry(masked_text, text)
           colon = masked_text.index(":")
           return nil if colon.nil?

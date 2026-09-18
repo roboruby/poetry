@@ -21,6 +21,7 @@ module Poetry
       #   yielding { "path" =>, "target" =>, "content" => } hashes.
       #   Targets must be relative and traversal-free; enforced here so a
       #   bad declaration fails in the gem's suite, not in a host.
+      # The recipe items of a gem.
       # @param gem_name [String] recorded in every item's meta
       # @param gem_version [String] recorded in every item's meta
       def initialize(recipes:, gem_name:, gem_version:)
@@ -29,6 +30,7 @@ module Poetry
         @gem_version = gem_version
       end
 
+      # The recipe names, sorted, raising on a collision.
       def names
         @names ||= begin
           all = @list.map { |recipe| recipe.fetch("name") }
@@ -39,6 +41,7 @@ module Poetry
         end
       end
 
+      # One recipe as a registry item, or nil.
       def item(name)
         recipe = @list.find { |candidate| candidate.fetch("name") == name }
         return nil unless recipe
@@ -56,6 +59,7 @@ module Poetry
         }
       end
 
+      # Every recipe as an item without its file contents.
       def summaries
         names.map do |name|
           full = item(name)
@@ -65,6 +69,7 @@ module Poetry
 
       private
 
+      # A recipe's files with their contents read, targets validated.
       def recipe_files(recipe)
         source = recipe.fetch("files")
         (source.respond_to?(:call) ? source.call : source).map do |file|

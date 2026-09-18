@@ -78,10 +78,12 @@ module Poetry
 
         private
 
+        # Whether the name has the icon-file shape.
         def valid_name?(name)
           name.to_s.match?(NAME_FORMAT)
         end
 
+        # The SVG file for a name under the set's directory.
         def path_for(name)
           @dir.join("#{name}.svg")
         end

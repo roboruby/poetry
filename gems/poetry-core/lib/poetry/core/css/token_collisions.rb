@@ -102,6 +102,7 @@ module Poetry
           end
         end
 
+        # A collision scan over the host stylesheets against the token set.
         # @param sources [Hash{String => String}] relative path => stylesheet text
         # @param tokens [Tokens] the poetry token set
         def initialize(sources:, tokens: Tokens.load)
@@ -138,6 +139,7 @@ module Poetry
           end
         end
 
+        # Whether no collision was found.
         def ok?
           collisions.empty?
         end
@@ -161,12 +163,14 @@ module Poetry
 
         private
 
+        # Whether a name is a token or a theme key, or nil.
         def kind_of(name)
           if token_names.include?(name) then :token
           elsif theme_keys.include?(name) then :theme_key
           end
         end
 
+        # The prose for what a colliding name controls.
         def role_for(name, kind)
           role = kind == :theme_key ? name.delete_prefix("--color-").delete_prefix("--") : name.delete_prefix("--")
           role = "radius" if role.start_with?("radius-")

@@ -19,15 +19,19 @@ module Poetry
     #
     # @api private
     class RegistryInstaller
+      # A registry install failure.
       class Error < Poetry::Core::Error; end
 
       ALLOWED_TARGET_ROOTS = %w[app/components app/views app/javascript app/helpers app/assets].freeze
       COMMUNITY_CSS_DIR = "app/assets/tailwind/poetry/community"
 
+      # The install plan: the writes, css writes, import lines and what the gems already satisfy.
       Plan = Struct.new(:writes, :css_writes, :entry_lines, :gem_satisfied, :block_installs,
                         :gem_deps, :docs, :manifest, keyword_init: true)
+      # One file write of the plan.
       Write = Struct.new(:target, :content, :item, keyword_init: true)
 
+      # An installer over a client, writing under the destination root.
       # @param client [RegistryClient] resolves remote addresses to items
       # @param local_components [Enumerable<String>] kebab names the
       #   installed poetry gems provide at runtime (no copy needed)
@@ -46,6 +50,7 @@ module Poetry
         @loaded_gems = loaded_gems.to_set
       end
 
+      # The plan for a list of addresses.
       # @param addresses [Array<RegistryAddress>] remote addresses only
       # @return [Plan]
       def plan(addresses)
@@ -57,6 +62,7 @@ module Poetry
 
       private
 
+      # Resolves an address and its dependencies into the state.
       def resolve_into(state, address)
         return state[:resolved][address.raw] if state[:resolved].key?(address.raw)
 
@@ -84,10 +90,12 @@ module Poetry
         state[:sources][name] = address.raw
       end
 
+      # A digest of the item's JSON.
       def item_digest(item)
         Digest::SHA256.hexdigest(JSON.generate(item))
       end
 
+      # Resolves one dependency of an item: satisfied by a gem when local, else fetched and resolved.
       # @return [String, nil] the remote item name this dependency resolves
       #   to, or nil when the installed gems satisfy it (recorded on state).
       def resolve_dependency(state, parent, dep)
@@ -115,6 +123,7 @@ module Poetry
         address.kind == :bare || (address.kind == :namespace && address.namespace == "@poetry")
       end
 
+      # The plan from the resolved state, in dependency order.
       def build_plan(state)
         order = topo_order(state)
         items = order.map { |name| state[:items][name] }
@@ -146,6 +155,7 @@ module Poetry
         order
       end
 
+      # The file writes in order, targets validated and duplicates folded.
       def collect_writes(state, order)
         seen = {}
         order.flat_map do |name|
@@ -157,6 +167,7 @@ module Poetry
         end
       end
 
+      # A write, or nil when an identical one is already planned; raises on a conflicting one.
       def deduplicate_write(seen, target, content, name)
         digest = Digest::SHA256.hexdigest(content)
         if (previous = seen[target])
@@ -186,6 +197,7 @@ module Poetry
         raise Error, "#{item}: refusing target #{target.inspect} - escapes the app root"
       end
 
+      # An item's community stylesheet write, or nil.
       def css_write(item)
         content = css_content(item)
         return nil unless content
@@ -193,6 +205,7 @@ module Poetry
         { path: "#{COMMUNITY_CSS_DIR}/#{item["name"]}.css", content: content }
       end
 
+      # The import line for an item's stylesheet, or nil.
       def entry_line(item)
         return nil unless css_content(item)
 
@@ -215,6 +228,7 @@ module Poetry
         "/* #{item["name"]} - installed by bin/rails g poetry:add */\n#{sections.join("\n\n")}\n"
       end
 
+      # A selector block declaring the variables, or nil for none.
       def css_block(selector, vars)
         return nil unless vars.is_a?(Hash) && vars.any?
 

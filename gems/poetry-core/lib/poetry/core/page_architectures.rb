@@ -273,6 +273,7 @@ module Poetry
 
       module_function
 
+      # Every archetype.
       def all
         ALL
       end
@@ -287,6 +288,7 @@ module Poetry
            .sort_by { |entry, score| [-score, entry["name"]] }
       end
 
+      # An archetype's score against a token set: curated keywords count double.
       def score(entry, tokens)
         keywords = (entry["keywords"] || []).to_set { |word| word.delete_suffix("s") }
         corpus = "#{entry["title"]} #{entry["purpose"]}".downcase

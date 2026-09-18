@@ -76,6 +76,7 @@ module Poetry
         # behavior to automatically filter out abstract classes.
         module ClassMethods
           # @!attribute [rw] abstract_class
+          #   Whether the preview class is abstract.
           #   @return [Boolean, nil] whether this preview class is abstract
           attr_accessor :abstract_class
 

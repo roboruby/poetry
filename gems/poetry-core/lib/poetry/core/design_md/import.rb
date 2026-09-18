@@ -43,10 +43,14 @@ module Poetry
           "on-background" => "foreground"
         }.freeze
 
+        # One source color mapped onto a role for a mode.
         Application = Struct.new(:role, :from, :mode, :color, keyword_init: true)
+        # One source value the import could not use, with the reason.
         Drop = Struct.new(:name, :value, :mode, :reason, keyword_init: true)
+        # One measured contrast pair: the ratio, whether it passes, and what shipped.
         ContrastResult = Struct.new(:mode, :label, :roles, :ratio, :pass, :suggestion, :shipped,
                                     keyword_init: true) do
+          # The pair as one line: mode, label, ratio, verdict and the nearest passing suggestion.
           def to_s
             state = if pass
                       "pass"
@@ -65,16 +69,19 @@ module Poetry
         # later) - pinning keeps dark exactly as shipped, no fabrication.
         Plan = Struct.new(:overrides, :pins, :radius, :applied, :dropped, :contrast, :typography_note,
                           keyword_init: true) do
+          # Whether the plan changes a radius or any color.
           def any_overrides?
             radius || overrides.any? { |_mode, colors| colors.any? }
           end
         end
 
+        # An importer over the token set's color roles.
         def initialize(tokens: Tokens.load)
           @tokens = tokens
           @roles = tokens.color_names("light")
         end
 
+        # The override plan for a parsed document: applied colors, drops, and the contrast measures.
         # @param doc [Hash] DesignMd.parse output
         # @param force [Boolean] ship overrides even when a touched pair fails AA
         # @return [Plan]
@@ -121,6 +128,7 @@ module Poetry
 
         private
 
+        # Maps each source color onto a role, dropping the ones no role matches.
         def map_colors(doc, applied, dropped)
           (doc["colors"] || {}).each do |mode, colors|
             (colors || {}).each do |name, color|
@@ -134,6 +142,7 @@ module Poetry
           end
         end
 
+        # The role a source name maps to, through the aliases and the on- prefix, with the reason when none.
         def resolve_role(name)
           return [name, nil] if @roles.include?(name)
           return [ALIASES[name], nil] if ALIASES.key?(name)
@@ -149,6 +158,7 @@ module Poetry
           [nil, "no poetry role for #{name.inspect} (roles + aliases only - never guessed)"]
         end
 
+        # Drops the source colors whose values did not parse.
         def drop_unknown(doc, dropped)
           (doc.dig("unknown", "colors") || {}).each do |name, value|
             dropped << Drop.new(name: name, value: value, mode: nil,
@@ -171,6 +181,7 @@ module Poetry
           end
         end
 
+        # One ledger pair's contrast on the merged colors, with the nearest passing suggestion when it fails.
         def measure(mode, spec, overrides, force:)
           fg = spec[:fg] == :white ? Tokens::Color::WHITE : merged(mode, spec[:fg], overrides)
           bg = merged_background(mode, spec, overrides)
@@ -201,6 +212,7 @@ module Poetry
           end
         end
 
+        # Removes a failing pair's overrides from the plan and records the drops.
         def drop_failing_pair(result, overrides, applied, dropped)
           mode = result.mode
           result.roles.each do |name|
@@ -214,6 +226,7 @@ module Poetry
           end
         end
 
+        # The nearest-passing note for a result, or an empty string.
         def suffix(result)
           result.suggestion ? "; nearest passing: #{result.suggestion}" : ""
         end
@@ -225,10 +238,12 @@ module Poetry
           missing.to_h { |name| [name, @tokens.color("dark", name)] }
         end
 
+        # A role's color with the override applied, else the shipped token.
         def merged(mode, name, overrides)
           overrides.fetch(mode, {})[name] || @tokens.color(mode, name)
         end
 
+        # A pair's background, composited over its base when it is translucent.
         def merged_background(mode, spec, overrides)
           base = merged(mode, spec[:bg], overrides)
           return base unless spec[:bg_alpha]
@@ -237,6 +252,7 @@ module Poetry
           translucent.composite_over(merged(mode, spec[:bg_over], overrides))
         end
 
+        # The note telling the host how to adopt the document's font family, or nil.
         def typography_note(doc)
           family = doc.dig("typography", "family")
           return unless family

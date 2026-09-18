@@ -96,9 +96,12 @@ module Poetry
       # @api private
       Node = Struct.new(:kind, :tag, :classes, :attrs, :helper, :line, :children, :parent, :texts,
                         keyword_init: true) do
+        # Whether the node is an HTML element.
         def element? = kind == :element
+        # The heading level of an h1 to h6 element, else nil.
         def heading_level = tag&.match(HEADING) && Regexp.last_match(1).to_i
 
+        # Whether the node reads as a card: the helper, the slot, the cn class, or the bordered rounded shape.
         def card?
           return helper == "poetry_card" unless element?
 
@@ -107,10 +110,12 @@ module Poetry
               (classes.any?(SHADOW) || classes.include?("bg-card")))
         end
 
+        # The node's shape as text, for spotting repeats.
         def signature
           element? ? "#{tag}##{classes.sort.join(".")}" : "call##{helper}"
         end
 
+        # The node's ancestors, nearest first.
         def ancestors
           list = []
           node = parent
@@ -252,6 +257,7 @@ module Poetry
                             "pattern; put the icon inline with the heading or drop the tile")
       end
 
+      # Whether the node's one meaningful child is an icon.
       def icon_only?(node)
         meaningful = node.children.reject { |child| child.kind == :block }
         return false unless meaningful.size == 1
@@ -681,6 +687,7 @@ module Poetry
         end
       end
 
+      # Whether an element is interactive by tag or role.
       def interactive?(element)
         INTERACTIVE_TAGS.include?(element.name) || INTERACTIVE_ROLES.include?(element["role"])
       end
@@ -690,6 +697,7 @@ module Poetry
         LANDMARK_TAGS.include?(element.name) || LANDMARK_ROLES.include?(element["role"])
       end
 
+      # Whether the computed style leaves the element visible.
       def rendered?(computed)
         computed["display"].to_s != "none" && computed["visibility"].to_s != "hidden"
       end

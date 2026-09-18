@@ -31,6 +31,7 @@ module Poetry
         SELECTOR_LINE = /^[^@\s{}][^{]*\{/
         CN_TOKEN = /\.(cn-[a-z0-9-]+)/
 
+        # A coverage check of the theme CSS against the Style classes.
         def initialize(theme_css:, style_classes:, allowlist: [])
           @theme_css = theme_css
           @style_classes = style_classes
@@ -55,14 +56,17 @@ module Poetry
                                      .flatten.uniq.sort
         end
 
+        # The dictionary names the theme never styles.
         def missing
           dictionary_names - theme_names
         end
 
+        # The theme's cn rules no dictionary emits, the allowlist aside.
         def orphans
           theme_names - dictionary_names - @allowlist
         end
 
+        # Whether nothing is missing and nothing is orphaned.
         def ok?
           missing.empty? && orphans.empty?
         end

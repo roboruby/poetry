@@ -31,9 +31,11 @@ module Poetry
     #     logger.info("missing icon #{e.name.inspect}") # e.suggestion may name the fix
     #   end
     class IconNotFound < Error
+      # The requested icon name.
       # @return [Symbol, String] the requested icon name, as given
       attr_reader :name
 
+      # The closest valid icon name, when one is known.
       # @return [String, nil] the closest valid name, when one exists
       attr_reader :suggestion
 

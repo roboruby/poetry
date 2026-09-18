@@ -39,9 +39,11 @@ module Poetry
           hover_out: %w[mouseleave blur].freeze
         }.freeze
 
+        # The controller identifier.
         # @return [String] The formatted Stimulus controller identifier
         attr_reader :identifier
 
+        # The attributes object the builder merges its data attributes into.
         # @return [Object] The HTML attributes object that will be modified
         attr_reader :html_attributes
 

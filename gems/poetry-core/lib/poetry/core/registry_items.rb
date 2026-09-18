@@ -26,6 +26,7 @@ module Poetry
       # comment is registry metadata, not file content.
       BLOCK_HEADER = /\A<%#\s*poetry:block[^%]*%>\n?/
 
+      # The registry items of a gem, from its committed registry.
       # @param registry [Hash] a parsed component_registry.yml payload
       # @param root [Pathname, String] the gem root files resolve against
       # @param gem_name [String] recorded in every item's meta
@@ -53,6 +54,7 @@ module Poetry
         end
       end
 
+      # One component or block as a registry item, or nil.
       def item(name)
         if (path = component_paths[name])
           component_item(name, path)
@@ -72,14 +74,17 @@ module Poetry
 
       private
 
+      # The registry's components section.
       def components
         @registry["components"] || {}
       end
 
+      # The registry's blocks section.
       def blocks
         @registry["blocks"] || {}
       end
 
+      # Item name to component path.
       def component_paths
         @component_paths ||= components.keys.to_h do |path|
           [path.delete_prefix(path_prefix).tr("/", "_").tr("_", "-"), path]
@@ -98,6 +103,7 @@ module Poetry
         end
       end
 
+      # One component as a registry item.
       def component_item(name, path)
         entry = components.fetch(path)
         {
@@ -139,10 +145,12 @@ module Poetry
         end
       end
 
+      # The directory prefixes of the components nested under a path.
       def nested_dir_prefixes(path)
         components.keys.filter_map { |other| "#{other}/" if other.start_with?("#{path}/") }
       end
 
+      # The file names of the components nested directly under a path.
       def nested_leaves(path)
         components.keys.filter_map do |other|
           next unless other.start_with?("#{path}/")
@@ -163,6 +171,7 @@ module Poetry
         end
       end
 
+      # One block as a registry item.
       def block_item(name, entry)
         source = @root.join(entry.fetch("template")).read
         target = "app/views/blocks/_#{name.tr("-", "_")}.html.erb"

@@ -218,6 +218,7 @@ module Poetry
             words[0].upcase + words[1..]
           end
 
+          # Raises unless the tool name is a symbol or string in the allowed shape and length.
           # @api private
           def validate_tool_name!(name)
             unless name.is_a?(Symbol) || name.is_a?(String)
@@ -233,6 +234,7 @@ module Poetry
             text.to_sym
           end
 
+          # The description trimmed, raising when it is missing or too long.
           # @api private
           def validate_tool_description!(name, description)
             text = description.to_s.strip
@@ -269,6 +271,7 @@ module Poetry
             end
           end
 
+          # The tool's input schema as string-keyed JSON Schema, from params: or input_schema: but never both.
           # @api private
           def normalize_tool_schema!(name, params, input_schema)
             if params && input_schema
@@ -301,6 +304,7 @@ module Poetry
             schema
           end
 
+          # Raises when a parameter's description is blank or too long.
           # @api private
           def validate_param_description!(name, param, description)
             return if description.nil?
@@ -313,6 +317,7 @@ module Poetry
                   "and at most #{PARAM_DESCRIPTION_LIMIT} characters"
           end
 
+          # The input schema as given, raising unless it is a hash with a type.
           # @api private
           def validate_input_schema!(name, input_schema)
             unless input_schema.is_a?(Hash) && (input_schema[:type] || input_schema["type"])
@@ -323,6 +328,7 @@ module Poetry
             input_schema
           end
 
+          # The value with every hash key and symbol turned into a string, recursively.
           # @api private
           def deep_stringify_tool_keys(value)
             case value

@@ -15,6 +15,7 @@ module Poetry
     #
     # @api private
     class SkillText < LlmsText
+      # The skill text over the registries and the family map.
       # @param registry [Registry] the component registry the skill describes
       # @param families [Hash{String => Array<String>}] family name => component names
       # @param charts_registry [Registry, nil] the charts registry, when the gem is present
@@ -142,6 +143,7 @@ module Poetry
 
       private
 
+      # The skill's front matter and body.
       def skill_md
         <<~MD
           ---
@@ -227,6 +229,7 @@ module Poetry
         MD
       end
 
+      # The component, chart, app and block counts as a phrase.
       def census
         parts = ["#{@registry.entries.size} components"]
         parts << "#{@charts_registry.entries.size} chart components" if @charts_registry
@@ -236,6 +239,7 @@ module Poetry
         parts.join(" + ")
       end
 
+      # One line per family reference file, with its members.
       def family_index
         lines = @families.map do |family, members|
           "- **#{family}** (`references/#{family}.md`): #{members.join(", ")}"
@@ -246,10 +250,12 @@ module Poetry
         lines.join("\n")
       end
 
+      # The chart components' names.
       def chart_names
         @charts_registry.entries.keys.map { |path| path.split("/").drop(2).join("_") }
       end
 
+      # One family's reference: the contracts of its components.
       def family_reference(family)
         members = @families.fetch(family)
         paths = @registry.entries.keys.select do |path|
@@ -306,6 +312,7 @@ module Poetry
         MD
       end
 
+      # The app components' helpers.
       def app_helper_names
         @host_registry.entries.map { |path, entry| helper(path, entry) }
       end
@@ -326,6 +333,7 @@ module Poetry
         MD
       end
 
+      # The charts reference: the contracts of the chart components.
       def charts_reference
         charts = self.class.new(registry: @charts_registry, families: {})
         <<~MD

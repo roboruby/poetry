@@ -45,6 +45,7 @@ module Poetry
 
       # @param component [Class] a component class with use_stimulus
       #   declarations (callers skip undeclared components)
+      # The findings for a component's Stimulus declarations against its rendered previews.
       # @param docs [Array<String, #css>] every preview render
       # @return [Array<Check::Finding>]
       def verify(component:, docs:)
@@ -153,6 +154,7 @@ module Poetry
         end
       end
 
+      # Whether an identifier is a poetry controller the component never declared.
       def foreign?(identifier, declared)
         !declared.include?(identifier) && Stimulus::Manifest.catalog.key?(identifier)
       end
@@ -233,6 +235,7 @@ module Poetry
         end
       end
 
+      # The findings for declared tokens no preview renders.
       def phantom(findings, title, kind, missing, &)
         missing.sort.each do |token|
           findings << finding("phantom-#{kind}",

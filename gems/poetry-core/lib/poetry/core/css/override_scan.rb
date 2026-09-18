@@ -38,9 +38,12 @@ module Poetry
         CN_TOKEN = /\.(cn-[a-z0-9-]+)/
         COMMENT = %r{/\*.*?\*/}m
 
+        # One override declaration from the overrides section, with its match state.
         Declaration = Struct.new(:cn, :files, :reason, :created, :index, :matched, keyword_init: true) do
+          # Whether the declaration covers every cn class.
           def wildcard? = cn == "*"
 
+          # Whether the declaration covers a cn class in a file.
           def covers?(path, cn_class)
             return false unless wildcard? || Array(cn).include?(cn_class)
             return true if files.nil? || files.empty?
@@ -49,8 +52,10 @@ module Poetry
           end
         end
 
+        # The findings: undeclared overrides, invalid declarations, stale ones, and the declared count.
         attr_reader :undeclared, :invalid, :stale, :declared_count
 
+        # Scans the host CSS for cn overrides against the declarations.
         # @param sources [Hash{String => String}] relative path => host CSS
         # @param declarations [Array<Hash>] the raw `overrides:` entries
         # @param owned [Enumerable<String>, nil] the theme-owned cn-* names;
@@ -64,6 +69,7 @@ module Poetry
           @stale = @declarations.reject(&:matched)
         end
 
+        # Whether nothing is undeclared or invalid.
         def ok? = @undeclared.empty? && @invalid.empty?
 
         # The exact YAML to paste for an undeclared override - a finding
@@ -80,6 +86,7 @@ module Poetry
 
         private
 
+        # The declarations as records, with the malformed ones reported.
         def normalize(raw)
           valid = []
           invalid = []
@@ -104,6 +111,7 @@ module Poetry
           [valid, invalid]
         end
 
+        # Records each file's cn classes no declaration covers.
         def scan(sources)
           sources.each do |path, css|
             classes = css.gsub(COMMENT, "").scan(CN_TOKEN).flatten.uniq.sort

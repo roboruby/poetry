@@ -139,12 +139,14 @@ module Poetry
 
           private
 
+          # A color from hex digits, short forms expanded, with the alpha pair when present.
           def from_hex(digits)
             digits = digits.chars.map { |d| d * 2 }.join if digits.length <= 4
             channels = digits.scan(/\h{2}/).map { |pair| pair.to_i(16) / 255.0 }
             from_srgb(channels.first(3), alpha: channels.fetch(3, 1.0))
           end
 
+          # An alpha channel from its raw text, a percentage divided down; one when absent.
           def parse_alpha(raw, percent)
             return 1.0 if raw.nil?
 

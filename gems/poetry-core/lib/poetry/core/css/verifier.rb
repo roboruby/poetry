@@ -22,7 +22,9 @@ module Poetry
       #
       # @api private
       class Verifier
+        # A class the compiled CSS lacks, with a suggestion when one is close.
         Unknown = Struct.new(:class_name, :suggestion) do
+          # The class name with the did-you-mean, when there is one.
           def to_s
             suggestion ? "#{class_name} (did you mean #{suggestion.inspect}?)" : class_name
           end
@@ -58,8 +60,10 @@ module Poetry
           end
         end
 
+        # The classes the compiled CSS defines.
         attr_reader :known
 
+        # A verifier over the classes a compiled stylesheet defines.
         def initialize(compiled_css:)
           @known = self.class.known_classes(compiled_css)
         end
@@ -86,6 +90,7 @@ module Poetry
 
         private
 
+        # The nearest known class within the suggestion distance, or nil.
         def suggestion_for(name)
           best = nil
           best_distance = SUGGESTION_DISTANCE + 1

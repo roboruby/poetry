@@ -61,13 +61,16 @@ module Poetry
           ].freeze
         }.freeze
 
+        # One measured ledger pair: the mode, label, ratio, lock level and verdict.
         Result = Struct.new(:mode, :label, :ratio, :lock, :pass) do
+          # The result as one line: mode, label, ratio and the threshold it is held to.
           def to_s
             "[#{mode}] #{label}: #{format("%.2f", ratio)}:1 " \
               "(locked #{lock.to_s.upcase}, needs >= #{THRESHOLDS.fetch(lock)})"
           end
         end
 
+        # A contrast gate over a token set.
         def initialize(tokens)
           @tokens = tokens
         end
@@ -79,6 +82,7 @@ module Poetry
           end
         end
 
+        # The ledger pairs that fail their threshold.
         def violations
           results.reject(&:pass)
         end
@@ -98,6 +102,7 @@ module Poetry
 
         private
 
+        # One ledger pair measured: the foreground against the composited background.
         def measure(mode, spec)
           fg = spec[:fg] == :white ? Color::WHITE : @tokens.color(mode, spec[:fg])
           bg = background_for(mode, spec)
@@ -107,6 +112,7 @@ module Poetry
           Result.new(mode, label, ratio, spec[:lock], ratio >= THRESHOLDS.fetch(spec[:lock]))
         end
 
+        # A pair's background, composited over its base when the spec gives an alpha.
         def background_for(mode, spec)
           base = @tokens.color(mode, spec[:bg])
           return base unless spec[:bg_alpha]

@@ -246,6 +246,7 @@ module Poetry
       # @param internal [Boolean] mark the file internal: a gate artifact
       #   consumers skip ({.roots}, {.gem_roots}) - poetry-core's own
       #   registry of helperless building blocks
+      # A registry over the discovered or given components, with its optional sections.
       # @param banner [String] the do-not-edit header written at the top
       def initialize(components: nil, source_root: Poetry::Core.root, # rubocop:disable Metrics/ParameterLists
                      helpers: nil, blocks: nil, helper_args: nil, descriptions: nil, form_builder: nil,
@@ -375,6 +376,7 @@ module Poetry
         mint_sources.fetch(path) { mint_sources[path] = File.read(path).match?(MINT_PATTERN) }
       end
 
+      # One component's registry entry.
       def entry_for(component)
         props = component.prop_definitions
         entry = {

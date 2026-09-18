@@ -19,12 +19,15 @@ module Poetry
       #
       # @api private
       class TemplateClasses
+        # A template Herb could not parse, with its message.
         ParseError = Struct.new(:path, :message) do
+          # The path and the message.
           def to_s
             "#{path}: #{message}"
           end
         end
 
+        # The classes found and the parse errors met.
         Result = Struct.new(:classes, :errors)
 
         class << self
@@ -68,6 +71,7 @@ module Poetry
 
           private
 
+          # Requires the herb gem, raising a clear error when it is missing.
           def herb!
             require "herb"
           rescue LoadError
@@ -75,11 +79,13 @@ module Poetry
                   "the herb gem is required for template class extraction - add `gem \"herb\"` to your Gemfile"
           end
 
+          # Yields every Herb node under the node, depth first.
           def walk(node, &)
             yield node
             node.child_nodes.compact.each { |child| walk(child, &) } if node.respond_to?(:child_nodes)
           end
 
+          # Whether a Herb attribute is a class attribute.
           def class_attribute?(attribute)
             name = attribute.name.child_nodes.compact.first
             name.respond_to?(:content) && name.content == "class"

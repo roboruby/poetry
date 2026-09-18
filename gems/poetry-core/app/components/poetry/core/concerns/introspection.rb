@@ -139,6 +139,7 @@ module Poetry
             callable || renders || (opts unless opts.empty?)
           end
 
+          # One style attribute's registry definition: type, variants, default, required and doc.
           def style_definition(name)
             definition = { name: name, type: attribute_types[name.to_s].type }
             variants = respond_to?("#{name}_variants") ? public_send("#{name}_variants") : nil
@@ -151,6 +152,7 @@ module Poetry
             definition
           end
 
+          # One option's registry definition: type, the inclusion validator as its enum, default, required and doc.
           def option_definition(name)
             definition = { name: name, type: attribute_types[name.to_s].type }
             # An inclusion validator IS the option's enum contract:
@@ -203,6 +205,7 @@ module Poetry
             end
           end
 
+          # Whether a presence validator makes the attribute required.
           def required_attribute?(name)
             validators_on(name).any? { |validator| validator.kind == :presence }
           end
@@ -399,14 +402,17 @@ module Poetry
 
           private
 
+          # The class's SLOT_BUILDERS map, or an empty one.
           def declared_builders(klass)
             declared_constant(klass, :SLOT_BUILDERS)
           end
 
+          # The class's SLOT_REQUIRED_CONTENT map, or an empty one.
           def declared_required_content(klass)
             declared_constant(klass, :SLOT_REQUIRED_CONTENT)
           end
 
+          # A constant on the class as a hash, or an empty hash when it is absent or unresolvable.
           def declared_constant(klass, name)
             klass.const_defined?(name) ? klass.const_get(name) : {}
           rescue NameError
@@ -431,6 +437,7 @@ module Poetry
             [config[:collection] ? name.delete_suffix("s") : name]
           end
 
+          # Each setter's positional arity for a slot, per polymorphic type when it has them.
           def setter_positional_args(slot_name, config)
             if (types = config[:renderable_hash])
               types.filter_map do |type, definition|
@@ -444,6 +451,7 @@ module Poetry
             end
           end
 
+          # Each setter's keyword names for a slot, per polymorphic type when it has them.
           def setter_keyword_args(slot_name, config)
             if (types = config[:renderable_hash])
               types.filter_map do |type, definition|
@@ -457,6 +465,7 @@ module Poetry
             end
           end
 
+          # The slot's setters whose lambda consumes the block, so a caller's block param would be nil.
           def yieldless_setters(slot_name, config)
             if (types = config[:renderable_hash])
               types.filter_map do |type, definition|
@@ -510,6 +519,7 @@ module Poetry
             nil
           end
 
+          # The slot surfaces of the builder classes a slot's setters yield, recursing once per builder.
           def builder_surfaces(slot_name, config, builders, seen)
             slot_setters(slot_name, config).filter_map do |setter|
               builder = builders[setter.to_sym]

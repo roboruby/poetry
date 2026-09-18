@@ -148,8 +148,10 @@ module Poetry
       class HelperMethods < Prism::Visitor
         PREFIX = "poetry_"
 
+        # The helper method names found.
         attr_reader :names
 
+        # Starts with no names.
         def initialize
           super
           @names = []
@@ -166,8 +168,10 @@ module Poetry
       # the syntax tree - a mention inside a string, a heredoc or a comment
       # is not a declaration.
       class Declarations < Prism::Visitor
+        # The declared helper names found.
         attr_reader :names
 
+        # Starts with no names at depth zero.
         def initialize
           super
           @names = []

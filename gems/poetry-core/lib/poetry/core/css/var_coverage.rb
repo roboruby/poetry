@@ -35,6 +35,7 @@ module Poetry
         PROPERTY_RULE = /@property\s+(--[A-Za-z][\w-]*)/
         READ = /var\(\s*(--[A-Za-z][\w-]*)/
 
+        # A coverage check over the compiled CSS, comments stripped.
         def initialize(compiled_css:, extra_definitions: [], definition_prefixes: [], extra_reads: [])
           @compiled_css = strip_comments(compiled_css)
           @extra_definitions = extra_definitions.map(&:to_s)
@@ -42,12 +43,14 @@ module Poetry
           @extra_reads = extra_reads.map(&:to_s)
         end
 
+        # Every custom property the build declares, plus the extras.
         def definitions
           @definitions ||= (@compiled_css.scan(DECLARATION).flatten +
                             @compiled_css.scan(PROPERTY_RULE).flatten +
                             @extra_definitions).to_set
         end
 
+        # Every custom property the build reads, plus the extras, sorted.
         # @api private
         def reads
           @reads ||= (@compiled_css.scan(READ).flatten + @extra_reads).uniq.sort
@@ -63,10 +66,12 @@ module Poetry
           end
         end
 
+        # Whether no read is dead.
         def ok? = dead_reads.empty?
 
         private
 
+        # The CSS without its comments.
         def strip_comments(css)
           css.gsub(%r{/\*.*?\*/}m, "")
         end

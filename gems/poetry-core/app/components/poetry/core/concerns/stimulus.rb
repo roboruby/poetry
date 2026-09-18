@@ -167,6 +167,7 @@ module Poetry
 
           private
 
+          # The controller and name from a one- or two-argument descriptor call.
           def unpack_stimulus_descriptor_args(args, kind)
             case args.size
             when 1 then [nil, args.first]
@@ -177,6 +178,7 @@ module Poetry
             end
           end
 
+          # The controller identifier a descriptor names, or the one declaration that owns the name.
           def resolve_stimulus_descriptor(controller, name, kind:)
             return resolve_stimulus_identifier(controller) if controller
 
@@ -197,6 +199,7 @@ module Poetry
                   "stimulus_#{kind}(:controller, #{name.inspect})"
           end
 
+          # Whether a controller's manifest lists the name as an action method or an event.
           def stimulus_descriptor_match?(identifier, name, kind)
             definition = Poetry::Core::Stimulus::Manifest.definition(identifier)
             return false unless definition
@@ -212,6 +215,7 @@ module Poetry
             end
           end
 
+          # Records an element's declaration, merging its wirings into an earlier declaration of the same name.
           def store_stimulus_element(element)
             existing = own_stimulus_elements[element.name]
             own_stimulus_elements[element.name] =
