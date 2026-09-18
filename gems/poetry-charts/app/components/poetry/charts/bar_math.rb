@@ -90,6 +90,8 @@ module Poetry
         text = value.to_s
         text.end_with?("%") ? total * (text.to_f / 100.0) : text.to_f
       end
+
+      private :bar_slots_for, :bar_cells, :motion_origin, :bar_path_for, :bar_percent_value
     end
   end
 end

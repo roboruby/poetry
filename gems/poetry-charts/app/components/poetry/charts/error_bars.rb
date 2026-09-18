@@ -30,6 +30,8 @@ module Poetry
           "M#{f.call(center_x)},#{f.call(y_low)}V#{f.call(y_high)}" \
           "M#{f.call(center_x - half)},#{f.call(y_high)}H#{f.call(center_x + half)}"
       end
+
+      private :error_range, :error_bar_path
     end
   end
 end

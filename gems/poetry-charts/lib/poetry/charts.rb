@@ -91,7 +91,6 @@ module Poetry
 
       # Each poetry_* helper's max positional arity, read from its real
       # signature.
-      # @api private
       def registry_helper_args
         require root.join("app/helpers/poetry/charts/components_helper.rb")
         ComponentsHelper.public_instance_methods(false).grep(/\Apoetry_/).sort.filter_map do |name|
@@ -114,6 +113,8 @@ module Poetry
         value.to_s
       end
     end
+
+    private_class_method :registry_helper_args
   end
 end
 

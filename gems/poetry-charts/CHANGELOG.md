@@ -4,6 +4,7 @@
 
 ### Changed
 
+- 9 methods the reference already hid with `@api private` are Ruby-private now: each was called only by its own class or template, so the runtime enforces what the tag only stated. A host that reached one gets a NoMethodError instead of an internal that may change without notice. The tag remains on the internals the family shares between its gems and on whole internal classes.
 - The container, legend, tooltip and tooltip layer roots ride the core default `root_attributes`, passing only their own markup up; the rendered attributes are unchanged apart from their order on the element.
 
 ## [0.1.4] - 2026-09-15

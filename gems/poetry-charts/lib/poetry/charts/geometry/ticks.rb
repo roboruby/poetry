@@ -22,7 +22,6 @@ module Poetry
         module_function
 
         # The [first index, last index, increment] spec for a tick run.
-        # @api private
         def tick_spec(start, stop, count)
           step = (stop - start) / [0, count].max.to_f
           # JS runs degenerate inputs (zero span) through its float arithmetic
@@ -108,6 +107,8 @@ module Poetry
           inc = reverse ? tick_increment(stop, start, count) : tick_increment(start, stop, count)
           (reverse ? -1 : 1) * (inc.negative? ? 1.0 / -inc : inc)
         end
+
+        private_class_method :tick_spec
       end
     end
   end
