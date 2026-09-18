@@ -29,6 +29,7 @@ Naming/FileName:
   # Poetry::Agent namespace; its name must match the gem, not snake_case.
   Exclude:
     - "lib/poetry-agent.rb"
+    - Archspec.rb # ArchSpec reads the spec by that name
 
 # The inner modules carry the YARD docs, not the namespace wrappers.
 Style/Documentation:
