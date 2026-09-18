@@ -112,6 +112,10 @@ files against the manifest stamped at last bless.
 - The dommy tier runs controllers on QuickJS + a real DOM: no layout, no
   matchMedia (reports desktop), no Intl — server-feed what needs those.
 
+### The order inside a component class
+
+Declarations first, then methods, and neither interrupts the other. The declarations run: identity (`internal_component!`, `helper`, `css_mode`), includes and constants, slots (`renders_one` / `renders_many`), `style` and `option` with their `validates`, `use_stimulus`, `tool`, `part`, `requires_content`, and any `attr_*`. Then `initialize`, `before_render` or `call`; then the public methods, the instance-level agent hooks (`webmcp_tool_definition`) and a slot writer's override among them; then the attribute builders; then `private`. A method never sits between two declarations and a declaration never trails the methods. The one exception is a class-method hook an `include` consumes (BarChart's `value_axis_slot` before `CartesianFamily`), which must exist before that include and says so in its comment.
+
 ## Known traps
 
 Traps that recur across controllers: value callbacks fire async
