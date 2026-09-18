@@ -68,6 +68,7 @@ module Poetry
           raise ArgumentError, "MetadataList requires at least one with_item" unless items?
         end
 
+        # Renders the list with its items.
         # @api private
         def call
           content_tag(:dl, safe_join(items.map(&:to_s)), **root_attributes)

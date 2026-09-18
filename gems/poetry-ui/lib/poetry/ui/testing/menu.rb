@@ -101,6 +101,7 @@ module Poetry
                 "options: #{list.map(&:text).inspect}"
         end
 
+        # The trigger button.
         def trigger
           part("dropdown-menu-trigger")
         end
@@ -110,6 +111,7 @@ module Poetry
           @content_id ||= trigger["aria-controls"]
         end
 
+        # The menu node.
         def content
           session.find("##{content_id}", visible: :all)
         end
@@ -120,6 +122,7 @@ module Poetry
           content.find("[data-slot='dropdown-menu-item']", text: text, match: :first)
         end
 
+        # The highlighted item's text, or nil.
         def highlighted_text
           content.find("[data-slot='dropdown-menu-item'][data-highlighted]", wait: 1).text
         rescue Capybara::ElementNotFound

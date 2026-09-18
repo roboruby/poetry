@@ -132,6 +132,7 @@ module Poetry
                 "no option #{text.inspect} reached by ArrowDown - options: #{items.map(&:text).inspect}"
         end
 
+        # The trigger button.
         def trigger
           part("combobox-trigger")
         end
@@ -145,23 +146,28 @@ module Poetry
           )["aria-controls"]
         end
 
+        # The popup's id, found through the list.
         def content_id
           @content_id ||= session.find("##{list_id}", visible: :all)
                                  .ancestor("[data-slot='combobox-content']", visible: :all)[:id]
         end
 
+        # The popup node.
         def content
           session.find("##{content_id}", visible: :all)
         end
 
+        # The filter input, inside the popup or at the root.
         def filter_input
           content.first("[data-slot='combobox-input']", minimum: 0, visible: :all) || part("combobox-input")
         end
 
+        # An option by its exact text.
         def option(text)
           content.find("[data-slot='combobox-item']", text: text, exact_text: true)
         end
 
+        # The highlighted option's text, or nil.
         def highlighted_text
           content.find("[data-slot='combobox-item'][data-highlighted]", wait: 1).text
         rescue Capybara::ElementNotFound

@@ -48,6 +48,7 @@ module Poetry
           ensure_content!
         end
 
+        # Renders the group around its content.
         # @api private
         def call
           content_tag(:div, content, **root_attributes)

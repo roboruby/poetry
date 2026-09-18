@@ -93,6 +93,7 @@ module Poetry
         part "resizable-handle", "The role=separator splitter between panels - drag and keyboard " \
                                  "resizing live here; its aria-valuenow tracks the preceding panel"
 
+        # Raises with fewer than two panels.
         # @api private
         def before_render
           # panels? forces the render block (the slot-predicate rule -
@@ -101,6 +102,7 @@ module Poetry
             panels? && panel_defs.size >= 2
         end
 
+        # The declared panels, in order.
         # @api private
         def panel_defs
           @panel_defs ||= []
@@ -121,6 +123,7 @@ module Poetry
           )
         end
 
+        # One panel's attributes: its id, size, bounds and classes.
         # @api private
         def panel_attributes(panel, index)
           attrs = {
@@ -156,6 +159,7 @@ module Poetry
           }.merge(stimulus_attributes_for(:handle))
         end
 
+        # One panel's id by position.
         # @api private
         def panel_id(index)
           "#{instance_id}-panel-#{index}"
@@ -167,6 +171,7 @@ module Poetry
 
         private
 
+        # The server-stable id the panel ids derive from.
         def instance_id
           @instance_id ||= poetry_instance_id("poetry-resizable")
         end

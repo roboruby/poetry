@@ -83,6 +83,7 @@ module Poetry
                "data-unchecked" => "mirrors the control - the thumb sits at the start"
              }
 
+        # A switch from its attributes; raises on an indeterminate checked value.
         # @api private
         def initialize(attributes = {})
           # A switch is strictly binary: aria-checked on role=switch must
@@ -95,21 +96,25 @@ module Poetry
           super
         end
 
+        # The state attribute: checked or unchecked.
         # @api private
         def state
           checked ? "checked" : "unchecked"
         end
 
+        # The server-stable control id.
         # @api private
         def control_id
           @control_id ||= poetry_instance_id("poetry-switch")
         end
 
+        # The hidden input's id.
         # @api private
         def input_id
           "#{control_id}-input"
         end
 
+        # Whether the switch posts a value: it has a name.
         # @api private
         def form_participant?
           name.present?

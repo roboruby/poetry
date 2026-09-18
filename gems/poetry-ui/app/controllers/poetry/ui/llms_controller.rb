@@ -17,6 +17,7 @@ module Poetry
 
       private
 
+      # Serves the llms text built from the registry, the app's components included.
       def llms_text
         # The shared builder (the llms construction rule, extended): the
         # served text uses the exact registry construction the committed

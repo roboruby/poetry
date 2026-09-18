@@ -64,18 +64,22 @@ module Poetry
 
         private
 
+        # The native input type.
         def input_type
           "time"
         end
 
+        # The data-slot prefix for the field's parts.
         def slot_prefix
           "time-field"
         end
 
+        # A value as an ISO time string, with seconds when enabled.
         def iso(candidate)
           candidate.respond_to?(:strftime) ? candidate.strftime("%H:%M#{":%S" if seconds}") : candidate.to_s
         end
 
+        # The placeholder as an ISO time, noon by default.
         def placeholder_iso
           placeholder_value.present? ? iso(placeholder_value) : "12:00#{":00" if seconds}"
         end

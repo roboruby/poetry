@@ -56,6 +56,7 @@ module Poetry
 
       private
 
+      # The adapters to install: the named one, validated and loaded, else every detected one.
       def requested_adapters
         if paginator.present?
           unless ADAPTERS.key?(paginator)

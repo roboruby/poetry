@@ -139,10 +139,12 @@ module Poetry
 
         private
 
+        # The server-stable id every item id derives from.
         def instance_id
           @instance_id ||= poetry_instance_id("poetry-accordion")
         end
 
+        # One item's header: the trigger button with its chevron, wired to the controller.
         def accordion_header(item_id, title, open_item, disabled: false)
           trigger_attrs = {
             type: "button", id: "#{item_id}-trigger", class: css(:trigger),
@@ -169,6 +171,7 @@ module Poetry
           end
         end
 
+        # One item's panel region, hidden when closed, labelled by its trigger.
         def accordion_panel(item_id, open_item, &)
           attrs = {
             id: "#{item_id}-panel", role: "region", class: css(:content),
@@ -181,6 +184,7 @@ module Poetry
           end
         end
 
+        # The trigger's chevron icon.
         def chevron
           render(Icon::Component.new(name: :"chevron-down", class: css(:indicator),
                                      data: { slot: "accordion-trigger-icon" }))

@@ -18,18 +18,22 @@ module Poetry
 
       private
 
+      # The module the component family lives in.
       def family_namespace
         self.class.module_parent
       end
 
+      # The family's name.
       def family_name
         @family_name ||= family_namespace.name.demodulize
       end
 
+      # The family's data-slot prefix.
       def family_slot_prefix
         @family_slot_prefix ||= family_name.underscore.dasherize
       end
 
+      # The family's Style class.
       def family_style
         family_namespace::Style
       end

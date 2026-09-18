@@ -50,10 +50,12 @@ module Poetry
 
         private
 
+        # The separator line.
         def rule
           render(Separator::Component.new(class: css(:line)))
         end
 
+        # The caption span, or nil without content.
         def caption
           return unless content?
 

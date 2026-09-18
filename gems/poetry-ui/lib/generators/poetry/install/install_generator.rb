@@ -446,10 +446,12 @@ module Poetry
       options[:charts] || File.exist?(File.join(destination_root, "app/assets/tailwind/poetry/charts.css"))
     end
 
+    # Whether preflight is skipped: by option, or a reset file is present.
     def floor?
       options[:preflight] == false || File.exist?(File.join(destination_root, RESET_FILE))
     end
 
+    # The theme to install: the option, the installed one, or default.
     def resolved_theme
       @resolved_theme ||= options[:theme] || installed_theme || "default"
     end
@@ -471,10 +473,12 @@ module Poetry
       name
     end
 
+    # Whether the charts gem is bundled.
     def charts_available?
       defined?(Poetry::Charts::Engine) ? true : false
     end
 
+    # Whether the agent gem is bundled.
     def agent_available?
       defined?(Poetry::Agent::Engine) ? true : false
     end
@@ -512,10 +516,12 @@ module Poetry
       [text] + evaluated
     end
 
+    # The ui theme stylesheet for the resolved theme.
     def ui_theme_path
       Poetry::Ui.root.join("themes/#{resolved_theme}.css")
     end
 
+    # The charts theme stylesheet for the resolved theme.
     def charts_theme_path
       Poetry::Charts.root.join("themes/#{resolved_theme}.css")
     end

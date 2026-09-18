@@ -18,6 +18,7 @@ module Poetry
 
         private
 
+        # The indicator class for a checkbox or radio item.
         def indicator_extra_class(kind)
           "cn-menubar-#{kind}-item-indicator"
         end
@@ -254,6 +255,7 @@ module Poetry
           raise ArgumentError, "Menubar requires at least one with_menu" unless menus?
         end
 
+        # The open menu's value as text.
         # @api private
         def value_string = value.to_s
 
@@ -265,6 +267,7 @@ module Poetry
           tab_stop_menu.equal?(menu)
         end
 
+        # Whether a menu value is the open one.
         # @api private
         def open_menu?(menu_value)
           value.present? && value.to_s == menu_value
@@ -292,10 +295,12 @@ module Poetry
 
         private
 
+        # The registered menus, in order.
         def menu_parts
           @menu_parts ||= []
         end
 
+        # The menu whose trigger takes the tab stop: the open one, else the first enabled.
         def tab_stop_menu
           menu_parts.find { |menu| open_menu?(menu.value) && !menu.disabled } ||
             menu_parts.find { |menu| !menu.disabled } || menu_parts.first
@@ -315,6 +320,7 @@ module Poetry
         internal_component!
         include ItemSlots
 
+        # The menu's value and disabled state.
         attr_reader :value, :disabled
 
         renders_one :trigger,
@@ -339,6 +345,7 @@ module Poetry
                       content_tag(:button, Poetry::Core::HTML::Attributes.merged(attrs, options)) { capture(&block) }
                     }
 
+        # A menu registered with its bar, valued by position when no value is given.
         def initialize(bar:, value: nil, disabled: false, dir: nil, content_class: nil, **extra_attributes)
           super(extra_attributes)
           @bar = bar
@@ -349,33 +356,40 @@ module Poetry
           @value = (value || "menu-#{position}").to_s
         end
 
+        # Raises without a trigger or items.
         def before_render
           raise ArgumentError, "Menubar menu requires with_trigger (the top-level menu button)" unless trigger?
           raise ArgumentError, "Menubar menu requires at least one item" unless items?
         end
 
+        # Renders the menu: its trigger and content.
         def call
           content_tag(:div, menu_attributes) { safe_join([trigger, menu_content]) }
         end
 
+        # Whether this menu is the bar's open one.
         def open?
           @bar.open_menu?(value)
         end
 
+        # The trigger's id.
         def trigger_id
           "#{instance_id}-trigger"
         end
 
+        # The content's id.
         def content_id
           "#{instance_id}-content"
         end
 
         private
 
+        # The menu's text direction.
         def menu_dir
           @dir
         end
 
+        # The server-stable id the trigger and content ids derive from.
         def instance_id
           @instance_id ||= poetry_instance_id("poetry-menubar")
         end
@@ -400,6 +414,7 @@ module Poetry
             .merge(wiring).then { |w| Poetry::Core::HTML::Attributes.merged(w, html_attributes) }
         end
 
+        # The trigger's wiring: toggle, hover slide, keyboard, and the popper anchor.
         def trigger_stimulus_attributes
           stimulus_attributes(:menubar, :popper) do |menubar, popper|
             menubar.with_action(:toggle, on: :pointerdown)

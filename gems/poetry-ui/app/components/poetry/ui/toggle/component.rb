@@ -82,6 +82,7 @@ module Poetry
                 "'Bookmark', never 'Remove bookmark')"
         end
 
+        # Renders the toggle button around its content.
         # @api private
         def call
           content_tag(:button, content, **root_attributes)
@@ -106,6 +107,7 @@ module Poetry
 
         private
 
+        # Whether the content has visible text once tags are stripped.
         def visible_text?
           content? && content.to_s.gsub(/<[^>]+>/, " ").strip.present?
         end

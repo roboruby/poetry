@@ -122,6 +122,7 @@ module Poetry
 
       private
 
+      # The Capybara session: the page when there is one.
       def testing_session
         respond_to?(:page) ? page : Capybara.current_session
       end

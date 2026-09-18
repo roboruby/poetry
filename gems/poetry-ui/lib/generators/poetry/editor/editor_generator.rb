@@ -205,6 +205,7 @@ module Poetry
       stdio ? { "type" => "stdio" }.merge(entry) : entry
     end
 
+    # Writes the MCP server entry into a JSON config, creating or merging.
     def upsert_mcp(relative, key, stdio:)
       path = File.join(destination_root, relative)
       unless File.exist?(path)
@@ -258,6 +259,7 @@ module Poetry
       Poetry::Core::Stimulus::Manifest.catalog.keys.sort
     end
 
+    # Writes the Stimulus LSP config, creating or merging the ignored identifiers.
     def upsert_stimulus_lsp(relative)
       path = File.join(destination_root, relative)
       identifiers = poetry_identifiers
@@ -281,6 +283,7 @@ module Poetry
       say_status :update, "#{relative} (+#{missing.size} poetry controller identifiers)", :green
     end
 
+    # A fresh Stimulus LSP config ignoring the identifiers.
     def stimulus_lsp_config(identifiers)
       now = Time.now.utc.iso8601
       { "version" => STIMULUS_LSP_VERSION, "createdAt" => now, "updatedAt" => now,
@@ -317,6 +320,7 @@ module Poetry
       end
     end
 
+    # One snippet's body: a block form when the component has slots.
     def snippet_body(name, component)
       call = "poetry_#{name}#{enum_argument(component)}"
       if Array(component["slots"]).any?
@@ -337,6 +341,7 @@ module Poetry
       "(#{chosen["name"]}: :${1|#{Array(chosen["variants"]).join(",")}|})"
     end
 
+    # A snake_case name as capitalized words.
     def humanize(name)
       name.split("_").map(&:capitalize).join(" ")
     end

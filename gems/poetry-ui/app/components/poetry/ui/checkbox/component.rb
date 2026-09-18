@@ -66,10 +66,12 @@ module Poetry
         #
         # @api private
         class CheckedState < ActiveModel::Type::Value
+          # The type's name.
           def type
             :checked_state
           end
 
+          # The value as a checked state: indeterminate by name, else a boolean.
           def cast(value)
             return :indeterminate if value.to_s == "indeterminate"
 

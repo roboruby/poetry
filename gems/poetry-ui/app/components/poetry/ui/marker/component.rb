@@ -62,6 +62,7 @@ module Poetry
         part "marker-icon", "Decorative icon wrapper (aria-hidden always)"
         part "marker-content", "The label span - the marker text itself"
 
+        # Raises without content.
         # @api private
         def before_render
           ensure_content!

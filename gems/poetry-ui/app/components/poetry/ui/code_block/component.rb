@@ -125,6 +125,7 @@ module Poetry
 
         private
 
+        # The confirmation text after a copy.
         def copied_message_text = t("poetry.clipboard_text.copied")
 
         private :highlighted, :pre_attributes, :code_attributes, :copy_button

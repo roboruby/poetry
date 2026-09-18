@@ -15,6 +15,7 @@ module Poetry
     # hook (poetry-ui does not depend on turbo-rails; hosts that have it
     # get the action automatically - see the engine initializer).
     module ToastStreamActions
+      # Appends a toast with its title and description to the toaster stream.
       def poetry_toast(title:, description: nil, target: Poetry::Ui::Toaster::Component::DEFAULT_ID, **)
         component = Poetry::Ui::Toast::Component.new(**)
         component.with_title { title }

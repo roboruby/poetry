@@ -102,6 +102,7 @@ module Poetry
         # Words per streamed text chunk in the compiled frames.
         TEXT_CHUNK_WORDS = 3
 
+        # A script built by evaluating the block.
         def initialize(&)
           @segments = []
           @counter = 0
@@ -130,11 +131,13 @@ module Poetry
           @segments << Segment.new(kind: :assistant, id: next_id, turn: turn)
         end
 
+        # The declared segments, in order.
         # @return [Array<Segment>] the declared segments, in scripted order
         attr_reader :segments
 
         private
 
+        # The next message id.
         def next_id
           @counter += 1
           "chat-msg-#{@counter}"
@@ -144,6 +147,7 @@ module Poetry
       # Collects writer calls into an ordered part list, then compiles the
       # deterministic frame timeline.
       class AssistantTurn
+        # An empty turn.
         def initialize
           @parts = []
         end
@@ -190,10 +194,12 @@ module Poetry
 
         private
 
+        # The index of the first tool part awaiting approval, or nil.
         def pause_index
           @parts.index { |part| part[:kind] == :tool && part[:approval] }
         end
 
+        # Whether a tool awaiting approval precedes the index.
         def pause_before?(index)
           before = @parts.first(index)
           before.any? { |part| part[:kind] == :tool && part[:approval] }

@@ -44,6 +44,7 @@ module Poetry
         announce_ignored_skills if skills_ignored?
       end
 
+      # Notes that the skills directory is gitignored.
       # @api private
       def announce_ignored_skills
         say_status :note, "#{SKILLS_DIR} is gitignored here, so the skills stay local to this checkout - " \

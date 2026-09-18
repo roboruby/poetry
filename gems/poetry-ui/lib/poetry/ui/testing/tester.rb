@@ -7,6 +7,7 @@ module Poetry
       # contract surface - never CSS classes), and Capybara-native waiting.
       # Subclasses encode one component's real interaction sequences.
       class Tester
+        # The session driving the browser.
         # @return [Capybara::Session] the session driving the browser
         attr_reader :session
 
@@ -42,10 +43,12 @@ module Poetry
                 "no [data-slot=#{slot}] under #{describe_root} - is this the right component root?"
         end
 
+        # Whether the root has a part.
         def part?(slot, **)
           root.has_selector?(slot_selector(slot), **)
         end
 
+        # Every matching part under the root.
         def parts(slot, **)
           root.all(slot_selector(slot), **)
         end
@@ -60,10 +63,12 @@ module Poetry
           root.find(slot_selector(slot), visible: :all)
         end
 
+        # The selector for a data-slot.
         def slot_selector(slot)
           "[data-slot='#{slot}']"
         end
 
+        # The root as text for messages.
         def describe_root
           @root_locator.is_a?(String) ? @root_locator.inspect : "the given node"
         end
@@ -117,10 +122,12 @@ module Poetry
           end
         end
 
+        # The focused element, when the driver can evaluate script.
         def active_element
           session.evaluate_script("document.activeElement") if session.driver.respond_to?(:evaluate_script)
         end
 
+        # Waits for the block to be truthy, failing with the message.
         def wait_until(message)
           Timeout.timeout(Capybara.default_max_wait_time) do
             sleep 0.05 until yield

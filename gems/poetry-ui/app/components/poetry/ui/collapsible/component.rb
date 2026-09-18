@@ -119,6 +119,7 @@ module Poetry
 
         private
 
+        # The server-stable id the content id derives from.
         def instance_id
           @instance_id ||= poetry_instance_id("poetry-collapsible")
         end

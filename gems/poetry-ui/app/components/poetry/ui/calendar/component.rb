@@ -171,8 +171,10 @@ module Poetry
           @month = to_date(month) || @selected || @range_start || @today
         end
 
+        # Whether the calendar selects a range.
         # @api private
         def range? = mode == :range
+        # Whether both ends of the range are chosen.
         # @api private
         def range_complete? = !!(@range_start && @range_end)
 
@@ -202,12 +204,16 @@ module Poetry
           I18n.t("date.abbr_day_names").rotate(week_start).map { |name| name[0, 2] }
         end
 
+        # Whether the date falls in the displayed month.
         # @api private
         def in_month?(date) = date.month == @month.month
+        # Whether the date is the selected one.
         # @api private
         def selected?(date) = @selected && date == @selected
+        # Whether the date is today.
         # @api private
         def today?(date) = date == @today
+        # Whether the date falls outside the min and max bounds.
         # @api private
         def disabled?(date) = (@min && date < @min) || (@max && date > @max)
 
@@ -219,9 +225,11 @@ module Poetry
           "#{month_names_list[@month.month - 1]} #{@month.year}"
         end
 
+        # Whether the caption renders as month and year dropdowns.
         # @api private
         def dropdown_caption? = caption_layout == :dropdown
 
+        # The month names with their numbers, for the caption dropdown.
         # @api private
         def month_options
           month_names_list.each_with_index.map { |label, index| [label, index + 1] }
@@ -270,6 +278,7 @@ module Poetry
           }
         end
 
+        # One day button's attributes: its date, label, tab stop, states and wiring.
         # @api private
         def day_attributes(date)
           iso = date.iso8601
@@ -290,11 +299,13 @@ module Poetry
           attrs
         end
 
+        # The previous-month button's options.
         # @api private
         def previous_options
           nav_options("Previous month", :nav_previous)
         end
 
+        # The next-month button's options.
         # @api private
         def next_options
           nav_options("Next month", :nav_next)
@@ -302,12 +313,14 @@ module Poetry
 
         private
 
+        # A navigation button's options with its label and wiring.
         def nav_options(label, element)
           {
             variant: :ghost, size: :icon, label: label, class: css(:nav_button)
           }.merge(stimulus_attributes_for(element))
         end
 
+        # A value as a Date, parsed from text; nil stays nil.
         def to_date(value)
           return if value.nil?
           return value if value.is_a?(Date)
@@ -346,12 +359,19 @@ module Poetry
           end
         end
 
+        # The displayed month as a year-month key.
         def month_key = @month.strftime("%Y-%m")
+        # The selected date as ISO text, or empty.
         def selected_iso = @selected&.iso8601 || ""
+        # The range start as ISO text, or empty.
         def range_start_iso = @range_start&.iso8601 || ""
+        # The range end as ISO text, or empty.
         def range_end_iso = @range_end&.iso8601 || ""
+        # The minimum date as ISO text, or empty.
         def min_iso = @min&.iso8601 || ""
+        # The maximum date as ISO text, or empty.
         def max_iso = @max&.iso8601 || ""
+        # The localized month names, January first.
         def month_names_list = I18n.t("date.month_names").drop(1)
 
         private :range?, :range_complete?, :in_span?, :cells, :weekday_labels, :in_month?, :selected?, :today?

@@ -258,6 +258,7 @@ module Poetry
           @total = total
         end
 
+        # The class values joined, nils dropped.
         def merge_classes(*values)
           values.compact.join(" ")
         end

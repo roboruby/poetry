@@ -150,6 +150,7 @@ module Poetry
                                   "with the root's)"
              }
 
+        # A slider from its attributes; raises when both value and values are given, then validates the numbers.
         # @api private
         def initialize(attributes = {})
           if attributes.values_at(:value, "value").any? && attributes.values_at(:values, "values").any?
@@ -173,21 +174,25 @@ module Poetry
                             end
         end
 
+        # Whether the slider has more than one thumb.
         # @api private
         def range?
           thumb_values.length > 1
         end
 
+        # The hidden inputs' name, with brackets for a range.
         # @api private
         def input_name
           range? ? "#{name}[]" : name
         end
 
+        # The server-stable id the thumb ids derive from.
         # @api private
         def control_id
           @control_id ||= poetry_instance_id("poetry-slider")
         end
 
+        # One thumb's id.
         # @api private
         def thumb_id(index)
           "#{control_id}-thumb-#{index}"
@@ -201,16 +206,19 @@ module Poetry
           index.zero? ? number(min) : number(thumb_values[index - 1] + gap)
         end
 
+        # One thumb's effective maximum: the bound, or the next thumb less the gap.
         # @api private
         def thumb_max(index)
           index == thumb_values.length - 1 ? number(max) : number(thumb_values[index + 1] - gap)
         end
 
+        # One thumb's label.
         # @api private
         def thumb_label(index)
           Array(label)[index]
         end
 
+        # One thumb's value text through the formatter, or nil.
         # @api private
         def thumb_text(index)
           return unless value_text.present?
@@ -229,18 +237,21 @@ module Poetry
           super(attrs)
         end
 
+        # The track's attributes with its wiring.
         # @api private
         def track_attributes
           { class: css(:track), "data-slot" => "slider-track", "data-orientation" => orientation }
             .merge(stimulus_attributes_for(:track))
         end
 
+        # The filled range's attributes with its wiring.
         # @api private
         def range_attributes
           { class: css(:range), "data-slot" => "slider-range", "data-orientation" => orientation }
             .merge(stimulus_attributes_for(:range))
         end
 
+        # One anchor's attributes: start, mid or end, with the mid position.
         # @api private
         def anchor_attributes(index)
           anchor = if range? && index.zero? then :anchor_start
@@ -253,6 +264,7 @@ module Poetry
           attrs
         end
 
+        # One thumb's attributes: the slider role, its bounds, value, label and wiring.
         # @api private
         def thumb_attributes(index)
           attrs = {
@@ -289,10 +301,12 @@ module Poetry
 
         private
 
+        # The smallest distance between thumbs.
         def gap
           min_steps_between_thumbs * step
         end
 
+        # A value's position along the track as a percentage.
         def percent(value)
           span = max - min
           return 0 if span <= 0
@@ -300,17 +314,20 @@ module Poetry
           ((value - min) / span * 100).round(4)
         end
 
+        # The custom properties placing the filled range.
         def geometry_style
           start = range? ? percent(thumb_values.first) : 0
           "--slider-start: #{number(start.to_f)}%; --slider-end: #{number(percent(thumb_values.last).to_f)}%;"
         end
 
+        # A value as a Float, raising with the option's name when it is not numeric.
         def numeric(value, option_name)
           Float(value)
         rescue ArgumentError, TypeError
           raise ArgumentError, "Slider #{option_name}: must be numeric - got #{value.inspect}"
         end
 
+        # Raises on inverted bounds, a non-positive step, or unsorted or out-of-bounds values.
         def validate_numbers!
           raise ArgumentError, "Slider max: must be greater than min:" unless max > min
           raise ArgumentError, "Slider step: must be positive" unless step.positive?
@@ -344,9 +361,13 @@ module Poetry
           end
         end
 
+        # The minimum as a number.
         def min_number = number(min)
+        # The maximum as a number.
         def max_number = number(max)
+        # The step as a number.
         def step_number = number(step)
+        # The thumb values as numbers.
         def value_numbers = thumb_values.map { |item| number(item) }
 
         private :thumb_values, :range?, :input_name, :control_id, :thumb_id, :thumb_min, :thumb_max, :thumb_label

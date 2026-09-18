@@ -57,6 +57,7 @@ module Poetry
           ensure_content!
         end
 
+        # Renders the avatar: the fallback, the image and the badge.
         # @api private
         def call
           content_tag(:span, root_attributes) do
@@ -76,11 +77,13 @@ module Poetry
 
         private
 
+        # The initials fallback span.
         def fallback
           content_tag(:span, content, "data-slot" => "avatar-fallback", "aria-hidden" => "true",
                                       class: css(:fallback))
         end
 
+        # The image, or nil without a source.
         def image
           return if src.blank?
 
@@ -90,6 +93,7 @@ module Poetry
           tag.img(src: src, alt: "", "data-slot": "avatar-image", class: css(:image))
         end
 
+        # The badge span, or nil without a badge.
         def badge_part
           return unless badge?
 

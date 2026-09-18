@@ -50,6 +50,7 @@ module Poetry
           raise ArgumentError, "Meter max: must exceed min:" unless max > min
         end
 
+        # Renders the meter: its label, value and track.
         # @api private
         def call
           content_tag(:div, root_attributes) do
@@ -64,6 +65,7 @@ module Poetry
           ((clamped - min).to_f / (max - min) * 100).clamp(0, 100)
         end
 
+        # The value text, or the percentage.
         # @api private
         def readout
           value_text.presence || "#{percent.round}%"
@@ -87,20 +89,24 @@ module Poetry
 
         private
 
+        # The value held within the bounds.
         def clamped
           value.clamp(min, max)
         end
 
+        # The label span.
         def label_part
           content_tag(:span, label, "data-slot" => "meter-label", class: Progress::Style.css(:label))
         end
 
+        # The value span, or nil when hidden.
         def value_part
           return unless show_value
 
           content_tag(:span, readout, "data-slot" => "meter-value", class: Progress::Style.css(:value))
         end
 
+        # The track with its indicator sized to the fraction.
         def track
           content_tag(:div, "data-slot" => "meter-track", class: Progress::Style.css(:track)) do
             content_tag(:div, nil, "data-slot" => "meter-indicator",

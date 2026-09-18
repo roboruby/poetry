@@ -194,6 +194,7 @@ module Poetry
           @trigger_attributes = attributes
         end
 
+        # Renders the trigger element with its attributes.
         def call
           content_tag(@tag_name, content, @trigger_attributes)
         end

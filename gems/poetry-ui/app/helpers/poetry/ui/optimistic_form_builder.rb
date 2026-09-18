@@ -47,6 +47,7 @@ module Poetry
         hidden_field(attribute_name, value: value)
       end
 
+      # Whether the optimistic hidden field has been rendered.
       def optimistic_hidden_field_rendered?
         !!@optimistic_hidden_field_rendered
       end

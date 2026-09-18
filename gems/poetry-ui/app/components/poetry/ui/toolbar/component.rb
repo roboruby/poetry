@@ -77,11 +77,13 @@ module Poetry
                                        values: %w[horizontal vertical] }
              }
 
+        # Raises without controls.
         # @api private
         def before_render
           raise ArgumentError, "Toolbar requires at least one control slot" unless items?
         end
 
+        # Renders the toolbar with its controls.
         # @api private
         def call
           content_tag(:div, safe_join(items.map(&:to_s)), **root_attributes)
@@ -108,6 +110,7 @@ module Poetry
           options.merge(extra)
         end
 
+        # The roving-focus controller's wiring with its orientation and loop.
         def roving_attributes
           attrs = Poetry::Core::HTML::Attributes.new
           roving = Poetry::Core::Stimulus::Builder.new(ROVING, attrs)

@@ -131,11 +131,13 @@ module Poetry
         part "toast-title", "The message - the announced payload's first line (required slot)"
         part "toast-description", "Supporting copy under the title"
 
+        # Raises without a title.
         # @api private
         def before_render
           raise ArgumentError, "Toast requires with_title (the message)" unless title?
         end
 
+        # The auto-dismiss duration: the given one, else persistent for action and loading toasts.
         # @api private
         def effective_duration
           return duration unless duration.nil?
@@ -147,6 +149,7 @@ module Poetry
           action? || variant == :loading ? 0 : 5000
         end
 
+        # The icon for the variant, or nil.
         # @api private
         def variant_icon
           VARIANT_ICONS[variant]
@@ -166,6 +169,7 @@ module Poetry
           )
         end
 
+        # The close button's attributes with its wiring.
         # @api private
         def close_button_attributes
           stimulus_attributes_for(:close).merge("data-slot" => "toast-close")

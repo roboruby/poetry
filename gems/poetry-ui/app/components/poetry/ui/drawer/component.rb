@@ -185,6 +185,7 @@ module Poetry
 
         private
 
+        # Raises unless the snap points are fractions or CSS lengths on a bottom drawer.
         def validate_snap_points!
           unless direction == :down
             raise ArgumentError, "Drawer snap_points: is a bottom-sheet recipe - direction: :down only"
@@ -206,6 +207,7 @@ module Poetry
           stimulus_action(:close, on: :click)
         end
 
+        # The snap points as JSON.
         def snap_points_json = snap_points.to_json
 
         private :dialog_attributes

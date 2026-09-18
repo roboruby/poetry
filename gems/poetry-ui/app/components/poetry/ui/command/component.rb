@@ -16,8 +16,10 @@ module Poetry
       #
       # @api private
       class ItemSet
+        # The id of the highlighted item and the number registered.
         attr_reader :highlighted_id, :count
 
+        # An empty item set under a base id, highlighting the given value.
         def initialize(base_id:, highlight_value: nil)
           @base_id = base_id
           @highlight_value = highlight_value.presence
@@ -96,8 +98,10 @@ module Poetry
         internal_component!
         include Helpers
 
+        # The shared item set and the item wiring.
         attr_reader :item_set, :item_wiring
 
+        # An item with its value, disabled state, keywords and filter value.
         def initialize(item_set:, value:, item_wiring: {}, **options)
           super(options)
           @item_set = item_set
@@ -110,6 +114,7 @@ module Poetry
           @shortcut = options.delete(:shortcut)
         end
 
+        # Renders the option, registered in the set, with its wiring and highlighted state.
         def call
           item_id, highlighted = item_set.register(value: @value, disabled: @disabled)
           attrs = {
@@ -161,6 +166,7 @@ module Poetry
         internal_component!
         include Helpers
 
+        # The shared item set and the item wiring.
         attr_reader :item_set, :item_wiring
 
         renders_many :items,
@@ -171,6 +177,7 @@ module Poetry
                        separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
                      }
 
+        # A group with its heading; raises without one.
         def initialize(item_set:, heading:, item_wiring: {}, always_render: false, **extra_attributes)
           raise ArgumentError, "Command group requires heading: (the group's accessible name)" if heading.blank?
 
@@ -181,10 +188,12 @@ module Poetry
           @always_render = always_render
         end
 
+        # Raises when the group has no items.
         def before_render
           raise ArgumentError, "Command group requires at least one item" unless items?
         end
 
+        # Renders the group with its heading and items.
         def call
           attrs = {
             "data-slot" => "command-group", "role" => "group", "aria-labelledby" => heading_id,
@@ -198,10 +207,12 @@ module Poetry
 
         private
 
+        # The stable id the heading id derives from.
         def group_id
           @group_id ||= poetry_instance_id("poetry-command-group")
         end
 
+        # The heading's id.
         def heading_id
           "#{group_id}-heading"
         end
@@ -487,6 +498,7 @@ module Poetry
 
         private
 
+        # Whether the command has an accessible name: an id or an input aria label.
         def named?
           id.present? || @input_aria["label"].present? || @input_aria["labelledby"].present?
         end
@@ -504,12 +516,14 @@ module Poetry
           aria
         end
 
+        # The aria attributes pulled off the root for the input.
         def input_aria_attributes
           INPUT_ARIA_KEYS.each_with_object({}) do |key, attrs|
             attrs["aria-#{key}"] = @input_aria[key] unless @input_aria[key].nil?
           end
         end
 
+        # The wiring every item carries, memoized.
         def item_wiring
           @item_wiring ||= stimulus_attributes_for(:item)
         end

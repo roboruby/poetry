@@ -113,6 +113,7 @@ module Poetry
           tag == :a || href.present?
         end
 
+        # The root tag: an anchor for a link, else a button.
         # @api private
         def root_tag
           link_tag? ? :a : :button
@@ -125,6 +126,7 @@ module Poetry
 
         private
 
+        # The attributes every button root carries: identity, variant, size, label and loading state.
         def base_attributes
           attrs = { "data-slot" => "button", "data-variant" => variant, "data-size" => size }
                   .merge(component_data_attributes)
@@ -143,6 +145,7 @@ module Poetry
           link_tag? ? link_attributes : button_attributes
         end
 
+        # The anchor's attributes: the button role, and the href or the disabled state.
         def link_attributes
           attrs = { "role" => "button" }
           if disabled || loading
@@ -153,6 +156,7 @@ module Poetry
           attrs
         end
 
+        # The button's attributes: its type and disabled state.
         def button_attributes
           attrs = { "type" => type }
           attrs["disabled"] = true if disabled || loading

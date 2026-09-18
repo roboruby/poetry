@@ -201,6 +201,7 @@ module Poetry
           )
         end
 
+        # One item's attributes, wired when it has a panel.
         # @api private
         def item_attributes(entry)
           attrs = {
@@ -211,6 +212,7 @@ module Poetry
           attrs
         end
 
+        # One trigger's attributes: its panel, disabled state and wiring.
         # @api private
         def trigger_attributes(entry)
           attrs = {
@@ -225,6 +227,7 @@ module Poetry
           attrs.merge(stimulus_attributes_for(:trigger))
         end
 
+        # One panel's attributes: hidden, closed, positioned by mode, and wired.
         # @api private
         def panel_attributes(entry)
           {
@@ -250,6 +253,7 @@ module Poetry
           attrs.merge(stimulus_attributes_for(:positioner))
         end
 
+        # One entry's panel id.
         # @api private
         def panel_id(entry)
           "#{instance_id}-panel-#{entry.value}"
@@ -257,6 +261,7 @@ module Poetry
 
         private
 
+        # The server-stable id the panel ids derive from.
         def instance_id
           @instance_id ||= poetry_instance_id("poetry-nav")
         end

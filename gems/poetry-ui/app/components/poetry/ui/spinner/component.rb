@@ -31,6 +31,7 @@ module Poetry
         part "spinner", "The spinning <svg> itself (the lucide loader-circle) - announces " \
                         "as role=status with aria-label from label:"
 
+        # Renders the spinner svg.
         # @api private
         def call
           content_tag(:svg, glyph, **root_attributes)
@@ -47,6 +48,7 @@ module Poetry
 
         private
 
+        # The spinner's path markup.
         def glyph
           Poetry::Core::Icons.set(nil).fetch(GLYPH).html_safe
         end

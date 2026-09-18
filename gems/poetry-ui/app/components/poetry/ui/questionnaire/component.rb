@@ -188,6 +188,7 @@ module Poetry
           __vc_with_progress(&)
         end
 
+        # Evaluates the composition block, then raises without items.
         # @api private
         def before_render
           # Evaluate the composition block first - with_item is hand-rolled
@@ -209,6 +210,7 @@ module Poetry
           item
         end
 
+        # The declared items, in order.
         # @api private
         def item_models = (@item_models ||= [])
 
@@ -230,11 +232,14 @@ module Poetry
                            enabled_items.first
         end
 
+        # The active item's position among the enabled ones.
         # @api private
         def active_index = enabled_items.index(active_item) || 0
 
+        # Whether the active item is the first.
         # @api private
         def first? = active_index.zero?
+        # Whether the active item is the last.
         # @api private
         def last? = active_index >= enabled_items.size - 1
 
@@ -243,6 +248,7 @@ module Poetry
           "Question #{active_index + 1} of #{enabled_items.size}"
         end
 
+        # The shortcut scheme as text.
         # @api private
         def shortcuts_string = shortcuts.to_s
 
@@ -285,6 +291,7 @@ module Poetry
           element_attributes(:progress, attrs)
         end
 
+        # One item's attributes: its name, status, description and active state.
         # @api private
         def item_attributes(item)
           active = item == active_item
@@ -367,6 +374,7 @@ module Poetry
           attr_reader :name, :title, :description, :required, :multiple, :disabled,
                       :error, :choices, :input, :class_name
 
+          # An item with its name, title and options.
           # @api private
           def initialize(name:, title:, **options)
             @name = name
@@ -411,14 +419,17 @@ module Poetry
             end
           end
 
+          # The item's error text, its own or the default.
           # @api private
           def error_message = error || default_error
 
+          # Whether a choice is checked or the input has a value.
           # @api private
           def answered?
             choices.any?(&:checked) || input&.value.to_s.strip != ""
           end
 
+          # The item's status: answered or unanswered.
           # @api private
           def status = answered? ? "answered" : "unanswered"
 

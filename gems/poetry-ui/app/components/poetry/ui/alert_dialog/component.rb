@@ -148,16 +148,19 @@ module Poetry
           raise ArgumentError, "AlertDialog requires with_cancel (the safe way out)" unless cancel?
         end
 
+        # The title element's id.
         # @api private
         def title_id
           "#{instance_id}-title"
         end
 
+        # The description element's id.
         # @api private
         def description_id
           "#{instance_id}-description"
         end
 
+        # The dialog element's attributes: the alertdialog role, size, closed state and wiring.
         # @api private
         def dialog_attributes
           attrs = {
@@ -185,16 +188,19 @@ module Poetry
           ].compact.join(" "))
         end
 
+        # The media slot's classes, sized for the default dialog.
         # @api private
         def media_classes
           css(:media, class: (css(:media_size_default) if size == :default))
         end
 
+        # The title's classes, placed beside the media in the default size.
         # @api private
         def title_classes
           css(:title, class: (css(:title_beside_media) if media? && size == :default))
         end
 
+        # The footer's classes, tightened in the small size.
         # @api private
         def footer_classes
           css(:footer, class: (css(:footer_size_sm) if size == :sm))

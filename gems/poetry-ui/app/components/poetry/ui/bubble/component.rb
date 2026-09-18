@@ -88,6 +88,7 @@ module Poetry
           href.present? ? :a : tag
         end
 
+        # The content element's attributes, with the href or button type its tag needs.
         # @api private
         def content_attributes
           attrs = { class: css(:content), "data-slot" => "bubble-content" }

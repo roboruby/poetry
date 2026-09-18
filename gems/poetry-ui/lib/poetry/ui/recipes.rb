@@ -41,6 +41,7 @@ module Poetry
 
         private
 
+        # The poetry skill bundle recipe.
         def skill_poetry
           {
             "name" => "skill-poetry",
@@ -56,6 +57,7 @@ module Poetry
           }
         end
 
+        # The poetry-design skill bundle recipe.
         def skill_poetry_design
           {
             "name" => "skill-poetry-design",
@@ -72,6 +74,7 @@ module Poetry
           }
         end
 
+        # The poetry-component skill bundle recipe.
         def skill_poetry_component
           {
             "name" => "skill-poetry-component",
@@ -136,6 +139,7 @@ module Poetry
           }
         end
 
+        # A screen recipe from its sources, with its dependencies.
         def screen(name, title:, description:, dependencies:)
           {
             "name" => name,

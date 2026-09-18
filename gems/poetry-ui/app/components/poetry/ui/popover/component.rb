@@ -163,16 +163,19 @@ module Poetry
           )
         end
 
+        # The title element's id.
         # @api private
         def title_id
           "#{instance_id}-title"
         end
 
+        # The description element's id.
         # @api private
         def description_id
           "#{instance_id}-description"
         end
 
+        # The content's attributes: the dialog role, open state, placement and classes.
         # @api private
         def content_attributes
           attrs = {
@@ -195,6 +198,7 @@ module Poetry
 
         private
 
+        # The selector the popper anchors to: the trigger's id.
         def trigger_anchor_selector = "##{trigger_id}"
 
         private :title_id, :description_id, :content_attributes

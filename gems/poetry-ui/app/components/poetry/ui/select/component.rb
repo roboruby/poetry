@@ -23,13 +23,16 @@ module Poetry
         # One registered option: committable value, plain-text label, disabled flag.
         Entry = Struct.new(:value, :label, :disabled)
 
+        # The registered options.
         attr_reader :entries
 
+        # An empty option set.
         def initialize
           @entries = []
           @seen = Set.new
         end
 
+        # Registers an option, raising on a blank or duplicate value.
         def add(value:, label:, disabled: false)
           key = value.to_s
           raise ArgumentError, "Select item requires a non-blank value:" if key.blank?
@@ -41,6 +44,7 @@ module Poetry
           @entries << Entry.new(key, label, disabled)
         end
 
+        # The label of the option with a value, or nil.
         def label_for(value)
           entries.find { |entry| entry.value == value }&.label
         end
@@ -62,6 +66,7 @@ module Poetry
                    item_wiring: item_wiring, **)
         end
 
+        # A separator row with the caller's class.
         def separator_part(**options)
           attrs = {
             "data-slot" => "select-separator", "aria-hidden" => "true",
@@ -93,8 +98,10 @@ module Poetry
         internal_component!
         include Helpers
 
+        # The shared option set and the selected value.
         attr_reader :option_set, :selected_value
 
+        # An item with its value, wiring, disabled state and text value.
         def initialize(option_set:, selected_value:, value:, item_wiring: {}, **options)
           super(options)
           @item_wiring = item_wiring
@@ -105,6 +112,7 @@ module Poetry
           @text_value = options.delete(:text_value)
         end
 
+        # Renders the option, registered in the set, marked selected when it matches.
         def call
           label_html = content || "".html_safe
           plain_label = (@text_value.presence || ActionView::Base.full_sanitizer.sanitize(label_html.to_s)).squish
@@ -367,6 +375,7 @@ module Poetry
         part "select-item-text", "The option's label span - the value display copies from it"
         part "select-separator", "Decorative divider between options (aria-hidden)"
 
+        # A select from its attributes; raises on multiple, and pulls the trigger's aria out of the root.
         # @api private
         def initialize(attributes = {})
           if attributes.key?(:multiple) || attributes.key?("multiple")
@@ -377,6 +386,7 @@ module Poetry
           @trigger_aria = extract_trigger_aria!
         end
 
+        # Raises without items or an accessible name.
         # @api private
         def before_render
           raise ArgumentError, "Select requires at least one item (with_item / with_group)" unless items?
@@ -394,26 +404,31 @@ module Poetry
           @trigger_id ||= id.presence || poetry_instance_id("poetry-select")
         end
 
+        # The popup's id.
         # @api private
         def content_id
           "#{trigger_id}-content"
         end
 
+        # The native select's id.
         # @api private
         def native_id
           "#{trigger_id}-native"
         end
 
+        # The shared option set.
         # @api private
         def option_set
           @option_set ||= OptionSet.new
         end
 
+        # The selected value as text.
         # @api private
         def selected_value
           @selected_value ||= value.presence.to_s
         end
 
+        # The selected option's label, or nil.
         # @api private
         def selected_label
           option_set.label_for(selected_value) if selected_value.present?
@@ -436,6 +451,7 @@ module Poetry
           content_tag(:select, native_options, attrs)
         end
 
+        # The trigger button: the combobox role, its open state, size and wiring.
         # @api private
         def trigger_button
           attrs = {
@@ -456,6 +472,7 @@ module Poetry
           end
         end
 
+        # The popup's attributes: its open state, placement and wiring.
         # @api private
         def content_attributes
           # No widget role here: the popup shell holds scroll buttons too,
@@ -473,6 +490,7 @@ module Poetry
           attrs
         end
 
+        # The viewport's attributes: the listbox labelled by the trigger.
         # @api private
         def viewport_attributes
           {
@@ -507,6 +525,7 @@ module Poetry
 
         private
 
+        # Whether the select has an accessible name: an id or a trigger aria label.
         def named?
           id.present? || @trigger_aria["label"].present? || @trigger_aria["labelledby"].present?
         end
@@ -524,6 +543,7 @@ module Poetry
           aria
         end
 
+        # The aria attributes pulled off the root for the trigger.
         def trigger_aria_attributes
           TRIGGER_ARIA_KEYS.each_with_object({}) do |key, attrs|
             attrs["aria-#{key}"] = @trigger_aria[key] unless @trigger_aria[key].nil?
@@ -539,6 +559,7 @@ module Poetry
           content_tag(:span, selected_label || placeholder, attrs)
         end
 
+        # The trigger's chevron icon.
         def chevron
           render(Icon::Component.new(name: :"chevron-down", class: Style.css(:trigger_icon)))
         end
@@ -565,6 +586,7 @@ module Poetry
         # token-concatenating it.
         def value_string = value.to_s
 
+        # The wiring every item carries, memoized.
         def item_wiring
           @item_wiring ||= stimulus_attributes_for(:item)
         end
@@ -583,6 +605,7 @@ module Poetry
         internal_component!
         include Helpers
 
+        # The shared option set, the selected value and the item wiring.
         attr_reader :option_set, :selected_value, :item_wiring
 
         renders_many :items,
@@ -601,10 +624,12 @@ module Poetry
           @label_text = heading || label
         end
 
+        # Raises when the group has no items.
         def before_render
           raise ArgumentError, "Select group requires at least one item" unless items?
         end
 
+        # Renders the group with its label and items.
         def call
           attrs = { "data-slot" => "select-group", "role" => "group", "class" => "cn-select-group" }
           attrs["aria-labelledby"] = label_id if @label_text
@@ -615,10 +640,12 @@ module Poetry
 
         private
 
+        # The stable id the label id derives from.
         def group_id
           @group_id ||= poetry_instance_id("poetry-select-group")
         end
 
+        # The label's id.
         def label_id
           "#{group_id}-label"
         end

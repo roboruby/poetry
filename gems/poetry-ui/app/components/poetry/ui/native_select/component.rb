@@ -59,6 +59,7 @@ module Poetry
                                      "poetry_native_select_option) - Canvas system colors " \
                                      "keep the native dropdown legible"
 
+        # Renders the wrapper around the select and its chevron.
         # @api private
         def call
           content_tag(:div, wrapper_attributes.to_attributes) do
@@ -66,6 +67,7 @@ module Poetry
           end
         end
 
+        # The wrapper's attributes: the caller's over the identity and size.
         # @api private
         def wrapper_attributes
           html_attributes.merge_if_not_set(
@@ -75,6 +77,7 @@ module Poetry
           )
         end
 
+        # The select's attributes: name, id, label, described-by, disabled and invalid state.
         # @api private
         def select_attributes
           attrs = { "data-slot" => "native-select", "data-size" => size, "class" => css(:select) }
@@ -96,10 +99,12 @@ module Poetry
           @selected = selected
         end
 
+        # The select element with its content.
         def select_element
           content_tag(:select, select_content, select_attributes)
         end
 
+        # The options: the given content, else one option per entry.
         def select_content
           return content if content.present?
 

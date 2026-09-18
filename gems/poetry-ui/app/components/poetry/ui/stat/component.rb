@@ -68,21 +68,25 @@ module Poetry
         part "stat-description", "Muted supporting copy under the value"
         part "stat-media", "The trend-visual slot (sparkline, chart, glyph) below the text stack"
 
+        # Raises without content.
         # @api private
         def before_render
           ensure_content!
         end
 
+        # The sentiment: the given one, else the trend's default.
         # @api private
         def resolved_sentiment
           sentiment || DEFAULT_SENTIMENT.fetch(trend)
         end
 
+        # The delta's classes for the sentiment.
         # @api private
         def delta_classes
           "#{css(:delta)} #{css(:"delta_#{resolved_sentiment}")}"
         end
 
+        # The icon for the trend.
         # @api private
         def trend_icon
           TREND_ICON.fetch(trend)

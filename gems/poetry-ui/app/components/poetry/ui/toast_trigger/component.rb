@@ -61,6 +61,7 @@ module Poetry
         # inner anatomy lands in this component's data-component scope.
         part "label", "The Button's label span (the trigger renders AS a poetry Button)"
 
+        # The button's options: the trigger wiring merged under the caller's attributes.
         # @api private
         def button_options
           wiring = { data: { slot: "toast-trigger" } }

@@ -41,6 +41,7 @@ module Poetry
                 "AspectRatio ratio: must be a CSS ratio ('16/9', '1', '1.5') - got #{ratio.inspect}"
         end
 
+        # Renders the ratio box around the content.
         # @api private
         def call
           content_tag(:div, content, **root_attributes)

@@ -157,11 +157,13 @@ module Poetry
                                 values: SIDES.map(&:to_s) }
              }
 
+        # Raises without a trigger.
         # @api private
         def before_render
           raise ArgumentError, "Tooltip requires with_trigger (the described control)" unless trigger?
         end
 
+        # The tooltip's attributes: its role, open state, placement and wiring.
         # @api private
         def content_attributes
           # A server-pinned open tooltip renders bare data-open; the

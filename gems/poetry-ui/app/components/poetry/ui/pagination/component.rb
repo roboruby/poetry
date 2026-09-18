@@ -78,8 +78,10 @@ module Poetry
                                "edges: :none would render an empty nav"
         end
 
+        # Whether the previous and next links render.
         # @api private
         def show_edges? = edges != :none
+        # Whether the edge links are icons only.
         # @api private
         def icon_edges? = edges == :icons
 
@@ -94,8 +96,10 @@ module Poetry
           with_gaps([1, *window, total])
         end
 
+        # Whether a page is the current one.
         # @api private
         def current?(page) = page == current
+        # The path for a page.
         # @api private
         def path_for(page) = @path.call(page)
 
@@ -144,8 +148,10 @@ module Poetry
           options
         end
 
+        # The previous link's options.
         # @api private
         def previous_options = edge_options(current - 1, "Go to previous page", css(:edge_previous))
+        # The next link's options.
         # @api private
         def next_options = edge_options(current + 1, "Go to next page", css(:edge_next))
 
@@ -163,6 +169,7 @@ module Poetry
           @path = path
         end
 
+        # The pages with a gap marker wherever a number is skipped.
         def with_gaps(pages)
           pages.each_with_object([]) do |page, sequence|
             previous = sequence.reject { |item| item == :gap }.last

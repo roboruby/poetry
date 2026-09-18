@@ -133,16 +133,19 @@ module Poetry
         # group; copy is a real tab stop wired to the clipboard-text
         # engine.
 
+        # The hint's id.
         # @api private
         def hint_id
           "#{control_id}-hint"
         end
 
+        # The field's state: masked with a value, else empty.
         # @api private
         def state
           value.present? ? "masked" : "empty"
         end
 
+        # Whether a value is masked.
         # @api private
         def masked?
           state == "masked"
@@ -158,6 +161,7 @@ module Poetry
           super(attrs)
         end
 
+        # The input group's attributes.
         # @api private
         def group_attributes
           attrs = {
@@ -188,6 +192,7 @@ module Poetry
           element_attributes(:mask, attrs)
         end
 
+        # The password input's attributes: name, control id, classes and wiring.
         # @api private
         def input_attributes
           attrs = {
@@ -235,6 +240,7 @@ module Poetry
                             wiring: stimulus_attributes_for(:copy_button))
         end
 
+        # The masked value's accessible label, with the field label when given.
         # @api private
         def masked_label
           if label.present?
@@ -253,7 +259,9 @@ module Poetry
 
         private
 
+        # The announcement after hiding the value.
         def hidden_message_text = t("poetry.sensitive_input.hidden")
+        # The confirmation text after a copy.
         def copied_message_text = t("poetry.clipboard_text.copied")
 
         private :hint_id, :state, :masked?, :group_attributes, :addon_attributes, :mask_attributes

@@ -215,15 +215,18 @@ module Poetry
         internal_component!
         include ItemSlots
 
+        # A group with its text direction.
         def initialize(dir: nil, **extra_attributes)
           super(extra_attributes)
           @dir = dir
         end
 
+        # Raises when the group has no items.
         def before_render
           raise ArgumentError, "#{family_name} group requires at least one item" unless items?
         end
 
+        # Renders the group with its items, labelled when it has a label.
         def call
           attrs = { "data-slot" => "#{family_slot_prefix}-group", "role" => "group" }
           attrs["aria-labelledby"] = label_id if @labelled
@@ -240,14 +243,17 @@ module Poetry
           super("id" => label_id, "aria-hidden" => "true", **, &)
         end
 
+        # The stable id the label id derives from.
         def group_id
           @group_id ||= poetry_instance_id("poetry-#{family_slot_prefix}-group")
         end
 
+        # The label's id.
         def label_id
           "#{group_id}-label"
         end
 
+        # The menu's text direction.
         def menu_dir
           @dir
         end
@@ -261,6 +267,7 @@ module Poetry
         internal_component!
         include Helpers
 
+        # The group's selected value.
         attr_reader :group_value
 
         renders_many :radio_items,
@@ -287,16 +294,19 @@ module Poetry
                        end
                      }
 
+        # A radio group with its selected value.
         def initialize(value: nil, **extra_attributes)
           super(extra_attributes)
           @group_value = value&.to_s
           @seen_values = Set.new
         end
 
+        # Raises when the group has no radio items.
         def before_render
           raise ArgumentError, "#{family_name} radio group requires at least one with_radio_item" unless radio_items?
         end
 
+        # Renders the radio group with its items and value.
         def call
           attrs = { "data-slot" => "#{family_slot_prefix}-radio-group", "role" => "group" }
           attrs["data-value"] = group_value if group_value
@@ -337,37 +347,45 @@ module Poetry
           @content_class = content_class
         end
 
+        # Raises without a trigger or items.
         def before_render
           raise ArgumentError, "#{family_name} sub requires with_trigger (the sub-menu item)" unless trigger?
           raise ArgumentError, "#{family_name} sub requires at least one item" unless items?
         end
 
+        # Renders the sub-menu: its trigger and content.
         def call
           content_tag(:div, sub_attributes) { safe_join([trigger, sub_content]) }
         end
 
+        # The trigger's id.
         def trigger_id
           "#{instance_id}-trigger"
         end
 
+        # The content's id.
         def content_id
           "#{instance_id}-content"
         end
 
         private
 
+        # The menu's text direction.
         def menu_dir
           @dir
         end
 
+        # Whether the text direction is right to left.
         def rtl?
           @dir == :rtl
         end
 
+        # The server-stable id the trigger and content ids derive from.
         def instance_id
           @instance_id ||= poetry_instance_id("poetry-#{family_slot_prefix}-sub")
         end
 
+        # The sub-menu wrapper's attributes with its popper wiring, opening to the reading side.
         def sub_attributes
           attrs = { "data-slot" => "#{family_slot_prefix}-sub" }.merge(
             stimulus_attributes(:popper) do |popper|
@@ -379,6 +397,7 @@ module Poetry
           Poetry::Core::HTML::Attributes.merged(attrs, html_attributes)
         end
 
+        # The sub-menu's content: a hidden menu labelled by its trigger.
         def sub_content
           attrs = {
             "id" => content_id, "role" => "menu", "aria-orientation" => "vertical",
@@ -389,6 +408,7 @@ module Poetry
           content_tag(:div, attrs) { safe_join(items.map(&:to_s)) }
         end
 
+        # The sub-menu trigger's wiring: hover enter and leave, click open, and the popper anchor.
         def sub_trigger_stimulus_attributes
           stimulus_attributes(:menu, :popper) do |menu, popper|
             menu.with_action(:sub_enter, on: :pointerenter)
@@ -398,6 +418,7 @@ module Poetry
           end
         end
 
+        # The sub-menu's chevron icon.
         def chevron
           render(Icon::Component.new(name: :"chevron-right", class: family_style.css(:sub_indicator)))
         end

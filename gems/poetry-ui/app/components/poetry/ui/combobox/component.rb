@@ -26,8 +26,10 @@ module Poetry
         # @api private
         Entry = Struct.new(:value, :label, :disabled)
 
+        # The registered options, and the id of the highlighted one.
         attr_reader :entries, :highlighted_id
 
+        # An empty option set under a base id, highlighting the given value.
         def initialize(base_id:, highlight_value: nil)
           @base_id = base_id
           @highlight_value = highlight_value.presence
@@ -52,6 +54,7 @@ module Poetry
           [item_id, highlighted]
         end
 
+        # The label of the option with a value, or nil.
         def label_for(value)
           entries.find { |entry| entry.value == value }&.label
         end
@@ -77,6 +80,7 @@ module Poetry
       module Helpers
         private
 
+        # One item part over the shared option set and selection.
         def item_component(**)
           Item.new(option_set: option_set, selected_value: selected_value, **)
         end
@@ -122,8 +126,10 @@ module Poetry
         internal_component!
         include Helpers
 
+        # The shared option set and the committed selection.
         attr_reader :option_set, :selected_value
 
+        # An item with its value, disabled state, text value and keywords.
         def initialize(option_set:, selected_value:, value:, **options)
           super(options)
           @option_set = option_set
@@ -136,6 +142,7 @@ module Poetry
           @always_render = options.delete(:always_render) || false
         end
 
+        # Renders the option, registered in the set, marked selected when it matches the selection.
         def call
           label_html = content || "".html_safe
           plain_label = (@text_value.presence || ActionView::Base.full_sanitizer.sanitize(label_html.to_s)).squish
@@ -190,6 +197,7 @@ module Poetry
         internal_component!
         include Helpers
 
+        # The shared option set and the committed selection.
         attr_reader :option_set, :selected_value
 
         renders_many :items,
@@ -200,6 +208,7 @@ module Poetry
                        separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
                      }
 
+        # A group with its heading; raises without one.
         def initialize(option_set:, selected_value:, heading:, always_render: false, **extra_attributes)
           raise ArgumentError, "Combobox group requires heading: (the group's accessible name)" if heading.blank?
 
@@ -210,10 +219,12 @@ module Poetry
           @always_render = always_render
         end
 
+        # Raises when the group has no items.
         def before_render
           raise ArgumentError, "Combobox group requires at least one item" unless items?
         end
 
+        # Renders the group with its heading and items.
         def call
           attrs = { "data-slot" => "combobox-group", "role" => "group", "aria-labelledby" => heading_id }
           # The group is unpadded and hookless (the list carries the
@@ -228,10 +239,12 @@ module Poetry
 
         private
 
+        # The stable id the heading id derives from.
         def group_id
           @group_id ||= poetry_instance_id("poetry-combobox-group")
         end
 
+        # The heading's id.
         def heading_id
           "#{group_id}-heading"
         end
@@ -888,6 +901,7 @@ module Poetry
 
         private
 
+        # Whether the combobox has an accessible name: an id or a trigger aria label.
         def named?
           id.present? || @trigger_aria["label"].present? || @trigger_aria["labelledby"].present?
         end
@@ -905,6 +919,7 @@ module Poetry
           aria
         end
 
+        # The aria attributes pulled off the root for the trigger.
         def trigger_aria_attributes
           TRIGGER_ARIA_KEYS.each_with_object({}) do |key, attrs|
             attrs["aria-#{key}"] = @trigger_aria[key] unless @trigger_aria[key].nil?
@@ -989,6 +1004,7 @@ module Poetry
           content_tag(:template, chip_part)
         end
 
+        # The inline filter input element.
         def inline_input
           tag.input(**inline_input_attributes)
         end
@@ -1052,12 +1068,14 @@ module Poetry
           safe_join(rendered)
         end
 
+        # The native select's name, with brackets when multiple.
         def native_name
           return name unless multiple
 
           name.end_with?("[]") ? name : "#{name}[]"
         end
 
+        # Whether a value is selected in the native select.
         def native_selected?(entry_value)
           multiple ? selected_values.include?(entry_value) : entry_value == selected_value
         end
@@ -1072,6 +1090,7 @@ module Poetry
           stimulus_attributes_for(:root)
         end
 
+        # The trigger's wiring.
         def trigger_stimulus_attributes
           stimulus_attributes_for(:trigger)
         end

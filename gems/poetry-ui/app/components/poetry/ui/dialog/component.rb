@@ -183,6 +183,7 @@ module Poetry
           content_class
         end
 
+        # The data attributes stamped on the panel; none for a plain dialog.
         def panel_stamps
           {}
         end

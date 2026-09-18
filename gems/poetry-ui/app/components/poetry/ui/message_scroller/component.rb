@@ -135,6 +135,7 @@ module Poetry
           super(pending_scroll_attributes)
         end
 
+        # The viewport's attributes: the region, its label, wiring and pending scroll.
         # @api private
         def viewport_attributes
           {
@@ -150,6 +151,7 @@ module Poetry
           %i[end last-anchor].include?(default_scroll_position) ? { "data-pending-scroll" => "" } : {}
         end
 
+        # The log's attributes with its wiring.
         # @api private
         def content_attributes
           {
@@ -159,12 +161,14 @@ module Poetry
           }.merge(stimulus_attributes_for(:content))
         end
 
+        # The spacer's attributes, hidden until the controller needs it.
         # @api private
         def spacer_attributes
           { "data-slot" => "message-scroller-spacer", "aria-hidden" => "true", "hidden" => true }
             .merge(stimulus_attributes_for(:spacer))
         end
 
+        # The jump button's attributes with its wiring.
         # @api private
         def button_attributes
           {

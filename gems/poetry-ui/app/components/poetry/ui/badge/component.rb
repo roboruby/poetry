@@ -54,6 +54,7 @@ module Poetry
           ensure_content!
         end
 
+        # Renders the badge as a link when it has an href, else as a span.
         # @api private
         def call
           content_tag(href.present? ? :a : :span, content, **root_attributes)

@@ -168,11 +168,13 @@ module Poetry
                "data-sidebar" => "always \"menu-badge\" - the suite-wide sub-part marker"
              }
 
+        # Raises without a nav.
         # @api private
         def before_render
           raise ArgumentError, "Sidebar requires with_nav (the sidebar column)" unless nav?
         end
 
+        # The state attribute: expanded or collapsed.
         # @api private
         def data_state
           open ? "expanded" : "collapsed"
@@ -185,6 +187,7 @@ module Poetry
           open ? "" : collapsible.to_s
         end
 
+        # Whether the variant floats or insets.
         # @api private
         def inset_variant?
           %i[floating inset].include?(variant)
@@ -201,6 +204,7 @@ module Poetry
           )
         end
 
+        # The sidebar peer's attributes: state, collapsible mode, variant, side and wiring.
         # @api private
         def peer_attributes
           {
@@ -210,11 +214,13 @@ module Poetry
           }.merge(stimulus_attributes_for(:peer))
         end
 
+        # The gap's classes, padded for inset variants.
         # @api private
         def gap_classes
           inset_variant? ? "#{css(:gap)} #{css(:gap_inset)}" : css(:gap)
         end
 
+        # The container's classes, padded for inset variants.
         # @api private
         def container_classes
           inset_variant? ? "#{css(:container)} #{css(:container_inset)}" : css(:container)
@@ -236,6 +242,7 @@ module Poetry
           attrs.merge(stimulus_attributes_for(:mobile))
         end
 
+        # The mobile sheet's title id.
         # @api private
         def mobile_title_id
           @mobile_title_id ||= poetry_instance_id("poetry-sidebar-mobile")

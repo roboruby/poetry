@@ -40,11 +40,13 @@ module Poetry
                         "app-owned typeset.css; not-typeset (class or data attribute) opts a " \
                         "subtree out"
 
+        # Raises without content.
         # @api private
         def before_render
           ensure_content!
         end
 
+        # Renders the typeset container around its content.
         # @api private
         def call
           content_tag(:div, content, **root_attributes)

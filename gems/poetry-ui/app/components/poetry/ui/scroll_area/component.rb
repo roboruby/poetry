@@ -39,6 +39,7 @@ module Poetry
         part "scroll-area-viewport", "The focusable native scroll region (role=region + tabindex=0) " \
                                      "with themed platform scrollbars - zero JS"
 
+        # Raises without a label or content.
         # @api private
         def before_render
           raise ArgumentError, "ScrollArea requires label: (the region's accessible name)" if label.blank?
@@ -46,6 +47,7 @@ module Poetry
           ensure_content!
         end
 
+        # Renders the scroll region around its viewport.
         # @api private
         def call
           content_tag(:div, root_attributes) do
@@ -53,6 +55,7 @@ module Poetry
           end
         end
 
+        # The viewport's attributes: the labelled region, focusable.
         # @api private
         def viewport_attributes
           {

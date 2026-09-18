@@ -63,6 +63,7 @@ module Poetry
 
     private
 
+    # The generated rules text with its do-not-edit header.
     def generated_rules
       registry = Poetry::Core::Registry.new(source_root: Poetry::Ui.root)
       body = Poetry::Core::LlmsText.new(registry: registry).full
@@ -70,6 +71,7 @@ module Poetry
         "project overrides go in .poetry/house-rules.md -->\n\n#{body}"
     end
 
+    # Writes the import block into a file, replacing the marked block when present.
     def marker_import(relative)
       path = File.join(destination_root, relative)
       existing = File.exist?(path) ? File.read(path) : nil

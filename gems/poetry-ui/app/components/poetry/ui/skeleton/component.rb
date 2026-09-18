@@ -20,6 +20,7 @@ module Poetry
 
         part "skeleton", "The pulsing placeholder box itself - sized entirely by utility classes"
 
+        # Renders the placeholder around its content.
         # @api private
         def call
           content_tag(:div, content, **root_attributes)

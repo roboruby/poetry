@@ -62,6 +62,7 @@ module Poetry
         # No content = an empty <table> in a scroll container.
         requires_content "the table sections (poetry_table_* helpers)"
 
+        # Raises without content, or with a sticky header and no scroll label.
         # @api private
         def before_render
           ensure_content!
@@ -71,6 +72,7 @@ module Poetry
                 "Table sticky_header: requires scroll_label: (the scroll region's accessible name)"
         end
 
+        # The scroll container's attributes, a labelled region when the header is sticky.
         # @api private
         def container_attributes
           extra = [(css(:container_sticky) if sticky_header), container_class].compact.join(" ")

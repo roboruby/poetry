@@ -208,6 +208,7 @@ module Poetry
 
         private
 
+        # A value as a Date, parsed from text; nil stays nil.
         def to_date(value)
           return if value.nil?
           return value if value.is_a?(Date)

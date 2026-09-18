@@ -47,6 +47,7 @@ module Poetry
 
         private
 
+        # The icon set the name resolves in.
         def icon_set
           Poetry::Core::Icons.set(library)
         end
@@ -75,6 +76,7 @@ module Poetry
           end
         end
 
+        # Whether a missing icon raises: the configured answer, else only in local environments.
         def raise_on_missing_icon?
           configured = self.class.config.raise_on_missing_icon
           return configured unless configured.nil?
@@ -82,6 +84,7 @@ module Poetry
           !defined?(Rails.env) || Rails.env.local?
         end
 
+        # Adds a validation error for an unknown icon name, with a suggestion when one is close.
         def icon_must_exist
           return if name.blank? || icon_set.include?(name)
 
@@ -91,10 +94,12 @@ module Poetry
                             "#{library || self.class.config.icon_library} set#{hint}")
         end
 
+        # The svg's attributes: the caller's over the defaults and the aria.
         def svg_attributes
           html_attributes.merge_if_not_set(default_svg_attributes.merge(aria_attributes))
         end
 
+        # The default svg attributes: namespace, intrinsic box and stroke settings.
         def default_svg_attributes
           {
             "xmlns" => "http://www.w3.org/2000/svg",
@@ -114,6 +119,7 @@ module Poetry
           }.merge(component_data_attributes)
         end
 
+        # The aria attributes: an image role with its label, else hidden.
         def aria_attributes
           if label.present?
             { "role" => "img", "aria-label" => label }

@@ -52,6 +52,7 @@ module Poetry
 
     private
 
+    # Reports one copied component against the gem: remote, gone, unchanged or changed.
     def report_component(name, record)
       return report_remote(name, record) if record.is_a?(Hash) && record.key?("source")
 
@@ -97,11 +98,13 @@ module Poetry
       changes
     end
 
+    # Reports a remote-installed component.
     def report_remote(name, record)
       say_status :remote, "#{name} - installed from #{record["source"]}; re-run " \
                           "`bin/rails g poetry:add #{record["source"]}` to compare (skip-if-exists)", :cyan
     end
 
+    # Reports one copied block against the catalog.
     def report_block(path)
       name = File.basename(path, ".html.erb").delete_prefix("_").tr("_", "-")
       entry = block_catalog[name]
@@ -120,12 +123,14 @@ module Poetry
       end
     end
 
+    # The components section of the manifest, empty when absent.
     def manifest_components
       path = File.join(destination_root, MANIFEST)
       config = File.exist?(path) ? YAML.safe_load_file(path) : nil
       config.is_a?(Hash) && config["components"].is_a?(Hash) ? config["components"] : {}
     end
 
+    # The block catalog from the committed registry.
     def block_catalog
       @block_catalog ||= YAML.safe_load_file(
         Poetry::Ui.root.join(Poetry::Core::Registry::RELATIVE_PATH)

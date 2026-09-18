@@ -58,6 +58,7 @@ module Poetry
       address.kind == :bare || (address.kind == :namespace && address.namespace == "@poetry")
     end
 
+    # Installs local names: components, blocks and recipes; raises for unknown ones.
     def install_local(local)
       names = local.map { |address| address.name.tr("-", "_") }
       components, rest = names.partition { |name| source_dir(name).directory? }
@@ -70,6 +71,7 @@ module Poetry
       recipes.each { |name| install_recipe(name.tr("_", "-")) }
     end
 
+    # Copies the components with their dependencies and records them in the manifest.
     def copy_components(names)
       resolved = resolve(names)
       resolved.each { |name| copy_component(name) }
@@ -79,6 +81,7 @@ module Poetry
       say_status :note, "restart your server so the local copies take precedence over the gem", :yellow
     end
 
+    # The names with their dependencies, in install order.
     def resolve(names, seen = [])
       names.each do |name|
         next if seen.include?(name)
@@ -89,10 +92,12 @@ module Poetry
       seen
     end
 
+    # A component's directory in the gem.
     def source_dir(name)
       Poetry::Ui.root.join("app/components/poetry/ui", name)
     end
 
+    # Copies a component's files into the app, never overwriting.
     def copy_component(name)
       dir = source_dir(name)
       # Recursive: a component owns its nested subcomponents (command ships
@@ -115,6 +120,7 @@ module Poetry
       record_in_manifest(plan.manifest)
     end
 
+    # The install plan for remote addresses through the registry client.
     def build_plan(remote)
       config = manifest_config
       client = Poetry::Core::RegistryClient.new(
@@ -127,6 +133,7 @@ module Poetry
       ).plan(remote)
     end
 
+    # Writes the plan's stylesheets and adds their import lines to the Tailwind entry.
     def apply_css(plan)
       plan.css_writes.each { |css| create_file css[:path], css[:content], skip: true }
       return if plan.entry_lines.empty?
@@ -138,6 +145,7 @@ module Poetry
       plan.entry_lines.each { |line| inject_unless_present(TAILWIND_ENTRY, line) }
     end
 
+    # Prints what the gems satisfy, the gems to add, and the docs.
     def report(plan)
       plan.gem_satisfied.each do |name|
         say_status :runtime, "#{name} - provided by the installed poetry gems (no copy needed)", :cyan
@@ -148,6 +156,7 @@ module Poetry
       plan.docs.each { |docs| say_status :docs, docs, :blue }
     end
 
+    # Runs the block generator for a name.
     def install_block(name)
       BlockGenerator.new([name], [], destination_root: destination_root).invoke_all
     end
@@ -167,6 +176,7 @@ module Poetry
       say_status :note, routes_hint, :yellow if routes_hint
     end
 
+    # The recipe names the gem ships.
     def gem_recipes
       @gem_recipes ||= Poetry::Ui.recipe_items.names
     end
@@ -180,6 +190,7 @@ module Poetry
       end
     end
 
+    # The block names the gem ships.
     def gem_blocks
       @gem_blocks ||= begin
         registry = YAML.safe_load_file(Poetry::Ui.root.join(Poetry::Core::Registry::RELATIVE_PATH))
@@ -187,18 +198,21 @@ module Poetry
       end
     end
 
+    # The gem roots and path prefixes that provide items.
     def gem_item_sources
       sources = [[Poetry::Ui.root, "poetry/ui/"]]
       sources << [Poetry::Charts.root, "poetry/charts/"] if defined?(Poetry::Charts::Engine)
       sources
     end
 
+    # The manifest as a hash, empty when absent.
     def manifest_config
       path = File.join(destination_root, MANIFEST)
       config = File.exist?(path) ? YAML.safe_load_file(path) : nil
       config.is_a?(Hash) ? config : {}
     end
 
+    # Records entries in a manifest section, keeping existing ones.
     def record_in_manifest(entries, section: "components")
       manifest = manifest_config
       manifest[section] = {} unless manifest[section].is_a?(Hash)

@@ -93,6 +93,7 @@ module Poetry
           [Style.side(side), content_class]
         end
 
+        # The data attributes stamped on the panel: its side.
         def panel_stamps
           { "data-side" => side }
         end

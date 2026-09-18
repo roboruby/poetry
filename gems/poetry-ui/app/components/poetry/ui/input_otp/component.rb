@@ -207,6 +207,7 @@ module Poetry
           Poetry::Core::HTML::Attributes.new(html_attributes.except(*INPUT_FACING))
         end
 
+        # The pattern's spec: the JS regex, the per-cell class and the input mode; raises for an unknown one.
         def pattern_spec
           return PATTERNS.fetch(pattern.to_sym) if pattern.respond_to?(:to_sym) && PATTERNS.key?(pattern.to_sym)
           return { js: pattern.source, char: "(?:#{pattern.source})", inputmode: "text" } if pattern.is_a?(Regexp)
@@ -215,14 +216,17 @@ module Poetry
                                "got #{pattern.inspect}"
         end
 
+        # The HTML pattern attribute: one cell pattern repeated per length.
         def html_pattern
           "#{pattern_spec[:char]}{#{length}}"
         end
 
+        # The input mode the pattern asks for.
         def inputmode
           pattern_spec[:inputmode]
         end
 
+        # Raises unless the length is in range.
         def validate_length!
           return if LENGTH_RANGE.cover?(length)
 
@@ -230,6 +234,7 @@ module Poetry
                                "got #{length.inspect}"
         end
 
+        # Raises unless the group sizes are integers summing to the length.
         def validate_groups!
           return if group_sizes.sum == length
 
@@ -239,6 +244,7 @@ module Poetry
           raise ArgumentError, "InputOTP groups: must be an array of integers - got #{groups.inspect}"
         end
 
+        # The pattern's JavaScript regex source.
         def pattern_js = pattern_spec[:js]
 
         private :group_sizes, :display_value, :char_at, :input_id, :complete?, :input_attributes

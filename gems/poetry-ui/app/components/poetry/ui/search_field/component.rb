@@ -95,6 +95,7 @@ module Poetry
           super(attrs)
         end
 
+        # The search input's attributes: name, control id, classes and wiring.
         # @api private
         def input_attributes
           attrs = {

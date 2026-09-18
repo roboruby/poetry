@@ -166,6 +166,7 @@ module Poetry
           super(attrs)
         end
 
+        # The text input's attributes: control id, input mode, value and wiring.
         # @api private
         def input_attributes
           attrs = {
@@ -221,6 +222,7 @@ module Poetry
                             wiring: stimulus_attributes_for(direction))
         end
 
+        # The icon for a stepper direction.
         # @api private
         def stepper_icon(direction)
           direction == :increment ? :plus : :minus
@@ -228,6 +230,7 @@ module Poetry
 
         private
 
+        # Whether a value reads as a number.
         def numeric?(candidate)
           candidate.is_a?(Numeric) || candidate.to_s.match?(/\A-?\d+(\.\d+)?\z/)
         end
@@ -245,11 +248,17 @@ module Poetry
           float == float.to_i ? float.to_i.to_s : float.to_s
         end
 
+        # The minimum as a number.
         def min_number = number(min)
+        # The maximum as a number.
         def max_number = number(max)
+        # The step as a number.
         def step_number = number(step)
+        # The large step as a number.
         def large_step_number = number(large_step)
+        # The small step as a number.
         def small_step_number = number(small_step)
+        # The format options as JSON.
         def format_json = format.to_json
 
         private :input_attributes, :hidden_attributes, :stepper, :stepper_icon

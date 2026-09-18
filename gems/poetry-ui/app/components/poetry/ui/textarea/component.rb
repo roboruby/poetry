@@ -39,6 +39,7 @@ module Poetry
         part "textarea", "The <textarea> element itself - value renders as content; " \
                          "auto-grow is the field-sizing-content CSS property, zero JS"
 
+        # Renders the textarea with its value as content.
         # @api private
         def call
           # value as CONTENT (escaped by content_tag - the </textarea>

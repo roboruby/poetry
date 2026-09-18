@@ -64,6 +64,7 @@ module Poetry
 
         private
 
+        # The input mask controller's wiring with its pattern.
         def mask_attributes
           attrs = Poetry::Core::HTML::Attributes.new
           masked = Poetry::Core::Stimulus::Builder.new(MASK, attrs)

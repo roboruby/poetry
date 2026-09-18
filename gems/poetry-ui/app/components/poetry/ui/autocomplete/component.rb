@@ -125,6 +125,7 @@ module Poetry
         # @api private
         def item_models = (@item_models ||= [])
 
+        # The root id: the given id as a token, else a stable instance id.
         # @api private
         def autocomplete_id
           @autocomplete_id ||= if (token = dom_id_token(id))
@@ -134,6 +135,7 @@ module Poetry
                                end
         end
 
+        # The listbox's id.
         # @api private
         def list_id = "#{autocomplete_id}-list"
 
@@ -142,6 +144,7 @@ module Poetry
           super({ "class" => css, "id" => autocomplete_id })
         end
 
+        # The text input's attributes: the combobox role, its list and open state, and the wiring.
         # @api private
         def input_attributes
           attrs = {
@@ -154,6 +157,7 @@ module Poetry
           attrs.merge(stimulus_attributes_for(:input).transform_keys(&:to_sym))
         end
 
+        # The popup's attributes with its open or closed state.
         # @api private
         def content_attributes
           attrs = {
@@ -168,6 +172,7 @@ module Poetry
           attrs.merge(stimulus_attributes_for(:content))
         end
 
+        # One option's attributes: its id, value, label and highlighted state.
         # @api private
         def item_attributes(item, index)
           attrs = {

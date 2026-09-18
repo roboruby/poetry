@@ -125,6 +125,7 @@ module Poetry
                "data-value" => "the owning tab's value"
              }
 
+        # Raises without tabs, or when the default matches no tab.
         # @api private
         def before_render
           raise ArgumentError, "Tabs requires at least one with_tab" unless tabs?
@@ -149,6 +150,7 @@ module Poetry
           definition.merge("inputSchema" => schema.merge("properties" => schema["properties"].merge("value" => value)))
         end
 
+        # The declared tabs, in order.
         # @api private
         def tab_defs
           @tab_defs ||= []
@@ -161,13 +163,16 @@ module Poetry
           @active_value ||= default.presence || tab_defs.reject(&:disabled).first&.value || tab_defs.first.value
         end
 
+        # Whether a tab is the active one.
         # @api private
         def active?(tab)
           tab.value == active_value
         end
 
+        # One tab's trigger id.
         # @api private
         def trigger_id(tab) = "#{instance_id}-trigger-#{tab.value}"
+        # One tab's panel id.
         # @api private
         def panel_id(tab) = "#{instance_id}-panel-#{tab.value}"
 
@@ -191,6 +196,7 @@ module Poetry
           )
         end
 
+        # The tab list's attributes: its orientation, variant, label and wiring.
         # @api private
         def list_attributes
           attrs = {
@@ -202,6 +208,7 @@ module Poetry
           attrs.merge(stimulus_attributes_for(:list))
         end
 
+        # One trigger's attributes: the tab role, its selected state, tab stop and wiring.
         # @api private
         def trigger_attributes(tab)
           attrs = {
@@ -221,6 +228,7 @@ module Poetry
           attrs
         end
 
+        # One panel's attributes: labelled by its trigger, hidden when inactive.
         # @api private
         def panel_attributes(tab)
           attrs = {
@@ -241,6 +249,7 @@ module Poetry
 
         private
 
+        # The server-stable id the trigger and panel ids derive from.
         def instance_id
           @instance_id ||= poetry_instance_id("poetry-tabs")
         end

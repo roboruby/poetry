@@ -771,6 +771,7 @@ module Poetry
         end
       end
 
+      # Adds one choice to a select or group as an item.
       def add_select_item(owner, choice)
         label, value = choice.is_a?(Array) ? choice : [choice.to_s, choice]
         owner.with_item(value: value.to_s) { label.to_s }
@@ -851,6 +852,7 @@ module Poetry
         poetry_select(method, pairs, hint: hint, **)
       end
 
+      # An item's label: its to_label, name or title, else its text.
       def association_label(item)
         %i[to_label name title].each do |candidate|
           return item.public_send(candidate) if item.respond_to?(candidate)
@@ -858,11 +860,13 @@ module Poetry
         item.to_s
       end
 
+      # The foreign key attribute for an association.
       def association_attribute(reflection, method)
         attribute = (reflection.respond_to?(:foreign_key) && reflection.foreign_key) || "#{method}_id"
         attribute.to_sym
       end
 
+      # A collection association as a multi-value control; raises for single-value ones.
       def collection_association(method, pairs, as, hint: nil, **)
         attribute = :"#{method.to_s.singularize}_ids"
         case as
@@ -887,6 +891,7 @@ module Poetry
         end
       end
 
+      # One checkbox row per collection item, checked when chosen.
       def checkbox_group_item_rows(method, collection, chosen, base_id)
         collection.map do |item|
           value, label = item.is_a?(Array) ? item : [item, item.to_s.humanize]

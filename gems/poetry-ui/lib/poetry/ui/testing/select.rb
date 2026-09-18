@@ -121,6 +121,7 @@ module Poetry
                 "no option #{text.inspect} reached by ArrowDown - options: #{items.map(&:text).inspect}"
         end
 
+        # The trigger button.
         def trigger
           part("select-trigger")
         end
@@ -130,10 +131,12 @@ module Poetry
           @content_id ||= trigger["aria-controls"]
         end
 
+        # The listbox node.
         def content
           session.find("##{content_id}", visible: :all)
         end
 
+        # An option by its exact text.
         def option(text)
           content.find("[data-slot='select-item']", text: text, exact_text: true)
         end

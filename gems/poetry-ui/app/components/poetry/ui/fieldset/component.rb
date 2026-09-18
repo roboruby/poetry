@@ -68,12 +68,14 @@ module Poetry
 
         private
 
+        # The legend element with its variant.
         def legend_tag
           content_tag(:legend, legend, "data-slot" => "field-legend",
                                        "data-variant" => legend_variant,
                                        "class" => css(:legend))
         end
 
+        # The hint paragraph, or nil when blank.
         def hint_tag
           return if hint.blank?
 

@@ -41,6 +41,7 @@ module Poetry
           raise ArgumentError, "Progress max: must be positive" unless max.positive?
         end
 
+        # Renders the progress bar: its label, value and track.
         # @api private
         def call
           content_tag(:div, root_attributes) do
@@ -48,11 +49,13 @@ module Poetry
           end
         end
 
+        # The value as a percentage of the maximum, clamped.
         # @api private
         def percent
           (value.to_f / max * 100).clamp(0, 100)
         end
 
+        # The percentage as text.
         # @api private
         def percent_text
           "#{percent.round}%"
@@ -71,16 +74,19 @@ module Poetry
 
         private
 
+        # The label span.
         def label_part
           content_tag(:span, label, "data-slot" => "progress-label", class: css(:label))
         end
 
+        # The value span, or nil when hidden.
         def value_part
           return unless show_value
 
           content_tag(:span, percent_text, "data-slot" => "progress-value", class: css(:value))
         end
 
+        # The track with its indicator sized to the percentage.
         def track
           content_tag(:div, "data-slot" => "progress-track", class: css(:track)) do
             content_tag(:div, nil, "data-slot" => "progress-indicator", class: css(:indicator),

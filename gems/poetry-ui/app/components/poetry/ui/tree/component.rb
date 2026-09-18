@@ -85,6 +85,7 @@ module Poetry
              }
         part "tree-item-label", "The row's text - a link when href: is given"
 
+        # Raises without a label, then consumes the builder block.
         # @api private
         def before_render
           raise ArgumentError, "Tree requires label: (the treegrid's accessible name)" if label.blank?
@@ -108,11 +109,13 @@ module Poetry
           nil
         end
 
+        # The top-level items, in order.
         # @api private
         def root_items
           @root_items ||= []
         end
 
+        # The items flattened into rows, memoized.
         # @api private
         def rows
           @rows ||= flatten(root_items, level: 1, hidden: false)
@@ -128,6 +131,7 @@ module Poetry
           )
         end
 
+        # One row's attributes: its level, position, tab stop and expanded state.
         # @api private
         def row_attributes(row, index)
           attrs = {
@@ -148,6 +152,7 @@ module Poetry
           attrs
         end
 
+        # One row's expand toggle attributes with its labels and wiring.
         # @api private
         def toggle_attributes(row, index)
           attrs = {
@@ -162,16 +167,19 @@ module Poetry
           element_attributes(:toggle, attrs)
         end
 
+        # One row's id by index.
         # @api private
         def row_id(index)
           "#{tree_id}-item-#{index}"
         end
 
+        # The server-stable id the row ids derive from.
         # @api private
         def tree_id
           @tree_id ||= poetry_instance_id("poetry-tree")
         end
 
+        # The index of the first row not hidden.
         # @api private
         def first_visible_index
           @first_visible_index ||= rows.index { |row| !row.hidden } || 0
@@ -188,9 +196,11 @@ module Poetry
         # The nested builder yielded to item blocks - call with_item on it
         # to declare children. Never constructed directly.
         class Item
+          # The item's options and its child items.
           # @api private
           attr_reader :options, :children
 
+          # An item with its options and no children.
           # @api private
           def initialize(**options)
             @options = options
@@ -209,6 +219,7 @@ module Poetry
 
         private
 
+        # The items as rows, depth first, with their levels, positions and hidden state.
         def flatten(items, level:, hidden:)
           items.flat_map.with_index do |item, index|
             expandable = item.children.any?

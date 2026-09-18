@@ -31,6 +31,7 @@ module Poetry
 
         private
 
+        # The input type for an attribute: a collection, attachment, enum, column type or name heuristic.
         def infer_input_type(method, collection: nil)
           return :select if collection
           return :file if attachment_attribute?(method)
@@ -50,10 +51,12 @@ module Poetry
             object.respond_to?("#{method}_attacher") || object.respond_to?("remote_#{method}_url")
         end
 
+        # Whether the attribute is a defined enum.
         def enum_attribute?(method)
           object.class.respond_to?(:defined_enums) && object.class.defined_enums.key?(method.to_s)
         end
 
+        # The attribute's column type, or nil.
         def column_type(method)
           return nil unless object.class.respond_to?(:type_for_attribute)
 

@@ -80,11 +80,13 @@ module Poetry
         part "timeline-time", "The event's <time> - muted, small"
         part "timeline-content", "Muted description under the header (the item's block)"
 
+        # Raises without items.
         # @api private
         def before_render
           raise ArgumentError, "Timeline requires at least one with_item" unless items?
         end
 
+        # Renders the list with its items.
         # @api private
         def call
           content_tag(:ol, safe_join(items.map(&:to_s)), **root_attributes)
@@ -111,11 +113,13 @@ module Poetry
           end
         end
 
+        # The separator line between items.
         def item_separator
           content_tag(:div, nil, "data-slot" => "timeline-separator", "aria-hidden" => "true",
                                  "class" => css(:separator))
         end
 
+        # An item's header: its title and time.
         def item_header(title, time)
           content_tag(:div, "data-slot" => "timeline-header", class: css(:header)) do
             parts = [content_tag(:div, title, "data-slot" => "timeline-title", class: css(:title))]

@@ -171,6 +171,7 @@ module Poetry
           super
         end
 
+        # Raises without items, and warns without an accessible name.
         # @api private
         def before_render
           raise ArgumentError, "ToggleGroup requires at least one with_item" unless items?
@@ -184,11 +185,13 @@ module Poetry
           )
         end
 
+        # Whether one item at a time is pressed.
         # @api private
         def single?
           type != :multiple
         end
 
+        # The pressed values as text, from value or values by type.
         # @api private
         def pressed_values
           @pressed_values ||= (single? ? Array(value) : Array(values)).compact.map(&:to_s)
@@ -208,6 +211,7 @@ module Poetry
 
         private
 
+        # Records an item value, raising on a duplicate.
         def register_item_value!(value)
           @item_values ||= Set.new
           item_value = value.to_s
@@ -218,6 +222,7 @@ module Poetry
           item_value
         end
 
+        # Raises for an icon-only item without a label.
         def ensure_item_name!(content, label, item_value)
           return if label.present? || content.to_s.gsub(/<[^>]+>/, " ").strip.present?
 
@@ -226,6 +231,7 @@ module Poetry
                 "state-invariant)"
         end
 
+        # Whether the group has an accessible name: a label or an aria label.
         def named?
           aria = html_attributes["aria"] || {}
           label.present? ||

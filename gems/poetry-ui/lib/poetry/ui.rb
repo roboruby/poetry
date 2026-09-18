@@ -91,6 +91,7 @@ module Poetry
         @root ||= Pathname.new(File.expand_path("../..", __dir__))
       end
 
+      # The template class list, comments and blanks dropped.
       # @return [Array<String>] the committed template-static classes
       def template_classes
         root.join(TEMPLATE_CLASSES_PATH).read.lines

@@ -90,6 +90,7 @@ module Poetry
         part "tag-group-remove", "The per-tag remove button - tabbable (Tab steps from the " \
                                  "row into it), removes exactly its own tag"
 
+        # Raises without a label.
         # @api private
         def before_render
           raise ArgumentError, "TagGroup requires label: (the grid's accessible name)" if label.blank?
@@ -103,6 +104,7 @@ module Poetry
           @instance_id ||= poetry_instance_id("poetry-tag-group")
         end
 
+        # The label's id.
         # @api private
         def label_id
           "#{instance_id}-label"
@@ -113,6 +115,7 @@ module Poetry
           super({ "class" => css })
         end
 
+        # The grid's attributes: its role, label, live region and wiring.
         # @api private
         def grid_attributes
           attrs = {
@@ -173,6 +176,7 @@ module Poetry
 
         private
 
+        # One tag's remove button, labelled by itself and its row.
         def remove_button(row_id, disabled:)
           button_id = "#{row_id}-remove"
           attrs = {
@@ -189,6 +193,7 @@ module Poetry
           end
         end
 
+        # A hidden input carrying one tag value.
         def hidden_input(value)
           tag.input(type: "hidden", name: "#{name}[]", value: value)
         end

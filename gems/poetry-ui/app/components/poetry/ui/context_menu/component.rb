@@ -287,6 +287,7 @@ module Poetry
 
         private
 
+        # The menu's text direction.
         def menu_dir
           dir
         end

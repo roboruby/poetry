@@ -34,11 +34,13 @@ module Poetry
         # text is required.
         requires_content "the visible link text"
 
+        # Raises without content.
         # @api private
         def before_render
           ensure_content!
         end
 
+        # Renders the anchor around its content.
         # @api private
         def call
           content_tag(:a, content, **root_attributes)

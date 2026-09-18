@@ -150,22 +150,27 @@ module Poetry
 
         private
 
+        # The native input type.
         def input_type
           "date"
         end
 
+        # The data-slot prefix for the field's parts.
         def slot_prefix
           "date-field"
         end
 
+        # The group's classes.
         def group_classes
           css(:group)
         end
 
+        # A value as an ISO date string.
         def iso(candidate)
           candidate.respond_to?(:strftime) ? candidate.strftime("%F") : candidate.to_s
         end
 
+        # The placeholder as an ISO date, today by default.
         def placeholder_iso
           placeholder_value.present? ? iso(placeholder_value) : Date.current.strftime("%F")
         end
@@ -186,6 +191,7 @@ module Poetry
           }
         end
 
+        # The visual placeholder text per segment.
         def segment_placeholders
           {
             year: t("poetry.date_field.placeholder_year"),
@@ -197,7 +203,9 @@ module Poetry
           }
         end
 
+        # The segment labels as JSON.
         def segment_labels_json = segment_labels.to_json
+        # The segment placeholders as JSON.
         def segment_placeholders_json = segment_placeholders.to_json
 
         private :group_attributes, :input_attributes

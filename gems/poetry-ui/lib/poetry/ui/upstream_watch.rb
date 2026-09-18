@@ -80,6 +80,7 @@ module Poetry
         end
       end
 
+      # The manifest: the pin, timestamp, families and watched files under a root.
       # @api private
       def build_manifest(root, pin:, generated_at:)
         {
@@ -111,11 +112,13 @@ module Poetry
         }
       end
 
+      # Whether a diff carries any change.
       def drift?(diff)
         diff.values_at(:added_families, :removed_families, :watched_changed).any?(&:any?) ||
           diff[:changed].any?
       end
 
+      # The verbatim families a diff changed or removed.
       def verbatim_violations(diff, families: VERBATIM_FAMILIES)
         families.select do |family|
           diff[:changed].key?(family) || diff[:removed_families].include?(family)

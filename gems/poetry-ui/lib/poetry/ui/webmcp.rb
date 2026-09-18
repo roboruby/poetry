@@ -77,6 +77,7 @@ module Poetry
         { toolparamdescription: description!(description, "tool_description:") }
       end
 
+      # The description trimmed, raising when blank or too long.
       # @api private
       def description!(value, context)
         text = value.to_s.strip

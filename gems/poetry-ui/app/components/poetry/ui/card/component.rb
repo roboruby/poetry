@@ -62,6 +62,7 @@ module Poetry
         # The caller's footer block, captured by with_footer.
         attr_reader :footer_block
 
+        # The footer's attributes, the caller's class merged into the footer classes.
         # @api private
         def footer_attributes
           options = (@footer_options || {}).dup

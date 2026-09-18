@@ -32,6 +32,7 @@ module Poetry
                                        values: %w[horizontal vertical] }
              }
 
+        # Renders the separator.
         # @api private
         def call
           content_tag(:div, nil, **root_attributes)

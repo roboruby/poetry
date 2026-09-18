@@ -51,12 +51,14 @@ module Poetry
 
     private
 
+    # The block catalog from the committed registry.
     def catalog
       @catalog ||= YAML.safe_load_file(
         Poetry::Ui.root.join(Poetry::Core::Registry::RELATIVE_PATH)
       )["blocks"] || {}
     end
 
+    # Prints every block with its title and description.
     def print_catalog
       say "poetry blocks (bin/rails g poetry:block <name>):"
       catalog.each do |name, entry|

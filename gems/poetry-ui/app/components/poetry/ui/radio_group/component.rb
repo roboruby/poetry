@@ -165,6 +165,7 @@ module Poetry
         part "radio-group-card-description", "Muted copy under the choice card's title " \
                                              "(description:)"
 
+        # Raises without items or an accessible name.
         # @api private
         def before_render
           raise ArgumentError, "RadioGroup requires at least one with_item" unless items?
@@ -176,6 +177,7 @@ module Poetry
                 "accessible name is an APG violation"
         end
 
+        # Whether an item value is the checked one.
         # @api private
         def checked?(item_value)
           value.present? && value.to_s == item_value
@@ -201,6 +203,7 @@ module Poetry
 
         private
 
+        # Records an item value, raising on a duplicate.
         def register_item_value!(value)
           @item_values ||= Set.new
           item_value = value.to_s
@@ -242,6 +245,7 @@ module Poetry
                       "data-slot" => "radio-group-card", "for" => item_id, class: css(:card))
         end
 
+        # Whether the group has an accessible name: a label or an aria label.
         def named?
           aria = html_attributes["aria"] || {}
           label.present? ||
@@ -249,6 +253,7 @@ module Poetry
             aria["label"].present? || aria["labelledby"].present?
         end
 
+        # One radio button with its checked state, indicator and wiring.
         def radio_item(item_value, item_id, item_disabled, options)
           checked = checked?(item_value)
 
@@ -277,6 +282,7 @@ module Poetry
                     ])
         end
 
+        # The checked indicator, hidden when unchecked.
         def indicator(checked)
           attrs = { class: css(:indicator), "data-slot" => "radio-group-indicator" }
           # A hidden attr toggle, not element presence - no check animation
@@ -307,11 +313,14 @@ module Poetry
           stop
         end
 
+        # The item classes with the caller's extra.
         def item_classes(extra)
           classnames(css(:item), extra)
         end
 
+        # The value as text.
         def value_string = value.to_s
+        # Whether a value is set.
         def value? = value.present?
 
         private :checked?, :control_id
