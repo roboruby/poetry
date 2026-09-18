@@ -792,7 +792,7 @@ module Poetry
               reachable = group unless reachable["content"] || reachable["options"]
               findings << Finding.new(rule: "requires-any", severity: :error,
                                       message: "with_#{slot_name} renders #{helper_of(component)}, which " \
-                                               "requires #{any_of_phrase(reachable)}", line: line)
+                                               "requires #{RequiresAny.phrase(reachable)}", line: line)
             end
           end
           findings
@@ -846,17 +846,8 @@ module Poetry
             next if (group["options"] || []).intersect?(keys)
 
             Finding.new(rule: "requires-any", severity: :error,
-                        message: "#{helper_of(path)} requires #{any_of_phrase(group)}", line: line)
+                        message: "#{helper_of(path)} requires #{RequiresAny.phrase(group)}", line: line)
           end
-        end
-
-        # The any-of contract as a phrase naming the block, slots and options that satisfy it.
-        def any_of_phrase(group)
-          parts = []
-          parts << "a content block" if group["content"]
-          parts.concat((group["slots"] || []).map { |name| "with_#{name}" })
-          parts.concat((group["options"] || []).map { |key| "#{key}:" })
-          "one of #{parts.join(" / ")} (#{group["hint"]})"
         end
 
         # A bound block param that travels anywhere except a with_* receiver
