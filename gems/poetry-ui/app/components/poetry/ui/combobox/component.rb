@@ -421,26 +421,6 @@ module Poetry
              executes: %i[combobox clear],
              mutating: true
 
-        # The rendered instance knows its options (the option union renders
-        # into a capture before the root's attributes): the payload's schema
-        # lists the enabled values as the enum, each with its label as the
-        # title - an agent reads "Japan" and passes "jp" - so an unknown
-        # value is refused before dispatch instead of committing nothing.
-        # multiple: keeps the bare schema (its value is a list).
-        def webmcp_tool_definition(definition)
-          return definition unless definition["name"] == "set_value" && !multiple
-
-          entries = option_set.entries.reject(&:disabled)
-          return definition if entries.empty?
-
-          schema = definition.fetch("inputSchema")
-          value = schema.fetch("properties").fetch("value").merge(
-            "enum" => entries.map(&:value),
-            "anyOf" => entries.map { |entry| { "type" => "string", "const" => entry.value, "title" => entry.label } }
-          )
-          definition.merge("inputSchema" => schema.merge("properties" => schema["properties"].merge("value" => value)))
-        end
-
         option :value, :string, doc: "The committed value; with multiple:, an array of values."
         option :name, :string, doc: "The form field name on the native <select>; multiple: appends [] for you."
         option :placeholder, :string,
@@ -625,6 +605,26 @@ module Poetry
 
           raise ArgumentError, "Combobox requires an accessible name - compose with a Field label " \
                                "(id: + label[for: id]) or pass 'aria-label'"
+        end
+
+        # The rendered instance knows its options (the option union renders
+        # into a capture before the root's attributes): the payload's schema
+        # lists the enabled values as the enum, each with its label as the
+        # title - an agent reads "Japan" and passes "jp" - so an unknown
+        # value is refused before dispatch instead of committing nothing.
+        # multiple: keeps the bare schema (its value is a list).
+        def webmcp_tool_definition(definition)
+          return definition unless definition["name"] == "set_value" && !multiple
+
+          entries = option_set.entries.reject(&:disabled)
+          return definition if entries.empty?
+
+          schema = definition.fetch("inputSchema")
+          value = schema.fetch("properties").fetch("value").merge(
+            "enum" => entries.map(&:value),
+            "anyOf" => entries.map { |entry| { "type" => "string", "const" => entry.value, "title" => entry.label } }
+          )
+          definition.merge("inputSchema" => schema.merge("properties" => schema["properties"].merge("value" => value)))
         end
 
         # The Field-targetable id lands on the TRIGGER (label[for=id]

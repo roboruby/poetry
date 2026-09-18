@@ -155,6 +155,10 @@ all nine themes).
   slot lambda so the doc reads first; `slot_doc` only for docs declared
   away from the declaration); template-facing methods are `@api private`.
 
+### The order inside a component class
+
+Declarations first, then methods, and neither interrupts the other. The declarations run: identity (`internal_component!`, `helper`, `css_mode`), includes and constants, slots (`renders_one` / `renders_many`), `style` and `option` with their `validates`, `use_stimulus`, `tool`, `part`, `requires_content`, and any `attr_*`. Then `initialize`, `before_render` or `call`; then the public methods, the instance-level agent hooks (`webmcp_tool_definition`) and a slot writer's override among them; then the attribute builders; then `private`. A method never sits between two declarations and a declaration never trails the methods. The one exception is a class-method hook an `include` consumes (BarChart's `value_axis_slot` before `CartesianFamily`), which must exist before that include and says so in its comment.
+
 ## Known traps
 
 - Kill CSS transitions/animations before cross-style computed reads;

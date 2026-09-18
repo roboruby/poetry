@@ -53,18 +53,6 @@ module Poetry
                                     "{ custom } replaces it (marked data-custom so the controller leaves it alone). " \
                                     "class: merges onto the progress element (e.g. w-full for a full-width segment " \
                                     "bar over the base w-fit)."
-        alias __vc_with_progress with_progress
-
-        # Opts the progress readout in. Bare, it renders the live
-        # "Question X of Y" text; a block replaces the text; class: merges
-        # onto the progress element.
-        def with_progress(**options, &)
-          @progress_class = options[:class]
-          __vc_with_progress(&)
-        end
-
-        # @api private
-        attr_reader :progress_class
 
         use_stimulus do
           on :root do
@@ -187,6 +175,19 @@ module Poetry
                                       "(the buttons ride composed Buttons, so those elements " \
                                       "belong to Button's anatomy, not this contract; each " \
                                       "carries data-visible/data-hidden + hidden/inert)"
+
+        # @api private
+        attr_reader :progress_class
+
+        alias __vc_with_progress with_progress
+
+        # Opts the progress readout in. Bare, it renders the live
+        # "Question X of Y" text; a block replaces the text; class: merges
+        # onto the progress element.
+        def with_progress(**options, &)
+          @progress_class = options[:class]
+          __vc_with_progress(&)
+        end
 
         # @api private
         def before_render

@@ -84,6 +84,10 @@ module Poetry
         part "date-picker", "Root wrapper - the glue controller (formats the trigger label, " \
                             "closes on pick) around the composed Popover + Calendar"
 
+        # The parsed date collaborators for the template.
+        # @api private
+        attr_reader :value, :min, :max, :month, :range_start, :range_end
+
         # Parses the date collaborators (value/min/max/month) up front.
         # @api private
         def initialize(value: nil, min: nil, max: nil, month: nil, **)
@@ -105,10 +109,6 @@ module Poetry
           raise ArgumentError, "DatePicker variant: must be :button or :input" unless %i[button input].include?(variant)
           raise ArgumentError, "DatePicker variant: :input is single-mode only" if input_variant? && range?
         end
-
-        # The parsed date collaborators for the template.
-        # @api private
-        attr_reader :value, :min, :max, :month, :range_start, :range_end
 
         # Whether mode: is :range.
         # @api private

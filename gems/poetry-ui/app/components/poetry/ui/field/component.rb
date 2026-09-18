@@ -87,6 +87,10 @@ module Poetry
         part "switch-input", "A nested Switch's hidden native input - the same wrapper-free " \
                              "fragment escape as checkbox-input (the setting-row layout)"
 
+        # The captured hint block, consumed by the template.
+        # @api private
+        attr_reader :hint_block
+
         # Validates hint_position and forces the content capture.
         # @api private
         def before_render
@@ -135,10 +139,6 @@ module Poetry
           @hint_block = block
           self
         end
-
-        # The captured hint block, consumed by the template.
-        # @api private
-        attr_reader :hint_block
 
         # Whether any hint (string or block form) is present.
         # @api private

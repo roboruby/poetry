@@ -362,13 +362,6 @@ module Poetry
                                "placeholder the controller interpolates)"
              }
 
-        # Pulls the input-bound aria-* out of the root attributes.
-        # @api private
-        def initialize(attributes = {})
-          super
-          @input_aria = extract_input_aria!
-        end
-
         # The input row's trailing content - the seam the CommandDialog
         # seats its close button in (IN the row, never laid over the input).
         # A lambda the owner supplies, called at render time in the OWNER's
@@ -376,6 +369,13 @@ module Poetry
         # this is composition between two components of the gem.
         # @api private
         attr_writer :input_trailing
+
+        # Pulls the input-bound aria-* out of the root attributes.
+        # @api private
+        def initialize(attributes = {})
+          super
+          @input_aria = extract_input_aria!
+        end
 
         # The rendered trailing content of the input row, or nil.
         # @api private
