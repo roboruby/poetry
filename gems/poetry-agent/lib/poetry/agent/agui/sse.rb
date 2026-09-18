@@ -17,6 +17,7 @@ module Poetry
           # @return [Array<String>]
           attr_reader :errors
 
+          # A parser with an empty buffer and no pending data.
           def initialize
             @buffer = +""
             @data = []
@@ -48,6 +49,7 @@ module Poetry
 
           private
 
+          # Consumes one line: a blank dispatches the pending event, a data line adds to it.
           def consume(line, &)
             if line.empty?
               dispatch(&)
@@ -57,6 +59,7 @@ module Poetry
             # Comments (":"), event:, id:, retry: carry nothing AG-UI reads.
           end
 
+          # Parses the pending data lines as one JSON event and yields it; a parse error is recorded.
           def dispatch
             return if @data.empty?
 

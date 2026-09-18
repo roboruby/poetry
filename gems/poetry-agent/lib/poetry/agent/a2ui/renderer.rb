@@ -42,17 +42,23 @@ module Poetry
         # The form events that re-run the checks.
         EVALUATE_ACTIONS = "input->#{SURFACE_CONTROLLER}#evaluate change->#{SURFACE_CONTROLLER}#evaluate".freeze
 
+        # The surface being rendered.
         # @return [Surface]
         attr_reader :surface
+        # The view context.
         # @return [Object] the view context
         attr_reader :view
+        # Where actions post, or nil for a plain container.
         # @return [String, nil]
         attr_reader :action_url
+        # What could not be rendered, in render order.
         # @return [Array<String>] what could not be rendered, in render order
         attr_reader :warnings
+        # The check failures by component key.
         # @return [Hash{String => Array<Hash>}] check failures by component key (see {Surface#failures})
         attr_reader :errors
 
+        # The DOM id of a surface's wrapper.
         # @param surface_or_id [Surface, String]
         # @return [String] the DOM id of the surface's wrapper
         def self.element_id(surface_or_id)
@@ -60,6 +66,7 @@ module Poetry
           "#{ELEMENT_PREFIX}#{id}"
         end
 
+        # A renderer for a surface in a view context, with its action url, wrapper html and errors.
         # @param surface [Surface]
         # @param view [Object] an ActionView context (`view_context`)
         # @param action_url [String, nil] where actions post; nil renders a plain container
@@ -75,6 +82,7 @@ module Poetry
           @warnings = []
         end
 
+        # The surface's HTML: the root component in its wrapper, a form when actions post somewhere.
         # @return [String] the surface's HTML (html_safe)
         def call
           body = Poetry::Core::StableId.with_seed("a2ui:#{surface.id}") do
@@ -95,6 +103,7 @@ module Poetry
           end
         end
 
+        # Renders one component in a scope; an unknown id or a raised error warns.
         # @param component_id [String]
         # @param scope [String, nil]
         # @return [String] the component's HTML (empty when it cannot render)
@@ -137,12 +146,14 @@ module Poetry
           view.render(klass.new(**attributes), &)
         end
 
+        # A stable key for the component being rendered, with an optional suffix.
         # @param suffix [String, nil]
         # @return [String] the render-stable key of the component being rendered
         def stable_key(suffix = nil)
           ["a2ui", surface.id, @current_key, suffix].compact.join("-")
         end
 
+        # The key of the component being rendered.
         # @return [String, nil] the key of the component being rendered (`id`, or `id@scope`)
         attr_reader :current_key
 
@@ -155,6 +166,7 @@ module Poetry
           surface.text(value, scope, on_error: method(:warn))
         end
 
+        # A component property resolved in a scope; a problem warns.
         # @param value [Object]
         # @param scope [String, nil]
         # @return [Object, nil] the resolved dynamic value
@@ -172,6 +184,7 @@ module Poetry
           Evaluator.new(surface, scope, on_error: method(:warn)).call(name, args)
         end
 
+        # The first check failure's message for a component, or nil.
         # @param component [Hash]
         # @param scope [String, nil]
         # @return [String, nil] the first check failure message for the component
@@ -180,6 +193,7 @@ module Poetry
           failure && failure[:message]
         end
 
+        # The form name for a bound path in a scope.
         # @param path [String] a bound pointer
         # @param scope [String, nil]
         # @return [String] the input's form name
@@ -187,6 +201,7 @@ module Poetry
           "#{VALUES_PARAM}[#{Pointer.absolute(path, scope)}]"
         end
 
+        # A DOM id for a component's control in a scope.
         # @param component [Hash]
         # @param scope [String, nil]
         # @return [String] a DOM id for the component's control
@@ -206,6 +221,7 @@ module Poetry
           { type: :submit, name: ACTION_PARAM, value: surface.source_key(component, scope) }
         end
 
+        # A component's accessibility label, or nil when none or empty.
         # @param component [Hash]
         # @param scope [String, nil]
         # @return [String, nil] the component's accessibility label
@@ -217,12 +233,14 @@ module Poetry
           label.empty? ? nil : label
         end
 
+        # Markdown text as HTML-safe markup.
         # @param text [String]
         # @return [String] the Markdown subset rendered (html_safe)
         def markdown(text)
           Markdown.render(text).html_safe
         end
 
+        # An empty html-safe string.
         # @return [String] an empty html_safe string
         def blank
           view.safe_join([])

@@ -25,9 +25,11 @@ module Poetry
         # The bridge controller's identifier.
         CLIENT_TOOL_CONTROLLER = "poetry--agent--agui-client-tool"
 
+        # The transcript the relay renders.
         # @return [Transcript]
         attr_reader :transcript
 
+        # A relay over a transcript, with the row renderer, container, target and stream action.
         # @param transcript [Transcript]
         # @param render [#call] `(message, version) -> String` the row HTML
         # @param container [String, nil] the id new rows append to (nil: replace only)

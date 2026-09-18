@@ -65,6 +65,7 @@ module Poetry
           end
         end
 
+        # Adds a value at a pointer: a hash key, an array position, or the whole document.
         # @api private
         def add(document, path, value)
           parts = tokens(path)
@@ -87,6 +88,7 @@ module Poetry
           document
         end
 
+        # Removes the value at a pointer, raising when it is absent.
         # @api private
         def remove(document, path)
           parts = tokens(path)
@@ -102,6 +104,7 @@ module Poetry
           document
         end
 
+        # A pointer's unescaped tokens; raises when it does not start with a slash.
         # @api private
         def tokens(path)
           return [] if path.nil? || path.empty?
@@ -110,6 +113,7 @@ module Poetry
           path[1..].split("/", -1).map { |token| token.gsub("~1", "/").gsub("~0", "~") }
         end
 
+        # Tokens joined back into an escaped pointer.
         # @api private
         def pointer(parts)
           parts.map { |token| "/#{token.gsub("~", "~0").gsub("/", "~1")}" }.join
@@ -123,6 +127,7 @@ module Poetry
           index
         end
 
+        # A deep copy of a value.
         # @api private
         def deep_copy(value)
           case value

@@ -52,6 +52,7 @@ module Poetry
           is a Button's local action.
         TEXT
 
+        # The catalog id the agent names in createSurface.
         # @return [String]
         attr_reader :catalog_id
 
@@ -92,12 +93,14 @@ module Poetry
           path.split("/").last.split("_").map(&:capitalize).join
         end
 
+        # Whether an option stays out of the catalog: a listed name, or any class-string option.
         # @param name [String] an option name
         # @return [Boolean] whether an agent never sets it
         def self.skipped_option?(name)
           SKIPPED_OPTIONS.include?(name) || name.end_with?("_class")
         end
 
+        # A catalog over registry entries, with its identity and the agent instructions.
         # @param entries [Hash{String => Hash}] registry entries by path
         # @param catalog_id [String]
         # @param title [String]
@@ -155,6 +158,7 @@ module Poetry
           { "catalogId" => @catalog_id, "components" => components }
         end
 
+        # The catalog as pretty JSON.
         # @return [String] the document as JSON
         def to_json(*)
           JSON.pretty_generate(to_h)
@@ -179,6 +183,7 @@ module Poetry
 
         private
 
+        # One component's JSON Schema: the component const, its styles, options, slots and content.
         def component_schema(path, entry)
           properties = { "component" => { "const" => component_name(path) } }
           entry.fetch("styles", []).each { |axis| properties[axis["name"]] = enum_schema(axis) }
@@ -210,6 +215,7 @@ module Poetry
           schema
         end
 
+        # A string enum schema for a style axis or an option with variants, with its default and description.
         def enum_schema(axis)
           schema = { "type" => "string", "enum" => Array(axis["variants"]).map(&:to_s) }
           schema["default"] = axis["default"].to_s if axis.key?("default") && !axis["default"].nil?
@@ -217,6 +223,7 @@ module Poetry
           schema
         end
 
+        # One option's schema: a dynamic string or boolean, an enum, or a typed value.
         def option_schema(option)
           name = option["name"].to_s
           schema =
@@ -231,6 +238,7 @@ module Poetry
           schema
         end
 
+        # A JSON Schema for a registry option type, string when the type is unknown.
         def typed(type, description)
           schema = case type
                    when "boolean" then { "type" => "boolean" }
@@ -244,21 +252,25 @@ module Poetry
           schema
         end
 
+        # A reference to one of the A2UI common dynamic types, with the description.
         def dynamic(kind, description)
           schema = { "$ref" => "#{COMMON_TYPES}#{kind}" }
           schema["description"] = description.to_s if description
           schema
         end
 
+        # A reference to the common ComponentId type for a slot, with the description.
         def component_id(description)
           { "$ref" => "#{COMMON_TYPES}ComponentId",
             "description" => "The id of the component rendered here. #{description}".strip }
         end
 
+        # A reference to the common ChildList type, with the description.
         def child_list(description)
           { "$ref" => "#{COMMON_TYPES}ChildList", "description" => description.to_s }
         end
 
+        # Whether an option stays out of the catalog; the class-level rule.
         def skipped_option?(name)
           self.class.skipped_option?(name)
         end
@@ -273,10 +285,12 @@ module Poetry
           Array(entry["elements"]).include?("content")
         end
 
+        # Whether a component path takes an action: the button.
         def actionable?(path)
           path.end_with?("/button")
         end
 
+        # A component's description with its agent rules appended, capped in length.
         def description_of(entry)
           rules = Array(entry["agent_rules"])
           text = entry["description"].to_s

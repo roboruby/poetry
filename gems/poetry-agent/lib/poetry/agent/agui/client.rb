@@ -14,6 +14,7 @@ module Poetry
       class Client
         # Raised for a non-success HTTP status.
         class Error < Poetry::Core::Error
+          # The HTTP status the relay answered with.
           # @return [Integer]
           attr_reader :status
 
@@ -27,6 +28,7 @@ module Poetry
           end
         end
 
+        # A client for an AG-UI endpoint, with its headers and timeouts.
         # @param url [String] the agent's run endpoint
         # @param headers [Hash{String => String}] extra request headers (auth)
         # @param open_timeout [Numeric] seconds

@@ -15,6 +15,7 @@ module Poetry
       module Markdown
         module_function
 
+        # The markdown text as HTML: headings, bullet lists, paragraphs and inline marks.
         # @param text [String]
         # @return [String] HTML (unmarked; wrap in `html_safe` at the render site)
         def render(text)
@@ -31,6 +32,7 @@ module Poetry
               .gsub(/`([^`]+)`/, '\1').gsub(/\[([^\]]+)\]\([^)]+\)/, '\1').gsub(/^[-*]\s+/, "")
         end
 
+        # The text split into blocks at blank lines.
         # @api private
         def blocks(text)
           text.split(/\n{2,}/).map(&:strip).reject(&:empty?)
@@ -49,6 +51,7 @@ module Poetry
           end
         end
 
+        # A block's text escaped, with code, strong, emphasis and links marked up.
         # @api private
         def inline(text)
           html = ERB::Util.html_escape(text).to_str

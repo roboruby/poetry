@@ -103,6 +103,7 @@ module Poetry
           end
         end
 
+        # Removes a token's child from a node, by index for an array.
         # @api private
         def delete(node, token)
           node.is_a?(Array) ? node.delete_at(token.to_i) : node.delete(token)

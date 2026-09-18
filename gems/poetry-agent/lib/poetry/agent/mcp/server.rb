@@ -353,6 +353,7 @@ module Poetry
 
         private
 
+        # The initialize result: protocol version, server info and capabilities.
         def initialize_result
           {
             "protocolVersion" => PROTOCOL_VERSION,
@@ -361,6 +362,7 @@ module Poetry
           }
         end
 
+        # Dispatches a tools/call to its tool; missing required arguments answer as an error.
         def call_tool(params)
           name = params["name"]
           arguments = params["arguments"] || {}
@@ -403,6 +405,7 @@ module Poetry
           end.join("\n")
         end
 
+        # The describe_component tool: a component's contract at the requested detail.
         def describe_component(arguments)
           path = resolve(arguments["name"])
           return "no such component: #{arguments["name"].inspect} - call list_components" unless path
@@ -422,6 +425,7 @@ module Poetry
           lines.join("\n")
         end
 
+        # The check tool: the lint findings for an ERB source with a PASS or FAIL verdict.
         def check(arguments)
           findings = Poetry::Core::Check.lint(arguments["source"].to_s, catalog: @catalog)
           errors = findings.count { |finding| finding.severity == :error }
@@ -493,6 +497,7 @@ module Poetry
           end.sort.first(8)
         end
 
+        # The compose answer when a block matches strongly: its source and the runners-up.
         def block_route(scored, components)
           name, entry, score = scored.first
           runners = scored.drop(1).select { |_n, _e, s| s.positive? }.first(2)
@@ -513,6 +518,7 @@ module Poetry
           lines.join("\n")
         end
 
+        # The compose answer when no block covers the brief: the matched components.
         def component_route(scored, components)
           lines = ["No block covers this brief - component-scale work."]
           lines << if components.any?
@@ -532,6 +538,7 @@ module Poetry
           lines.join("\n")
         end
 
+        # A block's template source without its header comment, or a note when unreadable.
         def block_source(entry)
           Pathname.new(@root).join(entry.fetch("template")).read
                   .sub(/\A<%#\s*poetry:block[^%]*%>\n?/, "").rstrip
@@ -572,6 +579,7 @@ module Poetry
           :implement
         end
 
+        # The build_page entry by request mode: review, harden, shape or implement.
         def route_entry(intent)
           case request_mode(intent)
           when :review then review_route(intent)
@@ -581,6 +589,7 @@ module Poetry
           end
         end
 
+        # The implement banner followed by the probe step.
         def implement_entry(intent)
           banner = ["GUIDED BUILD - mode: implement.",
                     "Steps: probe -> plan -> direct -> snippets -> verify; each ends with the next call.",
@@ -588,6 +597,7 @@ module Poetry
           banner.join("\n") + run_step("probe", intent, {})
         end
 
+        # The shape banner followed by the plan step.
         def shape_entry(intent)
           banner = ["GUIDED BUILD - mode: shape (planning only, no host changes).",
                     "You asked to shape, not build - here is the architecture; call step: \"snippets\" " \
@@ -595,6 +605,7 @@ module Poetry
           banner.join("\n") + run_step("plan", intent, {})
         end
 
+        # The read-only answer for a review request.
         def review_route(intent)
           ["REQUEST MODE: review - staying read-only (an audit does not become an edit).",
            "I will not enter the build sequence to review. To assess existing markup:",
@@ -604,6 +615,7 @@ module Poetry
            %(To BUILD instead, re-call with a build verb, e.g. "build #{intent}".)].join("\n")
         end
 
+        # The read-only answer for a harden request.
         def harden_route
           ["REQUEST MODE: harden - read-only recon, no edits from here.",
            "Hardening runs the same executable gate, not a rewrite:",
@@ -613,6 +625,7 @@ module Poetry
            "", "To build a NEW page instead, re-call with a build verb."].join("\n")
         end
 
+        # One build_page step by name; an unknown step redirects.
         def run_step(step, intent, arguments)
           case step
           when "probe" then framed(1, "PROBE (host setup)", probe_body, "plan")
@@ -624,11 +637,13 @@ module Poetry
           end
         end
 
+        # A step's body framed with its number, label and the next call.
         def framed(number, label, body, nxt)
           ["STEP #{number}/5 - #{label}", "", body, "",
            %(NEXT -> call build_page again with step: "#{nxt}" (same intent).)].join("\n")
         end
 
+        # The answer for an unknown step name.
         def redirect_step(step)
           "no such step: #{step.inspect} - the workflow is #{STEPS.join(" -> ")}. " \
             "Omit step for the guided entry, or pass one of those."
@@ -647,6 +662,7 @@ module Poetry
           lines.join("\n")
         end
 
+        # The probe answer when no host app is visible.
         def probe_no_host
           ["Host app not visible (run `bundle exec poetry-agent` from the app dir for setup checks).",
            "Probe would read: installed components + declared overrides (config/poetry_components.yml),",
@@ -654,6 +670,7 @@ module Poetry
            "poetry install and continue - the plan step does not depend on this."].join("\n")
         end
 
+        # The probe line for the host's poetry config.
         def host_config_line(root)
           cfg = read_host_yaml(File.join(root, "config", "poetry_components.yml"))
           return "poetry config: config/poetry_components.yml not found - run `bin/rails g poetry:install`." unless cfg
@@ -663,12 +680,14 @@ module Poetry
           "poetry config: #{installed} component(s) configured, #{overrides} declared cn-* override(s)."
         end
 
+        # The probe line for the detected theme.
         def theme_line(theme)
           return "theme: not detected - the direct step covers picking one of the nine." unless theme
 
           "theme: #{theme} (its tokens ARE your creative direction - step 3)."
         end
 
+        # The probe line for the host's CSS mode.
         def css_mode_line(root)
           entry = ["app/assets/tailwind/application.css", "tailwind.config.js", "config/tailwind.config.js",
                    "app/assets/stylesheets/application.tailwind.css"].any? { |rel| host_exist?(root, rel) }
@@ -679,6 +698,7 @@ module Poetry
           end
         end
 
+        # The probe lines for the host's JS pipeline: importmap, bundler, or neither.
         def js_pipeline_lines(root)
           importmap = host_exist?(root, "config/importmap.rb")
           bundler = %w[vite.config.js vite.config.ts config/vite.json package.json].any? do |rel|
@@ -706,6 +726,7 @@ module Poetry
           [render_archetype(best, best_score), runners_note(scored)].reject(&:empty?).join("\n")
         end
 
+        # An archetype match as text: its start-from note, sections, states and components.
         def render_archetype(entry, score)
           lines = ["MATCH: #{entry["title"]} (`#{entry["name"]}`) - score #{score}.", entry["purpose"], "",
                    start_from(entry), "", "Section order:"]
@@ -721,6 +742,7 @@ module Poetry
           lines.join("\n")
         end
 
+        # The start-from note for an archetype: its block, or composition from components.
         def start_from(entry)
           if entry["block"]
             "Start from block `#{entry["block"]}` - describe_block returns its source; adapt in place " \
@@ -731,6 +753,7 @@ module Poetry
           end
         end
 
+        # The nearby archetypes note, or an empty string.
         def runners_note(scored)
           runners = scored.drop(1).select { |_entry, score| score.positive? }.first(2)
           return "" if runners.empty?
@@ -739,6 +762,7 @@ module Poetry
           "\nNearby archetypes: #{described.join(", ")}."
         end
 
+        # The answer when no archetype matches strongly.
         def no_archetype(scored)
           near = scored.first(3).map { |entry, _score| entry["name"] }.join(", ")
           ["No archetype strongly matched this intent. The catalog is a SEED " \
@@ -828,14 +852,17 @@ module Poetry
           nil
         end
 
+        # Whether the host has a DESIGN.md in one of its known places.
         def design_md_present?(root)
           %w[DESIGN.md config/DESIGN.md app/assets/DESIGN.md].any? { |rel| host_exist?(root, rel) }
         end
 
+        # Whether a relative path exists under the host root.
         def host_exist?(root, rel)
           File.exist?(File.join(root, rel))
         end
 
+        # The list_blocks tool: one line per block.
         def list_blocks
           return "no blocks in this registry" if @blocks.empty?
 
@@ -845,6 +872,7 @@ module Poetry
           end.join("\n")
         end
 
+        # The list_recipes tool: one line per recipe.
         def list_recipes
           return "no recipes in this registry" if @recipes.empty?
 
@@ -877,6 +905,7 @@ module Poetry
           end
         end
 
+        # A skill's SKILL.md followed by the menu of its reference files.
         def skill_menu(name, files)
           references = files.keys.reject { |path| path == "SKILL.md" }.sort
           menu = ["", "---", "Files in this skill - fetch one with get_skill(name: #{name.inspect}, " \
@@ -897,6 +926,7 @@ module Poetry
           "no such topic: #{topic.inspect} - topics: #{topics.keys.join(", ")}"
         end
 
+        # The describe_block tool: a block's description and source.
         def describe_block(arguments)
           name = arguments["name"].to_s.tr("_", "-")
           entry = @blocks[name]
@@ -967,6 +997,7 @@ module Poetry
           lines
         end
 
+        # The full-detail lines of a component: its wiring, parts and tools.
         def full_lines(entry)
           lines = (entry["controllers"] || []).map do |controller|
             "- wiring #{controller["identifier"]}: actions #{(controller["actions"] || []).join(", ")}"
@@ -983,6 +1014,7 @@ module Poetry
           lines
         end
 
+        # One line for a component's WebMCP tool: its name, description and parameters.
         def tool_line(tool)
           schema = tool["inputSchema"] || {}
           required = schema["required"] || []
@@ -999,6 +1031,7 @@ module Poetry
             "[opt in with webmcp: \"name\" on the call; dispatches #{tool["executes"]}]"
         end
 
+        # One line for a component part: its states and vars.
         def part_line(part)
           facets = []
           states = (part["states"] || []).map do |state|
@@ -1012,6 +1045,7 @@ module Poetry
             "#{" | #{facets.join(" | ")}" if facets.any?}"
         end
 
+        # An entry's description, or its style axes when it has none.
         def summary(entry)
           return entry["description"] if entry["description"]
 
@@ -1037,15 +1071,19 @@ module Poetry
         def helper_text(path) = helper(path) || "render #{@entries.dig(path, "class_name") || path}"
         # The same, the helper in backticks.
         def helper_label(path) = (name = helper(path)) ? "`#{name}`" : helper_text(path)
+        # The registry path whose title matches a name, or nil.
         def path_for(name) = @entries.keys.find { |path| title(path) == name }
 
+        # A JSON-RPC result envelope.
         def result(id, value) = { "jsonrpc" => "2.0", "id" => id, "result" => value }
 
+        # A JSON-RPC error envelope.
         def error(id, code,
                   message)
           { "jsonrpc" => "2.0", "id" => id, "error" => { "code" => code, "message" => message } }
         end
 
+        # A tool result with one text content block, flagged when it is an error.
         def tool_content(text,
                          error: false)
           { "content" => [{ "type" => "text", "text" => text }], "isError" => error }

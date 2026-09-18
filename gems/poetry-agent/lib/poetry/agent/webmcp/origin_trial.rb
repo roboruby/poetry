@@ -43,6 +43,7 @@ module Poetry
 
         private
 
+        # Whether a response's content type is HTML.
         def html?(headers)
           type = headers["content-type"] || headers["Content-Type"]
           type.to_s.include?("text/html")

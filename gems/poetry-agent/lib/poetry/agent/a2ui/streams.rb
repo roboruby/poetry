@@ -17,9 +17,11 @@ module Poetry
       #                         render: ->(surface) { Renderer.new(surface, view: view_context).call })
       #   response.stream.write(AGUI::TurboStream.sse(streams.apply(message)))
       class Streams
+        # The session the streams follow.
         # @return [Session]
         attr_reader :session
 
+        # A stream builder over a session, rendering surfaces into a container.
         # @param session [Session]
         # @param render [#call] `(surface) -> html`
         # @param container [String, nil] the DOM id new surfaces append into
@@ -41,6 +43,7 @@ module Poetry
           streams(session.apply(message))
         end
 
+        # Applies messages to the session and returns the streams for the surfaces they changed.
         # @param messages [Array<Hash>]
         # @return [String] Turbo Stream HTML
         def apply_all(messages)
@@ -55,6 +58,7 @@ module Poetry
           Array(ids).map { |id| stream_for(id) }.join
         end
 
+        # The stream for one surface: an append on first sight, a replace after, a remove when gone.
         # @param id [String]
         # @return [String] the stream for one surface (remove, append, or vreplace)
         def stream_for(id)

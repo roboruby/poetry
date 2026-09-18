@@ -12,6 +12,7 @@ module Poetry
       module Bundled
         module_function
 
+        # The MCP server over every bundled gem's registry and the host's, with the controller manifests registered.
         # @param root [String, nil] one more registry root to serve (the
         #   bundle's published registries and the app's committed one are
         #   found on their own)

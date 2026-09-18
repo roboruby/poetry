@@ -18,11 +18,14 @@ module Poetry
       # @example
       #   Evaluator.new(surface, "/items/2").resolve({ "call" => "@index", "args" => { "offset" => 1 } }) # => 3
       class Evaluator
+        # The surface whose data model the evaluator reads.
         # @return [Surface]
         attr_reader :surface
+        # The collection-item pointer in effect.
         # @return [String, nil] the collection-item pointer in effect
         attr_reader :scope
 
+        # An evaluator over a surface in a scope, reporting problems to the callback.
         # @param surface [Surface]
         # @param scope [String, nil]
         # @param on_error [#call, nil] receives each problem's message
@@ -115,6 +118,7 @@ module Poetry
           end
         end
 
+        # The scope's item index, or nil outside a template.
         # @return [Integer, nil] the collection index the scope carries
         def index
           token = scope.to_s.split("/").last
@@ -123,12 +127,14 @@ module Poetry
 
         private
 
+        # The item index with the offset argument applied; raises outside a template.
         def index_of(args)
           position = index or raise Functions::Error, "@index is only available inside a template"
 
           position + (Functions.number(args["offset"]) || 0)
         end
 
+        # Reports a problem and returns nil.
         def fail!(message)
           @on_error&.call(message)
           nil

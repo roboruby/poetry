@@ -12,6 +12,7 @@ module Poetry
       module RunInput
         module_function
 
+        # A RunAgentInput hash from its fields, with a generated run id by default.
         # @param thread_id [String] the conversation thread
         # @param messages [Array<Hash>] protocol messages (`id`, `role`, `content`, ...)
         # @param run_id [String] defaults to a fresh UUID

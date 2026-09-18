@@ -14,6 +14,7 @@ module Poetry
       # @return [Array<String>]
       attr_accessor :origin_trial_tokens
 
+      # The default configuration, with no origin trial tokens.
       def initialize
         @origin_trial_tokens = []
       end

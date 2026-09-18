@@ -16,6 +16,7 @@ module Poetry
 
         module_function
 
+        # The error-severity checks that fail for a component, each as an outcome.
         # @param component [Hash]
         # @param evaluator [Evaluator]
         # @return [Array<Hash>] failures as `{ code:, message:, severity: }`

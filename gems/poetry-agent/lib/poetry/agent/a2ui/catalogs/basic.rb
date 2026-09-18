@@ -51,11 +51,13 @@ module Poetry
           INPUT_KINDS = { "TextField" => :string, "CheckBox" => :boolean, "Slider" => :number,
                           "ChoicePicker" => :string_list, "DateTimeInput" => :string }.freeze
 
+          # The basic catalog's id.
           # @return [String]
           def id
             ID
           end
 
+          # The basic catalog's function set.
           # @return [Functions] the basic catalog's function set
           def functions
             Functions.basic
@@ -89,6 +91,7 @@ module Poetry
             [{ path: Pointer.absolute(path, scope), kind: kind }]
           end
 
+          # Renders a basic catalog component by dispatching on its name; an unknown one warns.
           # @param component [Hash]
           # @param scope [String, nil]
           # @param renderer [Renderer]
@@ -103,6 +106,7 @@ module Poetry
 
           private
 
+          # Renders a Text component: a caption as muted small text, anything else as typeset markdown.
           def render_text(component, scope, renderer)
             text = renderer.text(component["text"], scope)
             if component["variant"] == "caption"
@@ -112,6 +116,7 @@ module Poetry
             end
           end
 
+          # Renders an Image component with its fit and size variant; an empty url renders nothing.
           def render_image(component, scope, renderer)
             url = renderer.text(component["url"], scope)
             return renderer.blank if url.empty?
@@ -122,6 +127,7 @@ module Poetry
                                   class: classes.join(" "), loading: "lazy")
           end
 
+          # Renders an Icon component through Poetry's icon set; an empty name renders nothing.
           def render_icon(component, scope, renderer)
             name = icon_name(renderer.text(component["name"], scope))
             return renderer.blank if name.empty?
@@ -129,11 +135,13 @@ module Poetry
             renderer.component(Poetry::Ui::Icon::Component, name: name, class: "size-5")
           end
 
+          # An icon name as kebab-case, through the alias table.
           def icon_name(raw)
             kebab = raw.strip.gsub(/([a-z0-9])([A-Z])/, '\1-\2').tr("_ ", "--").downcase
             ICON_ALIASES.fetch(kebab, kebab)
           end
 
+          # Renders a Video component as a native player with its poster.
           def render_video(component, scope, renderer)
             url = renderer.text(component["url"], scope)
             return renderer.blank if url.empty?
@@ -143,6 +151,7 @@ module Poetry
                                     class: "w-full rounded-md")
           end
 
+          # Renders an AudioPlayer component as a native player with its label.
           def render_audio_player(component, scope, renderer)
             url = renderer.text(component["url"], scope)
             return renderer.blank if url.empty?
@@ -152,14 +161,17 @@ module Poetry
                                     class: "w-full")
           end
 
+          # Renders a Row component as a horizontal flex container.
           def render_row(component, scope, renderer)
             flex(component, scope, renderer, "flex-row")
           end
 
+          # Renders a Column component as a vertical flex container.
           def render_column(component, scope, renderer)
             flex(component, scope, renderer, "flex-col")
           end
 
+          # A flex container in a direction, with the justify and align mappings and the weighted children.
           def flex(component, scope, renderer, direction)
             classes = ["flex", direction, "gap-4", JUSTIFY.fetch(component["justify"], "justify-start"),
                        ALIGN.fetch(component["align"], "items-stretch")]
@@ -177,6 +189,7 @@ module Poetry
             renderer.view.safe_join(items)
           end
 
+          # Renders a List component as a scrolling flex container in its direction.
           def render_list(component, scope, renderer)
             horizontal = component["direction"] == "horizontal"
             classes = ["flex gap-2", horizontal ? "flex-row overflow-x-auto" : "flex-col overflow-y-auto",
@@ -184,10 +197,12 @@ module Poetry
             renderer.view.tag.div(renderer.render_children(component["children"], scope), class: classes.join(" "))
           end
 
+          # Renders a Card component around its child.
           def render_card(component, scope, renderer)
             renderer.component(Poetry::Ui::Card::Component) { renderer.render_children(component["child"], scope) }
           end
 
+          # Renders a Tabs component, one tab per entry; no tabs renders nothing.
           def render_tabs(component, scope, renderer)
             tabs = Array(component["tabs"]).grep(Hash)
             return renderer.blank if tabs.empty?
@@ -203,6 +218,7 @@ module Poetry
             end
           end
 
+          # Renders a Divider component as a separator in its axis.
           def render_divider(component, _scope, renderer)
             orientation = component["axis"] == "vertical" ? :vertical : :horizontal
             renderer.component(Poetry::Ui::Separator::Component, orientation: orientation)
@@ -228,6 +244,7 @@ module Poetry
             end
           end
 
+          # Renders a Button component with its variant, label, action attributes and content.
           def render_button(component, scope, renderer)
             attributes = { variant: BUTTON_VARIANTS.fetch(component["variant"], :outline) }
             label = renderer.aria_label(component, scope)
@@ -289,6 +306,7 @@ module Poetry
             label || renderer.render_children(component["child"], scope)
           end
 
+          # The plain text of a component's Text child, or nil.
           def label_of(component, scope, renderer)
             child = renderer.surface.component(component["child"])
             return unless child && child["component"] == "Text"
@@ -296,6 +314,7 @@ module Poetry
             Markdown.strip(renderer.text(child["text"], scope))
           end
 
+          # Renders a TextField component as a bound input with its placeholder, checks and error.
           def render_text_field(component, scope, renderer)
             path = binding_path(component["value"])
             attributes = { id: renderer.control_id(component, scope), value: renderer.text(component["value"], scope) }
@@ -320,6 +339,7 @@ module Poetry
             with_error(component, scope, renderer, renderer.component(Poetry::Ui::Field::Component, field) { control })
           end
 
+          # Renders a CheckBox component as a bound checkbox with its error.
           def render_check_box(component, scope, renderer)
             path = binding_path(component["value"])
             attributes = { label: renderer.text(component["label"], scope), value: "true", unchecked_value: "false",
@@ -361,6 +381,7 @@ module Poetry
             with_error(component, scope, renderer, control)
           end
 
+          # A choice as a combobox, single or multiple, with its options.
           def choice_combobox(choice, multiple, scope, renderer)
             attributes = { multiple: multiple, placeholder: choice.label, aria: { label: choice.label },
                            value: multiple ? choice.selected : choice.selected.first }
@@ -391,6 +412,7 @@ module Poetry
             renderer.view.tag.fieldset(renderer.view.safe_join(items), class: classes)
           end
 
+          # Renders a Slider component as a bound slider within its bounds.
           def render_slider(component, scope, renderer)
             path = binding_path(component["value"])
             min = component["min"].is_a?(Numeric) ? component["min"] : 0
@@ -406,11 +428,13 @@ module Poetry
             with_error(component, scope, renderer, renderer.component(Poetry::Ui::Slider::Component, attributes))
           end
 
+          # The slider step for a range and a step count, an integer when it divides evenly.
           def step_size(min, max, steps)
             size = (max - min).to_f / steps
             size == size.floor ? size.to_i : size
           end
 
+          # Renders a DateTimeInput component as a bound date, time or datetime input.
           def render_date_time_input(component, scope, renderer)
             path = binding_path(component["value"])
             type = if component["enableTime"] && component["enableDate"] then "datetime-local"
@@ -450,6 +474,7 @@ module Poetry
             attributes
           end
 
+          # A value's bound path, or nil when it is not a binding.
           def binding_path(value)
             value.is_a?(Hash) && value["path"].is_a?(String) ? value["path"] : nil
           end

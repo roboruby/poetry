@@ -21,9 +21,11 @@ module Poetry
           KINDS = { "boolean" => :boolean, "checked_state" => :boolean, "integer" => :number, "number" => :number,
                     "float" => :number, "list" => :string_list }.freeze
 
+          # The catalog id this binding answers to.
           # @return [String]
           attr_reader :id
 
+          # A native binding over registry entries, answering to a catalog id.
           # @param entries [Hash{String => Hash}, nil] registry entries by path
           #   (the poetry-ui registry when nil)
           # @param id [String] the catalog id this binding answers to
@@ -32,16 +34,19 @@ module Poetry
             @id = id
           end
 
+          # The function set Poetry's catalog declares: the basic one.
           # @return [Functions] the function set Poetry's catalog declares (the basic one)
           def functions
             Functions.basic
           end
 
+          # The registry entries by path, loaded on first use.
           # @return [Hash{String => Hash}] registry entries by path
           def entries
             @entries ||= Catalog.load_entries
           end
 
+          # The path and entry of every component, by component name.
           # @return [Hash{String => Array(String, Hash)}] `[path, entry]` by component name
           def by_name
             @by_name ||= entries.to_h { |path, entry| [Catalog.component_name(path), [path, entry]] }
@@ -58,6 +63,7 @@ module Poetry
             references.compact
           end
 
+          # The bound inputs of a component: each bound option's path with its kind.
           # @param component [Hash]
           # @param scope [String, nil]
           # @return [Array<Hash>] `{ path:, kind: }` for each bound option
@@ -76,6 +82,7 @@ module Poetry
             end
           end
 
+          # Renders a native component through its Poetry class, filling its slots and content.
           # @param component [Hash]
           # @param scope [String, nil]
           # @param renderer [Renderer]
@@ -93,14 +100,17 @@ module Poetry
 
           private
 
+          # A component's path and registry entry, or a nil pair.
           def lookup(component)
             by_name[component["component"].to_s] || [nil, nil]
           end
 
+          # Whether an entry marks an option required.
           def option_required?(entry, name)
             Array(entry["options"]).any? { |option| option["name"] == name && option["required"] }
           end
 
+          # The component's Poetry attributes: its styles as symbols, its resolved options, and any action.
           def attributes(component, entry, scope, renderer)
             attributes = {}
             Array(entry["styles"]).each do |axis|
@@ -130,6 +140,7 @@ module Poetry
             attributes
           end
 
+          # The attributes for a component's action: a submit, a link for openUrl, or nothing.
           def action_attributes(component, scope, renderer)
             action = component["action"]
             return renderer.submit_attributes(component, scope) if action["event"].is_a?(Hash)
@@ -168,6 +179,7 @@ module Poetry
             end
           end
 
+          # A component's content: its text, its children, or its child.
           def content(component, scope, renderer)
             if component.key?("text")
               renderer.view.safe_join([renderer.text(component["text"], scope)])

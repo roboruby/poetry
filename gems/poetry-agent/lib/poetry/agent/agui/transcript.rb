@@ -68,6 +68,7 @@ module Poetry
         # @return [Integer]
         attr_reader :version
 
+        # An empty transcript, with the client-side tool names.
         # @param client_tools [Array<String>] names of tools the browser executes
         def initialize(client_tools: [])
           @client_tools = client_tools.map(&:to_s)
@@ -110,6 +111,7 @@ module Poetry
           self
         end
 
+        # A message by id, or nil.
         # @param id [String]
         # @return [Message, nil]
         def message(id)
@@ -125,11 +127,13 @@ module Poetry
           found ? { parts: found.parts.map(&:dup), version: found.version } : { parts: [], version: 0 }
         end
 
+        # Whether the run finished, was interrupted, or failed.
         # @return [Boolean] the run ended (finished, interrupted, or errored)
         def ended?
           %i[finished interrupted error].include?(@run[:status])
         end
 
+        # Whether the run was interrupted.
         # @return [Boolean]
         def interrupted?
           @run[:status] == :interrupted
@@ -206,15 +210,19 @@ module Poetry
         }.freeze
         private_constant :HANDLERS
 
+        # An event field by name.
         def f(event, name) = AGUI.field(event, name)
 
+        # Ignores an event.
         def noop(_event) = []
 
+        # Records a custom event.
         def custom(event)
           @custom_events << event
           []
         end
 
+        # Records a step event.
         def step(event)
           @steps << [f(event, "type"), f(event, "stepName")]
           []
@@ -229,6 +237,7 @@ module Poetry
           []
         end
 
+        # Marks the run finished, or interrupted when the outcome carries interrupts.
         def run_finished(event)
           outcome = f(event, "outcome")
           interrupts = if outcome.is_a?(Hash) && AGUI.field(outcome,
@@ -245,6 +254,7 @@ module Poetry
           close_open_texts
         end
 
+        # Marks the run failed with its message and code.
         def run_error(event)
           @run[:status] = :error
           @run[:error] = { message: f(event, "message").to_s, code: f(event, "code") }
@@ -255,15 +265,23 @@ module Poetry
         # --- text and reasoning ---
 
         def text_start(event) = start_part(f(event, "messageId"), f(event, "role") || "assistant", :text)
+        # Appends a text delta to its message.
         def text_content(event) = append_part(f(event, "messageId"), :text, f(event, "delta"))
+        # Closes a message's text part.
         def text_end(event) = end_part(f(event, "messageId"), :text)
+        # Opens a reasoning part on its message.
         def reasoning_start(event) = start_part(f(event, "messageId"), "assistant", :reasoning)
+        # Appends a reasoning delta to its message.
         def reasoning_content(event) = append_part(f(event, "messageId"), :reasoning, f(event, "delta"))
+        # Closes a message's reasoning part.
         def reasoning_end(event) = end_part(f(event, "messageId"), :reasoning)
 
+        # Handles a text chunk, opening the part when it is the first.
         def text_chunk(event) = chunk(event, :text, f(event, "role") || "assistant")
+        # Handles a reasoning chunk, opening the part when it is the first.
         def reasoning_chunk(event) = chunk(event, :reasoning, "assistant")
 
+        # Handles a chunk event: opens the part when needed and appends its delta.
         def chunk(event, kind, role)
           id = f(event, "messageId") || @current_message_id
           return [] unless id
@@ -274,6 +292,7 @@ module Poetry
           changed
         end
 
+        # Opens a text or reasoning part on a message and makes it current.
         def start_part(id, role, kind)
           return [] unless id
 
@@ -285,6 +304,7 @@ module Poetry
           [touch(id)]
         end
 
+        # Appends a delta to a message's open part, opening one when needed.
         def append_part(id, kind, delta)
           id ||= @current_message_id
           return [] unless id && delta
@@ -300,6 +320,7 @@ module Poetry
           [touch(id)]
         end
 
+        # Closes a message's open part.
         def end_part(id, kind)
           @open_text.delete([id || @current_message_id, kind])
           []
@@ -334,6 +355,7 @@ module Poetry
           [touch(message_id)]
         end
 
+        # Appends an arguments delta to a tool call.
         def tool_args(event)
           tool_call_id = f(event, "toolCallId").to_s
           part = @tool_parts[tool_call_id]
@@ -343,6 +365,7 @@ module Poetry
           [touch(part[:message_id])]
         end
 
+        # Settles a tool call's input; a client tool moves to awaiting the client.
         def tool_end(event)
           tool_call_id = f(event, "toolCallId").to_s
           part = @tool_parts[tool_call_id]
@@ -357,6 +380,7 @@ module Poetry
           [touch(part[:message_id])]
         end
 
+        # Handles a chunked tool call, starting it and appending its delta as needed.
         def tool_chunk(event)
           tool_call_id = f(event, "toolCallId")
           changed = []
@@ -372,6 +396,7 @@ module Poetry
           changed
         end
 
+        # Records a tool call's output and marks it done.
         def tool_result(event)
           tool_call_id = f(event, "toolCallId").to_s
           part = @tool_parts[tool_call_id]
@@ -392,6 +417,7 @@ module Poetry
           []
         end
 
+        # Applies a JSON patch to the state; a bad patch is recorded as unknown.
         def state_delta(event)
           @state = JsonPatch.apply(@state, f(event, "delta") || [])
           @version += 1
@@ -401,6 +427,7 @@ module Poetry
           []
         end
 
+        # Replaces the messages with a snapshot.
         def messages_snapshot(event)
           rebuilt = Array(f(event, "messages")).filter_map { |message| snapshot_message(stringify(message)) }
           @messages = rebuilt
@@ -429,6 +456,7 @@ module Poetry
           end
         end
 
+        # An assistant message rebuilt from its wire form, with its tool calls.
         def snapshot_assistant(wire)
           parts = []
           parts << { kind: :text, text: wire["content"] } if wire["content"].is_a?(String) && !wire["content"].empty?
@@ -442,6 +470,7 @@ module Poetry
           Message.new(id: wire["id"].to_s, role: "assistant", parts: parts, version: 0)
         end
 
+        # Applies a tool result from a snapshot to its open tool part.
         def snapshot_tool_result(wire)
           part = @tool_parts[wire["toolCallId"].to_s]
           return nil unless part
@@ -451,6 +480,7 @@ module Poetry
           nil
         end
 
+        # Replaces an activity's content from a snapshot, unless it asks not to replace an existing one.
         def activity_snapshot(event)
           id = f(event, "messageId").to_s
           replace = f(event, "replace")
@@ -464,6 +494,7 @@ module Poetry
           [touch(id)]
         end
 
+        # Applies a JSON patch to an activity's content.
         def activity_delta(event)
           id = f(event, "messageId").to_s
           activity = @activities[id]
@@ -486,6 +517,7 @@ module Poetry
           end
         end
 
+        # Bumps the version and stamps it on a message.
         def touch(id)
           @version += 1
           found = message(id)
@@ -493,10 +525,12 @@ module Poetry
           id
         end
 
+        # A message's text parts joined.
         def text_of(message)
           message.parts.select { |part| part[:kind] == :text }.map { |part| part[:text] }.join
         end
 
+        # An assistant message in its wire form, with its tool calls.
         def assistant_wire(message)
           wire = { "id" => message.id, "role" => "assistant", "content" => text_of(message) }
           calls = message.parts.select { |part| part[:kind] == :tool }
@@ -514,10 +548,12 @@ module Poetry
           [wire, *results]
         end
 
+        # A value as text: strings as they are, anything else as JSON.
         def as_text(value)
           value.is_a?(String) ? value : JSON.generate(value)
         end
 
+        # Text parsed as JSON when it is; otherwise the value as given.
         def parse_json(text)
           return text unless text.is_a?(String)
           return text if text.empty?
@@ -527,6 +563,7 @@ module Poetry
           text
         end
 
+        # A value with every hash key turned into a string, recursively.
         def stringify(value)
           case value
           when Hash then value.to_h { |key, inner| [key.to_s, stringify(inner)] }

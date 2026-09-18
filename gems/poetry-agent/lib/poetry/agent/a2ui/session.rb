@@ -26,17 +26,20 @@ module Poetry
         # A user action, ready for the agent: the spec message plus the
         # AG-UI placement (`forwardedProps.a2uiAction.userAction`).
         Action = Struct.new(:message, :surface, :errors, keyword_init: true) do
+          # Whether the action produced a message and no check failed.
           # @return [Boolean] whether every check passed and the message exists
           def valid?
             !message.nil? && (errors.nil? || errors.empty?)
           end
 
+          # The renderer-to-agent action message, or nil when a check failed.
           # @return [Hash, nil] the `{ "version", "action" }` renderer-to-agent
           #   message; nil when a check failed
           def to_h
             message
           end
 
+          # The forwarded props carrying the action and, when asked for, the data model.
           # @return [Hash] the AG-UI `forwardedProps` carrying the action (and the
           #   data model when the surface asked for it); empty when invalid
           def forwarded_props
@@ -48,17 +51,23 @@ module Poetry
           end
         end
 
+        # The live surfaces by id.
         # @return [Hash{String => Surface}] live surfaces by id
         attr_reader :surfaces
+        # The renderer-to-agent error messages, in order.
         # @return [Array<Hash>] renderer-to-agent error messages, in order
         attr_reader :errors
+        # The ids of deleted surfaces, in order.
         # @return [Array<String>] ids of deleted surfaces, in order
         attr_reader :deleted
+        # The renderer-to-agent function response messages, in order.
         # @return [Array<Hash>] renderer-to-agent `rendererFunctionResponse` messages, in order
         attr_reader :responses
+        # The catalog bindings by catalog id.
         # @return [Hash{String => Object}] catalog bindings by catalog id
         attr_reader :catalogs
 
+        # A session over catalog bindings, with a default for unknown catalog ids.
         # @param catalogs [Hash{String => Object}] catalog bindings by id
         # @param default_catalog [Object, nil] the binding for unknown catalog ids
         #   (Poetry's own when nil)
@@ -87,6 +96,7 @@ module Poetry
           send(:"apply_#{key.gsub(/([A-Z])/) { "_#{::Regexp.last_match(1).downcase}" }}", body)
         end
 
+        # Applies a list of messages and returns the ids of the surfaces they changed.
         # @param messages [Array<Hash>]
         # @return [Array<String>] the changed surface ids, deduplicated
         def apply_all(messages)
@@ -109,6 +119,7 @@ module Poetry
           apply_all(list.grep(Hash))
         end
 
+        # A surface by id, or nil.
         # @param surface_id [String]
         # @return [Surface, nil]
         def surface(surface_id)
@@ -148,6 +159,7 @@ module Poetry
           Action.new(message: { "version" => "v#{PROTOCOL_VERSION}", "action" => action }, surface: surface, errors: {})
         end
 
+        # The binding for a catalog id, or the default.
         # @param catalog_id [String, nil]
         # @return [Object] the catalog binding for an id (the default when unknown)
         def catalog_for(catalog_id)
@@ -156,6 +168,7 @@ module Poetry
 
         private
 
+        # The one operation key of a message, or nil after rejecting a malformed one.
         def message_key(message)
           return reject("INVALID_MESSAGE", "message must be an object") && nil unless message.is_a?(Hash)
 
@@ -172,6 +185,7 @@ module Poetry
           nil
         end
 
+        # Creates a surface from a createSurface body; a duplicate or missing id is rejected.
         def apply_create_surface(body)
           surface_id = body["surfaceId"]
           return reject("INVALID_MESSAGE", "createSurface.surfaceId is required") unless surface_id.is_a?(String)
@@ -188,6 +202,7 @@ module Poetry
           [surface_id]
         end
 
+        # Updates a surface's components from an updateComponents body, recording validation errors.
         def apply_update_components(body)
           surface = find(body, "updateComponents") or return []
           components = body["components"]
@@ -199,6 +214,7 @@ module Poetry
           [surface.id]
         end
 
+        # Writes a value into a surface's data model from an updateDataModel body.
         def apply_update_data_model(body)
           surface = find(body, "updateDataModel") or return []
           return reject("INVALID_MESSAGE", "updateDataModel.value is required", surface.id) unless body.key?("value")
@@ -207,6 +223,7 @@ module Poetry
           [surface.id]
         end
 
+        # Deletes a surface from a deleteSurface body.
         def apply_delete_surface(body)
           surface = find(body, "deleteSurface") or return []
           @surfaces.delete(surface.id)
@@ -235,6 +252,7 @@ module Poetry
           refuse_call(body, e.message)
         end
 
+        # Records an invalid function call error and changes nothing.
         def refuse_call(body, message)
           error = { "code" => "INVALID_FUNCTION_CALL", "message" => message }
           error["functionCallId"] = body["functionCallId"] if body["functionCallId"]
@@ -247,6 +265,7 @@ module Poetry
           []
         end
 
+        # The surface a body names, or nil after rejecting the unknown id.
         def find(body, key)
           surface_id = body["surfaceId"]
           surface = surface_id.is_a?(String) && @surfaces[surface_id]
@@ -254,6 +273,7 @@ module Poetry
           surface || nil
         end
 
+        # Records a surface's validation errors as error messages.
         def record(surface_id, validation_errors)
           validation_errors.each do |error|
             @errors << { "version" => "v#{PROTOCOL_VERSION}",
@@ -262,6 +282,7 @@ module Poetry
           end
         end
 
+        # Records an error message and returns no changed ids.
         def reject(code, message, surface_id = nil)
           error = { "code" => code, "message" => message }
           error["surfaceId"] = surface_id if surface_id.is_a?(String)
@@ -281,6 +302,7 @@ module Poetry
           end
         end
 
+        # A submitted value coerced to its input's kind.
         def coerce(value, kind)
           case kind
           when :boolean then %w[true 1 on].include?(value.to_s.downcase)
@@ -290,6 +312,7 @@ module Poetry
           end
         end
 
+        # A submitted value as a number, or nil when blank or unparsable.
         def number(value)
           text = value.to_s
           return nil if text.strip.empty?

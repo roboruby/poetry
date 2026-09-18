@@ -23,6 +23,7 @@ module Poetry
         # The response media type.
         JSON_TYPE = "application/json"
 
+        # A Rack endpoint over a server, a callable that builds one, or the bundled default.
         # @param server [Server, Proc, nil] the server, a lambda building it
         #   on first request, or nil for the bundled assembly
         def initialize(server = nil)
@@ -53,20 +54,24 @@ module Poetry
 
         private
 
+        # The MCP server, built on first use.
         def server
           @server = @server.call if @server.respond_to?(:call) && !@server.respond_to?(:handle)
           @server ||= Bundled.server
         end
 
+        # The JSON response headers.
         def headers
           { "content-type" => JSON_TYPE, "cache-control" => "no-store" }
         end
 
+        # The 405 response for anything but POST.
         def not_allowed
           [405, headers.merge("allow" => "POST"),
            [JSON.generate(rpc_error(-32_601, "POST JSON-RPC only (SSE streaming is not offered)"))]]
         end
 
+        # The 403 response for a cross-origin request.
         def forbidden
           [403, headers, [JSON.generate(rpc_error(-32_600, "origin not allowed"))]]
         end
@@ -80,6 +85,7 @@ module Poetry
           origin.casecmp?("#{request.scheme}://#{request.host_with_port}")
         end
 
+        # A JSON-RPC error body with no id.
         def rpc_error(code, message)
           { "jsonrpc" => "2.0", "id" => nil, "error" => { "code" => code, "message" => message } }
         end

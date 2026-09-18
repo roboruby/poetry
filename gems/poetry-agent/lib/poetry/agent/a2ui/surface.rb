@@ -25,21 +25,29 @@ module Poetry
         # The reserved container the renderer instantiates on createSurface.
         RESERVED_COMPONENT = "Surface"
 
+        # The surface id.
         # @return [String]
         attr_reader :id
+        # The catalog id the agent named.
         # @return [String, nil] the catalog id the agent named
         attr_reader :catalog_id
+        # The catalog binding.
         # @return [Object] the catalog binding (see {Catalogs::Basic})
         attr_reader :catalog
+        # Whether actions carry the whole data model.
         # @return [Boolean] whether actions carry the whole data model
         attr_reader :send_data_model
+        # The components by id.
         # @return [Hash{String => Hash}] components by id
         attr_reader :components
+        # The data model.
         # @return [Hash] the data model
         attr_reader :data
+        # A counter that bumps on every applied change.
         # @return [Integer] bumps on every applied change
         attr_reader :version
 
+        # A surface with its catalog, initial data model and components.
         # @param id [String]
         # @param catalog [Object] the catalog binding
         # @param catalog_id [String, nil]
@@ -89,11 +97,13 @@ module Poetry
           bump!
         end
 
+        # The root component, or nil.
         # @return [Hash, nil] the top-level component
         def root
           @components["root"]
         end
 
+        # A component by id, or nil.
         # @param component_id [String]
         # @return [Hash, nil]
         def component(component_id)
@@ -142,6 +152,7 @@ module Poetry
           result
         end
 
+        # A component's key: its id, with the scope appended inside a template.
         # @param component [Hash]
         # @param scope [String, nil]
         # @return [String] `id`, or `id@scope` inside a template
@@ -171,18 +182,21 @@ module Poetry
           { "checks" => checks, "inputs" => inputs.to_h { |input| [input[:path], input[:kind].to_s] }, "model" => data }
         end
 
+        # Whether a value is a data binding.
         # @param value [Object]
         # @return [Boolean] whether the value is a `{ "path" => ... }` data binding
         def binding?(value)
           value.is_a?(Hash) && value.key?("path") && !value.key?("componentId")
         end
 
+        # Whether a value is a function call.
         # @param value [Object]
         # @return [Boolean] whether the value is a `{ "call" => ... }` function call
         def function_call?(value)
           value.is_a?(Hash) && value.key?("call")
         end
 
+        # Whether a value is a component template.
         # @param value [Object]
         # @return [Boolean] whether the value is a `{ "componentId", "path" }` template
         def template?(value)
@@ -243,6 +257,7 @@ module Poetry
           result.uniq { |input| input[:path] }
         end
 
+        # The surface as a hash: identity, version, components and data model.
         # @return [Hash] a JSON-ready snapshot
         def to_h
           { "surfaceId" => id, "catalogId" => catalog_id, "sendDataModel" => send_data_model,
@@ -251,6 +266,7 @@ module Poetry
 
         private
 
+        # Advances the version.
         def bump!
           @version += 1
         end
@@ -267,6 +283,7 @@ module Poetry
           end
         end
 
+        # Yields each component reachable from an id in a scope, once per component and scope.
         def walk_from(component_id, scope, stack, &)
           key = [component_id, scope]
           return if stack.include?(key)
@@ -282,6 +299,7 @@ module Poetry
           end
         end
 
+        # The validation error for one incoming component, or nil when it is well formed.
         def component_error(component, index)
           path = "/components/#{index}"
           return error(path, "component must be an object") unless component.is_a?(Hash)
@@ -306,6 +324,7 @@ module Poetry
           errors
         end
 
+        # Depth-first visits a component's static children, recording a circular reference as an error.
         def visit(component_id, state, stack, errors)
           return if state[component_id] == :done
 
@@ -320,6 +339,7 @@ module Poetry
           state[component_id] = :done
         end
 
+        # The ids a component references directly, templates excluded.
         def static_children(component_id)
           component = @components[component_id]
           return [] unless component
@@ -335,10 +355,12 @@ module Poetry
           children.select { |child| @components.key?(child) }
         end
 
+        # A validation error at a path.
         def error(path, message)
           { code: "VALIDATION_FAILED", path: path, message: message }
         end
 
+        # A deep copy of a value with string keys.
         def deep_copy(value)
           case value
           when Hash then value.to_h { |key, item| [key.to_s, deep_copy(item)] }

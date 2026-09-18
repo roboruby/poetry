@@ -32,6 +32,7 @@ module Poetry
 
         module_function
 
+        # The template tree of an expression string.
         # @param text [String]
         # @return [Array] the `[:template, nodes]` tree
         # @raise [SyntaxError]
@@ -39,6 +40,7 @@ module Poetry
           Parser.new(text.to_s).template
         end
 
+        # Whether the text carries an interpolation block.
         # @param text [String]
         # @return [Boolean] whether the text carries an interpolation block
         def dynamic?(text)
@@ -47,6 +49,7 @@ module Poetry
 
         # The recursive-descent parser.
         class Parser
+          # A parser over the source, at the start and at depth zero.
           # @param source [String]
           def initialize(source)
             @source = source
@@ -54,6 +57,7 @@ module Poetry
             @depth = 0
           end
 
+          # The template tree: literal runs and interpolation blocks.
           # @return [Array] the `[:template, nodes]` tree
           def template
             nodes = []
@@ -86,6 +90,7 @@ module Poetry
             node
           end
 
+          # One expression node: a nested block, a string literal, a number, a path or a call.
           def expression
             @depth += 1
             raise SyntaxError, "expression nested deeper than #{MAX_DEPTH}" if @depth > MAX_DEPTH
@@ -113,6 +118,7 @@ module Poetry
             [:call, name, arguments]
           end
 
+          # The keyword arguments of a call, up to the closing parenthesis.
           def arguments
             args = {}
             skip_space
@@ -135,14 +141,17 @@ module Poetry
             end
           end
 
+          # A number literal as an Integer or a Float.
           def number(text)
             text.include?(".") ? Float(text) : Integer(text, 10)
           end
 
+          # A string literal's body with its backslash escapes removed.
           def unescape(text)
             text.gsub(/\\(.)/) { Regexp.last_match(1) }
           end
 
+          # The match of a pattern at the current index, advancing past it; nil when it does not match there.
           def scan(pattern)
             match = pattern.match(@source, @index)
             return unless match && match.begin(0) == @index
@@ -151,20 +160,24 @@ module Poetry
             match
           end
 
+          # Consumes an exact token, raising when it is not next.
           def expect(token)
             raise SyntaxError, "expected #{token.inspect} at #{@index}" unless peek(token.length) == token
 
             @index += token.length
           end
 
+          # The next characters without consuming them.
           def peek(length)
             @source[@index, length]
           end
 
+          # Advances past whitespace.
           def skip_space
             @index += 1 while @source[@index]&.match?(/\s/)
           end
 
+          # Whether the source is exhausted.
           def eos?
             @index >= @source.length
           end

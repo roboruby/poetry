@@ -14,6 +14,7 @@ module Poetry
       module TurboStream
         module_function
 
+        # One turbo-stream element with its action, target, method and template.
         # @param action [String] a Turbo Stream action (`append`, `replace`, `vreplace`, `remove`, ...)
         # @param target [String] the target element id
         # @param html [String, nil] the template content (already rendered, trusted)
@@ -28,6 +29,7 @@ module Poetry
           "#{open}<template>#{html}</template></turbo-stream>"
         end
 
+        # A vreplace stream, morphing when asked.
         # @param target [String]
         # @param html [String]
         # @param morph [Boolean] morph the target (Turbo's idiomorph) instead of swapping it, so
@@ -35,16 +37,19 @@ module Poetry
         # @return [String]
         def vreplace(target, html, morph: false) = build("vreplace", target, html, method: morph ? "morph" : nil)
 
+        # An append stream.
         # @param target [String]
         # @param html [String]
         # @return [String]
         def append(target, html) = build("append", target, html)
 
+        # A replace stream.
         # @param target [String]
         # @param html [String]
         # @return [String]
         def replace(target, html) = build("replace", target, html)
 
+        # A remove stream.
         # @param target [String]
         # @return [String]
         def remove(target) = build("remove", target)
@@ -58,6 +63,7 @@ module Poetry
           "data: #{html.tr("\n", " ")}\n\n"
         end
 
+        # A value HTML-escaped for an attribute.
         # @api private
         def escape(value)
           CGI.escapeHTML(value.to_s)

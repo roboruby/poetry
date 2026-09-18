@@ -66,6 +66,7 @@ module Poetry
           end
         end
 
+        # A value as a number: numerics as they are, numeric strings parsed, anything else nil.
         # @param value [Object]
         # @return [Numeric, nil] the value as a number, when it is one
         def self.number(value)
@@ -79,6 +80,7 @@ module Poetry
           end
         end
 
+        # An empty function set.
         def initialize
           @definitions = {}
         end
@@ -106,6 +108,7 @@ module Poetry
           self
         end
 
+        # Whether a declared function may be called by the agent.
         # @param name [String]
         # @return [Boolean] whether an agent may invoke the function through `callRendererFunction`
         def agent_callable?(name)
@@ -113,11 +116,13 @@ module Poetry
           !definition.nil? && definition.callers != "rendererOnly"
         end
 
+        # The declared function names.
         # @return [Array<String>] the declared names
         def names
           @definitions.keys
         end
 
+        # Whether a function is declared.
         # @param name [String]
         # @return [Boolean]
         def declared?(name)
@@ -165,6 +170,7 @@ module Poetry
 
         private
 
+        # A function's argument schema: its params as properties, the required ones listed.
         def arguments_schema(definition)
           schema = { "type" => "object", "properties" => definition.params, "unevaluatedProperties" => false }
           schema["required"] = definition.required if definition.required.any?
@@ -192,6 +198,7 @@ module Poetry
                             "items" => { "$ref" => "#{COMMON_TYPES}DynamicBoolean" }, "minItems" => 2 } }
           end
 
+          # Declares the basic catalog's functions on a registry.
           # @param registry [Functions]
           # @return [void]
           def install(registry)
@@ -289,11 +296,13 @@ module Poetry
             end
           end
 
+          # A validation result, with its code when it fails.
           # @api private
           def result(valid, code: nil)
             code ? { "valid" => valid, "code" => code } : { "valid" => valid }
           end
 
+          # Whether a value is present: not nil, not blank, not empty.
           # @api private
           def present?(value)
             return false if value.nil?
@@ -308,6 +317,7 @@ module Poetry
             (min.nil? || number >= min) && (max.nil? || number <= max)
           end
 
+          # A regex validation with a match timeout; a bad pattern raises.
           # @api private
           def regex(value, pattern)
             expression = Regexp.new(pattern.to_s, timeout: 0.05)
@@ -383,6 +393,7 @@ module Poetry
             end
           end
 
+          # The plural form for a number, falling back to the other form.
           # @api private
           def pluralize(args)
             number = Functions.number(args["value"])
