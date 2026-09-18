@@ -43,6 +43,13 @@ module Poetry
         refute_includes floor, "banner"
       end
 
+      test "a comment before a selector stays outside the wrap" do
+        css = "/* the banner */\n\n/* a second */ h1, h2 {\n  font-size: 2rem;\n}\n"
+        floor = ResetFloor.floor(css)
+
+        assert_includes floor, "/* the banner */\n\n/* a second */ :where(h1), :where(h2) {\n  font-size: 2rem;\n}"
+      end
+
       test "a brace inside a comment does not open or close a rule" do
         css = "h1 {\n  /* not a } close */\n  font-size: 2rem;\n}\nh2 { color: red; }\n"
         floor = ResetFloor.floor(css)

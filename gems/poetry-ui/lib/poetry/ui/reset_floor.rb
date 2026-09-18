@@ -102,8 +102,8 @@ module Poetry
           case char
           when "{"
             if depth.zero?
-              prelude = css[prelude_start...i]
-              out << css[prelude_start...i].sub(prelude.strip, wrap_prelude(prelude.strip))
+              lead, selectors = split_lead_comments(css[prelude_start...i])
+              out << lead << selectors.sub(selectors.strip, wrap_prelude(selectors.strip))
               out << "{"
               prelude_start = i + 1
             end
@@ -119,6 +119,17 @@ module Poetry
         end
         out << css[prelude_start..]
         out
+      end
+
+      # A prelude split into its leading run of whitespace and comments,
+      # which stays as it is, and the selector text after it, which gets
+      # wrapped.
+      #
+      # @param prelude [String] the text before a rule's opening brace
+      # @return [Array(String, String)] the lead and the selectors
+      def split_lead_comments(prelude)
+        lead = prelude[%r{\A(?:\s|/\*.*?\*/)*}m]
+        [lead, prelude[lead.length..]]
       end
 
       # `:where()` around each selector of a list, except pseudo-element
