@@ -675,6 +675,15 @@ module Poetry
           }
         CSS
       end
+
+      private_class_method :bodies, :parse_hex, :to_hex, :mix, :readable, :js_float, :js_to_fixed, :format_number
+      private_class_method :rgb_to_hsl_token, :normalize_css_color, :normalize_hsl, :normalize_rgb, :split_channels
+      private_class_method :to_px, :to_px_list, :px_to_rem, :quote_if_needed, :build_font_stack, :classify_family
+      private_class_method :find_mono_family, :find_serif_family, :pick_fonts, :pick_radius, :normalize_px_token
+      private_class_method :split_shadow_layers, :find_color_snippet, :parse_box_shadow, :color_with_opacity
+      private_class_method :fallback_shadow_color, :build_shadow_tokens, :pick_shadows, :pick_spacing
+      private_class_method :pick_tracking_normal, :build_palette, :palette_lines, :non_color_lines
+      private_class_method :theme_inline_block, :layer_base
     end
   end
 end

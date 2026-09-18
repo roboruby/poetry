@@ -49,7 +49,6 @@ module Poetry
       end
 
       # The no-client Signals shape: homepage markdown, nothing else.
-      # @api private
       def degraded(domain, homepage_fetcher)
         Signals.new(styleguide: nil, brand: nil, screenshot_url: nil,
                     markdown: homepage_fetcher.call(domain).to_s)
@@ -66,7 +65,6 @@ module Poetry
 
       # SDK responses expose the payload as an accessor; plain-hash fakes
       # (tests, cassettes) work identically.
-      # @api private
       def value_of(response, key)
         return response[key.to_s] || response[key] if response.is_a?(Hash)
 
@@ -97,6 +95,8 @@ module Poetry
       rescue StandardError
         ""
       end
+
+      private_class_method :degraded, :value_of
     end
   end
 end

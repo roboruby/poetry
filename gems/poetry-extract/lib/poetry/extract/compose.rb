@@ -110,15 +110,12 @@ module Poetry
       end
 
       # A Messages API text content block.
-      # @api private
       def text_block(text) = { type: "text", text: text }
 
       # A Messages API URL-source image content block.
-      # @api private
       def image_block(url) = { type: "image", source: { type: "url", url: url } }
 
       # Join the response's text blocks into one string.
-      # @api private
       def extract_text(response)
         Array(response["content"]).filter_map { |block| block["text"] if block["type"] == "text" }.join
       end
@@ -144,6 +141,8 @@ module Poetry
 
         JSON.parse(response.body)
       end
+
+      private_class_method :text_block, :image_block, :extract_text
     end
   end
 end
