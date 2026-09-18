@@ -262,20 +262,9 @@ module Poetry
               j = j ? j + 2 : n
               blank(out, i, j)
               i = j
-            elsif ['"', "'"].include?(c)
-              j = literal_end(source, i, c)
+            elsif (j = literal_close(source, i, c, last))
               blank(out, i + 1, j - 1) if !keep && j - 1 > i + 1
               last = c
-              i = j
-            elsif c == "`"
-              j = template_end(source, i)
-              blank(out, i + 1, j - 1) if !keep && j - 1 > i + 1
-              last = c
-              i = j
-            elsif c == "/" && regex_start?(last, source, i)
-              j = literal_end(source, i, "/", regex: true)
-              blank(out, i + 1, j - 1) if !keep && j - 1 > i + 1
-              last = "/"
               i = j
             else
               last = c unless c.match?(/\s/)
@@ -283,6 +272,17 @@ module Poetry
             end
           end
           out
+        end
+
+        # Where the literal opening at a position closes: a string for a
+        # quote, a template for a backtick, a regex for a slash in regex
+        # position; nil when the character opens no literal.
+        def literal_close(source, position, char, last)
+          case char
+          when '"', "'" then literal_end(source, position, char)
+          when "`" then template_end(source, position)
+          when "/" then literal_end(source, position, "/", regex: true) if regex_start?(last, source, position)
+          end
         end
 
         # Blanks a range of the masked source, keeping its newlines.
