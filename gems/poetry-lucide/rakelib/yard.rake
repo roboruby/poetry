@@ -79,12 +79,44 @@ namespace :yard do
     puts "yard:lint: clean (#{hidden})"
   end
 
+  # The whole tree, private methods and the api-private internals included:
+  # every class, module and method counts as undocumented when its
+  # docstring has no sentence (a tag alone is not documentation). The
+  # committed .yard_coverage_all floor ratchets the same way.
+  whole_tree_undocumented = lambda do
+    require "yard"
+    system("bundle exec yard doc --no-output --no-progress --no-stats > /dev/null 2>&1")
+    YARD::Registry.load!(".yardoc")
+    YARD::Registry.all(:class, :module, :method).count { |object| object.docstring.to_s.strip.empty? }
+  end
+
   namespace :coverage do
     desc "Record the current undocumented-object count as the floor"
     task :record do
       count = undocumented_count.call
       File.write(".yard_coverage", "#{count}\n")
       puts "recorded floor: #{count}"
+    end
+
+    desc "Fail when the whole-tree undocumented count (private and internal included) exceeds the recorded floor"
+    task :all do
+      unless File.exist?(".yard_coverage_all")
+        abort "yard:coverage:all: no .yard_coverage_all - run yard:coverage:all:record"
+      end
+
+      floor = File.read(".yard_coverage_all").to_i
+      count = whole_tree_undocumented.call
+      abort "yard:coverage:all: #{count} objects without a sentence (floor #{floor})" if count > floor
+      puts "yard:coverage:all: #{count} without a sentence (floor #{floor})"
+    end
+
+    namespace :all do
+      desc "Record the current whole-tree undocumented count as the floor"
+      task :record do
+        count = whole_tree_undocumented.call
+        File.write(".yard_coverage_all", "#{count}\n")
+        puts "recorded whole-tree floor: #{count}"
+      end
     end
   end
 end
