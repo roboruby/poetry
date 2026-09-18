@@ -35,6 +35,7 @@ module Poetry
 
       attr_reader :width, :height, :margin, :y_tick_count, :offset, :layout
 
+      # Builds the cartesian geometry for the data, series and box, with the axis and stacking options.
       # @param data [Array<Hash>] the rows, one hash per category
       # @param series [Array<#key>] series entries (key + optional stack id)
       # @param width [Numeric] outer SVG width in pixels
@@ -231,11 +232,13 @@ module Poetry
         end
       end
 
+      # A row's value for a key as a float, NaN when it is missing.
       def value_at(index, key)
         value = @data[index][key]
         value.nil? ? Float::NAN : value.to_f
       end
 
+      # A value as chart text.
       def display_value(value)
         Poetry::Charts.display_value(value)
       end

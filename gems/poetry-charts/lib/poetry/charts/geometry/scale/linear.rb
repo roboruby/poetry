@@ -16,6 +16,7 @@ module Poetry
         class Linear
           attr_reader :domain, :range
 
+          # A linear scale from the domain to the range.
           # @param domain [Array<Numeric>] the two-point input interval
           # @param range [Array<Numeric>] the two-point output interval
           def initialize(domain: [0.0, 1.0], range: [0.0, 1.0])

@@ -68,6 +68,7 @@ module Poetry
 
         private
 
+        # Applies the configured offset to the stacked series in order.
         def apply_offset(series, order)
           case @offset
           when :none then offset_none(series, order)

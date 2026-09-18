@@ -117,27 +117,33 @@ module Poetry
         # One resolved tooltip row: name via config, color via item-else-config.
         # @api private
         class Row
+          # Wraps one tooltip item with the chart config it resolves against.
           def initialize(item, config)
             @item = item
             @config = config
           end
 
+          # The row's series key: the item's key, else its name, else value.
           def key
             (@item[:key] || @item[:name] || "value").to_s
           end
 
+          # The row's label, through the config.
           def name
             @config.label_for(key, @item[:name])
           end
 
+          # The row's swatch color: the item's own, else the config entry's.
           def color
             @item[:color] || @config[key]&.color
           end
 
+          # The row's raw value.
           def value
             @item[:value]
           end
 
+          # The value as text, a number with thousands separators; nil stays nil.
           def formatted_value
             return nil if value.nil?
             return ActiveSupport::NumberHelper.number_to_delimited(value) if value.is_a?(Numeric)

@@ -19,6 +19,7 @@ module Poetry
       # Theme name -> selector prefix (the .dark class convention).
       THEMES = { light: "", dark: ".dark " }.freeze
 
+      # The per-chart stylesheet for an id and config.
       # @param id [String] the container's data-chart identifier
       # @param config [Config, Hash] the chart config the colors come from
       def initialize(id:, config:)
@@ -39,6 +40,7 @@ module Poetry
 
       private
 
+      # One theme's rule: the color custom properties the entries set for that mode, or nil when none.
       def theme_block(theme, prefix, entries)
         declarations = entries.filter_map do |entry|
           color = entry.color_for(theme)

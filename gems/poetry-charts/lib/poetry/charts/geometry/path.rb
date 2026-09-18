@@ -20,6 +20,8 @@ module Poetry
       #   path.line_to(10, 20.5)
       #   path.to_s # => "M0,0L10,20.5"
       class Path
+        # An empty path rounding coordinates to the given digits.
+        #
         # @param digits [Integer, nil] output rounding decimals; nil disables
         #   rounding (full-precision output)
         def initialize(digits: 3)
@@ -104,6 +106,7 @@ module Poetry
 
         private
 
+        # A coordinate rounded to the path's precision and printed the JavaScript way.
         def fmt(value)
           value = ((value * @scale) + 0.5).floor / @scale.to_f if @scale
           Geometry.js_number(value)

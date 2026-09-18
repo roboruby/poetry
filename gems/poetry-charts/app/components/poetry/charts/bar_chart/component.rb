@@ -264,6 +264,7 @@ module Poetry
         # The widest the auto-sized strip may grow, as a share of the width.
         CATEGORY_STRIP_SHARE = 0.4
 
+        # The axis margin, widened on the left by the category strip allowance when the strip auto-sizes.
         # @api private
         def axis_margin
           base = super
@@ -271,6 +272,7 @@ module Poetry
           allowance.positive? ? base.merge(left: Cartesian::DEFAULT_MARGIN[:left] + allowance) : base
         end
 
+        # Whether the category strip sizes itself: a horizontal chart with a y axis and no explicit left margin.
         # @api private
         def auto_category_strip?
           horizontal? && y_axis? && !(margin || {}).to_h.symbolize_keys.key?(:left)
@@ -285,6 +287,7 @@ module Poetry
           [[needed, category_strip_cap].min - Cartesian::Y_AXIS_WIDTH, 0].max.ceil
         end
 
+        # The most pixels the category strip may take, a share of the chart width.
         # @api private
         def category_strip_cap
           (width * CATEGORY_STRIP_SHARE).floor
@@ -299,12 +302,14 @@ module Poetry
           [((category_strip_cap - y_axis_config.tick_margin.to_f) / CATEGORY_LABEL_CHAR_WIDTH).floor, 2].max
         end
 
+        # The longest formatted category label, in characters.
         # @api private
         def longest_category_label
           key = y_axis_config.data_key
           data.map { |row| formatted_category_label(row.to_h[key] || row.to_h[key.to_sym]).length }.max || 0
         end
 
+        # A category through the y axis's tick formatter when one is given, else as text.
         # @api private
         def formatted_category_label(category)
           formatter = y_axis_config&.tick_formatter

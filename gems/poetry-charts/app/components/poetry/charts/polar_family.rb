@@ -20,6 +20,7 @@ module Poetry
       # The default polar margin - a slim, even inset on all sides.
       MARGIN = { top: 5, right: 5, bottom: 5, left: 5 }.freeze
 
+      # Declares the tooltip wiring on the including chart's svg.
       def self.included(base)
         base.use_stimulus do
           on :svg do

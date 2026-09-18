@@ -31,6 +31,7 @@ module Poetry
 
       attr_reader :type, :data, :series, :axes, :config
 
+      # A chart spec of a known type over its data, series and axes.
       # @param type [Symbol, String] one of TYPES
       # @param data [Array<Hash>] the rows, one hash per data point
       # @param series [Array<Hash>] series entries; data_key: is required
@@ -73,6 +74,7 @@ module Poetry
 
       private
 
+      # The series entries with symbol keys, each with a data_key and no unknown keys.
       def normalize_series(series)
         Array(series).map do |entry|
           entry = entry.symbolize_keys
@@ -85,6 +87,7 @@ module Poetry
         end
       end
 
+      # The axes with symbol keys and no unknown keys.
       def normalize_axes(axes)
         axes.symbolize_keys.to_h do |name, axis|
           axis = axis.symbolize_keys

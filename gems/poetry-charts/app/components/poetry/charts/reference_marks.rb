@@ -14,6 +14,7 @@ module Poetry
     # and fnum. Vertical layouts only (a horizontal bar raises - a
     # declared limit).
     module ReferenceMarks
+      # Declares the reference line, area and dot slots on the including chart.
       def self.included(base)
         # A dashed rule across the plot: x: (a category) draws it
         # vertical, y: (a value) horizontal; label: annotates it.
@@ -89,6 +90,7 @@ module Poetry
 
       private
 
+      # One reference mark's SVG, by its kind.
       def reference_mark_svg(mark)
         case mark[:kind]
         when :line then reference_line_svg(mark)
@@ -139,6 +141,7 @@ module Poetry
         safe_join([rect, label])
       end
 
+      # A reference dot's SVG: the circle, and its label above it when given.
       def reference_dot_svg(mark)
         cx = ref_x_pixel(mark[:x])
         cy = ref_y_pixel(mark[:y])

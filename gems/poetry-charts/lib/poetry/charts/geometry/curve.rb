@@ -46,16 +46,19 @@ module Poetry
         # Shared area/line bookkeeping (identical across all four curves).
         # @api private
         module LineState
+          # Marks the start of an area: the next segment opens a subpath.
           def area_start
             @line = 0
           end
 
+          # Marks the end of an area.
           def area_end
             @line = Float::NAN
           end
 
           private
 
+          # Whether the line state reads as true the way the source's JavaScript does.
           def line_truthy?
             Geometry.js_truthy?(@line)
           end
@@ -65,6 +68,7 @@ module Poetry
             line_truthy? || (@line != 0 && extra)
           end
 
+          # Flips the line state between its two values.
           def flip_line
             @line = Curve.js_flip(@line)
           end
@@ -75,20 +79,24 @@ module Poetry
         class Linear
           include LineState
 
+          # A linear curve writing into the path context.
           def initialize(context)
             @context = context
             @line = nil
           end
 
+          # Resets the point count for a new line.
           def line_start
             @point = 0
           end
 
+          # Closes the path when the line state asks for it, then flips the state.
           def line_end
             @context.close_path if close_on_line_end?(@point == 1)
             flip_line
           end
 
+          # Adds a point: a move for the first, a line for the rest.
           def point(x, y)
             x = x.to_f
             y = y.to_f
@@ -109,17 +117,20 @@ module Poetry
         class Step
           include LineState
 
+          # A step curve writing into the path context, stepping at fraction t.
           def initialize(context, t)
             @context = context
             @t = t
             @line = nil
           end
 
+          # Resets the pending point for a new line.
           def line_start
             @x = @y = Float::NAN
             @point = 0
           end
 
+          # Draws the pending step, closes the path when asked, and mirrors the step for the return leg.
           def line_end
             @context.line_to(@x, @y) if @t.positive? && @t < 1 && @point == 2
             @context.close_path if close_on_line_end?(@point == 1)
@@ -130,6 +141,7 @@ module Poetry
             @line = 1 - @line
           end
 
+          # Adds a point, drawing the horizontal and vertical legs of the step from the previous one.
           def point(x, y)
             x = x.to_f
             y = y.to_f
@@ -158,16 +170,19 @@ module Poetry
         class Natural
           include LineState
 
+          # A natural cubic spline writing into the path context.
           def initialize(context)
             @context = context
             @line = nil
           end
 
+          # Starts collecting the points of a new line.
           def line_start
             @xs = []
             @ys = []
           end
 
+          # Draws the collected points as a natural cubic spline.
           def line_end
             x = @xs
             y = @ys
@@ -192,6 +207,7 @@ module Poetry
             @xs = @ys = nil
           end
 
+          # Collects a point for the spline.
           def point(x, y)
             @xs << x.to_f
             @ys << y.to_f
@@ -238,16 +254,19 @@ module Poetry
         class MonotoneX
           include LineState
 
+          # A monotone-in-x cubic curve writing into the path context.
           def initialize(context)
             @context = context
             @line = nil
           end
 
+          # Resets the previous points and tangent for a new line.
           def line_start
             @x0 = @x1 = @y0 = @y1 = @t0 = Float::NAN
             @point = 0
           end
 
+          # Draws the last segment, closes the path when asked, and flips the state.
           def line_end
             case @point
             when 2 then @context.line_to(@x1, @y1)
@@ -257,6 +276,7 @@ module Poetry
             flip_line
           end
 
+          # Adds a point, emitting the previous segment with monotone tangents.
           def point(x, y)
             x = x.to_f
             y = y.to_f
@@ -288,6 +308,7 @@ module Poetry
 
           private
 
+          # The sign of a value as a float, negative or positive one.
           def sign(value)
             value.negative? ? -1.0 : 1.0
           end
@@ -315,6 +336,7 @@ module Poetry
             result.nan? ? 0.0 : result
           end
 
+          # The tangent at the current point from the previous tangent.
           def slope2(t)
             h = @x1 - @x0
             Geometry.js_truthy?(h) ? (((3 * (@y1 - @y0)) / h) - t) / 2 : t

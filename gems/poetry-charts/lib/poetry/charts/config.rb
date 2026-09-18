@@ -112,6 +112,7 @@ module Poetry
 
       private
 
+      # One config entry from its key and value, validating the key, color and theme.
       def build_entry(key, value)
         key = key.to_s
         raise ArgumentError, "chart config key #{key.inspect} is not CSS-safe" unless key.match?(KEY)
@@ -124,6 +125,7 @@ module Poetry
         Entry.new(key:, label: value[:label], icon: value[:icon], color:, theme:)
       end
 
+      # The color as a CSS-safe string, or nil; raises otherwise.
       def validate_color!(key, color)
         return nil if color.nil?
 
@@ -136,6 +138,7 @@ module Poetry
         color
       end
 
+      # The theme as a hash of known modes, or nil; raises otherwise.
       def validate_theme!(key, theme)
         return nil if theme.nil?
         raise ArgumentError, "chart config #{key.inspect} theme must be a Hash" unless theme.is_a?(Hash)

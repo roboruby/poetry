@@ -17,6 +17,7 @@ module Poetry
       # The live controller's full-string identifier.
       CONTROLLER = "poetry--charts--live"
 
+      # Declares the live update wiring on the including chart: registration, the tooltip re-read and the zoom drag.
       def self.included(base)
         base.extend(ClassMethods)
 

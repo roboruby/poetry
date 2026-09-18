@@ -59,6 +59,7 @@ module Poetry
 
           private
 
+          # Recomputes the step, bandwidth and positions from the domain, range and paddings.
           def rescale
             n = domain.length
             reverse = range[1] < range[0]

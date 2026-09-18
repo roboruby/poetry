@@ -15,6 +15,7 @@ module Poetry
       # The motion controller's full-string identifier.
       CONTROLLER = "poetry--charts--motion"
 
+      # Declares the motion controller on the including chart's frame.
       def self.included(base)
         base.extend(ClassMethods)
 

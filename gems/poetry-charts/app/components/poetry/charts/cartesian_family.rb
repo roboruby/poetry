@@ -25,6 +25,7 @@ module Poetry
     #     include Poetry::Charts::CartesianFamily
     #   end
     module CartesianFamily
+      # Declares the x axis, the value axis, the grid and the class-level helpers on the including chart.
       def self.included(base)
         base.extend(ClassMethods)
 

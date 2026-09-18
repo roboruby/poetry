@@ -290,6 +290,7 @@ module Poetry
 
         private
 
+        # Records one series of the given mark with the defaults filled in, validating its curve.
         def push_series(mark, key:, **attrs)
           attrs = SERIES_DEFAULTS.merge(attrs)
           if attrs[:curve] && !CURVES.include?(attrs[:curve])

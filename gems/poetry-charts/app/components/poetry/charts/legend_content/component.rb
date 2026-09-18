@@ -102,6 +102,7 @@ module Poetry
           entry.theme ? "var(--color-#{entry.key})" : entry.color
         end
 
+        # One legend item's key, label and color, the config filling what the item omits.
         def resolve(item)
           key = (item[:key] || item[:name]).to_s
           entry = chart_config[key]
