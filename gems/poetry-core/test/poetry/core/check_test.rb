@@ -1477,6 +1477,59 @@ module Poetry
 
         assert_empty(findings.select { |f| f.rule == "unknown-option" })
       end
+
+      # --- internal constants (the family's @api private namespaces) ---
+
+      INTERNALS_CATALOG = Check::Catalog.new({}, internals: %w[Poetry::Core::Check Poetry::Core::HostComponents])
+
+      def test_naming_an_internal_namespace_is_a_warning_with_its_line
+        source = <<~RUBY
+          class Report
+            def run
+              Poetry::Core::HostComponents.discover(root: ".")
+            end
+          end
+        RUBY
+        findings = Check::InternalConstants.new(INTERNALS_CATALOG).lint(source)
+
+        assert_equal ["internal-constant"], findings.map(&:rule)
+        assert_equal [:warning], findings.map(&:severity)
+        assert_equal [3], findings.map(&:line)
+        assert_match(/Poetry::Core::HostComponents is internal to Poetry/, findings.first.message)
+      end
+
+      def test_a_constant_under_an_internal_namespace_counts_once
+        findings = Check::InternalConstants.new(INTERNALS_CATALOG).lint("x = Poetry::Core::Check::Finding.new\n")
+
+        assert_equal 1, findings.size
+        assert_match(/Poetry::Core::Check::Finding/, findings.first.message)
+      end
+
+      def test_the_documented_surface_is_never_flagged
+        source = "Poetry::Core::Registry.committed(root)\nPoetry::Core::Config.current\n"
+
+        assert_empty Check::InternalConstants.new(INTERNALS_CATALOG).lint(source)
+      end
+
+      def test_a_catalog_without_internals_flags_nothing
+        assert_empty Check::InternalConstants.new(CATALOG).lint("Poetry::Core::Check.run\n")
+      end
+
+      def test_an_internal_constant_in_a_template_is_found_at_its_template_line
+        source = "<div>\n<%= Poetry::Core::HostComponents.discover(root: root).size %>\n</div>\n"
+        findings = Check::Linter.new(INTERNALS_CATALOG).lint(source)
+
+        assert_equal ["internal-constant"], findings.map(&:rule)
+        assert_equal [2], findings.map(&:line)
+      end
+
+      def test_from_registries_carries_the_internals_of_the_roots_and_core
+        catalog = Check::Catalog.from_registries([Poetry::Core.root])
+
+        assert_includes catalog.internals, "Poetry::Core::Check"
+        assert catalog.internal?("Poetry::Core::Check::Finding")
+        refute catalog.internal?("Poetry::Core::Registry")
+      end
     end
   end
 end

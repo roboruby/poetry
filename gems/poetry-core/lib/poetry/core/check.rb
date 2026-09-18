@@ -88,6 +88,11 @@ module Poetry
           end
           components = payloads.map { |payload| payload.fetch("components") }.reduce({}, :merge)
           helper_args = payloads.map { |payload| payload["helper_args"] || {} }.reduce({}, :merge)
+          # The family's internals: every registry's list, plus core's own
+          # (its registry is internal and never one of the roots, but its
+          # hidden namespaces are the ones a host most often reaches for).
+          internals = payloads.flat_map { |payload| Array(payload["internals"]) }
+          internals += Registry.committed(Poetry::Core.root).internals
           if host_registry
             components = components.merge(host_registry.entries)
             helper_args = helper_args.merge(host_registry.helper_args || {}) if host_registry.respond_to?(:helper_args)
@@ -97,7 +102,8 @@ module Poetry
               helper_entries: payloads.map { |payload| payload["helpers"] || {} }.reduce({}, :merge),
               icon_names: icon_names,
               helper_args: helper_args,
-              host_helpers: host_helpers)
+              host_helpers: host_helpers,
+              internals: internals.uniq.sort)
         end
 
         # helpers: the FULL set of valid poetry_* helper method names (from
@@ -111,9 +117,12 @@ module Poetry
         # helpers (poetry_input_group_addon align: et al). icon_names: the
         # active icon set's valid names - when given, icon-formatted option
         # values are checked for membership, not just shape.
+        # rubocop:disable Metrics/ParameterLists
         def initialize(components, helpers: nil, helper_entries: nil, icon_names: nil, helper_args: nil,
-                       host_helpers: nil)
+                       host_helpers: nil, internals: [])
+          # rubocop:enable Metrics/ParameterLists
           @components = components
+          @internals = internals
           @helper_entries = helper_entries || {}
           @helper_args = helper_args || {}
           @icon_names = icon_names&.to_set(&:to_s)
@@ -141,6 +150,18 @@ module Poetry
         end
 
         attr_reader :icon_names
+
+        # The family's `@api private` namespaces (the registries' "internals"
+        # sections), top-most only.
+        #
+        # @return [Array<String>]
+        attr_reader :internals
+
+        # Whether a written constant path names an internal, or sits under one.
+        #
+        # @param path [String] a fully qualified constant name as written
+        # @return [Boolean]
+        def internal?(path) = ApiInternals.internal?(path, @internals)
 
         def helper_names = @helper_names.to_a
 
@@ -405,6 +426,8 @@ module Poetry
           content_fed = content_fed_calls(parsed.value)
           findings = calls.flat_map { |call| call_findings(call, base_line, bindings, content_fed) }
           findings += slot_findings(parsed.value, bindings, base_line)
+          @internal_constants ||= InternalConstants.new(@catalog)
+          findings += @internal_constants.lint(node.content.value, base_line: base_line)
           mark_escaped_bindings(parsed.value, bindings)
           findings
         end
@@ -1524,14 +1547,73 @@ module Poetry
         end
       end
 
+      # A host naming one of the family's `@api private` namespaces (the
+      # catalog's internals, from the registries): the constant works today
+      # and may change without notice, so the finding is a warning, one per
+      # reference. Prism-walks constant paths; a path is matched as written,
+      # exactly or under an internal namespace, so no boot and no type
+      # inference is needed.
+      #
+      # @api private
+      class InternalConstants
+        # Holds the catalog whose internals the paths are matched against.
+        def initialize(catalog)
+          @catalog = catalog
+        end
+
+        # Lint one Ruby source string. Returns [Finding].
+        #
+        # @param source [String] Ruby source
+        # @param base_line [Integer] the line the source starts on in its file
+        def lint(source, base_line: 1)
+          return [] if @catalog.internals.empty?
+
+          require "prism"
+          result = Prism.parse(source)
+          return [] unless result.success?
+
+          findings = []
+          walk(result.value, findings, base_line - 1)
+          findings
+        end
+
+        private
+
+        # Judges each constant path once and descends into everything else.
+        def walk(node, findings, offset)
+          if node.is_a?(Prism::ConstantPathNode)
+            path = written_path(node)
+            return unless path # a dynamic segment: nothing to name
+
+            if @catalog.internal?(path)
+              findings << Finding.new(rule: "internal-constant", severity: :warning,
+                                      message: "#{path} is internal to Poetry (@api private) and may change " \
+                                               "without notice - reach it through the documented surface",
+                                      line: node.location.start_line + offset)
+            end
+            return # the parent path is a prefix of this one, already judged
+          end
+          node.compact_child_nodes.each { |child| walk(child, findings, offset) }
+        end
+
+        # The constant path as written, or nil when a segment is dynamic.
+        def written_path(node)
+          node.full_name
+        rescue Prism::ConstantPathNode::DynamicPartsInConstantPathError,
+               Prism::ConstantPathNode::MissingNodesInConstantPathError
+          nil
+        end
+      end
+
       # Reads files, lints each, attaches the file to every finding. Ruby
-      # files go through the declaration tier; everything else is ERB.
+      # files go through the declaration tiers; everything else is ERB.
       #
       # @api private
       class Runner
         def initialize(catalog)
           @linter = Linter.new(catalog)
           @declarations = IconDeclarations.new(catalog)
+          @internals = InternalConstants.new(catalog)
           @stable_identity = StableIdentity.new(catalog)
         end
 
@@ -1554,7 +1636,7 @@ module Poetry
             return [Finding.new(rule: "unreadable", severity: :warning,
                                 message: "not valid UTF-8 - skipped (re-encode the file to lint it)")]
           end
-          return @declarations.lint(source) if path.end_with?(".rb")
+          return @declarations.lint(source) + @internals.lint(source) if path.end_with?(".rb")
 
           findings = @linter.lint(source, mail: Check.mail_template?(path, root: root))
           # The StableId heuristics ride every ERB pass (warnings only -

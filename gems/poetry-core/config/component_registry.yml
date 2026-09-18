@@ -20,3 +20,36 @@ components:
     - name: box
       description: The rendered element itself - the whole component is one part
 internal: true
+internals:
+- Poetry::Core::ApiInternals::Visitor
+- Poetry::Core::CSS::BemReference
+- Poetry::Core::CSS::Modes
+- Poetry::Core::CSS::OverrideScan
+- Poetry::Core::CSS::Resolver
+- Poetry::Core::CSS::Safelist
+- Poetry::Core::CSS::TailwindMerger
+- Poetry::Core::CSS::TemplateClasses
+- Poetry::Core::CSS::ThemeCoverage
+- Poetry::Core::CSS::TokenCollisions
+- Poetry::Core::CSS::VarCoverage
+- Poetry::Core::CSS::Verifier
+- Poetry::Core::Check
+- Poetry::Core::DesignLint
+- Poetry::Core::DesignMd
+- Poetry::Core::HostComponents
+- Poetry::Core::HostHelpers
+- Poetry::Core::LlmsText
+- Poetry::Core::PageArchitectures
+- Poetry::Core::PartContract
+- Poetry::Core::RecipeItems
+- Poetry::Core::RegistryClient
+- Poetry::Core::RegistryInstaller
+- Poetry::Core::RegistryItems
+- Poetry::Core::SkillText
+- Poetry::Core::StableId
+- Poetry::Core::Stimulus::HostManifest
+- Poetry::Core::StimulusContract
+- Poetry::Core::TemplateCompile
+- Poetry::Core::TokenImport
+- Poetry::Core::Tokens::ContrastGate
+- Poetry::Core::Tokens::Generator

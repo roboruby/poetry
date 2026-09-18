@@ -398,6 +398,14 @@ module Poetry
         assert nested.internal_component, "internal is inherited"
         refute regular.internal_component
       end
+
+      def test_the_committed_registry_carries_the_gems_internals_top_most_only
+        internals = Registry.committed(Poetry::Core.root).internals
+
+        assert_includes internals, "Poetry::Core::Check"
+        refute_includes internals, "Poetry::Core::Check::Finding"
+        assert_equal internals, ApiInternals.scan(Poetry::Core.root)
+      end
     end
   end
 end

@@ -46,6 +46,12 @@ module Poetry
         # artifact, never a consumer surface) - see {Registry.roots}.
         attr_reader :internal
 
+        # The gem's `@api private` namespaces ({ApiInternals}), the
+        # "internals" section: what `poetry check` flags a host for naming.
+        #
+        # @return [Array<String>]
+        attr_reader :internals
+
         # Holds the sections of one committed registry file;
         # {Registry.committed} is the loader.
         #
@@ -57,9 +63,14 @@ module Poetry
         # @param form_builder [Hash, nil] the "form_builder" section
         # @param internal [Boolean] true for a registry the family ships for its own tooling,
         #   never merged into a host catalog
-        def initialize(entries:, blocks:, helpers:, helper_args:, source_root:, form_builder: nil, internal: false) # rubocop:disable Metrics/ParameterLists
+        # @param internals [Array<String>] the "internals" section
+        # rubocop:disable Metrics/ParameterLists
+        def initialize(entries:, blocks:, helpers:, helper_args:, source_root:, form_builder: nil, internal: false,
+                       internals: [])
+          # rubocop:enable Metrics/ParameterLists
           @form_builder = form_builder
           @internal = internal
+          @internals = internals
           @entries = entries
           @blocks = blocks
           @helpers = helpers
@@ -80,7 +91,7 @@ module Poetry
         Committed.new(entries: payload.fetch("components"), blocks: payload["blocks"],
                       helpers: payload["helpers"], helper_args: payload["helper_args"],
                       form_builder: payload["form_builder"], source_root: source_root,
-                      internal: payload["internal"] == true)
+                      internal: payload["internal"] == true, internals: Array(payload["internals"]))
       end
 
       # The view helper for a registry entry: the name the entry carries
@@ -273,7 +284,7 @@ module Poetry
       end
 
       # The complete registry serialized as plain-data YAML (components plus
-      # the optional helpers/blocks/helper_args/form_builder sections),
+      # the optional helpers/blocks/helper_args/form_builder/internals sections),
       # headed by the do-not-edit banner.
       #
       # @return [String]
@@ -284,6 +295,8 @@ module Poetry
         payload["blocks"] = plain(@blocks.sort.to_h) if @blocks&.any?
         payload["helper_args"] = plain(@helper_args.sort.to_h) if @helper_args&.any?
         payload["form_builder"] = plain(@form_builder) if @form_builder&.any?
+        internals = ApiInternals.scan(@source_root)
+        payload["internals"] = internals if internals.any?
         @banner + YAML.dump(payload)
       end
 
