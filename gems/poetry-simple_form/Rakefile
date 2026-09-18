@@ -12,4 +12,4 @@ end
 require "rubocop/rake_task"
 RuboCop::RakeTask.new
 
-task default: %i[test rubocop yard:verify yard:coverage yard:coverage:all yard:lint]
+task default: %i[test rubocop yard:verify yard:coverage yard:coverage:all yard:lint arch:check arch:order arch:lint]

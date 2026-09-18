@@ -29,3 +29,6 @@ gem "rubocop-rake", require: false
 gem "rubocop-yard", require: false
 gem "yard", require: false
 gem "yard-lint", require: false
+# Architecture gates: archspec check and the Rubydex linter rules (rake arch:*).
+gem "archspec", require: false
+gem "rubydex", require: false

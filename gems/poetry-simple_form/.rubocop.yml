@@ -55,3 +55,7 @@ Minitest/MultipleAssertions:
 # the long collection form (Array<String>) is the house style.
 YARD/CollectionStyle:
   EnforcedStyle: long
+
+Naming/FileName:
+  Exclude:
+    - Archspec.rb # ArchSpec reads the spec by that name
