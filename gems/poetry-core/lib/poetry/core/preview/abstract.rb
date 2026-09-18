@@ -66,7 +66,6 @@ module Poetry
         #
         # @param base [Class] the class being extended with this module
         # @return [void]
-        # @api private
         def self.extended(base)
           base.singleton_class.prepend(ClassMethods)
         end
@@ -114,6 +113,8 @@ module Poetry
             descendants.reject(&:abstract_class?)
           end
         end
+
+        private_class_method :extended
       end
     end
   end

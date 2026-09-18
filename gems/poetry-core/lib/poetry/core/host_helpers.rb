@@ -105,6 +105,8 @@ module Poetry
           nil
         end
       end
+
+      private_class_method :taken?, :owner_of, :app_helpers
     end
   end
 end

@@ -178,6 +178,8 @@ module Poetry
         def strip_comments(css)
           css.gsub(%r{/\*.*?\*/}m) { |comment| comment.gsub(/[^\n]/, " ") }
         end
+
+        private :theme_keys
       end
     end
   end

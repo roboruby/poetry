@@ -65,7 +65,6 @@ module Poetry
           #
           # @param child [Class] the inheriting preview class
           # @return [void]
-          # @api private
           def inherited(child)
             child.layout(@layout) if defined?(@layout)
             super
@@ -220,6 +219,8 @@ module Poetry
 
           render_with(component: component, content_block: block)
         end
+
+        private_class_method :inherited
       end
     end
   end

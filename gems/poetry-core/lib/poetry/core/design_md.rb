@@ -456,6 +456,13 @@ module Poetry
           name.to_s.strip.downcase.gsub(/\s+/, "-")
         end
       end
+
+      private_class_method :front_matter, :resolved_rounded, :overview_section, :colors_section, :typography_section
+      private_class_method :layout_section, :elevation_section, :shapes_section, :components_section
+      private_class_method :dos_and_donts_section, :deviations_section, :split_front_matter, :from_poetry_front_matter
+      private_class_method :from_foreign, :parse_color_map, :foreign_radius, :walk_sections, :each_section
+      private_class_method :walk_colors, :color_table_row, :assign_color, :walk_typography, :walk_shapes
+      private_class_method :normalize_name
     end
   end
 end

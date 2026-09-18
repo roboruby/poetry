@@ -308,6 +308,8 @@ module Poetry
         def style_colors(style_string)
           style_string.scan(STYLE_COLOR)
         end
+
+        private :slots_of, :slot_extras_of
       end
 
       # Lints one ERB source string. Rules split cleanly: the Ruby-call rules
@@ -1560,6 +1562,8 @@ module Poetry
         rescue SystemCallError, IOError, ArgumentError, Encoding::CompatibilityError => e
           [Finding.new(rule: "unreadable", severity: :warning, message: "#{e.class}: #{e.message} - skipped")]
         end
+
+        private :run_one
       end
 
       # A mailer template by Rails convention: a view under a `*_mailer/`

@@ -258,6 +258,10 @@ module Poetry
       def finding(rule, message, suggestion: nil)
         Check::Finding.new(rule: rule, severity: :error, message: message, suggestion: suggestion)
       end
+
+      private_class_method :declared_tokens, :apply_entry, :rendered_tokens, :empty_tokens, :collect_attributes
+      private_class_method :collect_foreign, :parse_scoped_key, :action_identifier, :dom_to_declarations
+      private_class_method :declarations_to_dom, :foreign_findings, :action_scaffold, :finding
     end
   end
 end

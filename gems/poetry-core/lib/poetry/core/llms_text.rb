@@ -381,6 +381,8 @@ module Poetry
         end
         "\n#{sections.join("\n\n")}\n"
       end
+
+      private :app_index, :app_entries, :index_summary, :app_full, :forms_full
     end
   end
 end

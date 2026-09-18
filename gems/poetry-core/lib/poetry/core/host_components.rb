@@ -188,6 +188,8 @@ module Poetry
           super
         end
       end
+
+      private_class_method :engine_owned?, :engine_roots
     end
   end
 end

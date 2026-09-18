@@ -159,7 +159,6 @@ module Poetry
           validate_name!(identifier, definition&.fetch("methods", []), name, "action method")
         end
 
-        # @api private
         def validate_name!(identifier, known, name, kind)
           return if known.nil?
 
@@ -194,7 +193,6 @@ module Poetry
           definition
         end
 
-        # @api private
         def serialize_wiring(wiring)
           serialized = { "identifier" => wiring.identifier }
           if (label = condition_label(wiring.conditions))
@@ -218,7 +216,6 @@ module Poetry
           serialized
         end
 
-        # @api private
         def serialize_entry(entry, base)
           if (label = condition_label(entry.conditions))
             base["conditional"] = label
@@ -226,7 +223,6 @@ module Poetry
           base
         end
 
-        # @api private
         def serialize_on(on)
           on.is_a?(Array) ? on.map(&:to_s) : on.to_s
         end
@@ -234,7 +230,6 @@ module Poetry
         # The serialized label of a conditions hash, or nil when
         # unconditional.
         #
-        # @api private
         def condition_label(conditions)
           return nil if conditions.nil? || conditions.empty?
 
@@ -443,6 +438,8 @@ module Poetry
                                          on: on, at: at, conditions: conditions)
           end
         end
+
+        private_class_method :validate_name!, :serialize_wiring, :serialize_entry, :serialize_on, :condition_label
       end
     end
   end

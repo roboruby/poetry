@@ -77,7 +77,6 @@ module Poetry
         # @api public
         DEFAULT_TEMPLATE = "poetry/core/preview"
 
-        # @api private
         def self.included(base)
           base.singleton_class.prepend(ClassMethods)
         end
@@ -179,6 +178,8 @@ module Poetry
             default_preview_template
           end
         end
+
+        private_class_method :included
       end
     end
   end

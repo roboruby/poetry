@@ -715,6 +715,16 @@ module Poetry
       def finding(rule, line, message)
         Check::Finding.new(rule: rule, severity: :warning, message: message, line: line)
       end
+
+      private_class_method :build_tree, :append_children, :element_node, :literal_content, :attribute_literal
+      private_class_method :walk_rules, :card_in_card, :icon_tile_over_heading, :class_token_rules, :off_scale_message
+      private_class_method :motion_over_ceiling, :shadow_stack, :wall_of_cards, :heading_skips, :collect_headings
+      private_class_method :mixed_status_weight, :each_table, :collect_badge_variants, :copy_tells, :page_copy
+      private_class_method :collect_copy, :em_dash_overuse, :marketing_buzzword, :aphoristic_cadence
+      private_class_method :numbered_section_markers, :repeated_section_kickers, :collect_kickers, :kicker_classes?
+      private_class_method :hero_eyebrow_chip, :oversized_h1, :center_everything, :collect_centered
+      private_class_method :type_scale_monotony, :surface_boundaries, :landmark?, :check_boundary, :surface_color
+      private_class_method :bordered?, :shadowed?, :stock_theme_nudge, :finding
     end
   end
 end

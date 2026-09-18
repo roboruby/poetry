@@ -280,6 +280,11 @@ module Poetry
       def finding(rule, message, suggestion: nil)
         Check::Finding.new(rule: rule, severity: :error, message: message, suggestion: suggestion)
       end
+
+      private_class_method :observe, :observe_node, :embedded_root_wearing_part?, :state_attributes, :inline_vars
+      private_class_method :root_findings, :dom_to_contract, :state_reconciliation, :var_reconciliation
+      private_class_method :contract_to_dom, :declared_states, :declared_vars, :unnamed_findings, :var_match?
+      private_class_method :scaffold, :finding
     end
   end
 end

@@ -550,6 +550,9 @@ module Poetry
         rescue JSON::ParserError
           nil
         end
+
+        private_class_method :parent_definition, :poetry_identifier, :extends_name, :literal_end, :template_end
+        private_class_method :regex_start?, :static_list, :strings, :static_values, :value_spec, :closing, :existing
       end
     end
   end

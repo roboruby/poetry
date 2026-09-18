@@ -11,6 +11,10 @@
 
 - A message scroller opening at the end (or the last anchor) no longer settles at the top of the thread when its controller connects before the page's render-blocking stylesheet lands. The opening position counted as applied against a viewport that had nothing to scroll yet; it now finalizes only against a laid-out viewport, else on the first resize pass, and the opening hold (`data-pending-scroll`) releases there.
 
+### Changed
+
+- 133 methods the reference already hid with `@api private` are Ruby-private now: each was called only by its own class or template, so the runtime enforces what the tag only stated. A host that reached one gets a NoMethodError instead of an internal that may change without notice. The tag remains on the internals the family shares between its gems and on whole internal classes.
+
 ## [0.1.4] - 2026-09-15
 
 Lockstep release with the family; no changes in this gem.

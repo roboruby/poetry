@@ -48,6 +48,7 @@ module Poetry
                             @extra_definitions).to_set
         end
 
+        # @api private
         def reads
           @reads ||= (@compiled_css.scan(READ).flatten + @extra_reads).uniq.sort
         end

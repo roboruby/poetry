@@ -121,6 +121,8 @@ module Poetry
 
           raise Poetry::Core::Error, "unknown css_mode #{mode.inspect} (expected :tailwind or :bem)"
         end
+
+        private_class_method :stock_merger
       end
     end
   end

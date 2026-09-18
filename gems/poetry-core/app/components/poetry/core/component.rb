@@ -119,7 +119,6 @@ module Poetry
         # @param open [Boolean] a style redeclared without variants: any value passes,
         #   the vocabulary is not enforced
         # @return [void]
-        # @api private
         def record_declared_value(name, variants:, required:, open: false)
           spec = { variants: variants, required: required, open: open }.freeze
           self.declared_values = declared_values.merge(name.to_sym => spec).freeze
@@ -714,6 +713,8 @@ module Poetry
         controller.request = ActionDispatch::TestRequest.create
         render_in(controller.view_context)
       end
+
+      private_class_method :record_declared_value
     end
   end
 end

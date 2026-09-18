@@ -105,6 +105,8 @@ module Poetry
           key.to_s.parameterize.presence
         end
       end
+
+      private_class_method :sequence_for
     end
   end
 end
