@@ -951,11 +951,7 @@ module Poetry
             lines << "- slot REQUIRED: with_#{setter} (#{hint}) - a call without it raises"
           end
           (entry["requires_any"] || []).each do |group|
-            parts = []
-            parts << "a content block" if group["content"]
-            parts.concat((group["slots"] || []).map { |name| "with_#{name}" })
-            parts.concat((group["options"] || []).map { |key| "#{key}:" })
-            lines << "- REQUIRED - one of #{parts.join(" / ")} (#{group["hint"]})"
+            lines << "- REQUIRED - #{Poetry::Core::RequiresAny.phrase(group)}"
           end
           (entry["styles"] + entry["options"]).each do |prop|
             facets = []

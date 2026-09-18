@@ -44,6 +44,17 @@ module Poetry
           "options" => [{ "name" => "name", "type" => "symbol", "required" => true, "format" => "icon-name" }],
           "slots" => []
         },
+        "poetry/ui/empty_state" => {
+          "class_name" => "Poetry::Ui::EmptyState::Component", "bem_block" => "poetry-ui-empty-state",
+          "styles" => [], "options" => [{ "name" => "title", "type" => "string" }],
+          "slots" => [{ "name" => "media", "many" => false, "types" => %w[icon image],
+                        "setter_args" => { "icon" => 0, "image" => 0 } },
+                      { "name" => "action", "many" => true, "component" => "poetry/ui/button" }],
+          "requires_content" => "the message",
+          "required_slots" => { "action" => "the way out" },
+          "requires_any" => [{ "content" => true, "slots" => ["media"], "options" => ["title"],
+                               "hint" => "something visible" }]
+        },
         "poetry/ui/alert" => {
           "class_name" => "Poetry::Ui::Alert::Component", "bem_block" => "poetry-ui-alert",
           "styles" => [], "options" => [],
@@ -404,6 +415,19 @@ module Poetry
 
         assert_includes text, "loading: boolean"
         refute_includes text, "RULE:" # rules only at full
+      end
+
+      # The contract lines at detailed: the required content, slots and
+      # any-of groups phrased as check phrases them, and a polymorphic
+      # slot's types with the keyword convention.
+      def test_describe_detailed_states_the_requirements_and_slot_facets
+        text = call("describe_component", "name" => "empty_state", "detail" => "detailed")
+
+        assert_includes text, "- content block REQUIRED (the message)"
+        assert_includes text, "- slot REQUIRED: with_action (the way out) - a call without it raises"
+        assert_includes text, "- REQUIRED - one of a content block / with_media / title: (something visible)"
+        assert_includes text, "media (types icon|image - options as keywords)"
+        assert_includes text, "action (takes poetry_button props, not a block)"
       end
 
       def test_describe_full_adds_wiring_and_rules
