@@ -78,6 +78,7 @@ module Poetry
         tokens
       end
 
+      # Replays one declaration entry through a builder, so the declared tokens come out the same way rendered ones do.
       def apply_entry(builder, entry)
         case entry.kind
         when :register then builder.register_controller
@@ -87,6 +88,7 @@ module Poetry
         end
       end
 
+      # The Stimulus tokens the rendered documents carry, plus the foreign wiring on nodes this component owns.
       def rendered_tokens(title, docs, declared)
         tokens = empty_tokens(declared[:identifiers])
         docs.each do |doc|
@@ -100,6 +102,7 @@ module Poetry
         tokens
       end
 
+      # An empty token set for the declared identifiers.
       def empty_tokens(identifiers)
         { identifiers: identifiers, controllers: Set.new, actions: Set.new,
           targets: Set.new, values: Set.new, foreign: Set.new }
@@ -172,6 +175,7 @@ module Poetry
         nil
       end
 
+      # The controller identifier an action token names.
       def action_identifier(token)
         token.split("->").last.to_s.split("#").first
       end
@@ -188,6 +192,7 @@ module Poetry
         false
       end
 
+      # The findings for rendered controllers, actions, targets and values no declaration produces.
       def dom_to_declarations(findings, component, declared, rendered)
         title = component.component_title
         (rendered[:controllers] - declared[:controllers]).sort.each do |token|
@@ -214,6 +219,7 @@ module Poetry
         end
       end
 
+      # The findings for declared controllers, actions, targets and values no preview renders.
       def declarations_to_dom(findings, component, declared, rendered)
         title = component.component_title
         phantom(findings, title, "controller", declared[:controllers] - rendered[:controllers],
@@ -235,6 +241,7 @@ module Poetry
         end
       end
 
+      # The findings for hand-written wiring of controllers the declarations omit.
       def foreign_findings(findings, component, rendered)
         rendered[:foreign].sort.each do |token|
           findings << finding("foreign-wiring",
@@ -244,6 +251,7 @@ module Poetry
         end
       end
 
+      # The declaration line that would produce a rendered action token.
       def action_scaffold(token)
         event, descriptor = token.include?("->") ? token.split("->", 2) : [nil, token]
         method = descriptor.split("#").last.to_s.underscore
@@ -255,6 +263,7 @@ module Poetry
         line
       end
 
+      # An error-level finding for a rule, with its message and an optional suggestion.
       def finding(rule, message, suggestion: nil)
         Check::Finding.new(rule: rule, severity: :error, message: message, suggestion: suggestion)
       end

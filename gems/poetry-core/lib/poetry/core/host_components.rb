@@ -155,6 +155,7 @@ module Poetry
           @names = []
         end
 
+        # Records a receiverless method definition whose name carries the helper prefix, then keeps walking.
         def visit_def_node(node)
           @names << node.name.to_s if node.receiver.nil? && node.name.start_with?(PREFIX)
           super
@@ -173,6 +174,7 @@ module Poetry
           @depth = 0
         end
 
+        # Tracks class-body depth around the walk, so declarations only count inside a class.
         def visit_class_node(node)
           @depth += 1
           super
@@ -180,6 +182,7 @@ module Poetry
           @depth -= 1
         end
 
+        # Records the name a helper declaration passes when the call sits in a class body, then keeps walking.
         def visit_call_node(node)
           if @depth.positive? && node.name == DECLARATION && (node.receiver.nil? || node.receiver.is_a?(Prism::SelfNode))
             argument = node.arguments&.arguments&.first

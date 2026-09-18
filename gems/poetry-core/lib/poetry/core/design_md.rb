@@ -101,6 +101,7 @@ module Poetry
 
         # --- serialization -------------------------------------------------
 
+        # The YAML front matter of a DESIGN.md: colors by mode, typography, radius and the poetry section.
         def front_matter(doc)
           light = doc.dig("colors", "light") || {}
           dark = doc.dig("colors", "dark") || {}
@@ -157,6 +158,7 @@ module Poetry
            deviations_section(doc)].compact.join("\n")
         end
 
+        # The Overview section: the design system, the theme, and where the tokens come from.
         def overview_section(doc)
           <<~MD
             # DESIGN.md - #{doc["name"]}
@@ -173,6 +175,7 @@ module Poetry
           MD
         end
 
+        # The Colors section: a table of the semantic roles in light and dark.
         def colors_section(doc)
           light = doc.dig("colors", "light") || {}
           dark = doc.dig("colors", "dark") || {}
@@ -189,6 +192,7 @@ module Poetry
           MD
         end
 
+        # The Typography section: the pairing and the family.
         def typography_section(doc)
           <<~MD
             ## Typography
@@ -199,6 +203,7 @@ module Poetry
           MD
         end
 
+        # The Layout section: the spacing scale and the container-sized structure.
         def layout_section
           <<~MD
             ## Layout
@@ -208,6 +213,7 @@ module Poetry
           MD
         end
 
+        # The Elevation and Depth section: shadows as theme treatment, not tokens.
         def elevation_section(doc)
           <<~MD
             ## Elevation & Depth
@@ -217,6 +223,7 @@ module Poetry
           MD
         end
 
+        # The Shapes section: the radius token and its scale.
         def shapes_section(doc)
           scale = (doc["radius_scale"] || {}).map { |step, value| "#{step} #{value}" }.join(" - ")
           <<~MD
@@ -227,6 +234,7 @@ module Poetry
           MD
         end
 
+        # The Components section: the catalog count and the registry pointer.
         def components_section(doc)
           <<~MD
             ## Components
@@ -239,6 +247,7 @@ module Poetry
           MD
         end
 
+        # The Do's and Don'ts section: the house rules for variants, modes, colors and new tokens.
         def dos_and_donts_section
           <<~MD
             ## Do's and Don'ts
@@ -279,6 +288,8 @@ module Poetry
 
         # --- parsing ---------------------------------------------------------
 
+        # Splits a markdown document into its parsed YAML front matter and the prose; unparsable front matter yields
+        # nil.
         def split_front_matter(markdown)
           match = markdown.match(/\A---\n(.*?)\n---\n?(.*)\z/m)
           return [nil, markdown] unless match
@@ -354,6 +365,7 @@ module Poetry
           [parsed, unknown]
         end
 
+        # The radius a foreign front matter declares, from a rounded map's first value or a bare rounded value.
         def foreign_radius(front)
           rounded = front["rounded"]
           return rounded.values.first&.to_s if rounded.is_a?(Hash) && rounded.any?
@@ -379,6 +391,7 @@ module Poetry
           result
         end
 
+        # Yields each heading and the lines beneath it, in order.
         def each_section(prose)
           heading = nil
           lines = []
@@ -394,6 +407,7 @@ module Poetry
           yield(heading, lines) if heading
         end
 
+        # Mines a Colors section's lines into the result: table rows and name-value lines both count.
         def walk_colors(lines, result)
           table_modes = nil
           lines.each do |line|
@@ -426,6 +440,7 @@ module Poetry
           table_modes
         end
 
+        # Records one named color into the result: a parsable value as a color, anything else as unknown.
         def assign_color(result, name, raw)
           value = raw[COLOR_VALUE, 1] || raw.strip
           color = Tokens::Color.parse(value)
@@ -433,6 +448,7 @@ module Poetry
           color ? result[:colors][key] = value : result[:unknown_colors][key] = raw.strip
         end
 
+        # Mines the first font family a Typography section names into the result.
         def walk_typography(lines, result)
           lines.each do |line|
             match = line.match(NAME_VALUE_LINE)
@@ -443,6 +459,7 @@ module Poetry
           end
         end
 
+        # Mines the first radius dimension a Shapes section names into the result.
         def walk_shapes(lines, result)
           lines.each do |line|
             next unless line.match?(/radius|rounded/i)
@@ -452,6 +469,7 @@ module Poetry
           end
         end
 
+        # A section or role name as a key: trimmed, lowercased, spaces to dashes.
         def normalize_name(name)
           name.to_s.strip.downcase.gsub(/\s+/, "-")
         end

@@ -54,6 +54,7 @@ module Poetry
           "#{lines.join("\n")}\n"
       end
 
+      # The host registry's entries, or none when no host registry was given.
       def app_entries
         @host_registry ? @host_registry.entries : {}
       end

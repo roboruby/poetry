@@ -155,12 +155,15 @@ module Poetry
 
       # --- tree ----------------------------------------------------------
 
+      # The lint tree for a Herb AST: a root node with every element and ERB block appended beneath it.
       def build_tree(ast)
         root = Node.new(kind: :root, classes: [], attrs: {}, children: [], texts: [])
         append_children(ast, root)
         root
       end
 
+      # Appends the AST node's children to the tree parent, one lint node per element, ERB block or text run,
+      # recursing into elements.
       def append_children(ast_node, tree_parent)
         ast_node.child_nodes.compact.each do |child|
           case child.class.name.split("::").last
@@ -182,6 +185,7 @@ module Poetry
         end
       end
 
+      # One lint node for an HTML element: its tag, literal attributes and class tokens, the line, and the parent link.
       def element_node(ast_el, parent)
         attrs = {}
         open_tag = ast_el.respond_to?(:open_tag) ? ast_el.open_tag : nil
@@ -196,11 +200,13 @@ module Poetry
                  children: [], texts: [], parent: parent)
       end
 
+      # The literal text of an attribute-name node, or nil when the name is dynamic.
       def literal_content(node)
         first = Array(node&.child_nodes).compact.first
         first.respond_to?(:content) ? first.content : nil
       end
 
+      # The literal chunks of an attribute value joined with spaces; ERB output inside the value is skipped.
       def attribute_literal(attribute)
         value = attribute.value
         return "" unless value
@@ -212,6 +218,7 @@ module Poetry
 
       # --- AST rules -------------------------------------------------------
 
+      # Runs every AST rule over a node's children and recurses, carrying the ancestor stack the card rules read.
       def walk_rules(node, findings, stack = [])
         node.children.each_with_index do |child, index|
           card_in_card(child, findings) if child.card? && stack.any?(&:card?)
@@ -226,12 +233,14 @@ module Poetry
         end
       end
 
+      # The finding for a card nested directly inside another card.
       def card_in_card(node, findings)
         findings << finding("card-in-card", node.line,
                             "Card nested directly inside a Card - flatten, or use a plain " \
                             "bordered section (slop tell: cards-in-cards)")
       end
 
+      # The finding for an icon in a tinted, rounded tile sitting directly above a heading.
       def icon_tile_over_heading(node, next_sibling, findings)
         return unless node.element? && next_sibling&.element? && next_sibling.heading_level
         return unless node.classes.any? { |c| c.start_with?("rounded") } &&
@@ -251,6 +260,7 @@ module Poetry
         (child.element? && child.tag == "svg") || child.helper == "poetry_icon"
       end
 
+      # The per-token rules on an element's classes: off-scale arbitrary values and gradients outside the token surface.
       def class_token_rules(node, findings)
         node.classes.each do |token|
           if (match = token.match(SCALED_UTILITY))
@@ -266,6 +276,7 @@ module Poetry
         end
       end
 
+      # The message for an off-scale arbitrary value: the scale spelling when it exists, else the two nearest steps.
       def off_scale_message(token, value, unit)
         px = unit == "px" ? value : value * 16
         prefix = token[/\A-?[a-z-]+(?=-\[)/]
@@ -331,6 +342,7 @@ module Poetry
                  "ADVISORY - poetry ships the upstream default here; re-timing is a design decision")]
       end
 
+      # The first duration among the bases that exceeds the UI duration ceiling, in milliseconds, or nil.
       def motion_over_ceiling(bases)
         bases.each do |base|
           if (match = base.match(DURATION_TOKEN))
@@ -345,6 +357,7 @@ module Poetry
         nil
       end
 
+      # The finding for a shadowed element inside an already-shadowed ancestor.
       def shadow_stack(node, findings)
         return unless node.element? && node.classes.any?(SHADOW)
         return unless node.ancestors.any? { |ancestor| ancestor.element? && ancestor.classes.any?(SHADOW) }
@@ -354,6 +367,7 @@ module Poetry
                             "elevation level per surface (drop the inner shadow)")
       end
 
+      # The finding for four or more identical cards in a row under one parent.
       def wall_of_cards(parent, findings)
         elements = parent.children.select(&:card?)
         return if elements.size < 4
@@ -366,6 +380,7 @@ module Poetry
                             "a list/table for homogeneous records")
       end
 
+      # The findings for heading levels that jump by more than one.
       def heading_skips(root, findings)
         levels = []
         collect_headings(root, levels)
@@ -378,6 +393,7 @@ module Poetry
         end
       end
 
+      # Collects every heading's level and line into levels, in document order.
       def collect_headings(node, levels)
         levels << [node.heading_level, node.line] if node.element? && node.heading_level
         node.children.each { |child| collect_headings(child, levels) }
@@ -392,6 +408,7 @@ module Poetry
       SOLID_BADGE_VARIANTS = %w[default destructive].freeze
       SOFT_BADGE_VARIANTS = %w[success warning info].freeze
 
+      # The finding for a table that mixes solid and soft badge variants in its status pills.
       def mixed_status_weight(root, findings)
         each_table(root) do |table|
           variants = []
@@ -408,11 +425,13 @@ module Poetry
         end
       end
 
+      # Yields every table element under the node, depth first.
       def each_table(node, &)
         yield node if node.element? && node.tag == "table"
         node.children.each { |child| each_table(child, &) }
       end
 
+      # Collects each rendered badge's variant and line under the node into variants.
       def collect_badge_variants(node, variants)
         if node.element? && node.attrs["data-slot"] == "badge" && node.attrs["data-variant"]
           variants << [node.attrs["data-variant"], node.line]
@@ -444,6 +463,7 @@ module Poetry
         /(?<=[.!?])\s+(?:no [a-z][a-z -]{1,30}\.|just [a-z][a-z -]{1,30}\.)/i
       ].freeze
 
+      # The page-copy rules, run once over the joined static text when there is enough prose to read.
       def copy_tells(root, findings)
         text = page_copy(root)
         return if text.length < 80 # fragments carry no prose signal
@@ -454,12 +474,14 @@ module Poetry
         numbered_section_markers(text, findings)
       end
 
+      # The page's static text outside code contexts, joined and squeezed to single spaces.
       def page_copy(root)
         chunks = []
         collect_copy(root, chunks)
         chunks.join(" ").squeeze(" ")
       end
 
+      # Collects the text runs under the node into chunks, skipping the copy-exempt tags.
       def collect_copy(node, chunks)
         return if node.element? && COPY_EXEMPT_TAGS.include?(node.tag)
 
@@ -467,6 +489,7 @@ module Poetry
         node.children.each { |child| collect_copy(child, chunks) }
       end
 
+      # The finding for five or more em dashes in the page copy.
       def em_dash_overuse(text, findings)
         count = text.count("—")
         return if count < 5
@@ -476,6 +499,7 @@ module Poetry
                             "most as periods, commas, or parentheses")
       end
 
+      # The finding for three or more stock marketing phrases in the page copy.
       def marketing_buzzword(text, findings)
         down = text.downcase
         hits = BUZZWORDS.select { |phrase| down.include?(phrase) }
@@ -486,6 +510,7 @@ module Poetry
                             "the product concretely does instead")
       end
 
+      # The finding for three or more manufactured-contrast constructions in the page copy.
       def aphoristic_cadence(text, findings)
         count = APHORISM_PATTERNS.sum { |pattern| text.scan(pattern).size }
         return if count < 3
@@ -495,6 +520,7 @@ module Poetry
                             "\"No X. Just Y.\") - one lands, #{count} read as generated copy")
       end
 
+      # The finding for sequential zero-padded section markers in the page copy.
       def numbered_section_markers(text, findings)
         # Two-digit tokens only, and at least one zero-padded (01-09): "3
         # steps" and prices must never count; "01 02 03" editorial markers do.
@@ -522,6 +548,7 @@ module Poetry
                             "the sectioned-template tell; keep at most one, or vary section openers")
       end
 
+      # Collects the uppercase tracked kicker elements sitting directly above an h2 to h4, outside navigation.
       def collect_kickers(node, kickers)
         return if node.element? && (node.tag == "nav" || node.attrs["role"] == "navigation" ||
                                     node.attrs["aria-label"].to_s.downcase.include?("breadcrumb"))
@@ -535,6 +562,7 @@ module Poetry
         node.children.each { |child| collect_kickers(child, kickers) }
       end
 
+      # Whether an element wears the kicker treatment: uppercase, tracked, and not a badge.
       def kicker_classes?(node)
         node.classes.include?("uppercase") &&
           node.classes.any? { |c| c.start_with?("tracking-") } &&
@@ -560,6 +588,7 @@ module Poetry
       # 2-6 word statements.
       OVERSIZED_TEXT = %w[text-7xl text-8xl text-9xl].freeze
 
+      # The finding for a display-size h1 carrying forty or more characters.
       def oversized_h1(node, findings)
         return unless node.element? && node.heading_level == 1
         return unless node.classes.intersect?(OVERSIZED_TEXT)
@@ -570,6 +599,7 @@ module Poetry
                             "40+ characters - shorten the headline or step the size down")
       end
 
+      # The finding for three or more centered blocks in one template.
       def center_everything(root, findings)
         centered = []
         collect_centered(root, centered)
@@ -586,6 +616,7 @@ module Poetry
       CENTERED_EXEMPT_TAGS = %w[button td th table].freeze
       CENTERED_EXEMPT_ROLES = %w[grid gridcell cell columnheader rowheader row table].freeze
 
+      # Collects the text-centered elements under the node, skipping grid and table cells and their roles.
       def collect_centered(node, centered)
         return if node.element? &&
                   (CENTERED_EXEMPT_TAGS.include?(node.tag) || CENTERED_EXEMPT_ROLES.include?(node.attrs["role"]))
@@ -600,6 +631,7 @@ module Poetry
       # legitimately uniform; monotony is a CONTENT-hierarchy signal.
       TEXT_ELEMENTS = "h1, h2, h3, h4, h5, h6, p, li, blockquote"
 
+      # The DOM finding for content text that all renders at one size, navigation chrome and typeset prose excluded.
       def type_scale_monotony(doc, styles, findings)
         nodes = doc.css(TEXT_ELEMENTS).select { |el| el.text.strip.length.positive? }
         # Navigation chrome (pagination, menus) is legitimately uniform.
@@ -634,6 +666,7 @@ module Poetry
       LANDMARK_TAGS = %w[aside main nav header footer].freeze
       LANDMARK_ROLES = %w[complementary main navigation banner contentinfo region].freeze
 
+      # The DOM findings for adjacent siblings whose surfaces meet with no gap, border or contrast between them.
       def surface_boundaries(doc, styles, findings)
         doc.css("*").each do |parent|
           children = parent.element_children
@@ -652,6 +685,7 @@ module Poetry
         INTERACTIVE_TAGS.include?(element.name) || INTERACTIVE_ROLES.include?(element["role"])
       end
 
+      # Whether an element is a landmark by tag or role.
       def landmark?(element)
         LANDMARK_TAGS.include?(element.name) || LANDMARK_ROLES.include?(element["role"])
       end
@@ -660,6 +694,7 @@ module Poetry
         computed["display"].to_s != "none" && computed["visibility"].to_s != "hidden"
       end
 
+      # The boundary findings for one adjacent pair: the same surface twice, or two surfaces too close in color.
       def check_boundary(first, second, styles, findings)
         return if interactive?(first) && interactive?(second)
         return if landmark?(first) || landmark?(second)
@@ -681,6 +716,7 @@ module Poetry
         end
       end
 
+      # The element's opaque background color, or nil when it is transparent or carries a shadow.
       def surface_color(computed)
         color = Tokens::Color.parse(computed["background-color"].to_s)
         return unless color&.alpha&.positive?
@@ -698,11 +734,13 @@ module Poetry
         end
       end
 
+      # Whether the computed style paints a box shadow.
       def shadowed?(computed)
         shadow = computed["box-shadow"].to_s
         !shadow.empty? && shadow != "none"
       end
 
+      # The finding for a DESIGN.md on disk with no design overrides stylesheet beside it.
       def stock_theme_nudge(context, findings)
         return unless context[:design_md_present] && !context[:overrides_present]
 
@@ -712,6 +750,7 @@ module Poetry
                             "bin/rails 'poetry:design:import[DESIGN.md]'")
       end
 
+      # A warning-level finding for a rule, at a line, with its message.
       def finding(rule, line, message)
         Check::Finding.new(rule: rule, severity: :warning, message: message, line: line)
       end

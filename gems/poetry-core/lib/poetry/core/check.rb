@@ -223,6 +223,7 @@ module Poetry
           owner.is_a?(Hash) ? (owner["slots"] || []) : (@components.dig(owner, "slots") || [])
         end
 
+        # The slot extras of an owner: a registry entry hash carries its own, a component name looks them up.
         def slot_extras_of(owner)
           owner.is_a?(Hash) ? (owner["slot_extras"] || []) : (@components.dig(owner, "slot_extras") || [])
         end

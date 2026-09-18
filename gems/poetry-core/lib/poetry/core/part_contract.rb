@@ -100,6 +100,8 @@ module Poetry
         observed
       end
 
+      # Records one owned node's slot, state attributes and inline vars into observed; a stateful node without a slot
+      # lands in unnamed.
       def observe_node(observed, title, node, part_names)
         return unless owned?(node, title, part_names)
 
@@ -129,11 +131,13 @@ module Poetry
         false
       end
 
+      # Whether a node is another component's root wearing one of this component's part slots.
       def embedded_root_wearing_part?(node, title, part_names)
         node.key?("data-component") && node["data-component"] != title &&
           part_names.include?(node["data-slot"])
       end
 
+      # The node's data attributes that count as state: infrastructure names and patterns excluded.
       def state_attributes(node)
         node.attribute_nodes.each_with_object({}) do |attribute, states|
           name = attribute.name
@@ -145,10 +149,12 @@ module Poetry
         end
       end
 
+      # The custom property names the node's inline style declares.
       def inline_vars(node)
         (node["style"] || "").scan(VAR_DECLARATION).map(&:first)
       end
 
+      # The findings for a component whose previews never render its root, or render no slot at all.
       def root_findings(findings, title, observed, parts)
         unless observed[:root_seen]
           findings << finding("missing-root",
@@ -162,6 +168,7 @@ module Poetry
                             "(the root at minimum) so it can be styled and contracted")
       end
 
+      # The findings for rendered parts, states and vars the contract omits.
       def dom_to_contract(findings, title, observed, parts)
         declared = parts.to_h { |part| [part["name"], part] }
         observed[:parts].sort.each do |name, seen|
@@ -177,6 +184,7 @@ module Poetry
         end
       end
 
+      # The findings for one part's rendered states: undeclared attributes and off-vocabulary values.
       def state_reconciliation(findings, title, part, seen)
         declared = (part["states"] || []).to_h { |state| [state["attr"], state] }
         seen[:states].sort.each do |attr, values|
@@ -196,6 +204,7 @@ module Poetry
         end
       end
 
+      # The findings for one part's inline vars the contract omits.
       def var_reconciliation(findings, title, part, seen)
         seen[:vars].sort.each do |var|
           next if (part["vars"] || []).any? { |declared| var_match?(declared["name"], var) }
@@ -205,6 +214,7 @@ module Poetry
         end
       end
 
+      # The findings for declared parts, states and vars no preview renders.
       def contract_to_dom(findings, title, observed, parts, sources)
         parts.each do |part|
           seen = observed[:parts][part["name"]] if observed[:parts].key?(part["name"])
@@ -219,6 +229,8 @@ module Poetry
         end
       end
 
+      # The findings for a part's declared states that no preview renders, the vocabulary and the sources exempting
+      # them.
       def declared_states(findings, title, part, seen, sources)
         (part["states"] || []).each do |state|
           attr = state["attr"]
@@ -232,6 +244,7 @@ module Poetry
         end
       end
 
+      # The findings for a part's declared vars that no preview sets inline and the sources never mention.
       def declared_vars(findings, title, part, seen, sources)
         (part["vars"] || []).each do |var|
           name = var["name"]
@@ -244,6 +257,7 @@ module Poetry
         end
       end
 
+      # The findings for stateful elements rendered without a data-slot.
       def unnamed_findings(findings, title, observed)
         observed[:unnamed].uniq.sort.each do |element|
           findings << finding("unnamed-stateful",
@@ -277,6 +291,7 @@ module Poetry
         line
       end
 
+      # An error-level finding for a rule, with its message and an optional suggestion.
       def finding(rule, message, suggestion: nil)
         Check::Finding.new(rule: rule, severity: :error, message: message, suggestion: suggestion)
       end

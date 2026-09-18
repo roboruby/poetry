@@ -77,6 +77,7 @@ module Poetry
         # @api public
         DEFAULT_TEMPLATE = "poetry/core/preview"
 
+        # Prepends the class-level template methods onto the including preview class.
         def self.included(base)
           base.singleton_class.prepend(ClassMethods)
         end

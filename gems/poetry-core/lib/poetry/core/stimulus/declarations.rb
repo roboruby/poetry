@@ -159,6 +159,7 @@ module Poetry
           validate_name!(identifier, definition&.fetch("methods", []), name, "action method")
         end
 
+        # Raises when a declared value, target or action name is not among the controller's known ones.
         def validate_name!(identifier, known, name, kind)
           return if known.nil?
 
@@ -193,6 +194,7 @@ module Poetry
           definition
         end
 
+        # One wiring as registry data: the identifier, its condition, and its registers, values, actions and targets.
         def serialize_wiring(wiring)
           serialized = { "identifier" => wiring.identifier }
           if (label = condition_label(wiring.conditions))
@@ -216,6 +218,7 @@ module Poetry
           serialized
         end
 
+        # Stamps an entry's condition label onto its serialized base, when it has one.
         def serialize_entry(entry, base)
           if (label = condition_label(entry.conditions))
             base["conditional"] = label
@@ -223,6 +226,7 @@ module Poetry
           base
         end
 
+        # An action's event as registry data: a list of strings or one.
         def serialize_on(on)
           on.is_a?(Array) ? on.map(&:to_s) : on.to_s
         end

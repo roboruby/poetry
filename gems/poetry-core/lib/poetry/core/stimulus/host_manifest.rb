@@ -429,6 +429,7 @@ module Poetry
           [name, masked_text[(colon + 1)..], text[(colon + 1)..]]
         end
 
+        # A static value's spec from its braces: the type name and the parsed default when one is written.
         def value_spec(spec_masked, spec)
           open = spec_masked.index("{")
           close = closing(spec_masked, open, "{", "}")
