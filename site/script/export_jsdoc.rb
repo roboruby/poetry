@@ -39,6 +39,11 @@ CONFIGS = {
     subpath: "poetry/charts", package: "@poetry/charts",
     prefix: "poetry--charts--", skip: [ "d3.js" ],
     superclasses: {}
+  },
+  "poetry-agent" => {
+    subpath: "poetry/agent", package: "@poetry/agent",
+    prefix: "poetry--agent--", skip: [],
+    superclasses: {}
   }
 }.freeze
 
@@ -137,7 +142,7 @@ def scan(path)
   file = "app/javascript/#{CONFIG[:subpath]}/#{path.delete_prefix("#{JS_ROOT}/")}"
   result = { file: file, header: header_narration(lines),
              functions: [], constants: [], classes: [], controller_methods: [],
-             extends: nil }
+             extends: nil, class_doc: nil }
   klass = nil # {name:, methods: []} while inside export(ed) class
 
   i = 0
@@ -152,7 +157,15 @@ def scan(path)
       i += 1 while lines[i].to_s.strip.empty?
       decl = lines[i]
       parsed = parse_jsdoc(block)
-      handle_decl(result, klass, parsed, decl, lines, i, indent, file)
+      # The block above the controller class is the controller's purpose
+      # (the convention since the manifest harvest); it opens the class.
+      if (klass_match = decl.match(/\Aexport default class(?:\s+(\w+))?\s+extends\s+(\w+)/))
+        klass = { name: klass_match[1], controller: true }
+        result[:extends] = klass_match[2]
+        result[:class_doc] = parsed["docstring"]
+      else
+        handle_decl(result, klass, parsed, decl, lines, i, indent, file)
+      end
       i += 1
       next
     end
@@ -224,9 +237,10 @@ def facts_for(identifier)
   if values.any?
     rendered = values.map do |name, definition|
       default = definition.key?("default") ? ", default: #{definition["default"].inspect}" : ""
-      "`#{name}` (#{definition["type"]}#{default})"
+      meaning = definition["doc"] ? ": #{definition["doc"]}" : ""
+      "- `#{name}` (#{definition["type"]}#{default})#{meaning}"
     end
-    parts << "**Values**: #{rendered.join("; ")}"
+    parts << "**Values**:\n#{rendered.join("\n")}"
   end
   parts << "**Classes**: #{classes.map { |c| "`#{c}`" }.join(", ")}" if classes.any?
   parts << "**Events**: #{events.map { |e| "`#{e}`" }.join(", ")}" if events.any?
@@ -256,7 +270,8 @@ Dir[File.join(JS_ROOT, "**/*.js")].sort.each do |path|
            "controllers map) - exported without the facts section"
     end
 
-    docstring = [ scanned[:header], facts_for(identifier) ].compact.reject(&:empty?).join("\n\n")
+    purpose = scanned[:class_doc].to_s.empty? ? scanned[:header] : scanned[:class_doc]
+    docstring = [ purpose, facts_for(identifier) ].compact.reject(&:empty?).join("\n\n")
     objects << { "path" => identifier, "type" => "controller",
                  "superclass" => SUPERCLASS_IDENTIFIERS[scanned[:extends]],
                  "docstring" => docstring, "examples" => [], "file" => scanned[:file],

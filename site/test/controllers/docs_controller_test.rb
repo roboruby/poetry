@@ -79,25 +79,13 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "the controllers reference lists every poetry controller with its purpose, values and actions" do
-    get controllers_reference_url
-
-    assert_response :success
-    assert_select "article#poetry--core--dialog h3", text: "poetry--core--dialog"
-    assert_select "article#poetry--core--dialog p", text: /native-dialog primitive/
-    assert_select "article#poetry--core--dialog td", text: /backdrop clicks stop dismissing/
-    assert_select "article#poetry--core--dialog li code", text: "poetry--core--dialog#open"
-    assert_select "article#poetry--charts--tooltip"
-    assert_select "article#poetry--agent--webmcp"
-    assert_select "article[id^=demo-]", count: 0
-  end
-
   test "a component's wiring table carries the manifest's meaning of each value and action" do
     get component_url("dialog")
 
     assert_response :success
     assert_select "#wiring ~ div li", text: /value dismissible: Set false for AlertDialog-style confirmations/
-    assert_select "#wiring ~ div a[href=?]", controllers_reference_path(anchor: "poetry--core--dialog"), text: "poetry--core--dialog"
+    assert_select "#wiring ~ div a[href=?]", api_page_path("poetry-controllers", anchor: "poetry-core-dialog"),
+                  text: "poetry--core--dialog"
   end
 
   test "the i18n guide serves the catalogue, the override story, and the model chain" do

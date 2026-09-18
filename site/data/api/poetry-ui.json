@@ -359,11 +359,20 @@
           "group": null,
           "signature": "agent_skills(app_root: nil)",
           "docstring": "The MCP server's runtime skill map (get_skill): the SAME\nfiles `rails g poetry:skill` writes, for hosts that cannot write\nfiles. Boot-free by construction - the usage skill regenerates from\nthe COMMITTED registries (never the booted builders above), the\ndesign skill reads its static templates - so the exe can serve both\nwithout Rails. Lazy: nothing generates until an agent asks.\n\napp_root: the host app directory (the MCP server passes Dir.pwd);\nwhen `bin/rails poetry:registry` committed the app's registry there,\nthe usage skill carries references/app.md too - boot-free, from the\ncommitted file, like every other registry it reads.",
-          "params": [],
+          "params": [
+            {
+              "name": "app_root",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the host app directory (see above)"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 225
+          "line": 232
         },
         {
           "name": "block_components",
@@ -371,11 +380,26 @@
           "group": null,
           "signature": "block_components(source, titles:)",
           "docstring": "The distinct components a block composes, folded from its poetry_*\nhelper calls: each call maps to the LONGEST component title that\nprefixes it (poetry_sidebar_menu_badge -> sidebar; poetry_table_head\n-> table); calls matching no component (pure wrapper helpers like\npoetry_input_group_addon fold through input_group) are dropped\nrather than guessed.",
-          "params": [],
+          "params": [
+            {
+              "name": "source",
+              "types": [
+                "String"
+              ],
+              "text": "the block template's source"
+            },
+            {
+              "name": "titles",
+              "types": [
+                "Array<String>"
+              ],
+              "text": "the component titles the calls fold onto"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 323
+          "line": 337
         },
         {
           "name": "charts_registry",
@@ -387,7 +411,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 206
+          "line": 209
         },
         {
           "name": "committed_charts_registry",
@@ -399,7 +423,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 256
+          "line": 263
         },
         {
           "name": "helper_names",
@@ -411,7 +435,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 105
+          "line": 106
         },
         {
           "name": "host_registry",
@@ -423,7 +447,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 196
+          "line": 199
         },
         {
           "name": "recipe_items",
@@ -435,7 +459,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 157
+          "line": 158
         },
         {
           "name": "registry",
@@ -447,7 +471,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 118
+          "line": 119
         },
         {
           "name": "registry_blocks",
@@ -455,11 +479,19 @@
           "group": null,
           "signature": "registry_blocks(component_paths:)",
           "docstring": "The registry \"blocks\" section: every block template's metadata,\nall source-derived - title/description/keywords from the\nmandatory poetry:block header (keywords power the MCP compose\ntool's brief routing), the composed component list from the\ntemplate's own poetry_* calls (longest-prefix fold:\nsidebar_menu_button counts as sidebar), the gem-relative template\npath for boot-free source reads. No hand-authored catalog to drift.",
-          "params": [],
+          "params": [
+            {
+              "name": "component_paths",
+              "types": [
+                "Array<String>"
+              ],
+              "text": "the registry's component paths"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 300
+          "line": 311
         },
         {
           "name": "registry_descriptions",
@@ -471,7 +503,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 135
+          "line": 136
         },
         {
           "name": "registry_helpers",
@@ -479,11 +511,19 @@
           "group": null,
           "signature": "registry_helpers(component_paths:)",
           "docstring": "The registry \"helpers\" section: every poetry_* helper that\nmaps to no component - group/provider/item wrappers - each carrying\nits declared value contract (ComponentsHelper::HELPER_CONTRACTS) or\n{} for a plain wrapper.",
-          "params": [],
+          "params": [
+            {
+              "name": "component_paths",
+              "types": [
+                "Array<String>"
+              ],
+              "text": "the registry's component paths"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 286
+          "line": 295
         },
         {
           "name": "registry_items",
@@ -495,7 +535,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 145
+          "line": 146
         },
         {
           "name": "root",
@@ -515,18 +555,27 @@
           "group": null,
           "signature": "skill_files(host_registry: nil)",
           "docstring": "The installable component-usage skill: a lean SKILL.md menu +\nper-family references, generated from the live\nregistry - the seam the poetry:skill generator and the eval\nharness share (the agents_section_text pattern).\n\nhost_registry: the app's own components, passed by the generator\nrunning inside a host (references/app.md + the menu line); absent\nby default, so this set stays the gem's and equals the boot-free\nruntime map the MCP server serves.",
-          "params": [],
+          "params": [
+            {
+              "name": "host_registry",
+              "types": [
+                "Poetry::Core::Registry",
+                "nil"
+              ],
+              "text": "the app's own components (see above)"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 172
+          "line": 175
         },
         {
           "name": "template_classes",
           "scope": "class",
           "group": null,
           "signature": "template_classes",
-          "docstring": "",
+          "docstring": "The template class list, comments and blanks dropped.",
           "params": [],
           "return": {
             "types": [
@@ -536,7 +585,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 95
+          "line": 96
         },
         {
           "name": "theme_owned_names",
@@ -561,7 +610,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 188
+          "line": 191
         }
       ],
       "constants": [
@@ -689,6 +738,18 @@
           "line": 79
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/accordion/component.rb",
+          "line": 136
+        },
+        {
           "name": "type",
           "scope": "instance",
           "group": "Options",
@@ -812,6 +873,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/alert/component.rb",
           "line": 27
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/alert/component.rb",
+          "line": 47
         },
         {
           "name": "title",
@@ -1261,6 +1334,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/aspect_ratio/component.rb",
           "line": 25
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/aspect_ratio/component.rb",
+          "line": 51
         }
       ],
       "constants": [
@@ -1376,6 +1461,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
           "line": 85
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/attachment/component.rb",
+          "line": 126
         },
         {
           "name": "size",
@@ -1717,6 +1814,18 @@
           "line": 73
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/autocomplete/component.rb",
+          "line": 143
+        },
+        {
           "name": "side_offset",
           "scope": "instance",
           "group": "Options",
@@ -1869,6 +1978,18 @@
           "line": 34
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/avatar/component.rb",
+          "line": 69
+        },
+        {
           "name": "size",
           "scope": "instance",
           "group": "Options",
@@ -1984,6 +2105,18 @@
           "line": 40
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/badge/component.rb",
+          "line": 64
+        },
+        {
           "name": "variant",
           "scope": "instance",
           "group": "Style axes",
@@ -2062,7 +2195,19 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/breadcrumb/component.rb",
-          "line": 39
+          "line": 38
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/breadcrumb/component.rb",
+          "line": 87
         },
         {
           "name": "separator",
@@ -2079,7 +2224,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/breadcrumb/component.rb",
-          "line": 48
+          "line": 47
         },
         {
           "name": "with_ellipsis",
@@ -2091,7 +2236,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/breadcrumb/component.rb",
-          "line": 77
+          "line": 76
         },
         {
           "name": "with_item",
@@ -2108,7 +2253,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/breadcrumb/component.rb",
-          "line": 39
+          "line": 38
         },
         {
           "name": "with_separator",
@@ -2125,7 +2270,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/breadcrumb/component.rb",
-          "line": 48
+          "line": 47
         }
       ],
       "constants": [
@@ -2224,6 +2369,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/bubble/component.rb",
           "line": 33
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/bubble/component.rb",
+          "line": 80
         },
         {
           "name": "tag",
@@ -2417,6 +2574,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/button/component.rb",
           "line": 60
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: the base and the tag's own, over the caller's.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/button/component.rb",
+          "line": 123
         },
         {
           "name": "size",
@@ -2615,6 +2784,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/button_group/component.rb",
           "line": 34
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/button_group/component.rb",
+          "line": 58
         }
       ],
       "constants": [
@@ -2678,7 +2859,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/calendar/component.rb",
-          "line": 104
+          "line": 106
         },
         {
           "name": "mode",
@@ -2695,7 +2876,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/calendar/component.rb",
-          "line": 99
+          "line": 101
         },
         {
           "name": "name",
@@ -2712,7 +2893,19 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/calendar/component.rb",
-          "line": 96
+          "line": 98
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/calendar/component.rb",
+          "line": 267
         },
         {
           "name": "week_numbers",
@@ -2729,7 +2922,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/calendar/component.rb",
-          "line": 107
+          "line": 109
         },
         {
           "name": "week_start",
@@ -2746,7 +2939,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/calendar/component.rb",
-          "line": 102
+          "line": 104
         }
       ],
       "constants": [
@@ -3081,6 +3274,18 @@
           "line": 86
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "Attributes for the role=region root.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/carousel/component.rb",
+          "line": 124
+        },
+        {
           "name": "show_controls",
           "scope": "instance",
           "group": "Options",
@@ -3229,7 +3434,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 171
+          "line": 182
         },
         {
           "name": "frames",
@@ -3246,14 +3451,14 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 158
+          "line": 169
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
           "signature": "initialize",
-          "docstring": "",
+          "docstring": "An empty turn.",
           "params": [],
           "return": {
             "types": [
@@ -3263,7 +3468,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 140
+          "line": 151
         },
         {
           "name": "pause?",
@@ -3280,7 +3485,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 153
+          "line": 164
         },
         {
           "name": "writer",
@@ -3297,7 +3502,87 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 148
+          "line": 159
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Ui::Chat::AssistantTurn::Timeline",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The frames a turn compiles to, built one push at a time: each push\nrecords the whole part list as rendered at that instant.",
+      "examples": [],
+      "file": "lib/poetry/ui/chat.rb",
+      "methods": [
+        {
+          "name": "frames",
+          "scope": "instance",
+          "group": null,
+          "signature": "frames",
+          "docstring": "The frames pushed so far.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/ui/chat.rb",
+          "line": 225
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize",
+          "docstring": "An empty timeline.",
+          "params": [],
+          "return": {
+            "types": [
+              "Timeline"
+            ],
+            "text": "a new instance of Timeline"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/chat.rb",
+          "line": 228
+        },
+        {
+          "name": "stream_text",
+          "scope": "instance",
+          "group": null,
+          "signature": "stream_text(part)",
+          "docstring": "Streams a text or reasoning part a few words at a time, one frame per chunk.",
+          "params": [
+            {
+              "name": "part",
+              "types": [
+                "Hash"
+              ],
+              "text": "the part, with its text and optional delay_ms"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/ui/chat.rb",
+          "line": 237
+        },
+        {
+          "name": "stream_tool",
+          "scope": "instance",
+          "group": null,
+          "signature": "stream_tool(part)",
+          "docstring": "Streams a tool part: loading, then awaiting approval when it asks\nfor one, then its settled state unless the approval is left open.",
+          "params": [
+            {
+              "name": "part",
+              "types": [
+                "Hash"
+              ],
+              "text": "the part, with its approval, state, output and sleep_ms"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/ui/chat.rb",
+          "line": 251
         }
       ],
       "constants": []
@@ -3476,14 +3761,14 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 116
+          "line": 124
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
           "signature": "initialize(&)",
-          "docstring": "",
+          "docstring": "A script built by evaluating the block.",
           "params": [],
           "return": {
             "types": [
@@ -3493,14 +3778,14 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 98
+          "line": 106
         },
         {
           "name": "segments",
           "scope": "instance",
           "group": null,
           "signature": "segments",
-          "docstring": "",
+          "docstring": "The declared segments, in order.",
           "params": [],
           "return": {
             "types": [
@@ -3510,7 +3795,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 127
+          "line": 136
         },
         {
           "name": "user",
@@ -3530,7 +3815,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 107
+          "line": 115
         }
       ],
       "constants": [
@@ -3577,7 +3862,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 77
+          "line": 83
         },
         {
           "name": "final_parts",
@@ -3585,7 +3870,15 @@
           "group": null,
           "signature": "final_parts(approved: true)",
           "docstring": "The final resting parts (approval segments resolve per decision).",
-          "params": [],
+          "params": [
+            {
+              "name": "approved",
+              "types": [
+                "Boolean"
+              ],
+              "text": "how an approval segment resolved: true approves, false denies"
+            }
+          ],
           "return": {
             "types": [
               "Array<Hash>"
@@ -3594,7 +3887,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 82
+          "line": 89
         },
         {
           "name": "frames",
@@ -3611,7 +3904,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 71
+          "line": 77
         },
         {
           "name": "id",
@@ -3630,8 +3923,39 @@
           "scope": "instance",
           "group": null,
           "signature": "initialize(kind:, id:, text: nil, turn: nil)",
-          "docstring": "",
-          "params": [],
+          "docstring": "A segment of the scripted conversation.",
+          "params": [
+            {
+              "name": "kind",
+              "types": [
+                "Symbol"
+              ],
+              "text": ":user or :assistant"
+            },
+            {
+              "name": "id",
+              "types": [
+                "String"
+              ],
+              "text": "the deterministic DOM id"
+            },
+            {
+              "name": "text",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the user text (user segments)"
+            },
+            {
+              "name": "turn",
+              "types": [
+                "AssistantTurn",
+                "nil"
+              ],
+              "text": "the turn (assistant segments)"
+            }
+          ],
           "return": {
             "types": [
               "Segment"
@@ -3640,7 +3964,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 55
+          "line": 61
         },
         {
           "name": "kind",
@@ -3669,7 +3993,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 65
+          "line": 71
         },
         {
           "name": "text",
@@ -3711,8 +4035,16 @@
           "scope": "instance",
           "group": null,
           "signature": "initialize(parts)",
-          "docstring": "",
-          "params": [],
+          "docstring": "The writer over one assistant turn's parts.",
+          "params": [
+            {
+              "name": "parts",
+              "types": [
+                "Array<Hash>"
+              ],
+              "text": "the turn's part list, appended to in order"
+            }
+          ],
           "return": {
             "types": [
               "Writer"
@@ -3721,7 +4053,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 241
+          "line": 290
         },
         {
           "name": "reasoning",
@@ -3754,7 +4086,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 262
+          "line": 311
         },
         {
           "name": "text",
@@ -3787,7 +4119,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 251
+          "line": 300
         },
         {
           "name": "tool",
@@ -3848,7 +4180,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 279
+          "line": 328
         }
       ],
       "constants": []
@@ -3891,7 +4223,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/checkbox/component.rb",
-          "line": 80
+          "line": 82
         },
         {
           "name": "disabled",
@@ -3908,7 +4240,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/checkbox/component.rb",
-          "line": 90
+          "line": 92
         },
         {
           "name": "label",
@@ -3925,7 +4257,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/checkbox/component.rb",
-          "line": 94
+          "line": 96
         },
         {
           "name": "name",
@@ -3942,7 +4274,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/checkbox/component.rb",
-          "line": 83
+          "line": 85
         },
         {
           "name": "required",
@@ -3959,7 +4291,19 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/checkbox/component.rb",
-          "line": 91
+          "line": 93
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "Attributes for the visual button[role=checkbox].",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/checkbox/component.rb",
+          "line": 162
         },
         {
           "name": "unchecked_value",
@@ -3976,7 +4320,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/checkbox/component.rb",
-          "line": 87
+          "line": 89
         },
         {
           "name": "value",
@@ -3993,7 +4337,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/checkbox/component.rb",
-          "line": 86
+          "line": 88
         }
       ],
       "constants": [
@@ -4109,6 +4453,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/clipboard_text/component.rb",
           "line": 52
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "Attributes for the root wrapper.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/clipboard_text/component.rb",
+          "line": 84
         },
         {
           "name": "text_to_copy",
@@ -4287,6 +4643,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/code_block/component.rb",
           "line": 55
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "Attributes for the panel root.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/code_block/component.rb",
+          "line": 88
         }
       ],
       "constants": [
@@ -4342,7 +4710,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui/code_block_highlighter.rb",
-          "line": 40
+          "line": 44
         },
         {
           "name": "highlight",
@@ -4350,11 +4718,35 @@
           "group": null,
           "signature": "highlight(code, language:, highlight_lines: [])",
           "docstring": "-> html_safe highlighted markup - every line wrapped in .line (the\ncounter hook), the requested ones also .hll (the theme's tint hook) -\nor nil when rouge is absent. Unknown languages lex as plain text.",
-          "params": [],
+          "params": [
+            {
+              "name": "code",
+              "types": [
+                "String"
+              ],
+              "text": "the source to highlight"
+            },
+            {
+              "name": "language",
+              "types": [
+                "String",
+                "Symbol",
+                "nil"
+              ],
+              "text": "the rouge lexer name; unknown or nil lexes as plain text"
+            },
+            {
+              "name": "highlight_lines",
+              "types": [
+                "Array<Integer>"
+              ],
+              "text": "1-based line numbers to tint"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui/code_block_highlighter.rb",
-          "line": 29
+          "line": 33
         }
       ],
       "constants": []
@@ -4398,6 +4790,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/collapsible/component.rb",
           "line": 61
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "Attributes for the disclosure root.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/collapsible/component.rb",
+          "line": 105
         },
         {
           "name": "trigger",
@@ -4506,7 +4910,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 471
+          "line": 464
         },
         {
           "name": "align_offset",
@@ -4523,7 +4927,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 473
+          "line": 466
         },
         {
           "name": "avoid_collisions",
@@ -4540,7 +4944,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 474
+          "line": 467
         },
         {
           "name": "dir",
@@ -4557,7 +4961,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 475
+          "line": 468
         },
         {
           "name": "disabled",
@@ -4574,7 +4978,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 452
+          "line": 445
         },
         {
           "name": "empty",
@@ -4591,7 +4995,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 309
+          "line": 322
         },
         {
           "name": "filter",
@@ -4608,7 +5012,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 465
+          "line": 458
         },
         {
           "name": "id",
@@ -4625,7 +5029,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 449
+          "line": 442
         },
         {
           "name": "items",
@@ -4642,7 +5046,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 313
+          "line": 326
         },
         {
           "name": "loading",
@@ -4659,7 +5063,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 310
+          "line": 323
         },
         {
           "name": "loop",
@@ -4676,7 +5080,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 468
+          "line": 461
         },
         {
           "name": "modal",
@@ -4693,7 +5097,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 458
+          "line": 451
         },
         {
           "name": "multiple",
@@ -4710,7 +5114,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 454
+          "line": 447
         },
         {
           "name": "name",
@@ -4727,7 +5131,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 445
+          "line": 438
         },
         {
           "name": "open",
@@ -4744,7 +5148,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 450
+          "line": 443
         },
         {
           "name": "placeholder",
@@ -4761,7 +5165,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 446
+          "line": 439
         },
         {
           "name": "required",
@@ -4778,7 +5182,19 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 451
+          "line": 444
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "Attributes for the root wrapper.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/combobox/component.rb",
+          "line": 896
         },
         {
           "name": "search_placeholder",
@@ -4795,7 +5211,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 448
+          "line": 441
         },
         {
           "name": "show_clear",
@@ -4812,7 +5228,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 461
+          "line": 454
         },
         {
           "name": "side",
@@ -4829,7 +5245,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 469
+          "line": 462
         },
         {
           "name": "side_offset",
@@ -4846,7 +5262,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 472
+          "line": 465
         },
         {
           "name": "trigger",
@@ -4863,7 +5279,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 305
+          "line": 318
         },
         {
           "name": "value",
@@ -4880,7 +5296,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 444
+          "line": 437
         },
         {
           "name": "webmcp_tool_definition",
@@ -4892,7 +5308,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 430
+          "line": 629
         },
         {
           "name": "width",
@@ -4909,7 +5325,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 476
+          "line": 469
         },
         {
           "name": "with_empty",
@@ -4926,7 +5342,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 309
+          "line": 322
         },
         {
           "name": "with_group",
@@ -4943,7 +5359,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 313
+          "line": 326
         },
         {
           "name": "with_item",
@@ -4960,7 +5376,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 313
+          "line": 326
         },
         {
           "name": "with_loading",
@@ -4977,7 +5393,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 310
+          "line": 323
         },
         {
           "name": "with_separator",
@@ -4994,7 +5410,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 313
+          "line": 326
         },
         {
           "name": "with_trigger",
@@ -5011,7 +5427,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 305
+          "line": 318
         }
       ],
       "constants": [
@@ -5080,7 +5496,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 315
+          "line": 326
         },
         {
           "name": "empty",
@@ -5097,7 +5513,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 269
+          "line": 280
         },
         {
           "name": "filter",
@@ -5114,7 +5530,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 309
+          "line": 320
         },
         {
           "name": "id",
@@ -5131,7 +5547,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 316
+          "line": 327
         },
         {
           "name": "items",
@@ -5148,7 +5564,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 273
+          "line": 284
         },
         {
           "name": "list_label",
@@ -5165,7 +5581,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 312
+          "line": 323
         },
         {
           "name": "loading",
@@ -5182,7 +5598,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 270
+          "line": 281
         },
         {
           "name": "loop",
@@ -5199,7 +5615,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 310
+          "line": 321
         },
         {
           "name": "placeholder",
@@ -5216,7 +5632,19 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 311
+          "line": 322
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "Attributes for the palette root.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/command/component.rb",
+          "line": 495
         },
         {
           "name": "value",
@@ -5233,7 +5661,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 314
+          "line": 325
         },
         {
           "name": "with_empty",
@@ -5250,7 +5678,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 269
+          "line": 280
         },
         {
           "name": "with_group",
@@ -5267,7 +5695,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 273
+          "line": 284
         },
         {
           "name": "with_item",
@@ -5284,7 +5712,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 273
+          "line": 284
         },
         {
           "name": "with_loading",
@@ -5301,7 +5729,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 270
+          "line": 281
         },
         {
           "name": "with_separator",
@@ -5318,7 +5746,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 273
+          "line": 284
         }
       ],
       "constants": [
@@ -5487,6 +5915,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/command/dialog_component.rb",
           "line": 88
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "Attributes for the root wrapper.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/command/dialog_component.rb",
+          "line": 163
         },
         {
           "name": "show_close_button",
@@ -7924,6 +8364,18 @@
           "line": 131
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "Attributes for the root wrapper.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/context_menu/component.rb",
+          "line": 263
+        },
+        {
           "name": "side",
           "scope": "instance",
           "group": "Options",
@@ -7985,27 +8437,6 @@
           "name": "REQUIRED_SLOTS",
           "value": "{ trigger: \"the right-click surface\", item: \"at least one item\" }.freeze",
           "docstring": "The required slots, stated statically for static checks."
-        },
-        {
-          "name": "SLOT_BUILDERS",
-          "value": "{ sub: Sub, group: Group, radio_group: RadioGroup }.freeze",
-          "docstring": "Nested-slot recursion map for the registry projection."
-        }
-      ]
-    },
-    {
-      "path": "Poetry::Ui::ContextMenu::ItemSlots",
-      "type": "module",
-      "superclass": null,
-      "docstring": "The builder classes behind lambda-wrapped slot types: a\nlambda hides its return class from introspection, so the owner\ndeclares it and the registry walker recurses into the builder's own\ncall surface (with_sub yields a Sub with its own items).\nREQUIRED_SLOTS states the same facts the before_render\nraises enforce, so static checks can flag omissions without\nrendering.",
-      "examples": [],
-      "file": "app/components/poetry/ui/context_menu/component.rb",
-      "methods": [],
-      "constants": [
-        {
-          "name": "SLOT_BUILDERS",
-          "value": "{ sub: Sub, group: Group, radio_group: RadioGroup }.freeze",
-          "docstring": "Nested-slot recursion map for the registry projection."
         }
       ]
     },
@@ -8777,6 +9208,18 @@
           "line": 66
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "Attributes for the field root.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/date_field/component.rb",
+          "line": 105
+        },
+        {
           "name": "value",
           "scope": "instance",
           "group": "Options",
@@ -8809,6 +9252,16 @@
       "docstring": "Utility-only (the Separator/Spinner rule): the GROUP wears\ncn-input's field chrome (zero new theme CSS) with a focus-within\nring standing in for the input's focus-visible one, since focus\nlives on the segments inside. Segments and literals are\ncontroller-BUILT, so their look rides descendant variants on the\ngroup (the FileInput list idiom). The group stays hidden until the\ncontroller stamps data-enhanced on the root; until then the native\ninput is the visible, styled control (no-JS = native pickers).",
       "examples": [],
       "file": "app/components/poetry/ui/date_field/style.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Ui::DateParsing",
+      "type": "module",
+      "superclass": null,
+      "docstring": "Reads the date values a calendar-style component accepts (Calendar,\nDatePicker): a single value as a Date, and a range as its two ends\nfrom a Range, a pair, a start and end hash, or one starting value.",
+      "examples": [],
+      "file": "app/components/poetry/ui/date_parsing.rb",
       "methods": [],
       "constants": []
     },
@@ -8850,7 +9303,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/date_picker/component.rb",
-          "line": 75
+          "line": 77
         },
         {
           "name": "label",
@@ -8867,7 +9320,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/date_picker/component.rb",
-          "line": 69
+          "line": 71
         },
         {
           "name": "mode",
@@ -8884,7 +9337,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/date_picker/component.rb",
-          "line": 66
+          "line": 68
         },
         {
           "name": "name",
@@ -8901,7 +9354,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/date_picker/component.rb",
-          "line": 65
+          "line": 67
         },
         {
           "name": "placeholder",
@@ -8918,7 +9371,19 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/date_picker/component.rb",
-          "line": 68
+          "line": 70
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "Attributes for the root wrapper.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/date_picker/component.rb",
+          "line": 147
         },
         {
           "name": "variant",
@@ -8935,7 +9400,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/date_picker/component.rb",
-          "line": 71
+          "line": 73
         }
       ],
       "constants": [
@@ -9076,6 +9541,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/deferred/component.rb",
           "line": 52
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "No src in the markup ON PURPOSE: the URL rides the controller\nvalue and connect() arms it, so a fast response can never beat\nthe controllers module graph to the frame (Turbo 8's\nframe-missing default would promote that race to a full-page\nvisit).",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/deferred/component.rb",
+          "line": 76
         },
         {
           "name": "src",
@@ -9385,7 +9862,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/dictionary_fidelity.rb",
-          "line": 243
+          "line": 238
         },
         {
           "name": "diff",
@@ -9417,7 +9894,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/dictionary_fidelity.rb",
-          "line": 204
+          "line": 200
         },
         {
           "name": "extract",
@@ -9442,7 +9919,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/dictionary_fidelity.rb",
-          "line": 67
+          "line": 68
         },
         {
           "name": "snapshot",
@@ -9467,7 +9944,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/dictionary_fidelity.rb",
-          "line": 346
+          "line": 334
         },
         {
           "name": "snapshot_path",
@@ -9492,7 +9969,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/dictionary_fidelity.rb",
-          "line": 354
+          "line": 342
         },
         {
           "name": "verify",
@@ -9524,7 +10001,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/dictionary_fidelity.rb",
-          "line": 259
+          "line": 254
         },
         {
           "name": "write_snapshot",
@@ -9563,7 +10040,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/dictionary_fidelity.rb",
-          "line": 322
+          "line": 310
         }
       ],
       "constants": [
@@ -9960,6 +10437,18 @@
           "line": 132
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root wrapper's attributes.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/dropdown_menu/component.rb",
+          "line": 261
+        },
+        {
           "name": "side",
           "scope": "instance",
           "group": "Options",
@@ -10277,7 +10766,79 @@
       "docstring": "Gives an including component its family identity, derived from the\nnamespace (Poetry::Ui::HoverCard::Component -> \"HoverCard\" /\n\"hover-card\"): the data-slot prefix, error nouns, and the sibling\nStyle dictionary all resolve through it, so shared modules never\nhard-code a family name. Also supplies the root-shell attributes\nand the instance-id seed; a family with a different root or id\nshape simply overrides.",
       "examples": [],
       "file": "app/components/poetry/ui/family_identity.rb",
-      "methods": [],
+      "methods": [
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes(extra = {})",
+          "docstring": "The family root's attributes: the core default under the family's\ndata-slot prefix (a family with a different root shape overrides).",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/family_identity.rb",
+          "line": 15
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Ui::Fidelity",
+      "type": "module",
+      "superclass": null,
+      "docstring": "What the two fidelity contracts (themes, dictionaries) share: the\ntwo-way reconciliation of one item's diff kinds against its record.",
+      "examples": [],
+      "file": "lib/poetry/ui/fidelity.rb",
+      "methods": [
+        {
+          "name": "reconcile_kinds",
+          "scope": "class",
+          "group": null,
+          "signature": "reconcile_kinds(label, kinds, actual, recorded, findings)",
+          "docstring": "Adds a finding for every value a diff carries that the record lacks,\nand for every recorded value the diff no longer carries.",
+          "params": [
+            {
+              "name": "label",
+              "types": [
+                "String"
+              ],
+              "text": "the item the findings name"
+            },
+            {
+              "name": "kinds",
+              "types": [
+                "Array<String>"
+              ],
+              "text": "the diff kinds to reconcile"
+            },
+            {
+              "name": "actual",
+              "types": [
+                "Hash"
+              ],
+              "text": "the item's diff, values by kind"
+            },
+            {
+              "name": "recorded",
+              "types": [
+                "Hash"
+              ],
+              "text": "the item's record, values by kind"
+            },
+            {
+              "name": "findings",
+              "types": [
+                "Array<String>"
+              ],
+              "text": "the list the findings join"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/ui/fidelity.rb",
+          "line": 18
+        }
+      ],
       "constants": []
     },
     {
@@ -10313,7 +10874,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/field/component.rb",
-          "line": 155
+          "line": 153
         },
         {
           "name": "error",
@@ -10469,6 +11030,18 @@
           "line": 60
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The quartet root's attributes.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/field/component.rb",
+          "line": 169
+        },
+        {
           "name": "with_hint",
           "scope": "instance",
           "group": null,
@@ -10483,7 +11056,7 @@
             }
           ],
           "file": "app/components/poetry/ui/field/component.rb",
-          "line": 127
+          "line": 129
         }
       ],
       "constants": [
@@ -10600,7 +11173,20 @@
         }
       ],
       "file": "app/components/poetry/ui/field_separator/component.rb",
-      "methods": [],
+      "methods": [
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The divider row's attributes.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/field_separator/component.rb",
+          "line": 41
+        }
+      ],
       "constants": [
         {
           "name": "AGENT_RULES",
@@ -10692,6 +11278,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/fieldset/component.rb",
           "line": 35
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The <fieldset> root's attributes.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/fieldset/component.rb",
+          "line": 65
         }
       ],
       "constants": [
@@ -10894,6 +11492,18 @@
           "line": 82
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The dropzone root's attributes.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/file_input/component.rb",
+          "line": 151
+        },
+        {
           "name": "variant",
           "scope": "instance",
           "group": "Style axes",
@@ -10959,7 +11569,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 455
+          "line": 412
         },
         {
           "name": "autocomplete",
@@ -10971,7 +11581,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 564
+          "line": 521
         },
         {
           "name": "button",
@@ -10983,7 +11593,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 729
+          "line": 686
         },
         {
           "name": "calendar",
@@ -10995,7 +11605,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 669
+          "line": 626
         },
         {
           "name": "check_box",
@@ -11019,7 +11629,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 951
+          "line": 933
         },
         {
           "name": "checkbox_group",
@@ -11031,7 +11641,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 633
+          "line": 590
         },
         {
           "name": "collection_check_boxes",
@@ -11043,7 +11653,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 712
+          "line": 669
         },
         {
           "name": "collection_checkboxes",
@@ -11055,7 +11665,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 956
+          "line": 938
         },
         {
           "name": "collection_radio_buttons",
@@ -11067,7 +11677,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 705
+          "line": 662
         },
         {
           "name": "collection_select",
@@ -11079,19 +11689,19 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 695
+          "line": 652
         },
         {
           "name": "date_field",
           "scope": "instance",
           "group": null,
-          "signature": "date_field(method, hint: nil, **options)",
+          "signature": "date_field(method, hint: nil, **)",
           "docstring": "form.date_field(:due_on) - a Field wrapping a DateField;\nparams arrive as ISO yyyy-mm-dd with or without JS. OVERRIDES\nActionView's date_field (the number_field precedent).",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 229
+          "line": 217
         },
         {
           "name": "date_picker",
@@ -11103,14 +11713,14 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 655
+          "line": 612
         },
         {
           "name": "datetime_field",
           "scope": "instance",
           "group": null,
           "signature": "datetime_field(method, hint: nil, **options)",
-          "docstring": "A Field-wrapped DateTimeField (one control, one datetime-local value; seconds:/hour_cycle: pass through).",
+          "docstring": "A Field-wrapped DateTimeField (one control, one datetime-local value; seconds:/hour_cycle: pass through).\n\nrubocop:disable-next Style/ArgumentsForwarding -- the reference names the options hash",
           "params": [
             {
               "name": "method",
@@ -11126,6 +11736,13 @@
                 "nil"
               ],
               "text": "hint text"
+            },
+            {
+              "name": "options",
+              "types": [
+                "Hash"
+              ],
+              "text": "the DateTimeField's own options (seconds:, hour_cycle:)\nand HTML attributes, passed through to the control"
             }
           ],
           "return": {
@@ -11136,7 +11753,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 268
+          "line": 235
         },
         {
           "name": "email_field",
@@ -11153,7 +11770,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 498
+          "line": 455
         },
         {
           "name": "field",
@@ -11177,7 +11794,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 738
+          "line": 695
         },
         {
           "name": "file_input",
@@ -11189,7 +11806,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 287
+          "line": 242
         },
         {
           "name": "group",
@@ -11201,7 +11818,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 747
+          "line": 704
         },
         {
           "name": "input",
@@ -11248,6 +11865,13 @@
                 "nil"
               ],
               "text": "overrides the presence-validator inference for this\ncall (aria-required only, never the native attribute)"
+            },
+            {
+              "name": "options",
+              "types": [
+                "Hash"
+              ],
+              "text": "passed through to the control the type resolves to\n(placeholder:, HTML attributes, the control's own options)"
             }
           ],
           "return": {
@@ -11263,7 +11887,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 420
+          "line": 377
         },
         {
           "name": "native_select",
@@ -11275,13 +11899,13 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 586
+          "line": 543
         },
         {
           "name": "number_field",
           "scope": "instance",
           "group": null,
-          "signature": "number_field(method, hint: nil, **options)",
+          "signature": "number_field(method, hint: nil, **)",
           "docstring": "form.number_field(:quantity, min: 0, max: 100) - a Field wrapping\na NumberField, label/error/required from the object. The\nhidden <input type=number> submits the raw value; format: only\nshapes the display.",
           "params": [],
           "return": null,
@@ -11311,7 +11935,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 510
+          "line": 467
         },
         {
           "name": "phone_field",
@@ -11328,7 +11952,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 505
+          "line": 462
         },
         {
           "name": "poetry_combobox",
@@ -11340,7 +11964,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 356
+          "line": 311
         },
         {
           "name": "poetry_select",
@@ -11352,7 +11976,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 314
+          "line": 269
         },
         {
           "name": "radio_group",
@@ -11376,7 +12000,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 522
+          "line": 479
         },
         {
           "name": "search_field",
@@ -11388,7 +12012,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 528
+          "line": 485
         },
         {
           "name": "select",
@@ -11400,7 +12024,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 687
+          "line": 644
         },
         {
           "name": "sensitive_input",
@@ -11412,7 +12036,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 545
+          "line": 502
         },
         {
           "name": "slider",
@@ -11436,7 +12060,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 722
+          "line": 679
         },
         {
           "name": "switch",
@@ -11460,7 +12084,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 607
+          "line": 564
         },
         {
           "name": "telephone_field",
@@ -11477,7 +12101,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 498
+          "line": 455
         },
         {
           "name": "text_area",
@@ -11489,7 +12113,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 516
+          "line": 473
         },
         {
           "name": "text_field",
@@ -11506,7 +12130,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 498
+          "line": 455
         },
         {
           "name": "textarea",
@@ -11518,19 +12142,19 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 948
+          "line": 930
         },
         {
           "name": "time_field",
           "scope": "instance",
           "group": null,
-          "signature": "time_field(method, hint: nil, **options)",
+          "signature": "time_field(method, hint: nil, **)",
           "docstring": "form.time_field(:starts_at) - a Field wrapping a TimeField;\nparams arrive as HH:MM (HH:MM:SS with seconds: true).",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 247
+          "line": 223
         },
         {
           "name": "url_field",
@@ -11547,7 +12171,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 498
+          "line": 455
         }
       ],
       "constants": [
@@ -11993,6 +12617,18 @@
           "line": 32
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The <input> element's attributes.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/input/component.rb",
+          "line": 54
+        },
+        {
           "name": "type",
           "scope": "instance",
           "group": "Options",
@@ -12072,7 +12708,20 @@
         }
       ],
       "file": "app/components/poetry/ui/input_group/component.rb",
-      "methods": [],
+      "methods": [
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The group surface's attributes.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/input_group/component.rb",
+          "line": 58
+        }
+      ],
       "constants": [
         {
           "name": "AGENT_RULES",
@@ -12242,6 +12891,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/input_otp/component.rb",
           "line": 88
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The row container's attributes.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/input_otp/component.rb",
+          "line": 157
         },
         {
           "name": "separator",
@@ -12435,6 +13096,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/item/component.rb",
           "line": 51
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The row root's attributes.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/item/component.rb",
+          "line": 86
         },
         {
           "name": "size",
@@ -12720,6 +13393,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/label/component.rb",
           "line": 23
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/label/component.rb",
+          "line": 37
         }
       ],
       "constants": [
@@ -12813,6 +13498,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/link/component.rb",
           "line": 25
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/link/component.rb",
+          "line": 50
         },
         {
           "name": "underline",
@@ -12943,6 +13640,18 @@
           "line": 31
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/marker/component.rb",
+          "line": 72
+        },
+        {
           "name": "tag",
           "scope": "instance",
           "group": "Options",
@@ -13061,7 +13770,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menubar/component.rb",
-          "line": 147
+          "line": 148
         },
         {
           "name": "label",
@@ -13078,7 +13787,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menubar/component.rb",
-          "line": 142
+          "line": 143
         },
         {
           "name": "loop",
@@ -13095,7 +13804,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menubar/component.rb",
-          "line": 144
+          "line": 145
         },
         {
           "name": "menus",
@@ -13112,7 +13821,19 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menubar/component.rb",
-          "line": 73
+          "line": 74
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/menubar/component.rb",
+          "line": 285
         },
         {
           "name": "value",
@@ -13129,7 +13850,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menubar/component.rb",
-          "line": 145
+          "line": 146
         },
         {
           "name": "with_menu",
@@ -13146,7 +13867,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menubar/component.rb",
-          "line": 73
+          "line": 74
         }
       ],
       "constants": [
@@ -13442,6 +14163,18 @@
           "line": 32
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/message/component.rb",
+          "line": 54
+        },
+        {
           "name": "with_avatar",
           "scope": "instance",
           "group": "Slots",
@@ -13625,6 +14358,18 @@
           "line": 84
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/message_scroller/component.rb",
+          "line": 134
+        },
+        {
           "name": "track_visibility",
           "scope": "instance",
           "group": "Options",
@@ -13740,6 +14485,18 @@
           "line": 49
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/metadata_list/component.rb",
+          "line": 78
+        },
+        {
           "name": "with_item",
           "scope": "instance",
           "group": "Slots",
@@ -13853,6 +14610,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/meter/component.rb",
           "line": 29
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The role is the single token \"meter\" - a two-token fallback\n(\"meter progressbar\") makes checkers treat the element as generic\nand flag every aria-value* attribute.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/meter/component.rb",
+          "line": 77
         },
         {
           "name": "show_value",
@@ -14146,6 +14915,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/navigation_menu/component.rb",
           "line": 106
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/navigation_menu/component.rb",
+          "line": 194
         },
         {
           "name": "viewport",
@@ -14489,6 +15270,18 @@
           "line": 104
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/number_field/component.rb",
+          "line": 159
+        },
+        {
           "name": "small_step",
           "scope": "instance",
           "group": "Options",
@@ -14617,7 +15410,7 @@
           "scope": "instance",
           "group": null,
           "signature": "optimistic_hidden_field_rendered?",
-          "docstring": "",
+          "docstring": "Whether the optimistic hidden field has been rendered.",
           "params": [],
           "return": {
             "types": [
@@ -14627,7 +15420,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/optimistic_form_builder.rb",
-          "line": 50
+          "line": 51
         },
         {
           "name": "optimistic_template",
@@ -14791,6 +15584,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/pagination/component.rb",
           "line": 57
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/pagination/component.rb",
+          "line": 159
         },
         {
           "name": "siblings",
@@ -15241,6 +16046,18 @@
           "line": 25
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/progress/component.rb",
+          "line": 65
+        },
+        {
           "name": "show_value",
           "scope": "instance",
           "group": "Options",
@@ -15331,7 +16148,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 56
+          "line": 181
         },
         {
           "name": "default_item",
@@ -15348,7 +16165,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 115
+          "line": 103
         },
         {
           "name": "http_method",
@@ -15365,7 +16182,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 108
+          "line": 96
         },
         {
           "name": "id",
@@ -15382,7 +16199,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 111
+          "line": 99
         },
         {
           "name": "next_label",
@@ -15399,7 +16216,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 119
+          "line": 107
         },
         {
           "name": "previous_label",
@@ -15416,7 +16233,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 116
+          "line": 104
         },
         {
           "name": "progress",
@@ -15436,6 +16253,18 @@
           "line": 52
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/questionnaire/component.rb",
+          "line": 275
+        },
+        {
           "name": "shortcuts",
           "scope": "instance",
           "group": "Options",
@@ -15450,7 +16279,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 112
+          "line": 100
         },
         {
           "name": "skip_label",
@@ -15467,7 +16296,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 117
+          "line": 105
         },
         {
           "name": "submit_label",
@@ -15484,7 +16313,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 120
+          "line": 108
         },
         {
           "name": "url",
@@ -15501,7 +16330,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 107
+          "line": 95
         },
         {
           "name": "with_item",
@@ -15513,7 +16342,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 205
+          "line": 206
         },
         {
           "name": "with_progress",
@@ -15525,7 +16354,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 61
+          "line": 186
         }
       ],
       "constants": [
@@ -15564,7 +16393,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 335
+          "line": 374
         },
         {
           "name": "class_name",
@@ -15576,7 +16405,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 335
+          "line": 374
         },
         {
           "name": "description",
@@ -15588,7 +16417,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 335
+          "line": 374
         },
         {
           "name": "disabled",
@@ -15600,7 +16429,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 335
+          "line": 374
         },
         {
           "name": "error",
@@ -15612,7 +16441,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 335
+          "line": 374
         },
         {
           "name": "input",
@@ -15624,7 +16453,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 335
+          "line": 374
         },
         {
           "name": "multiple",
@@ -15636,7 +16465,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 335
+          "line": 374
         },
         {
           "name": "name",
@@ -15648,7 +16477,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 335
+          "line": 374
         },
         {
           "name": "required",
@@ -15660,7 +16489,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 335
+          "line": 374
         },
         {
           "name": "title",
@@ -15672,7 +16501,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 335
+          "line": 374
         },
         {
           "name": "with_choice",
@@ -15721,7 +16550,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 358
+          "line": 398
         },
         {
           "name": "with_input",
@@ -15757,7 +16586,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 368
+          "line": 408
         }
       ],
       "constants": []
@@ -15930,6 +16759,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/radio_group/component.rb",
           "line": 122
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/radio_group/component.rb",
+          "line": 194
         },
         {
           "name": "value",
@@ -16111,6 +16952,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/resizable/component.rb",
           "line": 42
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/resizable/component.rb",
+          "line": 118
         },
         {
           "name": "with_panel",
@@ -16399,6 +17252,18 @@
           "line": 62
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/search_field/component.rb",
+          "line": 90
+        },
+        {
           "name": "value",
           "scope": "instance",
           "group": "Options",
@@ -16493,7 +17358,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 281
+          "line": 289
         },
         {
           "name": "align_item_with_trigger",
@@ -16510,7 +17375,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 287
+          "line": 295
         },
         {
           "name": "align_offset",
@@ -16527,7 +17392,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 283
+          "line": 291
         },
         {
           "name": "avoid_collisions",
@@ -16544,7 +17409,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 284
+          "line": 292
         },
         {
           "name": "dir",
@@ -16561,7 +17426,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 292
+          "line": 300
         },
         {
           "name": "disabled",
@@ -16578,7 +17443,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 278
+          "line": 286
         },
         {
           "name": "id",
@@ -16595,7 +17460,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 271
+          "line": 279
         },
         {
           "name": "items",
@@ -16612,7 +17477,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 199
+          "line": 207
         },
         {
           "name": "loop",
@@ -16629,7 +17494,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 285
+          "line": 293
         },
         {
           "name": "modal",
@@ -16646,7 +17511,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 279
+          "line": 287
         },
         {
           "name": "name",
@@ -16663,7 +17528,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 267
+          "line": 275
         },
         {
           "name": "open",
@@ -16680,7 +17545,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 274
+          "line": 282
         },
         {
           "name": "placeholder",
@@ -16697,7 +17562,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 268
+          "line": 276
         },
         {
           "name": "required",
@@ -16714,7 +17579,19 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 275
+          "line": 283
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/select/component.rb",
+          "line": 520
         },
         {
           "name": "side",
@@ -16731,7 +17608,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 280
+          "line": 288
         },
         {
           "name": "side_offset",
@@ -16748,7 +17625,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 282
+          "line": 290
         },
         {
           "name": "size",
@@ -16765,7 +17642,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 293
+          "line": 301
         },
         {
           "name": "trigger",
@@ -16782,7 +17659,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 195
+          "line": 203
         },
         {
           "name": "trigger_class",
@@ -16799,7 +17676,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 294
+          "line": 302
         },
         {
           "name": "value",
@@ -16816,7 +17693,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 264
+          "line": 272
         },
         {
           "name": "with_group",
@@ -16833,7 +17710,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 199
+          "line": 207
         },
         {
           "name": "with_item",
@@ -16850,7 +17727,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 199
+          "line": 207
         },
         {
           "name": "with_separator",
@@ -16867,7 +17744,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 199
+          "line": 207
         },
         {
           "name": "with_trigger",
@@ -16884,7 +17761,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/select/component.rb",
-          "line": 195
+          "line": 203
         }
       ],
       "constants": [
@@ -17109,6 +17986,18 @@
           "line": 98
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/sensitive_input/component.rb",
+          "line": 155
+        },
+        {
           "name": "value",
           "scope": "instance",
           "group": "Options",
@@ -17200,6 +18089,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/separator/component.rb",
           "line": 21
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/separator/component.rb",
+          "line": 42
         }
       ],
       "constants": [
@@ -17387,6 +18288,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/sidebar/component.rb",
           "line": 94
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/sidebar/component.rb",
+          "line": 197
         },
         {
           "name": "side",
@@ -17770,6 +18683,18 @@
           "line": 92
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/slider/component.rb",
+          "line": 231
+        },
+        {
           "name": "step",
           "scope": "instance",
           "group": "Options",
@@ -17900,6 +18825,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/spinner/component.rb",
           "line": 29
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/spinner/component.rb",
+          "line": 41
         }
       ],
       "constants": [
@@ -18237,6 +19174,18 @@
           "line": 65
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/switch/component.rb",
+          "line": 124
+        },
+        {
           "name": "size",
           "scope": "instance",
           "group": "Style axes",
@@ -18442,7 +19391,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tabs/component.rb",
-          "line": 106
+          "line": 92
         },
         {
           "name": "label",
@@ -18459,7 +19408,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tabs/component.rb",
-          "line": 109
+          "line": 95
         },
         {
           "name": "orientation",
@@ -18476,7 +19425,19 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tabs/component.rb",
-          "line": 110
+          "line": 96
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/tabs/component.rb",
+          "line": 191
         },
         {
           "name": "tabs",
@@ -18510,7 +19471,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/tabs/component.rb",
-          "line": 112
+          "line": 98
         },
         {
           "name": "webmcp_tool_definition",
@@ -18522,7 +19483,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/tabs/component.rb",
-          "line": 95
+          "line": 142
         },
         {
           "name": "with_tab",
@@ -18648,6 +19609,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/tag_group/component.rb",
           "line": 68
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/tag_group/component.rb",
+          "line": 114
         },
         {
           "name": "tags",
@@ -18943,7 +19916,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/combobox.rb",
-          "line": 100
+          "line": 105
         },
         {
           "name": "close",
@@ -18960,7 +19933,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/combobox.rb",
-          "line": 55
+          "line": 57
         },
         {
           "name": "filter",
@@ -18968,7 +19941,15 @@
           "group": null,
           "signature": "filter(query)",
           "docstring": "Type into the filter input (opens first when closed). Single mode\nkeeps the input inside the (portaled) popup; multiple keeps it\ninline in the chips field at home.",
-          "params": [],
+          "params": [
+            {
+              "name": "query",
+              "types": [
+                "String"
+              ],
+              "text": "the text to type into the filter"
+            }
+          ],
           "return": {
             "types": [
               "Combobox"
@@ -18977,7 +19958,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/combobox.rb",
-          "line": 66
+          "line": 69
         },
         {
           "name": "open",
@@ -18985,7 +19966,15 @@
           "group": null,
           "signature": "open(via: :mouse)",
           "docstring": "Opens the popup (no-op when already open). via: :keyboard focuses\nthe trigger and presses ArrowDown; :mouse presses it.",
-          "params": [],
+          "params": [
+            {
+              "name": "via",
+              "types": [
+                "Symbol"
+              ],
+              "text": ":mouse presses the trigger, :keyboard focuses it and presses the key that opens"
+            }
+          ],
           "return": {
             "types": [
               "Combobox"
@@ -18994,7 +19983,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/combobox.rb",
-          "line": 37
+          "line": 39
         },
         {
           "name": "open?",
@@ -19002,7 +19991,15 @@
           "group": null,
           "signature": "open?(wait: 0)",
           "docstring": "Whether the popup is currently open.",
-          "params": [],
+          "params": [
+            {
+              "name": "wait",
+              "types": [
+                "Numeric"
+              ],
+              "text": "seconds to wait for the state before answering"
+            }
+          ],
           "return": {
             "types": [
               "Boolean"
@@ -19011,7 +20008,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/combobox.rb",
-          "line": 27
+          "line": 28
         },
         {
           "name": "remove_chip",
@@ -19019,7 +20016,15 @@
           "group": null,
           "signature": "remove_chip(text)",
           "docstring": "Remove a chip by its accessible text (multiple mode).",
-          "params": [],
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "String"
+              ],
+              "text": "the chip's accessible text"
+            }
+          ],
           "return": {
             "types": [
               "Combobox"
@@ -19028,7 +20033,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/combobox.rb",
-          "line": 107
+          "line": 113
         },
         {
           "name": "select_option",
@@ -19036,7 +20041,22 @@
           "group": null,
           "signature": "select_option(text, via: :mouse)",
           "docstring": "Commit by exact visible text; single-select waits for the close,\nmultiple leaves the popover up (assert on values/chips instead).",
-          "params": [],
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "String"
+              ],
+              "text": "the option's exact visible text"
+            },
+            {
+              "name": "via",
+              "types": [
+                "Symbol"
+              ],
+              "text": ":mouse presses the trigger, :keyboard focuses it and presses the key that opens"
+            }
+          ],
           "return": {
             "types": [
               "Combobox"
@@ -19045,7 +20065,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/combobox.rb",
-          "line": 76
+          "line": 81
         },
         {
           "name": "value",
@@ -19063,7 +20083,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/combobox.rb",
-          "line": 92
+          "line": 97
         }
       ],
       "constants": []
@@ -19096,7 +20116,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/dialog.rb",
-          "line": 49
+          "line": 51
         },
         {
           "name": "open",
@@ -19104,7 +20124,15 @@
           "group": null,
           "signature": "open(via: :mouse)",
           "docstring": "Opens the dialog (no-op when already open). via: :keyboard\nfocuses the trigger and presses Enter; :mouse presses it.",
-          "params": [],
+          "params": [
+            {
+              "name": "via",
+              "types": [
+                "Symbol"
+              ],
+              "text": ":mouse presses the trigger, :keyboard focuses it and presses the key that opens"
+            }
+          ],
           "return": {
             "types": [
               "Dialog"
@@ -19113,7 +20141,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/dialog.rb",
-          "line": 31
+          "line": 33
         },
         {
           "name": "open?",
@@ -19121,7 +20149,15 @@
           "group": null,
           "signature": "open?(wait: 0)",
           "docstring": "Whether the dialog is currently open.",
-          "params": [],
+          "params": [
+            {
+              "name": "wait",
+              "types": [
+                "Numeric"
+              ],
+              "text": "seconds to wait for the state before answering"
+            }
+          ],
           "return": {
             "types": [
               "Boolean"
@@ -19130,7 +20166,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/dialog.rb",
-          "line": 20
+          "line": 21
         },
         {
           "name": "title",
@@ -19147,7 +20183,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/dialog.rb",
-          "line": 58
+          "line": 60
         }
       ],
       "constants": []
@@ -19171,7 +20207,22 @@
           "group": null,
           "signature": "choose(text, via: :mouse)",
           "docstring": "Opens first when closed; activates by exact visible text.",
-          "params": [],
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "String"
+              ],
+              "text": "the item's exact visible text"
+            },
+            {
+              "name": "via",
+              "types": [
+                "Symbol"
+              ],
+              "text": ":mouse presses the trigger, :keyboard focuses it and presses the key that opens"
+            }
+          ],
           "return": {
             "types": [
               "Menu"
@@ -19180,7 +20231,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/menu.rb",
-          "line": 61
+          "line": 65
         },
         {
           "name": "close",
@@ -19197,7 +20248,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/menu.rb",
-          "line": 52
+          "line": 54
         },
         {
           "name": "items",
@@ -19214,7 +20265,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/menu.rb",
-          "line": 77
+          "line": 81
         },
         {
           "name": "open",
@@ -19222,7 +20273,15 @@
           "group": null,
           "signature": "open(via: :mouse)",
           "docstring": "Opens the menu (no-op when already open). via: :keyboard focuses\nthe trigger and presses ArrowDown; :mouse presses it.",
-          "params": [],
+          "params": [
+            {
+              "name": "via",
+              "types": [
+                "Symbol"
+              ],
+              "text": ":mouse presses the trigger, :keyboard focuses it and presses the key that opens"
+            }
+          ],
           "return": {
             "types": [
               "Menu"
@@ -19231,7 +20290,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/menu.rb",
-          "line": 34
+          "line": 36
         },
         {
           "name": "open?",
@@ -19239,7 +20298,15 @@
           "group": null,
           "signature": "open?(wait: 0)",
           "docstring": "Whether the menu is currently open.",
-          "params": [],
+          "params": [
+            {
+              "name": "wait",
+              "types": [
+                "Numeric"
+              ],
+              "text": "seconds to wait for the state before answering"
+            }
+          ],
           "return": {
             "types": [
               "Boolean"
@@ -19248,7 +20315,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/menu.rb",
-          "line": 24
+          "line": 25
         }
       ],
       "constants": []
@@ -19291,7 +20358,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/select.rb",
-          "line": 56
+          "line": 58
         },
         {
           "name": "open",
@@ -19299,7 +20366,15 @@
           "group": null,
           "signature": "open(via: :mouse)",
           "docstring": "Opens the listbox (no-op when already open). via: :keyboard\nfocuses the trigger and presses ArrowDown; :mouse presses it.",
-          "params": [],
+          "params": [
+            {
+              "name": "via",
+              "types": [
+                "Symbol"
+              ],
+              "text": ":mouse presses the trigger, :keyboard focuses it and presses the key that opens"
+            }
+          ],
           "return": {
             "types": [
               "Select"
@@ -19308,7 +20383,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/select.rb",
-          "line": 38
+          "line": 40
         },
         {
           "name": "open?",
@@ -19316,7 +20391,15 @@
           "group": null,
           "signature": "open?(wait: 0)",
           "docstring": "Whether the listbox is currently open.",
-          "params": [],
+          "params": [
+            {
+              "name": "wait",
+              "types": [
+                "Numeric"
+              ],
+              "text": "seconds to wait for the state before answering"
+            }
+          ],
           "return": {
             "types": [
               "Boolean"
@@ -19325,7 +20408,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/select.rb",
-          "line": 28
+          "line": 29
         },
         {
           "name": "options",
@@ -19342,7 +20425,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/select.rb",
-          "line": 98
+          "line": 102
         },
         {
           "name": "select_option",
@@ -19350,7 +20433,22 @@
           "group": null,
           "signature": "select_option(text, via: :mouse)",
           "docstring": "Opens first when closed; exact visible-text match; waits for the\ncommit to land on the native select before returning.",
-          "params": [],
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "String"
+              ],
+              "text": "the option's exact visible text"
+            },
+            {
+              "name": "via",
+              "types": [
+                "Symbol"
+              ],
+              "text": ":mouse presses the trigger, :keyboard focuses it and presses the key that opens"
+            }
+          ],
           "return": {
             "types": [
               "Select"
@@ -19359,7 +20457,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/select.rb",
-          "line": 66
+          "line": 70
         },
         {
           "name": "text",
@@ -19376,7 +20474,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/select.rb",
-          "line": 91
+          "line": 95
         },
         {
           "name": "value",
@@ -19393,7 +20491,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/select.rb",
-          "line": 84
+          "line": 88
         }
       ],
       "constants": []
@@ -19411,8 +20509,24 @@
           "scope": "instance",
           "group": null,
           "signature": "initialize(root, session:)",
-          "docstring": "",
-          "params": [],
+          "docstring": "A tester over one component root.",
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "String",
+                "Capybara::Node::Element"
+              ],
+              "text": "the component's root: a CSS locator or the node itself"
+            },
+            {
+              "name": "session",
+              "types": [
+                "Capybara::Session"
+              ],
+              "text": "the session driving the browser"
+            }
+          ],
           "return": {
             "types": [
               "Tester"
@@ -19421,7 +20535,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/tester.rb",
-          "line": 13
+          "line": 18
         },
         {
           "name": "root",
@@ -19438,14 +20552,14 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/tester.rb",
-          "line": 22
+          "line": 27
         },
         {
           "name": "session",
           "scope": "instance",
           "group": null,
           "signature": "session",
-          "docstring": "",
+          "docstring": "The session driving the browser.",
           "params": [],
           "return": {
             "types": [
@@ -19455,7 +20569,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing/tester.rb",
-          "line": 11
+          "line": 12
         }
       ],
       "constants": []
@@ -19552,6 +20666,18 @@
           "line": 30
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/textarea/component.rb",
+          "line": 51
+        },
+        {
           "name": "rows",
           "scope": "instance",
           "group": "Options",
@@ -19618,11 +20744,19 @@
           "group": null,
           "signature": "current_diffs(root)",
           "docstring": "Every theme's diff against the committed snapshot.",
-          "params": [],
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "String"
+              ],
+              "text": "the gem root"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui/theme_fidelity.rb",
-          "line": 105
+          "line": 113
         },
         {
           "name": "diff",
@@ -19630,11 +20764,26 @@
           "group": null,
           "signature": "diff(upstream, poetry)",
           "docstring": "The per-theme diff between a source parse and a poetry parse:\nselectors only one side has, and per shared selector the dropped\n(source-only) and added (poetry-only) utilities and raw\ndeclarations. Selectors with no difference are omitted.",
-          "params": [],
+          "params": [
+            {
+              "name": "upstream",
+              "types": [
+                "Hash"
+              ],
+              "text": "the source theme's parse (parse_css)"
+            },
+            {
+              "name": "poetry",
+              "types": [
+                "Hash"
+              ],
+              "text": "poetry's theme parse (parse_css)"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui/theme_fidelity.rb",
-          "line": 81
+          "line": 87
         },
         {
           "name": "parse_css",
@@ -19642,11 +20791,19 @@
           "group": null,
           "signature": "parse_css(text)",
           "docstring": "Parses a theme stylesheet into { selector => { \"apply\" => [utils],\n\"raw\" => [declarations] } }. Handles both shapes: poetry's flat\nthemes/<t>.css and the source's .style-<t> { ... } wrapper. Only\ncn-* selectors participate; comments are stripped; a .dark ancestor\nscopes the key with a \"[dark] \" prefix so both sides stay keyed\nidentically.",
-          "params": [],
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "String"
+              ],
+              "text": "the stylesheet source"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui/theme_fidelity.rb",
-          "line": 42
+          "line": 45
         },
         {
           "name": "snapshot_path",
@@ -19654,7 +20811,15 @@
           "group": null,
           "signature": "snapshot_path(root)",
           "docstring": "The committed snapshot's path - exactly one may exist.",
-          "params": [],
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "String"
+              ],
+              "text": "the gem root"
+            }
+          ],
           "return": {
             "types": [
               "String"
@@ -19663,7 +20828,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/theme_fidelity.rb",
-          "line": 186
+          "line": 194
         },
         {
           "name": "verify",
@@ -19671,11 +20836,19 @@
           "group": null,
           "signature": "verify(root)",
           "docstring": "Exact two-way reconciliation against deviations.yml. Returns a list\nof finding strings; empty means the contract holds.",
-          "params": [],
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "String"
+              ],
+              "text": "the gem root"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui/theme_fidelity.rb",
-          "line": 117
+          "line": 127
         },
         {
           "name": "write_snapshot",
@@ -19683,11 +20856,33 @@
           "group": null,
           "signature": "write_snapshot(root, checkout:, pin:)",
           "docstring": "Writes the frozen source snapshot from a pinned checkout - the\npin-bump ceremony's first step.",
-          "params": [],
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "String"
+              ],
+              "text": "the gem root"
+            },
+            {
+              "name": "checkout",
+              "types": [
+                "String"
+              ],
+              "text": "the pinned source checkout the themes are read from"
+            },
+            {
+              "name": "pin",
+              "types": [
+                "String"
+              ],
+              "text": "the pinned version the snapshot file is named after"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui/theme_fidelity.rb",
-          "line": 171
+          "line": 178
         }
       ],
       "constants": [
@@ -19727,11 +20922,26 @@
           "group": null,
           "signature": "design_md_exports(components_count:, generator: \"bin/rake design:export_all\")",
           "docstring": "theme name -> serialized DESIGN.md, for every shipped theme - the\nsingle builder rake design:export_all, the drift gate, and the\ntests all share.",
-          "params": [],
+          "params": [
+            {
+              "name": "components_count",
+              "types": [
+                "Integer"
+              ],
+              "text": "the component count stamped into every export"
+            },
+            {
+              "name": "generator",
+              "types": [
+                "String"
+              ],
+              "text": "the command each export names as its generator"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui/themes.rb",
-          "line": 96
+          "line": 99
         },
         {
           "name": "details",
@@ -19943,6 +21153,18 @@
           "line": 62
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/timeline/component.rb",
+          "line": 96
+        },
+        {
           "name": "with_item",
           "scope": "instance",
           "group": "Slots",
@@ -20084,6 +21306,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/toast/component.rb",
           "line": 107
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/toast/component.rb",
+          "line": 159
         },
         {
           "name": "show_close_button",
@@ -20234,12 +21468,12 @@
           "scope": "instance",
           "group": null,
           "signature": "poetry_toast(title:, description: nil, target: Poetry::Ui::Toaster::Component::DEFAULT_ID, **)",
-          "docstring": "",
+          "docstring": "Appends a toast with its title and description to the toaster stream.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/toast_stream_actions.rb",
-          "line": 18
+          "line": 19
         }
       ],
       "constants": []
@@ -20423,6 +21657,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/toaster/component.rb",
           "line": 60
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/toaster/component.rb",
+          "line": 78
         }
       ],
       "constants": [
@@ -20521,6 +21767,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/toggle/component.rb",
           "line": 58
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/toggle/component.rb",
+          "line": 92
         },
         {
           "name": "size",
@@ -20675,6 +21933,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/toggle_group/component.rb",
           "line": 121
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/toggle_group/component.rb",
+          "line": 201
         },
         {
           "name": "size",
@@ -20919,6 +22189,18 @@
           "examples": [],
           "file": "app/components/poetry/ui/toolbar/component.rb",
           "line": 67
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/toolbar/component.rb",
+          "line": 93
         },
         {
           "name": "with_button",
@@ -21238,6 +22520,18 @@
           "line": 59
         },
         {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The root's attributes: this component's markup over the core default.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/ui/tree/component.rb",
+          "line": 125
+        },
+        {
           "name": "with_item",
           "scope": "instance",
           "group": null,
@@ -21252,7 +22546,7 @@
             }
           ],
           "file": "app/components/poetry/ui/tree/component.rb",
-          "line": 106
+          "line": 107
         }
       ],
       "constants": [
@@ -21281,7 +22575,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/tree/component.rb",
-          "line": 202
+          "line": 212
         }
       ],
       "constants": []

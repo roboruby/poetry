@@ -30,7 +30,6 @@ Rails.application.routes.draw do
   get "testing" => "docs#testing", as: :testing
   get "i18n" => "docs#i18n", as: :i18n
   get "stimulus" => "docs#stimulus", as: :stimulus
-  get "controllers" => "docs#controllers", as: :controllers_reference
   get "accessibility" => "docs#accessibility", as: :accessibility
   get "caching" => "docs#caching", as: :caching
   get "engines" => "docs#engines", as: :engines_guide

@@ -31,6 +31,17 @@ class ApiReference
                    poetry--core--roving-focus @poetry/controllers/helpers/state
                    @poetry/controllers/helpers/presence @poetry/controllers/helpers/portal]
     },
+    "poetry-agent-controllers" => {
+      "title" => "@poetry/agent",
+      "description" => "The agent JavaScript surface: the WebMCP registrar and form companion, " \
+                       "the AG-UI client-tool bridge, the A2UI surface checks, and the stream " \
+                       "actions - generated from the source JSDoc and the controllers manifest.",
+      "note" => "Generated from the source JSDoc plus the introspected controllers " \
+                "manifest. What a component registers is on its gallery page and the " \
+                "WebMCP guide - this page documents the JS itself.",
+      "pins" => %w[poetry--agent--webmcp poetry--agent--webmcp-form
+                   poetry--agent--a2ui-surface poetry--agent--agui-client-tool]
+    },
     "poetry-ui" => {
       "title" => "poetry-ui",
       "description" => "The component suite's Ruby surface beyond the gallery: the poetry_* " \

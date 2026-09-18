@@ -689,7 +689,7 @@
       "path": "poetry--charts--adapter",
       "type": "controller",
       "superclass": null,
-      "docstring": "The adapter mount: reads the FROZEN chart-spec v1 the\nserver embedded, hands it to the registered engine adapter, and owns\nthe lifecycle - render on connect, destroy on disconnect (Turbo-safe),\nthemeChanged on dark-mode flips. The helpers close the canvas gap:\nresolveColor turns var(--color-key)/var(--chart-N) into concrete\nvalues at paint time (CSS variables cannot reach a canvas).\n\n**Targets**: `mount`, `spec`\n\n**Values**: `engine` (String)\n\n**Events**: `poetry--charts--adapter:rendered`",
+      "docstring": "The adapter mount: reads the FROZEN chart-spec v1 the\nserver embedded, hands it to the registered engine adapter, and owns\nthe lifecycle - render on connect, destroy on disconnect (Turbo-safe),\nthemeChanged on dark-mode flips. The helpers close the canvas gap:\nresolveColor turns var(--color-key)/var(--chart-N) into concrete\nvalues at paint time (CSS variables cannot reach a canvas).\n\n**Targets**: `mount`, `spec`\n\n**Values**:\n- `engine` (String): The registered engine adapter that renders the embedded spec.\n\n**Events**: `poetry--charts--adapter:rendered`",
       "examples": [],
       "file": "app/javascript/poetry/charts/adapter_controller.js",
       "methods": [
@@ -703,7 +703,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/adapter_controller.js",
-          "line": 24
+          "line": 29
         },
         {
           "name": "disconnect",
@@ -715,7 +715,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/adapter_controller.js",
-          "line": 47
+          "line": 52
         }
       ],
       "constants": []
@@ -738,7 +738,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/live_controller.js",
-          "line": 35
+          "line": 37
         },
         {
           "name": "disconnect",
@@ -750,7 +750,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/live_controller.js",
-          "line": 44
+          "line": 46
         },
         {
           "name": "receive",
@@ -770,7 +770,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/live_controller.js",
-          "line": 57
+          "line": 59
         },
         {
           "name": "setWindow",
@@ -790,7 +790,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/live_controller.js",
-          "line": 68
+          "line": 70
         },
         {
           "name": "toggleSeries",
@@ -810,7 +810,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/live_controller.js",
-          "line": 87
+          "line": 89
         },
         {
           "name": "update",
@@ -830,7 +830,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/live_controller.js",
-          "line": 116
+          "line": 118
         }
       ],
       "constants": []
@@ -853,7 +853,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/motion_controller.js",
-          "line": 55
+          "line": 56
         },
         {
           "name": "disconnect",
@@ -865,7 +865,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/motion_controller.js",
-          "line": 104
+          "line": 105
         }
       ],
       "constants": []
@@ -874,7 +874,7 @@
       "path": "poetry--charts--tooltip",
       "type": "controller",
       "superclass": null,
-      "docstring": "The chart tooltip engine: ZERO chart math in the\nbrowser. The server embeds per-category pixel centers, per-series pixel\nextents, and PRE-FORMATTED value strings in a JSON script; this\ncontroller bisects the pointer against those numbers, swaps text into\nthe server-rendered TooltipContent chrome, positions the box, and\nreflects data-active onto the marked cells/dots. Keyboard access is\nthe accessibility-layer floor: the SVG is focusable, arrows walk the\ncategories, Escape dismisses.\n\n**Targets**: `data`, `svg`, `tooltip`\n\n**Values**: `sync` (String)\n\n**Events**: `poetry--charts--tooltip:hide`, `poetry--charts--tooltip:show`",
+      "docstring": "The chart tooltip engine: ZERO chart math in the\nbrowser. The server embeds per-category pixel centers, per-series pixel\nextents, and PRE-FORMATTED value strings in a JSON script; this\ncontroller bisects the pointer against those numbers, swaps text into\nthe server-rendered TooltipContent chrome, positions the box, and\nreflects data-active onto the marked cells/dots. Keyboard access is\nthe accessibility-layer floor: the SVG is focusable, arrows walk the\ncategories, Escape dismisses.\n\n**Targets**: `data`, `svg`, `tooltip`\n\n**Values**:\n- `sync` (String): The sync group id; charts sharing one follow each other's active index.\n\n**Events**: `poetry--charts--tooltip:hide`, `poetry--charts--tooltip:show`",
       "examples": [],
       "file": "app/javascript/poetry/charts/tooltip_controller.js",
       "methods": [
@@ -888,7 +888,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/tooltip_controller.js",
-          "line": 24
+          "line": 29
         },
         {
           "name": "disconnect",
@@ -900,24 +900,24 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/tooltip_controller.js",
-          "line": 49
+          "line": 54
         },
         {
           "name": "count",
           "scope": "instance",
           "group": null,
           "signature": "count()",
-          "docstring": "",
+          "docstring": "The category (or slice) count.",
           "params": [],
           "return": {
             "types": [
               "number"
             ],
-            "text": "the category (or slice) count"
+            "text": "the count"
           },
           "examples": [],
           "file": "app/javascript/poetry/charts/tooltip_controller.js",
-          "line": 57
+          "line": 66
         },
         {
           "name": "move",
@@ -937,7 +937,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/tooltip_controller.js",
-          "line": 67
+          "line": 76
         },
         {
           "name": "enter",
@@ -957,7 +957,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/tooltip_controller.js",
-          "line": 85
+          "line": 94
         },
         {
           "name": "keydown",
@@ -977,7 +977,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/tooltip_controller.js",
-          "line": 96
+          "line": 105
         },
         {
           "name": "refresh",
@@ -989,7 +989,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/tooltip_controller.js",
-          "line": 131
+          "line": 140
         },
         {
           "name": "focus",
@@ -1001,7 +1001,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/tooltip_controller.js",
-          "line": 139
+          "line": 148
         },
         {
           "name": "blur",
@@ -1013,7 +1013,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/tooltip_controller.js",
-          "line": 144
+          "line": 153
         },
         {
           "name": "leave",
@@ -1025,7 +1025,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/tooltip_controller.js",
-          "line": 152
+          "line": 161
         },
         {
           "name": "show",
@@ -1045,7 +1045,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/tooltip_controller.js",
-          "line": 168
+          "line": 177
         }
       ],
       "constants": []
@@ -1054,7 +1054,7 @@
       "path": "poetry--charts--window",
       "type": "controller",
       "superclass": null,
-      "docstring": "The window controller: brush + zoom over the live\nrenderer. One concept drives both - frame.window = [start, end]\n(inclusive indices into the FULL data) slices the data before the\nkernel computes. The brush drags the window (handles resize it, the\nbody shifts it); zoom drag-selects a range on the plot; double-click\nresets. Window changes go through the live controller's setWindow\n(instant renders - no tween mid-drag), and this controller repaints\nthe strip visuals from index fractions of the server-computed rects\n(its Stimulus values) - no chart math.\n\n**Values**: `zoom` (Boolean); `plot` (Array); `brush` (Array)",
+      "docstring": "The window controller: brush + zoom over the live\nrenderer. One concept drives both - frame.window = [start, end]\n(inclusive indices into the FULL data) slices the data before the\nkernel computes. The brush drags the window (handles resize it, the\nbody shifts it); zoom drag-selects a range on the plot; double-click\nresets. Window changes go through the live controller's setWindow\n(instant renders - no tween mid-drag), and this controller repaints\nthe strip visuals from index fractions of the server-computed rects\n(its Stimulus values) - no chart math.\n\n**Values**:\n- `zoom` (Boolean): Whether a drag on the plot zooms the window into the dragged span.\n- `plot` (Array): The plot's left and right edges in SVG units, the range a drag maps onto.\n- `brush` (Array): [left, right, top, bottom] in viewBox units",
       "examples": [],
       "file": "app/javascript/poetry/charts/window_controller.js",
       "methods": [
@@ -1068,7 +1068,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/window_controller.js",
-          "line": 20
+          "line": 24
         },
         {
           "name": "disconnect",
@@ -1080,7 +1080,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/window_controller.js",
-          "line": 27
+          "line": 31
         },
         {
           "name": "startBrush",
@@ -1100,7 +1100,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/window_controller.js",
-          "line": 39
+          "line": 43
         },
         {
           "name": "startZoom",
@@ -1120,7 +1120,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/window_controller.js",
-          "line": 59
+          "line": 63
         },
         {
           "name": "reset",
@@ -1132,7 +1132,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/charts/window_controller.js",
-          "line": 69
+          "line": 73
         }
       ],
       "constants": []

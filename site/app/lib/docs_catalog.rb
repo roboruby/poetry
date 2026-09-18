@@ -48,10 +48,6 @@ class DocsCatalog
                        "drives Poetry's actions, use_stimulus declares wiring in a subclass, and a " \
                        "re-registered identifier extends a controller in JavaScript - poetry:check and " \
                        "the registration guard cover every rung."),
-    Entry.new(slug: "controllers", title: "Controllers", section: "docs", icon: :cpu,
-              description: "Every Poetry Stimulus controller with its purpose, its values (type, default, " \
-                           "meaning), its actions and the events it dispatches - read from the committed " \
-                           "controllers manifests, the same files poetry:check validates against."),
     Entry.new(slug: "forms", title: "Form Builder", section: "docs", icon: :pencil,
               description: "The model-bound FormBuilder: form_with(builder:) + f.input for one-call " \
                            "fields - label, value, errors, aria, and validation attributes all derived " \
@@ -212,7 +208,7 @@ class DocsCatalog
     # The sidebar's guide sections. Order within a section is the display
     # order; Agent stays last in AI Native while it is experimental.
     DOC_SECTIONS = {
-      "Get Started" => %w[installation theming typography testing i18n stimulus controllers editors api],
+      "Get Started" => %w[installation theming typography testing i18n stimulus editors api],
       "Advanced" => %w[accessibility forms pagination data-table deferred optimistic-forms caching stable-ids engines],
       "AI Native" => %w[mcp-server webmcp agent-skills recipes ag-ui a2ui page-agent]
     }.freeze
@@ -372,16 +368,6 @@ class DocsCatalog
       when "components" then component_wiring[slug]
       when "charts" then chart_wiring[slug]
       end
-    end
-
-    # Poetry's controllers by gem, each with its manifest entry: the
-    # purpose, the values with their meanings, the action methods with
-    # their summaries, and the events. Host controllers stay out.
-    def controller_families
-      catalog = Poetry::Core::Stimulus::Manifest.catalog.select { |identifier, _| identifier.start_with?("poetry--") }
-      catalog.group_by { |identifier, _| identifier.split("--")[1] }
-             .sort_by { |gem, _| %w[core charts agent].index(gem) || 9 }
-             .to_h { |gem, entries| [ gem, entries.sort_by(&:first).to_h ] }
     end
 
     # One controller's manifest entry, or nil for a host identifier.

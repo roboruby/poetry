@@ -156,7 +156,7 @@
                     <%= element["element"] %><%= " (#{element["conditional"]})" if element["conditional"] %>
                   <% end %>
                   <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") do %>
-                    <%= link_to controller["identifier"], controllers_reference_path(anchor: controller["identifier"]), class: "underline" %><%= " (#{controller["conditional"]})" if controller["conditional"] %>
+                    <%= link_to controller["identifier"], api_page_path("poetry-controllers", anchor: controller["identifier"].parameterize), class: "underline" %><%= " (#{controller["conditional"]})" if controller["conditional"] %>
                   <% end %>
                   <%= poetry_table_cell(class: "text-muted-foreground") do %>
                     <% definition = DocsCatalog.controller_definition(controller["identifier"]) || {} %>

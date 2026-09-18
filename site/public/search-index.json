@@ -324,30 +324,6 @@
     "path": "/stimulus#tooling"
   },
   {
-    "title": "Controllers",
-    "page": "Controllers",
-    "section": "docs",
-    "path": "/controllers"
-  },
-  {
-    "title": "poetry-core",
-    "page": "Controllers",
-    "section": "docs",
-    "path": "/controllers#core"
-  },
-  {
-    "title": "poetry-charts",
-    "page": "Controllers",
-    "section": "docs",
-    "path": "/controllers#charts"
-  },
-  {
-    "title": "poetry-agent",
-    "page": "Controllers",
-    "section": "docs",
-    "path": "/controllers#agent"
-  },
-  {
     "title": "Form Builder",
     "page": "Form Builder",
     "section": "docs",
@@ -6292,6 +6268,12 @@
     "page": "@poetry/controllers",
     "section": "api",
     "path": "/api/poetry-controllers#incompletedate"
+  },
+  {
+    "title": "@poetry/agent",
+    "page": "@poetry/agent",
+    "section": "api",
+    "path": "/api/poetry-agent-controllers"
   },
   {
     "title": "poetry-ui",

@@ -87,34 +87,6 @@ class DocsMarkdown
       MD
     end
 
-    # The controllers reference, generated from the committed manifests:
-    # every Poetry controller with its purpose, values, actions and events.
-    def controllers(entry)
-      sections = [ header(entry) ]
-      DocsCatalog.controller_families.each do |gem, controllers|
-        sections << "## poetry-#{gem}"
-        controllers.each { |identifier, definition| sections << controller_section(identifier, definition) }
-      end
-      sections.join("\n\n") + "\n"
-    end
-
-    # One controller as a markdown section.
-    def controller_section(identifier, definition)
-      lines = [ "### #{identifier}" ]
-      lines << definition["doc"] if definition["doc"].present?
-      lines << "Targets: #{definition['targets'].map { |target| "`#{target}`" }.join(', ')}." if definition["targets"].any?
-      definition["values"].each do |name, value|
-        default = value.key?("default") ? " (default #{value['default'].inspect})" : ""
-        lines << "- value `#{name}` #{value['type']}#{default}: #{value['doc']}"
-      end
-      (definition["methods"] - %w[connect disconnect]).each do |method|
-        summary = definition.dig("method_docs", method)
-        lines << "- action `#{identifier}##{method}`#{summary ? ": #{summary}" : ''}"
-      end
-      lines << "Events: #{definition['events'].map { |event| "`#{event}`" }.join(', ')}." if definition["events"].any?
-      lines.join("\n\n")
-    end
-
     def accessibility(entry)
       <<~MD
         #{header(entry)}

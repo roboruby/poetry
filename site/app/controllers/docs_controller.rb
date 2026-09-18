@@ -30,10 +30,6 @@ class DocsController < ApplicationController
   def stimulus
   end
 
-  def controllers
-    @families = DocsCatalog.controller_families
-  end
-
   def accessibility
   end
 
@@ -184,7 +180,6 @@ class DocsController < ApplicationController
     when "testing" then DocsMarkdown.testing(guide_entry("testing"))
     when "i18n" then DocsMarkdown.i18n(guide_entry("i18n"))
     when "stimulus" then DocsMarkdown.stimulus(guide_entry("stimulus"))
-    when "controllers" then DocsMarkdown.controllers(guide_entry("controllers"))
     when "accessibility" then DocsMarkdown.accessibility(guide_entry("accessibility"))
     when "caching" then DocsMarkdown.caching(guide_entry("caching"))
     when "engines" then DocsMarkdown.engines(guide_entry("engines"))

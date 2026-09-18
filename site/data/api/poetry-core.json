@@ -192,6 +192,81 @@
       ]
     },
     {
+      "path": "Poetry::Core::ApiInternals",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The namespaces a gem hides from its reference with `@api private`,\nread from source without booting and without YARD. A class or module\nwhose leading docstring carries the tag is internal, and so is\neverything nested under it; a constant assigned a `Struct.new`,\n`Data.define`, `Class.new` or `Module.new` counts as a namespace too.\nThe registry writes the list beside the components (its \"internals\"\nsection) so `poetry check` can tell a host it reached past the\ndocumented surface.",
+      "examples": [],
+      "file": "lib/poetry/core/api_internals.rb",
+      "methods": [
+        {
+          "name": "internal?",
+          "scope": "class",
+          "group": null,
+          "signature": "internal?(path, internals)",
+          "docstring": "Whether a written constant path is one of the internals or sits\nunder one.",
+          "params": [
+            {
+              "name": "path",
+              "types": [
+                "String"
+              ],
+              "text": "a fully qualified constant name as written"
+            },
+            {
+              "name": "internals",
+              "types": [
+                "Array<String>"
+              ],
+              "text": "the top-most internal namespaces"
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/api_internals.rb",
+          "line": 43
+        },
+        {
+          "name": "scan",
+          "scope": "class",
+          "group": null,
+          "signature": "scan(root)",
+          "docstring": "The tagged namespaces under a gem root, top-most only (a namespace\nnested under a tagged one is covered by the prefix), sorted.",
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "String",
+                "Pathname"
+              ],
+              "text": "the gem root (app/ and lib/ are read)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": "fully qualified names"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/api_internals.rb",
+          "line": 22
+        }
+      ],
+      "constants": [
+        {
+          "name": "TAG",
+          "value": "\"# @api private\"",
+          "docstring": "The docstring line that hides a namespace from the reference."
+        }
+      ]
+    },
+    {
       "path": "Poetry::Core::Box",
       "type": "module",
       "superclass": null,
@@ -359,7 +434,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 195
+          "line": 201
         },
         {
           "name": "component_module",
@@ -381,7 +456,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 184
+          "line": 190
         },
         {
           "name": "component_path",
@@ -403,7 +478,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 175
+          "line": 181
         },
         {
           "name": "component_title",
@@ -425,7 +500,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 205
+          "line": 211
         },
         {
           "name": "config",
@@ -442,7 +517,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 164
+          "line": 170
         },
         {
           "name": "helper",
@@ -473,7 +548,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 143
+          "line": 149
         },
         {
           "name": "helper_name",
@@ -491,7 +566,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 156
+          "line": 162
         },
         {
           "name": "internal_component!",
@@ -513,7 +588,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 74
+          "line": 79
         },
         {
           "name": "required_content",
@@ -531,7 +606,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 229
+          "line": 235
         },
         {
           "name": "requires_content",
@@ -561,7 +636,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 222
+          "line": 228
         },
         {
           "name": "attributes",
@@ -578,7 +653,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 494
+          "line": 589
         },
         {
           "name": "classname_merger",
@@ -595,7 +670,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 575
+          "line": 665
         },
         {
           "name": "classnames",
@@ -625,7 +700,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 567
+          "line": 657
         },
         {
           "name": "component_data_attributes",
@@ -642,7 +717,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 264
+          "line": 270
         },
         {
           "name": "dom_id_token",
@@ -668,7 +743,56 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 609
+          "line": 699
+        },
+        {
+          "name": "element_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "element_attributes(part = nil, attrs = {}, stimulus: nil)",
+          "docstring": "A part's attributes, ready to splat. Named after a part, it carries\nthe part's `data-slot` (the root slot and the part name: a\nDropdownMenu's `:content` is \"dropdown-menu-content\"), the\ndictionary's classes for it (`css(part)`, when the Style declares the\nelement), and the part's Stimulus wiring when a `use_stimulus` block\ndeclares an element of that name - each of which the markup may\noverride (its own `\"data-slot\"` or `\"class\"` wins; `stimulus:` names\nanother element, or `false` for none). The wiring merges beneath the\nmarkup the safe way: plain `Hash#merge` drops one side's\n`data-controller` or `data-action` when both carry one, and this\nconcatenates them. Rendered more than once (a row, an addon), the\nbuilder takes its arguments and the part stays the same.",
+          "params": [
+            {
+              "name": "part",
+              "types": [
+                "Symbol",
+                "String",
+                "nil"
+              ],
+              "text": "the part; nil (or a Hash in its\nplace) for markup with no part of its own"
+            },
+            {
+              "name": "attrs",
+              "types": [
+                "Hash"
+              ],
+              "text": "the element's markup, in braces after a part"
+            },
+            {
+              "name": "stimulus",
+              "types": [
+                "Symbol",
+                "String",
+                "false",
+                "nil"
+              ],
+              "text": "the `use_stimulus`\nelement whose wiring joins the markup: nil takes the part's own when\none is declared, false takes none"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "the element's attributes, flat, for `tag` and `content_tag`"
+          },
+          "examples": [
+            {
+              "title": "A part builder, and its template",
+              "text": "def content_attributes\n  attrs = { \"id\" => content_id, \"role\" => \"menu\" }\n  attrs[\"hidden\"] = true unless open\n  element_attributes(:content, attrs)\nend\n# <%= tag.div(**content_attributes) do %>"
+            }
+          ],
+          "file": "app/components/poetry/core/component.rb",
+          "line": 347
         },
         {
           "name": "ensure_content!",
@@ -685,7 +809,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 284
+          "line": 378
         },
         {
           "name": "html_attributes",
@@ -707,7 +831,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 520
+          "line": 615
         },
         {
           "name": "initialize",
@@ -745,7 +869,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 323
+          "line": 417
         },
         {
           "name": "persisted?",
@@ -762,7 +886,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 295
+          "line": 389
         },
         {
           "name": "poetry_instance_id",
@@ -787,7 +911,58 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 544
+          "line": 634
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes(extra = {})",
+          "docstring": "The root element's attributes, ready to splat: the caller's\n{#html_attributes} (its classes already merged with the dictionary's)\nover the component's own root markup - `data-slot` (the component\ntitle, or the one in +extra+), `data-component`, and the root's\nStimulus wiring when a `use_stimulus` block declares `:root`. The\ncaller's attributes win: a class, id or data-* passed in is kept and\nthe component's default fills the gaps.\n\nA component adds its own root markup by overriding and passing it up;\nthe template splats the result.",
+          "params": [
+            {
+              "name": "extra",
+              "types": [
+                "Hash"
+              ],
+              "text": "the component's own root attributes; a\n`\"data-slot\"` here replaces the default"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "the root's attributes, flat (`data-x`, `aria-x`,\nbooleans as the attribute name), for `tag` and `content_tag`"
+          },
+          "examples": [
+            {
+              "title": "A component's override",
+              "text": "def root_attributes\n  super(\"role\" => \"status\", \"data-variant\" => variant)\nend"
+            },
+            {
+              "title": "The template",
+              "text": "<%= tag.div(**root_attributes) do %>"
+            }
+          ],
+          "file": "app/components/poetry/core/component.rb",
+          "line": 305
+        },
+        {
+          "name": "root_slot",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_slot",
+          "docstring": "The root's `data-slot`: the component title in kebab form (a\nToggleGroup roots as \"toggle-group\").",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the slot name"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/component.rb",
+          "line": 315
         },
         {
           "name": "script_json",
@@ -813,7 +988,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 595
+          "line": 685
         },
         {
           "name": "slot_data_attributes",
@@ -839,7 +1014,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 273
+          "line": 279
         },
         {
           "name": "stable_key",
@@ -857,7 +1032,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 533
+          "line": 68
         },
         {
           "name": "to_html",
@@ -879,7 +1054,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 622
+          "line": 712
         }
       ],
       "constants": [
@@ -1162,7 +1337,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 340
+          "line": 346
         },
         {
           "name": "webmcp_name",
@@ -1180,7 +1355,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 353
+          "line": 359
         },
         {
           "name": "webmcp_tool_definition",
@@ -1205,7 +1380,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 381
+          "line": 387
         },
         {
           "name": "webmcp_tools",
@@ -1222,7 +1397,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/agent_tools.rb",
-          "line": 371
+          "line": 377
         }
       ],
       "constants": [
@@ -1627,7 +1802,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 386
+          "line": 361
         },
         {
           "name": "prop_definitions",
@@ -1770,7 +1945,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 332
+          "line": 307
         },
         {
           "name": "requires_any_surface",
@@ -1802,7 +1977,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 354
+          "line": 329
         },
         {
           "name": "slot_doc",
@@ -1888,7 +2063,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 282
+          "line": 285
         }
       ],
       "constants": [
@@ -2608,7 +2783,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/stimulus.rb",
-          "line": 296
+          "line": 300
         },
         {
           "name": "stimulus_attributes",
@@ -2633,7 +2808,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/stimulus.rb",
-          "line": 276
+          "line": 280
         },
         {
           "name": "stimulus_attributes_for",
@@ -2659,7 +2834,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/stimulus.rb",
-          "line": 240
+          "line": 244
         },
         {
           "name": "stimulus_event",
@@ -2676,7 +2851,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/stimulus.rb",
-          "line": 305
+          "line": 309
         }
       ],
       "constants": []
@@ -3218,7 +3393,7 @@
             }
           ],
           "file": "lib/poetry/core/config.rb",
-          "line": 153
+          "line": 152
         },
         {
           "name": "default",
@@ -3240,7 +3415,7 @@
             }
           ],
           "file": "lib/poetry/core/config.rb",
-          "line": 42
+          "line": 41
         },
         {
           "name": "defaults",
@@ -3262,7 +3437,7 @@
             }
           ],
           "file": "lib/poetry/core/config.rb",
-          "line": 93
+          "line": 92
         },
         {
           "name": "classname_merger",
@@ -3279,7 +3454,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         },
         {
           "name": "classname_merger=",
@@ -3304,7 +3479,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         },
         {
           "name": "css_mode",
@@ -3321,7 +3496,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         },
         {
           "name": "css_mode=",
@@ -3346,7 +3521,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         },
         {
           "name": "icon_fallback",
@@ -3364,7 +3539,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         },
         {
           "name": "icon_fallback=",
@@ -3391,7 +3566,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         },
         {
           "name": "icon_library",
@@ -3408,7 +3583,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         },
         {
           "name": "icon_library=",
@@ -3435,7 +3610,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         },
         {
           "name": "initialize",
@@ -3457,7 +3632,7 @@
             }
           ],
           "file": "lib/poetry/core/config.rb",
-          "line": 291
+          "line": 283
         },
         {
           "name": "on_missing_icon",
@@ -3475,7 +3650,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         },
         {
           "name": "on_missing_icon=",
@@ -3502,7 +3677,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         },
         {
           "name": "raise_on_missing_icon",
@@ -3520,7 +3695,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         },
         {
           "name": "raise_on_missing_icon=",
@@ -3547,7 +3722,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         },
         {
           "name": "stable_id_mode",
@@ -3564,7 +3739,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         },
         {
           "name": "stable_id_mode=",
@@ -3589,7 +3764,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         },
         {
           "name": "stable_id_seed",
@@ -3606,7 +3781,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         },
         {
           "name": "stable_id_seed=",
@@ -3631,7 +3806,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         },
         {
           "name": "stimulus_merger",
@@ -3648,7 +3823,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         },
         {
           "name": "stimulus_merger=",
@@ -3673,7 +3848,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         },
         {
           "name": "webmcp_registration_budget",
@@ -3690,7 +3865,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         },
         {
           "name": "webmcp_registration_budget=",
@@ -3715,7 +3890,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/config.rb",
-          "line": 158
+          "line": 157
         }
       ],
       "constants": [
@@ -3777,7 +3952,7 @@
             }
           ],
           "file": "lib/poetry/core/contrib/wrapped_helper.rb",
-          "line": 62
+          "line": 61
         }
       ],
       "constants": []
@@ -4316,7 +4491,7 @@
           "params": [],
           "return": {
             "types": [
-              "Hash<String, String>"
+              "Hash{String => String}"
             ],
             "text": "A flat hash of HTML attribute names to values"
           },
@@ -4390,14 +4565,14 @@
           },
           "examples": [],
           "file": "lib/poetry/core/errors.rb",
-          "line": 46
+          "line": 48
         },
         {
           "name": "name",
           "scope": "instance",
           "group": null,
           "signature": "name",
-          "docstring": "",
+          "docstring": "The requested icon name.",
           "params": [],
           "return": {
             "types": [
@@ -4408,14 +4583,14 @@
           },
           "examples": [],
           "file": "lib/poetry/core/errors.rb",
-          "line": 35
+          "line": 36
         },
         {
           "name": "suggestion",
           "scope": "instance",
           "group": null,
           "signature": "suggestion",
-          "docstring": "",
+          "docstring": "The closest valid icon name, when one is known.",
           "params": [],
           "return": {
             "types": [
@@ -4426,7 +4601,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/errors.rb",
-          "line": 38
+          "line": 40
         }
       ],
       "constants": []
@@ -4475,7 +4650,7 @@
             }
           ],
           "file": "lib/poetry/core/icons.rb",
-          "line": 135
+          "line": 137
         },
         {
           "name": "registry",
@@ -4492,7 +4667,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 113
+          "line": 115
         },
         {
           "name": "set",
@@ -4519,7 +4694,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 146
+          "line": 148
         },
         {
           "name": "suggest",
@@ -4553,7 +4728,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 99
+          "line": 101
         }
       ],
       "constants": []
@@ -4719,14 +4894,14 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 74
+          "line": 86
         },
         {
           "name": "gem_roots",
           "scope": "class",
           "group": null,
           "signature": "gem_roots(app_root: nil, registry: true)",
-          "docstring": "The registry roots visible without booting: every gem in the bundle\n(or installed) whose root carries a published registry, plus\napp_root when it committed one - what the MCP server assembles from.\n\nregistry: false lists every bundled gem root (plus app_root) whatever\nit carries - the manifest registration walks the same roots.",
+          "docstring": "The registry roots visible without booting: every gem in the bundle\n(or installed) whose root carries a published registry, plus\napp_root when it committed one - what the MCP server assembles from.",
           "params": [
             {
               "name": "app_root",
@@ -4736,6 +4911,13 @@
                 "nil"
               ],
               "text": "the host app directory"
+            },
+            {
+              "name": "registry",
+              "types": [
+                "Boolean"
+              ],
+              "text": "true lists only roots carrying a published\nregistry; false lists every bundled gem root (plus app_root) whatever\nit carries - the manifest registration walks the same roots"
             }
           ],
           "return": {
@@ -4746,7 +4928,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 165
+          "line": 178
         },
         {
           "name": "helper_for",
@@ -4779,7 +4961,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 95
+          "line": 107
         },
         {
           "name": "invalid_at?",
@@ -4805,7 +4987,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 129
+          "line": 141
         },
         {
           "name": "merged",
@@ -4839,7 +5021,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 183
+          "line": 196
         },
         {
           "name": "published_at?",
@@ -4865,7 +5047,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 139
+          "line": 151
         },
         {
           "name": "read_file",
@@ -4892,7 +5074,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 111
+          "line": 123
         },
         {
           "name": "roots",
@@ -4909,7 +5091,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 151
+          "line": 163
         },
         {
           "name": "blocks",
@@ -4921,7 +5103,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 256
+          "line": 270
         },
         {
           "name": "components",
@@ -4933,7 +5115,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 252
+          "line": 266
         },
         {
           "name": "entries",
@@ -4950,7 +5132,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 269
+          "line": 283
         },
         {
           "name": "form_builder",
@@ -4962,7 +5144,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 263
+          "line": 277
         },
         {
           "name": "generate!",
@@ -4988,7 +5170,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 292
+          "line": 308
         },
         {
           "name": "helper_args",
@@ -5000,14 +5182,14 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 259
+          "line": 273
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
           "signature": "initialize(components: nil, source_root: Poetry::Core.root, # rubocop:disable Metrics/ParameterLists helpers: nil, blocks: nil, helper_args: nil, descriptions: nil, form_builder: nil, internal: false, banner: HEADER)",
-          "docstring": "",
+          "docstring": "A registry over the discovered or given components, with its optional sections.",
           "params": [
             {
               "name": "components",
@@ -5088,7 +5270,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 237
+          "line": 251
         },
         {
           "name": "source_root",
@@ -5100,14 +5282,14 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 256
+          "line": 270
         },
         {
           "name": "to_yaml",
           "scope": "instance",
           "group": null,
           "signature": "to_yaml",
-          "docstring": "The complete registry serialized as plain-data YAML (components plus\nthe optional helpers/blocks/helper_args/form_builder sections),\nheaded by the do-not-edit banner.",
+          "docstring": "The complete registry serialized as plain-data YAML (components plus\nthe optional helpers/blocks/helper_args/form_builder/internals sections),\nheaded by the do-not-edit banner.",
           "params": [],
           "return": {
             "types": [
@@ -5117,7 +5299,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 278
+          "line": 292
         },
         {
           "name": "verified?",
@@ -5143,7 +5325,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 303
+          "line": 319
         }
       ],
       "constants": [
@@ -5241,8 +5423,8 @@
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(entries:, blocks:, helpers:, helper_args:, source_root:, form_builder: nil, internal: false)",
-          "docstring": "Holds the sections of one committed registry file;\n{Registry.committed} is the loader.",
+          "signature": "initialize(entries:, blocks:, helpers:, helper_args:, source_root:, form_builder: nil, internal: false, internals: [])",
+          "docstring": "Holds the sections of one committed registry file;\n{Registry.committed} is the loader.\n\nrubocop:disable Metrics/ParameterLists",
           "params": [
             {
               "name": "entries",
@@ -5295,7 +5477,14 @@
               "types": [
                 "Boolean"
               ],
-              "text": "the file's internal marker"
+              "text": "true for a registry the family ships for its own tooling,\nnever merged into a host catalog"
+            },
+            {
+              "name": "internals",
+              "types": [
+                "Array<String>"
+              ],
+              "text": "the \"internals\" section"
             }
           ],
           "return": {
@@ -5306,7 +5495,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
-          "line": 59
+          "line": 68
         },
         {
           "name": "internal",
@@ -5319,6 +5508,23 @@
           "examples": [],
           "file": "lib/poetry/core/registry.rb",
           "line": 47
+        },
+        {
+          "name": "internals",
+          "scope": "instance",
+          "group": null,
+          "signature": "internals",
+          "docstring": "The gem's `@api private` namespaces ({ApiInternals}), the\n\"internals\" section: what `poetry check` flags a host for naming.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/registry.rb",
+          "line": 53
         },
         {
           "name": "source_root",
@@ -5597,6 +5803,42 @@
       ]
     },
     {
+      "path": "Poetry::Core::RequiresAny",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The any-of contract of a registry entry (its requires_any groups): a\ncomponent that raises unless one of a content block, a slot or an\noption is given. Phrased once here for poetry check, llms.txt and\nthe MCP server.",
+      "examples": [],
+      "file": "lib/poetry/core/requires_any.rb",
+      "methods": [
+        {
+          "name": "phrase",
+          "scope": "class",
+          "group": null,
+          "signature": "phrase(group)",
+          "docstring": "The group as a phrase naming the block, slots and options that satisfy it.",
+          "params": [
+            {
+              "name": "group",
+              "types": [
+                "Hash"
+              ],
+              "text": "one requires_any group: content, slots, options and hint"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/requires_any.rb",
+          "line": 16
+        }
+      ],
+      "constants": []
+    },
+    {
       "path": "Poetry::Core::Stimulus",
       "type": "module",
       "superclass": null,
@@ -5657,7 +5899,7 @@
             }
           ],
           "file": "lib/poetry/core/stimulus/builder.rb",
-          "line": 388
+          "line": 389
         },
         {
           "name": "action",
@@ -5719,7 +5961,7 @@
             }
           ],
           "file": "lib/poetry/core/stimulus/builder.rb",
-          "line": 243
+          "line": 244
         },
         {
           "name": "event",
@@ -5754,14 +5996,14 @@
             }
           ],
           "file": "lib/poetry/core/stimulus/builder.rb",
-          "line": 278
+          "line": 279
         },
         {
           "name": "html_attributes",
           "scope": "instance",
           "group": null,
           "signature": "html_attributes",
-          "docstring": "",
+          "docstring": "The attributes object the builder merges its data attributes into.",
           "params": [],
           "return": {
             "types": [
@@ -5771,14 +6013,14 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/builder.rb",
-          "line": 47
+          "line": 48
         },
         {
           "name": "identifier",
           "scope": "instance",
           "group": null,
           "signature": "identifier",
-          "docstring": "",
+          "docstring": "The controller identifier.",
           "params": [],
           "return": {
             "types": [
@@ -5842,7 +6084,7 @@
             }
           ],
           "file": "lib/poetry/core/stimulus/builder.rb",
-          "line": 71
+          "line": 72
         },
         {
           "name": "param_attribute_name",
@@ -5873,7 +6115,7 @@
             }
           ],
           "file": "lib/poetry/core/stimulus/builder.rb",
-          "line": 194
+          "line": 195
         },
         {
           "name": "register_controller",
@@ -5895,7 +6137,7 @@
             }
           ],
           "file": "lib/poetry/core/stimulus/builder.rb",
-          "line": 91
+          "line": 92
         },
         {
           "name": "target",
@@ -5921,7 +6163,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/builder.rb",
-          "line": 138
+          "line": 139
         },
         {
           "name": "target_attribute_name",
@@ -5943,7 +6185,7 @@
             }
           ],
           "file": "lib/poetry/core/stimulus/builder.rb",
-          "line": 102
+          "line": 103
         },
         {
           "name": "with_action",
@@ -6001,7 +6243,7 @@
             }
           ],
           "file": "lib/poetry/core/stimulus/builder.rb",
-          "line": 216
+          "line": 217
         },
         {
           "name": "with_class",
@@ -6039,7 +6281,7 @@
             }
           ],
           "file": "lib/poetry/core/stimulus/builder.rb",
-          "line": 153
+          "line": 154
         },
         {
           "name": "with_outlet",
@@ -6077,7 +6319,7 @@
             }
           ],
           "file": "lib/poetry/core/stimulus/builder.rb",
-          "line": 168
+          "line": 169
         },
         {
           "name": "with_param",
@@ -6115,7 +6357,7 @@
             }
           ],
           "file": "lib/poetry/core/stimulus/builder.rb",
-          "line": 182
+          "line": 183
         },
         {
           "name": "with_target",
@@ -6146,7 +6388,7 @@
             }
           ],
           "file": "lib/poetry/core/stimulus/builder.rb",
-          "line": 130
+          "line": 131
         },
         {
           "name": "with_value",
@@ -6184,7 +6426,7 @@
             }
           ],
           "file": "lib/poetry/core/stimulus/builder.rb",
-          "line": 117
+          "line": 118
         }
       ],
       "constants": [
@@ -6512,7 +6754,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 318
+          "line": 319
         },
         {
           "name": "event",
@@ -6546,7 +6788,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 334
+          "line": 335
         },
         {
           "name": "initialize",
@@ -6578,7 +6820,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 305
+          "line": 306
         }
       ],
       "constants": []
@@ -6864,7 +7106,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 250
+          "line": 251
         },
         {
           "name": "event",
@@ -6898,7 +7140,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 294
+          "line": 295
         },
         {
           "name": "initialize",
@@ -6923,7 +7165,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 256
+          "line": 257
         },
         {
           "name": "on",
@@ -6968,7 +7210,7 @@
             }
           ],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 279
+          "line": 280
         }
       ],
       "constants": []
@@ -7167,7 +7409,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 412
+          "line": 413
         },
         {
           "name": "event",
@@ -7201,7 +7443,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 434
+          "line": 435
         },
         {
           "name": "initialize",
@@ -7233,7 +7475,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 349
+          "line": 350
         },
         {
           "name": "register",
@@ -7258,7 +7500,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 361
+          "line": 362
         },
         {
           "name": "target",
@@ -7290,7 +7532,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 423
+          "line": 424
         },
         {
           "name": "value",
@@ -7337,7 +7579,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/stimulus/declarations.rb",
-          "line": 383
+          "line": 384
         }
       ],
       "constants": []
@@ -8373,7 +8615,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/tokens/color.rb",
-          "line": 189
+          "line": 191
         },
         {
           "name": "css",
@@ -8390,7 +8632,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/tokens/color.rb",
-          "line": 171
+          "line": 173
         },
         {
           "name": "h",
@@ -8477,7 +8719,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/tokens/color.rb",
-          "line": 179
+          "line": 181
         },
         {
           "name": "with",
@@ -8523,7 +8765,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/tokens/color.rb",
-          "line": 163
+          "line": 165
         }
       ],
       "constants": [

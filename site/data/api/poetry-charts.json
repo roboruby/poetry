@@ -31,11 +31,19 @@
           "group": null,
           "signature": "display_value(value)",
           "docstring": "The tooltip display string shared by every chart family (matches\nTooltipContent's Row: delimited numerics from RAW values so\nintegers stay integers, verbatim strings, nil for missing).",
-          "params": [],
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the raw datum value"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts.rb",
-          "line": 108
+          "line": 109
         },
         {
           "name": "registry",
@@ -1254,7 +1262,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/cartesian.rb",
-          "line": 127
+          "line": 128
         },
         {
           "name": "baseline",
@@ -1266,7 +1274,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/cartesian.rb",
-          "line": 169
+          "line": 170
         },
         {
           "name": "categories",
@@ -1278,7 +1286,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/cartesian.rb",
-          "line": 100
+          "line": 101
         },
         {
           "name": "category_range",
@@ -1290,7 +1298,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/cartesian.rb",
-          "line": 108
+          "line": 109
         },
         {
           "name": "coordinates",
@@ -1302,7 +1310,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/cartesian.rb",
-          "line": 200
+          "line": 201
         },
         {
           "name": "height",
@@ -1331,14 +1339,14 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/cartesian.rb",
-          "line": 71
+          "line": 72
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
           "signature": "initialize(data:, series:, width:, height:, x_key: nil, margin: {}, category_axis: true, value_axis: false, y_tick_count: 5, offset: :none, x_scale_type: :point, layout: :vertical)",
-          "docstring": "",
+          "docstring": "Builds the cartesian geometry for the data, series and box, with the axis and stacking options.",
           "params": [
             {
               "name": "data",
@@ -1435,7 +1443,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/cartesian.rb",
-          "line": 50
+          "line": 51
         },
         {
           "name": "layout",
@@ -1483,7 +1491,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/cartesian.rb",
-          "line": 93
+          "line": 94
         },
         {
           "name": "plot_left",
@@ -1495,7 +1503,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/cartesian.rb",
-          "line": 82
+          "line": 83
         },
         {
           "name": "plot_right",
@@ -1507,7 +1515,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/cartesian.rb",
-          "line": 88
+          "line": 89
         },
         {
           "name": "plot_top",
@@ -1519,7 +1527,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/cartesian.rb",
-          "line": 90
+          "line": 91
         },
         {
           "name": "points",
@@ -1544,7 +1552,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/cartesian.rb",
-          "line": 182
+          "line": 183
         },
         {
           "name": "width",
@@ -1568,7 +1576,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/cartesian.rb",
-          "line": 133
+          "line": 134
         },
         {
           "name": "x_positions",
@@ -1580,7 +1588,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/cartesian.rb",
-          "line": 122
+          "line": 123
         },
         {
           "name": "x_scale",
@@ -1592,7 +1600,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/cartesian.rb",
-          "line": 113
+          "line": 114
         },
         {
           "name": "y_domain",
@@ -1604,7 +1612,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/cartesian.rb",
-          "line": 154
+          "line": 155
         },
         {
           "name": "y_scale",
@@ -1616,7 +1624,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/cartesian.rb",
-          "line": 160
+          "line": 161
         },
         {
           "name": "y_tick_count",
@@ -1640,7 +1648,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/cartesian.rb",
-          "line": 145
+          "line": 146
         }
       ],
       "constants": [
@@ -1689,12 +1697,12 @@
           "scope": "class",
           "group": null,
           "signature": "included(base)",
-          "docstring": "",
+          "docstring": "Declares the x axis, the value axis, the grid and the class-level helpers on the including chart.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/components/poetry/charts/cartesian_family.rb",
-          "line": 28
+          "line": 29
         }
       ],
       "constants": []
@@ -1717,7 +1725,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/charts/cartesian_family.rb",
-          "line": 70
+          "line": 71
         }
       ],
       "constants": []
@@ -2655,7 +2663,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/config.rb",
-          "line": 49
+          "line": 51
         },
         {
           "name": "[]",
@@ -2682,7 +2690,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/config.rb",
-          "line": 70
+          "line": 72
         },
         {
           "name": "color_entries",
@@ -2694,7 +2702,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/config.rb",
-          "line": 84
+          "line": 86
         },
         {
           "name": "entries",
@@ -2706,7 +2714,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/config.rb",
-          "line": 54
+          "line": 56
         },
         {
           "name": "initialize",
@@ -2731,7 +2739,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/config.rb",
-          "line": 60
+          "line": 62
         },
         {
           "name": "keys",
@@ -2748,7 +2756,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/config.rb",
-          "line": 78
+          "line": 80
         },
         {
           "name": "label_for",
@@ -2782,7 +2790,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/config.rb",
-          "line": 94
+          "line": 96
         },
         {
           "name": "to_h",
@@ -2799,7 +2807,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/config.rb",
-          "line": 102
+          "line": 104
         }
       ],
       "constants": [
@@ -2851,11 +2859,20 @@
           "group": null,
           "signature": "color_for(theme_name)",
           "docstring": "The per-theme color: the flat color, or the theme map's value.",
-          "params": [],
+          "params": [
+            {
+              "name": "theme_name",
+              "types": [
+                "String",
+                "Symbol"
+              ],
+              "text": "the theme to answer for"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/config.rb",
-          "line": 34
+          "line": 36
         },
         {
           "name": "colored?",
@@ -2872,7 +2889,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/config.rb",
-          "line": 39
+          "line": 41
         },
         {
           "name": "icon",
@@ -3001,6 +3018,18 @@
           "examples": [],
           "file": "app/components/poetry/charts/container/component.rb",
           "line": 30
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The frame div's attributes: part self-identification plus the\ndata-chart scope.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/charts/container/component.rb",
+          "line": 66
         }
       ],
       "constants": [
@@ -3055,11 +3084,19 @@
           "group": null,
           "signature": "js_number(value)",
           "docstring": "JS Number#toString for the values that appear in SVG path data:\nintegral doubles print bare (\"80\", not \"80.0\"), -0 prints \"0\", and\neverything else uses shortest round-trip decimal (Ruby and V8 agree\non shortest-repr in the post-rounding magnitude range; the exponent\nguard covers the sub-1e-4 corner where Ruby switches early).",
-          "params": [],
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the number to print"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry.rb",
-          "line": 34
+          "line": 38
         },
         {
           "name": "js_round",
@@ -3067,11 +3104,19 @@
           "group": null,
           "signature": "js_round(value)",
           "docstring": "JS Math.round: floor(x + 0.5) - differs from Float#round at negative\nhalves (JS rounds -2.5 to -2; Ruby to -3).",
-          "params": [],
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the number to round"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry.rb",
-          "line": 25
+          "line": 27
         },
         {
           "name": "js_truthy?",
@@ -3079,7 +3124,15 @@
           "group": null,
           "signature": "js_truthy?(value)",
           "docstring": "JS truthiness for the curve state machines (the line state flag\nruns nil | 0 | 1 | NaN): nil, 0, and NaN are falsy.",
-          "params": [],
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the flag"
+            }
+          ],
           "return": {
             "types": [
               "Boolean"
@@ -3088,7 +3141,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/geometry.rb",
-          "line": 48
+          "line": 54
         }
       ],
       "constants": []
@@ -3111,8 +3164,75 @@
           "scope": "instance",
           "group": null,
           "signature": "initialize(x: nil, x1: nil, y0: nil, y1: nil, curve: :linear, defined: nil, digits: 3)",
-          "docstring": "",
-          "params": [],
+          "docstring": "An area generator over a point list.",
+          "params": [
+            {
+              "name": "x",
+              "types": [
+                "Proc",
+                "Symbol",
+                "String",
+                "Numeric",
+                "nil"
+              ],
+              "text": "the accessor:\na (d, i) lambda, a hash key, or a constant; defaults to d[0]"
+            },
+            {
+              "name": "x1",
+              "types": [
+                "Proc",
+                "Symbol",
+                "String",
+                "Numeric",
+                "nil"
+              ],
+              "text": "the accessor:\na (d, i) lambda, a hash key, or a constant; defaults to x"
+            },
+            {
+              "name": "y0",
+              "types": [
+                "Proc",
+                "Symbol",
+                "String",
+                "Numeric",
+                "nil"
+              ],
+              "text": "the accessor:\na (d, i) lambda, a hash key, or a constant for the baseline"
+            },
+            {
+              "name": "y1",
+              "types": [
+                "Proc",
+                "Symbol",
+                "String",
+                "Numeric",
+                "nil"
+              ],
+              "text": "the accessor:\na (d, i) lambda, a hash key, or a constant for the topline"
+            },
+            {
+              "name": "curve",
+              "types": [
+                "Symbol"
+              ],
+              "text": "the curve name"
+            },
+            {
+              "name": "defined",
+              "types": [
+                "Proc",
+                "nil"
+              ],
+              "text": "the defined predicate (d, i) -> Boolean; nil for every point"
+            },
+            {
+              "name": "digits",
+              "types": [
+                "Integer"
+              ],
+              "text": "path coordinate precision"
+            }
+          ],
           "return": {
             "types": [
               "Area"
@@ -3121,7 +3241,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/geometry/area.rb",
-          "line": 15
+          "line": 28
         },
         {
           "name": "path",
@@ -3147,7 +3267,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/geometry/area.rb",
-          "line": 29
+          "line": 42
         }
       ],
       "constants": []
@@ -3171,11 +3291,26 @@
           "group": null,
           "signature": "build(name, context)",
           "docstring": "A curve state machine writing into the given path context.",
-          "params": [],
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol"
+              ],
+              "text": "the curve name"
+            },
+            {
+              "name": "context",
+              "types": [
+                "Path"
+              ],
+              "text": "the path context the curve writes into"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/curve.rb",
-          "line": 28
+          "line": 31
         },
         {
           "name": "js_flip",
@@ -3183,11 +3318,20 @@
           "group": null,
           "signature": "js_flip(line)",
           "docstring": "JS `1 - line` where line may be undefined (nil) or NaN.",
-          "params": [],
+          "params": [
+            {
+              "name": "line",
+              "types": [
+                "Numeric",
+                "nil"
+              ],
+              "text": "the line state flag"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/curve.rb",
-          "line": 35
+          "line": 40
         }
       ],
       "constants": [
@@ -3216,8 +3360,53 @@
           "scope": "instance",
           "group": null,
           "signature": "initialize(x: nil, y: nil, curve: :linear, defined: nil, digits: 3)",
-          "docstring": "",
-          "params": [],
+          "docstring": "A line generator over a point list.",
+          "params": [
+            {
+              "name": "x",
+              "types": [
+                "Proc",
+                "Symbol",
+                "String",
+                "Numeric",
+                "nil"
+              ],
+              "text": "the accessor:\na (d, i) lambda, a hash key, or a constant; defaults to d[0]"
+            },
+            {
+              "name": "y",
+              "types": [
+                "Proc",
+                "Symbol",
+                "String",
+                "Numeric",
+                "nil"
+              ],
+              "text": "the accessor:\na (d, i) lambda, a hash key, or a constant; defaults to d[1]"
+            },
+            {
+              "name": "curve",
+              "types": [
+                "Symbol"
+              ],
+              "text": "the curve name"
+            },
+            {
+              "name": "defined",
+              "types": [
+                "Proc",
+                "nil"
+              ],
+              "text": "the defined predicate (d, i) -> Boolean; nil for every point"
+            },
+            {
+              "name": "digits",
+              "types": [
+                "Integer"
+              ],
+              "text": "path coordinate precision"
+            }
+          ],
           "return": {
             "types": [
               "Line"
@@ -3226,7 +3415,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/geometry/line.rb",
-          "line": 15
+          "line": 24
         },
         {
           "name": "path",
@@ -3252,7 +3441,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/geometry/line.rb",
-          "line": 27
+          "line": 36
         }
       ],
       "constants": []
@@ -3271,11 +3460,23 @@
           "group": null,
           "signature": "wrap(value, &default)",
           "docstring": "A (d, i) lambda from a lambda, key, constant, or the default.",
-          "params": [],
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Proc",
+                "Symbol",
+                "String",
+                "Numeric",
+                "nil"
+              ],
+              "text": "the accessor:\na (d, i) lambda, a hash key, or a constant, as given"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/line.rb",
-          "line": 51
+          "line": 63
         }
       ],
       "constants": []
@@ -3299,11 +3500,33 @@
           "group": null,
           "signature": "adaptive_step(rough_step, allow_decimals, correction_factor)",
           "docstring": "The default step function: amend the rough step to a value that\nreads well at its order of magnitude.",
-          "params": [],
+          "params": [
+            {
+              "name": "rough_step",
+              "types": [
+                "BigDecimal"
+              ],
+              "text": "the unrounded step"
+            },
+            {
+              "name": "allow_decimals",
+              "types": [
+                "Boolean"
+              ],
+              "text": "whether a fractional step is acceptable"
+            },
+            {
+              "name": "correction_factor",
+              "types": [
+                "Integer"
+              ],
+              "text": "the widening pass the caller is on"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 63
+          "line": 78
         },
         {
           "name": "calculate_step",
@@ -3311,11 +3534,55 @@
           "group": null,
           "signature": "calculate_step(min, max, tick_count, allow_decimals, correction_factor = 0, step_fn: method(:adaptive_step))",
           "docstring": "The step + tick bounds for an interval (recursive: a correction\nfactor grows the step until tickCount ticks cover the interval).",
-          "params": [],
+          "params": [
+            {
+              "name": "min",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the interval's low end"
+            },
+            {
+              "name": "max",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the interval's high end"
+            },
+            {
+              "name": "tick_count",
+              "types": [
+                "Integer"
+              ],
+              "text": "the ticks wanted"
+            },
+            {
+              "name": "allow_decimals",
+              "types": [
+                "Boolean"
+              ],
+              "text": "whether a fractional step is acceptable"
+            },
+            {
+              "name": "correction_factor",
+              "types": [
+                "Integer"
+              ],
+              "text": "the current widening pass"
+            },
+            {
+              "name": "step_fn",
+              "types": [
+                "Method",
+                "Proc"
+              ],
+              "text": "the step function (adaptive_step by default)"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 134
+          "line": 166
         },
         {
           "name": "dec",
@@ -3323,11 +3590,19 @@
           "group": null,
           "signature": "dec(value)",
           "docstring": "Coerce to BigDecimal via the double's shortest decimal string.",
-          "params": [],
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the double to coerce"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 31
+          "line": 33
         },
         {
           "name": "digit_count",
@@ -3335,11 +3610,19 @@
           "group": null,
           "signature": "digit_count(value)",
           "docstring": "Digit count: 1 for [1,10), 0 for [0.1,1), -1 for [0.01,0.1)...\nBigDecimal#exponent IS floor(log10(|v|)) + 1, exactly.",
-          "params": [],
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "BigDecimal"
+              ],
+              "text": "the value to count"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 37
+          "line": 41
         },
         {
           "name": "fixed_domain_ticks",
@@ -3347,11 +3630,40 @@
           "group": null,
           "signature": "fixed_domain_ticks(domain, tick_count, allow_decimals: true, mode: :auto)",
           "docstring": "Nice-stepped ticks CONSTRAINED to [min, max] - the domain\nboundary always closes the list.",
-          "params": [],
+          "params": [
+            {
+              "name": "domain",
+              "types": [
+                "Array(Numeric, Numeric)"
+              ],
+              "text": "[min, max]"
+            },
+            {
+              "name": "tick_count",
+              "types": [
+                "Integer"
+              ],
+              "text": "the ticks wanted"
+            },
+            {
+              "name": "allow_decimals",
+              "types": [
+                "Boolean"
+              ],
+              "text": "whether a fractional step is acceptable"
+            },
+            {
+              "name": "mode",
+              "types": [
+                "Symbol"
+              ],
+              "text": ":auto or :snap125"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 197
+          "line": 239
         },
         {
           "name": "nice_ticks",
@@ -3359,11 +3671,40 @@
           "group": null,
           "signature": "nice_ticks(domain, tick_count = 6, allow_decimals: true, mode: :auto)",
           "docstring": "Nice ticks for [min, max] - ticks may run OUTSIDE the interval\nto stay round.",
-          "params": [],
+          "params": [
+            {
+              "name": "domain",
+              "types": [
+                "Array(Numeric, Numeric)"
+              ],
+              "text": "[min, max]"
+            },
+            {
+              "name": "tick_count",
+              "types": [
+                "Integer"
+              ],
+              "text": "the ticks wanted"
+            },
+            {
+              "name": "allow_decimals",
+              "types": [
+                "Boolean"
+              ],
+              "text": "whether a fractional step is acceptable"
+            },
+            {
+              "name": "mode",
+              "types": [
+                "Symbol"
+              ],
+              "text": ":auto or :snap125"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 171
+          "line": 208
         },
         {
           "name": "range_step",
@@ -3371,11 +3712,33 @@
           "group": null,
           "signature": "range_step(start, stop, step)",
           "docstring": "[start, end) with a fixed decimal step.",
-          "params": [],
+          "params": [
+            {
+              "name": "start",
+              "types": [
+                "BigDecimal"
+              ],
+              "text": "the first value"
+            },
+            {
+              "name": "stop",
+              "types": [
+                "BigDecimal"
+              ],
+              "text": "the exclusive end"
+            },
+            {
+              "name": "step",
+              "types": [
+                "BigDecimal"
+              ],
+              "text": "the increment"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 44
+          "line": 52
         },
         {
           "name": "snap125_step",
@@ -3383,11 +3746,33 @@
           "group": null,
           "signature": "snap125_step(rough_step, allow_decimals, correction_factor)",
           "docstring": "The opt-in snap125 step: snap to 1 / 2 / 2.5 / 5 at each order of\nmagnitude.",
-          "params": [],
+          "params": [
+            {
+              "name": "rough_step",
+              "types": [
+                "BigDecimal"
+              ],
+              "text": "the unrounded step"
+            },
+            {
+              "name": "allow_decimals",
+              "types": [
+                "Boolean"
+              ],
+              "text": "whether a fractional step is acceptable"
+            },
+            {
+              "name": "correction_factor",
+              "types": [
+                "Integer"
+              ],
+              "text": "the widening pass the caller is on"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 79
+          "line": 98
         },
         {
           "name": "step_function",
@@ -3395,11 +3780,19 @@
           "group": null,
           "signature": "step_function(mode)",
           "docstring": "The step function a mode selects.",
-          "params": [],
+          "params": [
+            {
+              "name": "mode",
+              "types": [
+                "Symbol"
+              ],
+              "text": ":auto or :snap125"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 105
+          "line": 126
         },
         {
           "name": "ticks_of_single_value",
@@ -3407,11 +3800,33 @@
           "group": null,
           "signature": "ticks_of_single_value(value, tick_count, allow_decimals)",
           "docstring": "Ticks when min == max: center a window of tickCount steps on the value.",
-          "params": [],
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the single value"
+            },
+            {
+              "name": "tick_count",
+              "types": [
+                "Integer"
+              ],
+              "text": "the ticks wanted"
+            },
+            {
+              "name": "allow_decimals",
+              "types": [
+                "Boolean"
+              ],
+              "text": "whether a fractional step is acceptable"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 110
+          "line": 135
         },
         {
           "name": "valid_interval",
@@ -3419,11 +3834,26 @@
           "group": null,
           "signature": "valid_interval(min, max)",
           "docstring": "The interval sorted ascending.",
-          "params": [],
+          "params": [
+            {
+              "name": "min",
+              "types": [
+                "Numeric"
+              ],
+              "text": "one end of the interval"
+            },
+            {
+              "name": "max",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the other end"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/nice_ticks.rb",
-          "line": 57
+          "line": 68
         }
       ],
       "constants": [
@@ -3458,11 +3888,54 @@
           "group": null,
           "signature": "bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y)",
           "docstring": "A cubic curve to (x, y) with two control points.",
-          "params": [],
+          "params": [
+            {
+              "name": "cp1x",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the first control point's x"
+            },
+            {
+              "name": "cp1y",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the first control point's y"
+            },
+            {
+              "name": "cp2x",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the second control point's x"
+            },
+            {
+              "name": "cp2y",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the second control point's y"
+            },
+            {
+              "name": "x",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the end x"
+            },
+            {
+              "name": "y",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the end y"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/path.rb",
-          "line": 59
+          "line": 79
         },
         {
           "name": "close_path",
@@ -3474,7 +3947,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/path.rb",
-          "line": 69
+          "line": 89
         },
         {
           "name": "empty?",
@@ -3491,14 +3964,14 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/geometry/path.rb",
-          "line": 83
+          "line": 103
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
           "signature": "initialize(digits: 3)",
-          "docstring": "",
+          "docstring": "An empty path rounding coordinates to the given digits.",
           "params": [
             {
               "name": "digits",
@@ -3517,7 +3990,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/geometry/path.rb",
-          "line": 25
+          "line": 27
         },
         {
           "name": "line_to",
@@ -3525,11 +3998,26 @@
           "group": null,
           "signature": "line_to(x, y)",
           "docstring": "A straight segment to (x, y).",
-          "params": [],
+          "params": [
+            {
+              "name": "x",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the x coordinate"
+            },
+            {
+              "name": "y",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the y coordinate"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/path.rb",
-          "line": 41
+          "line": 49
         },
         {
           "name": "move_to",
@@ -3537,11 +4025,26 @@
           "group": null,
           "signature": "move_to(x, y)",
           "docstring": "Starts a new subpath at (x, y).",
-          "params": [],
+          "params": [
+            {
+              "name": "x",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the x coordinate"
+            },
+            {
+              "name": "y",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the y coordinate"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/path.rb",
-          "line": 32
+          "line": 37
         },
         {
           "name": "quadratic_curve_to",
@@ -3549,11 +4052,40 @@
           "group": null,
           "signature": "quadratic_curve_to(cpx, cpy, x, y)",
           "docstring": "A quadratic curve to (x, y) with one control point.",
-          "params": [],
+          "params": [
+            {
+              "name": "cpx",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the control point's x"
+            },
+            {
+              "name": "cpy",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the control point's y"
+            },
+            {
+              "name": "x",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the end x"
+            },
+            {
+              "name": "y",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the end y"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/path.rb",
-          "line": 50
+          "line": 63
         },
         {
           "name": "to_s",
@@ -3565,7 +4097,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/path.rb",
-          "line": 78
+          "line": 98
         }
       ],
       "constants": []
@@ -3599,11 +4131,47 @@
           "group": null,
           "signature": "padded(domain:, range:, padding: 0.0, align: 0.5, round: false)",
           "docstring": "Convenience for the common single padding: knob - one value\nsets inner AND outer padding.",
-          "params": [],
+          "params": [
+            {
+              "name": "domain",
+              "types": [
+                "Array"
+              ],
+              "text": "the categories, in order"
+            },
+            {
+              "name": "range",
+              "types": [
+                "Array(Numeric, Numeric)"
+              ],
+              "text": "the pixel extent"
+            },
+            {
+              "name": "padding",
+              "types": [
+                "Float"
+              ],
+              "text": "the inner and outer padding at once"
+            },
+            {
+              "name": "align",
+              "types": [
+                "Float"
+              ],
+              "text": "where leftover space goes: 0 at the start, 1 at the end"
+            },
+            {
+              "name": "round",
+              "types": [
+                "Boolean"
+              ],
+              "text": "round positions and widths to integers"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/scale/band.rb",
-          "line": 32
+          "line": 46
         },
         {
           "name": "[]",
@@ -3611,11 +4179,19 @@
           "group": null,
           "signature": "call(value)",
           "docstring": "The band's leading-edge position for a category (nil when the\ncategory is unknown).",
-          "params": [],
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the category"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/scale/band.rb",
-          "line": 42
+          "line": 58
         },
         {
           "name": "align",
@@ -3647,11 +4223,19 @@
           "group": null,
           "signature": "call(value)",
           "docstring": "The band's leading-edge position for a category (nil when the\ncategory is unknown).",
-          "params": [],
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the category"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/scale/band.rb",
-          "line": 38
+          "line": 54
         },
         {
           "name": "domain",
@@ -3670,8 +4254,51 @@
           "scope": "instance",
           "group": null,
           "signature": "initialize(domain:, range:, padding_inner: 0.0, padding_outer: 0.0, align: 0.5, round: false)",
-          "docstring": "",
-          "params": [],
+          "docstring": "A band scale: categories to equal-width bands across the range.",
+          "params": [
+            {
+              "name": "domain",
+              "types": [
+                "Array"
+              ],
+              "text": "the categories, in order"
+            },
+            {
+              "name": "range",
+              "types": [
+                "Array(Numeric, Numeric)"
+              ],
+              "text": "the pixel extent"
+            },
+            {
+              "name": "padding_inner",
+              "types": [
+                "Float"
+              ],
+              "text": "the fraction of each band left between bands"
+            },
+            {
+              "name": "padding_outer",
+              "types": [
+                "Float"
+              ],
+              "text": "the fraction of a band left at each range edge"
+            },
+            {
+              "name": "align",
+              "types": [
+                "Float"
+              ],
+              "text": "where leftover space goes: 0 at the start, 1 at the end"
+            },
+            {
+              "name": "round",
+              "types": [
+                "Boolean"
+              ],
+              "text": "round positions and widths to integers"
+            }
+          ],
           "return": {
             "types": [
               "Band"
@@ -3680,7 +4307,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/geometry/scale/band.rb",
-          "line": 20
+          "line": 28
         },
         {
           "name": "padding_inner",
@@ -3781,7 +4408,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/geometry/scale/linear.rb",
-          "line": 44
+          "line": 45
         },
         {
           "name": "call",
@@ -3806,7 +4433,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/geometry/scale/linear.rb",
-          "line": 30
+          "line": 31
         },
         {
           "name": "domain",
@@ -3825,7 +4452,7 @@
           "scope": "instance",
           "group": null,
           "signature": "initialize(domain: [0.0, 1.0], range: [0.0, 1.0])",
-          "docstring": "",
+          "docstring": "A linear scale from the domain to the range.",
           "params": [
             {
               "name": "domain",
@@ -3850,7 +4477,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/geometry/scale/linear.rb",
-          "line": 21
+          "line": 22
         },
         {
           "name": "invert",
@@ -3875,7 +4502,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/geometry/scale/linear.rb",
-          "line": 50
+          "line": 51
         },
         {
           "name": "nice",
@@ -3883,7 +4510,15 @@
           "group": null,
           "signature": "nice(count = 10)",
           "docstring": "Extends the domain to tick-increment boundaries, iterating\nuntil the increment is stable. Returns a NEW scale (poetry\nimmutability).",
-          "params": [],
+          "params": [
+            {
+              "name": "count",
+              "types": [
+                "Integer"
+              ],
+              "text": "the ticks the nice step is chosen for"
+            }
+          ],
           "return": {
             "types": [
               "Linear"
@@ -3892,7 +4527,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/geometry/scale/linear.rb",
-          "line": 76
+          "line": 79
         },
         {
           "name": "range",
@@ -3912,7 +4547,15 @@
           "group": null,
           "signature": "ticks(count = 10)",
           "docstring": "Float-exact ticks across the domain.",
-          "params": [],
+          "params": [
+            {
+              "name": "count",
+              "types": [
+                "Integer"
+              ],
+              "text": "the ticks wanted"
+            }
+          ],
           "return": {
             "types": [
               "Array<Numeric>"
@@ -3921,7 +4564,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/geometry/scale/linear.rb",
-          "line": 67
+          "line": 69
         }
       ],
       "constants": []
@@ -3944,8 +4587,44 @@
           "scope": "instance",
           "group": null,
           "signature": "initialize(domain:, range:, padding: 0.0, align: 0.5, round: false)",
-          "docstring": "",
-          "params": [],
+          "docstring": "A point scale: a band scale whose bands have no width.",
+          "params": [
+            {
+              "name": "domain",
+              "types": [
+                "Array"
+              ],
+              "text": "the categories, in order"
+            },
+            {
+              "name": "range",
+              "types": [
+                "Array(Numeric, Numeric)"
+              ],
+              "text": "the pixel extent"
+            },
+            {
+              "name": "padding",
+              "types": [
+                "Float"
+              ],
+              "text": "the outer padding as a fraction of a step"
+            },
+            {
+              "name": "align",
+              "types": [
+                "Float"
+              ],
+              "text": "where leftover space goes: 0 at the start, 1 at the end"
+            },
+            {
+              "name": "round",
+              "types": [
+                "Boolean"
+              ],
+              "text": "round positions to integers"
+            }
+          ],
           "return": {
             "types": [
               "Point"
@@ -3954,7 +4633,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/geometry/scale/band.rb",
-          "line": 74
+          "line": 98
         }
       ],
       "constants": []
@@ -3977,8 +4656,31 @@
           "scope": "instance",
           "group": null,
           "signature": "initialize(keys:, value: nil, offset: :none)",
-          "docstring": "",
-          "params": [],
+          "docstring": "A stack generator: rows and keys to per-series [base, top] pairs.",
+          "params": [
+            {
+              "name": "keys",
+              "types": [
+                "Array<String, Symbol>"
+              ],
+              "text": "the series keys, in stacking order"
+            },
+            {
+              "name": "value",
+              "types": [
+                "Proc",
+                "nil"
+              ],
+              "text": "the value accessor (row, key) -> Numeric; nil reads row[key]"
+            },
+            {
+              "name": "offset",
+              "types": [
+                "Symbol"
+              ],
+              "text": ":none, or :expand for 100%-normalized"
+            }
+          ],
           "return": {
             "types": [
               "Stack"
@@ -3987,7 +4689,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/geometry/stack.rb",
-          "line": 32
+          "line": 39
         },
         {
           "name": "series",
@@ -4012,7 +4714,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/geometry/stack.rb",
-          "line": 44
+          "line": 51
         }
       ],
       "constants": [
@@ -4037,11 +4739,19 @@
           "group": null,
           "signature": "[](index)",
           "docstring": "The [base, top] pair at one row index.",
-          "params": [],
+          "params": [
+            {
+              "name": "index",
+              "types": [
+                "Integer"
+              ],
+              "text": "the row index"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/stack.rb",
-          "line": 22
+          "line": 24
         },
         {
           "name": "index",
@@ -4137,7 +4847,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/stack.rb",
-          "line": 27
+          "line": 29
         },
         {
           "name": "points",
@@ -4203,11 +4913,33 @@
           "group": null,
           "signature": "tick_increment(start, stop, count)",
           "docstring": "The raw increment for the run - negative encodes a divisor.",
-          "params": [],
+          "params": [
+            {
+              "name": "start",
+              "types": [
+                "Numeric"
+              ],
+              "text": "where the run begins"
+            },
+            {
+              "name": "stop",
+              "types": [
+                "Numeric"
+              ],
+              "text": "where the run ends"
+            },
+            {
+              "name": "count",
+              "types": [
+                "Integer"
+              ],
+              "text": "the ticks wanted"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/ticks.rb",
-          "line": 86
+          "line": 92
         },
         {
           "name": "tick_step",
@@ -4215,11 +4947,33 @@
           "group": null,
           "signature": "tick_step(start, stop, count)",
           "docstring": "The absolute step size for the run (the increment decoded,\nsigned by direction).",
-          "params": [],
+          "params": [
+            {
+              "name": "start",
+              "types": [
+                "Numeric"
+              ],
+              "text": "where the run begins"
+            },
+            {
+              "name": "stop",
+              "types": [
+                "Numeric"
+              ],
+              "text": "where the run ends"
+            },
+            {
+              "name": "count",
+              "types": [
+                "Integer"
+              ],
+              "text": "the ticks wanted"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/geometry/ticks.rb",
-          "line": 92
+          "line": 102
         },
         {
           "name": "ticks",
@@ -4227,7 +4981,29 @@
           "group": null,
           "signature": "ticks(start, stop, count)",
           "docstring": "About `count` evenly stepped, float-exact values covering\n[start, stop].",
-          "params": [],
+          "params": [
+            {
+              "name": "start",
+              "types": [
+                "Numeric"
+              ],
+              "text": "where the run begins"
+            },
+            {
+              "name": "stop",
+              "types": [
+                "Numeric"
+              ],
+              "text": "where the run ends"
+            },
+            {
+              "name": "count",
+              "types": [
+                "Integer"
+              ],
+              "text": "the ticks wanted"
+            }
+          ],
           "return": {
             "types": [
               "Array<Numeric>"
@@ -4236,7 +5012,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/geometry/ticks.rb",
-          "line": 67
+          "line": 69
         }
       ],
       "constants": [
@@ -4392,6 +5168,18 @@
           "examples": [],
           "file": "app/components/poetry/charts/legend_content/component.rb",
           "line": 29
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The legend row's attributes with the part self-identification.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/charts/legend_content/component.rb",
+          "line": 83
         },
         {
           "name": "toggle",
@@ -4838,12 +5626,12 @@
           "scope": "class",
           "group": null,
           "signature": "included(base)",
-          "docstring": "",
+          "docstring": "Declares the live update wiring on the including chart: registration, the tooltip re-read and the zoom drag.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/components/poetry/charts/live.rb",
-          "line": 20
+          "line": 21
         }
       ],
       "constants": [
@@ -4882,7 +5670,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/charts/live.rb",
-          "line": 82
+          "line": 83
         }
       ],
       "constants": []
@@ -4900,12 +5688,12 @@
           "scope": "class",
           "group": null,
           "signature": "included(base)",
-          "docstring": "",
+          "docstring": "Declares the motion controller on the including chart's frame.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/components/poetry/charts/motion.rb",
-          "line": 18
+          "line": 19
         },
         {
           "name": "motion_style_extras",
@@ -4923,7 +5711,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/motion.rb",
-          "line": 81
+          "line": 82
         }
       ],
       "constants": [
@@ -4957,7 +5745,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/charts/motion.rb",
-          "line": 37
+          "line": 38
         }
       ],
       "constants": []
@@ -5745,11 +6533,26 @@
           "group": null,
           "signature": "max_radius(width, height)",
           "docstring": "The largest radius fitting the plot: half the shorter side.",
-          "params": [],
+          "params": [
+            {
+              "name": "width",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the plot width"
+            },
+            {
+              "name": "height",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the plot height"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/polar.rb",
-          "line": 32
+          "line": 42
         },
         {
           "name": "percent_value",
@@ -5757,11 +6560,35 @@
           "group": null,
           "signature": "percent_value(value, total, default = 0)",
           "docstring": "\"80%\" of the max radius, or a plain number.",
-          "params": [],
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "String",
+                "Numeric",
+                "nil"
+              ],
+              "text": "a percent string or a plain number"
+            },
+            {
+              "name": "total",
+              "types": [
+                "Numeric"
+              ],
+              "text": "what a percent is taken of"
+            },
+            {
+              "name": "default",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the answer when value is nil"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/polar.rb",
-          "line": 37
+          "line": 51
         },
         {
           "name": "pie_sectors",
@@ -5769,11 +6596,47 @@
           "group": null,
           "signature": "pie_sectors(values, start_angle: 0, end_angle: 360, padding_angle: 0, min_angle: 0)",
           "docstring": "The pie accumulation: values -> per-slice angles. Zero values\ncollapse (and skip padding); paddings live BETWEEN non-zero\nslices (full circles pad after the last slice too, closing the\nring).",
-          "params": [],
+          "params": [
+            {
+              "name": "values",
+              "types": [
+                "Array<Numeric>"
+              ],
+              "text": "the slice values"
+            },
+            {
+              "name": "start_angle",
+              "types": [
+                "Numeric"
+              ],
+              "text": "degrees"
+            },
+            {
+              "name": "end_angle",
+              "types": [
+                "Numeric"
+              ],
+              "text": "degrees"
+            },
+            {
+              "name": "padding_angle",
+              "types": [
+                "Numeric"
+              ],
+              "text": "degrees between non-zero slices"
+            },
+            {
+              "name": "min_angle",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the smallest angle a non-zero slice may take"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/polar.rb",
-          "line": 48
+          "line": 68
         },
         {
           "name": "polar_to_cartesian",
@@ -5781,11 +6644,40 @@
           "group": null,
           "signature": "polar_to_cartesian(cx, cy, radius, angle)",
           "docstring": "The [x, y] point at (radius, angle) from the center, in SVG's\ny-down plane.",
-          "params": [],
+          "params": [
+            {
+              "name": "cx",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the center x"
+            },
+            {
+              "name": "cy",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the center y"
+            },
+            {
+              "name": "radius",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the distance from the center"
+            },
+            {
+              "name": "angle",
+              "types": [
+                "Numeric"
+              ],
+              "text": "degrees"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/polar.rb",
-          "line": 27
+          "line": 34
         },
         {
           "name": "sector_path",
@@ -5793,11 +6685,62 @@
           "group": null,
           "signature": "sector_path(cx:, cy:, inner_radius:, outer_radius:, start_angle:, end_angle:, fmt: nil)",
           "docstring": "The wedge/ring path. The delta clamps at 359.999 so a full\ncircle's endpoints never coincide.",
-          "params": [],
+          "params": [
+            {
+              "name": "cx",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the center x"
+            },
+            {
+              "name": "cy",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the center y"
+            },
+            {
+              "name": "inner_radius",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the ring's inner radius (0 for a wedge)"
+            },
+            {
+              "name": "outer_radius",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the ring's outer radius"
+            },
+            {
+              "name": "start_angle",
+              "types": [
+                "Numeric"
+              ],
+              "text": "degrees"
+            },
+            {
+              "name": "end_angle",
+              "types": [
+                "Numeric"
+              ],
+              "text": "degrees"
+            },
+            {
+              "name": "fmt",
+              "types": [
+                "Proc",
+                "nil"
+              ],
+              "text": "the number formatter for the path data"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/polar.rb",
-          "line": 149
+          "line": 192
         },
         {
           "name": "sector_path_with_corners",
@@ -5805,11 +6748,69 @@
           "group": null,
           "signature": "sector_path_with_corners(cx:, cy:, inner_radius:, outer_radius:, start_angle:, end_angle:, corner_radius:, fmt: nil)",
           "docstring": "The ring segment with all four corners rounded by tangent\ncircles. Falls back to the plain path when the sweep is too small\nto fit the corners.",
-          "params": [],
+          "params": [
+            {
+              "name": "cx",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the center x"
+            },
+            {
+              "name": "cy",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the center y"
+            },
+            {
+              "name": "inner_radius",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the ring's inner radius (0 for a wedge)"
+            },
+            {
+              "name": "outer_radius",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the ring's outer radius"
+            },
+            {
+              "name": "start_angle",
+              "types": [
+                "Numeric"
+              ],
+              "text": "degrees"
+            },
+            {
+              "name": "end_angle",
+              "types": [
+                "Numeric"
+              ],
+              "text": "degrees"
+            },
+            {
+              "name": "corner_radius",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the corners' radius"
+            },
+            {
+              "name": "fmt",
+              "types": [
+                "Proc",
+                "nil"
+              ],
+              "text": "the number formatter for the path data"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/polar.rb",
-          "line": 103
+          "line": 140
         },
         {
           "name": "sign",
@@ -5817,11 +6818,19 @@
           "group": null,
           "signature": "sign(value)",
           "docstring": "-1, 0, or 1 by the value's sign.",
-          "params": [],
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the number"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/polar.rb",
-          "line": 19
+          "line": 21
         },
         {
           "name": "tangent_circle",
@@ -5829,11 +6838,61 @@
           "group": null,
           "signature": "tangent_circle(cx:, cy:, radius:, angle:, sign:, corner_radius:, external: false)",
           "docstring": "The corner circle tangent to an arc (at `radius`) and a radial\nedge (at `angle`) - the rounded-corner primitive for the radial\nbar's corner_radius.",
-          "params": [],
+          "params": [
+            {
+              "name": "cx",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the center x"
+            },
+            {
+              "name": "cy",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the center y"
+            },
+            {
+              "name": "radius",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the distance from the center to the arc"
+            },
+            {
+              "name": "angle",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the radial edge's angle, degrees"
+            },
+            {
+              "name": "sign",
+              "types": [
+                "Integer"
+              ],
+              "text": "which side of the edge the corner turns: 1 or -1"
+            },
+            {
+              "name": "corner_radius",
+              "types": [
+                "Numeric"
+              ],
+              "text": "the corner's radius"
+            },
+            {
+              "name": "external",
+              "types": [
+                "Boolean"
+              ],
+              "text": "whether the circle sits outside the arc"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/charts/polar.rb",
-          "line": 89
+          "line": 117
         }
       ],
       "constants": [
@@ -5862,12 +6921,12 @@
           "scope": "class",
           "group": null,
           "signature": "included(base)",
-          "docstring": "",
+          "docstring": "Declares the tooltip wiring on the including chart's svg.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/components/poetry/charts/polar_family.rb",
-          "line": 23
+          "line": 24
         }
       ],
       "constants": [
@@ -7218,12 +8277,12 @@
           "scope": "class",
           "group": null,
           "signature": "included(base)",
-          "docstring": "",
+          "docstring": "Declares the reference line, area and dot slots on the including chart.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/components/poetry/charts/reference_marks.rb",
-          "line": 17
+          "line": 18
         }
       ],
       "constants": []
@@ -7977,7 +9036,7 @@
           "scope": "instance",
           "group": null,
           "signature": "initialize(type:, data:, series:, axes: {}, config: nil)",
-          "docstring": "",
+          "docstring": "A chart spec of a known type over its data, series and axes.",
           "params": [
             {
               "name": "type",
@@ -8026,7 +9085,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/spec.rb",
-          "line": 39
+          "line": 40
         },
         {
           "name": "series",
@@ -8055,7 +9114,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/spec.rb",
-          "line": 56
+          "line": 57
         },
         {
           "name": "to_json",
@@ -8072,7 +9131,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/spec.rb",
-          "line": 70
+          "line": 71
         },
         {
           "name": "type",
@@ -8139,14 +9198,14 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/theme_style.rb",
-          "line": 33
+          "line": 34
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
           "signature": "initialize(id:, config:)",
-          "docstring": "",
+          "docstring": "The per-chart stylesheet for an id and config.",
           "params": [
             {
               "name": "id",
@@ -8172,7 +9231,7 @@
           },
           "examples": [],
           "file": "lib/poetry/charts/theme_style.rb",
-          "line": 24
+          "line": 25
         }
       ],
       "constants": [
@@ -8307,6 +9366,18 @@
           "examples": [],
           "file": "app/components/poetry/charts/tooltip_content/component.rb",
           "line": 37
+        },
+        {
+          "name": "root_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "root_attributes",
+          "docstring": "The box's attributes with the part self-identification.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/charts/tooltip_content/component.rb",
+          "line": 113
         }
       ],
       "constants": [

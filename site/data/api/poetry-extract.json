@@ -195,7 +195,15 @@
           "group": null,
           "signature": "normalize_domain(domain)",
           "docstring": "Reduce a URL or bare domain to its lowercase host.",
-          "params": [],
+          "params": [
+            {
+              "name": "domain",
+              "types": [
+                "String"
+              ],
+              "text": "a URL or a bare host"
+            }
+          ],
           "return": {
             "types": [
               "String"
@@ -204,7 +212,7 @@
           },
           "examples": [],
           "file": "lib/poetry/extract/runner.rb",
-          "line": 57
+          "line": 58
         },
         {
           "name": "run!",
@@ -271,11 +279,26 @@
           "group": null,
           "signature": "validate!(design_md, io)",
           "docstring": "The composed document must at least parse as DESIGN.md; a missing\nfrontmatter is a warning, not a failure - prose-only documents\nstill carry the body sections, and import will say so again.",
-          "params": [],
+          "params": [
+            {
+              "name": "design_md",
+              "types": [
+                "String"
+              ],
+              "text": "the composed DESIGN.md document"
+            },
+            {
+              "name": "io",
+              "types": [
+                "IO"
+              ],
+              "text": "where warnings are printed"
+            }
+          ],
           "return": null,
           "examples": [],
           "file": "lib/poetry/extract/runner.rb",
-          "line": 65
+          "line": 69
         }
       ],
       "constants": [

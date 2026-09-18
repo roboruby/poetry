@@ -109,8 +109,17 @@
           "scope": "instance",
           "group": null,
           "signature": "input(_wrapper_options = nil)",
-          "docstring": "",
-          "params": [],
+          "docstring": "Renders the field as an autocomplete.",
+          "params": [
+            {
+              "name": "_wrapper_options",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "Simple Form's wrapper options, unused: the Field is the wrapper"
+            }
+          ],
           "return": {
             "types": [
               "String"
@@ -119,7 +128,7 @@
           },
           "examples": [],
           "file": "lib/poetry/simple_form/inputs/collection_inputs.rb",
-          "line": 99
+          "line": 111
         }
       ],
       "constants": []
@@ -205,7 +214,16 @@
           "group": null,
           "signature": "input(_wrapper_options = nil)",
           "docstring": "Render the collection as a Field-wrapped checkbox group.",
-          "params": [],
+          "params": [
+            {
+              "name": "_wrapper_options",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "Simple Form's wrapper options, unused: the Field is the wrapper"
+            }
+          ],
           "return": {
             "types": [
               "String"
@@ -214,7 +232,7 @@
           },
           "examples": [],
           "file": "lib/poetry/simple_form/inputs/collection_inputs.rb",
-          "line": 68
+          "line": 74
         }
       ],
       "constants": []
@@ -233,7 +251,16 @@
           "group": null,
           "signature": "input(_wrapper_options = nil)",
           "docstring": "Render the collection as a Field-wrapped RadioGroup.",
-          "params": [],
+          "params": [
+            {
+              "name": "_wrapper_options",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "Simple Form's wrapper options, unused: the Field is the wrapper"
+            }
+          ],
           "return": {
             "types": [
               "String"
@@ -242,7 +269,7 @@
           },
           "examples": [],
           "file": "lib/poetry/simple_form/inputs/collection_inputs.rb",
-          "line": 56
+          "line": 61
         }
       ],
       "constants": []
@@ -261,7 +288,16 @@
           "group": null,
           "signature": "input(_wrapper_options = nil)",
           "docstring": "Render the collection as a Field-wrapped Select;\ninclude_blank/prompt becomes the placeholder option.",
-          "params": [],
+          "params": [
+            {
+              "name": "_wrapper_options",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "Simple Form's wrapper options, unused: the Field is the wrapper"
+            }
+          ],
           "return": {
             "types": [
               "String"
@@ -270,7 +306,7 @@
           },
           "examples": [],
           "file": "lib/poetry/simple_form/inputs/collection_inputs.rb",
-          "line": 43
+          "line": 47
         }
       ],
       "constants": []
@@ -288,8 +324,17 @@
           "scope": "instance",
           "group": null,
           "signature": "input(_wrapper_options = nil)",
-          "docstring": "",
-          "params": [],
+          "docstring": "Renders the field as a combobox.",
+          "params": [
+            {
+              "name": "_wrapper_options",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "Simple Form's wrapper options, unused: the Field is the wrapper"
+            }
+          ],
           "return": {
             "types": [
               "String"
@@ -298,7 +343,7 @@
           },
           "examples": [],
           "file": "lib/poetry/simple_form/inputs/collection_inputs.rb",
-          "line": 88
+          "line": 98
         }
       ],
       "constants": []
@@ -327,7 +372,16 @@
           "group": null,
           "signature": "input(_wrapper_options = nil)",
           "docstring": "Render :date/:time/:datetime attributes as poetry DateField /\nTimeField / DateTimeField - one control each, ISO on the wire.",
-          "params": [],
+          "params": [
+            {
+              "name": "_wrapper_options",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "Simple Form's wrapper options, unused: the Field is the wrapper"
+            }
+          ],
           "return": {
             "types": [
               "String"
@@ -336,7 +390,7 @@
           },
           "examples": [],
           "file": "lib/poetry/simple_form/inputs/date_time_input.rb",
-          "line": 13
+          "line": 14
         }
       ],
       "constants": []
@@ -364,8 +418,17 @@
           "scope": "instance",
           "group": null,
           "signature": "input(_wrapper_options = nil)",
-          "docstring": "",
-          "params": [],
+          "docstring": "Renders the field as a select with labelled groups.",
+          "params": [
+            {
+              "name": "_wrapper_options",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "Simple Form's wrapper options, unused: the Field is the wrapper"
+            }
+          ],
           "return": {
             "types": [
               "String"
@@ -374,7 +437,7 @@
           },
           "examples": [],
           "file": "lib/poetry/simple_form/inputs/collection_inputs.rb",
-          "line": 109
+          "line": 123
         }
       ],
       "constants": []
@@ -392,8 +455,17 @@
           "scope": "instance",
           "group": null,
           "signature": "input(_wrapper_options = nil)",
-          "docstring": "",
-          "params": [],
+          "docstring": "Renders the field as a native select.",
+          "params": [
+            {
+              "name": "_wrapper_options",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "Simple Form's wrapper options, unused: the Field is the wrapper"
+            }
+          ],
           "return": {
             "types": [
               "String"
@@ -402,7 +474,7 @@
           },
           "examples": [],
           "file": "lib/poetry/simple_form/inputs/collection_inputs.rb",
-          "line": 78
+          "line": 86
         }
       ],
       "constants": []
@@ -510,8 +582,17 @@
           "scope": "instance",
           "group": null,
           "signature": "input(_wrapper_options = nil)",
-          "docstring": "",
-          "params": [],
+          "docstring": "Renders the field as a select over the time zones.",
+          "params": [
+            {
+              "name": "_wrapper_options",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "Simple Form's wrapper options, unused: the Field is the wrapper"
+            }
+          ],
           "return": {
             "types": [
               "String"
@@ -520,7 +601,7 @@
           },
           "examples": [],
           "file": "lib/poetry/simple_form/inputs/collection_inputs.rb",
-          "line": 139
+          "line": 156
         }
       ],
       "constants": []

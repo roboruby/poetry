@@ -42,7 +42,8 @@ namespace :docs do
     # The JS siblings: JSDoc + controllers-manifest exports (pure file
     # parsing - no bundle switch needed).
     { "poetry-core" => "poetry-controllers",
-      "poetry-charts" => "poetry-charts-controllers" }.each do |js_gem, slug|
+      "poetry-charts" => "poetry-charts-controllers",
+      "poetry-agent" => "poetry-agent-controllers" }.each do |js_gem, slug|
       js_root = root.join("..", js_gem).expand_path
       next warn("skip #{slug}: #{js_gem} not found") unless js_root.exist?
 
