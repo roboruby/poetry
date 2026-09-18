@@ -3078,3 +3078,13 @@ helper_args:
   poetry_scatter_chart: 0
   poetry_tooltip_content: 0
   poetry_tooltip_layer: 0
+internals:
+- Poetry::Charts::BarMath
+- Poetry::Charts::ErrorBars
+- Poetry::Charts::Geometry::Curve::LineState
+- Poetry::Charts::Geometry::Curve::Linear
+- Poetry::Charts::Geometry::Curve::MonotoneX
+- Poetry::Charts::Geometry::Curve::Natural
+- Poetry::Charts::Geometry::Curve::Step
+- Poetry::Charts::TooltipContent::Component::Row
+- Poetry::Charts::TooltipLayer::Component
