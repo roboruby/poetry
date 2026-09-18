@@ -1,6 +1,0 @@
-<%# DateField's template verbatim: native input visible (and THE form
-    value) until the controller builds segments into the group. %>
-<%= content_tag(:div, **root_attributes) do %>
-  <%= content_tag(:span, "", **group_attributes) %>
-  <%= tag.input(**input_attributes) %>
-<% end %>
