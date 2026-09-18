@@ -276,13 +276,13 @@ module Poetry
         { "data-slot" => part.to_s }
       end
 
-      # The root element's attributes: the caller's {#html_attributes} (its
-      # classes already merged with the dictionary's) with the component's
-      # own root markup set beneath them - `data-slot` (the component title,
-      # or the one in +extra+), `data-component`, and the root's Stimulus
-      # wiring when a `use_stimulus` block declares `:root`. The caller's
-      # attributes win: a class, id or data-* passed in is kept and the
-      # component's default fills the gaps.
+      # The root element's attributes, ready to splat: the caller's
+      # {#html_attributes} (its classes already merged with the dictionary's)
+      # over the component's own root markup - `data-slot` (the component
+      # title, or the one in +extra+), `data-component`, and the root's
+      # Stimulus wiring when a `use_stimulus` block declares `:root`. The
+      # caller's attributes win: a class, id or data-* passed in is kept and
+      # the component's default fills the gaps.
       #
       # A component adds its own root markup by overriding and passing it up;
       # the template splats the result.
@@ -292,15 +292,16 @@ module Poetry
       #     super("role" => "status", "data-variant" => variant)
       #   end
       # @example The template
-      #   <%= tag.div(**root_attributes.to_attributes) do %>
+      #   <%= tag.div(**root_attributes) do %>
       #
       # @param extra [Hash] the component's own root attributes; a
       #   `"data-slot"` here replaces the default
-      # @return [Poetry::Core::HTML::Attributes] the root's attributes
+      # @return [Hash] the root's attributes, flat (`data-x`, `aria-x`,
+      #   booleans as the attribute name), for `tag` and `content_tag`
       def root_attributes(extra = {})
         own = { "data-slot" => root_slot }.merge(extra).merge(component_data_attributes)
         wired = self.class.stimulus_elements.key?(:root) ? :root : nil
-        html_attributes.merge_if_not_set(element_attributes(own, stimulus: wired))
+        html_attributes.merge_if_not_set(element_markup(own, stimulus: wired)).to_attributes
       end
 
       # The root's `data-slot`: the component title in kebab form (a
@@ -311,27 +312,57 @@ module Poetry
         self.class.component_title.to_s.tr("_", "-")
       end
 
-      # An element's attributes as one merge-aware {Poetry::Core::HTML::Attributes}:
-      # the given markup with a declared element's Stimulus wiring merged
-      # beneath it. Plain `Hash#merge` of markup with wiring drops one
-      # side's `data-controller` or `data-action` when both carry one; this
-      # concatenates them. Build every part's attributes here and splat
-      # `to_attributes` in the template.
+      # A part's attributes, ready to splat. Named after a part, it carries
+      # the part's `data-slot` (the root slot and the part name: a
+      # DropdownMenu's `:content` is "dropdown-menu-content"), the
+      # dictionary's classes for it (`css(part)`, when the Style declares the
+      # element), and the part's Stimulus wiring when a `use_stimulus` block
+      # declares an element of that name - each of which the markup may
+      # override (its own `"data-slot"` or `"class"` wins; `stimulus:` names
+      # another element, or `false` for none). The wiring merges beneath the
+      # markup the safe way: plain `Hash#merge` drops one side's
+      # `data-controller` or `data-action` when both carry one, and this
+      # concatenates them. Rendered more than once (a row, an addon), the
+      # builder takes its arguments and the part stays the same.
       #
-      # @example A part builder
+      # @example A part builder, and its template
       #   def content_attributes
-      #     element_attributes({ "id" => content_id, "role" => "menu" }, stimulus: :content)
+      #     attrs = { "id" => content_id, "role" => "menu" }
+      #     attrs["hidden"] = true unless open
+      #     element_attributes(:content, attrs)
       #   end
+      #   # <%= tag.div(**content_attributes) do %>
       #
-      # @param attrs [Hash] the element's markup, in braces (a braceless hash
-      #   would read as the keyword that follows)
-      # @param stimulus [Symbol, String, nil] a `use_stimulus` element whose
-      #   wiring joins the markup; nil for an unwired element
-      # @return [Poetry::Core::HTML::Attributes] the element's attributes
-      def element_attributes(attrs = {}, stimulus: nil)
+      # @param part [Symbol, String, nil] the part; nil (or a Hash in its
+      #   place) for markup with no part of its own
+      # @param attrs [Hash] the element's markup, in braces after a part
+      # @param stimulus [Symbol, String, false, nil] the `use_stimulus`
+      #   element whose wiring joins the markup: nil takes the part's own when
+      #   one is declared, false takes none
+      # @return [Hash] the element's attributes, flat, for `tag` and `content_tag`
+      def element_attributes(part = nil, attrs = {}, stimulus: nil)
+        if part.is_a?(Hash)
+          attrs = part
+          part = nil
+        end
+        own = attrs
+        if part
+          own = { "data-slot" => "#{root_slot}-#{part.to_s.tr("_", "-")}", "class" => css(part) }.compact.merge(attrs)
+          stimulus = part.to_sym if stimulus.nil? && self.class.stimulus_elements.key?(part.to_sym)
+        end
+        element_markup(own, stimulus: stimulus || nil).to_attributes
+      end
+
+      # The merge-aware form of an element's markup with its wiring.
+      #
+      # @param attrs [Hash] the element's markup
+      # @param stimulus [Symbol, String, nil] a declared element, or nil
+      # @return [Poetry::Core::HTML::Attributes]
+      def element_markup(attrs, stimulus:)
         attributes = Poetry::Core::HTML::Attributes.new(attrs)
         stimulus ? attributes.merge(stimulus_attributes_for(stimulus)) : attributes
       end
+      private :element_markup
 
       # Enforces the class-level requires_content declaration - call from
       # before_render. The message is built from the declaration so the

@@ -117,6 +117,9 @@ export default class extends Controller {
     this.pendingScrollToMessage = null
     this.defaultScrollPositionApplied = false
     this.pendingScroll = HELD_SCROLL_POSITIONS.has(this.defaultScrollPositionValue)
+    // Layout is known once a resize observation has run (or right away
+    // where there is no observer to wait for).
+    this.layoutObserved = typeof ResizeObserver === "undefined"
     this.spacerHeight = 0
     this.spacerGap = getFlexGap(this.#spacer()?.parentElement ?? null)
     this.handledScrollAnchors = new WeakSet()
@@ -641,6 +644,9 @@ export default class extends Controller {
   }
 
   #handleResize() {
+    this.layoutObserved = true
+    if (!this.defaultScrollPositionApplied && this.#applyDefaultScrollPosition()) return
+
     if (this.mode === "following-bottom" && this.autoScrollValue) {
       this.#scrollToEnd({ behavior: "auto" })
       return
@@ -690,7 +696,13 @@ export default class extends Controller {
 
     if (!handled) return false
 
-    this.#markDefaultScrollPositionApplied()
+    // Final against a laid-out viewport. A controller can connect before the
+    // page's render-blocking stylesheet lands (the document still loading),
+    // when the viewport is not yet sized and has nothing to scroll: the
+    // position is repeated on the first resize pass, and the opening hold
+    // releases there instead.
+    const laidOut = this.layoutObserved || document.readyState === "complete" || getMaxScrollTop(this.#viewport()) > 0
+    if (laidOut) this.#markDefaultScrollPositionApplied()
 
     return true
   }
