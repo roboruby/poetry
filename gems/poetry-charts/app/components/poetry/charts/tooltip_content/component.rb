@@ -111,9 +111,7 @@ module Poetry
 
         # The box's attributes with the part self-identification.
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "chart-tooltip-content" }.merge(component_data_attributes)
-          )
+          super("data-slot" => "chart-tooltip-content")
         end
 
         # One resolved tooltip row: name via config, color via item-else-config.

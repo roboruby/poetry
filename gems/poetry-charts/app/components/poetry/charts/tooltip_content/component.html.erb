@@ -1,4 +1,4 @@
-<%= content_tag(:div, **root_attributes.to_attributes) do %>
+<%= content_tag(:div, **root_attributes) do %>
   <% if label_text && !nest_label? %><div data-slot="chart-tooltip-label" class="<%= css(:label) %>"><%= label_text %></div><% end %>
   <div class="<%= css(:inner) %>">
     <% rows.each do |row| %>

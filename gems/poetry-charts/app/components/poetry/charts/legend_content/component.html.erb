@@ -1,4 +1,4 @@
-<%= content_tag(:div, **root_attributes.to_attributes) do %>
+<%= content_tag(:div, **root_attributes) do %>
   <% rows.each do |row| %>
     <%= content_tag(toggle ? :button : :div, **(toggle ? toggle_attributes(row) : { data: { slot: "chart-legend-item" }, class: css(:item) })) do %>
       <% unless hide_icon || row[:color].nil? %>
