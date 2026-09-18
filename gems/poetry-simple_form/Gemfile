@@ -32,3 +32,6 @@ gem "yard-lint", require: false
 # Architecture gates: archspec check and the Rubydex linter rules (rake arch:*).
 gem "archspec", require: false
 gem "rubydex", require: false
+# Complexity and duplication report (rake quality:report), never a gate.
+gem "flay", require: false
+gem "flog", require: false
