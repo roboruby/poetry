@@ -285,42 +285,14 @@ module Poetry
           def slot_surface(klass, seen: [])
             return [] unless klass.respond_to?(:registered_slots)
 
-            builders = declared_builders(klass)
-            required_content = declared_required_content(klass)
-            block_yields = declared_constant(klass, :SLOT_BLOCK_YIELDS)
-            renders = declared_constant(klass, :SLOT_RENDERS)
-            slot_docs = klass.respond_to?(:slot_docs) ? klass.slot_docs : {}
-            klass.registered_slots.map do |slot_name, config|
-              definition = { name: slot_name, many: config[:collection] == true }
-              doc = slot_docs[slot_name.to_sym]
-              definition[:description] = doc if doc
-              renderable = config[:renderable]
-              definition[:component] = renderable.component_path if renderable.respond_to?(:component_path)
-              # A declared pure-forwarding lambda (SLOT_RENDERS) restores
-              # the component fact a wrapping lambda hides.
-              # Polymorphic slots stay out - their types are their contract.
-              if config[:renderable_hash].nil? &&
-                 (declared = renders[slot_setters(slot_name, config).first&.to_sym])
-                unless declared.respond_to?(:component_path)
-                  raise Poetry::Core::Error,
-                        "#{klass}::SLOT_RENDERS[#{slot_name}] must be a poetry component class"
-                end
-
-                definition[:component] ||= declared.component_path
-              end
-              definition[:types] = config[:renderable_hash].keys if config[:renderable_hash]
-              setter_args = setter_positional_args(slot_name, config)
-              definition[:setter_args] = setter_args unless setter_args.empty?
-              setter_kwargs = setter_keyword_args(slot_name, config)
-              definition[:setter_kwargs] = setter_kwargs unless setter_kwargs.empty?
-              yieldless = yieldless_setters(slot_name, config) - block_yields.keys
-              definition[:yieldless] = yieldless unless yieldless.empty?
-              required = required_content.slice(*slot_setters(slot_name, config).map(&:to_sym))
-              definition[:required_content] = required unless required.empty?
-              surfaces = builder_surfaces(slot_name, config, builders, seen + [klass])
-              definition[:builders] = surfaces unless surfaces.empty?
-              definition
-            end
+            context = {
+              klass: klass, seen: seen + [klass],
+              builders: declared_builders(klass), required_content: declared_required_content(klass),
+              block_yields: declared_constant(klass, :SLOT_BLOCK_YIELDS),
+              renders: declared_constant(klass, :SLOT_RENDERS),
+              slot_docs: klass.respond_to?(:slot_docs) ? klass.slot_docs : {}
+            }
+            klass.registered_slots.map { |slot_name, config| slot_definition(slot_name, config, context) }
           end
 
           # The validated REQUIRED_SLOTS declaration of a slot-owning class:
@@ -401,6 +373,55 @@ module Poetry
           end
 
           private
+
+          # One slot's registry definition: its name and arity, its doc, its
+          # component fact, its polymorphic types, then its setter facts.
+          def slot_definition(slot_name, config, context)
+            definition = { name: slot_name, many: config[:collection] == true }
+            doc = context[:slot_docs][slot_name.to_sym]
+            definition[:description] = doc if doc
+            renderable = config[:renderable]
+            definition[:component] = renderable.component_path if renderable.respond_to?(:component_path)
+            declared = declared_component(slot_name, config, context)
+            definition[:component] ||= declared if declared
+            definition[:types] = config[:renderable_hash].keys if config[:renderable_hash]
+            definition.merge!(setter_facts(slot_name, config, context))
+          end
+
+          # The component path a SLOT_RENDERS entry declares for a slot's
+          # first setter, or nil: a declared pure-forwarding lambda restores
+          # the component fact a wrapping lambda hides. Polymorphic slots
+          # stay out - their types are their contract.
+          def declared_component(slot_name, config, context)
+            return if config[:renderable_hash]
+
+            declared = context[:renders][slot_setters(slot_name, config).first&.to_sym]
+            return unless declared
+            unless declared.respond_to?(:component_path)
+              raise Poetry::Core::Error,
+                    "#{context[:klass]}::SLOT_RENDERS[#{slot_name}] must be a poetry component class"
+            end
+
+            declared.component_path
+          end
+
+          # A slot's setter facts, each present only when it says something:
+          # positional arity, keyword names, the yieldless setters, the
+          # required content, and the builder surfaces.
+          def setter_facts(slot_name, config, context)
+            facts = {}
+            setter_args = setter_positional_args(slot_name, config)
+            facts[:setter_args] = setter_args unless setter_args.empty?
+            setter_kwargs = setter_keyword_args(slot_name, config)
+            facts[:setter_kwargs] = setter_kwargs unless setter_kwargs.empty?
+            yieldless = yieldless_setters(slot_name, config) - context[:block_yields].keys
+            facts[:yieldless] = yieldless unless yieldless.empty?
+            required = context[:required_content].slice(*slot_setters(slot_name, config).map(&:to_sym))
+            facts[:required_content] = required unless required.empty?
+            surfaces = builder_surfaces(slot_name, config, context[:builders], context[:seen])
+            facts[:builders] = surfaces unless surfaces.empty?
+            facts
+          end
 
           # The class's SLOT_BUILDERS map, or an empty one.
           def declared_builders(klass)
