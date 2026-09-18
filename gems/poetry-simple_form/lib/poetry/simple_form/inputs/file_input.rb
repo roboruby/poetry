@@ -9,6 +9,7 @@ module Poetry
       class FileInput < Base
         private
 
+        # Renders as Poetry's file field.
         def poetry_as = :file
       end
     end

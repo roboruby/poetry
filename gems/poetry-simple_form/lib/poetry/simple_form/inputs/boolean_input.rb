@@ -8,6 +8,7 @@ module Poetry
       class BooleanInput < Base
         private
 
+        # Renders as Poetry's boolean field.
         def poetry_as = :boolean
       end
     end

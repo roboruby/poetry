@@ -8,6 +8,7 @@ module Poetry
       class StringInput < Base
         private
 
+        # The Poetry field type for a string column, or nil so Poetry infers one for the no-column fallback.
         def poetry_as
           # :string is simple_form's no-column fallback (ActiveModel,
           # virtual attributes) - hand poetry a nil so ITS inference runs

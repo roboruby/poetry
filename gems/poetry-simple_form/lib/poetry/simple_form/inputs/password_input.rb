@@ -8,6 +8,7 @@ module Poetry
       class PasswordInput < Base
         private
 
+        # Renders as Poetry's password field.
         def poetry_as = :password
       end
     end

@@ -11,6 +11,7 @@ module Poetry
       class SwitchInput < Base
         private
 
+        # Renders as Poetry's switch field.
         def poetry_as = :switch
       end
 
@@ -18,6 +19,7 @@ module Poetry
       class SliderInput < Base
         private
 
+        # Renders as Poetry's slider field.
         def poetry_as = :slider
       end
 
@@ -25,6 +27,7 @@ module Poetry
       class OtpInput < Base
         private
 
+        # Renders as Poetry's one-time-code field.
         def poetry_as = :otp
       end
 
@@ -32,6 +35,7 @@ module Poetry
       class SensitiveInput < Base
         private
 
+        # Renders as Poetry's sensitive field.
         def poetry_as = :sensitive
       end
 
@@ -39,6 +43,7 @@ module Poetry
       class TagGroupInput < Base
         private
 
+        # Renders as Poetry's tag group field.
         def poetry_as = :tag_group
       end
 
@@ -46,6 +51,7 @@ module Poetry
       class DatePickerInput < Base
         private
 
+        # Renders as Poetry's date picker field.
         def poetry_as = :date_picker
       end
 
@@ -53,6 +59,7 @@ module Poetry
       class CalendarInput < Base
         private
 
+        # Renders as Poetry's inline calendar field.
         def poetry_as = :calendar
       end
     end

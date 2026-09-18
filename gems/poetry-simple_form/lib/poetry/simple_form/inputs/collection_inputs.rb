@@ -10,6 +10,8 @@ module Poetry
       class CollectionBase < Base
         private
 
+        # The collection as label and value pairs, reading the configured label
+        # and value methods when the items are records.
         def label_value_pairs(collection = Array(options[:collection]))
           return [] if collection.empty?
 
@@ -27,6 +29,7 @@ module Poetry
           end
         end
 
+        # An item's label or value: a callable is called, a symbol is sent.
         def read(item, method)
           method.respond_to?(:call) ? method.call(item) : item.public_send(method)
         end
@@ -77,6 +80,7 @@ module Poetry
       # Serves `as: :native_select`: a poetry Field wrapping the styled
       # native <select> (the no-JS picker).
       class NativeSelectInput < CollectionBase
+        # Renders the field as a native select.
         # @param _wrapper_options [Hash, nil] Simple Form's wrapper options, unused: the Field is the wrapper
         # @return [String] the rendered Field HTML
         def input(_wrapper_options = nil)
@@ -88,6 +92,7 @@ module Poetry
 
       # Serves `as: :combobox`: a poetry Field wrapping the filterable Combobox.
       class ComboboxInput < CollectionBase
+        # Renders the field as a combobox.
         # @param _wrapper_options [Hash, nil] Simple Form's wrapper options, unused: the Field is the wrapper
         # @return [String] the rendered Field HTML
         def input(_wrapper_options = nil)
@@ -100,6 +105,7 @@ module Poetry
       # Serves `as: :autocomplete`: a poetry Field wrapping the Autocomplete;
       # the collection becomes its suggestions.
       class AutocompleteInput < CollectionBase
+        # Renders the field as an autocomplete.
         # @param _wrapper_options [Hash, nil] Simple Form's wrapper options, unused: the Field is the wrapper
         # @return [String] the rendered Field HTML
         def input(_wrapper_options = nil)
@@ -111,6 +117,7 @@ module Poetry
       # group_label_method resolve the groups, poetry's Select renders them
       # as labelled groups.
       class GroupedCollectionSelectInput < CollectionBase
+        # Renders the field as a select with labelled groups.
         # @param _wrapper_options [Hash, nil] Simple Form's wrapper options, unused: the Field is the wrapper
         # @return [String] the rendered Field HTML
         def input(_wrapper_options = nil)
@@ -131,6 +138,7 @@ module Poetry
           end
         end
 
+        # A group's label, through the configured or the first responding label method.
         def group_label_for(group)
           method = options[:group_label_method] ||
                    ::SimpleForm.collection_label_methods.find { |m| group.respond_to?(m) }
@@ -142,6 +150,7 @@ module Poetry
       # Select, the priority zones (priority: or SimpleForm.time_zone_priority)
       # listed first.
       class TimeZoneInput < CollectionBase
+        # Renders the field as a select over the time zones.
         # @param _wrapper_options [Hash, nil] Simple Form's wrapper options, unused: the Field is the wrapper
         # @return [String] the rendered Field HTML
         def input(_wrapper_options = nil)
@@ -152,6 +161,7 @@ module Poetry
 
         private
 
+        # Every time zone as a label and name pair, the priority zones first.
         def zone_pairs
           zones = ActiveSupport::TimeZone.all
           priority = Array(options[:priority] || ::SimpleForm.time_zone_priority)

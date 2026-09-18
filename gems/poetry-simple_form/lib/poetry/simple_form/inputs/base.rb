@@ -24,6 +24,7 @@ module Poetry
         # Subclasses answer the poetry `as:` value (nil lets poetry infer).
         def poetry_as = nil
 
+        # A Poetry form builder over the same object, the one the inputs render through.
         def poetry_builder
           Poetry::Ui::FormBuilder.new(object_name, object, template, {})
         end

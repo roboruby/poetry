@@ -8,6 +8,7 @@ module Poetry
       class NumericInput < Base
         private
 
+        # Renders as Poetry's number field.
         def poetry_as = :number
       end
     end
