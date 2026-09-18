@@ -49,6 +49,7 @@ Naming/FileName:
   # Poetry::Core namespace; its name must match the gem, not snake_case.
   Exclude:
     - "lib/poetry-ui.rb"
+    - Archspec.rb # ArchSpec reads the spec by that name
 
 # --- poetry-core framework port ---------------------------------------------
 # The framework layer is ported intact from view_component_plus (which used

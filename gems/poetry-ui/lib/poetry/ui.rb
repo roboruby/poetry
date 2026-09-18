@@ -206,8 +206,10 @@ module Poetry
       # Tolerant on charts, like the AGENTS.md census: a host without the
       # gem (or with a stubbed/partial one) just drops the charts reference.
       def charts_registry
+        # archspec:disable-next-line constants.forbid -- a defined? probe, never a dependency
         return nil unless defined?(Poetry::Charts::Engine)
 
+        # archspec:disable-next-line constants.forbid -- guarded by the defined? probe above
         Poetry::Charts.registry
       rescue StandardError
         nil
@@ -259,6 +261,7 @@ module Poetry
       # simply drops it - the charts_registry tolerance, boot-free.
       def committed_charts_registry
         require "poetry/charts"
+        # archspec:disable-next-line constants.forbid -- a defined? probe, never a dependency
         Poetry::Core::Registry.committed(Poetry::Charts.root)
       rescue LoadError, StandardError
         nil

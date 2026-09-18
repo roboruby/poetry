@@ -270,6 +270,21 @@ module Poetry
           super({ "id" => questionnaire_id })
         end
 
+        # The progress readout's attributes: the progressbar semantics and live
+        # region, the current and total counts, and the custom marker when a
+        # block replaced the text.
+        def progress_attributes(custom:)
+          attrs = {
+            "class" => css(:progress, class: progress_class), "role" => "progressbar",
+            "aria-label" => "Questionnaire progress", "aria-live" => "polite",
+            "data-current" => active_index + 1, "data-total" => enabled_items.size,
+            "aria-valuemin" => "1", "aria-valuemax" => enabled_items.size,
+            "aria-valuenow" => active_index + 1, "aria-valuetext" => progress_label
+          }
+          attrs["data-custom"] = "" if custom
+          element_attributes(:progress, attrs)
+        end
+
         # @api private
         def item_attributes(item)
           active = item == active_item
@@ -388,7 +403,7 @@ module Poetry
         end
 
         private :progress_class, :questionnaire_id, :enabled_items, :active_item, :progress_label, :shortcut_for
-        private :item_dom_id, :field_name, :input_type, :nav_button_options, :choice_attributes
+        private :item_dom_id, :field_name, :input_type, :nav_button_options, :choice_attributes, :progress_attributes
       end
     end
   end

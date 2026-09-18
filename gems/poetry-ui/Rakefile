@@ -23,4 +23,5 @@ task default: %i[test test:dommy rubocop vendor:stimulus:verify registry:verify 
                  herb:compile css:verify_compiled css:verify_selected_bridge css:verify_reduced_motion
                  css:verify_theme css:verify_fidelity css:verify_rendered
                  css:verify_hooks css:verify_vars design:verify
-                 eval:verify goldens:verify_inputs yard:verify yard:coverage yard:coverage:all yard:lint]
+                 eval:verify goldens:verify_inputs yard:verify yard:coverage
+                 yard:coverage:all yard:lint arch:check arch:order arch:lint]

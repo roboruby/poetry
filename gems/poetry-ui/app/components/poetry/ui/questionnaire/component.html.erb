@@ -1,19 +1,9 @@
 <%= form_with(url: url, method: http_method, html: root_attributes) do %>
   <% if progress? %>
     <% custom_progress = progress.to_s %>
-    <div <%= tag.attributes({ "class" => css(:progress, class: progress_class), "data-slot" => "questionnaire-progress",
-                              "role" => "progressbar", "aria-label" => "Questionnaire progress",
-                              "aria-live" => "polite",
-                              "data-current" => active_index + 1,
-                              "data-total" => enabled_items.size,
-                              "aria-valuemin" => "1",
-                              "aria-valuemax" => enabled_items.size,
-                              "aria-valuenow" => active_index + 1,
-                              "aria-valuetext" => progress_label }
-                              .merge(custom_progress.present? ? { "data-custom" => "" } : {})
-                              .merge(stimulus_attributes_for(:progress))) %>>
+    <%= content_tag(:div, **progress_attributes(custom: custom_progress.present?)) do %>
       <%= custom_progress.presence || progress_label %>
-    </div>
+    <% end %>
   <% end %>
   <% item_models.each do |item| %>
     <%= content_tag(:fieldset, **item_attributes(item)) do %>
