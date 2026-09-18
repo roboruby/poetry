@@ -32,7 +32,7 @@ export const commentText = (comments) => {
 }
 
 // The description of a JSDoc block: the text before its first tag.
-export const jsdocSummary = (comment) => {
+const jsdocSummary = (comment) => {
   const text = commentText([comment])
   const tagAt = text.search(/(^|\n)@\w+/)
   return (tagAt === -1 ? text : text.slice(0, tagAt)).trim()
