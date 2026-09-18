@@ -76,10 +76,16 @@ export default class extends Controller {
     this.unregister()
   }
 
+  /**
+   * Re-registers under the new name once connected.
+   */
   nameValueChanged() {
     if (this.#connected) this.register()
   }
 
+  /**
+   * Re-registers the new tool list once connected.
+   */
   toolsValueChanged() {
     if (this.#connected) this.register()
   }
@@ -252,9 +258,16 @@ const serializable = (value) => {
   }
 }
 
-// Executes a declared tool by its full registered name on whichever
-// connected root declares it - the in-page dispatch path (no
-// modelContext needed). Answers an error string when no root does.
+/**
+ * Executes a declared tool by its full registered name on whichever
+ * connected root declares it - the in-page dispatch path (no
+ * modelContext needed). Answers an error string when no root does.
+ *
+ * @param {Object} application the Stimulus application
+ * @param {string} name the full registered tool name
+ * @param {Object} [args] the tool's arguments
+ * @returns {Promise<*>} the tool's result, or an error string when no root declares it
+ */
 export const executeRegisteredTool = (application, name, args = {}) => {
   for (const [element, controller] of instances) {
     const owns = controller.toolsValue.some((tool) => `poetry.${controller.nameValue}.${tool.name}` === name)
@@ -265,5 +278,7 @@ export const executeRegisteredTool = (application, name, args = {}) => {
   return Promise.resolve(`Error: no registered tool named ${name} on this page`)
 }
 
-// Test seam: the live registration table.
+/**
+ * Test seam: the live registration table.
+ */
 export const _registrations = registrations

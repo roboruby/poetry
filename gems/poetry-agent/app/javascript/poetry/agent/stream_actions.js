@@ -1,12 +1,17 @@
-// The versioned replace Turbo Stream action the AG-UI relay and the A2UI
-// surface streams emit: a streamed frame re-renders the SAME element from
-// a server stream, which inherits an out-of-order delivery race, so every
-// payload carries data-version and this action applies only strictly-newer
-// frames - older or duplicate frames are dropped silently. With
-// method="morph" the newer frame morphs the element through Turbo's own
-// replace action (idiomorph), so local state survives an update. Installed
-// on Turbo by registerPoetryAgent when the host has Turbo and no vreplace
-// of its own.
+/**
+ * The versioned replace Turbo Stream action the AG-UI relay and the A2UI
+ * surface streams emit: a streamed frame re-renders the SAME element from
+ * a server stream, which inherits an out-of-order delivery race, so every
+ * payload carries data-version and this action applies only strictly-newer
+ * frames - older or duplicate frames are dropped silently. With
+ * method="morph" the newer frame morphs the element through Turbo's own
+ * replace action (idiomorph), so local state survives an update. Installed
+ * on Turbo by registerPoetryAgent when the host has Turbo and no vreplace
+ * of its own.
+ *
+ * @param {Object} [turbo] the Turbo global; a host with no Turbo installs nothing
+ * @returns {boolean} true when the action was installed
+ */
 export const installVersionedReplace = (turbo = globalThis.Turbo) => {
   if (!turbo?.StreamActions || turbo.StreamActions.vreplace) return false
 
@@ -39,6 +44,15 @@ const LOCAL_STATE = {
 }
 const EXPANDED = ["aria-expanded", "data-open", "data-state"]
 
+/**
+ * Whether a morph must leave an attribute alone to keep an A2UI surface's
+ * local state: an edited input's value or checked state, an open disclosure,
+ * or a slot-specific attribute the runtime owns.
+ *
+ * @param {Element} element the element being morphed
+ * @param {string} attributeName the attribute the morph would change
+ * @returns {boolean} true to keep the current attribute
+ */
 export const preservesLocalState = (element, attributeName) => {
   if (!element?.closest?.("[data-a2ui-surface]")) return false
   if (attributeName === "value" || attributeName === "checked") return isDirty(element)
@@ -55,6 +69,13 @@ const isDirty = (element) => {
   return false
 }
 
+/**
+ * Installs the before-morph-attribute guard once per document, so a streamed
+ * re-render morphs without clobbering local state.
+ *
+ * @param {Document} [doc] the document to guard
+ * @returns {boolean} true when installed, false when absent or already guarded
+ */
 export const installMorphStateGuard = (doc = globalThis.document) => {
   if (!doc || doc.__poetryA2uiMorphGuard) return false
   doc.__poetryA2uiMorphGuard = true

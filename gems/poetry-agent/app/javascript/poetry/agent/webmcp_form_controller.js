@@ -99,11 +99,16 @@ const excerpt = (text, contentType = "") => {
   return plain ? `: ${plain.slice(0, 500)}` : ""
 }
 
-// Declarative tool attributes never reach an inert document: Chrome 151
-// crashes the renderer when a DOMParser (or createHTMLDocument) document
-// holds a <form toolname> - the answer page usually IS the page with the
-// form - so they are stripped from the text before parsing. Turbo's own
-// visit parse adopts the form into the live document and is unaffected.
+/**
+ * Declarative tool attributes never reach an inert document: Chrome 151
+ * crashes the renderer when a DOMParser (or createHTMLDocument) document
+ * holds a <form toolname> - the answer page usually IS the page with the
+ * form - so they are stripped from the text before parsing. Turbo's own
+ * visit parse adopts the form into the live document and is unaffected.
+ *
+ * @param {string} html the answer page's markup
+ * @returns {string} the markup without tool attributes
+ */
 export const stripToolAttributes = (html) =>
   html.replace(/\stool(?:name|description|autosubmit|paramdescription)(?:=(?:"[^"]*"|'[^']*'|[^\s>]*))?/gi, "")
 
