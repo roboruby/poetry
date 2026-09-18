@@ -1016,9 +1016,7 @@ module Poetry
 
         # The full-detail lines of a component: its wiring, parts and tools.
         def full_lines(entry)
-          lines = (entry["controllers"] || []).map do |controller|
-            "- wiring #{controller["identifier"]}: actions #{(controller["actions"] || []).join(", ")}"
-          end
+          lines = (entry["controllers"] || []).map { |controller| wiring_line(controller) }
           # The styling contract: every data-slot part with its
           # state attributes and var seams, DOM-verified by the
           # part-contract tier - restyle via [data-slot=...], never by
@@ -1029,6 +1027,17 @@ module Poetry
           (entry["tools"] || []).each { |tool| lines << tool_line(tool) }
           (entry["agent_rules"] || []).each { |rule| lines << "- RULE: #{rule}" }
           lines
+        end
+
+        # One line for a wired controller: its actions, each with the summary
+        # the manifest carries beside the code, so an agent writing a
+        # data-action knows what it will do.
+        def wiring_line(controller)
+          docs = Poetry::Core::Stimulus::Manifest.catalog.dig(controller["identifier"], "method_docs") || {}
+          actions = (controller["actions"] || []).map do |action|
+            docs[action] ? "#{action} (#{docs[action]})" : action
+          end
+          "- wiring #{controller["identifier"]}: actions #{actions.join(", ")}"
         end
 
         # One line for a component's WebMCP tool: its name, description and parameters.

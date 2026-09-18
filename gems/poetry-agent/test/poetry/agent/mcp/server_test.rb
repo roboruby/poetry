@@ -433,7 +433,9 @@ module Poetry
       def test_describe_full_adds_wiring_and_rules
         text = call("describe_component", "name" => "command_dialog", "detail" => "full")
 
-        assert_includes text, "wiring poetry--core--dialog: actions open, close, toggle"
+        assert_includes text, "wiring poetry--core--dialog: actions open (Opens"
+        assert_includes text, "close (Closes"
+        assert_includes text, "toggle ("
       end
 
       # The styling contract at full detail: parts with their state
