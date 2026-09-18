@@ -36,6 +36,7 @@ module Poetry
           text.split(/\n{2,}/).map(&:strip).reject(&:empty?)
         end
 
+        # One markdown block as HTML: a heading, a bullet list, or a paragraph with its lines joined by breaks.
         def block_html(block)
           if (match = block.match(/\A(\#{1,6})\s+(.*)\z/m))
             level = match[1].length

@@ -200,6 +200,7 @@ module Poetry
             combinators(registry)
           end
 
+          # Defines the validation functions: required, regex and the numeric bounds.
           def validators(registry)
             registry.define("required", description: "Checks that the value is not null, undefined, or empty.",
                                         returns: "validationResult", required: %w[value], params: CHECKED) do |args, _|
@@ -228,6 +229,7 @@ module Poetry
             end
           end
 
+          # Defines the formatting functions: strings, numbers, currency, dates and plurals.
           def formatters(registry)
             grouping = { "decimals" => DYNAMIC.call("Number", "Fraction digits to show."),
                          "grouping" => DYNAMIC.call("Boolean", "Thousands separators (default true).") }
@@ -271,6 +273,7 @@ module Poetry
             end
           end
 
+          # Defines the logical functions: and, or and not.
           def combinators(registry)
             registry.define("and", description: "Logical AND of a list of values.", returns: "boolean",
                                    required: %w[values], params: list) do |args, _|
@@ -300,6 +303,7 @@ module Poetry
             true
           end
 
+          # Whether a number sits inside the optional min and max bounds.
           def within?(number, min, max)
             (min.nil? || number >= min) && (max.nil? || number <= max)
           end
@@ -314,6 +318,7 @@ module Poetry
             raise Error, "regex: #{e.message}"
           end
 
+          # A number with thousands separators and the requested fraction digits; an empty string for no number.
           def format_number(args)
             number = Functions.number(args["value"]) or return ""
             decimals = Functions.number(args["decimals"])
@@ -327,6 +332,7 @@ module Poetry
             end
           end
 
+          # A number as currency: the code's unit and digits, grouping and decimals from the arguments.
           def format_currency(args)
             number = Functions.number(args["value"]) or return ""
             code = args["currency"].to_s.upcase
@@ -337,11 +343,13 @@ module Poetry
                                                                    format: "%u%n", negative_format: "-%u%n")
           end
 
+          # A time value rendered through a date pattern; an empty string when the value is not a time.
           def format_date(value, pattern)
             time = parse_time(value) or return ""
             time.strftime(strftime_pattern(pattern.to_s))
           end
 
+          # A Time from a time, a number in seconds or milliseconds, or a string; nil otherwise.
           def parse_time(value)
             case value
             when Time then value
@@ -365,6 +373,7 @@ module Poetry
             end
           end
 
+          # A date pattern in strftime form: quoted runs stay literal, letter runs map to their fields.
           def strftime_pattern(pattern)
             pattern.gsub(/'((?:[^']|'')*)'|([A-Za-z])\2*|%/) do |token|
               if token.start_with?("'") then token[1...-1].gsub("''", "'").gsub("%", "%%")
@@ -383,6 +392,7 @@ module Poetry
             form.to_s
           end
 
+          # The plural category of a number: zero, one, two, or other.
           def plural_category(number)
             return "other" if number.nil?
             return "zero" if number.zero?
@@ -392,6 +402,7 @@ module Poetry
             "other"
           end
 
+          # The URL to open, which must be http or https.
           def open_url(url)
             text = url.to_s.strip
             raise Error, "openUrl: only http and https URLs open" unless text.match?(%r{\Ahttps?://\S+\z})

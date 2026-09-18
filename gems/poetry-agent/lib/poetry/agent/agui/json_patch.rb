@@ -115,6 +115,7 @@ module Poetry
           parts.map { |token| "/#{token.gsub("~", "~0").gsub("/", "~1")}" }.join
         end
 
+        # An array index from a pointer token, raising when it is not a valid position.
         def index_of(array, token, path)
           index = Integer(token, exception: false)
           raise Error, "bad index #{token} at #{path}" if index.nil? || index.negative? || index >= array.length

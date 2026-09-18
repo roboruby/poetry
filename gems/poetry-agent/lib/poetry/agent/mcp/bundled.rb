@@ -55,6 +55,7 @@ module Poetry
           nil
         end
 
+        # Requires a feature and answers whether it loaded.
         def soft_require(feature)
           require feature
           true

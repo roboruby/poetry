@@ -89,10 +89,12 @@ module Poetry
           document
         end
 
+        # The child a pointer token names: an index into an array, a key into a hash.
         def child_of(node, token)
           node.is_a?(Array) ? node[token.to_i] : node[token]
         end
 
+        # Writes a value at a pointer token: an array appends on the dash token, else sets the index or key.
         def store(node, token, value)
           if node.is_a?(Array)
             token == "-" ? node.push(value) : node[token.to_i] = value

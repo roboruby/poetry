@@ -28,6 +28,8 @@ module Poetry
           end
         end
 
+        # A check's result as a validation: a hash carries its own verdict and message, anything else is read as a
+        # boolean.
         def interpret(result, rule)
           if result.is_a?(Hash)
             { valid: result["valid"] == true, code: result["code"],
