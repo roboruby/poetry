@@ -208,43 +208,76 @@ module Poetry
         # The accumulated-state timeline: every frame is the FULL part list
         # as rendered at that instant (streaming morphs the same row).
         def compile(parts)
-          frames = []
-          acc = []
-          version = 0
-          push = lambda do |sleep_ms|
-            version += 1
-            frames << Frame.new(parts: acc.map(&:dup), sleep_ms: sleep_ms, version: version)
-          end
-
+          timeline = Timeline.new
           parts.each do |part|
             case part[:kind]
-            when :reasoning, :text
-              chunks = part[:text].split(/(?<=\S)\s+/).each_slice(Script::TEXT_CHUNK_WORDS).map { |w| w.join(" ") }
-              delay = part.fetch(:delay_ms, Script::DEFAULT_TEXT_DELAY_MS) || Script::DEFAULT_TEXT_DELAY_MS
-              acc << part.merge(text: "")
-              chunks.each do |chunk|
-                acc[-1] = acc[-1].merge(text: [acc[-1][:text], chunk].reject(&:empty?).join(" "))
-                push.call(delay)
-              end
-            when :tool
-              acc << part.merge(state: :loading, output: nil)
-              push.call(0)
-              # An approval tool always passes through :awaiting_approval -
-              # resolved or not - so the paused prefix and the resolved
-              # timeline share frame counts up to the pause and the
-              # continuation begins AT the resolution frame (a denial with
-              # nothing after it still streams its denial).
-              if part[:approval]
-                acc[-1] = acc[-1].merge(state: :awaiting_approval)
-                push.call(part.fetch(:sleep_ms, 0))
-              end
-              unless part[:approval] && part[:state].nil?
-                acc[-1] = acc[-1].merge(state: part[:state] || :done, output: part[:output])
-                push.call(part.fetch(:sleep_ms, 0))
-              end
+            when :reasoning, :text then timeline.stream_text(part)
+            when :tool then timeline.stream_tool(part)
             end
           end
-          frames
+          timeline.frames
+        end
+
+        # The frames a turn compiles to, built one push at a time: each push
+        # records the whole part list as rendered at that instant.
+        class Timeline
+          # The frames pushed so far.
+          attr_reader :frames
+
+          # An empty timeline.
+          def initialize
+            @frames = []
+            @acc = []
+            @version = 0
+          end
+
+          # Streams a text or reasoning part a few words at a time, one frame per chunk.
+          #
+          # @param part [Hash] the part, with its text and optional delay_ms
+          def stream_text(part)
+            chunks = part[:text].split(/(?<=\S)\s+/).each_slice(Script::TEXT_CHUNK_WORDS).map { |w| w.join(" ") }
+            delay = part.fetch(:delay_ms, Script::DEFAULT_TEXT_DELAY_MS) || Script::DEFAULT_TEXT_DELAY_MS
+            @acc << part.merge(text: "")
+            chunks.each do |chunk|
+              amend(text: [@acc[-1][:text], chunk].reject(&:empty?).join(" "))
+              push(delay)
+            end
+          end
+
+          # Streams a tool part: loading, then awaiting approval when it asks
+          # for one, then its settled state unless the approval is left open.
+          #
+          # @param part [Hash] the part, with its approval, state, output and sleep_ms
+          def stream_tool(part)
+            @acc << part.merge(state: :loading, output: nil)
+            push(0)
+            # An approval tool always passes through :awaiting_approval -
+            # resolved or not - so the paused prefix and the resolved
+            # timeline share frame counts up to the pause and the
+            # continuation begins AT the resolution frame (a denial with
+            # nothing after it still streams its denial).
+            if part[:approval]
+              amend(state: :awaiting_approval)
+              push(part.fetch(:sleep_ms, 0))
+            end
+            return if part[:approval] && part[:state].nil?
+
+            amend(state: part[:state] || :done, output: part[:output])
+            push(part.fetch(:sleep_ms, 0))
+          end
+
+          private
+
+          # Records a frame of the current parts with its pause.
+          def push(sleep_ms)
+            @version += 1
+            @frames << Frame.new(parts: @acc.map(&:dup), sleep_ms: sleep_ms, version: @version)
+          end
+
+          # Replaces the last part with the changes merged in.
+          def amend(**changes)
+            @acc[-1] = @acc[-1].merge(changes)
+          end
         end
       end
 
