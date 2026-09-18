@@ -100,7 +100,30 @@ module Poetry
         @grid_config
       end
 
-      private :x_axis_config, :y_axis_config, :grid_config
+      # The gridlines group, per the grid slot: horizontal rules at the value
+      # ticks, vertical rules at the category centers; nil without the slot.
+      def grid_svg
+        return unless grid?
+
+        lines = []
+        if grid_config.horizontal
+          cartesian.y_ticks.each do |tick|
+            y = cartesian.y_scale.call(tick)
+            lines << grid_line(cartesian.plot_left, cartesian.plot_right, y, y)
+          end
+        end
+        if grid_config.vertical
+          cartesian.x_centers.each { |x| lines << grid_line(x, x, cartesian.plot_top, cartesian.plot_bottom) }
+        end
+        tag.g(safe_join(lines), "data-slot": "chart-grid", "aria-hidden": true)
+      end
+
+      # One gridline from one point to another.
+      def grid_line(from_x, to_x, from_y, to_y)
+        tag.line(class: css(:grid_line), x1: fnum(from_x), x2: fnum(to_x), y1: fnum(from_y), y2: fnum(to_y))
+      end
+
+      private :x_axis_config, :y_axis_config, :grid_config, :grid_svg, :grid_line
     end
   end
 end

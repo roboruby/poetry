@@ -1,20 +1,7 @@
 <%= render Poetry::Charts::Container::Component.new(config: chart_config, id: chart_id.delete_prefix("chart-")) do %>
   <%= content_tag(:div, frame_attributes.merge("class" => css(:frame))) do %>
   <svg viewBox="0 0 <%= width %> <%= height %>" class="<%= css(:svg) %>" data-slot="chart-svg" aria-label="<%= svg_label %>" preserveAspectRatio="xMidYMid meet" <%= tag.attributes(svg_interaction_attributes) %>>
-    <% if grid? %>
-      <g data-slot="chart-grid" aria-hidden="true">
-        <% if grid_config.horizontal %>
-          <% cartesian.y_ticks.each do |tick| %>
-            <line class="<%= css(:grid_line) %>" x1="<%= fnum(cartesian.plot_left) %>" x2="<%= fnum(cartesian.plot_right) %>" y1="<%= fnum(cartesian.y_scale.call(tick)) %>" y2="<%= fnum(cartesian.y_scale.call(tick)) %>" />
-          <% end %>
-        <% end %>
-        <% if grid_config.vertical %>
-          <% cartesian.x_centers.each do |x| %>
-            <line class="<%= css(:grid_line) %>" x1="<%= fnum(x) %>" x2="<%= fnum(x) %>" y1="<%= fnum(cartesian.plot_top) %>" y2="<%= fnum(cartesian.plot_bottom) %>" />
-          <% end %>
-        <% end %>
-      </g>
-    <% end %>
+    <%= grid_svg %>
     <%= cursor_svg(:line) %>
     <g data-slot="chart-lines">
       <% series_entries.each do |entry| %>
