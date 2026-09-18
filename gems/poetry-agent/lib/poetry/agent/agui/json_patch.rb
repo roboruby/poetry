@@ -115,7 +115,6 @@ module Poetry
           parts.map { |token| "/#{token.gsub("~", "~0").gsub("/", "~1")}" }.join
         end
 
-        # @api private
         def index_of(array, token, path)
           index = Integer(token, exception: false)
           raise Error, "bad index #{token} at #{path}" if index.nil? || index.negative? || index >= array.length
@@ -131,6 +130,8 @@ module Poetry
           else value
           end
         end
+
+        private_class_method :index_of
       end
     end
   end

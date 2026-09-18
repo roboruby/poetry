@@ -200,7 +200,6 @@ module Poetry
             combinators(registry)
           end
 
-          # @api private
           def validators(registry)
             registry.define("required", description: "Checks that the value is not null, undefined, or empty.",
                                         returns: "validationResult", required: %w[value], params: CHECKED) do |args, _|
@@ -229,7 +228,6 @@ module Poetry
             end
           end
 
-          # @api private
           def formatters(registry)
             grouping = { "decimals" => DYNAMIC.call("Number", "Fraction digits to show."),
                          "grouping" => DYNAMIC.call("Boolean", "Thousands separators (default true).") }
@@ -273,7 +271,6 @@ module Poetry
             end
           end
 
-          # @api private
           def combinators(registry)
             registry.define("and", description: "Logical AND of a list of values.", returns: "boolean",
                                    required: %w[values], params: list) do |args, _|
@@ -303,7 +300,6 @@ module Poetry
             true
           end
 
-          # @api private
           def within?(number, min, max)
             (min.nil? || number >= min) && (max.nil? || number <= max)
           end
@@ -318,7 +314,6 @@ module Poetry
             raise Error, "regex: #{e.message}"
           end
 
-          # @api private
           def format_number(args)
             number = Functions.number(args["value"]) or return ""
             decimals = Functions.number(args["decimals"])
@@ -332,7 +327,6 @@ module Poetry
             end
           end
 
-          # @api private
           def format_currency(args)
             number = Functions.number(args["value"]) or return ""
             code = args["currency"].to_s.upcase
@@ -343,13 +337,11 @@ module Poetry
                                                                    format: "%u%n", negative_format: "-%u%n")
           end
 
-          # @api private
           def format_date(value, pattern)
             time = parse_time(value) or return ""
             time.strftime(strftime_pattern(pattern.to_s))
           end
 
-          # @api private
           def parse_time(value)
             case value
             when Time then value
@@ -360,7 +352,6 @@ module Poetry
 
           # ISO 8601 first (a date alone is midnight UTC), then anything
           # Time.parse reads; nil when neither does.
-          # @api private
           def parse_time_string(text)
             return if text.empty?
             return Time.utc(*text.split("-").map(&:to_i)) if text.match?(/\A\d{4}-\d{2}-\d{2}\z/)
@@ -374,7 +365,6 @@ module Poetry
             end
           end
 
-          # @api private
           def strftime_pattern(pattern)
             pattern.gsub(/'((?:[^']|'')*)'|([A-Za-z])\2*|%/) do |token|
               if token.start_with?("'") then token[1...-1].gsub("''", "'").gsub("%", "%%")
@@ -393,7 +383,6 @@ module Poetry
             form.to_s
           end
 
-          # @api private
           def plural_category(number)
             return "other" if number.nil?
             return "zero" if number.zero?
@@ -403,13 +392,16 @@ module Poetry
             "other"
           end
 
-          # @api private
           def open_url(url)
             text = url.to_s.strip
             raise Error, "openUrl: only http and https URLs open" unless text.match?(%r{\Ahttps?://\S+\z})
 
             text
           end
+
+          private_class_method :validators, :formatters, :combinators, :within?, :format_number, :format_currency
+          private_class_method :format_date, :parse_time, :parse_time_string, :strftime_pattern, :plural_category
+          private_class_method :open_url
         end
       end
     end

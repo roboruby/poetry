@@ -89,12 +89,10 @@ module Poetry
           document
         end
 
-        # @api private
         def child_of(node, token)
           node.is_a?(Array) ? node[token.to_i] : node[token]
         end
 
-        # @api private
         def store(node, token, value)
           if node.is_a?(Array)
             token == "-" ? node.push(value) : node[token.to_i] = value
@@ -107,6 +105,8 @@ module Poetry
         def delete(node, token)
           node.is_a?(Array) ? node.delete_at(token.to_i) : node.delete(token)
         end
+
+        private_class_method :child_of, :store
       end
     end
   end

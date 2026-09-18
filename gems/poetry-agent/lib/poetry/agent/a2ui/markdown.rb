@@ -36,7 +36,6 @@ module Poetry
           text.split(/\n{2,}/).map(&:strip).reject(&:empty?)
         end
 
-        # @api private
         def block_html(block)
           if (match = block.match(/\A(\#{1,6})\s+(.*)\z/m))
             level = match[1].length
@@ -57,6 +56,8 @@ module Poetry
           html = html.gsub(/(?<!\w)[*_](.+?)[*_](?!\w)/, '<em>\1</em>')
           html.gsub(%r{\[([^\]]+)\]\((https?://[^)\s]+)\)}, '<a href="\2">\1</a>')
         end
+
+        private_class_method :block_html
       end
     end
   end

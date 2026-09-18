@@ -28,7 +28,6 @@ module Poetry
           end
         end
 
-        # @api private
         def interpret(result, rule)
           if result.is_a?(Hash)
             { valid: result["valid"] == true, code: result["code"],
@@ -39,6 +38,8 @@ module Poetry
               severity: "error" }
           end
         end
+
+        private_class_method :interpret
       end
     end
   end

@@ -55,13 +55,14 @@ module Poetry
           nil
         end
 
-        # @api private
         def soft_require(feature)
           require feature
           true
         rescue LoadError
           false
         end
+
+        private_class_method :soft_require
       end
     end
   end
