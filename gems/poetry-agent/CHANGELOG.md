@@ -2,6 +2,10 @@
 
 ## [0.1.5]
 
+### Added
+
+- The controllers manifest carries the prose beside each controller: its purpose (a JSDoc block above the class), the meaning of every value, and a summary of every action method, harvested when the manifest is generated; `rake stimulus:docs` holds the count of gaps at a committed floor, now zero.
+
 ### Changed
 
 - 18 methods the reference already hid with `@api private` are Ruby-private now: each was called only by its own class or template, so the runtime enforces what the tag only stated. A host that reached one gets a NoMethodError instead of an internal that may change without notice. The tag remains on the internals the family shares between its gems and on whole internal classes.
