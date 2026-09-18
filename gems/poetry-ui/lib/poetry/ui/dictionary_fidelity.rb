@@ -87,7 +87,6 @@ module Poetry
 
       # The tokens a className expression resolves to: its string literals
       # plus the base and variant strings of every cva it calls.
-      # @api private
       def class_tokens(expression, cvas)
         tokens = expression.scan(/"([^"]*)"/).flatten.flat_map(&:split)
         expression.scan(/(\w+)\(/).flatten.each do |call|
@@ -102,7 +101,6 @@ module Poetry
       # The JSX opening tags of a file as [tag name, attribute text] pairs.
       # Attribute text is delimited by brace depth, so arrow functions and
       # nested render-prop elements inside attributes do not end the tag.
-      # @api private
       def opening_tags(text)
         tags = []
         index = 0
@@ -136,7 +134,6 @@ module Poetry
       # className) }, state: { slot: "x" } }) - no JSX tag carries the slot
       # (Base UI maps state.slot to data-slot), so each call's balanced body
       # is read instead.
-      # @api private
       def use_render_slots(text, cvas)
         slots = []
         index = 0
@@ -161,7 +158,6 @@ module Poetry
 
       # `const xVariants = cva("base", { variants: { key: { value: "..." } } })`
       # definitions, by constant name.
-      # @api private
       def cva_definitions(text)
         text.scan(/const (\w+) = cva\(\s*"([^"]*)"/).to_h do |name, base|
           start = text.index("const #{name} = cva(")
@@ -185,7 +181,6 @@ module Poetry
       # The tag a source element renders, when knowable: native elements
       # and the icon placeholder (an svg). Primitives render whatever
       # Base UI chooses; those compare as nil.
-      # @api private
       def source_tag(tag)
         return "svg" if tag == "IconPlaceholder"
         return nil if tag.include?(".") || tag.match?(/\A[A-Z]/)
@@ -217,7 +212,6 @@ module Poetry
       end
 
       # One slot's token and tag diff.
-      # @api private
       def slot_diff(source, rendered)
         styled = source["styled"].to_set
         classic_only = source["classic"].to_set - styled
@@ -275,7 +269,6 @@ module Poetry
       end
 
       # Reconciles a presence list against the record.
-      # @api private
       def verify_list(label, kind, actual_list, recorded, findings)
         recorded_list = recorded.fetch("list", nil) || []
         (actual_list - recorded_list).each do |item|
@@ -288,7 +281,6 @@ module Poetry
       end
 
       # Reconciles a component's per-slot token diffs against the record.
-      # @api private
       def verify_slots(name, actual_slots, recorded_slots, findings)
         (actual_slots.keys - recorded_slots.keys).each do |slot|
           findings << "#{name}/#{slot} deviates but is not recorded - add it with a reason"
@@ -359,6 +351,9 @@ module Poetry
 
         candidates.first
       end
+
+      private_class_method :class_tokens, :opening_tags, :use_render_slots, :cva_definitions, :source_tag, :slot_diff
+      private_class_method :verify_list, :verify_slots
     end
   end
 end

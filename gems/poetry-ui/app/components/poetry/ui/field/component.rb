@@ -88,7 +88,6 @@ module Poetry
                              "fragment escape as checkbox-input (the setting-row layout)"
 
         # The captured hint block, consumed by the template.
-        # @api private
         attr_reader :hint_block
 
         # Validates hint_position and forces the content capture.
@@ -108,7 +107,6 @@ module Poetry
         # @api private
         def hint_id = "#{id}-hint"
         # The error element's id (leads aria-describedby).
-        # @api private
         def error_id = "#{id}-error"
         # The label element's id (referenced from aria-labelledby when group:).
         # @api private
@@ -176,6 +174,7 @@ module Poetry
         end
 
         private :hint_present?
+        private :hint_block, :error_id
       end
     end
   end

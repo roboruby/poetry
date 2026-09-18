@@ -302,6 +302,8 @@ module Poetry
           attrs["data-value"] = group_value if group_value
           content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, html_attributes)) { safe_join(radio_items.map(&:to_s)) }
         end
+
+        private :group_value
       end
 
       # A submenu scope - its own positioning instance (trigger anchors

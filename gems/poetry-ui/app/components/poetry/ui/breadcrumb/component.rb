@@ -18,7 +18,6 @@ module Poetry
       #   <% end %>
       class Component < Poetry::Core::Component
         # The caller's separator block, captured by with_separator.
-        # @api private
         attr_reader :separator_block
 
         # Projected into the registry, llms.txt, and the agent surface.
@@ -94,6 +93,7 @@ module Poetry
         Entry = Data.define(:label, :href, :ellipsis, :block)
 
         private :entries
+        private :separator_block
       end
     end
   end

@@ -176,7 +176,6 @@ module Poetry
                                       "belong to Button's anatomy, not this contract; each " \
                                       "carries data-visible/data-hidden + hidden/inert)"
 
-        # @api private
         attr_reader :progress_class
 
         alias __vc_with_progress with_progress
@@ -213,7 +212,6 @@ module Poetry
         # @api private
         def item_models = (@item_models ||= [])
 
-        # @api private
         def questionnaire_id
           @questionnaire_id ||= if (token = dom_id_token(id))
                                   "questionnaire-#{token}"
@@ -222,10 +220,8 @@ module Poetry
                                 end
         end
 
-        # @api private
         def enabled_items = item_models.reject(&:disabled)
 
-        # @api private
         def active_item
           @active_item ||= enabled_items.find { |item| item.name == default_item } ||
                            enabled_items.first
@@ -239,7 +235,6 @@ module Poetry
         # @api private
         def last? = active_index >= enabled_items.size - 1
 
-        # @api private
         def progress_label
           "Question #{active_index + 1} of #{enabled_items.size}"
         end
@@ -249,22 +244,18 @@ module Poetry
 
         # Server-side shortcut assignment: keys in document order per item;
         # the controller only handles keystrokes.
-        # @api private
         def shortcut_for(_item, index)
           return nil unless shortcuts
 
           SHORTCUT_KEYS.fetch(shortcuts)[index]
         end
 
-        # @api private
         def item_dom_id(item, suffix)
           "#{questionnaire_id}-#{item.name.to_s.parameterize}-#{suffix}"
         end
 
-        # @api private
         def field_name(item) = item.multiple ? "#{item.name}[]" : item.name.to_s
 
-        # @api private
         def input_type(item) = item.multiple ? "checkbox" : "radio"
 
         # The root's attributes: this component's markup over the core default.
@@ -291,7 +282,6 @@ module Poetry
 
         # Symbol-keyed Button kwargs for one nav action: part classes,
         # slot, wiring, and the server-rendered visibility stamp.
-        # @api private
         def nav_button_options(kind, hidden:)
           stimulus_element = { next: :next_button, submit: :submit_button }.fetch(kind, kind)
           attrs = { class: css(kind), "data-slot": "questionnaire-#{kind}" }
@@ -305,7 +295,6 @@ module Poetry
           attrs
         end
 
-        # @api private
         def choice_attributes(item, choice, index)
           attrs = {
             "class" => css(:choice), "data-slot" => "questionnaire-choice",
@@ -367,7 +356,6 @@ module Poetry
             self
           end
 
-          # @api private
           def default_error
             if required
               "Choose an answer to continue."
@@ -386,7 +374,12 @@ module Poetry
 
           # @api private
           def status = answered? ? "answered" : "unanswered"
+
+          private :default_error
         end
+
+        private :progress_class, :questionnaire_id, :enabled_items, :active_item, :progress_label, :shortcut_for
+        private :item_dom_id, :field_name, :input_type, :nav_button_options, :choice_attributes
       end
     end
   end

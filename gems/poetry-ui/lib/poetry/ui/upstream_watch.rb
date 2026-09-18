@@ -79,6 +79,7 @@ module Poetry
         end
       end
 
+      # @api private
       def build_manifest(root, pin:, generated_at:)
         {
           "pin" => pin,
@@ -141,6 +142,8 @@ module Poetry
         diff[:watched_changed].each { |path| lines << "CHANGED watched file: #{path}" }
         lines
       end
+
+      private_class_method :scan_families, :scan_watched_files
     end
   end
 end

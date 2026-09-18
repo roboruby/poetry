@@ -4,6 +4,7 @@
 
 ### Changed
 
+- 36 methods the reference already hid with `@api private` are Ruby-private now: each was called only by its own class or template, so the runtime enforces what the tag only stated. A host that reached one gets a NoMethodError instead of an internal that may change without notice. The tag remains on the internals the family shares between its gems and on whole internal classes.
 - Every component's root rides the core default: `root_attributes` is the public `Poetry::Core::Component` method, and a component's override passes only its own markup up (`super("data-variant" => variant)`); the slot name, `data-component` and the root's Stimulus wiring come from the default. Twelve overrides that added nothing are gone, and the shared `FamilyIdentity` override passes the family's slot prefix the same way. The rendered attributes are unchanged apart from their order on the element.
 - The part builders (a popup's content, a field's group, a tree row, a dialog panel, and the rest) return `element_attributes(...)`, the part's attributes with its Stimulus wiring merged safely, named after their part so the slot, the dictionary classes and the wiring come stamped, and the templates splat the result (`tag.div(**content_attributes)`); `to_attributes` and the `Poetry::Core::HTML::Attributes.new(...)` wrap at every call site are gone.
 

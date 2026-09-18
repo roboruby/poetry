@@ -273,7 +273,6 @@ module Poetry
       # against a kwargs-only helper. Rest-signatures are omitted - the
       # linter enforces arity only where a key exists.
       #
-      # @api private
       def registry_helper_args
         helper_names.sort.filter_map do |name|
           params = ComponentsHelper.instance_method(name.to_sym).parameters
@@ -337,6 +336,8 @@ module Poetry
         end.uniq.sort
       end
     end
+
+    private_class_method :registry_helper_args
   end
 end
 

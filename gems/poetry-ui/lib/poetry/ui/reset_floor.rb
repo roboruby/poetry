@@ -194,6 +194,8 @@ module Poetry
 
         :none
       end
+
+      private_class_method :compiled_preflight, :wrap_rules, :wrap_prelude, :split_selectors
     end
   end
 end

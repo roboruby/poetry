@@ -378,7 +378,6 @@ module Poetry
         end
 
         # The rendered trailing content of the input row, or nil.
-        # @api private
         def input_trailing_html
           @input_trailing&.call
         end
@@ -517,6 +516,7 @@ module Poetry
 
         private :base_id, :input_id, :list_id, :item_set, :input_attributes, :list_attributes
         private :empty_part, :loading_part, :status_part
+        private :input_trailing_html
       end
     end
   end

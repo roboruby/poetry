@@ -134,7 +134,6 @@ module Poetry
       end
 
       # Reconciles a theme's selector-presence lists against the record.
-      # @api private
       def verify_selector_lists(theme, actual, recorded, findings)
         SELECTOR_KINDS.each do |kind|
           actual_list = actual[kind]
@@ -152,7 +151,6 @@ module Poetry
       end
 
       # Reconciles a theme's per-rule utility diffs against the record.
-      # @api private
       def verify_rules(theme, actual, recorded, findings)
         actual_rules = actual["rules"]
         recorded_rules = recorded.fetch("rules", {})
@@ -205,6 +203,8 @@ module Poetry
 
         candidates.first
       end
+
+      private_class_method :verify_selector_lists, :verify_rules
     end
   end
 end

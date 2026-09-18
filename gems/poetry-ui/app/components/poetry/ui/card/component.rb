@@ -60,7 +60,6 @@ module Poetry
         part "card-footer", "The bottom row (actions/meta)"
 
         # The caller's footer block, captured by with_footer.
-        # @api private
         attr_reader :footer_block
 
         # @api private
@@ -77,6 +76,7 @@ module Poetry
         end
 
         private :footer_attributes, :header?
+        private :footer_block
       end
     end
   end
