@@ -1,24 +1,26 @@
 import { Controller } from "@hotwired/stimulus"
 import { announce } from "@poetry/controllers/helpers/announce"
 
-// The table row-selection engine (the SelectionManager
-// contract, checkbox-flavored): per-row checkboxes are the form value
-// (selected_ids[] - no JS means plain checkboxes in a form, the honest
-// fallback), this controller adds what HTML cannot:
-//
-// - select-all with a real INDETERMINATE middle state (a JS property,
-//   never an attribute), computed over ENABLED rows only (disabled rows
-//   are skipped by select-all and ranges - disabledBehavior 'selection').
-// - Shift-click range selection off the ANCHOR model: the
-//   anchor is the last plainly-toggled row; Shift sets every row in
-//   anchor..target to the ANCHOR row's state (the checkbox idiom).
-// - aria-selected + data-selected mirrored onto rows, count announcements
-//   through the announce singleton, and a bubbling selection-change event
-//   the ActionBar block feeds on.
-// - poetry:data-table:clear-selection (dispatched by the ActionBar's
-//   Escape) clears everything from anywhere inside the wrapper.
 const EVENT_PREFIX = "poetry:data-table"
 
+/**
+ * The table row-selection engine (the SelectionManager
+ * contract, checkbox-flavored): per-row checkboxes are the form value
+ * (selected_ids[] - no JS means plain checkboxes in a form, the honest
+ * fallback), this controller adds what HTML cannot:
+ *
+ * - select-all with a real INDETERMINATE middle state (a JS property,
+ *   never an attribute), computed over ENABLED rows only (disabled rows
+ *   are skipped by select-all and ranges - disabledBehavior 'selection').
+ * - Shift-click range selection off the ANCHOR model: the
+ *   anchor is the last plainly-toggled row; Shift sets every row in
+ *   anchor..target to the ANCHOR row's state (the checkbox idiom).
+ * - aria-selected + data-selected mirrored onto rows, count announcements
+ *   through the announce singleton, and a bubbling selection-change event
+ *   the ActionBar block feeds on.
+ * - poetry:data-table:clear-selection (dispatched by the ActionBar's
+ *   Escape) clears everything from anywhere inside the wrapper.
+ */
 export default class TableSelectionController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
@@ -26,6 +28,8 @@ export default class TableSelectionController extends Controller {
 
   static targets = ["all"]
   static values = {
+    // The selection announcement, with %{count} replaced by the number of selected
+    // rows.
     label: { type: String, default: "%{count} selected" }
   }
 

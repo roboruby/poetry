@@ -1,41 +1,45 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The ContextMenu DELTA layer: trigger
-// acquisition + pointer-point capture ONLY. Everything menu-shaped (open
-// state machine, items, typeahead, submenus, dismissal, the layer stack)
-// stays with poetry--core--menu on the same root; positioning stays with
-// poetry--core--popper, driven here through its VIRTUAL-ANCHOR attribute
-// (data-poetry--core--popper-anchor-point-value="x,y" - the DOM is the
-// store, so the write works whether or not popper has connected yet).
-//
-// Input paths (all contractual):
-// - contextmenu (mouse right-click, or Shift+F10 / the ContextMenu key on a
-//   focused surface): preventDefault, capture the point, open. A
-//   keyboard-synthesized event carries no usable point (0,0) - the anchor
-//   attribute is CLEARED so popper falls back to the trigger surface rect
-//   (deliberately better than a 0,0 fallback).
-// - long-press (touch/pen ONLY - mouse never long-presses): pointerdown
-//   starts a longPressDelay timer (700ms default, exposed as a
-//   Value); ANY pointermove/pointerup/pointercancel cancels (no slop radius
-//   - the platform's own touch slop absorbs jitter); a second pointerdown
-//   restarts (multi-touch guard); the contextmenu handler itself clears the
-//   timer (Android synthesizes contextmenu from long-press - clearing there
-//   prevents double-open). data-pressing on the surface is the styleable
-//   long-press feedback window (poetry addition).
-// - disabled STANDS THE HANDLERS DOWN (no preventDefault): the
-//   browser-native context menu returns - never a dead right-click.
 const TRIGGER_SELECTOR = '[data-slot$="menu-trigger"]'
 const MENU = "poetry--core--menu"
 const ANCHOR_POINT_ATTRIBUTE = "data-poetry--core--popper-anchor-point-value"
 const EVENT_PREFIX = "poetry:context-menu"
 
+/**
+ * The ContextMenu DELTA layer: trigger
+ * acquisition + pointer-point capture ONLY. Everything menu-shaped (open
+ * state machine, items, typeahead, submenus, dismissal, the layer stack)
+ * stays with poetry--core--menu on the same root; positioning stays with
+ * poetry--core--popper, driven here through its VIRTUAL-ANCHOR attribute
+ * (data-poetry--core--popper-anchor-point-value="x,y" - the DOM is the
+ * store, so the write works whether or not popper has connected yet).
+ *
+ * Input paths (all contractual):
+ * - contextmenu (mouse right-click, or Shift+F10 / the ContextMenu key on a
+ *   focused surface): preventDefault, capture the point, open. A
+ *   keyboard-synthesized event carries no usable point (0,0) - the anchor
+ *   attribute is CLEARED so popper falls back to the trigger surface rect
+ *   (deliberately better than a 0,0 fallback).
+ * - long-press (touch/pen ONLY - mouse never long-presses): pointerdown
+ *   starts a longPressDelay timer (700ms default, exposed as a
+ *   Value); ANY pointermove/pointerup/pointercancel cancels (no slop radius
+ *   - the platform's own touch slop absorbs jitter); a second pointerdown
+ *   restarts (multi-touch guard); the contextmenu handler itself clears the
+ *   timer (Android synthesizes contextmenu from long-press - clearing there
+ *   prevents double-open). data-pressing on the surface is the styleable
+ *   long-press feedback window (poetry addition).
+ * - disabled STANDS THE HANDLERS DOWN (no preventDefault): the
+ *   browser-native context menu returns - never a dead right-click.
+ */
 export default class ContextMenuController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry:context-menu:open"]
 
   static values = {
+    // How long a touch must be held, in milliseconds, before the menu opens.
     longPressDelay: { type: Number, default: 700 },
+    // When true the native context menu is left alone: no capture, no popup.
     disabled: { type: Boolean, default: false }
   }
 

@@ -1,20 +1,22 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The FileInput dropzone engine: the
-// component renders a <label> wrapping a visually-hidden native
-// <input type=file>, so click-to-browse and keyboard access are the
-// PLATFORM's - this controller adds only what HTML cannot: drag-and-drop
-// onto the label, the selected-file list, and the clear affordance. The
-// native input stays the single source of truth (its FileList is the
-// form value; ActiveStorage direct upload rides it untouched).
-//
-// Drag state uses an enter/leave COUNTER: dragenter/dragleave fire per
-// descendant crossed, so a boolean flickers over child elements - the
-// counter nets out to zero only when the pointer truly leaves the zone.
 const EVENT_PREFIX = "poetry:file-input"
 
 const UNITS = ["B", "KB", "MB", "GB"]
 
+/**
+ * The FileInput dropzone engine: the
+ * component renders a <label> wrapping a visually-hidden native
+ * <input type=file>, so click-to-browse and keyboard access are the
+ * PLATFORM's - this controller adds only what HTML cannot: drag-and-drop
+ * onto the label, the selected-file list, and the clear affordance. The
+ * native input stays the single source of truth (its FileList is the
+ * form value; ActiveStorage direct upload rides it untouched).
+ *
+ * Drag state uses an enter/leave COUNTER: dragenter/dragleave fire per
+ * descendant crossed, so a boolean flickers over child elements - the
+ * counter nets out to zero only when the pointer truly leaves the zone.
+ */
 export default class FileInputController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
@@ -22,6 +24,7 @@ export default class FileInputController extends Controller {
 
   static targets = ["input", "list", "clear"]
   static values = {
+    // Whether more than one file may be chosen; otherwise a drop keeps the first.
     multiple: { type: Boolean, default: false }
   }
 

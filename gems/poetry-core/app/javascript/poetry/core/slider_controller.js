@@ -1,48 +1,57 @@
 import { Controller } from "@hotwired/stimulus"
 import { directionOf } from "@poetry/controllers/helpers/direction"
 
-// The Slider machine - the only form control with real math. Three concerns,
-// nothing else:
-//
-// 1. THE VALUE MATH (the pure core, unit-tested exhaustively): snap to the
-//    step grid with decimal-precision rounding (a 0.1 grid lands on
-//    0.3, never 0.30000000000000004), clamp to
-//    [min, max], and clamp against neighbor thumbs +- the min gap
-//    (minStepsBetweenThumbs * step) so range thumbs can never cross.
-//
-// 2. TWO INPUT PATHS feeding it: the APG keyboard map per thumb (arrows
-//    +-step, Shift+Arrow / PageUp / PageDown +-step*10, Home/End to the
-//    thumb's EFFECTIVE min/max) with the orientation x RTL x inverted
-//    resolution - horizontal RTL swaps Left/Right only, inverted flips the
-//    whole axis, both compose (rtl + inverted = ltr math); and pointer
-//    capture on the root - pointerdown jumps the NEAREST thumb (ties to
-//    the later index, so stacked thumbs stay separable), the track
-//    box is read ONCE at pointerdown (no per-frame layout), pointermove
-//    projects the value ABSOLUTELY from the pointer position (overshoot
-//    past a neighbor clamps, never swaps), pointerup commits.
-//
-// 3. THE DOM PROJECTION: aria-valuemin/max/now per role=slider thumb - the
-//    range bounds are DYNAMIC (neighbor-clamped, rewritten on every
-//    neighbor move: APG multithumb), the --slider-start/--slider-end
-//    geometry vars consumed by the calc() rules, and one hidden native
-//    input per thumb. poetry:slider:change fires per mutation; commit
-//    (pointerup / each keydown) syncs the
-//    hidden inputs + dispatches native input/change so Rails listeners get
-//    one event per gesture, not per frame.
 const LARGE_STEP_MULTIPLIER = 10
 
+/**
+ * The Slider machine - the only form control with real math. Three concerns,
+ * nothing else:
+ *
+ * 1. THE VALUE MATH (the pure core, unit-tested exhaustively): snap to the
+ *    step grid with decimal-precision rounding (a 0.1 grid lands on
+ *    0.3, never 0.30000000000000004), clamp to
+ *    [min, max], and clamp against neighbor thumbs +- the min gap
+ *    (minStepsBetweenThumbs * step) so range thumbs can never cross.
+ *
+ * 2. TWO INPUT PATHS feeding it: the APG keyboard map per thumb (arrows
+ *    +-step, Shift+Arrow / PageUp / PageDown +-step*10, Home/End to the
+ *    thumb's EFFECTIVE min/max) with the orientation x RTL x inverted
+ *    resolution - horizontal RTL swaps Left/Right only, inverted flips the
+ *    whole axis, both compose (rtl + inverted = ltr math); and pointer
+ *    capture on the root - pointerdown jumps the NEAREST thumb (ties to
+ *    the later index, so stacked thumbs stay separable), the track
+ *    box is read ONCE at pointerdown (no per-frame layout), pointermove
+ *    projects the value ABSOLUTELY from the pointer position (overshoot
+ *    past a neighbor clamps, never swaps), pointerup commits.
+ *
+ * 3. THE DOM PROJECTION: aria-valuemin/max/now per role=slider thumb - the
+ *    range bounds are DYNAMIC (neighbor-clamped, rewritten on every
+ *    neighbor move: APG multithumb), the --slider-start/--slider-end
+ *    geometry vars consumed by the calc() rules, and one hidden native
+ *    input per thumb. poetry:slider:change fires per mutation; commit
+ *    (pointerup / each keydown) syncs the
+ *    hidden inputs + dispatches native input/change so Rails listeners get
+ *    one event per gesture, not per frame.
+ */
 export default class SliderController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry:slider:change", "poetry:slider:commit"]
 
   static values = {
+    // The lowest value of the track.
     min: { type: Number, default: 0 },
+    // The highest value of the track.
     max: { type: Number, default: 100 },
+    // The amount an arrow key changes a thumb by.
     step: { type: Number, default: 1 },
+    // The thumb values, one per thumb, in order.
     value: { type: Array, default: [] },
+    // The least number of steps two thumbs keep between them.
     minStepsBetweenThumbs: { type: Number, default: 0 },
+    // horizontal runs the track left to right; vertical runs it bottom to top.
     orientation: { type: String, default: "horizontal" },
+    // Whether the track runs in the opposite direction.
     inverted: { type: Boolean, default: false }
   }
 

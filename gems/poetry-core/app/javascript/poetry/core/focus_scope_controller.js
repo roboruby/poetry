@@ -3,13 +3,15 @@ import { tabbableWithin } from "@poetry/controllers/helpers/tabbable"
 import { ensureFocusGuards, removeFocusGuards } from "@poetry/controllers/helpers/focus_guards"
 import { logicallyContains } from "@poetry/controllers/helpers/portal"
 
-// The overlay focus scope: traps Tab/Shift+Tab within the
-// subtree, loops at the edges, and - the part to get exact - snapshots
-// document.activeElement on connect and RESTORES it on disconnect (focus
-// return). Backs Dialog-family overlays, Popover, Menus, Select, Command.
-//
-// Listeners are wired here, not as data-actions: pause/resume must attach
-// and detach them dynamically as scopes stack, which data-action cannot do.
+/**
+ * The overlay focus scope: traps Tab/Shift+Tab within the
+ * subtree, loops at the edges, and - the part to get exact - snapshots
+ * document.activeElement on connect and RESTORES it on disconnect (focus
+ * return). Backs Dialog-family overlays, Popover, Menus, Select, Command.
+ *
+ * Listeners are wired here, not as data-actions: pause/resume must attach
+ * and detach them dynamically as scopes stack, which data-action cannot do.
+ */
 export default class FocusScopeController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
@@ -23,7 +25,9 @@ export default class FocusScopeController extends Controller {
   static stack = []
 
   static values = {
+    // Whether Tab and Shift+Tab stay within the scope.
     trapped: { type: Boolean, default: true },
+    // Whether Tab past the last element wraps to the first, and back.
     loop: { type: Boolean, default: true }
   }
 

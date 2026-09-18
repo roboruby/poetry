@@ -1,19 +1,21 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The Carousel engine, decided NATIVE: no carousel library - the platform's
-// scroll-snap owns the physics (touch, momentum, snapping, overscroll),
-// and this controller adds only what CSS can't: prev/next paging, button
-// state, and arrow keys. Navigation scrolls the VIEWPORT by a bounding-
-// rect delta (RTL- and transform-safe: never scrollLeft sign
-// conventions) - not scrollIntoView, whose alignment bubbles to
-// scrollable ancestors and whose "nearest" no-ops when several slides
-// fit the viewport at once (the vertical stack). Deferred with the
-// library-grade machinery: loop (it clones slides), autoplay, and a plugin API.
 const SLIDE_SELECTOR = '[data-slot="carousel-item"]'
 
 // The component-facing event namespace (the poetry:<component> rule).
 const EVENT_PREFIX = "poetry:carousel"
 
+/**
+ * The Carousel engine, decided NATIVE: no carousel library - the platform's
+ * scroll-snap owns the physics (touch, momentum, snapping, overscroll),
+ * and this controller adds only what CSS can't: prev/next paging, button
+ * state, and arrow keys. Navigation scrolls the VIEWPORT by a bounding-
+ * rect delta (RTL- and transform-safe: never scrollLeft sign
+ * conventions) - not scrollIntoView, whose alignment bubbles to
+ * scrollable ancestors and whose "nearest" no-ops when several slides
+ * fit the viewport at once (the vertical stack). Deferred with the
+ * library-grade machinery: loop (it clones slides), autoplay, and a plugin API.
+ */
 export default class CarouselController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
@@ -21,6 +23,8 @@ export default class CarouselController extends Controller {
 
   static targets = ["viewport", "previous", "next"]
   static values = {
+    // horizontal scrolls and arrows left and right; vertical scrolls and arrows up
+    // and down.
     orientation: { type: String, default: "horizontal" }
   }
 

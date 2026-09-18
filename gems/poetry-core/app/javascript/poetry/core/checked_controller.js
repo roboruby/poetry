@@ -1,42 +1,46 @@
 import { Controller } from "@hotwired/stimulus"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 
-// The toggle family's checked-state owner (Checkbox introduces it; Switch
-// reuses it VERBATIM - zero fork, CI-asserted). The architecture is the
-// STORE INVERSION: the hidden native <input type=checkbox> is the form
-// participant AND the store - the visual button[role=checkbox|switch] only
-// REFLECTS it (aria-checked incl. "mixed" + the data-checked/data-unchecked/
-// data-indeterminate attributes on the control and every part that carries
-// them: the checkbox indicator, the switch thumb). Every transition writes the input FIRST, dispatches a REAL
-// bubbling change event (no synthetic prototype-setter dance - the
-// input LEADS and the visual follows), then reflects attributes.
-//
-// The three states: checked / unchecked / indeterminate. Indeterminate is
-// server/programmatic only (aria-checked=mixed, input.indeterminate - a
-// JS-only property re-derived from the checked attributes on connect); the first user
-// toggle resolves it to CHECKED - contractual, do not loosen. A Switch
-// never renders it (the Ruby component raises), so that branch is
-// simply dormant there.
-//
-// Enter is suppressed on role=checkbox ONLY (WAI-ARIA: checkboxes activate
-// on Space alone); role=switch has no keydown
-// handler, so Enter toggles via the native button click (a deliberate
-// asymmetry, keyed off the role - no controller fork).
-//
-// No inputId value -> pure visual mode: state lives on the button's
-// checked attributes alone (controlled-UI cases like DataTable row selection).
-// The component-flavored prefixes the dynamic dispatch below emits under
-// (data-component on the host: checkbox / switch, with the bare fallback) -
-// the events declaration, the portal bridge, and the manifest enumerate
-// these REAL names; the identifier-default name never fires here.
 const EVENT_PREFIXES = ["poetry:checkbox", "poetry:switch", "poetry:checked"]
 
+/**
+ * The toggle family's checked-state owner (Checkbox introduces it; Switch
+ * reuses it VERBATIM - zero fork, CI-asserted). The architecture is the
+ * STORE INVERSION: the hidden native <input type=checkbox> is the form
+ * participant AND the store - the visual button[role=checkbox|switch] only
+ * REFLECTS it (aria-checked incl. "mixed" + the data-checked/data-unchecked/
+ * data-indeterminate attributes on the control and every part that carries
+ * them: the checkbox indicator, the switch thumb). Every transition writes the input FIRST, dispatches a REAL
+ * bubbling change event (no synthetic prototype-setter dance - the
+ * input LEADS and the visual follows), then reflects attributes.
+ *
+ * The three states: checked / unchecked / indeterminate. Indeterminate is
+ * server/programmatic only (aria-checked=mixed, input.indeterminate - a
+ * JS-only property re-derived from the checked attributes on connect); the first user
+ * toggle resolves it to CHECKED - contractual, do not loosen. A Switch
+ * never renders it (the Ruby component raises), so that branch is
+ * simply dormant there.
+ *
+ * Enter is suppressed on role=checkbox ONLY (WAI-ARIA: checkboxes activate
+ * on Space alone); role=switch has no keydown
+ * handler, so Enter toggles via the native button click (a deliberate
+ * asymmetry, keyed off the role - no controller fork).
+ *
+ * No inputId value -> pure visual mode: state lives on the button's
+ * checked attributes alone (controlled-UI cases like DataTable row selection).
+ * The component-flavored prefixes the dynamic dispatch below emits under
+ * (data-component on the host: checkbox / switch, with the bare fallback) -
+ * the events declaration, the portal bridge, and the manifest enumerate
+ * these REAL names; the identifier-default name never fires here.
+ */
 export default class CheckedController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
   static events = EVENT_PREFIXES.map((prefix) => `${prefix}:change`)
 
   static values = {
+    // The id of the hidden input that carries the checked state to the form, when
+    // the control has one.
     inputId: { type: String, default: "" }
   }
 

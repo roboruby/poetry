@@ -2,48 +2,52 @@ import { Controller } from "@hotwired/stimulus"
 import { directionOf } from "@poetry/controllers/helpers/direction"
 import { setState } from "@poetry/controllers/helpers/state"
 
-// The Menubar cross-menu COORDINATOR - kept
-// deliberately anorexic: ONE piece of state (`value`, which menu is open)
-// plus the three behaviors no other layer can own. The ownership split:
-// - roving-focus (horizontal, manageTabindex TRUE) owns which trigger is
-//   tabbable/focused on the bar - it knows nothing about menus.
-// - poetry--core--menu (one instance per menu, modal: false) owns
-//   everything inside an open menu - it knows nothing about siblings.
-// - this controller owns:
-//   1. TOGGLE - pointerdown opens (closing any sibling) / closes the open
-//      menu. Keyboard open (ArrowDown/Enter/Space -> first item; ArrowUp ->
-//      last item) rides the family's open-reason contract; pointer-open
-//      leaves focus on the trigger (pointer users keep their context).
-//   2. HOVER-SLIDE - pointerenter on a sibling trigger is a no-op from cold;
-//      once ANY menu is open it swaps to the hovered menu (the gated-hover
-//      rule) and focus moves to the new trigger.
-//   3. EDGE-NAVIGATE - the family menu controller fires a cancelable
-//      poetry:menu:edge-navigate when ArrowLeft/Right has no submenu
-//      meaning; this coordinator consumes it (loop-aware, RTL-aware,
-//      disabled-skipping) and opens the adjacent menu with its FIRST item
-//      focused (both directions - APG menubar). Standalone DropdownMenu
-//      leaves the event unconsumed.
-// Dismiss (Esc/outside) and select arrive as the family's poetry:menu:closed
-// - the coordinator nulls value; focus return to the trigger is the family
-// focus-scope's job (its connect snapshot IS the trigger, because every
-// open path here puts focus there first).
-//
-// A press on a sibling trigger must be TOGGLE's, not the open menu's
-// dismissable layer's: the coordinator vetoes interact-outside for presses
-// landing on this bar's triggers (otherwise dismiss-then-toggle would
-// close-and-reopen in the same pointerdown).
 const TRIGGER_SELECTOR = '[data-slot="menubar-trigger"]'
 const MENU = "poetry--core--menu"
 const MENU_SCOPE_SELECTOR = `[data-controller~="${MENU}"]`
 const EVENT_PREFIX = "poetry:menubar"
 
+/**
+ * The Menubar cross-menu COORDINATOR - kept
+ * deliberately anorexic: ONE piece of state (`value`, which menu is open)
+ * plus the three behaviors no other layer can own. The ownership split:
+ * - roving-focus (horizontal, manageTabindex TRUE) owns which trigger is
+ *   tabbable/focused on the bar - it knows nothing about menus.
+ * - poetry--core--menu (one instance per menu, modal: false) owns
+ *   everything inside an open menu - it knows nothing about siblings.
+ * - this controller owns:
+ *   1. TOGGLE - pointerdown opens (closing any sibling) / closes the open
+ *      menu. Keyboard open (ArrowDown/Enter/Space -> first item; ArrowUp ->
+ *      last item) rides the family's open-reason contract; pointer-open
+ *      leaves focus on the trigger (pointer users keep their context).
+ *   2. HOVER-SLIDE - pointerenter on a sibling trigger is a no-op from cold;
+ *      once ANY menu is open it swaps to the hovered menu (the gated-hover
+ *      rule) and focus moves to the new trigger.
+ *   3. EDGE-NAVIGATE - the family menu controller fires a cancelable
+ *      poetry:menu:edge-navigate when ArrowLeft/Right has no submenu
+ *      meaning; this coordinator consumes it (loop-aware, RTL-aware,
+ *      disabled-skipping) and opens the adjacent menu with its FIRST item
+ *      focused (both directions - APG menubar). Standalone DropdownMenu
+ *      leaves the event unconsumed.
+ * Dismiss (Esc/outside) and select arrive as the family's poetry:menu:closed
+ * - the coordinator nulls value; focus return to the trigger is the family
+ * focus-scope's job (its connect snapshot IS the trigger, because every
+ * open path here puts focus there first).
+ *
+ * A press on a sibling trigger must be TOGGLE's, not the open menu's
+ * dismissable layer's: the coordinator vetoes interact-outside for presses
+ * landing on this bar's triggers (otherwise dismiss-then-toggle would
+ * close-and-reopen in the same pointerdown).
+ */
 export default class MenubarController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry:menubar:value-changed"]
 
   static values = {
+    // The value of the open menu; empty when every menu is closed.
     value: { type: String, default: "" },
+    // Whether arrow keys wrap from the last trigger to the first, and back.
     loop: { type: Boolean, default: false }
   }
 

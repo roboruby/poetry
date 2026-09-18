@@ -1,29 +1,34 @@
 import { Controller } from "@hotwired/stimulus"
 import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
 
-// Error isolation for deferred turbo-frames. Turbo owns the
-// loading physics (loading="lazy" fetches on visibility, "eager" after
-// paint) but leaves failure INVISIBLE: a missing frame logs "Content
-// missing" or - Turbo 8 - promotes the error response to a full-page
-// visit, and a network error leaves the placeholder spinning forever.
-// This controller makes failure a state: data-error reflected on the
-// frame (a bespoke boolean, deliberately not the shared open/closed
-// vocabulary), the placeholder hidden, and the slotted <template> error
-// content stamped so the region shows a real, retryable message.
-//
-// THE BOOT CONTRACT: the frame renders with NO src - the URL rides
-// srcValue and connect() arms it. A visible lazy frame with src in
-// markup can complete its fetch before the controllers module graph
-// finishes loading (caught live: a local 404 beat Stimulus and Turbo 8
-// navigated the whole page to the error response); with src armed at
-// connect, no fetch - and so no failure - can predate the instance.
-//
-// retry() prefers Turbo's FrameElement#reload(); environments without
-// the Turbo runtime (jsdom, dommy) fall back to re-setting src, the same
-// signal Turbo reacts to.
+/**
+ * Error isolation for deferred turbo-frames. Turbo owns the
+ * loading physics (loading="lazy" fetches on visibility, "eager" after
+ * paint) but leaves failure INVISIBLE: a missing frame logs "Content
+ * missing" or - Turbo 8 - promotes the error response to a full-page
+ * visit, and a network error leaves the placeholder spinning forever.
+ * This controller makes failure a state: data-error reflected on the
+ * frame (a bespoke boolean, deliberately not the shared open/closed
+ * vocabulary), the placeholder hidden, and the slotted <template> error
+ * content stamped so the region shows a real, retryable message.
+ *
+ * THE BOOT CONTRACT: the frame renders with NO src - the URL rides
+ * srcValue and connect() arms it. A visible lazy frame with src in
+ * markup can complete its fetch before the controllers module graph
+ * finishes loading (caught live: a local 404 beat Stimulus and Turbo 8
+ * navigated the whole page to the error response); with src armed at
+ * connect, no fetch - and so no failure - can predate the instance.
+ *
+ * retry() prefers Turbo's FrameElement#reload(); environments without
+ * the Turbo runtime (jsdom, dommy) fall back to re-setting src, the same
+ * signal Turbo reacts to.
+ */
 export default class DeferredController extends Controller {
   static targets = ["placeholder", "error"]
-  static values = { src: String }
+  static values = {
+    // The URL the frame loads; written onto the element when it carries none.
+    src: String
+  }
 
   /**
    * Wires the three failure listeners, subscribes the before-cache reset,

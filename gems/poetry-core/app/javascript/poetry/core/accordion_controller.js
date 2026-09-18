@@ -2,13 +2,6 @@ import { Controller } from "@hotwired/stimulus"
 import { enterPresence, exitPresence, measurePresence } from "@poetry/controllers/helpers/presence"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 
-// The accordion open-set machine: single (optionally collapsible)
-// or multiple. Composes with poetry--core--roving-focus (manageTabindex:
-// false - APG keeps every trigger tabbable) attached separately on the
-// same root. Panels ride the presence helper; the measured
-// --accordion-panel-height var feeds the vendored accordion-down/up
-// keyframes.
-
 // Safety net (ms) for clearing the data-transitioning window when
 // animationend never arrives - reduced motion or a zero-length animation.
 // Comfortably longer than the 0.2s accordion keyframe.
@@ -17,13 +10,23 @@ const TRANSITION_FALLBACK_MS = 400
 // The component-facing event namespace (the poetry:<component> rule).
 const EVENT_PREFIX = "poetry:accordion"
 
+/**
+ * The accordion open-set machine: single (optionally collapsible)
+ * or multiple. Composes with poetry--core--roving-focus (manageTabindex:
+ * false - APG keeps every trigger tabbable) attached separately on the
+ * same root. Panels ride the presence helper; the measured
+ * --accordion-panel-height var feeds the vendored accordion-down/up
+ * keyframes.
+ */
 export default class extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry:accordion:change"]
 
   static values = {
+    // single keeps one item open at a time; multiple lets any number stay open.
     type: { type: String, default: "single" },
+    // In single mode, whether the open item can be closed by its own trigger.
     collapsible: { type: Boolean, default: false }
   }
 

@@ -4,28 +4,6 @@ import { setState } from "@poetry/controllers/helpers/state"
 import { enterPresence, exitPresence, flushPendingExits } from "@poetry/controllers/helpers/presence"
 import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
 
-// The NavigationMenu coordinator (the viewport=false mode): a
-// DISCLOSURE BAR, not a menu - Tab moves through triggers and links
-// normally, arrows are convenience navigation, nothing traps. Each item's
-// panel is its own popup positioned under the item; this controller owns
-// what per-item popovers can't: ONE panel open at a time, hover intent
-// (open/close delays so diagonal travel into a panel doesn't flicker),
-// Esc + focus-out + outside-press closing, and the vocabulary writes
-// (data-popup-open on the trigger - the chevron's rotation hook - and the
-// presence-driven open/closed pair on the panel).
-//
-// THE VIEWPORT MODE: when the markup ships the shared
-// positioner > popup > viewport shell (viewport: true), panels are
-// lazily ADOPTED into the viewport on first activation (the Rails
-// stand-in for a portal - server-rendered content stays in
-// place until JS activates) and the composite MORPHS: the popper
-// re-anchors to the active trigger (full floating-ui) while CSS
-// transitions the positioner's insets, the popup's --popup-width/height
-// pin old -> new across two frames so width/height transition, panels
-// slide by data-activation-direction (new trigger vs old - travel
-// direction drives the slide), and data-instant suppresses transitions
-// on cold opens. Vars reset to auto after the animations finish (the
-// auto-size reset via getAnimations().finished).
 const TRIGGER_SELECTOR = '[data-slot="navigation-menu-trigger"]'
 const PANEL_SELECTOR = '[data-slot="navigation-menu-content"]'
 const ITEM_SELECTOR = '[data-slot="navigation-menu-item"]'
@@ -33,9 +11,36 @@ const POSITIONER_SELECTOR = '[data-slot="navigation-menu-positioner"]'
 const POPUP_SELECTOR = '[data-slot="navigation-menu-popup"]'
 const VIEWPORT_SELECTOR = '[data-slot="navigation-menu-viewport"]'
 
+/**
+ * The NavigationMenu coordinator (the viewport=false mode): a
+ * DISCLOSURE BAR, not a menu - Tab moves through triggers and links
+ * normally, arrows are convenience navigation, nothing traps. Each item's
+ * panel is its own popup positioned under the item; this controller owns
+ * what per-item popovers can't: ONE panel open at a time, hover intent
+ * (open/close delays so diagonal travel into a panel doesn't flicker),
+ * Esc + focus-out + outside-press closing, and the vocabulary writes
+ * (data-popup-open on the trigger - the chevron's rotation hook - and the
+ * presence-driven open/closed pair on the panel).
+ *
+ * THE VIEWPORT MODE: when the markup ships the shared
+ * positioner > popup > viewport shell (viewport: true), panels are
+ * lazily ADOPTED into the viewport on first activation (the Rails
+ * stand-in for a portal - server-rendered content stays in
+ * place until JS activates) and the composite MORPHS: the popper
+ * re-anchors to the active trigger (full floating-ui) while CSS
+ * transitions the positioner's insets, the popup's --popup-width/height
+ * pin old -> new across two frames so width/height transition, panels
+ * slide by data-activation-direction (new trigger vs old - travel
+ * direction drives the slide), and data-instant suppresses transitions
+ * on cold opens. Vars reset to auto after the animations finish (the
+ * auto-size reset via getAnimations().finished).
+ */
 export default class NavigationMenuController extends Controller {
   static values = {
+    // How long the pointer must rest on a trigger, in milliseconds, before its
+    // panel opens.
     openDelay: { type: Number, default: 50 },
+    // How long after the pointer leaves, in milliseconds, before the panel closes.
     closeDelay: { type: Number, default: 150 }
   }
 

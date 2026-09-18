@@ -1,17 +1,19 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Scroll-spy: marks the
-// nav link whose section is currently active while the page scrolls - the
-// docs-TOC pattern. Put the controller on the nav; every link target's
-// href="#id" names its section:
-//
-//   <nav data-controller="poetry--core--scroll-spy">
-//     <a href="#usage" data-poetry--core--scroll-spy-target="link">Usage</a>
-//
-// The active section is the LAST one whose top sits above the offset line
-// (a closest-heading reduce); its link gains data-active and a
-// poetry--core--scroll-spy:changed event carries the id. rAF-coalesced
-// passive scroll + resize listeners; call refresh() after content changes.
+/**
+ * Scroll-spy: marks the
+ * nav link whose section is currently active while the page scrolls - the
+ * docs-TOC pattern. Put the controller on the nav; every link target's
+ * href="#id" names its section:
+ *
+ *   <nav data-controller="poetry--core--scroll-spy">
+ *     <a href="#usage" data-poetry--core--scroll-spy-target="link">Usage</a>
+ *
+ * The active section is the LAST one whose top sits above the offset line
+ * (a closest-heading reduce); its link gains data-active and a
+ * poetry--core--scroll-spy:changed event carries the id. rAF-coalesced
+ * passive scroll + resize listeners; call refresh() after content changes.
+ */
 export default class extends Controller {
   static targets = ["link"]
   static values = {

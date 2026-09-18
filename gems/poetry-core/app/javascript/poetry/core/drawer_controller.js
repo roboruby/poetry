@@ -2,27 +2,6 @@ import DialogController from "@poetry/controllers/dialog_controller"
 import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
 
-// The Drawer: the dialog machinery + the swipe-to-dismiss gesture.
-// Everything hard about the OVERLAY is inherited (native <dialog> platform
-// trap, backdrop-click discrimination, scroll lock, hotkey); this subclass
-// adds the two things a drawer is:
-//
-//   * ANIMATED presence - the first consumer of the presence helpers:
-//     enter rides the data-starting-style two-frame trick (a transition
-//     from --closed-transform), exit HOLDS the dialog through the
-//     data-ending-style transition before the native close() (the
-//     presence-hold close the sheet styling depends on).
-//   * The SWIPE - pointer-captured drag along the dismiss direction,
-//     writing the swipe CSS-var contract onto the <dialog> (::backdrop
-//     inherits from its originating element, so the overlay fade rides the
-//     same vars): --drawer-swipe-movement-x/y (px toward dismissal),
-//     --drawer-swipe-progress (0..1), data-swiping while tracking
-//     (duration-0 - the drawer follows the finger), and on release either
-//     a snap-back or a dismissal whose exit duration scales with
-//     --drawer-swipe-strength (mostly-swiped closes fast).
-//
-// Deferred with the rest of the stack machinery (see the Drawer style):
-// snap points, nested-drawer stacking, and bleed.
 const SWIPE_SLOP = 4 // px before a drag counts (clicks stay clicks)
 const DISMISS_PROGRESS = 0.5 // released past halfway -> dismiss
 const DISMISS_VELOCITY = 0.5 // px/ms toward dismissal -> flick-dismiss
@@ -31,6 +10,29 @@ const MIN_STRENGTH = 0.25 // even a full swipe animates the remainder briefly
 const INTERACTIVE = "button, a[href], input, select, textarea, [contenteditable], [role=button]"
 const HANDLE = '[data-slot="drawer-swipe-handle"]'
 
+/**
+ * The Drawer: the dialog machinery + the swipe-to-dismiss gesture.
+ * Everything hard about the OVERLAY is inherited (native <dialog> platform
+ * trap, backdrop-click discrimination, scroll lock, hotkey); this subclass
+ * adds the two things a drawer is:
+ *
+ *   * ANIMATED presence - the first consumer of the presence helpers:
+ *     enter rides the data-starting-style two-frame trick (a transition
+ *     from --closed-transform), exit HOLDS the dialog through the
+ *     data-ending-style transition before the native close() (the
+ *     presence-hold close the sheet styling depends on).
+ *   * The SWIPE - pointer-captured drag along the dismiss direction,
+ *     writing the swipe CSS-var contract onto the <dialog> (::backdrop
+ *     inherits from its originating element, so the overlay fade rides the
+ *     same vars): --drawer-swipe-movement-x/y (px toward dismissal),
+ *     --drawer-swipe-progress (0..1), data-swiping while tracking
+ *     (duration-0 - the drawer follows the finger), and on release either
+ *     a snap-back or a dismissal whose exit duration scales with
+ *     --drawer-swipe-strength (mostly-swiped closes fast).
+ *
+ * Deferred with the rest of the stack machinery (see the Drawer style):
+ * snap points, nested-drawer stacking, and bleed.
+ */
 export default class DrawerController extends DialogController {
   static values = {
     // The dismissal direction.

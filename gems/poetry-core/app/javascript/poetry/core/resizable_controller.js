@@ -1,13 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The Resizable engine, decided NATIVE: no panel library -
-// panels are flex children whose flex-grow IS the percentage, and this
-// controller implements the APG window-splitter on the handles: pointer
-// drag redistributes the two adjacent panels (clamped to each panel's
-// min/max), arrows step, Home/End jump the range, and every move writes
-// aria-valuenow (the preceding panel's size).
-// Deferred with the library's machinery: persistence (autoSaveId),
-// collapsible panels, and the imperative API.
 const PANEL_SELECTOR = '[data-slot="resizable-panel"]'
 const HANDLE_SELECTOR = '[data-slot="resizable-handle"]'
 
@@ -18,12 +10,23 @@ const DEFAULT_MAX = 90
 // The component-facing event namespace (the poetry:<component> rule).
 const EVENT_PREFIX = "poetry:resizable"
 
+/**
+ * The Resizable engine, decided NATIVE: no panel library -
+ * panels are flex children whose flex-grow IS the percentage, and this
+ * controller implements the APG window-splitter on the handles: pointer
+ * drag redistributes the two adjacent panels (clamped to each panel's
+ * min/max), arrows step, Home/End jump the range, and every move writes
+ * aria-valuenow (the preceding panel's size).
+ * Deferred with the library's machinery: persistence (autoSaveId),
+ * collapsible panels, and the imperative API.
+ */
 export default class ResizableController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry:resizable:resize"]
 
   static values = {
+    // horizontal lays the panels side by side; vertical stacks them.
     orientation: { type: String, default: "horizontal" }
   }
 

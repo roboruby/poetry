@@ -6,53 +6,6 @@ import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presenc
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 import { tabbableWithin } from "@poetry/controllers/helpers/tabbable"
 
-// The Combobox ORCHESTRATOR: Select's shell
-// x Command's engine, composed VIA THE EVENT CONTRACT ONLY - this thin
-// controller owns open/close + the commit pipeline + autofill adoption and
-// listens for the embedded engine's poetry:command:select; it contains NO
-// filter/highlight/scoring code (Command owns those) and Command gained no
-// combobox code (engine purity, fenced both directions by the conformance
-// greps). Zero code is shared with SelectController - the PATTERNS are
-// (the layer mechanism, the native-first 5-step pipeline, the adoption
-// path), re-instantiated here because a facade extraction was explicitly
-// declined (the Select contract's open question, answered by this build).
-//
-// THE THREE DELIBERATE DELTAS vs Select, each pinned by tests so neither
-// sibling's rules leak:
-// - open focuses the COMMAND INPUT for every reason (a combobox session is
-//   a TYPING session - APG editable combobox); the selected option gets the
-//   HIGHLIGHT (activedescendant, via the Command controller) + scroll, not
-//   DOM focus;
-// - Tab while open CLOSES WITHOUT COMMIT and lets focus proceed (Popover
-//   semantics, modal:false default; modal:true restores the trap) - Select
-//   is Tab-inert;
-// - a printable key on the CLOSED trigger OPENS and SEEDS the filter
-//   (typing filters, never blind-commits) - Select's closed-trigger
-//   typeahead-commit does NOT port.
-//
-// TWO MEANINGS, TWO ATTRIBUTES, ONE LIST: data-highlighted +
-// aria-activedescendant = position (Command's, never aria-selected);
-// aria-selected + data-selected + the indicator = the COMMITTED value
-// (Select's twin-write, written only here, in the pipeline).
-//
-// THE SYNC INVARIANT (Select's, inherited): native_select.value, the value
-// Value, the twin-write, and the display never diverge - every write path
-// funnels through #apply, NATIVE FIRST (serialization truth is never
-// behind the facade), with real bubbling change/input on the native so
-// Turbo auto-submit and form listeners work unmodified.
-//
-// MULTIPLE (the input-inside layout): the value is a
-// LIST (the value Value carries a JSON array over the same String seam),
-// the native is a <select multiple> posting name[], and the trigger is
-// replaced by the chips FIELD - one chip per committed value IN VALUE
-// ORDER with the filter input inline after them (data-slot=combobox-chip-input,
-// which the engine resolves too; the engine itself rides the ROOT).
-// Selection TOGGLES and the popup STAYS OPEN; chips take REAL DOM focus
-// (:focus-visible styles it - never data-highlighted) and focusing a chip
-// closes the popup; Backspace on the empty input removes the last chip;
-// Escape on the CLOSED popup clears the query and wipes the selection.
-// The input NEVER mirrors selection text; single-mode paths are
-// behavior-identical.
 const TRIGGER_SELECTOR = '[data-slot="combobox-trigger"]'
 const NATIVE_SELECTOR = '[data-slot="combobox-native"]'
 const VALUE_SELECTOR = '[data-slot="combobox-value"]'
@@ -74,6 +27,55 @@ const COMMAND_IDENTIFIER = "poetry--core--command"
 const CONTENT_LAYER_CONTROLLERS = ["poetry--core--focus-scope", "poetry--core--dismissable"]
 const POPPER_STRATEGY = "data-poetry--core--popper-strategy-value"
 
+/**
+ * The Combobox ORCHESTRATOR: Select's shell
+ * x Command's engine, composed VIA THE EVENT CONTRACT ONLY - this thin
+ * controller owns open/close + the commit pipeline + autofill adoption and
+ * listens for the embedded engine's poetry:command:select; it contains NO
+ * filter/highlight/scoring code (Command owns those) and Command gained no
+ * combobox code (engine purity, fenced both directions by the conformance
+ * greps). Zero code is shared with SelectController - the PATTERNS are
+ * (the layer mechanism, the native-first 5-step pipeline, the adoption
+ * path), re-instantiated here because a facade extraction was explicitly
+ * declined (the Select contract's open question, answered by this build).
+ *
+ * THE THREE DELIBERATE DELTAS vs Select, each pinned by tests so neither
+ * sibling's rules leak:
+ * - open focuses the COMMAND INPUT for every reason (a combobox session is
+ *   a TYPING session - APG editable combobox); the selected option gets the
+ *   HIGHLIGHT (activedescendant, via the Command controller) + scroll, not
+ *   DOM focus;
+ * - Tab while open CLOSES WITHOUT COMMIT and lets focus proceed (Popover
+ *   semantics, modal:false default; modal:true restores the trap) - Select
+ *   is Tab-inert;
+ * - a printable key on the CLOSED trigger OPENS and SEEDS the filter
+ *   (typing filters, never blind-commits) - Select's closed-trigger
+ *   typeahead-commit does NOT port.
+ *
+ * TWO MEANINGS, TWO ATTRIBUTES, ONE LIST: data-highlighted +
+ * aria-activedescendant = position (Command's, never aria-selected);
+ * aria-selected + data-selected + the indicator = the COMMITTED value
+ * (Select's twin-write, written only here, in the pipeline).
+ *
+ * THE SYNC INVARIANT (Select's, inherited): native_select.value, the value
+ * Value, the twin-write, and the display never diverge - every write path
+ * funnels through #apply, NATIVE FIRST (serialization truth is never
+ * behind the facade), with real bubbling change/input on the native so
+ * Turbo auto-submit and form listeners work unmodified.
+ *
+ * MULTIPLE (the input-inside layout): the value is a
+ * LIST (the value Value carries a JSON array over the same String seam),
+ * the native is a <select multiple> posting name[], and the trigger is
+ * replaced by the chips FIELD - one chip per committed value IN VALUE
+ * ORDER with the filter input inline after them (data-slot=combobox-chip-input,
+ * which the engine resolves too; the engine itself rides the ROOT).
+ * Selection TOGGLES and the popup STAYS OPEN; chips take REAL DOM focus
+ * (:focus-visible styles it - never data-highlighted) and focusing a chip
+ * closes the popup; Backspace on the empty input removes the last chip;
+ * Escape on the CLOSED popup clears the query and wipes the selection.
+ * The input NEVER mirrors selection text; single-mode paths are
+ * behavior-identical.
+ */
 export default class ComboboxController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
@@ -83,6 +85,7 @@ export default class ComboboxController extends Controller {
   ]
 
   static values = {
+    // Whether the popup is open.
     open: { type: Boolean, default: false },
     // Single: the committed value. multiple: a JSON array over the same
     // String seam (parsed by #listValues, serialized by #applyValues).

@@ -1,33 +1,36 @@
 import { Controller } from "@hotwired/stimulus"
 import { setState } from "@poetry/controllers/helpers/state"
 
-// The RadioGroup checked-value machine (the Accordion composition shape):
-// this controller owns ONLY the value + attribute/input writes - ZERO
-// keyboard code. The shared poetry--core--roving-focus runs on the same
-// root in its DEFAULT tabindex-managing mode (one Tab stop) with the
-// orientation: "both" extension (all four arrows, APG radio), and this
-// controller consumes its cancelable entry event to implement SELECTION
-// FOLLOWS FOCUS: entry fires only on arrow/Home/End navigation - never on
-// Tab or click-focus - so checking on entry is exactly the APG contract
-// (Tab into the group never changes the value; contractual).
-//
-// The form story is the hidden-native-input rule: one <input type=radio>
-// per item, shared name (aria-hidden, tabindex=-1) - native radio
-// serialization, byte-identical to collection_radio_buttons. check() writes
-// every item's aria-checked/checked pair/indicator, sets the hidden input's
-// .checked (the native group unchecks siblings; written explicitly anyway -
-// belt and braces), moves the roving tab stop to the checked item, and
-// dispatches poetry:radio-group:change + native input/change on the newly
-// checked hidden input (Rails autosave/change-tracking listeners fire).
 const ITEM_SELECTOR = '[data-slot="radio-group-item"]'
 const INDICATOR_SELECTOR = '[data-slot="radio-group-indicator"]'
 
+/**
+ * The RadioGroup checked-value machine (the Accordion composition shape):
+ * this controller owns ONLY the value + attribute/input writes - ZERO
+ * keyboard code. The shared poetry--core--roving-focus runs on the same
+ * root in its DEFAULT tabindex-managing mode (one Tab stop) with the
+ * orientation: "both" extension (all four arrows, APG radio), and this
+ * controller consumes its cancelable entry event to implement SELECTION
+ * FOLLOWS FOCUS: entry fires only on arrow/Home/End navigation - never on
+ * Tab or click-focus - so checking on entry is exactly the APG contract
+ * (Tab into the group never changes the value; contractual).
+ *
+ * The form story is the hidden-native-input rule: one <input type=radio>
+ * per item, shared name (aria-hidden, tabindex=-1) - native radio
+ * serialization, byte-identical to collection_radio_buttons. check() writes
+ * every item's aria-checked/checked pair/indicator, sets the hidden input's
+ * .checked (the native group unchecks siblings; written explicitly anyway -
+ * belt and braces), moves the roving tab stop to the checked item, and
+ * dispatches poetry:radio-group:change + native input/change on the newly
+ * checked hidden input (Rails autosave/change-tracking listeners fire).
+ */
 export default class RadioGroupController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry:radio-group:change"]
 
   static values = {
+    // The checked item's value; empty when none is checked.
     value: { type: String, default: "" }
   }
 

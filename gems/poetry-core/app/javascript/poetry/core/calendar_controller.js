@@ -1,40 +1,42 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The Calendar engine, decided OWN-THE-ENGINE: no date-picker library
-// (a heavy JS dep). The month grid is SERVER-RENDERED (Ruby Date math) so a
-// no-JS page shows a valid calendar; this controller adds month navigation
-// (regenerating the 42-cell grid from plain Date math - reusing the day
-// button DOM, no innerHTML churn), single-date selection (writing the
-// hidden input + the data-selected/aria vocabulary), and roving arrow-key
-// focus over the days. Selection is a real form value; the DatePicker
-// composes this inside a Popover.
-//
-// Range mode: mode="range" swaps the click path for a
-// transcription of an MIT-licensed range-selection algorithm (source and
-// license in THIRD_PARTY_NOTICES.md) and the reflection
-// for the range vocabulary (data-range-start/middle/end - dictionary
-// classes that shipped inert until range mode). The form value is TWO
-// hidden inputs (name[start]/name[end] - the wire shape is poetry's).
-// The transcribed semantics hold exactly: an incomplete
-// start-only pick renders as a plain selected single day; the range
-// vocabulary appears only once the range completes.
-//
-// Dropdown caption (caption_layout: :dropdown), the invisible-select overlay
-// pattern: each [data-calendar-unit=month|year] wrapper holds a visible
-// text label (calendar-dropdown-value) with the real select stretched
-// invisibly over it - #jump reads the selects, #render reflects
-// navigation back into both select values AND label text (no caption
-// target in that mode). Week numbers: one role=rowheader per week; each
-// row's Thursday decides the ISO number (matches Ruby Date#cweek under
-// any week_start).
-//
-// Still deferred: multiple months.
 const DAY_SELECTOR = '[data-slot="calendar-day"]'
 const MS_PER_DAY = 86400000
 
 // The component-facing event namespace (the poetry:<component> rule).
 const EVENT_PREFIX = "poetry:calendar"
 
+/**
+ * The Calendar engine, decided OWN-THE-ENGINE: no date-picker library
+ * (a heavy JS dep). The month grid is SERVER-RENDERED (Ruby Date math) so a
+ * no-JS page shows a valid calendar; this controller adds month navigation
+ * (regenerating the 42-cell grid from plain Date math - reusing the day
+ * button DOM, no innerHTML churn), single-date selection (writing the
+ * hidden input + the data-selected/aria vocabulary), and roving arrow-key
+ * focus over the days. Selection is a real form value; the DatePicker
+ * composes this inside a Popover.
+ *
+ * Range mode: mode="range" swaps the click path for a
+ * transcription of an MIT-licensed range-selection algorithm (source and
+ * license in THIRD_PARTY_NOTICES.md) and the reflection
+ * for the range vocabulary (data-range-start/middle/end - dictionary
+ * classes that shipped inert until range mode). The form value is TWO
+ * hidden inputs (name[start]/name[end] - the wire shape is poetry's).
+ * The transcribed semantics hold exactly: an incomplete
+ * start-only pick renders as a plain selected single day; the range
+ * vocabulary appears only once the range completes.
+ *
+ * Dropdown caption (caption_layout: :dropdown), the invisible-select overlay
+ * pattern: each [data-calendar-unit=month|year] wrapper holds a visible
+ * text label (calendar-dropdown-value) with the real select stretched
+ * invisibly over it - #jump reads the selects, #render reflects
+ * navigation back into both select values AND label text (no caption
+ * target in that mode). Week numbers: one role=rowheader per week; each
+ * row's Thursday decides the ISO number (matches Ruby Date#cweek under
+ * any week_start).
+ *
+ * Still deferred: multiple months.
+ */
 export default class CalendarController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
@@ -42,13 +44,17 @@ export default class CalendarController extends Controller {
 
   static targets = ["grid", "caption", "input", "startInput", "endInput", "day"]
   static values = {
+    // The displayed month as YYYY-MM; navigation moves it, and a selection outside
+    // it follows.
     month: String, // the visible month, "YYYY-MM"
     selected: String, // the chosen date, "YYYY-MM-DD" (or "")
     mode: { type: String, default: "single" }, // "single" | "range"
     rangeStart: String, // "YYYY-MM-DD" (or "")
     rangeEnd: String,
+    // The first day of the week, 0 for Sunday through 6 for Saturday.
     weekStart: { type: Number, default: 0 }, // 0 = Sunday
     min: String,
+    // The latest selectable date as ISO; later days are disabled.
     max: String,
     // The localized month names, handed down by the SERVER (Ruby I18n) so
     // the JS caption needs no Intl - correct under app locale AND in the

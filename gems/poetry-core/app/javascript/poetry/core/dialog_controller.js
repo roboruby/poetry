@@ -5,15 +5,17 @@ import { lockScroll, unlockScroll } from "@poetry/controllers/helpers/scroll_loc
 import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
 import { exitPresence, flushPendingExits } from "@poetry/controllers/helpers/presence"
 
-// The native-dialog primitive: borrow the PLATFORM overlay -
-// showModal() gives the focus trap, Esc handling, top-layer stacking, and
-// focus return for free; this controller adds what the platform doesn't:
-// the data-open/data-closed pair for CSS variants, backdrop-click
-// dismissal, a body scroll-lock, and the presence-hold close - exit flips
-// the pair to data-closed and HOLDS the dialog through its CSS exit
-// animation before the native close() (synchronous when no exit animation
-// applies, so reduced-motion and unthemed hosts close instantly).
-// Consumed by Dialog (and AlertDialog / CommandDialog / Sheet).
+/**
+ * The native-dialog primitive: borrow the PLATFORM overlay -
+ * showModal() gives the focus trap, Esc handling, top-layer stacking, and
+ * focus return for free; this controller adds what the platform doesn't:
+ * the data-open/data-closed pair for CSS variants, backdrop-click
+ * dismissal, a body scroll-lock, and the presence-hold close - exit flips
+ * the pair to data-closed and HOLDS the dialog through its CSS exit
+ * animation before the native close() (synchronous when no exit animation
+ * applies, so reduced-motion and unthemed hosts close instantly).
+ * Consumed by Dialog (and AlertDialog / CommandDialog / Sheet).
+ */
 export default class extends Controller {
   static targets = ["dialog"]
   static values = {

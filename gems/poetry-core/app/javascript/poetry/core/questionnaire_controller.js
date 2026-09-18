@@ -1,18 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The Questionnaire machine, adapted from an MIT-licensed source (source
-// and license in THIRD_PARTY_NOTICES.md): a native <form> of fieldset
-// items shown ONE at a
-// time. The server renders the complete initial state (active item,
-// statuses, shortcuts, button visibility); this controller owns the
-// runtime transitions - navigation (validate-gated Next, Skip for
-// optional items, submit validates every item and jumps to the first
-// invalid), answer tracking (choice change / text input -> status), the
-// keyboard map (Cmd/Ctrl+Enter confirm, ArrowUp/Down answer focus,
-// ArrowLeft/Right item navigation, Enter-on-filled-answer confirm,
-// letter/number shortcuts), and the data-attribute stamps the styling
-// contract reads. Answers are native radio/checkbox/text inputs - the
-// form serializes with zero JS.
 const ITEM = '[data-slot="questionnaire-item"]'
 const CHOICE = '[data-slot="questionnaire-choice"]'
 const CHOICE_INPUT = '[data-slot="questionnaire-choice-input"]'
@@ -20,6 +7,21 @@ const TEXT_INPUT = '[data-slot="questionnaire-input"]'
 const ERROR = '[data-slot="questionnaire-error"]'
 const DESCRIPTION = '[data-slot="questionnaire-description"]'
 
+/**
+ * The Questionnaire machine, adapted from an MIT-licensed source (source
+ * and license in THIRD_PARTY_NOTICES.md): a native <form> of fieldset
+ * items shown ONE at a
+ * time. The server renders the complete initial state (active item,
+ * statuses, shortcuts, button visibility); this controller owns the
+ * runtime transitions - navigation (validate-gated Next, Skip for
+ * optional items, submit validates every item and jumps to the first
+ * invalid), answer tracking (choice change / text input -> status), the
+ * keyboard map (Cmd/Ctrl+Enter confirm, ArrowUp/Down answer focus,
+ * ArrowLeft/Right item navigation, Enter-on-filled-answer confirm,
+ * letter/number shortcuts), and the data-attribute stamps the styling
+ * contract reads. Answers are native radio/checkbox/text inputs - the
+ * form serializes with zero JS.
+ */
 export default class QuestionnaireController extends Controller {
   // The events this controller dispatches (manifest surface).
   static events = [

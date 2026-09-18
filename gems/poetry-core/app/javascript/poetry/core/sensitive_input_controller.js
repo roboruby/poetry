@@ -2,22 +2,24 @@ import { Controller } from "@hotwired/stimulus"
 import { announce } from "@poetry/controllers/helpers/announce"
 import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 
-// The SensitiveInput machine, adapted from an MIT-licensed source
-// (source and license in THIRD_PARTY_NOTICES.md): a secret field in
-// three states - masked | revealed | empty - where data-state on the root
-// carries the truth and CSS renders it. Masked-with-value turns the MASK
-// OVERLAY into the reveal affordance (role=button + label + sr-hint; only
-// text spans inside - a role on the surrounding group would trip axe
-// nested-interactive around the inert input)
-// while the real input stays rendered for layout but goes inert
-// (aria-hidden, tabindex -1, readonly, transparent). Reveal: click
-// anywhere on the group (mask clicks bubble) or Enter/Space on the mask,
-// focus moves into the input. Re-mask: Escape (focus returns to the mask
-// - the input just lost its tab stop), leaving the component, or the eye.
-// Typing into an empty field auto-reveals so composition happens in
-// type=text. The no-JS story is a plain password input.
 const EVENT_PREFIX = "poetry:sensitive-input"
 
+/**
+ * The SensitiveInput machine, adapted from an MIT-licensed source
+ * (source and license in THIRD_PARTY_NOTICES.md): a secret field in
+ * three states - masked | revealed | empty - where data-state on the root
+ * carries the truth and CSS renders it. Masked-with-value turns the MASK
+ * OVERLAY into the reveal affordance (role=button + label + sr-hint; only
+ * text spans inside - a role on the surrounding group would trip axe
+ * nested-interactive around the inert input)
+ * while the real input stays rendered for layout but goes inert
+ * (aria-hidden, tabindex -1, readonly, transparent). Reveal: click
+ * anywhere on the group (mask clicks bubble) or Enter/Space on the mask,
+ * focus moves into the input. Re-mask: Escape (focus returns to the mask
+ * - the input just lost its tab stop), leaving the component, or the eye.
+ * Typing into an empty field auto-reveals so composition happens in
+ * type=text. The no-JS story is a plain password input.
+ */
 export default class SensitiveInputController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).

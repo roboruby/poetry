@@ -3,24 +3,6 @@ import { portalContent, resolvePortalContainer, restoreContent } from "@poetry/c
 import { exitPresence } from "@poetry/controllers/helpers/presence"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 
-// The Tooltip controller (the popper-consumer trio's timing machine): open
-// DELAYS (provider delay_duration, default 0), the provider-scoped
-// WARM grace (one tooltip open - or closed less than skip_delay_duration ms
-// ago - lets siblings in the same provider scope open instantly), ONE OPEN
-// GLOBALLY (the document-level will-open event),
-// close-on-scroll, and the pointer-vs-focus open paths with their latches.
-//
-// A11y is the strictest of the trio: the content is role=tooltip and the
-// trigger's aria-describedby is set on open and REMOVED on close
-// (describedby must never reference hidden content); focus-scope is NOT
-// composed at all - focus never enters a tooltip; touch NEVER opens one
-// (no long-press path, deliberately). Esc rides a token-activated
-// dismissable layer while open, so a tooltip above a Dialog peels first.
-//
-// THE WARM REGISTRY (the provider mechanism): a module-level WeakMap keyed
-// by the [data-slot=tooltip-provider] ancestor (document fallback) holding
-// {openCount, warmUntil}. The DOM ancestor IS the provider scope; the
-// WeakMap lets morphed/replaced providers garbage-collect (no Turbo leaks).
 const PROVIDER_SELECTOR = '[data-slot="tooltip-provider"]'
 const CONTENT_SELECTOR = '[data-slot="tooltip-content"]'
 const TRIGGER_SELECTOR = '[data-slot="tooltip-trigger"]'
@@ -51,13 +33,36 @@ const scopeFor = (element) => {
   return warmScopes.get(element)
 }
 
+/**
+ * The Tooltip controller (the popper-consumer trio's timing machine): open
+ * DELAYS (provider delay_duration, default 0), the provider-scoped
+ * WARM grace (one tooltip open - or closed less than skip_delay_duration ms
+ * ago - lets siblings in the same provider scope open instantly), ONE OPEN
+ * GLOBALLY (the document-level will-open event),
+ * close-on-scroll, and the pointer-vs-focus open paths with their latches.
+ *
+ * A11y is the strictest of the trio: the content is role=tooltip and the
+ * trigger's aria-describedby is set on open and REMOVED on close
+ * (describedby must never reference hidden content); focus-scope is NOT
+ * composed at all - focus never enters a tooltip; touch NEVER opens one
+ * (no long-press path, deliberately). Esc rides a token-activated
+ * dismissable layer while open, so a tooltip above a Dialog peels first.
+ *
+ * THE WARM REGISTRY (the provider mechanism): a module-level WeakMap keyed
+ * by the [data-slot=tooltip-provider] ancestor (document fallback) holding
+ * {openCount, warmUntil}. The DOM ancestor IS the provider scope; the
+ * WeakMap lets morphed/replaced providers garbage-collect (no Turbo leaks).
+ */
 export default class TooltipController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry:tooltip:closed", "poetry:tooltip:open"]
 
   static values = {
+    // Whether the tooltip is open.
     open: { type: Boolean, default: false },
+    // How long the pointer must rest on the trigger, in milliseconds, before the
+    // tooltip opens; -1 follows the provider.
     delayDuration: { type: Number, default: -1 }, // -1 = inherit the provider (default 0)
     disableHoverableContent: { type: Boolean, default: false } // unset = inherit the provider
   }

@@ -3,31 +3,36 @@ import { acquire, release } from "@poetry/controllers/helpers/announce"
 import { isEditingTarget, matchesHotkey } from "@poetry/controllers/helpers/hotkey"
 import { stateOf } from "@poetry/controllers/helpers/state"
 
-// The toast viewport (one per page): the labeled role=region <ol> that is
-// the Turbo Stream append target (id=poetry-toaster, data-turbo-permanent).
-// It ACQUIRES the announce singleton for its lifetime (items announce
-// through it on connect), owns the F8 hotkey (focus moves to the most
-// recent toast; the prior focus is remembered so dismissal returns it),
-// enforces the visible LIMIT (default 3 - the oldest overflow toasts queue
-// hidden with their timers held, promoted as newer ones dismiss), and owns
-// the stack reflow (--poetry-toast-index, newest = 0, for the offset/scale
-// stack styling).
-//
-// Items arrive by server render, Turbo Stream append, or a stamp (the
-// poetry:toaster:stamp window event - poetry_toast_trigger's no-round-trip
-// path, cloning a <template> toast into the region);
-// a childList MutationObserver reconciles limit + reflow on every change,
-// so no append path needs to know about the toaster.
 const TOAST_SELECTOR = '[data-slot="toast"]'
 const TOAST_IDENTIFIER = "poetry--core--toast"
 
 const INDEX_PROPERTY = "--poetry-toast-index"
 
+/**
+ * The toast viewport (one per page): the labeled role=region <ol> that is
+ * the Turbo Stream append target (id=poetry-toaster, data-turbo-permanent).
+ * It ACQUIRES the announce singleton for its lifetime (items announce
+ * through it on connect), owns the F8 hotkey (focus moves to the most
+ * recent toast; the prior focus is remembered so dismissal returns it),
+ * enforces the visible LIMIT (default 3 - the oldest overflow toasts queue
+ * hidden with their timers held, promoted as newer ones dismiss), and owns
+ * the stack reflow (--poetry-toast-index, newest = 0, for the offset/scale
+ * stack styling).
+ *
+ * Items arrive by server render, Turbo Stream append, or a stamp (the
+ * poetry:toaster:stamp window event - poetry_toast_trigger's no-round-trip
+ * path, cloning a <template> toast into the region);
+ * a childList MutationObserver reconciles limit + reflow on every change,
+ * so no append path needs to know about the toaster.
+ */
 export default class ToasterController extends Controller {
   static targets = ["item"]
   static values = {
+    // The shortcut that moves focus into the toaster, in the hotkey syntax.
     hotkey: { type: String, default: "F8" },
+    // How many toasts may be open at once; older ones are dismissed past it.
     limit: { type: Number, default: 3 },
+    // The corner or edge the toasts stack against.
     position: String
   }
 

@@ -3,28 +3,6 @@ import { portalContent, resolvePortalContainer, restoreContent } from "@poetry/c
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 
-// The Popover controller (the popper-consumer trio's click-open member):
-// the menu controller's #show/#hide + token-activated layer skeleton with
-// ALL item machinery deleted - no typeahead, no roving, no subs, no
-// collection. What remains is exactly the APG dialog-pattern-lite: the
-// trigger toggles a role=dialog panel, focus MOVES INTO the content on open
-// (focus-scope's mount default - deliberately NOT vetoed, the contrast with
-// the menu family's data-open-reason contract) and RETURNS to the trigger on
-// close; the trap is enforced only when modal (the default is
-// modal: FALSE - the deliberate contrast with the menu family's true).
-//
-// STRUCTURAL RESOLUTION, no targets: the content is found via the trigger's
-// aria-controls id (portal-safe - the menu-controller pattern verbatim);
-// content-level listeners are wired programmatically in connect for the same
-// reason.
-//
-// The layer stack is ACTIVATED on open: focus-scope + dismissable are
-// appended to the content's data-controller (a statically-connected trap on
-// hidden content would steal focus at page load; a static dismissable would
-// swallow topmost-Esc), with trapped / disable-outside-pointer-events both
-// set from modal. Close reverses: presence exit -> hidden -> tokens removed
-// -> focus-scope's disconnect restores focus to the trigger (suppressed for
-// outside-press when non-modal: focus follows the click).
 const TRIGGER_SELECTOR = '[data-slot="popover-trigger"]'
 
 const EVENT_PREFIX = "poetry:popover"
@@ -32,13 +10,39 @@ const EVENT_PREFIX = "poetry:popover"
 const CONTENT_LAYER_CONTROLLERS = ["poetry--core--focus-scope", "poetry--core--dismissable"]
 const POPPER_STRATEGY = "data-poetry--core--popper-strategy-value"
 
+/**
+ * The Popover controller (the popper-consumer trio's click-open member):
+ * the menu controller's #show/#hide + token-activated layer skeleton with
+ * ALL item machinery deleted - no typeahead, no roving, no subs, no
+ * collection. What remains is exactly the APG dialog-pattern-lite: the
+ * trigger toggles a role=dialog panel, focus MOVES INTO the content on open
+ * (focus-scope's mount default - deliberately NOT vetoed, the contrast with
+ * the menu family's data-open-reason contract) and RETURNS to the trigger on
+ * close; the trap is enforced only when modal (the default is
+ * modal: FALSE - the deliberate contrast with the menu family's true).
+ *
+ * STRUCTURAL RESOLUTION, no targets: the content is found via the trigger's
+ * aria-controls id (portal-safe - the menu-controller pattern verbatim);
+ * content-level listeners are wired programmatically in connect for the same
+ * reason.
+ *
+ * The layer stack is ACTIVATED on open: focus-scope + dismissable are
+ * appended to the content's data-controller (a statically-connected trap on
+ * hidden content would steal focus at page load; a static dismissable would
+ * swallow topmost-Esc), with trapped / disable-outside-pointer-events both
+ * set from modal. Close reverses: presence exit -> hidden -> tokens removed
+ * -> focus-scope's disconnect restores focus to the trigger (suppressed for
+ * outside-press when non-modal: focus follows the click).
+ */
 export default class PopoverController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry:popover:closed", "poetry:popover:open"]
 
   static values = {
+    // Whether the popover is open.
     open: { type: Boolean, default: false },
+    // Whether the open popover traps focus and blocks outside pointer events.
     modal: { type: Boolean, default: false }
   }
 

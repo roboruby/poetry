@@ -13,6 +13,7 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { Controller } from "@hotwired/stimulus"
 import { controllers } from "@poetry/controllers"
+import { mergedDocs, withDocs } from "./support/controller_docs.js"
 
 const MANIFEST_PATH = path.join(
   path.dirname(fileURLToPath(import.meta.url)), "../../config/controllers_manifest.json"
@@ -64,16 +65,26 @@ const methodNames = (controller) => {
   return [...names].sort()
 }
 
+// The prose rides along: each controller's file (poetry--core--action-bar
+// is action_bar_controller.js) and its parents' up the chain, the way
+// the statics merge - so Drawer documents Dialog's values it inherits.
+const CONTROLLERS_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "../../app/javascript/poetry/core")
+const fileFor = (identifier) =>
+  path.join(CONTROLLERS_DIR, `${identifier.replace("poetry--core--", "").replace(/-/g, "_")}_controller.js`)
+const identifierOf = (klass) => Object.entries(controllers).find(([, candidate]) => candidate === klass)?.[0]
+const docFiles = (controller) =>
+  classChain(controller).reverse().map(identifierOf).filter(Boolean).map(fileFor).filter((file) => fs.existsSync(file))
+
 const buildManifest = () =>
   Object.fromEntries(Object.entries(controllers).sort().map(([identifier, controller]) => [
     identifier,
-    {
+    withDocs({
       targets: mergedList(controller, "targets"),
       values: serializeValues(mergedValues(controller)),
       classes: mergedList(controller, "classes"),
       methods: methodNames(controller),
       events: mergedList(controller, "events")
-    }
+    }, mergedDocs(docFiles(controller)))
   ]))
 
 describe("controllers manifest", () => {

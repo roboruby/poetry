@@ -6,26 +6,28 @@ import { lockScroll, unlockScroll } from "@poetry/controllers/helpers/scroll_loc
 import { setState } from "@poetry/controllers/helpers/state"
 import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
 
-// The Sidebar state machine (desktop plus the mobile mode): expand/collapse
-// coordination for the app shell. The COLLAPSE itself is pure CSS - the
-// peer sidebar carries data-state=expanded|collapsed and the dictionary's
-// group-data-[state=collapsed] classes do all the width/transform work;
-// this controller only flips that attribute (plus data-collapsible, which
-// the source sets to the mode WHILE collapsed and "" while expanded),
-// persists the choice to a cookie (so the SERVER can read it and render
-// the right initial state - poetry's server-first angle), and binds the
-// Cmd/Ctrl+B shortcut.
-//
-// MOBILE (DOM-move): below md the trigger routes to a separate
-// never-persisted openMobile state (only desktop
-// toggles write the cookie). Opening ADOPTS the server-rendered nav
-// children from the desktop inner into the mobile <dialog> (one render,
-// no duplicate ids - the render-twice rejection) and shows it through the
-// sheet presence path; closing holds through the slide-out, then moves
-// the children back. Crossing to desktop while open restores INSTANTLY.
-// The component-facing event namespace (the poetry:<component> rule).
 const EVENT_PREFIX = "poetry:sidebar"
 
+/**
+ * The Sidebar state machine (desktop plus the mobile mode): expand/collapse
+ * coordination for the app shell. The COLLAPSE itself is pure CSS - the
+ * peer sidebar carries data-state=expanded|collapsed and the dictionary's
+ * group-data-[state=collapsed] classes do all the width/transform work;
+ * this controller only flips that attribute (plus data-collapsible, which
+ * the source sets to the mode WHILE collapsed and "" while expanded),
+ * persists the choice to a cookie (so the SERVER can read it and render
+ * the right initial state - poetry's server-first angle), and binds the
+ * Cmd/Ctrl+B shortcut.
+ *
+ * MOBILE (DOM-move): below md the trigger routes to a separate
+ * never-persisted openMobile state (only desktop
+ * toggles write the cookie). Opening ADOPTS the server-rendered nav
+ * children from the desktop inner into the mobile <dialog> (one render,
+ * no duplicate ids - the render-twice rejection) and shows it through the
+ * sheet presence path; closing holds through the slide-out, then moves
+ * the children back. Crossing to desktop while open restores INSTANTLY.
+ * The component-facing event namespace (the poetry:<component> rule).
+ */
 export default class SidebarController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
@@ -33,11 +35,14 @@ export default class SidebarController extends Controller {
 
   static targets = ["sidebar", "inner", "mobileDialog", "mobileInner"]
   static values = {
+    // Whether the sidebar is expanded.
     open: { type: Boolean, default: true },
     // The collapse mode written to data-collapsible while collapsed
     // (offcanvas | icon); "none" means the shortcut/trigger are inert.
     collapsible: { type: String, default: "offcanvas" },
+    // The cookie that remembers the open state across requests.
     cookieName: { type: String, default: "sidebar_state" },
+    // How long the cookie lives, in seconds.
     cookieMaxAge: { type: Number, default: 604800 }, // 7 days
     shortcut: { type: String, default: "b" }
   }

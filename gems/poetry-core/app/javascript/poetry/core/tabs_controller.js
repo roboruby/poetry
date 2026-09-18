@@ -1,27 +1,29 @@
 import { Controller } from "@hotwired/stimulus"
 import { setState } from "@poetry/controllers/helpers/state"
 
-// The Tabs activation machine: this controller owns ONLY the
-// active-value state + attribute writes; the shared poetry--core--roving-focus
-// on the tablist owns the keyboard (default tabindex-managing mode - one Tab
-// stop). Triggers are DUMB buttons (click -> tabs#activate; with automatic
-// activation - the APG default for tabs - focusin activates too, so arrow
-// keys both move focus AND switch panels).
-//
-// The state vocabulary: the active trigger carries data-active
-// (the styled token) + aria-selected; inactive panels carry the hidden
-// property + data-hidden. data-activation-direction is deliberately NOT
-// emitted - no shipped class consumes it (add it with the animated
-// indicator, when something does).
-//
-// Panels are scoped to THIS root (a nested Tabs inside a panel owns its own
-// triggers/panels - the DOM is the registry, same rule as roving-focus).
 const TRIGGER_SELECTOR = '[data-slot="tabs-trigger"]'
 const PANEL_SELECTOR = '[data-slot="tabs-content"]'
 
 // The component-facing event namespace (the poetry:<component> rule).
 const EVENT_PREFIX = "poetry:tabs"
 
+/**
+ * The Tabs activation machine: this controller owns ONLY the
+ * active-value state + attribute writes; the shared poetry--core--roving-focus
+ * on the tablist owns the keyboard (default tabindex-managing mode - one Tab
+ * stop). Triggers are DUMB buttons (click -> tabs#activate; with automatic
+ * activation - the APG default for tabs - focusin activates too, so arrow
+ * keys both move focus AND switch panels).
+ *
+ * The state vocabulary: the active trigger carries data-active
+ * (the styled token) + aria-selected; inactive panels carry the hidden
+ * property + data-hidden. data-activation-direction is deliberately NOT
+ * emitted - no shipped class consumes it (add it with the animated
+ * indicator, when something does).
+ *
+ * Panels are scoped to THIS root (a nested Tabs inside a panel owns its own
+ * triggers/panels - the DOM is the registry, same rule as roving-focus).
+ */
 export default class TabsController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).

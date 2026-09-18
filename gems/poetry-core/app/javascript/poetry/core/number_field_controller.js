@@ -1,31 +1,43 @@
 import { Controller } from "@hotwired/stimulus"
 
-// NumberField: a formatted
-// visible <input type=text> over a hidden <input type=number> that is the
-// form/validation truth - the spinbutton ARIA pattern is deliberately
-// not used. The controller owns stepping (arrows, steppers with
-// press-and-hold, opt-in wheel), parse/clamp/format, and the two-input
-// sync. Number | null value model: empty is null, never NaN.
-//
-// Deliberate v1 boundaries (documented in the component):
-// no scrub area, Latin-digit parsing only (locale separators and
-// currency/percent symbols ARE handled via Intl.formatToParts), and the
-// server renders the raw number - the display formats on connect.
 const START_AUTO_CHANGE_DELAY = 400
 const CHANGE_VALUE_TICK_DELAY = 60
 
+/**
+ * NumberField: a formatted
+ * visible <input type=text> over a hidden <input type=number> that is the
+ * form/validation truth - the spinbutton ARIA pattern is deliberately
+ * not used. The controller owns stepping (arrows, steppers with
+ * press-and-hold, opt-in wheel), parse/clamp/format, and the two-input
+ * sync. Number | null value model: empty is null, never NaN.
+ *
+ * Deliberate v1 boundaries (documented in the component):
+ * no scrub area, Latin-digit parsing only (locale separators and
+ * currency/percent symbols ARE handled via Intl.formatToParts), and the
+ * server renders the raw number - the display formats on connect.
+ */
 export default class extends Controller {
   static targets = ["input", "hidden", "increment", "decrement"]
 
   static values = {
+    // The lowest value accepted; typing or stepping below it clamps.
     min: Number,
+    // The highest value accepted; typing or stepping above it clamps.
     max: Number,
+    // The amount an arrow key or a stepper changes the value by.
     step: { type: Number, default: 1 },
+    // The step with Shift held.
     largeStep: { type: Number, default: 10 },
+    // The step with Alt held.
     smallStep: { type: Number, default: 0.1 },
+    // Whether a typed value snaps to the nearest step.
     snap: Boolean,
+    // Whether the mouse wheel changes the value while the input is focused.
     wheel: Boolean,
+    // Intl.NumberFormat options the visible value is formatted with (a style, a
+    // currency, the digits).
     format: Object,
+    // The locale the visible value is formatted in; empty follows the browser.
     locale: String
   }
 

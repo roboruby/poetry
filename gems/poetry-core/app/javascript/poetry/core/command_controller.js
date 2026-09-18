@@ -2,39 +2,6 @@ import { Controller } from "@hotwired/stimulus"
 import { collectionItems } from "@poetry/controllers/helpers/collection"
 import { scoreItem } from "@poetry/controllers/helpers/filter_rank"
 
-// The Command palette engine - the suite's
-// first ACTIVEDESCENDANT component (the APG editable-combobox pattern, the
-// deliberate delta vs the menus/Select family's roving focus): real DOM
-// focus stays pinned to the input for the whole session; the highlighted
-// option carries data-highlighted + its server-stable id in the input's
-// aria-activedescendant (the twin-write, activedescendant-flavored).
-// Options never get tabindex; roving-focus is NOT attached; aria-selected
-// is NEVER written here (reserved for committed values - Combobox's
-// twin-write; a bare palette has no committed value).
-//
-// THE FILTER is the deterministic helpers/filter_rank spec (prefix 4 >
-// word-boundary 3 > substring 2 > keyword 1 > hidden 0, diacritic-folded)
-// and it is HIDE-ONLY: score-0 items get hidden + data-hidden, matches get
-// both removed, and children are NEVER reordered - DOM order is the
-// ranking authority within a band; the score's only job is seating the
-// auto-highlight. filter:false is the server-driven mode: steps 1-2
-// (hiding) are skipped entirely and only
-// highlight/activation/announcement run over whatever the server rendered
-// - the Turbo-frame async seam Combobox's recipe plugs into.
-//
-// ACTIVATION IS AN EVENT, NOT AN ACTION: Enter/click dispatches cancelable
-// poetry:command:select and this controller does nothing further - no
-// navigation, no close, no value write. The listener (host data-action,
-// Combobox's commit pipeline) owns the consequences - the engine-purity
-// Combobox's composition depends on (no popper/commit/native-select code
-// lives here, fenced by the conformance greps).
-//
-// The DOM is the store, filtering included: query in the input, visibility
-// as hidden + data-hidden, highlight as data-highlighted +
-// aria-activedescendant, group visibility derived - a Turbo Stream can
-// append items mid-session and the next keystroke ranks them.
-// Each part matches both families' vocabularies: Command's own names and the
-// combobox's (two names for the same parts; the engine rides both).
 const INPUT_SELECTOR = '[data-slot="command-input"], [data-slot="combobox-input"], [data-slot="combobox-chip-input"]'
 const LIST_SELECTOR = '[data-slot="command-list"], [data-slot="combobox-list"]'
 const ITEM_SELECTOR = '[data-slot="command-item"], [data-slot="combobox-item"]'
@@ -51,6 +18,41 @@ const EVENT_PREFIX = "poetry:command"
 // remain (the count is the piece filter UIs usually leave silent).
 const STATUS_DEBOUNCE = 100
 
+/**
+ * The Command palette engine - the suite's
+ * first ACTIVEDESCENDANT component (the APG editable-combobox pattern, the
+ * deliberate delta vs the menus/Select family's roving focus): real DOM
+ * focus stays pinned to the input for the whole session; the highlighted
+ * option carries data-highlighted + its server-stable id in the input's
+ * aria-activedescendant (the twin-write, activedescendant-flavored).
+ * Options never get tabindex; roving-focus is NOT attached; aria-selected
+ * is NEVER written here (reserved for committed values - Combobox's
+ * twin-write; a bare palette has no committed value).
+ *
+ * THE FILTER is the deterministic helpers/filter_rank spec (prefix 4 >
+ * word-boundary 3 > substring 2 > keyword 1 > hidden 0, diacritic-folded)
+ * and it is HIDE-ONLY: score-0 items get hidden + data-hidden, matches get
+ * both removed, and children are NEVER reordered - DOM order is the
+ * ranking authority within a band; the score's only job is seating the
+ * auto-highlight. filter:false is the server-driven mode: steps 1-2
+ * (hiding) are skipped entirely and only
+ * highlight/activation/announcement run over whatever the server rendered
+ * - the Turbo-frame async seam Combobox's recipe plugs into.
+ *
+ * ACTIVATION IS AN EVENT, NOT AN ACTION: Enter/click dispatches cancelable
+ * poetry:command:select and this controller does nothing further - no
+ * navigation, no close, no value write. The listener (host data-action,
+ * Combobox's commit pipeline) owns the consequences - the engine-purity
+ * Combobox's composition depends on (no popper/commit/native-select code
+ * lives here, fenced by the conformance greps).
+ *
+ * The DOM is the store, filtering included: query in the input, visibility
+ * as hidden + data-hidden, highlight as data-highlighted +
+ * aria-activedescendant, group visibility derived - a Turbo Stream can
+ * append items mid-session and the next keystroke ranks them.
+ * Each part matches both families' vocabularies: Command's own names and the
+ * combobox's (two names for the same parts; the engine rides both).
+ */
 export default class CommandController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).

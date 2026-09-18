@@ -1,25 +1,28 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The Autocomplete: a REAL text
-// input that IS the form value, suggesting from a server-rendered list
-// that filters as you type. This is the input-is-the-value semantic -
-// the sibling of Combobox, whose value is a SELECTED ITEM behind a
-// native <select>. Selecting a suggestion writes the input and closes;
-// the text always submits as ordinary params.
-//
-// The contract's fixed behaviors: locale-aware filtering
-// (toLocaleLowerCase), list scroll reset on every filter pass, and
-// change-reason details on the commit event (item-press | enter-key).
-// Positioning rides the shared popper controller (input = anchor).
 const ITEM_SELECTOR = '[data-slot="autocomplete-item"]'
 const EVENT_PREFIX = "poetry:autocomplete"
 
+/**
+ * The Autocomplete: a REAL text
+ * input that IS the form value, suggesting from a server-rendered list
+ * that filters as you type. This is the input-is-the-value semantic -
+ * the sibling of Combobox, whose value is a SELECTED ITEM behind a
+ * native <select>. Selecting a suggestion writes the input and closes;
+ * the text always submits as ordinary params.
+ *
+ * The contract's fixed behaviors: locale-aware filtering
+ * (toLocaleLowerCase), list scroll reset on every filter pass, and
+ * change-reason details on the commit event (item-press | enter-key).
+ * Positioning rides the shared popper controller (input = anchor).
+ */
 export default class AutocompleteController extends Controller {
   static events = ["poetry:autocomplete:commit", "poetry:autocomplete:open", "poetry:autocomplete:closed"]
 
   static targets = ["input", "content", "list", "empty"]
 
   static values = {
+    // Whether the suggestion list is open.
     open: { type: Boolean, default: false },
     // Open the popup on focus even before any typing.
     openOnFocus: { type: Boolean, default: true }

@@ -1,32 +1,35 @@
 import { Controller } from "@hotwired/stimulus"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 
-// The ToggleGroup value-set machine (the Accordion composition, second
-// consumer): this controller owns ONLY the pressed-values set + attribute
-// writes; the shared poetry--core--roving-focus on the same root owns the
-// keyboard (default tabindex-managing mode - one Tab stop). Items are DUMB
-// buttons (data-action -> group#toggle; poetry--core--pressed is NOT
-// attached in group context - one owner, no event soup).
-//
-// The role/vocabulary split, enforced here: type=single is
-// RADIO semantics - items carry aria-checked (aria-pressed stripped) and
-// re-pressing the sole pressed item deselects to EMPTY;
-// type=multiple is toolbar semantics - independent aria-pressed items. The
-// controller reads type once and never mixes vocabularies; the bare
-// data-pressed presence boolean styles both types identically (Toggle's
-// classes just work).
-//
-// After every transition the PRESSED item becomes the roving tab stop
-// (re-entering the group lands on the selection) -
-// written directly as the tabindex stamp roving-focus adopts.
 const ITEM_SELECTOR = '[data-slot="toggle-group-item"]'
 
+/**
+ * The ToggleGroup value-set machine (the Accordion composition, second
+ * consumer): this controller owns ONLY the pressed-values set + attribute
+ * writes; the shared poetry--core--roving-focus on the same root owns the
+ * keyboard (default tabindex-managing mode - one Tab stop). Items are DUMB
+ * buttons (data-action -> group#toggle; poetry--core--pressed is NOT
+ * attached in group context - one owner, no event soup).
+ *
+ * The role/vocabulary split, enforced here: type=single is
+ * RADIO semantics - items carry aria-checked (aria-pressed stripped) and
+ * re-pressing the sole pressed item deselects to EMPTY;
+ * type=multiple is toolbar semantics - independent aria-pressed items. The
+ * controller reads type once and never mixes vocabularies; the bare
+ * data-pressed presence boolean styles both types identically (Toggle's
+ * classes just work).
+ *
+ * After every transition the PRESSED item becomes the roving tab stop
+ * (re-entering the group lands on the selection) -
+ * written directly as the tabindex stamp roving-focus adopts.
+ */
 export default class ToggleGroupController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry:toggle-group:change"]
 
   static values = {
+    // single presses one item at a time; multiple lets any number stay pressed.
     type: { type: String, default: "single" }
   }
 

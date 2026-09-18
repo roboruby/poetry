@@ -1,16 +1,18 @@
 import { Controller } from "@hotwired/stimulus"
 import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 
-// The SearchField seams: Escape CLEARS a
-// non-empty field and is consumed - the NEXT press reaches the dismissal
-// layer and closes a parent overlay; an already-empty field lets Escape
-// propagate untouched. Emptiness is checked against the RAW input value
-// (autofill and scripts poke the DOM directly). The clear button keeps
-// focus in the input by preventing the press's focus steal at
-// pointerdown - on mobile that is what keeps the virtual keyboard up.
-// Enter is never intercepted: native form submission is the Rails path.
 const EVENT_PREFIX = "poetry:search-field"
 
+/**
+ * The SearchField seams: Escape CLEARS a
+ * non-empty field and is consumed - the NEXT press reaches the dismissal
+ * layer and closes a parent overlay; an already-empty field lets Escape
+ * propagate untouched. Emptiness is checked against the RAW input value
+ * (autofill and scripts poke the DOM directly). The clear button keeps
+ * focus in the input by preventing the press's focus steal at
+ * pointerdown - on mobile that is what keeps the virtual keyboard up.
+ * Enter is never intercepted: native form submission is the Rails path.
+ */
 export default class SearchFieldController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).

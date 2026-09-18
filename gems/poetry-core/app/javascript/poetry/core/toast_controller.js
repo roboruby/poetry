@@ -4,21 +4,6 @@ import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 import { exitPresence } from "@poetry/controllers/helpers/presence"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 
-// One toast item (poetry's own Toast - the stacked-toaster genre with
-// strict a11y semantics). The item is role=status aria-live=off: it
-// never announces itself - on connect it speaks ONCE through the
-// announce singleton at its politeness (destructive -> assertive,
-// wired server-side via the
-// politeness value). The auto-dismiss timer follows APG/WCAG 2.2.1 timing:
-// it PAUSES on hover, focus-within, window blur and tab-hidden (reasons are
-// refcounted so overlapping pauses cannot resume early), and duration <= 0
-// means persistent (required for undo/action toasts). Dismiss flips
-// data-open -> data-closed, dispatches poetry:toast:dismiss {id, reason} (the
-// toaster's reflow + focus-return seam), then presence holds the node until
-// its exit animation finishes before removal.
-//
-// Swipe-to-dismiss is a browser-verification-GATED enhancement (contract) -
-// it does not ship in this pass; the swipe reason is reserved.
 const EVENT_PREFIX = "poetry:toast"
 
 const ACTION_SELECTOR = '[data-slot="toast-action"]'
@@ -36,6 +21,23 @@ const PAUSE_REASONS = {
 
 let toastSequence = 0
 
+/**
+ * One toast item (poetry's own Toast - the stacked-toaster genre with
+ * strict a11y semantics). The item is role=status aria-live=off: it
+ * never announces itself - on connect it speaks ONCE through the
+ * announce singleton at its politeness (destructive -> assertive,
+ * wired server-side via the
+ * politeness value). The auto-dismiss timer follows APG/WCAG 2.2.1 timing:
+ * it PAUSES on hover, focus-within, window blur and tab-hidden (reasons are
+ * refcounted so overlapping pauses cannot resume early), and duration <= 0
+ * means persistent (required for undo/action toasts). Dismiss flips
+ * data-open -> data-closed, dispatches poetry:toast:dismiss {id, reason} (the
+ * toaster's reflow + focus-return seam), then presence holds the node until
+ * its exit animation finishes before removal.
+ *
+ * Swipe-to-dismiss is a browser-verification-GATED enhancement (contract) -
+ * it does not ship in this pass; the swipe reason is reserved.
+ */
 export default class ToastController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
@@ -43,7 +45,10 @@ export default class ToastController extends Controller {
 
   static targets = ["action", "close"]
   static values = {
+    // How long the toast stays, in milliseconds; 0 keeps it until dismissed.
     duration: { type: Number, default: 5000 },
+    // The live-region politeness the message is announced with: polite or
+    // assertive.
     politeness: { type: String, default: "polite" }
   }
 

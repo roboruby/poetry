@@ -4,25 +4,6 @@ import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presenc
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 import { tabbableWithin } from "@poetry/controllers/helpers/tabbable"
 
-// The HoverCard controller (the popper-consumer trio's thinnest machine):
-// pointer-only enrichment behind a LINK. Two timers (open 600 / close
-// 300, over the trigger+content
-// pair, re-enter cancels - the grace window, no polygon), the touch double-guard
-// (pointerType 'touch' no-ops AND the pointerdown latch swallows the focus a
-// tap or click causes, so a tap keeps its click and just navigates the
-// link - cancelling touchstart would cancel that click with it), the focus
-// mirror (trigger focus opens immediately / blur closes - a keyboard user
-// SEES the card), the per-open TABINDEX STRIP (every tabbable inside is
-// forced tabindex=-1: keyboard and touch users never reach inside,
-// intentional and contractual - the reachable-elsewhere rule), and the
-// SELECTION HOLD (text selection started in the card keeps it open and
-// suppresses body user-select while dragging, so previews are copyable).
-//
-// NO focus-scope anywhere in the lifecycle: focus never moves in, so there
-// is nothing to trap or restore - the trio's simplest teardown. The
-// token-activated dismissable delivers Esc (topmost-only) + outside press
-// while open. No aria surface is added (no haspopup/expanded/describedby):
-// advertising a keyboard-unreachable surface to AT is worse than silence.
 const TRIGGER_SELECTOR = '[data-slot="hover-card-trigger"]'
 const CONTENT_SELECTOR = '[data-slot="hover-card-content"]'
 
@@ -36,14 +17,39 @@ const DISMISSABLE = "poetry--core--dismissable"
 const LATCH_RELEASE_EVENTS = ["mouseup", "pointercancel", "keydown"]
 const POPPER_STRATEGY = "data-poetry--core--popper-strategy-value"
 
+/**
+ * The HoverCard controller (the popper-consumer trio's thinnest machine):
+ * pointer-only enrichment behind a LINK. Two timers (open 600 / close
+ * 300, over the trigger+content
+ * pair, re-enter cancels - the grace window, no polygon), the touch double-guard
+ * (pointerType 'touch' no-ops AND the pointerdown latch swallows the focus a
+ * tap or click causes, so a tap keeps its click and just navigates the
+ * link - cancelling touchstart would cancel that click with it), the focus
+ * mirror (trigger focus opens immediately / blur closes - a keyboard user
+ * SEES the card), the per-open TABINDEX STRIP (every tabbable inside is
+ * forced tabindex=-1: keyboard and touch users never reach inside,
+ * intentional and contractual - the reachable-elsewhere rule), and the
+ * SELECTION HOLD (text selection started in the card keeps it open and
+ * suppresses body user-select while dragging, so previews are copyable).
+ *
+ * NO focus-scope anywhere in the lifecycle: focus never moves in, so there
+ * is nothing to trap or restore - the trio's simplest teardown. The
+ * token-activated dismissable delivers Esc (topmost-only) + outside press
+ * while open. No aria surface is added (no haspopup/expanded/describedby):
+ * advertising a keyboard-unreachable surface to AT is worse than silence.
+ */
 export default class HoverCardController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry:hover-card:closed", "poetry:hover-card:open"]
 
   static values = {
+    // Whether the card is open.
     open: { type: Boolean, default: false },
+    // How long the pointer must rest on the trigger, in milliseconds, before the
+    // card opens.
     openDelay: { type: Number, default: 600 },
+    // How long after the pointer leaves, in milliseconds, before the card closes.
     closeDelay: { type: Number, default: 300 }
   }
 

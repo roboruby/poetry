@@ -2,25 +2,28 @@ import { Controller } from "@hotwired/stimulus"
 import { COLLECTION_ITEM_SELECTOR, collectionItems } from "@poetry/controllers/helpers/collection"
 import { directionOf } from "@poetry/controllers/helpers/direction"
 
-// The roving-tabindex engine: the group is ONE Tab stop -
-// exactly one item holds tabindex=0, the rest -1, and arrow keys move focus
-// among the collection items in DOM order. Orientation gates which arrows
-// are live (horizontal flips Left/Right under RTL via the direction
-// helper); Home/End jump to the edges; loop wraps. Backs Tabs, Toolbar,
-// RadioGroup, Menus, ToggleGroup, and the Select/Command list.
-//
-// Dynamic items: NAVIGATION recomputes the collection on every keydown (the
-// DOM is the registry - always fresh, zero bookkeeping), but that alone is
-// not correct: an item appended between keystrokes would sit at its natural
-// tabindex and grow the group a SECOND Tab stop before any arrow is
-// pressed. The MutationObserver exists for that one job - re-stamping the
-// roving tabindex the moment items enter or leave.
+/**
+ * The roving-tabindex engine: the group is ONE Tab stop -
+ * exactly one item holds tabindex=0, the rest -1, and arrow keys move focus
+ * among the collection items in DOM order. Orientation gates which arrows
+ * are live (horizontal flips Left/Right under RTL via the direction
+ * helper); Home/End jump to the edges; loop wraps. Backs Tabs, Toolbar,
+ * RadioGroup, Menus, ToggleGroup, and the Select/Command list.
+ *
+ * Dynamic items: NAVIGATION recomputes the collection on every keydown (the
+ * DOM is the registry - always fresh, zero bookkeeping), but that alone is
+ * not correct: an item appended between keystrokes would sit at its natural
+ * tabindex and grow the group a SECOND Tab stop before any arrow is
+ * pressed. The MutationObserver exists for that one job - re-stamping the
+ * roving tabindex the moment items enter or leave.
+ */
 export default class RovingFocusController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry--core--roving-focus:entry"]
 
   static values = {
+    // The axis the arrow keys move along: vertical, horizontal, or both.
     orientation: { type: String, default: "vertical" }, // horizontal | vertical | both
     loop: { type: Boolean, default: true },
     // false = focus-nav-only mode (the APG accordion contract): every

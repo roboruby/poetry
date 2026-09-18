@@ -2,14 +2,16 @@ import { Controller } from "@hotwired/stimulus"
 import { announce } from "@poetry/controllers/helpers/announce"
 import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 
-// The floating bulk-actions bar (the ActionBar contract): shows
-// while its table's selection is non-empty, and holds the contract rules -
-// focus NEVER moves in on show; if focus was inside when the bar hides,
-// it returns to where it was before entering (the FocusScope restoreFocus
-// equivalent, scoped small); "Actions available." is announced ONCE per
-// appearance; the visible count RETAINS its last non-zero value while the
-// bar animates out (never a "None selected" flash); Escape anywhere
-// inside clears the selection (the table's engine listens for
+/**
+ * The floating bulk-actions bar (the ActionBar contract): shows
+ * while its table's selection is non-empty, and holds the contract rules -
+ * focus NEVER moves in on show; if focus was inside when the bar hides,
+ * it returns to where it was before entering (the FocusScope restoreFocus
+ * equivalent, scoped small); "Actions available." is announced ONCE per
+ * appearance; the visible count RETAINS its last non-zero value while the
+ * bar animates out (never a "None selected" flash); Escape anywhere
+ * inside clears the selection (the table's engine listens for
+ */
 export default class ActionBarController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
@@ -17,6 +19,8 @@ export default class ActionBarController extends Controller {
 
   static targets = ["count"]
   static values = {
+    // The count announcement, with %{count} replaced by the number of selected
+    // rows.
     label: { type: String, default: "%{count} selected" }
   }
 

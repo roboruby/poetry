@@ -1,26 +1,28 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The TagGroup removal engine (the tag-group contract):
-// navigation itself rides the roving-focus controller (the toolbar
-// precedent) - this controller owns what tags add on top:
-//
-// - Delete/Backspace on a focused tag removes it (row-origin keys only;
-//   keys from a tag's inner remove button must not drive the grid).
-// - The remove button removes exactly its own tag.
-// - Focus recovery after removal is the reference walk: FORWARD through
-//   the pre-removal order to the first surviving enabled tag, then
-//   backward; when the last tag goes, the CONTAINER takes focus, flips
-//   role grid->group, and becomes the tab stop.
-// - The container is a live region ONLY while focus is within (polite,
-//   additions) - SRs hear tags added while working in the group without
-//   spam from elsewhere.
-//
-// Removal is CANCELABLE (poetry:tag-group:remove): a Turbo-driven host
-// preventDefault()s and re-renders; otherwise this controller removes the
-// row (and the hidden input riding it - form mode serializes name[] per
-// tag).
 const EVENT_PREFIX = "poetry:tag-group"
 
+/**
+ * The TagGroup removal engine (the tag-group contract):
+ * navigation itself rides the roving-focus controller (the toolbar
+ * precedent) - this controller owns what tags add on top:
+ *
+ * - Delete/Backspace on a focused tag removes it (row-origin keys only;
+ *   keys from a tag's inner remove button must not drive the grid).
+ * - The remove button removes exactly its own tag.
+ * - Focus recovery after removal is the reference walk: FORWARD through
+ *   the pre-removal order to the first surviving enabled tag, then
+ *   backward; when the last tag goes, the CONTAINER takes focus, flips
+ *   role grid->group, and becomes the tab stop.
+ * - The container is a live region ONLY while focus is within (polite,
+ *   additions) - SRs hear tags added while working in the group without
+ *   spam from elsewhere.
+ *
+ * Removal is CANCELABLE (poetry:tag-group:remove): a Turbo-driven host
+ * preventDefault()s and re-renders; otherwise this controller removes the
+ * row (and the hidden input riding it - form mode serializes name[] per
+ * tag).
+ */
 export default class TagGroupController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).

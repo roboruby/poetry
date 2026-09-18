@@ -12,52 +12,61 @@ import {
   processInput
 } from "@poetry/controllers/helpers/mask"
 
-// The input-mask machine (the engine is adapted from an MIT-licensed
-// source - source and license in THIRD_PARTY_NOTICES.md) on a bare native
-// <input> - this.element IS the input. Three layers:
-//
-// 1. THE PRIMARY PATH is keydown with preventDefault: a printable char
-//    skips forward over literals from the caret and pattern-tests (a
-//    failing char is a NO-OP, it never reaches the field), a selection is
-//    replaced via a raw rebuild, and the caret lands past the next literal
-//    run. Backspace scans BACKWARD over literals (the caret lands at the
-//    deleted token), Delete scans FORWARD (the caret stays),
-//    Cmd/Ctrl+Backspace kills to start, arrows hop literal runs. Because
-//    preventDefault kills the native undo stack, a custom
-//    {raw, selectionStart} history (max 100, deduped) backs
-//    Cmd/Ctrl+Z / Shift+Cmd/Ctrl+Z / Ctrl+Y.
-//
-// 2. THE FALLBACK is the input-event diff (IME, mobile keyboards,
-//    autofill, password managers - paths that never emit clean keydowns):
-//    the longest common prefix+suffix against the previous display
-//    isolates the inserted text and the removed span, the value is rebuilt
-//    from raw pieces, re-masked, and the caret lands after the insertion.
-//
-// 3. THE DISPLAY: skeleton padding ("__/__") shows on focus
-//    (showMaskOnFocus, default) or permanently (alwaysShowMask); blur
-//    strips it back to the filled region - or clears the field entirely
-//    when autoClear is set and the mask is incomplete. A COLLAPSED caret
-//    is clamped into [first token, end of filled region] on focus (rAF),
-//    mousedown (rAF) and mouseup; selections are never touched.
-//
-// A deliberate divergence from the adapted source: every programmatic value write dispatches a
-// native bubbling `input` event (#painting guards the controller against
-// its own echo) so Rails/Turbo listeners stay live. The raw value mirrors
-// to data-raw after every change; `pattern` is set on connect from
-// generatePattern("full-inexact") unless the input already carries one.
 const MAX_UNDO_HISTORY = 100
 
+/**
+ * The input-mask machine (the engine is adapted from an MIT-licensed
+ * source - source and license in THIRD_PARTY_NOTICES.md) on a bare native
+ * <input> - this.element IS the input. Three layers:
+ *
+ * 1. THE PRIMARY PATH is keydown with preventDefault: a printable char
+ *    skips forward over literals from the caret and pattern-tests (a
+ *    failing char is a NO-OP, it never reaches the field), a selection is
+ *    replaced via a raw rebuild, and the caret lands past the next literal
+ *    run. Backspace scans BACKWARD over literals (the caret lands at the
+ *    deleted token), Delete scans FORWARD (the caret stays),
+ *    Cmd/Ctrl+Backspace kills to start, arrows hop literal runs. Because
+ *    preventDefault kills the native undo stack, a custom
+ *    {raw, selectionStart} history (max 100, deduped) backs
+ *    Cmd/Ctrl+Z / Shift+Cmd/Ctrl+Z / Ctrl+Y.
+ *
+ * 2. THE FALLBACK is the input-event diff (IME, mobile keyboards,
+ *    autofill, password managers - paths that never emit clean keydowns):
+ *    the longest common prefix+suffix against the previous display
+ *    isolates the inserted text and the removed span, the value is rebuilt
+ *    from raw pieces, re-masked, and the caret lands after the insertion.
+ *
+ * 3. THE DISPLAY: skeleton padding ("__/__") shows on focus
+ *    (showMaskOnFocus, default) or permanently (alwaysShowMask); blur
+ *    strips it back to the filled region - or clears the field entirely
+ *    when autoClear is set and the mask is incomplete. A COLLAPSED caret
+ *    is clamped into [first token, end of filled region] on focus (rAF),
+ *    mousedown (rAF) and mouseup; selections are never touched.
+ *
+ * A deliberate divergence from the adapted source: every programmatic value write dispatches a
+ * native bubbling `input` event (#painting guards the controller against
+ * its own echo) so Rails/Turbo listeners stay live. The raw value mirrors
+ * to data-raw after every change; `pattern` is set on connect from
+ * generatePattern("full-inexact") unless the input already carries one.
+ */
 export default class MaskController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry:mask:change", "poetry:mask:complete"]
 
   static values = {
+    // The mask pattern the typed value is formatted against.
     mask: String,
+    // The character shown in an unfilled slot of the mask.
     slotChar: { type: String, default: "_" },
+    // Whether the mask's slots stay visible while the input is empty and
+    // unfocused.
     alwaysShowMask: Boolean,
+    // Whether the mask's slots appear when the input gains focus.
     showMaskOnFocus: { type: Boolean, default: true },
+    // Whether an incomplete value is cleared when the input loses focus.
     autoClear: Boolean,
+    // Whether typed letters are upcased as they fill the mask.
     upcase: Boolean
   }
 

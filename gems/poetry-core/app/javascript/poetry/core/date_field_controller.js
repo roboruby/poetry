@@ -3,22 +3,6 @@ import {
   IncompleteDate, PAGE_STEP, resolveHourCycle
 } from "@poetry/controllers/helpers/incomplete_date"
 
-// The segmented date/time editor. The component renders a real native
-// <input type=date|time> that IS the form value (no JS = native pickers;
-// its ISO value format is exactly the wire contract), plus an empty group.
-// This controller builds per-segment role=spinbutton spans from
-// Intl.DateTimeFormat.formatToParts - so the LOCALE decides segment order
-// and literals - and syncs segments -> native input eagerly whenever the
-// value is complete and valid, constraining on blur (February 31st is
-// representable mid-edit; commit clamps).
-//
-// Hour is stored in the locale's hour cycle with a separate dayPeriod
-// segment; the cycle itself is INFERRED by formatting (two Intl bugs make
-// resolvedOptions() untrustworthy - helpers/incomplete_date.js).
-//
-// Latin-digit typing only (the NumberField documented divergence); the
-// DISPLAY uses Intl.NumberFormat, so locales that render non-latin digits
-// still see their own numerals.
 const EVENT_PREFIX = "poetry:date-field"
 
 // iPadOS 13+ reports as Mac; maxTouchPoints tells them apart.
@@ -31,6 +15,24 @@ const EDITABLE = {
   datetime: ["year", "month", "day", "hour", "minute", "second", "dayPeriod"]
 }
 
+/**
+ * The segmented date/time editor. The component renders a real native
+ * <input type=date|time> that IS the form value (no JS = native pickers;
+ * its ISO value format is exactly the wire contract), plus an empty group.
+ * This controller builds per-segment role=spinbutton spans from
+ * Intl.DateTimeFormat.formatToParts - so the LOCALE decides segment order
+ * and literals - and syncs segments -> native input eagerly whenever the
+ * value is complete and valid, constraining on blur (February 31st is
+ * representable mid-edit; commit clamps).
+ *
+ * Hour is stored in the locale's hour cycle with a separate dayPeriod
+ * segment; the cycle itself is INFERRED by formatting (two Intl bugs make
+ * resolvedOptions() untrustworthy - helpers/incomplete_date.js).
+ *
+ * Latin-digit typing only (the NumberField documented divergence); the
+ * DISPLAY uses Intl.NumberFormat, so locales that render non-latin digits
+ * still see their own numerals.
+ */
 export default class DateFieldController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
@@ -38,9 +40,13 @@ export default class DateFieldController extends Controller {
 
   static targets = ["input", "group"]
   static values = {
+    // The BCP 47 locale the segments format in; empty follows the document
+    // language.
     locale: { type: String, default: "" },
+    // The clock convention, h12 or h23; empty follows the locale.
     hourCycle: { type: String, default: "" }, // optional pin: h11|h12|h23|h24
     seconds: { type: Boolean, default: false },
+    // The ISO value the segments open on before the field has one.
     placeholder: { type: String, default: "" }, // ISO seed for arrow fills
     labels: { type: Object, default: {} }, // segment-name fallbacks (i18n)
     placeholders: { type: Object, default: {} } // segment placeholder text (i18n)

@@ -1,34 +1,38 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The InputOTP projection (the single-input architecture, poetry's own
-// build - no npm dependency): ONE real native <input> holds the whole
-// value, stretched invisibly over the slot row, so paste, SMS autofill,
-// IME, constraint validation and form serialization are all native and AT
-// sees ONE text field. The n slot cells are an aria-hidden MIRROR painted
-// here - this controller contains ZERO editing logic:
-//
-// - #sync filters input.value per-character through the pattern + truncates
-//   to length (writing back only when filtering changed it - that one line
-//   IS paste splitting: "123-456" under digits becomes "123456"), paints
-//   slot[i] with value[i], and projects the caret: the active cell is
-//   min(selectionStart, length - 1) while focused (data-active), with the
-//   fake blinking caret element visible only on the active EMPTY cell.
-// - Auto-advance and backspace-retreat are not features: typing moves the
-//   native caret forward, Backspace moves it back - the active cell is a
-//   PROJECTION of selectionStart. Arrows/Home/End/IME: native, re-projected
-//   via the document-level selectionchange listener (bound on focus,
-//   unbound on blur - n OTP fields must not all re-project on every caret
-//   move anywhere).
-// - poetry:otp:change fires per accepted mutation; poetry:otp:complete
-//   fires once when the value reaches length and re-arms below it (the
-//   enable-the-submit-button hook - it never submits).
+/**
+ * The InputOTP projection (the single-input architecture, poetry's own
+ * build - no npm dependency): ONE real native <input> holds the whole
+ * value, stretched invisibly over the slot row, so paste, SMS autofill,
+ * IME, constraint validation and form serialization are all native and AT
+ * sees ONE text field. The n slot cells are an aria-hidden MIRROR painted
+ * here - this controller contains ZERO editing logic:
+ *
+ * - #sync filters input.value per-character through the pattern + truncates
+ *   to length (writing back only when filtering changed it - that one line
+ *   IS paste splitting: "123-456" under digits becomes "123456"), paints
+ *   slot[i] with value[i], and projects the caret: the active cell is
+ *   min(selectionStart, length - 1) while focused (data-active), with the
+ *   fake blinking caret element visible only on the active EMPTY cell.
+ * - Auto-advance and backspace-retreat are not features: typing moves the
+ *   native caret forward, Backspace moves it back - the active cell is a
+ *   PROJECTION of selectionStart. Arrows/Home/End/IME: native, re-projected
+ *   via the document-level selectionchange listener (bound on focus,
+ *   unbound on blur - n OTP fields must not all re-project on every caret
+ *   move anywhere).
+ * - poetry:otp:change fires per accepted mutation; poetry:otp:complete
+ *   fires once when the value reaches length and re-arms below it (the
+ *   enable-the-submit-button hook - it never submits).
+ */
 export default class OtpController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry:otp:change", "poetry:otp:complete"]
 
   static values = {
+    // The number of characters the code has.
     length: { type: Number, default: 6 },
+    // The regular expression one character must match; digits by default.
     pattern: { type: String, default: "\\d" }
   }
 

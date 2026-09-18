@@ -1,23 +1,25 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Optimistic UI for Turbo forms, adapted from an MIT-licensed source
-// (source and license in THIRD_PARTY_NOTICES.md).
-// The optimistic update is AUTHORED AS A TURBO STREAM inside a <template>
-// target - the same vocabulary the server answers in, so prediction and
-// truth share one mental model and there is no bespoke DOM patching. On
-// turbo:submit-start the template contents are cloned into the document
-// and Turbo paints the predicted state immediately; on turbo:submit-end
-// the controller reconciles ONLY when the submission failed, by
-// appending <turbo-stream action="refresh"> - which must morph (the
-// helper documents the turbo-refresh-method=morph meta) so the
-// correction is seamless.
-//
-// THE SERVER CONTRACT (enforced nowhere, so stated everywhere): success
-// answers 204 (or a targeted stream for authoritative correction under
-// contention) - NEVER a redirect, because a redirect under morph
-// refreshes is itself a full reload and defeats the optimism. Failure
-// answers 4xx so event.detail.success is false and the refresh restores
-// authoritative truth. Full story: the Optimistic Forms guide on the poetry docs site.
+/**
+ * Optimistic UI for Turbo forms, adapted from an MIT-licensed source
+ * (source and license in THIRD_PARTY_NOTICES.md).
+ * The optimistic update is AUTHORED AS A TURBO STREAM inside a <template>
+ * target - the same vocabulary the server answers in, so prediction and
+ * truth share one mental model and there is no bespoke DOM patching. On
+ * turbo:submit-start the template contents are cloned into the document
+ * and Turbo paints the predicted state immediately; on turbo:submit-end
+ * the controller reconciles ONLY when the submission failed, by
+ * appending <turbo-stream action="refresh"> - which must morph (the
+ * helper documents the turbo-refresh-method=morph meta) so the
+ * correction is seamless.
+ *
+ * THE SERVER CONTRACT (enforced nowhere, so stated everywhere): success
+ * answers 204 (or a targeted stream for authoritative correction under
+ * contention) - NEVER a redirect, because a redirect under morph
+ * refreshes is itself a full reload and defeats the optimism. Failure
+ * answers 4xx so event.detail.success is false and the refresh restores
+ * authoritative truth. Full story: the Optimistic Forms guide on the poetry docs site.
+ */
 export default class OptimisticFormController extends Controller {
   static targets = ["template"]
 

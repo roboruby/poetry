@@ -2,20 +2,22 @@ import { Controller } from "@hotwired/stimulus"
 import { directionOf } from "@poetry/controllers/helpers/direction"
 import { createTypeahead, typeaheadLabel } from "@poetry/controllers/helpers/typeahead"
 
-// The Tree engine (the flat-treegrid contract): the
-// server renders a FLAT list of role=row siblings - hierarchy lives
-// entirely in aria-level/posinset/setsize (static per render) - so this
-// controller owns only what HTML cannot: roving focus over VISIBLE rows,
-// the four-branch ArrowLeft/Right expansion logic (including
-// focus-to-parent), Enter-toggles-expandable (the no-action default),
-// typeahead, and subtree show/hide that preserves nested collapsed state
-// (a row is visible iff every ancestor is expanded).
-//
-// Expansion state IS the DOM (aria-expanded + hidden); the host persists
-// it by listening for poetry:tree:toggle. Selection modes are deferred
-// (the TagGroup reasoning).
 const EVENT_PREFIX = "poetry:tree"
 
+/**
+ * The Tree engine (the flat-treegrid contract): the
+ * server renders a FLAT list of role=row siblings - hierarchy lives
+ * entirely in aria-level/posinset/setsize (static per render) - so this
+ * controller owns only what HTML cannot: roving focus over VISIBLE rows,
+ * the four-branch ArrowLeft/Right expansion logic (including
+ * focus-to-parent), Enter-toggles-expandable (the no-action default),
+ * typeahead, and subtree show/hide that preserves nested collapsed state
+ * (a row is visible iff every ancestor is expanded).
+ *
+ * Expansion state IS the DOM (aria-expanded + hidden); the host persists
+ * it by listening for poetry:tree:toggle. Selection modes are deferred
+ * (the TagGroup reasoning).
+ */
 export default class TreeController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).

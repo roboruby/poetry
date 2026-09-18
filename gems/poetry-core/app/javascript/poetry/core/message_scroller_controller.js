@@ -77,6 +77,15 @@ const USER_SCROLL_KEYS = new Set([
 // The component-facing event namespace (the poetry:<component> rule).
 const EVENT_PREFIX = "poetry:message-scroller"
 
+/**
+ * The message scroller: a transcript viewport that follows the bottom
+ * while the reader is there, releases the follow the moment they scroll
+ * up, keeps the reader's place across new messages (the scroll anchor),
+ * opens at the position the component asked for (the end, the last
+ * anchor, or the top) without a visible jump, and offers a jump-to-latest
+ * button while the follow is released. The geometry lives in the
+ * scroller_geometry helper; this controller owns the state and the timing.
+ */
 export default class extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
@@ -90,11 +99,18 @@ export default class extends Controller {
     // Source-faithful default (the contract): the poetry ViewComponent
     // wrapper opts INTO following by rendering the value true.
     autoScroll: { type: Boolean, default: false },
+    // Where the transcript opens: end, last-anchor, or top.
     defaultScrollPosition: { type: String, default: "end" }, // start | end | last-anchor
     preserveScrollOnPrepend: { type: Boolean, default: true },
+    // Whether the controller observes which messages are visible and reports them.
     trackVisibility: { type: Boolean, default: false },
+    // How close to the bottom, in pixels, still counts as at the bottom.
     scrollEdgeThreshold: { type: Number, default: 8 },
+    // How much of the previous message, in pixels, stays visible above a
+    // scrolled-to message.
     scrollPreviousItemPeek: { type: Number, default: 64 },
+    // The space, in pixels, kept between the viewport's top edge and a scrolled-to
+    // message.
     scrollMargin: { type: Number, default: 0 }
   }
 

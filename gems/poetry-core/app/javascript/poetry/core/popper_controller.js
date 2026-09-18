@@ -11,33 +11,6 @@ import {
   size
 } from "@poetry/controllers/vendor/floating_ui_dom"
 
-// The anchored-positioning primitive: one
-// controller over the VENDORED @floating-ui/dom. A fixed middleware
-// pipeline - offset -> shift -> flip (both gated on avoidCollisions)
-// -> size -> arrow (when an arrow target exists) -> hide - and a fixed
-// output contract: data-side / data-align mirror the RESOLVED placement
-// (after flip), and the content gets the sizing CSS vars
-// (--transform-origin / -available-width / -available-height /
-// -anchor-width / -anchor-height) so ported Tailwind classes like
-// data-[side=top]:slide-in-from-bottom-2 and
-// max-h-[var(--available-height)] work unchanged.
-//
-// The Arrow stays a markup primitive: any [data-slot=popper-arrow]
-// marked as the arrow target is positioned + given data-side here; the SVG
-// itself is poetry-ui's business.
-//
-// VIRTUAL-ANCHOR mode (the ContextMenu contract): a non-empty anchorPoint
-// value - canonically the data-poetry--core--popper-anchor-point="x,y"
-// attribute on the controller root (the DOM is the store) - floats against a
-// floating-ui VirtualElement: a zero-size rect at (x,y) client coords.
-// The resolved ELEMENT anchor rides along as
-// contextElement so autoUpdate still tracks ancestor scroll/resize.
-// setAnchor(x, y) is the ergonomics wrapper ContextMenu calls from its
-// contextmenu / long-press handlers; clearing the value returns to plain
-// element anchoring.
-//
-// Consumers: Popover, Dropdown/Context Menu, Tooltip, HoverCard, Select,
-// Combobox, Menubar.
 const SIDES = ["top", "right", "bottom", "left"]
 const ALIGNS = ["start", "center", "end"]
 
@@ -58,6 +31,35 @@ const ARROW_TRANSFORM_ORIGIN = { top: "", right: "0 0", bottom: "center 0", left
 
 const NO_ARROW_ALIGN_ORIGIN = { start: "0%", center: "50%", end: "100%" }
 
+/**
+ * The anchored-positioning primitive: one
+ * controller over the VENDORED @floating-ui/dom. A fixed middleware
+ * pipeline - offset -> shift -> flip (both gated on avoidCollisions)
+ * -> size -> arrow (when an arrow target exists) -> hide - and a fixed
+ * output contract: data-side / data-align mirror the RESOLVED placement
+ * (after flip), and the content gets the sizing CSS vars
+ * (--transform-origin / -available-width / -available-height /
+ * -anchor-width / -anchor-height) so ported Tailwind classes like
+ * data-[side=top]:slide-in-from-bottom-2 and
+ * max-h-[var(--available-height)] work unchanged.
+ *
+ * The Arrow stays a markup primitive: any [data-slot=popper-arrow]
+ * marked as the arrow target is positioned + given data-side here; the SVG
+ * itself is poetry-ui's business.
+ *
+ * VIRTUAL-ANCHOR mode (the ContextMenu contract): a non-empty anchorPoint
+ * value - canonically the data-poetry--core--popper-anchor-point="x,y"
+ * attribute on the controller root (the DOM is the store) - floats against a
+ * floating-ui VirtualElement: a zero-size rect at (x,y) client coords.
+ * The resolved ELEMENT anchor rides along as
+ * contextElement so autoUpdate still tracks ancestor scroll/resize.
+ * setAnchor(x, y) is the ergonomics wrapper ContextMenu calls from its
+ * contextmenu / long-press handlers; clearing the value returns to plain
+ * element anchoring.
+ *
+ * Consumers: Popover, Dropdown/Context Menu, Tooltip, HoverCard, Select,
+ * Combobox, Menubar.
+ */
 export default class PopperController extends Controller {
   static targets = ["anchor", "content", "arrow"]
   static values = {
@@ -67,11 +69,15 @@ export default class PopperController extends Controller {
     // "x,y" client coords -> virtual-anchor mode (see the header). Empty =
     // element anchoring. Reactive: changing it re-arms autoUpdate.
     anchorPoint: { type: String, default: "" },
+    // The side of the anchor the content opens on: top, right, bottom or left.
     side: { type: String, default: "bottom" }, // top | right | bottom | left
     align: { type: String, default: "center" }, // start | center | end
     sideOffset: { type: Number, default: 0 },
+    // The offset, in pixels, along the alignment axis.
     alignOffset: { type: Number, default: 0 },
+    // Whether the placement flips and shifts to stay inside the viewport.
     avoidCollisions: { type: Boolean, default: true },
+    // The CSS positioning strategy, fixed or absolute.
     strategy: { type: String, default: "fixed" } // fixed | absolute
   }
 

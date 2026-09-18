@@ -5,30 +5,6 @@ import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presenc
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 import { createTypeahead, typeaheadLabel } from "@poetry/controllers/helpers/typeahead"
 
-// The Select listbox controller - the APG select-only combobox on the menus
-// MACHINERY (popper markup-owned + focus-scope/dismissable/roving-focus
-// activated as layers + the shared typeahead helper) but deliberately NOT a
-// mode of poetry--core--menu: everything menu-specific (submenus,
-// close_on_select, checkbox/radio aria-checked, edge-navigate, Tab-closes,
-// pointer-open-no-focus) is wrong for a listbox, and everything here is
-// dead weight for menus.
-//
-// THE SYNC INVARIANT (the component): native_select.value, the value Value,
-// aria-selected/data-selected on options, and the display text never diverge -
-// every write path (commit, closed-trigger typeahead, autofill adoption,
-// programmatic setValue) funnels through #apply, which writes the NATIVE
-// SELECT FIRST (serialization truth is never behind the facade), dispatches
-// real bubbling change/input on it (Turbo auto-submit and friends work
-// unmodified), flips aria-selected + data-selected TOGETHER on every option,
-// syncs the value display from the option's item-text (data-text-value
-// override), toggles trigger[data-placeholder], then fires
-// poetry:select:change.
-//
-// Three deltas vs the menu family, all deliberate and contractual:
-// - Tab while open is INERT (a value picker resolves by commit or Esc);
-// - open focuses the SELECTED option for EVERY reason, pointer included;
-// - typeahead on the CLOSED trigger COMMITS the match without opening
-//   (native <select> behavior), while open typeahead only moves focus.
 const TRIGGER_SELECTOR = '[data-slot="select-trigger"]'
 const ITEM_SELECTOR = '[data-slot="select-item"]'
 const ITEM_TEXT_SELECTOR = '[data-slot="select-item-text"]'
@@ -47,6 +23,32 @@ const POPPER_STRATEGY = "data-poetry--core--popper-strategy-value"
 
 const SCROLL_HOLD_STEP = 4 // px per frame while hovering a scroll button
 
+/**
+ * The Select listbox controller - the APG select-only combobox on the menus
+ * MACHINERY (popper markup-owned + focus-scope/dismissable/roving-focus
+ * activated as layers + the shared typeahead helper) but deliberately NOT a
+ * mode of poetry--core--menu: everything menu-specific (submenus,
+ * close_on_select, checkbox/radio aria-checked, edge-navigate, Tab-closes,
+ * pointer-open-no-focus) is wrong for a listbox, and everything here is
+ * dead weight for menus.
+ *
+ * THE SYNC INVARIANT (the component): native_select.value, the value Value,
+ * aria-selected/data-selected on options, and the display text never diverge -
+ * every write path (commit, closed-trigger typeahead, autofill adoption,
+ * programmatic setValue) funnels through #apply, which writes the NATIVE
+ * SELECT FIRST (serialization truth is never behind the facade), dispatches
+ * real bubbling change/input on it (Turbo auto-submit and friends work
+ * unmodified), flips aria-selected + data-selected TOGETHER on every option,
+ * syncs the value display from the option's item-text (data-text-value
+ * override), toggles trigger[data-placeholder], then fires
+ * poetry:select:change.
+ *
+ * Three deltas vs the menu family, all deliberate and contractual:
+ * - Tab while open is INERT (a value picker resolves by commit or Esc);
+ * - open focuses the SELECTED option for EVERY reason, pointer included;
+ * - typeahead on the CLOSED trigger COMMITS the match without opening
+ *   (native <select> behavior), while open typeahead only moves focus.
+ */
 export default class SelectController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
@@ -56,11 +58,19 @@ export default class SelectController extends Controller {
   ]
 
   static values = {
+    // Whether the listbox is open.
     open: { type: Boolean, default: false },
+    // The selected option's value; empty when none is selected.
     value: { type: String, default: "" },
+    // Whether the open listbox traps focus and blocks outside pointer events.
     modal: { type: Boolean, default: true },
+    // Whether arrow keys wrap from the last option to the first, and back.
     loop: { type: Boolean, default: false },
+    // How long, in milliseconds, typed characters accumulate into one typeahead
+    // search.
     typeaheadTimeout: { type: Number, default: 1000 },
+    // Whether the listbox opens with the selected option over the trigger (fine
+    // pointers only).
     alignItemWithTrigger: { type: Boolean, default: false }
   }
 

@@ -1,16 +1,21 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The DatePicker glue: the thin coordinator between a Popover and
-// the Calendar it wraps. The Calendar owns selection + the form value (its
-// name: hidden input); this controller only reacts to the calendar's change
-// event to (a) write the human-formatted date into the trigger label and
-// (b) close the popover so the pick feels complete. Everything hard is
-// already done by poetry--core--calendar and poetry--core--popover.
+/**
+ * The DatePicker glue: the thin coordinator between a Popover and
+ * the Calendar it wraps. The Calendar owns selection + the form value (its
+ * name: hidden input); this controller only reacts to the calendar's change
+ * event to (a) write the human-formatted date into the trigger label and
+ * (b) close the popover so the pick feels complete. Everything hard is
+ * already done by poetry--core--calendar and poetry--core--popover.
+ */
 export default class DatePickerController extends Controller {
   static targets = ["label", "input"]
   static values = {
+    // The trigger text while no date is chosen.
     placeholder: { type: String, default: "Pick a date" },
+    // single picks one date; range picks a start and an end.
     mode: { type: String, default: "single" },
+    // The locale the chosen date is formatted in.
     locale: { type: String, default: "en-US" }
   }
 

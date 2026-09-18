@@ -143,7 +143,11 @@ module Poetry
 
             assert_equal expected["targets"].sort, read["targets"].sort, "#{identifier} targets"
             assert_equal expected["classes"].sort, read["classes"].sort, "#{identifier} classes"
-            assert_equal expected["values"], read["values"], "#{identifier} values"
+            # The generator also harvests each value's prose (and the reader inherits it
+            # through the catalog for a parent's values); the shapes are what must agree.
+            shape = ->(values) { values.transform_values { |value| value.except("doc") } }
+
+            assert_equal shape.call(expected["values"]), shape.call(read["values"]), "#{identifier} values"
             missing = expected["methods"].grep_v(HostManifest::CALLBACK) - read["methods"]
 
             assert_empty missing, "#{identifier} methods the generator found and the reader did not"

@@ -1,17 +1,19 @@
 import { Controller } from "@hotwired/stimulus"
 import { announce } from "@poetry/controllers/helpers/announce"
 
-// ClipboardText, adapted from an MIT-licensed source (source and license
-// in THIRD_PARTY_NOTICES.md): a read-only value with one
-// copy affordance. navigator.clipboard is the primary path; the
-// execCommand fallback SAVES AND RESTORES the user's own selection and
-// focus (copying a field must never eat a selection made elsewhere on the
-// page). Success stamps data-copied on
-// the root for a beat (CSS swaps the copy/check glyphs off it), announces
-// through the live-region singleton, and dispatches the copied event.
 const EVENT_PREFIX = "poetry:clipboard-text"
 const COPIED_MS = 1500
 
+/**
+ * ClipboardText, adapted from an MIT-licensed source (source and license
+ * in THIRD_PARTY_NOTICES.md): a read-only value with one
+ * copy affordance. navigator.clipboard is the primary path; the
+ * execCommand fallback SAVES AND RESTORES the user's own selection and
+ * focus (copying a field must never eat a selection made elsewhere on the
+ * page). Success stamps data-copied on
+ * the root for a beat (CSS swaps the copy/check glyphs off it), announces
+ * through the live-region singleton, and dispatches the copied event.
+ */
 export default class ClipboardTextController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).

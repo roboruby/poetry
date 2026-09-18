@@ -6,38 +6,6 @@ import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presenc
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 import { createTypeahead } from "@poetry/controllers/helpers/typeahead"
 
-// The menus-family controller (the DropdownMenu contract's ANCHOR - ONE
-// menu engine behind DropdownMenu / ContextMenu / Menubar).
-// This owns ONLY what is menu-specific: open/close with the data-open-reason
-// initial-focus contract, item activation (the cancelable poetry:menu:select),
-// checkbox/radio state (poetry:menu:change), the APG typeahead buffer,
-// submenu open/close with hover intent + sibling exclusivity, and the
-// cancelable poetry:menu:edge-navigate seam a Menubar coordinator consumes.
-// Everything else is composed BY REFERENCE: focus-scope (trap + focus return
-// to the trigger), dismissable (topmost-only Esc + outside press, arriving
-// here as its "dismiss" event), roving-focus (arrows/Home/End per menu
-// level), popper (positioning - markup-owned, untouched here), presence
-// (data-open/data-closed flip -> animationend -> hidden).
-//
-// STRUCTURAL RESOLUTION, no targets: the content is found via the trigger's
-// aria-controls id (portal-safe - a Stimulus target cannot cross a portal
-// move), items via the collection helper over the family's data-slot suffix
-// selectors ([data-slot$=menu-item] etc., so dropdown-menu-*, context-menu-*
-// and menubar-* anatomies all resolve), subs via their own aria-controls
-// pairs. Content-level listeners are wired programmatically in connect for
-// the same portal-safety reason.
-//
-// The layer stack is ACTIVATED on open: the focus-scope / dismissable /
-// roving-focus identifiers are appended to the content's data-controller (a
-// statically-connected trap or dismiss layer on a hidden menu would steal
-// focus at page load and swallow topmost-Esc). Close reverses: presence exit
-// -> hidden -> tokens removed -> focus-scope's disconnect restores focus to
-// the trigger. Each open sub level adds its own dismissable layer (the
-// close-one-level-at-a-time Esc chain for free) + its own roving group; subs
-// join the ROOT focus scope (no nested traps, contractual).
-// Both family spellings resolve: dropdown-menu-* / context-menu-* share the
-// "menu-" suffix; menubar-* is its own word (menubar-item does NOT end with
-// "menu-item"), so every part selector carries the pair.
 const menuSlot = (suffix) => `[data-slot$="menu-${suffix}"], [data-slot$="menubar-${suffix}"]`
 const MENU_SELECTOR = '[role="menu"]'
 const TRIGGER_SELECTOR = menuSlot("trigger")
@@ -70,6 +38,40 @@ const POPPER_STRATEGY = "data-poetry--core--popper-strategy-value"
 const SUB_OPEN_DELAY = 100
 const SUB_CLOSE_DELAY = 300
 
+/**
+ * The menus-family controller (the DropdownMenu contract's ANCHOR - ONE
+ * menu engine behind DropdownMenu / ContextMenu / Menubar).
+ * This owns ONLY what is menu-specific: open/close with the data-open-reason
+ * initial-focus contract, item activation (the cancelable poetry:menu:select),
+ * checkbox/radio state (poetry:menu:change), the APG typeahead buffer,
+ * submenu open/close with hover intent + sibling exclusivity, and the
+ * cancelable poetry:menu:edge-navigate seam a Menubar coordinator consumes.
+ * Everything else is composed BY REFERENCE: focus-scope (trap + focus return
+ * to the trigger), dismissable (topmost-only Esc + outside press, arriving
+ * here as its "dismiss" event), roving-focus (arrows/Home/End per menu
+ * level), popper (positioning - markup-owned, untouched here), presence
+ * (data-open/data-closed flip -> animationend -> hidden).
+ *
+ * STRUCTURAL RESOLUTION, no targets: the content is found via the trigger's
+ * aria-controls id (portal-safe - a Stimulus target cannot cross a portal
+ * move), items via the collection helper over the family's data-slot suffix
+ * selectors ([data-slot$=menu-item] etc., so dropdown-menu-*, context-menu-*
+ * and menubar-* anatomies all resolve), subs via their own aria-controls
+ * pairs. Content-level listeners are wired programmatically in connect for
+ * the same portal-safety reason.
+ *
+ * The layer stack is ACTIVATED on open: the focus-scope / dismissable /
+ * roving-focus identifiers are appended to the content's data-controller (a
+ * statically-connected trap or dismiss layer on a hidden menu would steal
+ * focus at page load and swallow topmost-Esc). Close reverses: presence exit
+ * -> hidden -> tokens removed -> focus-scope's disconnect restores focus to
+ * the trigger. Each open sub level adds its own dismissable layer (the
+ * close-one-level-at-a-time Esc chain for free) + its own roving group; subs
+ * join the ROOT focus scope (no nested traps, contractual).
+ * Both family spellings resolve: dropdown-menu-* / context-menu-* share the
+ * "menu-" suffix; menubar-* is its own word (menubar-item does NOT end with
+ * "menu-item"), so every part selector carries the pair.
+ */
 export default class MenuController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
@@ -79,10 +81,16 @@ export default class MenuController extends Controller {
   ]
 
   static values = {
+    // Whether the menu is open.
     open: { type: Boolean, default: false },
+    // Whether the open menu traps focus and blocks outside pointer events.
     modal: { type: Boolean, default: true },
+    // Whether arrow keys wrap from the last item to the first, and back.
     loop: { type: Boolean, default: false },
+    // How long, in milliseconds, typed characters accumulate into one typeahead
+    // search.
     typeaheadTimeout: { type: Number, default: 1000 },
+    // Whether choosing an item closes the menu.
     closeOnSelect: { type: Boolean, default: true }
   }
 
