@@ -38,7 +38,7 @@
           end
 
           def call
-            tag.span(**root_attributes.to_attributes) do
+            tag.span(**root_attributes) do
               safe_join([icon, content, count_tag].compact)
             end
           end
@@ -303,8 +303,10 @@
           <code>:root</code>. A component with more to say on its root
           overrides it and passes that markup up
           (<code>super("role" => "status")</code>); a part's attributes
-          come from <code>element_attributes</code>, which merges the
-          part's wiring beneath the markup instead of clobbering it.
+          come from <code>element_attributes(:part, markup)</code>, which
+          stamps the part's <code>data-slot</code> and dictionary classes
+          and merges its wiring beneath the markup instead of clobbering
+          it. Both are ready to splat: <code>tag.div(**content_attributes)</code>.
         </li>
         <li>
           Declarations double as ActiveModel validations: variant
