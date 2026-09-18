@@ -945,6 +945,14 @@ module Poetry
         # --- shared projections ---
 
         def surface_lines(entry)
+          lines = requirement_lines(entry) + property_lines(entry)
+          slots = (entry["slots"] || []).map { |slot| slot_summary(slot) }
+          lines << "- slots: #{slots.join(", ")}" if slots.any?
+          lines
+        end
+
+        # The contract lines: the required content, the required slots and the any-of groups.
+        def requirement_lines(entry)
           lines = []
           lines << "- content block REQUIRED (#{entry["requires_content"]})" if entry["requires_content"]
           (entry["required_slots"] || {}).each do |setter, hint|
@@ -953,44 +961,57 @@ module Poetry
           (entry["requires_any"] || []).each do |group|
             lines << "- REQUIRED - #{Poetry::Core::RequiresAny.phrase(group)}"
           end
-          (entry["styles"] + entry["options"]).each do |prop|
+          lines
+        end
+
+        # One line per style and option: its type, variants, requirement, format and description.
+        def property_lines(entry)
+          (entry["styles"] + entry["options"]).map do |prop|
             facets = []
             facets << prop["variants"].join("|") if prop["variants"]
             facets << "required" if prop["required"] && !prop.key?("default")
             facets << "format: #{prop["format"]}" if prop["format"]
             suffix = facets.any? ? " (#{facets.join("; ")})" : ""
             description = prop["description"] ? " - #{prop["description"]}" : ""
-            lines << "- #{prop["name"]}: #{prop["type"]}#{suffix}#{description}"
+            "- #{prop["name"]}: #{prop["type"]}#{suffix}#{description}"
           end
-          slots = (entry["slots"] || []).map do |slot|
-            facets = []
-            facets << slot["description"] if slot["description"]
-            if slot["types"]
-              args = slot["setter_args"]
-              convention = args && slot["types"].all? { |type| args[type]&.zero? } ? " - options as keywords" : ""
-              facets << "types #{slot["types"].join("|")}#{convention}"
-            end
-            facets << "takes #{helper_text(slot["component"])} props, not a block" if slot["component"]
-            # The render-crash seams, stated where agents read them.
-            if (yieldless = slot["yieldless"])
-              setters = yieldless.map { |name| "with_#{name}" }.join("/")
-              facets << "#{setters} #{yieldless.size == 1 ? "yields" : "yield"} NOTHING to the block - no |param|"
-            end
-            (slot["setter_kwargs"] || {}).each do |setter, keywords|
-              facets << "with_#{setter} keywords: #{keywords.map { |keyword| "#{keyword}:" }.join(", ")} ONLY"
-            end
-            (slot["required_content"] || {}).each do |setter, hint|
-              facets << "with_#{setter} REQUIRES a content block (#{hint})"
-            end
-            (slot["builders"] || {}).each do |setter, surface|
-              (surface["required_slots"] || {}).each do |required, hint|
-                facets << "each with_#{setter} REQUIRES with_#{required} inside its block (#{hint})"
-              end
-            end
-            "#{slot["name"]}#{" (#{facets.join("; ")})" if facets.any?}"
+        end
+
+        # A slot's name with its facets in parentheses, when it has any.
+        def slot_summary(slot)
+          facets = slot_facets(slot)
+          "#{slot["name"]}#{" (#{facets.join("; ")})" if facets.any?}"
+        end
+
+        # A slot's facets: its doc, its types and their keyword convention,
+        # the component it renders, and the render-crash seams stated where
+        # agents read them - the yieldless setters, the keyword-only setters,
+        # the required content and the builders' required slots.
+        def slot_facets(slot)
+          facets = []
+          facets << slot["description"] if slot["description"]
+          if slot["types"]
+            args = slot["setter_args"]
+            convention = args && slot["types"].all? { |type| args[type]&.zero? } ? " - options as keywords" : ""
+            facets << "types #{slot["types"].join("|")}#{convention}"
           end
-          lines << "- slots: #{slots.join(", ")}" if slots.any?
-          lines
+          facets << "takes #{helper_text(slot["component"])} props, not a block" if slot["component"]
+          if (yieldless = slot["yieldless"])
+            setters = yieldless.map { |name| "with_#{name}" }.join("/")
+            facets << "#{setters} #{yieldless.size == 1 ? "yields" : "yield"} NOTHING to the block - no |param|"
+          end
+          (slot["setter_kwargs"] || {}).each do |setter, keywords|
+            facets << "with_#{setter} keywords: #{keywords.map { |keyword| "#{keyword}:" }.join(", ")} ONLY"
+          end
+          (slot["required_content"] || {}).each do |setter, hint|
+            facets << "with_#{setter} REQUIRES a content block (#{hint})"
+          end
+          (slot["builders"] || {}).each do |setter, surface|
+            (surface["required_slots"] || {}).each do |required, hint|
+              facets << "each with_#{setter} REQUIRES with_#{required} inside its block (#{hint})"
+            end
+          end
+          facets
         end
 
         # The full-detail lines of a component: its wiring, parts and tools.
