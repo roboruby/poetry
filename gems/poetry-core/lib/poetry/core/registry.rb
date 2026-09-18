@@ -376,7 +376,8 @@ module Poetry
         mint_sources.fetch(path) { mint_sources[path] = File.read(path).match?(MINT_PATTERN) }
       end
 
-      # One component's registry entry.
+      # One component's registry entry: its identity and declared surface,
+      # then each section of facts in the registry's key order.
       def entry_for(component)
         props = component.prop_definitions
         entry = {
@@ -387,74 +388,99 @@ module Poetry
           "options" => plain(props[:options]),
           "slots" => plain(props[:slots])
         }
+        entry.merge!(naming_facts(component, props), style_facts(component), controller_facts(component),
+                     contract_facts(component, props), surface_facts(component))
+      end
+
+      # The helper, description and slot extras of a component.
+      def naming_facts(component, props)
+        facts = {}
         # The view helper that renders the component, named here so no
         # consumer guesses: a gem component's follows the poetry_ convention
         # (poetry/ui/data_table/row -> poetry_data_table_row); an app
         # component's is what it declared with `helper :name`, and an app
         # component that declared none has none (rendered by class).
         helper = conventional_helper(component)
-        entry["helper"] = helper if helper
+        facts["helper"] = helper if helper
         # The one-line human description (editorial, merged from the gem's
         # component_descriptions.yml) - the summary llms.txt / describe_component
         # / the docs page read from this single source.
         if @descriptions && (description = @descriptions[component.component_path])
-          entry["description"] = description
+          facts["description"] = description
         end
         # Hand-rolled with_* conveniences beyond the registered slots
         # (NavigationMenu#with_link) - consumers call them, so check and the
         # agent surfaces must know them.
-        entry["slot_extras"] = plain(props[:slot_extras]) if props[:slot_extras]&.any?
-        if (style = component.style_class)
-          entry["elements"] = style.resolver.elements.keys.map(&:to_s)
-          entry["capsule"] = style.capsule
-        end
-        # The JS wiring surface: the poetry--core--* controller
-        # identifiers the component wires, each joined to its manifest
-        # (targets / values / actions) so the registry is the ONE contract
-        # poetry check / llms.txt / the MCP server read. Derived from the
-        # component's controller-identifier constants (%i[poetry core x]);
-        # the rendered-truth drift test guarantees this equals what the
-        # previews actually emit as data-controller.
-        # plain() rebuilds fresh objects - the manifest arrays are shared
-        # across components that wire the same controller (popper is in 8),
-        # which would otherwise make Psych emit YAML anchors/aliases.
+        facts["slot_extras"] = plain(props[:slot_extras]) if props[:slot_extras]&.any?
+        facts
+      end
+
+      # The Style class's elements and capsule, when the component has one.
+      def style_facts(component)
+        style = component.style_class
+        return {} unless style
+
+        { "elements" => style.resolver.elements.keys.map(&:to_s), "capsule" => style.capsule }
+      end
+
+      # The JS wiring surface: the poetry--core--* controller identifiers
+      # the component wires, each joined to its manifest (targets / values
+      # / actions) so the registry is the ONE contract poetry check /
+      # llms.txt / the MCP server read. Derived from the component's
+      # controller-identifier constants (%i[poetry core x]); the
+      # rendered-truth drift test guarantees this equals what the previews
+      # actually emit as data-controller. plain() rebuilds fresh objects -
+      # the manifest arrays are shared across components that wire the
+      # same controller (popper is in 8), which would otherwise make Psych
+      # emit YAML anchors/aliases.
+      def controller_facts(component)
         controllers = wired_controllers(component)
-        entry["controllers"] = plain(controllers) unless controllers.empty?
+        controllers.empty? ? {} : { "controllers" => plain(controllers) }
+      end
+
+      # The contracts a call is held to: agent rules, required content,
+      # required slots, any-of groups, and whether the component mints an id.
+      def contract_facts(component, props)
+        facts = {}
         # Component-specific constraints agents must honor (the contract's
         # agent_rules section) - declared as an AGENT_RULES constant.
-        entry["agent_rules"] = component::AGENT_RULES.dup if component.const_defined?(:AGENT_RULES)
-        # The requires_content declaration:
-        # the same fact that raises at render lets poetry check flag a
-        # blockless call statically.
+        facts["agent_rules"] = component::AGENT_RULES.dup if component.const_defined?(:AGENT_RULES)
+        # The requires_content declaration: the same fact that raises at
+        # render lets poetry check flag a blockless call statically.
         if component.respond_to?(:required_content) && (hint = component.required_content)
-          entry["requires_content"] = hint
+          facts["requires_content"] = hint
         end
-        # The REQUIRED_SLOTS declaration: the
-        # same fact that raises in before_render lets poetry check flag a
-        # call that never sets the slot, statically.
-        entry["required_slots"] = plain(props[:required_slots]) if props[:required_slots]&.any?
-        # The REQUIRES_ANY declaration: the conditional any-of
-        # contracts - the before_render disjunction, stated statically.
-        entry["requires_any"] = plain(props[:requires_any]) if props[:requires_any]&.any?
-        # The identity fact: false when the family renders no
-        # poetry-minted id - key:/id: would have nothing to stabilize, so
-        # check's stable-identity rules skip the helper. Absent = the
-        # component mints (legacy registries keep every warning).
-        entry["identity"] = false unless mints_identity?(component)
-        # The part contract: the
-        # styling surface - data-slot parts, state attributes per part,
-        # CSS var seams - hand-authored prose that PartContract.verify
-        # holds to the rendered DOM of every preview.
-        parts = component.part_definitions
-        entry["parts"] = plain(parts) if parts.any?
+        # The REQUIRED_SLOTS declaration: the same fact that raises in
+        # before_render lets poetry check flag a call that never sets the
+        # slot, statically.
+        facts["required_slots"] = plain(props[:required_slots]) if props[:required_slots]&.any?
+        # The REQUIRES_ANY declaration: the conditional any-of contracts -
+        # the before_render disjunction, stated statically.
+        facts["requires_any"] = plain(props[:requires_any]) if props[:requires_any]&.any?
+        # The identity fact: false when the family renders no poetry-minted
+        # id - key:/id: would have nothing to stabilize, so check's
+        # stable-identity rules skip the helper. Absent = the component
+        # mints (legacy registries keep every warning).
+        facts["identity"] = false unless mints_identity?(component)
+        facts
+      end
 
+      # The styling and behavior surface: the part contract, the
+      # element-level wiring projection and the agent tools.
+      def surface_facts(component)
+        facts = {}
+        # The part contract: the styling surface - data-slot parts, state
+        # attributes per part, CSS var seams - hand-authored prose that
+        # PartContract.verify holds to the rendered DOM of every preview.
+        parts = component.part_definitions
+        facts["parts"] = plain(parts) if parts.any?
         # The element-level wiring projection (use_stimulus declarations,
         # resolved): which parts carry which controllers, values, actions,
         # and targets - the usage view beside the controllers section's
         # capability view.
         if component.respond_to?(:stimulus_definitions)
           wiring = component.stimulus_definitions
-          entry["stimulus"] = plain(wiring) if wiring.any?
+          facts["stimulus"] = plain(wiring) if wiring.any?
         end
         # The agent-tool projection (tool declarations, MCP Tool-shaped):
         # the component's operate surface - what an in-page agent may
@@ -462,9 +488,9 @@ module Poetry
         # tool dispatches.
         if component.respond_to?(:tool_definitions)
           tools = component.tool_definitions
-          entry["tools"] = plain(tools) if tools.any?
+          facts["tools"] = plain(tools) if tools.any?
         end
-        entry
+        facts
       end
 
       # The controllers a component wires, joined to the manifest. Two
