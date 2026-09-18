@@ -2,6 +2,10 @@
 
 ## [0.1.5]
 
+### Added
+
+- The controllers manifest carries the prose beside each controller: its purpose (a JSDoc block above the class), the meaning of every value, and a summary of every action method, harvested when the manifest is generated; `rake stimulus:docs` holds the count of gaps at a committed floor, now zero.
+
 ### Changed
 
 - The registry carries the gem's internal namespaces (`internals`), so `poetry check` can warn a host that names one.
