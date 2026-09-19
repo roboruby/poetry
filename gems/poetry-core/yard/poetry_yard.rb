@@ -41,19 +41,36 @@ module PoetryYard
 
   module_function
 
-  # A string literal or backslash-continued string concat -> its text.
+  # A string literal or backslash-continued string concat -> its text, as
+  # Ruby reads it: `\"` in the source is one quote in the prose, not a
+  # backslash and a quote. Each piece decodes by its own quote character.
   def string_text(node)
     return nil unless node.respond_to?(:type) && %i[string_literal string_concat].include?(node.type)
 
     parts = []
-    collect = lambda do |n|
-      parts << n.source if n.respond_to?(:type) && n.type == :tstring_content
-      n.children.each { |c| collect.call(c) if c.respond_to?(:children) }
+    collect = lambda do |n, quote|
+      quote = n.source[0] if n.respond_to?(:type) && n.type == :string_literal
+      parts << decode_literal(n.source, quote) if n.respond_to?(:type) && n.type == :tstring_content
+      n.children.each { |c| collect.call(c, quote) if c.respond_to?(:children) }
     end
-    collect.call(node)
+    collect.call(node, nil)
     parts.join
   rescue StandardError
     nil
+  end
+
+  # Backslash escapes a double-quoted literal reads as whitespace; every
+  # other escaped character stands for itself (`\"`, `\\`, `\#`).
+  DOUBLE_QUOTED_ESCAPES = { "n" => "\n", "t" => "\t", "r" => "\r", "s" => " " }.freeze
+
+  # The prose in one string piece. Heredocs and percent literals carry no
+  # quote character and pass through verbatim.
+  def decode_literal(text, quote)
+    case quote
+    when '"' then text.gsub(/\\(.)/m) { DOUBLE_QUOTED_ESCAPES.fetch(Regexp.last_match(1), Regexp.last_match(1)) }
+    when "'" then text.gsub(/\\(['\\])/, '\1')
+    else text
+    end
   end
 
   # The declaration's prose: the doc: keyword when present, else the

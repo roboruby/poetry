@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.6]
+
+### Fixed
+
+- The API reference reads a declaration's `doc:` string as Ruby does: an escaped quote in the source (`\"16/9\"`) is a quote on the page, not a backslash and a quote. The doc-build handler kit decodes each string piece by its quote character; a test covers the kit for the first time.
+
 ## [0.1.5] - 2026-09-18
 
 ### Added
