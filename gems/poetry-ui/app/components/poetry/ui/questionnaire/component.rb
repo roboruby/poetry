@@ -178,6 +178,9 @@ module Poetry
 
         attr_reader :progress_class
 
+        # The generated slot writer under a private name, so the wrapper
+        # below can take the class option before handing the block on.
+        # @api private
         alias __vc_with_progress with_progress
 
         # Opts the progress readout in. Bare, it renders the live
