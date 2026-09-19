@@ -1,5 +1,5 @@
 {
-  "poetry_version": "0.1.4",
+  "poetry_version": "0.1.5",
   "gem": "poetry-ui",
   "objects": [
     {
@@ -641,7 +641,7 @@
         },
         {
           "name": "VERSION",
-          "value": "\"0.1.4\"",
+          "value": "\"0.1.5\"",
           "docstring": "The gem version."
         }
       ]
@@ -16134,23 +16134,6 @@
       "file": "app/components/poetry/ui/questionnaire/component.rb",
       "methods": [
         {
-          "name": "__vc_with_progress",
-          "scope": "instance",
-          "group": null,
-          "signature": "",
-          "docstring": "with_progress (bare) renders the auto \\\"Question X of Y\\\" text; with_progress { custom } replaces it (marked data-custom so the controller leaves it alone). class: merges onto the progress element (e.g. w-full for a full-width segment bar over the base w-fit).\n\nSlot writer for the `progress` slot.",
-          "params": [],
-          "return": {
-            "types": [
-              "void"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 181
-        },
-        {
           "name": "default_item",
           "scope": "instance",
           "group": "Options",
@@ -16262,7 +16245,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 275
+          "line": 278
         },
         {
           "name": "shortcuts",
@@ -16342,7 +16325,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 206
+          "line": 209
         },
         {
           "name": "with_progress",
@@ -16354,7 +16337,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 186
+          "line": 189
         }
       ],
       "constants": [
@@ -16393,7 +16376,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 374
+          "line": 377
         },
         {
           "name": "class_name",
@@ -16405,7 +16388,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 374
+          "line": 377
         },
         {
           "name": "description",
@@ -16417,7 +16400,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 374
+          "line": 377
         },
         {
           "name": "disabled",
@@ -16429,7 +16412,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 374
+          "line": 377
         },
         {
           "name": "error",
@@ -16441,7 +16424,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 374
+          "line": 377
         },
         {
           "name": "input",
@@ -16453,7 +16436,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 374
+          "line": 377
         },
         {
           "name": "multiple",
@@ -16465,7 +16448,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 374
+          "line": 377
         },
         {
           "name": "name",
@@ -16477,7 +16460,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 374
+          "line": 377
         },
         {
           "name": "required",
@@ -16489,7 +16472,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 374
+          "line": 377
         },
         {
           "name": "title",
@@ -16501,7 +16484,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 374
+          "line": 377
         },
         {
           "name": "with_choice",
@@ -16550,7 +16533,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 398
+          "line": 401
         },
         {
           "name": "with_input",
@@ -16586,7 +16569,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/questionnaire/component.rb",
-          "line": 408
+          "line": 411
         }
       ],
       "constants": []
