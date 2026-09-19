@@ -1,5 +1,5 @@
 --markup markdown
---load ../poetry-core/yard/poetry_yard.rb
+--load yard/core_plugin.rb
 --no-private
 --hide-api private
 --readme README.md
