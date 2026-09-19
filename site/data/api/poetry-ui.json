@@ -862,7 +862,7 @@
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "Optional leading icon; pass icon props (e.g. name: :\\\"triangle-alert\\\"), not a block.\n\nSlot: the rendered `icon` content.",
+          "docstring": "Optional leading icon; pass icon props (e.g. name: :\"triangle-alert\"), not a block.\n\nSlot: the rendered `icon` content.",
           "params": [],
           "return": {
             "types": [
@@ -942,7 +942,7 @@
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "Optional leading icon; pass icon props (e.g. name: :\\\"triangle-alert\\\"), not a block.\n\nSlot writer for the `icon` slot.",
+          "docstring": "Optional leading icon; pass icon props (e.g. name: :\"triangle-alert\"), not a block.\n\nSlot writer for the `icon` slot.",
           "params": [],
           "return": {
             "types": [
@@ -1323,7 +1323,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "A CSS <ratio>: \\\"16/9\\\", \\\"1\\\", \\\"1.5\\\" - kept a string so the fraction survives verbatim into the --ratio custom property.\n\nConstructor option `ratio:`.",
+          "docstring": "A CSS <ratio>: \"16/9\", \"1\", \"1.5\" - kept a string so the fraction survives verbatim into the --ratio custom property.\n\nConstructor option `ratio:`.",
           "params": [],
           "return": {
             "types": [
@@ -3307,7 +3307,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Utility classes for the slide track - change spacing as a trio: track_classes: \\\"-ml-1\\\" pairs with item classes \\\"pl-1 -scroll-ml-1\\\".\n\nConstructor option `track_classes:`.",
+          "docstring": "Utility classes for the slide track - change spacing as a trio: track_classes: \"-ml-1\" pairs with item classes \"pl-1 -scroll-ml-1\".\n\nConstructor option `track_classes:`.",
           "params": [],
           "return": {
             "types": [
@@ -4327,7 +4327,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The value submitted when checked (the Rails check_box \\\"1\\\").\n\nConstructor option `value:`.",
+          "docstring": "The value submitted when checked (the Rails check_box \"1\").\n\nConstructor option `value:`.",
           "params": [],
           "return": {
             "types": [
@@ -4598,7 +4598,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The scroll region's accessible name; defaults to the localized \\\"Code\\\" (a focusable scrollable region must be named - axe).\n\nConstructor option `label:`.",
+          "docstring": "The scroll region's accessible name; defaults to the localized \"Code\" (a focusable scrollable region must be named - axe).\n\nConstructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -4615,7 +4615,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The lexer name (\\\"ruby\\\", \\\"js\\\", ...); unknown languages fall back to plain text.\n\nConstructor option `language:`.",
+          "docstring": "The lexer name (\"ruby\", \"js\", ...); unknown languages fall back to plain text.\n\nConstructor option `language:`.",
           "params": [],
           "return": {
             "types": [
@@ -5218,7 +5218,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Single mode only: the trigger-side deselection X - swaps in over the chevrons while a value is committed and commits the blank value, so the cleared state serializes as \\\"\\\".\n\nConstructor option `show_clear:`.",
+          "docstring": "Single mode only: the trigger-side deselection X - swaps in over the chevrons while a value is committed and commits the blank value, so the cleared state serializes as \"\".\n\nConstructor option `show_clear:`.",
           "params": [],
           "return": {
             "types": [
@@ -5836,7 +5836,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "A global shortcut (\\\"meta+k\\\") that toggles the palette from anywhere; an accelerator, not the only way in.\n\nConstructor option `hotkey:`.",
+          "docstring": "A global shortcut (\"meta+k\") that toggles the palette from anywhere; an accelerator, not the only way in.\n\nConstructor option `hotkey:`.",
           "params": [],
           "return": {
             "types": [
@@ -5967,7 +5967,7 @@
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The trigger is a poetry Button wired to open - the Dialog pattern: with_trigger(variant: :outline) { \\\"Open palette\\\" }.\n\nSlot: the rendered `trigger` content.",
+          "docstring": "The trigger is a poetry Button wired to open - the Dialog pattern: with_trigger(variant: :outline) { \"Open palette\" }.\n\nSlot: the rendered `trigger` content.",
           "params": [],
           "return": {
             "types": [
@@ -6001,7 +6001,7 @@
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The trigger is a poetry Button wired to open - the Dialog pattern: with_trigger(variant: :outline) { \\\"Open palette\\\" }.\n\nSlot writer for the `trigger` slot.",
+          "docstring": "The trigger is a poetry Button wired to open - the Dialog pattern: with_trigger(variant: :outline) { \"Open palette\" }.\n\nSlot writer for the `trigger` slot.",
           "params": [],
           "return": {
             "types": [
@@ -8215,7 +8215,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Class merge seam for the menu panel (e.g. content_class: \\\"w-48\\\"). Root-level class: styles the surface wrapper, not the panel.\n\nConstructor option `content_class:`.",
+          "docstring": "Class merge seam for the menu panel (e.g. content_class: \"w-48\"). Root-level class: styles the surface wrapper, not the panel.\n\nConstructor option `content_class:`.",
           "params": [],
           "return": {
             "types": [
@@ -8512,7 +8512,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Caps the scroll container's height (e.g. \\\"max-h-96\\\") - without a cap the sticky header has nothing to stick inside.\n\nConstructor option `container_class:`.",
+          "docstring": "Caps the scroll container's height (e.g. \"max-h-96\") - without a cap the sticky header has nothing to stick inside.\n\nConstructor option `container_class:`.",
           "params": [],
           "return": {
             "types": [
@@ -8614,7 +8614,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Wrap in a <turbo-frame data-turbo-action=\\\"advance\\\"> so hosts with Turbo scope the round trip to the table while the URL still advances. The host response must render the same frame id.\n\nConstructor option `frame:`.",
+          "docstring": "Wrap in a <turbo-frame data-turbo-action=\"advance\"> so hosts with Turbo scope the round trip to the table while the URL still advances. The host response must render the same frame id.\n\nConstructor option `frame:`.",
           "params": [],
           "return": {
             "types": [
@@ -8682,7 +8682,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Forwarded to the inner Table: sticky_header pins the thead while the table's scroll container scrolls; container_class caps that container's height (\\\"max-h-96\\\") - without a cap nothing sticks. The sticky scroll region needs an accessible name (the ScrollArea rule); scroll_label: falls back to caption:.\n\nConstructor option `sticky_header:`.",
+          "docstring": "Forwarded to the inner Table: sticky_header pins the thead while the table's scroll container scrolls; container_class caps that container's height (\"max-h-96\") - without a cap nothing sticks. The sticky scroll region needs an accessible name (the ScrollArea rule); scroll_label: falls back to caption:.\n\nConstructor option `sticky_header:`.",
           "params": [],
           "return": {
             "types": [
@@ -9608,7 +9608,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Extra classes merged onto the <dialog> panel (e.g. \\\"max-h-[50vh]\\\" caps a top/bottom sheet).\n\nConstructor option `content_class:`.",
+          "docstring": "Extra classes merged onto the <dialog> panel (e.g. \"max-h-[50vh]\" caps a top/bottom sheet).\n\nConstructor option `content_class:`.",
           "params": [],
           "return": {
             "types": [
@@ -9710,7 +9710,7 @@
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The trigger is a poetry Button wired to open the dialog - agents pass Button props: with_trigger(variant: :outline) { \\\"Open\\\" }.\n\nSlot: the rendered `trigger` content.",
+          "docstring": "The trigger is a poetry Button wired to open the dialog - agents pass Button props: with_trigger(variant: :outline) { \"Open\" }.\n\nSlot: the rendered `trigger` content.",
           "params": [],
           "return": {
             "types": [
@@ -9778,7 +9778,7 @@
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The trigger is a poetry Button wired to open the dialog - agents pass Button props: with_trigger(variant: :outline) { \\\"Open\\\" }.\n\nSlot writer for the `trigger` slot.",
+          "docstring": "The trigger is a poetry Button wired to open the dialog - agents pass Button props: with_trigger(variant: :outline) { \"Open\" }.\n\nSlot writer for the `trigger` slot.",
           "params": [],
           "return": {
             "types": [
@@ -10190,7 +10190,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Preset resting heights for a bottom sheet, ascending: fractions of the full height (0..1] or CSS px/rem lengths ([\\\"31rem\\\", 1]). The popup runs full-height and opens at the first point; drags move between points, below the first dismisses. direction: :down only.\n\nConstructor option `snap_points:`.",
+          "docstring": "Preset resting heights for a bottom sheet, ascending: fractions of the full height (0..1] or CSS px/rem lengths ([\"31rem\", 1]). The popup runs full-height and opens at the first point; drags move between points, below the first dismisses. direction: :down only.\n\nConstructor option `snap_points:`.",
           "params": [],
           "return": {
             "types": [
@@ -10339,7 +10339,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Class merge seam for the menu panel - the panel opens at the trigger's width (min 8rem), so content_class: \\\"w-56\\\" widens it. Root-level class: styles the wrapper, not the panel.\n\nConstructor option `content_class:`.",
+          "docstring": "Class merge seam for the menu panel - the panel opens at the trigger's width (min 8rem), so content_class: \"w-56\" widens it. Root-level class: styles the wrapper, not the panel.\n\nConstructor option `content_class:`.",
           "params": [],
           "return": {
             "types": [
@@ -11343,7 +11343,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The native accept filter (e.g. \\\"image/*,.pdf\\\").\n\nConstructor option `accept:`.",
+          "docstring": "The native accept filter (e.g. \"image/*,.pdf\").\n\nConstructor option `accept:`.",
           "params": [],
           "return": {
             "types": [
@@ -12289,7 +12289,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The panel's class merge seam - e.g. content_class: \\\"w-80\\\" widens the card.\n\nConstructor option `content_class:`.",
+          "docstring": "The panel's class merge seam - e.g. content_class: \"w-80\" widens the card.\n\nConstructor option `content_class:`.",
           "params": [],
           "return": {
             "types": [
@@ -12487,7 +12487,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The icon's name in the active set. format: :\\\"icon-name\\\" is the machine-readable value contract: the registry carries it, and literal names are validated against the icon set statically - a misspelled name is caught before it can crash a render.\n\nConstructor option `name:`.",
+          "docstring": "The icon's name in the active set. format: :\"icon-name\" is the machine-readable value contract: the registry carries it, and literal names are validated against the icon set statically - a misspelled name is caught before it can crash a render.\n\nConstructor option `name:`.",
           "params": [],
           "return": {
             "types": [
@@ -13470,7 +13470,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Opens in a new tab with rel=\\\"noopener noreferrer\\\" - never hand-write target=_blank.\n\nConstructor option `external:`.",
+          "docstring": "Opens in a new tab with rel=\"noopener noreferrer\" - never hand-write target=_blank.\n\nConstructor option `external:`.",
           "params": [],
           "return": {
             "types": [
@@ -13840,7 +13840,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Server-renders the menu with this value open (values default to \\\"menu-<position>\\\").\n\nConstructor option `value:`.",
+          "docstring": "Server-renders the menu with this value open (values default to \"menu-<position>\").\n\nConstructor option `value:`.",
           "params": [],
           "return": {
             "types": [
@@ -14294,7 +14294,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Where the viewport lands on connect: the newest message (:end), the oldest (:start), or the last anchor: true row (:\\\"last-anchor\\\").\n\nConstructor option `default_scroll_position:`.",
+          "docstring": "Where the viewport lands on connect: the newest message (:end), the oldest (:start), or the last anchor: true row (:\"last-anchor\").\n\nConstructor option `default_scroll_position:`.",
           "params": [],
           "return": {
             "types": [
@@ -14311,7 +14311,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The transcript's stable identifier - the content element renders dom id \\\"<id>-messages\\\" for Turbo Streams to target.\n\nConstructor option `id:`.",
+          "docstring": "The transcript's stable identifier - the content element renders dom id \"<id>-messages\" for Turbo Streams to target.\n\nConstructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -14662,7 +14662,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Verbatim human-readable value (\\\"3 of 4 seats\\\") replacing the percentage readout. Visible readout only - ARIA 1.2 deprecated aria-valuetext on role=meter, so aria-valuenow carries the value.\n\nConstructor option `value_text:`.",
+          "docstring": "Verbatim human-readable value (\"3 of 4 seats\") replacing the percentage readout. Visible readout only - ARIA 1.2 deprecated aria-valuetext on role=meter, so aria-valuenow carries the value.\n\nConstructor option `value_text:`.",
           "params": [],
           "return": {
             "types": [
@@ -15022,7 +15022,7 @@
       "path": "Poetry::Ui::NumberField::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "A numeric field with stepper buttons and locale-aware display\nformatting. The anatomy is a formatted visible <input type=text>\n(announced as \"Number field\") beside a visually-hidden\n<input type=number> that is the form and validation truth: the\nraw number submits (a currency field showing $1,234.50 submits\n1234.5), and native required/min/max validation rides the hidden\ninput.\n\nVisuals compose from existing primitives - the group wears\nInputGroup's chrome and the steppers are ghost icon Buttons - so\nthemes restyle it through those components. The server renders\nthe raw number; the display formats on connect. Typed input\nparses Latin digits (locale separators and currency/percent\nsymbols are handled).\n\n**Anatomy** (`data-slot` parts):\n\n- `number-field` - Root wrapper - the controller, disabled/invalid/filled state, and the two-input pair ride here\n- `number-field-group` - The bordered field surface - wears InputGroup's chrome (cn-input-group), focus ring keyed on the control inside\n- `input-group-addon` - The two stepper cells - InputGroup's addon vocabulary, reused so the group paddings compose\n- `input-group-control` - The visible formatted <input type=text> - InputGroup's control slot (the themes' focus-ring hook); aria-roledescription \\\"Number field\\\", never a spinbutton",
+      "docstring": "A numeric field with stepper buttons and locale-aware display\nformatting. The anatomy is a formatted visible <input type=text>\n(announced as \"Number field\") beside a visually-hidden\n<input type=number> that is the form and validation truth: the\nraw number submits (a currency field showing $1,234.50 submits\n1234.5), and native required/min/max validation rides the hidden\ninput.\n\nVisuals compose from existing primitives - the group wears\nInputGroup's chrome and the steppers are ghost icon Buttons - so\nthemes restyle it through those components. The server renders\nthe raw number; the display formats on connect. Typed input\nparses Latin digits (locale separators and currency/percent\nsymbols are handled).\n\n**Anatomy** (`data-slot` parts):\n\n- `number-field` - Root wrapper - the controller, disabled/invalid/filled state, and the two-input pair ride here\n- `number-field-group` - The bordered field surface - wears InputGroup's chrome (cn-input-group), focus ring keyed on the control inside\n- `input-group-addon` - The two stepper cells - InputGroup's addon vocabulary, reused so the group paddings compose\n- `input-group-control` - The visible formatted <input type=text> - InputGroup's control slot (the themes' focus-ring hook); aria-roledescription \"Number field\", never a spinbutton",
       "examples": [
         {
           "title": "",
@@ -15716,7 +15716,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Class merge seam for the panel itself (e.g. widen the default with content_class: \\\"w-80\\\") - root-level class: styles the wrapper, not the panel.\n\nConstructor option `content_class:`.",
+          "docstring": "Class merge seam for the panel itself (e.g. widen the default with content_class: \"w-80\") - root-level class: styles the wrapper, not the panel.\n\nConstructor option `content_class:`.",
           "params": [],
           "return": {
             "types": [
@@ -16223,7 +16223,7 @@
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "with_progress (bare) renders the auto \\\"Question X of Y\\\" text; with_progress { custom } replaces it (marked data-custom so the controller leaves it alone). class: merges onto the progress element (e.g. w-full for a full-width segment bar over the base w-fit).\n\nSlot: the rendered `progress` content.",
+          "docstring": "with_progress (bare) renders the auto \"Question X of Y\" text; with_progress { custom } replaces it (marked data-custom so the controller leaves it alone). class: merges onto the progress element (e.g. w-full for a full-width segment bar over the base w-fit).\n\nSlot: the rendered `progress` content.",
           "params": [],
           "return": {
             "types": [
@@ -17535,7 +17535,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Text shown in the trigger until an option is committed; also rendered as the blank native <option> (posts \\\"\\\" when untouched).\n\nConstructor option `placeholder:`.",
+          "docstring": "Text shown in the trigger until an option is committed; also rendered as the blank native <option> (posts \"\" when untouched).\n\nConstructor option `placeholder:`.",
           "params": [],
           "return": {
             "types": [
@@ -17789,7 +17789,7 @@
       "path": "Poetry::Ui::SensitiveInput::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "A secret field - API keys, tokens, credentials - shown masked\nuntil deliberately revealed. Three states ride data-state on the\nroot: masked (the value hidden behind an overlay that IS the\nreveal button, while the real input stays rendered for layout but\ngoes inert), revealed (type=text, editable, the eye re-masks), and\nempty (a plain password input; the first character typed\nauto-reveals so composition happens visibly). Re-mask via Escape\n(focus returns to the group), leaving the component, or the eye.\ncopy: adds a copy button - a real keyboard tab stop - that copies\nthe value WITHOUT revealing it. The no-JS story is a plain\npassword input that still submits.\n\n**Anatomy** (`data-slot` parts):\n\n- `sensitive-input` - Root - the state machine rides here\n- `sensitive-input-group` - The bordered field surface (InputGroup's chrome) - clicks anywhere on it reveal; wears the focus ring when the mask button inside holds focus\n- `input-group-control` - The real input - rendered in every state for layout stability; inert while masked (aria-hidden, tabindex -1, readonly, transparent); type=password unless revealed\n- `sensitive-input-mask` - The overlay painting the masked state - while masked it IS the reveal button (role=button, tabindex 0, \\\"{label}, masked.\\\", described by the sr hint; only text spans inside, so no nested-interactive); bullet dots swap to the reveal hint on hover/focus with no layout shift\n- `input-group-addon` - The trailing cell holding the eye (and copy: affordance)",
+      "docstring": "A secret field - API keys, tokens, credentials - shown masked\nuntil deliberately revealed. Three states ride data-state on the\nroot: masked (the value hidden behind an overlay that IS the\nreveal button, while the real input stays rendered for layout but\ngoes inert), revealed (type=text, editable, the eye re-masks), and\nempty (a plain password input; the first character typed\nauto-reveals so composition happens visibly). Re-mask via Escape\n(focus returns to the group), leaving the component, or the eye.\ncopy: adds a copy button - a real keyboard tab stop - that copies\nthe value WITHOUT revealing it. The no-JS story is a plain\npassword input that still submits.\n\n**Anatomy** (`data-slot` parts):\n\n- `sensitive-input` - Root - the state machine rides here\n- `sensitive-input-group` - The bordered field surface (InputGroup's chrome) - clicks anywhere on it reveal; wears the focus ring when the mask button inside holds focus\n- `input-group-control` - The real input - rendered in every state for layout stability; inert while masked (aria-hidden, tabindex -1, readonly, transparent); type=password unless revealed\n- `sensitive-input-mask` - The overlay painting the masked state - while masked it IS the reveal button (role=button, tabindex 0, \"{label}, masked.\", described by the sr hint; only text spans inside, so no nested-interactive); bullet dots swap to the reveal hint on hover/focus with no layout shift\n- `input-group-addon` - The trailing cell holding the eye (and copy: affordance)",
       "examples": [
         {
           "title": "An API key with copy-without-reveal",
@@ -17888,7 +17888,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The accessible name - feeds the input's aria-label and the masked announcement (\\\"{label}, masked.\\\"); pair with a visible Label/Field caption.\n\nConstructor option `label:`.",
+          "docstring": "The accessible name - feeds the input's aria-label and the masked announcement (\"{label}, masked.\"); pair with a visible Label/Field caption.\n\nConstructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -18636,7 +18636,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Form name; single thumb -> name; range -> name + \\\"[]\\\" per input (the Rails array-param convention).\n\nConstructor option `name:`.",
+          "docstring": "Form name; single thumb -> name; range -> name + \"[]\" per input (the Rails array-param convention).\n\nConstructor option `name:`.",
           "params": [],
           "return": {
             "types": [
@@ -18716,7 +18716,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "aria-valuetext formatter: a proc (v -> \\\"$200\\\") or an i18n key with %{value}; optional - falls back to the bare number.\n\nConstructor option `value_text:`.",
+          "docstring": "aria-valuetext formatter: a proc (v -> \"$200\") or an i18n key with %{value}; optional - falls back to the bare number.\n\nConstructor option `value_text:`.",
           "params": [],
           "return": {
             "types": [
@@ -18878,7 +18878,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The change text shown in the pill beside the value (\\\"+12.5%\\\").\n\nConstructor option `delta:`.",
+          "docstring": "The change text shown in the pill beside the value (\"+12.5%\").\n\nConstructor option `delta:`.",
           "params": [],
           "return": {
             "types": [
@@ -19271,7 +19271,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Extra classes for the scroll container - e.g. \\\"max-h-96\\\" to cap its height.\n\nConstructor option `container_class:`.",
+          "docstring": "Extra classes for the scroll container - e.g. \"max-h-96\" to cap its height.\n\nConstructor option `container_class:`.",
           "params": [],
           "return": {
             "types": [
@@ -21227,7 +21227,7 @@
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "Typed Button slot (undo / view / retry): clicking it dismisses the toast with reason \\\"action\\\". Its presence makes the toast persistent by default.\n\nSlot: the rendered `action` content.",
+          "docstring": "Typed Button slot (undo / view / retry): clicking it dismisses the toast with reason \"action\". Its presence makes the toast persistent by default.\n\nSlot: the rendered `action` content.",
           "params": [],
           "return": {
             "types": [
@@ -21358,7 +21358,7 @@
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "Typed Button slot (undo / view / retry): clicking it dismisses the toast with reason \\\"action\\\". Its presence makes the toast persistent by default.\n\nSlot writer for the `action` slot.",
+          "docstring": "Typed Button slot (undo / view / retry): clicking it dismisses the toast with reason \"action\". Its presence makes the toast persistent by default.\n\nSlot writer for the `action` slot.",
           "params": [],
           "return": {
             "types": [
@@ -22389,7 +22389,7 @@
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The described control - commonly a poetry Button (with_trigger(variant: :outline) { \\\"Hover\\\" }). The slot owns the state + timing wiring regardless of the composed content. NO aria-haspopup/expanded/controls - the tooltip is invisible as a popup; aria-describedby is written by the controller on open (and server-rendered only when open: true).\n\nSlot: the rendered `trigger` content.",
+          "docstring": "The described control - commonly a poetry Button (with_trigger(variant: :outline) { \"Hover\" }). The slot owns the state + timing wiring regardless of the composed content. NO aria-haspopup/expanded/controls - the tooltip is invisible as a popup; aria-describedby is written by the controller on open (and server-rendered only when open: true).\n\nSlot: the rendered `trigger` content.",
           "params": [],
           "return": {
             "types": [
@@ -22406,7 +22406,7 @@
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The described control - commonly a poetry Button (with_trigger(variant: :outline) { \\\"Hover\\\" }). The slot owns the state + timing wiring regardless of the composed content. NO aria-haspopup/expanded/controls - the tooltip is invisible as a popup; aria-describedby is written by the controller on open (and server-rendered only when open: true).\n\nSlot writer for the `trigger` slot.",
+          "docstring": "The described control - commonly a poetry Button (with_trigger(variant: :outline) { \"Hover\" }). The slot owns the state + timing wiring regardless of the composed content. NO aria-haspopup/expanded/controls - the tooltip is invisible as a popup; aria-describedby is written by the controller on open (and server-rendered only when open: true).\n\nSlot writer for the `trigger` slot.",
           "params": [],
           "return": {
             "types": [
@@ -22601,7 +22601,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Appends typeset-<preset> - a tiny class in the app's own CSS retuning the rhythm variables (e.g. \\\"docs\\\").\n\nConstructor option `preset:`.",
+          "docstring": "Appends typeset-<preset> - a tiny class in the app's own CSS retuning the rhythm variables (e.g. \"docs\").\n\nConstructor option `preset:`.",
           "params": [],
           "return": {
             "types": [
