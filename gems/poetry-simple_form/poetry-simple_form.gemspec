@@ -20,8 +20,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency "simple_form", ">= 5.3", "< 6"
   spec.metadata["homepage_uri"] = "https://poetryui.com"
   spec.metadata["documentation_uri"] = "https://poetryui.com/docs"
-  spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry-simple_form"
-  spec.metadata["changelog_uri"] = "https://github.com/roboruby/poetry-simple_form/blob/main/CHANGELOG.md"
-  spec.metadata["bug_tracker_uri"] = "https://github.com/roboruby/poetry-simple_form/issues"
+  spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry/tree/main/gems/poetry-simple_form"
+  spec.metadata["changelog_uri"] = "https://github.com/roboruby/poetry/blob/main/gems/poetry-simple_form/CHANGELOG.md"
+  spec.metadata["bug_tracker_uri"] = "https://github.com/roboruby/poetry/issues"
   spec.metadata["rubygems_mfa_required"] = "true"
 end

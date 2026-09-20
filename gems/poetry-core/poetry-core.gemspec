@@ -18,9 +18,9 @@ Gem::Specification.new do |spec|
   # Require MFA for gem pushes (supply-chain protection).
   spec.metadata["homepage_uri"] = "https://poetryui.com"
   spec.metadata["documentation_uri"] = "https://poetryui.com/docs"
-  spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry-core"
-  spec.metadata["changelog_uri"] = "https://github.com/roboruby/poetry-core/blob/main/CHANGELOG.md"
-  spec.metadata["bug_tracker_uri"] = "https://github.com/roboruby/poetry-core/issues"
+  spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry/tree/main/gems/poetry-core"
+  spec.metadata["changelog_uri"] = "https://github.com/roboruby/poetry/blob/main/gems/poetry-core/CHANGELOG.md"
+  spec.metadata["bug_tracker_uri"] = "https://github.com/roboruby/poetry/issues"
   spec.metadata["rubygems_mfa_required"] = "true"
 
   # Files shipped in the gem come from git; tooling/test/docs are excluded.

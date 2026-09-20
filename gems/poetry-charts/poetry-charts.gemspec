@@ -19,9 +19,9 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = ">= 3.4.0"
   spec.metadata["homepage_uri"] = "https://poetryui.com"
   spec.metadata["documentation_uri"] = "https://poetryui.com/docs"
-  spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry-charts"
-  spec.metadata["changelog_uri"] = "https://github.com/roboruby/poetry-charts/blob/main/CHANGELOG.md"
-  spec.metadata["bug_tracker_uri"] = "https://github.com/roboruby/poetry-charts/issues"
+  spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry/tree/main/gems/poetry-charts"
+  spec.metadata["changelog_uri"] = "https://github.com/roboruby/poetry/blob/main/gems/poetry-charts/CHANGELOG.md"
+  spec.metadata["bug_tracker_uri"] = "https://github.com/roboruby/poetry/issues"
   spec.metadata["rubygems_mfa_required"] = "true"
 
   gemspec = File.basename(__FILE__)
