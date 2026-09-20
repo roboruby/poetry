@@ -1,0 +1,12 @@
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+gem "minitest", "~> 6.0"
+gem "rake", "~> 13.0"
+
+# Signs and verifies the sigstore bundles that go up as attestations. sigstore
+# 0.2.3 reads its trust root through protobug, which still passes options that
+# json 3.0 dropped, so json stays below 3 until sigstore-ruby moves.
+gem "json", "< 3"
+gem "sigstore-cli", "= 0.2.3"

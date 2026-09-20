@@ -1,0 +1,122 @@
+# frozen_string_literal: true
+
+require "fileutils"
+require "rake/testtask"
+require_relative "lib/releaser"
+
+ROOT = Releaser::ROOT
+PKG = File.join(ROOT, "pkg")
+
+Rake::TestTask.new(:test) do |t|
+  t.libs << "test" << "lib"
+  t.test_files = FileList["test/**/*_test.rb"]
+  t.warning = false
+end
+task default: :test
+
+def version = Releaser.version(ROOT)
+
+# The ref under release (the workflow passes the tag); HEAD for local builds.
+def ref = ENV.fetch("REF", "HEAD")
+
+def gems_in_pkg = Dir[File.join(PKG, "*.gem")].sort
+
+desc "Stamp VERSION into every version.rb and package.json, then re-lock the site on the new path gem versions"
+task :versions do
+  changed = Releaser::Versions.stamp(ROOT, version)
+  puts changed.empty? ? "versions: everything already at #{version}" : "versions: #{changed.size} files now say #{version}"
+  # The site's committed lock names the family's versions; Bundler rewrites
+  # them from the gemspecs beside it.
+  Bundler.with_unbundled_env do
+    system("bundle", "lock", chdir: File.join(ROOT, "site"), out: File::NULL, exception: true)
+  end
+  puts "versions: site/Gemfile.lock re-locked"
+end
+
+namespace :changelog do
+  desc "Date every changelog's heading for VERSION (today, or DATE=YYYY-MM-DD)"
+  task :date do
+    date = ENV.fetch("DATE") { Time.now.strftime("%Y-%m-%d") }
+    Releaser::GEMS.each do |name|
+      result = Releaser::Changelog.date(File.join(Releaser.gem_dir(name, ROOT), "CHANGELOG.md"), version, date)
+      puts "changelog: #{name} #{result}"
+    end
+  end
+end
+
+desc "Assemble the release notes for VERSION into pkg/notes-<version>.md"
+task :notes do
+  FileUtils.mkdir_p(PKG)
+  path = File.join(PKG, "notes-#{version}.md")
+  File.write(path, Releaser::Notes.assemble(ROOT, version))
+  puts path
+end
+
+desc "Build all eight gems into pkg/, reproducibly from the commit time of REF (default HEAD)"
+task :build do
+  Releaser::Build.check_umbrella!(ROOT)
+  epoch = Releaser::Build.epoch(ROOT, ref)
+  files = Releaser::Build.all(ROOT, version, PKG, epoch: epoch)
+  puts "built #{files.size} gems into pkg/ (SOURCE_DATE_EPOCH #{epoch} from #{ref})"
+  puts "umbrella ships: #{Releaser::Build.umbrella_files(ROOT).join(' ')}"
+end
+
+desc "Write pkg/SHA256SUMS and print it"
+task :checksums do
+  sums = Releaser::Build.checksums(gems_in_pkg)
+  File.write(File.join(PKG, "SHA256SUMS"), sums.map { |file, sha| "#{sha}  #{file}\n" }.join)
+  sums.each { |file, sha| puts "#{sha}  #{file}" }
+end
+
+desc "Build a second time into a scratch directory and require byte-identical gems"
+task :reproducible do
+  epoch = Releaser::Build.epoch(ROOT, ref)
+  again = File.join(ROOT, "tmp", "reproducible")
+  FileUtils.rm_rf(again)
+  files = Releaser::Build.all(ROOT, version, again, epoch: epoch)
+  first = Releaser::Build.checksums(gems_in_pkg)
+  second = Releaser::Build.checksums(files.sort)
+  differing = first.keys.select { |file| first[file] != second[file] }
+  FileUtils.rm_rf(again)
+  raise Releaser::Error, "not reproducible: #{differing.join(', ')}" unless differing.empty?
+
+  puts "reproducible: #{first.size} gems identical across two builds"
+end
+
+desc "Sign every gem in pkg/ (sigstore, the runner's OIDC identity)"
+task :sign do
+  gems_in_pkg.each { |gem| puts "signed #{File.basename(Releaser::Sign.sign(gem))}" }
+end
+
+desc "Verify every bundle in pkg/ against this workflow's identity (GITHUB_REPOSITORY and GITHUB_REF)"
+task :verify do
+  repository = ENV.fetch("GITHUB_REPOSITORY") { raise Releaser::Error, "GITHUB_REPOSITORY is not set" }
+  github_ref = ENV.fetch("GITHUB_REF") { raise Releaser::Error, "GITHUB_REF is not set" }
+  identity = Releaser::Sign.identity(repository: repository, ref: github_ref)
+  gems_in_pkg.each do |gem|
+    Releaser::Sign.verify(gem, identity: identity)
+    puts "verified #{File.basename(gem)} as #{identity}"
+  end
+end
+
+desc "The tag REF names VERSION, every version file agrees, and the commit is on main"
+task :verify_tag do
+  Releaser::Tag.verify(ROOT, ref, version)
+  puts "verify_tag: #{ref} is VERSION #{version}, on main"
+end
+
+desc "Create and push the annotated tag for VERSION"
+task :tag do
+  puts "tagged #{Releaser::Tag.create(ROOT, version)}"
+end
+
+desc "Open a draft GitHub release for the tag, notes assembled from the changelogs"
+task draft_release: :notes do
+  Releaser::Tag.draft_release(ROOT, version, File.join(PKG, "notes-#{version}.md"))
+end
+
+desc "Push every gem in pkg/ to RubyGems (idempotent), then wait until each installs"
+task :push do
+  Releaser::Push.all(ROOT, version, PKG)
+  Releaser::Push.await(PKG)
+end
