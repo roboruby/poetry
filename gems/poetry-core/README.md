@@ -1,0 +1,26 @@
+# poetry-core
+
+The Rails engine, component DSL, and primitives that power **[poetry](https://github.com/roboruby/poetry)** — the AI-native, Rails-first component library. This gem is the *framework* layer (the engine, the `Component` base class plus the Styles/Options DSL, the Stimulus integration, the preview infrastructure). The components themselves live in `poetry-ui`.
+
+> **Status: early release.** The API is settling but not frozen; the CHANGELOG lists every breaking change.
+
+## Installation
+
+Most users should depend on the umbrella **`poetry`** gem rather than `poetry-core` directly.
+
+```bash
+bundle add poetry-core
+```
+
+## Development
+
+After checking out the repo, run `bin/setup` to install dependencies, then `bundle exec rake` to run the tests and RuboCop. `bin/console` gives an interactive prompt.
+
+## Release
+
+Releases publish to [RubyGems.org](https://rubygems.org) via GitHub Actions OIDC **trusted publishing** (no API keys). Run `bundle exec rake "version:bump[X.Y.Z]"` (sets `Poetry::Core::VERSION` and package.json together; `rake version:verify` in the default chain fails on drift), commit, then push a `vX.Y.Z` tag — the `Release` workflow checks the tag against the version and publishes the gem.
+
+## License
+
+Available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+See `THIRD_PARTY_NOTICES.md` for adapted code.

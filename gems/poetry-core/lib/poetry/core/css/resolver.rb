@@ -1,0 +1,186 @@
+# frozen_string_literal: true
+
+require "digest"
+
+module Poetry
+  module Core
+    module CSS
+      # poetry's in-tree server-side class-variants engine - no external
+      # runtime dependency.
+      #
+      # The resolver is a dictionary from a component's style surface to CSS
+      # utility classes:
+      #
+      #   base      "inline-flex items-center"           # the block root
+      #   element   :icon, "size-4 shrink-0"             # BEM elements (block__icon)
+      #   variant   :color, red: "text-red-600", ...     # BEM modifiers (block--color-red)
+      #   compound  ({ color: :red, mode: :dark }, "...") # multi-key combinations
+      #
+      # The resolver deliberately stores **no defaults**: default values
+      # live in exactly one place - the component's `style :attr, default:`
+      # declaration (ActiveModel fills them before render) - which
+      # structurally rules out the duplicated-defaults class of bug. Render
+      # criteria always arrive resolved.
+      #
+      # Merging goes through the shared, FIFO-cached Config merger
+      # (configured once - never a fresh TailwindMerge instance per render).
+      #
+      # @example
+      #   resolver = Poetry::Core::CSS::Resolver.new
+      #   resolver.base("inline-flex items-center")
+      #           .variant(:color, red: "text-red-600", blue: "text-blue-600")
+      #   resolver.render(color: :red) # => "inline-flex items-center text-red-600"
+      #
+      # @api private
+      class Resolver
+        # Classes applied when several variant criteria match at once.
+        Compound = Struct.new(:criteria, :classes)
+
+        # The dictionary's bases, elements, variants and compounds.
+        attr_reader :bases, :elements, :variants, :compounds
+        # The Style class this dictionary belongs to; its mode decides the
+        # class merger (nil answers with the global merger).
+        attr_accessor :owner
+
+        # An empty dictionary with its caches.
+        def initialize
+          @bases = []
+          @elements = {}
+          @variants = {}
+          @compounds = []
+          # The dictionary walk per criteria, memoised: the variant space is
+          # finite, so this is bounded, and the merger caches the join.
+          @root_cache = {}
+          @root_mutex = Mutex.new
+        end
+
+        # Subclass inheritance: a child Style extends a copy of its parent's
+        # dictionary (dup-on-inherit).
+        def dup
+          self.class.new.tap do |copy|
+            copy.instance_variable_set(:@bases, @bases.dup)
+            copy.instance_variable_set(:@elements, @elements.transform_values(&:dup))
+            copy.instance_variable_set(:@variants, @variants.transform_values(&:dup))
+            copy.instance_variable_set(:@compounds, @compounds.dup)
+          end
+        end
+
+        # -- The dictionary DSL ------------------------------------------------
+
+        def base(classes)
+          @root_cache.clear
+          @bases << classes.to_s
+          self
+        end
+
+        # Adds classes for a named element.
+        def element(name, classes)
+          @root_cache.clear
+          (@elements[name.to_sym] ||= []) << classes.to_s
+          self
+        end
+
+        # Adds classes per value for a variant axis.
+        def variant(attr, mapping)
+          @root_cache.clear
+          bucket = (@variants[attr.to_sym] ||= {})
+          mapping.each { |value, classes| bucket[value] = classes.to_s }
+          self
+        end
+
+        # Adds classes applied when at least two variant criteria match.
+        def compound(criteria, classes)
+          @root_cache.clear
+          raise ArgumentError, "compound criteria must name at least two variant keys" if criteria.size < 2
+
+          @compounds << Compound.new(criteria.transform_keys(&:to_sym), classes.to_s)
+          self
+        end
+
+        # -- Rendering ---------------------------------------------------------
+
+        # Resolves utility classes for the block root (element: nil) or a
+        # named element. `criteria` are the component's resolved style values;
+        # `extra` is a caller-supplied class string appended last (wins on
+        # Tailwind conflicts via the merger).
+        #
+        # @param element [Symbol, nil] a declared element name, or nil for the root
+        # @param extra [String, nil] caller classes appended after the dictionary's
+        # @param criteria [Hash{Symbol => Object}] resolved style values keyed by variant attr
+        # @return [String, nil] the merged class string, or nil when nothing resolves
+        def render(element = nil, extra: nil, **criteria)
+          classes = element ? @elements.fetch(element.to_sym, []) : cached_root_classes(criteria)
+          extra ? merger.merge(*classes, extra) : merger.merge(*classes)
+        end
+
+        # The introspection surface (previews, docs, the registry):
+        # { attr => [values] } for the declared variant space.
+        def variant_options
+          @variants.transform_values(&:keys)
+        end
+
+        # The capsule digest: a deterministic content hash of the whole
+        # dictionary. Embedded in the generated :bem reference stylesheet,
+        # so CSS written against an older dictionary is detectable instead
+        # of silently drifting.
+        #
+        # @return [String] a 12-character hex digest
+        def digest
+          Digest::SHA256.hexdigest(canonical_dictionary.inspect)[0, 12]
+        end
+
+        # Every utility class string in the dictionary (bases, elements,
+        # variants, compounds) - the Verifier's and the safelist's input.
+        def all_classes
+          [
+            @bases,
+            @elements.values.flatten,
+            @variants.values.flat_map(&:values),
+            @compounds.map(&:classes)
+          ].flatten.flat_map(&:split).uniq
+        end
+
+        private
+
+        # A stable, order-insensitive serialization of the dictionary for the
+        # capsule digest.
+        def canonical_dictionary
+          {
+            bases: @bases,
+            elements: @elements.sort_by { |name, _| name.to_s }.to_h { |name, v| [name, v] },
+            variants: @variants.sort_by { |attr, _| attr.to_s }
+                               .map { |attr, mapping| [attr, mapping.sort_by { |value, _| value.to_s }] },
+            compounds: @compounds.map { |rule| [rule.criteria.sort_by { |k, _| k.to_s }, rule.classes] }
+          }
+        end
+
+        # The root classes for the criteria, memoized under a mutex.
+        def cached_root_classes(criteria)
+          @root_cache[criteria] || @root_mutex.synchronize { @root_cache[criteria] ||= root_classes(criteria).freeze }
+        end
+
+        # The root classes for the criteria: the bases, then each matching variant and compound.
+        def root_classes(criteria)
+          classes = @bases.dup
+          @variants.each do |attr, mapping|
+            next unless criteria.key?(attr)
+
+            hit = mapping[criteria[attr]]
+            classes << hit if hit
+          end
+          @compounds.each do |rule|
+            classes << rule.classes if rule.criteria.all? { |attr, value| criteria[attr] == value }
+          end
+          classes
+        end
+
+        # The merger every element-level join goes through: the owner's, by
+        # its CSS mode, so a host's global BEM merger never reaches a
+        # Tailwind kit's utility conflicts (the root and the elements alike).
+        def merger
+          owner&.merger || Poetry::Core::Config.current.classname_merger
+        end
+      end
+    end
+  end
+end

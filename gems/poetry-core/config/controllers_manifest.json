@@ -1,0 +1,2129 @@
+{
+  "poetry--core--accordion": {
+    "doc": "The accordion open-set machine: single (optionally collapsible) or multiple. Composes with poetry--core--roving-focus (manageTabindex: false - APG keeps every trigger tabbable) attached separately on the same root. Panels ride the presence helper; the measured --accordion-panel-height var feeds the vendored accordion-down/up keyframes.",
+    "targets": [],
+    "values": {
+      "type": {
+        "type": "String",
+        "default": "single",
+        "doc": "single keeps one item open at a time; multiple lets any number stay open."
+      },
+      "collapsible": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "In single mode, whether the open item can be closed by its own trigger."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "toggle"
+    ],
+    "events": [
+      "poetry:accordion:change"
+    ],
+    "method_docs": {
+      "connect": "Reflects the locked-open trigger (aria-disabled) and adopts data-panel-open onto server-open triggers.",
+      "disconnect": "Flushes any in-flight transition window so its timer/listener doesn't outlive the controller (Turbo teardown, or a test between cases).",
+      "toggle": "Each trigger's click action: toggles its item - single mode closes the others first; single non-collapsible keeps the open item open. The change event reports the open values."
+    }
+  },
+  "poetry--core--action-bar": {
+    "doc": "The floating bulk-actions bar (the ActionBar contract): shows while its table's selection is non-empty, and holds the contract rules - focus NEVER moves in on show; if focus was inside when the bar hides, it returns to where it was before entering (the FocusScope restoreFocus equivalent, scoped small); \"Actions available.\" is announced ONCE per appearance; the visible count RETAINS its last non-zero value while the bar animates out (never a \"None selected\" flash); Escape anywhere inside clears the selection (the table's engine listens for",
+    "targets": [
+      "count"
+    ],
+    "values": {
+      "label": {
+        "type": "String",
+        "default": "%{count} selected",
+        "doc": "The count announcement, with %{count} replaced by the number of selected rows."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "clear",
+      "connect",
+      "disconnect",
+      "keydown"
+    ],
+    "events": [
+      "poetry:data-table:clear-selection"
+    ],
+    "method_docs": {
+      "clear": "The clear affordance (and Escape): asks the table's engine - which owns the state - to clear the selection.",
+      "connect": "Subscribes to the table's selection-change on the shared wrapper and starts the focus bookkeeping the hide-restore needs.",
+      "disconnect": "Unwires both listeners.",
+      "keydown": "The keydown action: Escape anywhere inside clears the selection."
+    }
+  },
+  "poetry--core--autocomplete": {
+    "doc": "The Autocomplete: a REAL text input that IS the form value, suggesting from a server-rendered list that filters as you type. This is the input-is-the-value semantic - the sibling of Combobox, whose value is a SELECTED ITEM behind a native <select>. Selecting a suggestion writes the input and closes; the text always submits as ordinary params.\n\nThe contract's fixed behaviors: locale-aware filtering (toLocaleLowerCase), list scroll reset on every filter pass, and change-reason details on the commit event (item-press | enter-key). Positioning rides the shared popper controller (input = anchor).",
+    "targets": [
+      "content",
+      "empty",
+      "input",
+      "list"
+    ],
+    "values": {
+      "open": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether the suggestion list is open."
+      },
+      "openOnFocus": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "Open the popup on focus even before any typing."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "blurred",
+      "disconnect",
+      "focus",
+      "input",
+      "itemEnter",
+      "itemPress",
+      "keydown"
+    ],
+    "events": [
+      "poetry:autocomplete:closed",
+      "poetry:autocomplete:commit",
+      "poetry:autocomplete:open"
+    ],
+    "method_docs": {
+      "blurred": "The focusout action: closes, unless focus moved into the popup (an item click commits first - the body comment).",
+      "disconnect": "Closes an open popup so its state never outlives the controller.",
+      "focus": "The focus action: opens pre-typing when openOnFocus allows.",
+      "input": "The input action: re-filters the list and opens.",
+      "itemEnter": "Each item's pointerenter action: moves the highlight under the pointer.",
+      "itemPress": "Each item's pointerdown action (not click): commits BEFORE the input's blur closes the popup.",
+      "keydown": "The input's keydown action: arrows open / move the highlight, Enter commits it, Escape closes (consumed - the next press reaches the layer above), Tab closes and passes through. IME keydowns are ignored."
+    }
+  },
+  "poetry--core--calendar": {
+    "doc": "The Calendar engine, decided OWN-THE-ENGINE: no date-picker library (a heavy JS dep). The month grid is SERVER-RENDERED (Ruby Date math) so a no-JS page shows a valid calendar; this controller adds month navigation (regenerating the 42-cell grid from plain Date math - reusing the day button DOM, no innerHTML churn), single-date selection (writing the hidden input + the data-selected/aria vocabulary), and roving arrow-key focus over the days. Selection is a real form value; the DatePicker composes this inside a Popover.\n\nRange mode: mode=\"range\" swaps the click path for a transcription of an MIT-licensed range-selection algorithm (source and license in THIRD_PARTY_NOTICES.md) and the reflection for the range vocabulary (data-range-start/middle/end - dictionary classes that shipped inert until range mode). The form value is TWO hidden inputs (name[start]/name[end] - the wire shape is poetry's). The transcribed semantics hold exactly: an incomplete start-only pick renders as a plain selected single day; the range vocabulary appears only once the range completes.\n\nDropdown caption (caption_layout: :dropdown), the invisible-select overlay pattern: each [data-calendar-unit=month|year] wrapper holds a visible text label (calendar-dropdown-value) with the real select stretched invisibly over it - #jump reads the selects, #render reflects navigation back into both select values AND label text (no caption target in that mode). Week numbers: one role=rowheader per week; each row's Thursday decides the ISO number (matches Ruby Date#cweek under any week_start).\n\nStill deferred: multiple months.",
+    "targets": [
+      "caption",
+      "day",
+      "endInput",
+      "grid",
+      "input",
+      "startInput"
+    ],
+    "values": {
+      "month": {
+        "type": "String",
+        "doc": "The displayed month as YYYY-MM; navigation moves it, and a selection outside it follows."
+      },
+      "selected": {
+        "type": "String",
+        "doc": "the visible month, \"YYYY-MM\""
+      },
+      "mode": {
+        "type": "String",
+        "default": "single",
+        "doc": "the chosen date, \"YYYY-MM-DD\" (or \"\")"
+      },
+      "rangeStart": {
+        "type": "String",
+        "doc": "\"single\" | \"range\""
+      },
+      "rangeEnd": {
+        "type": "String",
+        "doc": "\"YYYY-MM-DD\" (or \"\")"
+      },
+      "weekStart": {
+        "type": "Number",
+        "default": 0,
+        "doc": "The first day of the week, 0 for Sunday through 6 for Saturday."
+      },
+      "min": {
+        "type": "String",
+        "doc": "0 = Sunday"
+      },
+      "max": {
+        "type": "String",
+        "doc": "The latest selectable date as ISO; later days are disabled."
+      },
+      "monthNames": {
+        "type": "Array",
+        "default": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December"
+        ],
+        "doc": "The localized month names, handed down by the SERVER (Ruby I18n) so the JS caption needs no Intl - correct under app locale AND in the Intl-less dommy engine. English is the fallback."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "jump",
+      "keydown",
+      "monthValueChanged",
+      "nextMonth",
+      "previousMonth",
+      "select",
+      "selectedValueChanged"
+    ],
+    "events": [
+      "poetry:calendar:change"
+    ],
+    "method_docs": {
+      "connect": "Syncs the selected/today vocabulary over the server-rendered grid.",
+      "jump": "The dropdown caption's change action (the month/year select wrappers): navigates to the selects' month.",
+      "keydown": "The grid's keydown action: arrows move focus by day/week, PageUp/Down by month, Home/End to the week edges.",
+      "monthValueChanged": "Stimulus value callback: re-renders on external month writes (see above).",
+      "nextMonth": "The next-month button's click action.",
+      "previousMonth": "The previous-month button's click action.",
+      "select": "Each day button's click action: single mode writes the selection; range mode runs the addToRange transcription. The change event carries value (single) or start/end (range) as ISO strings.",
+      "selectedValueChanged": "Stimulus value callback. The DOM is the store (the anchor-point precedent): external writes to selected/month - the DatePicker input variant syncs typed dates this way - re-render on change. The booted gate skips the init echo (the server's own paint - Stimulus fires initial value callbacks BEFORE connect, and a connect-era render would restamp data-today with the client clock over the server's pinned one). Internal writes re-render once more; the in-place cell diff makes that free."
+    }
+  },
+  "poetry--core--carousel": {
+    "doc": "The Carousel engine, decided NATIVE: no carousel library - the platform's scroll-snap owns the physics (touch, momentum, snapping, overscroll), and this controller adds only what CSS can't: prev/next paging, button state, and arrow keys. Navigation scrolls the VIEWPORT by a bounding- rect delta (RTL- and transform-safe: never scrollLeft sign conventions) - not scrollIntoView, whose alignment bubbles to scrollable ancestors and whose \"nearest\" no-ops when several slides fit the viewport at once (the vertical stack). Deferred with the library-grade machinery: loop (it clones slides), autoplay, and a plugin API.",
+    "targets": [
+      "next",
+      "previous",
+      "viewport"
+    ],
+    "values": {
+      "orientation": {
+        "type": "String",
+        "default": "horizontal",
+        "doc": "horizontal scrolls and arrows left and right; vertical scrolls and arrows up and down."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "keydown",
+      "next",
+      "previous",
+      "scrollTo",
+      "scrolled"
+    ],
+    "events": [
+      "poetry:carousel:select"
+    ],
+    "method_docs": {
+      "connect": "Syncs button state to the initial scroll position.",
+      "disconnect": "Cancels any pending sync frame.",
+      "keydown": "The region root's keydown action: arrows page the carousel, orientation-aware.",
+      "next": "The next button's click action: pages one slide forward.",
+      "previous": "The previous button's click action: pages one slide back.",
+      "scrollTo": "The programmatic surface: scrolls to a slide by index (clamped).",
+      "scrolled": "The viewport's scroll action - button state follows the SCROLL (finger, wheel, keyboard PageDown), not just our own paging. rAF-coalesced: scroll fires in bursts."
+    }
+  },
+  "poetry--core--checkbox-group": {
+    "doc": "The select-all recipe (a parent checkbox running the APG mixed-state pattern) over the checked family. Wrap the parent and its rows, route the bubbling per-checkbox observe event at #changed, and mark the parent (target: all) plus each row (target: item):\n\n<div data-controller=\"poetry--core--checkbox-group\" data-action=\"poetry:checkbox:change->poetry--core--checkbox-group#changed\">\n\nA parent toggle fans its new state out to every enabled row; a row toggle re-derives the parent (all -> checked, none -> unchecked, some -> indeterminate, re-entered via the checked controller's set() - the only path back to mixed). Every state write goes THROUGH each box's checked controller (input first, real change event, aria-checked + the checked triple together) - this controller never touches attributes itself. Disabled rows are skipped by fan-out and excluded from the derivation (the DataTable disabledBehavior 'selection' doctrine; table_selection_controller is this same recipe for NATIVE checkboxes).",
+    "targets": [
+      "all",
+      "item"
+    ],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "changed"
+    ],
+    "events": [
+      "poetry:checkbox-group:change"
+    ],
+    "method_docs": {
+      "changed": "The wrapper's data-action route for every bubbling checkbox change: a parent toggle fans out, a row toggle re-derives the parent, and the group's own change event reports the enabled count/total. The applying flag mutes the echoes our own set() calls dispatch (a fan-out must not re-derive per row; a parent reflection must not fan out)."
+    }
+  },
+  "poetry--core--checked": {
+    "doc": "The toggle family's checked-state owner (Checkbox introduces it; Switch reuses it VERBATIM - zero fork, CI-asserted). The architecture is the STORE INVERSION: the hidden native <input type=checkbox> is the form participant AND the store - the visual button[role=checkbox|switch] only REFLECTS it (aria-checked incl. \"mixed\" + the data-checked/data-unchecked/ data-indeterminate attributes on the control and every part that carries them: the checkbox indicator, the switch thumb). Every transition writes the input FIRST, dispatches a REAL bubbling change event (no synthetic prototype-setter dance - the input LEADS and the visual follows), then reflects attributes.\n\nThe three states: checked / unchecked / indeterminate. Indeterminate is server/programmatic only (aria-checked=mixed, input.indeterminate - a JS-only property re-derived from the checked attributes on connect); the first user toggle resolves it to CHECKED - contractual, do not loosen. A Switch never renders it (the Ruby component raises), so that branch is simply dormant there.\n\nEnter is suppressed on role=checkbox ONLY (WAI-ARIA: checkboxes activate on Space alone); role=switch has no keydown handler, so Enter toggles via the native button click (a deliberate asymmetry, keyed off the role - no controller fork).\n\nNo inputId value -> pure visual mode: state lives on the button's checked attributes alone (controlled-UI cases like DataTable row selection). The component-flavored prefixes the dynamic dispatch below emits under (data-component on the host: checkbox / switch, with the bare fallback) - the events declaration, the portal bridge, and the manifest enumerate these REAL names; the identifier-default name never fires here.",
+    "targets": [],
+    "values": {
+      "inputId": {
+        "type": "String",
+        "default": "",
+        "doc": "The id of the hidden input that carries the checked state to the form, when the control has one."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "check",
+      "connect",
+      "disconnect",
+      "set",
+      "toggle",
+      "uncheck"
+    ],
+    "events": [
+      "poetry:checkbox:change",
+      "poetry:checked:change",
+      "poetry:switch:change"
+    ],
+    "method_docs": {
+      "check": "Programmatically checks (see set).",
+      "connect": "Reconcile-on-connect: derives input.checked/indeterminate from the checked attributes (the server truth), arms the form-reset restore, and installs the role-keyed Enter suppression.",
+      "disconnect": "Unwires the keydown and form-reset listeners.",
+      "set": "The programmatic controllable-state surface: set(true | false | \"indeterminate\") reaches all three states (the select-all recipe - checkbox_group_controller - re-enters indeterminate this way).",
+      "toggle": "Control activation (click / Space / label-for): indeterminate resolves to checked (contractual), else flip.",
+      "uncheck": "Programmatically unchecks (see set)."
+    }
+  },
+  "poetry--core--clipboard-text": {
+    "doc": "ClipboardText, adapted from an MIT-licensed source (source and license in THIRD_PARTY_NOTICES.md): a read-only value with one copy affordance. navigator.clipboard is the primary path; the execCommand fallback SAVES AND RESTORES the user's own selection and focus (copying a field must never eat a selection made elsewhere on the page). Success stamps data-copied on the root for a beat (CSS swaps the copy/check glyphs off it), announces through the live-region singleton, and dispatches the copied event.",
+    "targets": [
+      "input",
+      "source"
+    ],
+    "values": {
+      "text": {
+        "type": "String",
+        "doc": "Copy override: the full value when the display truncates. Empty means \"copy what the input/source shows\"."
+      },
+      "message": {
+        "type": "String",
+        "doc": "The announcement, localized server-side."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "copy",
+      "disconnect"
+    ],
+    "events": [
+      "poetry:clipboard-text:copied"
+    ],
+    "method_docs": {
+      "copy": "The copy action: writes the text (navigator.clipboard first, then the selection-preserving execCommand fallback), stamps data-copied for a beat, announces, and dispatches the copied event with the text in the detail. A failed write changes nothing.",
+      "disconnect": "Clears the copied-beat timer."
+    }
+  },
+  "poetry--core--combobox": {
+    "doc": "The Combobox ORCHESTRATOR: Select's shell x Command's engine, composed VIA THE EVENT CONTRACT ONLY - this thin controller owns open/close + the commit pipeline + autofill adoption and listens for the embedded engine's poetry:command:select; it contains NO filter/highlight/scoring code (Command owns those) and Command gained no combobox code (engine purity, fenced both directions by the conformance greps). Zero code is shared with SelectController - the PATTERNS are (the layer mechanism, the native-first 5-step pipeline, the adoption path), re-instantiated here because a facade extraction was explicitly declined (the Select contract's open question, answered by this build).\n\nTHE THREE DELIBERATE DELTAS vs Select, each pinned by tests so neither sibling's rules leak: - open focuses the COMMAND INPUT for every reason (a combobox session is a TYPING session - APG editable combobox); the selected option gets the HIGHLIGHT (activedescendant, via the Command controller) + scroll, not DOM focus; - Tab while open CLOSES WITHOUT COMMIT and lets focus proceed (Popover semantics, modal:false default; modal:true restores the trap) - Select is Tab-inert; - a printable key on the CLOSED trigger OPENS and SEEDS the filter (typing filters, never blind-commits) - Select's closed-trigger typeahead-commit does NOT port.\n\nTWO MEANINGS, TWO ATTRIBUTES, ONE LIST: data-highlighted + aria-activedescendant = position (Command's, never aria-selected); aria-selected + data-selected + the indicator = the COMMITTED value (Select's twin-write, written only here, in the pipeline).\n\nTHE SYNC INVARIANT (Select's, inherited): native_select.value, the value Value, the twin-write, and the display never diverge - every write path funnels through #apply, NATIVE FIRST (serialization truth is never behind the facade), with real bubbling change/input on the native so Turbo auto-submit and form listeners work unmodified.\n\nMULTIPLE (the input-inside layout): the value is a LIST (the value Value carries a JSON array over the same String seam), the native is a <select multiple> posting name[], and the trigger is replaced by the chips FIELD - one chip per committed value IN VALUE ORDER with the filter input inline after them (data-slot=combobox-chip-input, which the engine resolves too; the engine itself rides the ROOT). Selection TOGGLES and the popup STAYS OPEN; chips take REAL DOM focus (:focus-visible styles it - never data-highlighted) and focusing a chip closes the popup; Backspace on the empty input removes the last chip; Escape on the CLOSED popup clears the query and wipes the selection. The input NEVER mirrors selection text; single-mode paths are behavior-identical.",
+    "targets": [],
+    "values": {
+      "open": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether the popup is open."
+      },
+      "value": {
+        "type": "String",
+        "default": "",
+        "doc": "Single: the committed value. multiple: a JSON array over the same String seam (parsed by #listValues, serialized by #applyValues)."
+      },
+      "modal": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "DEFAULT FALSE - Popover semantics (Tab-out closes, no scrim); true restores the focus-scope trap for dialog-critical pickers."
+      },
+      "multiple": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "multiple: the value is a LIST, the trigger is the chips field, selection toggles, the popup stays open on select."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "chipKeydown",
+      "chipsPointerdown",
+      "clear",
+      "close",
+      "connect",
+      "disconnect",
+      "inputKeydown",
+      "nativeChanged",
+      "open",
+      "openValueChanged",
+      "removeChip",
+      "setValue",
+      "toggle",
+      "triggerKeydown",
+      "valueValueChanged"
+    ],
+    "events": [
+      "poetry:combobox:change",
+      "poetry:combobox:closed",
+      "poetry:combobox:open",
+      "poetry:combobox:select"
+    ],
+    "method_docs": {
+      "chipKeydown": "A focused chip's keyboard map: Left/Right walk the chips (off either end -> back to the input), Backspace/Delete remove (next highlight: same index, step back at the tail, the input once emptied), Enter/Space are no-ops returning to the input, ArrowDown/Up reopen the popup, and a printable char resumes the typing session.",
+      "chipsPointerdown": "The chips frame's pointerdown action (multiple): a press anywhere in the FRAME focuses the input and opens the popup (the whole frame IS the field) - except a chip-remove press, which is a removal, never a chips-area press.",
+      "clear": "The show_clear X's click action - the trigger-side deselection surface: commits the blank value through the pipeline, then hands focus to the trigger (the X hides itself once the value empties, and a focused hidden button would drop focus to body). Single mode only (the component raises on multiple; the guard here is belt and braces).",
+      "close": "Programmatically closes.",
+      "connect": "Wires the content (and chips-field) listeners, captures the placeholder, reconciles silently from the native select / the Value (multiple parses the JSON-array seam), and catches a server-open popup up (layers + the late portal).",
+      "disconnect": "Restores portaled content (drop-never-strand) and unwires everything.",
+      "inputKeydown": "The inline input's OWN keyboard map (multiple; the engine's map rides the same keydown): Backspace on an empty input removes the LAST chip (focus stays here), ArrowLeft at caret 0 walks into the chips, ArrowDown/Up reopen the popup, Enter with no highlight closes, and Escape on the CLOSED popup clears the query AND wipes the selection to [] (contractual; readOnly blocks every mutation).",
+      "nativeChanged": "The hidden native's change action: browser autofill (or any programmatic write) adopts - multiple compares MEMBERSHIP, not order (the body comment holds the reorder rule).",
+      "open": "Programmatically opens.",
+      "openValueChanged": "Stimulus value callback - controllable open state.",
+      "removeChip": "The chip-remove button's click action: removes the chip's value; focus returns to the input WITHOUT opening (not a chips-area press).",
+      "setValue": "The programmatic controllable-state surface (multiple accepts an array). Returns the resulting state - what an agent tool reports back - so an unknown value (not committed) reads as changed: false.",
+      "toggle": "The trigger's click action: open <-> close.",
+      "triggerKeydown": "The trigger's keydown action: Enter / Space / ArrowDown / ArrowUp open (reason: list-navigation). A PRINTABLE key opens AND seeds the filter input with the char (reason: keyboard + the char as data-open-seed, a poetry extension - the char is never lost, the filter pass runs immediately). There is deliberately NO closed-trigger typeahead-commit here.",
+      "valueValueChanged": "Stimulus value callback - controllable value (multiple parses the JSON-array seam; both modes no-op on the applied echo)."
+    }
+  },
+  "poetry--core--command": {
+    "doc": "The Command palette engine - the suite's first ACTIVEDESCENDANT component (the APG editable-combobox pattern, the deliberate delta vs the menus/Select family's roving focus): real DOM focus stays pinned to the input for the whole session; the highlighted option carries data-highlighted + its server-stable id in the input's aria-activedescendant (the twin-write, activedescendant-flavored). Options never get tabindex; roving-focus is NOT attached; aria-selected is NEVER written here (reserved for committed values - Combobox's twin-write; a bare palette has no committed value).\n\nTHE FILTER is the deterministic helpers/filter_rank spec (prefix 4 > word-boundary 3 > substring 2 > keyword 1 > hidden 0, diacritic-folded) and it is HIDE-ONLY: score-0 items get hidden + data-hidden, matches get both removed, and children are NEVER reordered - DOM order is the ranking authority within a band; the score's only job is seating the auto-highlight. filter:false is the server-driven mode: steps 1-2 (hiding) are skipped entirely and only highlight/activation/announcement run over whatever the server rendered - the Turbo-frame async seam Combobox's recipe plugs into.\n\nACTIVATION IS AN EVENT, NOT AN ACTION: Enter/click dispatches cancelable poetry:command:select and this controller does nothing further - no navigation, no close, no value write. The listener (host data-action, Combobox's commit pipeline) owns the consequences - the engine-purity Combobox's composition depends on (no popper/commit/native-select code lives here, fenced by the conformance greps).\n\nThe DOM is the store, filtering included: query in the input, visibility as hidden + data-hidden, highlight as data-highlighted + aria-activedescendant, group visibility derived - a Turbo Stream can append items mid-session and the next keystroke ranks them. Each part matches both families' vocabularies: Command's own names and the combobox's (two names for the same parts; the engine rides both).",
+    "targets": [],
+    "values": {
+      "filter": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "false = SERVER-DRIVEN mode: never hide - the host re-renders the list (Turbo frame) and Command only runs highlight/activation/announcement over what is rendered."
+      },
+      "loop": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Arrow-key wrap over visible enabled items."
+      },
+      "debounce": {
+        "type": "Number",
+        "default": 0,
+        "doc": "Filter-pass debounce in ms (0 = synchronous - client filtering is cheap string work; the status announcement is debounced separately)."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "activate",
+      "connect",
+      "disconnect",
+      "filterInput",
+      "highlightItem",
+      "keydown",
+      "pointerHighlight",
+      "reset"
+    ],
+    "events": [
+      "poetry:command:filter",
+      "poetry:command:highlight",
+      "poetry:command:select"
+    ],
+    "method_docs": {
+      "activate": "Each in-scope item's click action: dispatches the cancelable select event - and nothing further (the engine-purity contract).",
+      "connect": "Reconciles (a non-empty input re-derives visibility + highlight silently; an empty one just seats the highlight) and wires the portal delegation on the list node (the body comments hold the rules).",
+      "disconnect": "Clears the timers and unwires the list delegation.",
+      "filterInput": "The input's input action: runs the filter pass (debounced when configured).",
+      "highlightItem": "The composition surface (Combobox calls it): moves the highlight to a given option (visible + enabled required).",
+      "keydown": "The input's keydown action: ArrowUp/Down move the highlight (Meta/Ctrl jumps first/last), Enter activates it. Home/End/ArrowLeft/ArrowRight fall through to the input (CARET movement - APG-correct for an editable field; a Home/End list-jump is deliberately not offered). Space TYPES a space, never activates (a text field - the family delta vs Select/menus). Esc/Tab are NOT handled - the hosting layer owns them (Dialog dismiss / Combobox close / natural tab-out).",
+      "pointerHighlight": "Each in-scope item's pointermove action: hovering highlights (no scroll chasing); pointerleave does NOT clear - the keyboard position survives mouse exit (contractual).",
+      "reset": "Clears the query and silently re-derives visibility + highlight (the clean-reopen reset an overlay host runs on close)."
+    }
+  },
+  "poetry--core--context-menu": {
+    "doc": "The ContextMenu DELTA layer: trigger acquisition + pointer-point capture ONLY. Everything menu-shaped (open state machine, items, typeahead, submenus, dismissal, the layer stack) stays with poetry--core--menu on the same root; positioning stays with poetry--core--popper, driven here through its VIRTUAL-ANCHOR attribute (data-poetry--core--popper-anchor-point-value=\"x,y\" - the DOM is the store, so the write works whether or not popper has connected yet).\n\nInput paths (all contractual): - contextmenu (mouse right-click, or Shift+F10 / the ContextMenu key on a focused surface): preventDefault, capture the point, open. A keyboard-synthesized event carries no usable point (0,0) - the anchor attribute is CLEARED so popper falls back to the trigger surface rect (deliberately better than a 0,0 fallback). - long-press (touch/pen ONLY - mouse never long-presses): pointerdown starts a longPressDelay timer (700ms default, exposed as a Value); ANY pointermove/pointerup/pointercancel cancels (no slop radius - the platform's own touch slop absorbs jitter); a second pointerdown restarts (multi-touch guard); the contextmenu handler itself clears the timer (Android synthesizes contextmenu from long-press - clearing there prevents double-open). data-pressing on the surface is the styleable long-press feedback window (poetry addition). - disabled STANDS THE HANDLERS DOWN (no preventDefault): the browser-native context menu returns - never a dead right-click.",
+    "targets": [],
+    "values": {
+      "longPressDelay": {
+        "type": "Number",
+        "default": 700,
+        "doc": "How long a touch must be held, in milliseconds, before the menu opens."
+      },
+      "disabled": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "When true the native context menu is left alone: no capture, no popup."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "disabledValueChanged",
+      "disconnect",
+      "open",
+      "pressCancel",
+      "pressStart"
+    ],
+    "events": [
+      "poetry:context-menu:open"
+    ],
+    "method_docs": {
+      "disabledValueChanged": "Stimulus value callback: disabling mid-press clears the armed long-press.",
+      "disconnect": "Clears any armed long-press and stops the native-menu suppression.",
+      "open": "The trigger surface's contextmenu action. Re-invoking on an already-open menu re-captures the point and repositions (popper's anchorPoint value is reactive; autoUpdate re-reads the stored point).",
+      "pressCancel": "pointermove / pointerup / pointercancel - any of them cancels the armed press.",
+      "pressStart": "The surface's pointerdown action - touch/pen long-press. While open, a press on the surface closes first (press-again-to-dismiss), then the timer arms for a fresh open."
+    }
+  },
+  "poetry--core--date-field": {
+    "doc": "The segmented date/time editor. The component renders a real native <input type=date|time> that IS the form value (no JS = native pickers; its ISO value format is exactly the wire contract), plus an empty group. This controller builds per-segment role=spinbutton spans from Intl.DateTimeFormat.formatToParts - so the LOCALE decides segment order and literals - and syncs segments -> native input eagerly whenever the value is complete and valid, constraining on blur (February 31st is representable mid-edit; commit clamps).\n\nHour is stored in the locale's hour cycle with a separate dayPeriod segment; the cycle itself is INFERRED by formatting (two Intl bugs make resolvedOptions() untrustworthy - helpers/incomplete_date.js).\n\nLatin-digit typing only (the NumberField documented divergence); the DISPLAY uses Intl.NumberFormat, so locales that render non-latin digits still see their own numerals.",
+    "targets": [
+      "group",
+      "input"
+    ],
+    "values": {
+      "locale": {
+        "type": "String",
+        "default": "",
+        "doc": "The BCP 47 locale the segments format in; empty follows the document language."
+      },
+      "hourCycle": {
+        "type": "String",
+        "default": "",
+        "doc": "The clock convention, h12 or h23; empty follows the locale."
+      },
+      "seconds": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "optional pin: h11|h12|h23|h24"
+      },
+      "placeholder": {
+        "type": "String",
+        "default": "",
+        "doc": "The ISO value the segments open on before the field has one."
+      },
+      "labels": {
+        "type": "Object",
+        "default": {},
+        "doc": "ISO seed for arrow fills"
+      },
+      "placeholders": {
+        "type": "Object",
+        "default": {},
+        "doc": "segment-name fallbacks (i18n)"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "focusGap",
+      "settle"
+    ],
+    "events": [
+      "poetry:date-field:change"
+    ],
+    "method_docs": {
+      "connect": "Builds the locale-driven segment row from formatToParts, marks the field enhanced, retires the native input from the tab order (it stays the form value and the constraint-validation carrier), and routes native invalid to the first empty segment.",
+      "disconnect": "Restores the native input's tab order / AT visibility and unwires the document listeners.",
+      "focusGap": "The group's click action: clicking blank space lands on the earliest unfilled segment (the focusLast heuristic, simplified - segments themselves stop propagation by matching first).",
+      "settle": "The group's focusout action: leaving the whole group constrains (Feb 31 -> Feb 29) and commits."
+    }
+  },
+  "poetry--core--date-picker": {
+    "doc": "The DatePicker glue: the thin coordinator between a Popover and the Calendar it wraps. The Calendar owns selection + the form value (its name: hidden input); this controller only reacts to the calendar's change event to (a) write the human-formatted date into the trigger label and (b) close the popover so the pick feels complete. Everything hard is already done by poetry--core--calendar and poetry--core--popover.",
+    "targets": [
+      "input",
+      "label"
+    ],
+    "values": {
+      "placeholder": {
+        "type": "String",
+        "default": "Pick a date",
+        "doc": "The trigger text while no date is chosen."
+      },
+      "mode": {
+        "type": "String",
+        "default": "single",
+        "doc": "single picks one date; range picks a start and an end."
+      },
+      "locale": {
+        "type": "String",
+        "default": "en-US",
+        "doc": "The locale the chosen date is formatted in."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "inputChanged",
+      "inputKeydown",
+      "picked"
+    ],
+    "events": [],
+    "method_docs": {
+      "inputChanged": "The input's change action: a parseable date re-selects and re-months the calendar through its reactive values (the DOM is the store), and the calendar's own render refreshes the hidden ISO form value. Unparseable text changes nothing.",
+      "inputKeydown": "The input's keydown action: ArrowDown opens the calendar.",
+      "picked": "The calendar-change action on the wrapper: writes the formatted date into the trigger label (and input, when present) and closes the popover so the pick feels complete. Range mode: the label joins the pair, a start-only pick shows one date, and the popover closes only once the range COMPLETES - never mid-range."
+    }
+  },
+  "poetry--core--deferred": {
+    "doc": "Error isolation for deferred turbo-frames. Turbo owns the loading physics (loading=\"lazy\" fetches on visibility, \"eager\" after paint) but leaves failure INVISIBLE: a missing frame logs \"Content missing\" or - Turbo 8 - promotes the error response to a full-page visit, and a network error leaves the placeholder spinning forever. This controller makes failure a state: data-error reflected on the frame (a bespoke boolean, deliberately not the shared open/closed vocabulary), the placeholder hidden, and the slotted <template> error content stamped so the region shows a real, retryable message.\n\nTHE BOOT CONTRACT: the frame renders with NO src - the URL rides srcValue and connect() arms it. A visible lazy frame with src in markup can complete its fetch before the controllers module graph finishes loading (caught live: a local 404 beat Stimulus and Turbo 8 navigated the whole page to the error response); with src armed at connect, no fetch - and so no failure - can predate the instance.\n\nretry() prefers Turbo's FrameElement#reload(); environments without the Turbo runtime (jsdom, dommy) fall back to re-setting src, the same signal Turbo reacts to.",
+    "targets": [
+      "error",
+      "placeholder"
+    ],
+    "values": {
+      "src": {
+        "type": "String",
+        "doc": "The URL the frame loads; written onto the element when it carries none."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "retry"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Wires the three failure listeners, subscribes the before-cache reset, and arms src LAST (the boot contract above: no fetch can predate the instance).",
+      "disconnect": "Unwires the listeners and the before-cache subscription.",
+      "retry": "The retry action: back to the placeholder posture, then reload - Turbo's FrameElement#reload when the runtime is present, else the re-set-src fallback (the same signal Turbo reacts to)."
+    }
+  },
+  "poetry--core--dialog": {
+    "doc": "The native-dialog primitive: borrow the PLATFORM overlay - showModal() gives the focus trap, Esc handling, top-layer stacking, and focus return for free; this controller adds what the platform doesn't: the data-open/data-closed pair for CSS variants, backdrop-click dismissal, a body scroll-lock, and the presence-hold close - exit flips the pair to data-closed and HOLDS the dialog through its CSS exit animation before the native close() (synchronous when no exit animation applies, so reduced-motion and unthemed hosts close instantly). Consumed by Dialog (and AlertDialog / CommandDialog / Sheet).",
+    "targets": [
+      "dialog"
+    ],
+    "values": {
+      "dismissible": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "Set false for AlertDialog-style confirmations: backdrop clicks stop dismissing."
+      },
+      "hotkey": {
+        "type": "String",
+        "default": "",
+        "doc": "OPT-IN global shortcut (\"meta+k\") toggling the dialog - the command-palette ⌘K affordance, shipped here because every consumer would otherwise write the same ten lines. \"meta\" matches metaKey OR ctrlKey (⌘K on mac, ^K elsewhere - the command-palette convention)."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "backdropClose",
+      "close",
+      "connect",
+      "disconnect",
+      "lockScroll",
+      "open",
+      "toggle",
+      "unlockScroll"
+    ],
+    "events": [],
+    "method_docs": {
+      "backdropClose": "The click action discriminating backdrop presses: a backdrop click targets the <dialog> element itself AND lands outside its bounding rect (the backdrop is rendered by the dialog). The target check alone is not enough: clicks on the dialog's own padding / grid gaps also target the element (found in a live browser pass - they were incorrectly dismissing).",
+      "close": "Closes with the presence hold: flips the pair to data-closed and holds the dialog through its CSS exit animation before the native close() and the unlock (synchronous when no exit animation applies). The native cancel event (Esc) routes through here so state stays in sync.",
+      "connect": "Heals a restored zombie snapshot, subscribes the before-cache close, and arms the opt-in global hotkey.",
+      "disconnect": "Balances the scroll lock and unwires the hotkey and before-cache subscriptions.",
+      "lockScroll": "Takes the shared refcounted body scroll lock (scrollbar-width compensated) - subclasses (sheet/drawer/sidebar) inherit these entry points unchanged; the instance flag keeps double-unlocks (disconnect after close) balanced.",
+      "open": "Opens modally: showModal() (the platform trap, top-layer and focus return), the pair flip, and the body scroll lock. Returns the resulting state (what an agent tool reports back).",
+      "toggle": "The toggle action (and the hotkey's landing): open <-> close.",
+      "unlockScroll": "Balances {@link lockScroll}; safe when already unlocked."
+    }
+  },
+  "poetry--core--dismissable": {
+    "doc": "The dismissal layer: Escape + pointerdown-outside for every overlay. This controller NEVER removes DOM - it dispatches \"dismiss\" and the consumer closes itself (removes the node, collapses a disclosure, navigates a frame). The class-level stack makes Esc topmost-only, so stacked overlays peel one at a time.",
+    "targets": [],
+    "values": {
+      "disableOutsidePointerEvents": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether a scrim blocks pointer events outside the layer while it is open (a modal layer)."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [
+      "poetry--core--dismissable:dismiss",
+      "poetry--core--dismissable:interact-outside"
+    ],
+    "method_docs": {
+      "connect": "Registers on the layer stack, wires the capture-phase Escape and pointerdown listeners, subscribes the before-cache dismissal, and takes the body scrim when configured.",
+      "disconnect": "Leaves the stack and unwires everything, releasing the scrim when held."
+    }
+  },
+  "poetry--core--drawer": {
+    "doc": "The Drawer: the dialog machinery + the swipe-to-dismiss gesture. Everything hard about the OVERLAY is inherited (native <dialog> platform trap, backdrop-click discrimination, scroll lock, hotkey); this subclass adds the two things a drawer is:\n\n* ANIMATED presence - the first consumer of the presence helpers: enter rides the data-starting-style two-frame trick (a transition from --closed-transform), exit HOLDS the dialog through the data-ending-style transition before the native close() (the presence-hold close the sheet styling depends on). * The SWIPE - pointer-captured drag along the dismiss direction, writing the swipe CSS-var contract onto the <dialog> (::backdrop inherits from its originating element, so the overlay fade rides the same vars): --drawer-swipe-movement-x/y (px toward dismissal), --drawer-swipe-progress (0..1), data-swiping while tracking (duration-0 - the drawer follows the finger), and on release either a snap-back or a dismissal whose exit duration scales with --drawer-swipe-strength (mostly-swiped closes fast).\n\nDeferred with the rest of the stack machinery (see the Drawer style): snap points, nested-drawer stacking, and bleed.",
+    "targets": [
+      "dialog"
+    ],
+    "values": {
+      "dismissible": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "Set false for AlertDialog-style confirmations: backdrop clicks stop dismissing."
+      },
+      "hotkey": {
+        "type": "String",
+        "default": "",
+        "doc": "OPT-IN global shortcut (\"meta+k\") toggling the dialog - the command-palette ⌘K affordance, shipped here because every consumer would otherwise write the same ten lines. \"meta\" matches metaKey OR ctrlKey (⌘K on mac, ^K elsewhere - the command-palette convention)."
+      },
+      "direction": {
+        "type": "String",
+        "default": "down",
+        "doc": "The dismissal direction."
+      },
+      "modal": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "modal: false opens with show() instead of showModal() - no top layer, no ::backdrop, no focus trap, no scroll lock. The page behind stays fully interactive."
+      },
+      "snapPoints": {
+        "type": "Array",
+        "default": [],
+        "doc": "snapPoints: preset resting heights for a bottom sheet (direction down only), ascending: fractions of the full height (0..1] or CSS lengths (\"31rem\", \"400px\"). The popup runs full-height (the dictionary's data-snap-points sizing) and --drawer-snap-point-offset hides the rest; opens at the first point, drags move between points, below the first dismisses."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "backdropClose",
+      "close",
+      "connect",
+      "disconnect",
+      "escapeClose",
+      "lockScroll",
+      "open",
+      "swipeCancel",
+      "swipeEnd",
+      "swipeMove",
+      "swipeStart",
+      "toggle",
+      "unlockScroll"
+    ],
+    "events": [],
+    "method_docs": {
+      "backdropClose": "The inherited backdrop click, minus the ghost: a press that started inside the panel can end over the backdrop (a drag against the clamp, a slip off an inner control) and the click the browser then fires is a backdrop click by target and coordinates, never by intent.",
+      "close": "Closes through the animated exit (data-ending-style), then the native close(), the unlock, and the swipe-var reset. The native cancel event (Esc) routes through here so state stays in sync.",
+      "connect": "Heals a restored zombie snapshot, subscribes the before-cache close, and arms the opt-in global hotkey.",
+      "disconnect": "Balances the scroll lock and unwires the hotkey and before-cache subscriptions.",
+      "escapeClose": "The non-modal Escape exit (the component wires this keydown action only when modal is false): a non-modal dialog never fires cancel, so Esc needs its own path while focus is inside; modal drawers ride the native cancel.",
+      "lockScroll": "Takes the shared refcounted body scroll lock (scrollbar-width compensated) - subclasses (sheet/drawer/sidebar) inherit these entry points unchanged; the instance flag keeps double-unlocks (disconnect after close) balanced.",
+      "open": "Opens per the modal value: showModal() plus the scroll lock, or the non-modal show() (no top layer - the component pins the panel; the body comment). The first snap offset lands BEFORE the enter transition starts, then the animated entry runs.",
+      "swipeCancel": "The pointercancel action: abandons the drag and snaps home.",
+      "swipeEnd": "The pointerup action - release physics: dismiss past half the travel or on a flick (exit duration scaled by the remaining travel), else snap back; snap-pointed sheets settle between their points instead.",
+      "swipeMove": "The captured pointermove action: past the slop, tracks the drag - writing the swipe CSS vars (the finger-following, duration-0 window) and the release velocity.",
+      "swipeStart": "The <dialog>'s pointerdown action: arms the swipe - always from the handle; elsewhere only when the press is not on a control and no scrollable child still scrolls toward the gesture.",
+      "toggle": "The toggle action (and the hotkey's landing): open <-> close.",
+      "unlockScroll": "Balances {@link lockScroll}; safe when already unlocked."
+    }
+  },
+  "poetry--core--file-input": {
+    "doc": "The FileInput dropzone engine: the component renders a <label> wrapping a visually-hidden native <input type=file>, so click-to-browse and keyboard access are the PLATFORM's - this controller adds only what HTML cannot: drag-and-drop onto the label, the selected-file list, and the clear affordance. The native input stays the single source of truth (its FileList is the form value; ActiveStorage direct upload rides it untouched).\n\nDrag state uses an enter/leave COUNTER: dragenter/dragleave fire per descendant crossed, so a boolean flickers over child elements - the counter nets out to zero only when the pointer truly leaves the zone.",
+    "targets": [
+      "clear",
+      "input",
+      "list"
+    ],
+    "values": {
+      "multiple": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether more than one file may be chosen; otherwise a drop keeps the first."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "changed",
+      "clear",
+      "connect",
+      "dragenter",
+      "dragleave",
+      "dragover",
+      "drop"
+    ],
+    "events": [
+      "poetry:file-input:change"
+    ],
+    "method_docs": {
+      "changed": "The native input's change action (picker AND drop land here): reflects the selection and reports the file names.",
+      "clear": "The clear button's click action: empties the input and dispatches a real change.",
+      "connect": "Reflects the input's current FileList (list, clear, data-populated).",
+      "dragenter": "File drags flip the zone into its accepting state - depth-counted (the header explains the counter).",
+      "dragleave": "Nets the depth counter down; at zero the drag styling clears.",
+      "dragover": "The required preventDefault - without it the browser navigates to the dropped file.",
+      "drop": "Assigns the dropped files to the native input (single-file zones take the FIRST - the native picker's rule) and dispatches a real change so every listener sees a picker-identical selection."
+    }
+  },
+  "poetry--core--focus-scope": {
+    "doc": "The overlay focus scope: traps Tab/Shift+Tab within the subtree, loops at the edges, and - the part to get exact - snapshots document.activeElement on connect and RESTORES it on disconnect (focus return). Backs Dialog-family overlays, Popover, Menus, Select, Command.\n\nListeners are wired here, not as data-actions: pause/resume must attach and detach them dynamically as scopes stack, which data-action cannot do.",
+    "targets": [],
+    "values": {
+      "trapped": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "Whether Tab and Shift+Tab stay within the scope."
+      },
+      "loop": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "Whether Tab past the last element wraps to the first, and back."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [
+      "poetry--core--focus-scope:mount-auto-focus",
+      "poetry--core--focus-scope:unmount-auto-focus"
+    ],
+    "method_docs": {
+      "connect": "Snapshots the focus-return element BEFORE any focus moves, pauses the previous scope and takes the top of the stack, takes the guard refcount when trapped, then runs mount auto-focus (cancelable - a consumer owns initial focus by vetoing it).",
+      "disconnect": "Leaves the stack (resuming the scope below when this was the top), releases the guards, and restores focus to the snapshot (cancelable - a consumer sends focus elsewhere by vetoing it)."
+    }
+  },
+  "poetry--core--hotkey": {
+    "doc": "Declarative global shortcut: put the controller on any clickable element and declare the descriptor -\n\n<a href=\"/inbox\" data-controller=\"poetry--core--hotkey\" data-poetry--core--hotkey-keys-value=\"g+i\">\n\nOn match the controller dispatches a cancelable poetry--core--hotkey:pressed event, then clicks the host element (buttons, links, summary - anything click-activatable). Unmodified single-key descriptors stay inert while the user is typing in an input/textarea/select/contentEditable; combos carrying meta/ctrl/alt fire everywhere (the ⌘K convention).",
+    "targets": [],
+    "values": {
+      "keys": {
+        "type": "String",
+        "default": "",
+        "doc": "The shortcut that clicks the element, in the hotkey syntax (meta+k); empty disables it."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [
+      "poetry--core--hotkey:pressed"
+    ],
+    "method_docs": {
+      "connect": "Arms the window keydown listener when a descriptor is declared (an empty keys value stays inert).",
+      "disconnect": "Disarms the listener."
+    }
+  },
+  "poetry--core--hover-card": {
+    "doc": "The HoverCard controller (the popper-consumer trio's thinnest machine): pointer-only enrichment behind a LINK. Two timers (open 600 / close 300, over the trigger+content pair, re-enter cancels - the grace window, no polygon), the touch double-guard (pointerType 'touch' no-ops AND the pointerdown latch swallows the focus a tap or click causes, so a tap keeps its click and just navigates the link - cancelling touchstart would cancel that click with it), the focus mirror (trigger focus opens immediately / blur closes - a keyboard user SEES the card), the per-open TABINDEX STRIP (every tabbable inside is forced tabindex=-1: keyboard and touch users never reach inside, intentional and contractual - the reachable-elsewhere rule), and the SELECTION HOLD (text selection started in the card keeps it open and suppresses body user-select while dragging, so previews are copyable).\n\nNO focus-scope anywhere in the lifecycle: focus never moves in, so there is nothing to trap or restore - the trio's simplest teardown. The token-activated dismissable delivers Esc (topmost-only) + outside press while open. No aria surface is added (no haspopup/expanded/describedby): advertising a keyboard-unreachable surface to AT is worse than silence.",
+    "targets": [],
+    "values": {
+      "open": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether the card is open."
+      },
+      "openDelay": {
+        "type": "Number",
+        "default": 600,
+        "doc": "How long the pointer must rest on the trigger, in milliseconds, before the card opens."
+      },
+      "closeDelay": {
+        "type": "Number",
+        "default": 300,
+        "doc": "How long after the pointer leaves, in milliseconds, before the card closes."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "blurClose",
+      "connect",
+      "disconnect",
+      "focusOpen",
+      "openValueChanged",
+      "pointerDown",
+      "pointerEnter",
+      "pointerLeave"
+    ],
+    "events": [
+      "poetry:hover-card:closed",
+      "poetry:hover-card:open"
+    ],
+    "method_docs": {
+      "blurClose": "The trigger's blur action: closes immediately.",
+      "connect": "Wires the content listeners (portal-safe) and reconciles a server-pinned card (layer + tabindex strip catch up; the DOM wins).",
+      "disconnect": "Clears every timer, restores suppressed selection and portaled content (drop-never-strand), and unwires the listeners.",
+      "focusOpen": "The trigger's focus action: opens IMMEDIATELY, skipping the timers - a keyboard user sees the preview even though they cannot enter it. Focus a pointer caused (the latch) does not open.",
+      "openValueChanged": "Stimulus value callback - controllable state: pinned previews (Turbo Stream / Outlet ownership).",
+      "pointerDown": "The trigger's pointerdown action - the latch: the focus a tap or a click causes must not open the card (a pointer user never gets a focus-opened card; on touch it would be unreachable), so focusOpen stays shut until the press has landed (LATCH_RELEASE_EVENTS). The event is never cancelled: cancelling touchstart would cancel the tap's click, and the tap must still navigate the link.",
+      "pointerEnter": "The trigger's pointerenter action: arms the open timer; touch pointerType is EXCLUDED - a tap navigates the link instead.",
+      "pointerLeave": "The trigger's pointerleave action: cancels a pending open; leaving toward the content keeps the card, anywhere else arms the close grace."
+    }
+  },
+  "poetry--core--mask": {
+    "doc": "The input-mask machine (the engine is adapted from an MIT-licensed source - source and license in THIRD_PARTY_NOTICES.md) on a bare native <input> - this.element IS the input. Three layers:\n\n1. THE PRIMARY PATH is keydown with preventDefault: a printable char skips forward over literals from the caret and pattern-tests (a failing char is a NO-OP, it never reaches the field), a selection is replaced via a raw rebuild, and the caret lands past the next literal run. Backspace scans BACKWARD over literals (the caret lands at the deleted token), Delete scans FORWARD (the caret stays), Cmd/Ctrl+Backspace kills to start, arrows hop literal runs. Because preventDefault kills the native undo stack, a custom {raw, selectionStart} history (max 100, deduped) backs Cmd/Ctrl+Z / Shift+Cmd/Ctrl+Z / Ctrl+Y.\n\n2. THE FALLBACK is the input-event diff (IME, mobile keyboards, autofill, password managers - paths that never emit clean keydowns): the longest common prefix+suffix against the previous display isolates the inserted text and the removed span, the value is rebuilt from raw pieces, re-masked, and the caret lands after the insertion.\n\n3. THE DISPLAY: skeleton padding (\"__/__\") shows on focus (showMaskOnFocus, default) or permanently (alwaysShowMask); blur strips it back to the filled region - or clears the field entirely when autoClear is set and the mask is incomplete. A COLLAPSED caret is clamped into [first token, end of filled region] on focus (rAF), mousedown (rAF) and mouseup; selections are never touched.\n\nA deliberate divergence from the adapted source: every programmatic value write dispatches a native bubbling `input` event (#painting guards the controller against its own echo) so Rails/Turbo listeners stay live. The raw value mirrors to data-raw after every change; `pattern` is set on connect from generatePattern(\"full-inexact\") unless the input already carries one.",
+    "targets": [],
+    "values": {
+      "mask": {
+        "type": "String",
+        "doc": "The mask pattern the typed value is formatted against."
+      },
+      "slotChar": {
+        "type": "String",
+        "default": "_",
+        "doc": "The character shown in an unfilled slot of the mask."
+      },
+      "alwaysShowMask": {
+        "type": "Boolean",
+        "doc": "Whether the mask's slots stay visible while the input is empty and unfocused."
+      },
+      "showMaskOnFocus": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "Whether the mask's slots appear when the input gains focus."
+      },
+      "autoClear": {
+        "type": "Boolean",
+        "doc": "Whether an incomplete value is cleared when the input loses focus."
+      },
+      "upcase": {
+        "type": "Boolean",
+        "doc": "Whether typed letters are upcased as they fill the mask."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [
+      "poetry:mask:change",
+      "poetry:mask:complete"
+    ],
+    "method_docs": {
+      "connect": "Parses the mask, stamps the pattern attribute (unless the input carries one), wires the listener set, and processes a server-rendered value silently.",
+      "disconnect": "Unwires the listener set."
+    }
+  },
+  "poetry--core--menu": {
+    "doc": "The menus-family controller (the DropdownMenu contract's ANCHOR - ONE menu engine behind DropdownMenu / ContextMenu / Menubar). This owns ONLY what is menu-specific: open/close with the data-open-reason initial-focus contract, item activation (the cancelable poetry:menu:select), checkbox/radio state (poetry:menu:change), the APG typeahead buffer, submenu open/close with hover intent + sibling exclusivity, and the cancelable poetry:menu:edge-navigate seam a Menubar coordinator consumes. Everything else is composed BY REFERENCE: focus-scope (trap + focus return to the trigger), dismissable (topmost-only Esc + outside press, arriving here as its \"dismiss\" event), roving-focus (arrows/Home/End per menu level), popper (positioning - markup-owned, untouched here), presence (data-open/data-closed flip -> animationend -> hidden).\n\nSTRUCTURAL RESOLUTION, no targets: the content is found via the trigger's aria-controls id (portal-safe - a Stimulus target cannot cross a portal move), items via the collection helper over the family's data-slot suffix selectors ([data-slot$=menu-item] etc., so dropdown-menu-*, context-menu-* and menubar-* anatomies all resolve), subs via their own aria-controls pairs. Content-level listeners are wired programmatically in connect for the same portal-safety reason.\n\nThe layer stack is ACTIVATED on open: the focus-scope / dismissable / roving-focus identifiers are appended to the content's data-controller (a statically-connected trap or dismiss layer on a hidden menu would steal focus at page load and swallow topmost-Esc). Close reverses: presence exit -> hidden -> tokens removed -> focus-scope's disconnect restores focus to the trigger. Each open sub level adds its own dismissable layer (the close-one-level-at-a-time Esc chain for free) + its own roving group; subs join the ROOT focus scope (no nested traps, contractual). Both family spellings resolve: dropdown-menu-* / context-menu-* share the \"menu-\" suffix; menubar-* is its own word (menubar-item does NOT end with \"menu-item\"), so every part selector carries the pair.",
+    "targets": [],
+    "values": {
+      "open": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether the menu is open."
+      },
+      "modal": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "Whether the open menu traps focus and blocks outside pointer events."
+      },
+      "loop": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether arrow keys wrap from the last item to the first, and back."
+      },
+      "typeaheadTimeout": {
+        "type": "Number",
+        "default": 1000,
+        "doc": "How long, in milliseconds, typed characters accumulate into one typeahead search."
+      },
+      "closeOnSelect": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "Whether choosing an item closes the menu."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "activate",
+      "close",
+      "closeSub",
+      "connect",
+      "disconnect",
+      "keydown",
+      "open",
+      "openSub",
+      "openValueChanged",
+      "subEnter",
+      "subLeave",
+      "toggle",
+      "triggerKeydown"
+    ],
+    "events": [
+      "poetry:menu:change",
+      "poetry:menu:closed",
+      "poetry:menu:edge-navigate",
+      "poetry:menu:open",
+      "poetry:menu:select"
+    ],
+    "method_docs": {
+      "activate": "Item activation - click/Enter/Space unified. Kept as a public action for markup-declared data-action; the delegated content listener claims the event first, so both paths never double-activate.",
+      "close": "Programmatically closes.",
+      "closeSub": "Closes a sub-trigger's whole subtree (markup-declared affordances).",
+      "connect": "Wires the content listeners (portal-safe) and reconciles: server-open content adopts the layer stack and re-portals one frame late.",
+      "disconnect": "Restores portaled subs then the content (drop-never-strand), unwires everything, and clears the sub hover-intent timers.",
+      "keydown": "The content's keydown route (also wired programmatically): Tab closes and lets focus move on, Enter/Space activate (Space defers to a live typeahead; native link/submit items act through the element itself), the direction-aware horizontal pair opens/closes submenus or fires the Menubar edge seam, and printable keys run typeahead per level.",
+      "open": "Programmatically opens (the family surface Menubar's coordinator calls).",
+      "openSub": "The sub-trigger's click action: opens its sub level (the delegated click claims first).",
+      "openValueChanged": "Stimulus value callback - controllable state: a host (outlet / Turbo Stream / URL param) may own the open value; flipping the attribute drives the same machine.",
+      "subEnter": "Each sub-trigger's pointerenter action: hover intent toward opening its sub level.",
+      "subLeave": "Each sub-trigger's pointerleave action: hover intent toward closing (entering the sub pair within the grace cancels it).",
+      "toggle": "The trigger's click action: open <-> close.",
+      "triggerKeydown": "The trigger's keydown action: Enter / Space / ArrowDown open + focus the FIRST enabled item; ArrowUp opens + focuses the LAST (the APG menu-button map). preventDefault also suppresses the button's synthetic click, so toggle cannot double-fire."
+    }
+  },
+  "poetry--core--menubar": {
+    "doc": "The Menubar cross-menu COORDINATOR - kept deliberately anorexic: ONE piece of state (`value`, which menu is open) plus the three behaviors no other layer can own. The ownership split: - roving-focus (horizontal, manageTabindex TRUE) owns which trigger is tabbable/focused on the bar - it knows nothing about menus. - poetry--core--menu (one instance per menu, modal: false) owns everything inside an open menu - it knows nothing about siblings. - this controller owns: 1. TOGGLE - pointerdown opens (closing any sibling) / closes the open menu. Keyboard open (ArrowDown/Enter/Space -> first item; ArrowUp -> last item) rides the family's open-reason contract; pointer-open leaves focus on the trigger (pointer users keep their context). 2. HOVER-SLIDE - pointerenter on a sibling trigger is a no-op from cold; once ANY menu is open it swaps to the hovered menu (the gated-hover rule) and focus moves to the new trigger. 3. EDGE-NAVIGATE - the family menu controller fires a cancelable poetry:menu:edge-navigate when ArrowLeft/Right has no submenu meaning; this coordinator consumes it (loop-aware, RTL-aware, disabled-skipping) and opens the adjacent menu with its FIRST item focused (both directions - APG menubar). Standalone DropdownMenu leaves the event unconsumed. Dismiss (Esc/outside) and select arrive as the family's poetry:menu:closed - the coordinator nulls value; focus return to the trigger is the family focus-scope's job (its connect snapshot IS the trigger, because every open path here puts focus there first).\n\nA press on a sibling trigger must be TOGGLE's, not the open menu's dismissable layer's: the coordinator vetoes interact-outside for presses landing on this bar's triggers (otherwise dismiss-then-toggle would close-and-reopen in the same pointerdown).",
+    "targets": [],
+    "values": {
+      "value": {
+        "type": "String",
+        "default": "",
+        "doc": "The value of the open menu; empty when every menu is closed."
+      },
+      "loop": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether arrow keys wrap from the last trigger to the first, and back."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "hoverSlide",
+      "onMenuClosed",
+      "slideAdjacent",
+      "toggle",
+      "triggerKeydown",
+      "valueValueChanged"
+    ],
+    "events": [
+      "poetry:menubar:value-changed"
+    ],
+    "method_docs": {
+      "connect": "Wires the sibling-trigger interact-outside veto and reconciles one microtask behind (the per-menu controllers connect after the bar).",
+      "disconnect": "Unwires the veto listener.",
+      "hoverSlide": "Each trigger's pointerenter action - the gated hover: a no-op from cold; once ANY menu is open it swaps to the hovered menu.",
+      "onMenuClosed": "The family's closed event, from any of the bar's menus: nulls the value unless the close is one half of an in-flight swap.",
+      "slideAdjacent": "The edge-navigate action (cancelable, bubbling from the open menu's ROOT content). detail.direction is the PHYSICAL arrow; RTL maps it here. ALWAYS consumed once the menu belongs to this bar - an unconsumed edge would fall through to the bar's roving-focus and move trigger focus while the menu stays open (bar arrows are inert while open, by rule). At a no-loop boundary that means: consumed, no move.",
+      "toggle": "Each trigger's pointerdown action: opens (closing any sibling) or closes the open menu - left button only, ctrl-click passes (the macOS context menu); pointer-open leaves focus on the trigger.",
+      "triggerKeydown": "Each trigger's keydown action: Enter/Space/ArrowDown open with the FIRST item focused, ArrowUp with the last (the family's open-reason contract).",
+      "valueValueChanged": "Stimulus value callback - controllable state: a host (outlet / Turbo Stream / URL param) may own the value; flipping the attribute drives the same machine."
+    }
+  },
+  "poetry--core--message-scroller": {
+    "doc": "The message scroller: a transcript viewport that follows the bottom while the reader is there, releases the follow the moment they scroll up, keeps the reader's place across new messages (the scroll anchor), opens at the position the component asked for (the end, the last anchor, or the top) without a visible jump, and offers a jump-to-latest button while the follow is released. The geometry lives in the scroller_geometry helper; this controller owns the state and the timing.",
+    "targets": [
+      "button",
+      "content",
+      "spacer",
+      "viewport"
+    ],
+    "values": {
+      "autoScroll": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Source-faithful default (the contract): the poetry ViewComponent wrapper opts INTO following by rendering the value true."
+      },
+      "defaultScrollPosition": {
+        "type": "String",
+        "default": "end",
+        "doc": "Where the transcript opens: end, last-anchor, or top."
+      },
+      "preserveScrollOnPrepend": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "start | end | last-anchor"
+      },
+      "trackVisibility": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether the controller observes which messages are visible and reports them."
+      },
+      "scrollEdgeThreshold": {
+        "type": "Number",
+        "default": 8,
+        "doc": "How close to the bottom, in pixels, still counts as at the bottom."
+      },
+      "scrollPreviousItemPeek": {
+        "type": "Number",
+        "default": 64,
+        "doc": "How much of the previous message, in pixels, stays visible above a scrolled-to message."
+      },
+      "scrollMargin": {
+        "type": "Number",
+        "default": 0,
+        "doc": "The space, in pixels, kept between the viewport's top edge and a scrolled-to message."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "autoScrollValueChanged",
+      "connect",
+      "defaultScrollPositionValueChanged",
+      "disconnect",
+      "jump",
+      "keydownIntent",
+      "scrollToEnd",
+      "scrollToMessage",
+      "scrollToStart",
+      "syncAfterScroll",
+      "userScrollIntent"
+    ],
+    "events": [
+      "poetry:message-scroller:mode",
+      "poetry:message-scroller:pinned",
+      "poetry:message-scroller:scrollable",
+      "poetry:message-scroller:unpinned",
+      "poetry:message-scroller:visibility"
+    ],
+    "method_docs": {
+      "autoScrollValueChanged": "Stimulus value callback: re-pin if we were following.",
+      "connect": "Builds the ref bag, wires the viewport listeners and the three observers, runs the mount pass (rows counted, defaultScrollPosition applied once), and arms visibility tracking when opted in.",
+      "defaultScrollPositionValueChanged": "Stimulus value callback: a defaultScrollPosition change re-arms the one-shot apply.",
+      "disconnect": "Cancels every frame/timer, disconnects the observers, and unwires the viewport listeners (the body comment holds the stale-id rule).",
+      "jump": "The jump button's click action. No-op while inactive; blurs so focus is not stranded on a control about to inert itself.",
+      "keydownIntent": "The viewport's keydown handler: scroll keys count as deliberate intent.",
+      "scrollToEnd": "Scrolls to the end - callable as a Stimulus action (options via params) or directly with an options object (outlet callers).",
+      "scrollToMessage": "scrollToMessage(\"id\", options) programmatically, or as an action with data-...-message-id-param (align/behavior/scrollMargin params pass through).",
+      "scrollToStart": "Scrolls to the start (scrollToEnd's calling conventions).",
+      "syncAfterScroll": "The viewport's scroll handler: commits scrollable state, schedules a visibility sync, and re-captures the prepend anchor.",
+      "userScrollIntent": "The wheel/touchmove handler: a deliberate gesture releases auto-follow, turn-anchoring, AND an in-flight programmatic jump so re-pinning never fights the reader."
+    }
+  },
+  "poetry--core--navigation-menu": {
+    "doc": "The NavigationMenu coordinator (the viewport=false mode): a DISCLOSURE BAR, not a menu - Tab moves through triggers and links normally, arrows are convenience navigation, nothing traps. Each item's panel is its own popup positioned under the item; this controller owns what per-item popovers can't: ONE panel open at a time, hover intent (open/close delays so diagonal travel into a panel doesn't flicker), Esc + focus-out + outside-press closing, and the vocabulary writes (data-popup-open on the trigger - the chevron's rotation hook - and the presence-driven open/closed pair on the panel).\n\nTHE VIEWPORT MODE: when the markup ships the shared positioner > popup > viewport shell (viewport: true), panels are lazily ADOPTED into the viewport on first activation (the Rails stand-in for a portal - server-rendered content stays in place until JS activates) and the composite MORPHS: the popper re-anchors to the active trigger (full floating-ui) while CSS transitions the positioner's insets, the popup's --popup-width/height pin old -> new across two frames so width/height transition, panels slide by data-activation-direction (new trigger vs old - travel direction drives the slide), and data-instant suppresses transitions on cold opens. Vars reset to auto after the animations finish (the auto-size reset via getAnimations().finished).",
+    "targets": [],
+    "values": {
+      "openDelay": {
+        "type": "Number",
+        "default": 50,
+        "doc": "How long the pointer must rest on a trigger, in milliseconds, before its panel opens."
+      },
+      "closeDelay": {
+        "type": "Number",
+        "default": 150,
+        "doc": "How long after the pointer leaves, in milliseconds, before the panel closes."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "cancelClose",
+      "connect",
+      "disconnect",
+      "focusLeft",
+      "keydown",
+      "scheduleClose",
+      "scheduleOpen",
+      "toggle"
+    ],
+    "events": [],
+    "method_docs": {
+      "cancelClose": "The shared positioner's pointerenter action - in viewport mode the panel no longer lives inside its item, so entering the popup must cancel a pending close.",
+      "connect": "Subscribes the before-cache close (the body comment holds the zombie rules).",
+      "disconnect": "Clears the timer and unwires the outside-press and before-cache listeners.",
+      "focusLeft": "The root's focusout action - a disclosure closes when focus leaves it entirely (never traps).",
+      "keydown": "The root's keydown action: Escape closes and refocuses the trigger; ArrowLeft/Right move between the bar's stops (triggers and top-level links).",
+      "scheduleClose": "Each ITEM's pointerleave action: arms the close grace.",
+      "scheduleOpen": "Each ITEM's pointerenter action (the panel lives inside its item, so moving into the panel never schedules a close): arms hover intent - instant switch while the bar is already open, the open delay on cold entry. Touch is click's job.",
+      "toggle": "Each trigger's click action - immediate, cancels hover intent."
+    }
+  },
+  "poetry--core--number-field": {
+    "doc": "NumberField: a formatted visible <input type=text> over a hidden <input type=number> that is the form/validation truth - the spinbutton ARIA pattern is deliberately not used. The controller owns stepping (arrows, steppers with press-and-hold, opt-in wheel), parse/clamp/format, and the two-input sync. Number | null value model: empty is null, never NaN.\n\nDeliberate v1 boundaries (documented in the component): no scrub area, Latin-digit parsing only (locale separators and currency/percent symbols ARE handled via Intl.formatToParts), and the server renders the raw number - the display formats on connect.",
+    "targets": [
+      "decrement",
+      "hidden",
+      "increment",
+      "input"
+    ],
+    "values": {
+      "min": {
+        "type": "Number",
+        "doc": "The lowest value accepted; typing or stepping below it clamps."
+      },
+      "max": {
+        "type": "Number",
+        "doc": "The highest value accepted; typing or stepping above it clamps."
+      },
+      "step": {
+        "type": "Number",
+        "default": 1,
+        "doc": "The amount an arrow key or a stepper changes the value by."
+      },
+      "largeStep": {
+        "type": "Number",
+        "default": 10,
+        "doc": "The step with Shift held."
+      },
+      "smallStep": {
+        "type": "Number",
+        "default": 0.1,
+        "doc": "The step with Alt held."
+      },
+      "snap": {
+        "type": "Boolean",
+        "doc": "Whether a typed value snaps to the nearest step."
+      },
+      "wheel": {
+        "type": "Boolean",
+        "doc": "Whether the mouse wheel changes the value while the input is focused."
+      },
+      "format": {
+        "type": "Object",
+        "doc": "Intl.NumberFormat options the visible value is formatted with (a style, a currency, the digits)."
+      },
+      "locale": {
+        "type": "String",
+        "doc": "The locale the visible value is formatted in; empty follows the browser."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "blur",
+      "connect",
+      "disconnect",
+      "hiddenChanged",
+      "input",
+      "keydown",
+      "leave",
+      "press",
+      "tap"
+    ],
+    "events": [
+      "poetry:number-field:change",
+      "poetry:number-field:commit"
+    ],
+    "method_docs": {
+      "blur": "The blur action - the text commit point: empty clears, unparseable text is left as typed with no commit, parseable text clamps and normalizes to the canonical formatted display (never snapped to step - blur is not a correction gesture).",
+      "connect": "Adopts the hidden value, paints the formatted display, reflects the boundaries, and wires the opt-in wheel plus the window-level release listeners.",
+      "disconnect": "Unwires the wheel/release listeners and stops any repeat.",
+      "hiddenChanged": "The hidden input's change action: browser autofill lands there - adopt, clamp, commit.",
+      "input": "The input action: text updates freely; the value goes live only while parseable. The display is NEVER rewritten mid-typing (dirty-text authority).",
+      "keydown": "The visible input's keydown action: ArrowUp/Down step (Shift = large step, Alt = small), Home/End jump to the bounds, and printable keys pass the character gate.",
+      "leave": "The stepper's pointerleave action: stops the repeat.",
+      "press": "Each stepper's pointerdown action: steps once, then repeats after the hold delay (mouse focuses the input; touch would pop the software keyboard).",
+      "tap": "The stepper's click action: quick touch taps synthesize click without a held pointer - step once, but never double-step after a handled pointerdown."
+    }
+  },
+  "poetry--core--optimistic-form": {
+    "doc": "Optimistic UI for Turbo forms, adapted from an MIT-licensed source (source and license in THIRD_PARTY_NOTICES.md). The optimistic update is AUTHORED AS A TURBO STREAM inside a <template> target - the same vocabulary the server answers in, so prediction and truth share one mental model and there is no bespoke DOM patching. On turbo:submit-start the template contents are cloned into the document and Turbo paints the predicted state immediately; on turbo:submit-end the controller reconciles ONLY when the submission failed, by appending <turbo-stream action=\"refresh\"> - which must morph (the helper documents the turbo-refresh-method=morph meta) so the correction is seamless.\n\nTHE SERVER CONTRACT (enforced nowhere, so stated everywhere): success answers 204 (or a targeted stream for authoritative correction under contention) - NEVER a redirect, because a redirect under morph refreshes is itself a full reload and defeats the optimism. Failure answers 4xx so event.detail.success is false and the refresh restores authoritative truth. Full story: the Optimistic Forms guide on the poetry docs site.",
+    "targets": [
+      "template"
+    ],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "apply",
+      "reconcile"
+    ],
+    "events": [],
+    "method_docs": {
+      "apply": "Applies every template's stream(s) - the turbo:submit-start action. Rapid resubmits inside the window cannot stack duplicate clones; the first paint is still immediate.",
+      "reconcile": "The turbo:submit-end action: appends the authoritative refresh stream ONLY when the submission failed (the body comment holds the rule)."
+    }
+  },
+  "poetry--core--otp": {
+    "doc": "The InputOTP projection (the single-input architecture, poetry's own build - no npm dependency): ONE real native <input> holds the whole value, stretched invisibly over the slot row, so paste, SMS autofill, IME, constraint validation and form serialization are all native and AT sees ONE text field. The n slot cells are an aria-hidden MIRROR painted here - this controller contains ZERO editing logic:\n\n- #sync filters input.value per-character through the pattern + truncates to length (writing back only when filtering changed it - that one line IS paste splitting: \"123-456\" under digits becomes \"123456\"), paints slot[i] with value[i], and projects the caret: the active cell is min(selectionStart, length - 1) while focused (data-active), with the fake blinking caret element visible only on the active EMPTY cell. - Auto-advance and backspace-retreat are not features: typing moves the native caret forward, Backspace moves it back - the active cell is a PROJECTION of selectionStart. Arrows/Home/End/IME: native, re-projected via the document-level selectionchange listener (bound on focus, unbound on blur - n OTP fields must not all re-project on every caret move anywhere). - poetry:otp:change fires per accepted mutation; poetry:otp:complete fires once when the value reaches length and re-arms below it (the enable-the-submit-button hook - it never submits).",
+    "targets": [
+      "input",
+      "slot"
+    ],
+    "values": {
+      "length": {
+        "type": "Number",
+        "default": 6,
+        "doc": "The number of characters the code has."
+      },
+      "pattern": {
+        "type": "String",
+        "default": "\\d",
+        "doc": "The regular expression one character must match; digits by default."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "focusInput",
+      "paste",
+      "sync"
+    ],
+    "events": [
+      "poetry:otp:change",
+      "poetry:otp:complete"
+    ],
+    "method_docs": {
+      "connect": "Compiles the pattern, adopts the input's value, and paints the initial projection (no events dispatched).",
+      "disconnect": "Unbinds the document-level selectionchange listener.",
+      "focusInput": "The container's click action (gaps, separators - the input already covers the cells at z-20): focuses the real control.",
+      "paste": "The paste action. Paste is the one native path maxlength breaks: the browser truncates the RAW clipboard text to maxlength before any input event, so \"123-456\" loses its tail before the sync pass could filter the dashes (real Chrome; jsdom doesn't enforce maxlength, which is why the unit tier never saw it). Intercept, filter FIRST, splice at the selection.",
+      "sync": "The native input's input / focus / blur action (one handler - the projection is idempotent; blur clears the active cell; focus binds the selectionchange re-projection)."
+    }
+  },
+  "poetry--core--popover": {
+    "doc": "The Popover controller (the popper-consumer trio's click-open member): the menu controller's #show/#hide + token-activated layer skeleton with ALL item machinery deleted - no typeahead, no roving, no subs, no collection. What remains is exactly the APG dialog-pattern-lite: the trigger toggles a role=dialog panel, focus MOVES INTO the content on open (focus-scope's mount default - deliberately NOT vetoed, the contrast with the menu family's data-open-reason contract) and RETURNS to the trigger on close; the trap is enforced only when modal (the default is modal: FALSE - the deliberate contrast with the menu family's true).\n\nSTRUCTURAL RESOLUTION, no targets: the content is found via the trigger's aria-controls id (portal-safe - the menu-controller pattern verbatim); content-level listeners are wired programmatically in connect for the same reason.\n\nThe layer stack is ACTIVATED on open: focus-scope + dismissable are appended to the content's data-controller (a statically-connected trap on hidden content would steal focus at page load; a static dismissable would swallow topmost-Esc), with trapped / disable-outside-pointer-events both set from modal. Close reverses: presence exit -> hidden -> tokens removed -> focus-scope's disconnect restores focus to the trigger (suppressed for outside-press when non-modal: focus follows the click).",
+    "targets": [],
+    "values": {
+      "open": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether the popover is open."
+      },
+      "modal": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether the open popover traps focus and blocks outside pointer events."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "close",
+      "connect",
+      "disconnect",
+      "open",
+      "openValueChanged",
+      "toggle"
+    ],
+    "events": [
+      "poetry:popover:closed",
+      "poetry:popover:open"
+    ],
+    "method_docs": {
+      "close": "Programmatically closes.",
+      "connect": "Wires the content listeners (programmatic - portal-safe) and reconciles: server-open content adopts the layer stack and re-portals one frame late (the body comments hold the rules).",
+      "disconnect": "Restores portaled content (drop-never-strand) and unwires the content listeners.",
+      "open": "Programmatically opens.",
+      "openValueChanged": "Stimulus value callback - controllable state: a host (outlet / Turbo Stream / URL param) may own the open value; flipping the attribute drives the same machine.",
+      "toggle": "The trigger's click action (native button Enter/Space arrive as click - no custom keydown map, the deliberate contrast with the menu trigger)."
+    }
+  },
+  "poetry--core--popper": {
+    "doc": "The anchored-positioning primitive: one controller over the VENDORED @floating-ui/dom. A fixed middleware pipeline - offset -> shift -> flip (both gated on avoidCollisions) -> size -> arrow (when an arrow target exists) -> hide - and a fixed output contract: data-side / data-align mirror the RESOLVED placement (after flip), and the content gets the sizing CSS vars (--transform-origin / -available-width / -available-height / -anchor-width / -anchor-height) so ported Tailwind classes like data-[side=top]:slide-in-from-bottom-2 and max-h-[var(--available-height)] work unchanged.\n\nThe Arrow stays a markup primitive: any [data-slot=popper-arrow] marked as the arrow target is positioned + given data-side here; the SVG itself is poetry-ui's business.\n\nVIRTUAL-ANCHOR mode (the ContextMenu contract): a non-empty anchorPoint value - canonically the data-poetry--core--popper-anchor-point=\"x,y\" attribute on the controller root (the DOM is the store) - floats against a floating-ui VirtualElement: a zero-size rect at (x,y) client coords. The resolved ELEMENT anchor rides along as contextElement so autoUpdate still tracks ancestor scroll/resize. setAnchor(x, y) is the ergonomics wrapper ContextMenu calls from its contextmenu / long-press handlers; clearing the value returns to plain element anchoring.\n\nConsumers: Popover, Dropdown/Context Menu, Tooltip, HoverCard, Select, Combobox, Menubar.",
+    "targets": [
+      "anchor",
+      "arrow",
+      "content"
+    ],
+    "values": {
+      "anchor": {
+        "type": "String",
+        "default": "",
+        "doc": "Anchor fallback chain: anchor target -> this selector -> the element's previousElementSibling (the natural trigger-then-content markup shape)."
+      },
+      "anchorPoint": {
+        "type": "String",
+        "default": "",
+        "doc": "\"x,y\" client coords -> virtual-anchor mode (see the header). Empty = element anchoring. Reactive: changing it re-arms autoUpdate."
+      },
+      "side": {
+        "type": "String",
+        "default": "bottom",
+        "doc": "The side of the anchor the content opens on: top, right, bottom or left."
+      },
+      "align": {
+        "type": "String",
+        "default": "center",
+        "doc": "top | right | bottom | left"
+      },
+      "sideOffset": {
+        "type": "Number",
+        "default": 0,
+        "doc": "start | center | end"
+      },
+      "alignOffset": {
+        "type": "Number",
+        "default": 0,
+        "doc": "The offset, in pixels, along the alignment axis."
+      },
+      "avoidCollisions": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "Whether the placement flips and shifts to stay inside the viewport."
+      },
+      "strategy": {
+        "type": "String",
+        "default": "fixed",
+        "doc": "The CSS positioning strategy, fixed or absolute."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "anchorPointValueChanged",
+      "connect",
+      "disconnect",
+      "reposition",
+      "setAnchor",
+      "setAnchorElement",
+      "strategyValueChanged"
+    ],
+    "events": [],
+    "method_docs": {
+      "anchorPointValueChanged": "Stimulus value callback - reactive re-anchor: switching between element and virtual anchoring (or moving the point) re-arms autoUpdate against the new reference. Fires during initialization too, before connect - the connected guard skips that first call.",
+      "connect": "Arms autoUpdate (which fires one immediate position pass).",
+      "disconnect": "Disarms, stranding any in-flight update (the generation bump).",
+      "reposition": "Manual re-run for consumers whose geometry changed outside autoUpdate's sensors (e.g. content swapped by a Turbo Stream).",
+      "setAnchor": "The ContextMenu entry point: stores the pointer coords (the ATTRIBUTE is canonical - inspectable, server-settable) and repositions immediately; the value-changed callback then re-arms autoUpdate's tracking.",
+      "setAnchorElement": "The NavigationMenu viewport entry point: floats against a caller-supplied element (the active trigger) instead of a target/selector. Re-arms autoUpdate so the new reference's ancestors are tracked, then repositions - the positioner's inset transition turns that write into the position morph.",
+      "strategyValueChanged": "Stimulus value callback - reactive strategy (the portal seam): a consumer flips fixed <-> absolute when it portals/restores content; re-arming repositions in the new coordinate space immediately."
+    }
+  },
+  "poetry--core--pressed": {
+    "doc": "The Toggle micro-machine (the smallest controller in the suite): flip aria-pressed and mirror the bare data-pressed presence boolean - WRITTEN TOGETHER, never separately. The DOM is the store: no Values, no internal state. This is deliberately NOT poetry--core--checked (different ARIA vocabulary, no input to sync) and not poetry--core--state (that owns aria-expanded disclosure) - three micro-controllers, three vocabularies.\n\nNo keydown code: Space AND Enter both activate a native button (click) - the platform already implements the keyboard.\n\npoetry:toggle:change is CANCELABLE and fires BEFORE the flip renders: preventDefault vetoes it (hosts that must confirm). The pressed value in the detail is the state the toggle is ABOUT to enter.",
+    "targets": [],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "press",
+      "set",
+      "toggle",
+      "unpress"
+    ],
+    "events": [
+      "poetry:toggle:change"
+    ],
+    "method_docs": {
+      "press": "Programmatically presses the toggle (see set).",
+      "set": "Programmatically writes a pressed state through the same veto path the click takes. No-op while disabled.",
+      "toggle": "The click action: flips to the opposite pressed state. No-op while disabled; a listener that vetoes the (cancelable) change event stops the flip.",
+      "unpress": "Programmatically releases the toggle (see set)."
+    }
+  },
+  "poetry--core--questionnaire": {
+    "doc": "The Questionnaire machine, adapted from an MIT-licensed source (source and license in THIRD_PARTY_NOTICES.md): a native <form> of fieldset items shown ONE at a time. The server renders the complete initial state (active item, statuses, shortcuts, button visibility); this controller owns the runtime transitions - navigation (validate-gated Next, Skip for optional items, submit validates every item and jumps to the first invalid), answer tracking (choice change / text input -> status), the keyboard map (Cmd/Ctrl+Enter confirm, ArrowUp/Down answer focus, ArrowLeft/Right item navigation, Enter-on-filled-answer confirm, letter/number shortcuts), and the data-attribute stamps the styling contract reads. Answers are native radio/checkbox/text inputs - the form serializes with zero JS.",
+    "targets": [
+      "next",
+      "previous",
+      "progress",
+      "skip",
+      "submit"
+    ],
+    "values": {
+      "shortcuts": {
+        "type": "String",
+        "default": "",
+        "doc": "\"letters\" | \"numbers\" | \"\" - gates the shortcut KEY HANDLING; the key labels themselves are server-rendered (data-shortcut)."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "change",
+      "connect",
+      "input",
+      "keydown",
+      "next",
+      "previous",
+      "reset",
+      "skip",
+      "submit"
+    ],
+    "events": [
+      "poetry:questionnaire:item-change",
+      "poetry:questionnaire:status-change"
+    ],
+    "method_docs": {
+      "change": "The choice inputs' change action: re-stamps the item's choices, status, and validity.",
+      "connect": "Derives every stamp (checked/filled/status/progress/buttons) from the server-rendered DOM.",
+      "input": "The text inputs' input action: re-stamps filled/status/validity.",
+      "keydown": "The form's keydown action (the primitive's full map): Cmd/Ctrl+Enter confirms, ArrowUp/Down move answer focus, ArrowLeft/Right navigate items (outside text entry and radios), Enter on a filled answer confirms, and letter/number shortcuts pick choices.",
+      "next": "The next button's click action: validate-gated advance - an invalid active item takes focus instead.",
+      "previous": "The previous button's click action: back one item (no validation).",
+      "reset": "The form's reset action: native reset restores the inputs; re-derive every stamp from the restored DOM and return to the first item.",
+      "skip": "The skip button's click action (optional items only): stamps skipped, then advances - or submits from the last item.",
+      "submit": "The form's submit action: every enabled item must validate; the first invalid one becomes active with its error focused."
+    }
+  },
+  "poetry--core--radio-group": {
+    "doc": "The RadioGroup checked-value machine (the Accordion composition shape): this controller owns ONLY the value + attribute/input writes - ZERO keyboard code. The shared poetry--core--roving-focus runs on the same root in its DEFAULT tabindex-managing mode (one Tab stop) with the orientation: \"both\" extension (all four arrows, APG radio), and this controller consumes its cancelable entry event to implement SELECTION FOLLOWS FOCUS: entry fires only on arrow/Home/End navigation - never on Tab or click-focus - so checking on entry is exactly the APG contract (Tab into the group never changes the value; contractual).\n\nThe form story is the hidden-native-input rule: one <input type=radio> per item, shared name (aria-hidden, tabindex=-1) - native radio serialization, byte-identical to collection_radio_buttons. check() writes every item's aria-checked/checked pair/indicator, sets the hidden input's .checked (the native group unchecks siblings; written explicitly anyway - belt and braces), moves the roving tab stop to the checked item, and dispatches poetry:radio-group:change + native input/change on the newly checked hidden input (Rails autosave/change-tracking listeners fire).",
+    "targets": [
+      "input"
+    ],
+    "values": {
+      "value": {
+        "type": "String",
+        "default": "",
+        "doc": "The checked item's value; empty when none is checked."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "check",
+      "connect",
+      "entryCheck",
+      "setValue",
+      "valueValueChanged"
+    ],
+    "events": [
+      "poetry:radio-group:change"
+    ],
+    "method_docs": {
+      "check": "Each item's click action (Space arrives here too, via native button activation): checks the pressed item.",
+      "connect": "Reconcile-on-connect: adopts the server-checked item into the Value when none was given, else normalizes the DOM to the Value (the body comment holds the rules).",
+      "entryCheck": "The roving-focus entry action - the entry event fires ONLY on arrow/Home/End navigation (never on Tab), so this IS selection-follows-focus (the APG contract).",
+      "setValue": "The programmatic controllable-state surface: checks the item carrying `value`. Unknown values log a debug line and change nothing.",
+      "valueValueChanged": "Stimulus value callback: re-writes the DOM when the Value changes after connect (an Outlet or a host writing the attribute directly)."
+    }
+  },
+  "poetry--core--resizable": {
+    "doc": "The Resizable engine, decided NATIVE: no panel library - panels are flex children whose flex-grow IS the percentage, and this controller implements the APG window-splitter on the handles: pointer drag redistributes the two adjacent panels (clamped to each panel's min/max), arrows step, Home/End jump the range, and every move writes aria-valuenow (the preceding panel's size). Deferred with the library's machinery: persistence (autoSaveId), collapsible panels, and the imperative API.",
+    "targets": [],
+    "values": {
+      "orientation": {
+        "type": "String",
+        "default": "horizontal",
+        "doc": "horizontal lays the panels side by side; vertical stacks them."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "dragEnd",
+      "dragMove",
+      "dragStart",
+      "keydown"
+    ],
+    "events": [
+      "poetry:resizable:resize"
+    ],
+    "method_docs": {
+      "connect": "Writes the initial aria-value* reflection onto every handle.",
+      "dragEnd": "The pointerup / pointercancel action: ends the drag.",
+      "dragMove": "The captured pointermove action: redistributes the two panels by the drag delta, clamped to both panels' min/max.",
+      "dragStart": "Each handle's pointerdown action: begins a drag between the two adjacent panels (pointer capture holds the gesture).",
+      "keydown": "Each handle's keydown action (the APG window splitter): arrows step by 5%, Home/End jump the range."
+    }
+  },
+  "poetry--core--roving-focus": {
+    "doc": "The roving-tabindex engine: the group is ONE Tab stop - exactly one item holds tabindex=0, the rest -1, and arrow keys move focus among the collection items in DOM order. Orientation gates which arrows are live (horizontal flips Left/Right under RTL via the direction helper); Home/End jump to the edges; loop wraps. Backs Tabs, Toolbar, RadioGroup, Menus, ToggleGroup, and the Select/Command list.\n\nDynamic items: NAVIGATION recomputes the collection on every keydown (the DOM is the registry - always fresh, zero bookkeeping), but that alone is not correct: an item appended between keystrokes would sit at its natural tabindex and grow the group a SECOND Tab stop before any arrow is pressed. The MutationObserver exists for that one job - re-stamping the roving tabindex the moment items enter or leave.",
+    "targets": [],
+    "values": {
+      "orientation": {
+        "type": "String",
+        "default": "vertical",
+        "doc": "The axis the arrow keys move along: vertical, horizontal, or both."
+      },
+      "loop": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "horizontal | vertical | both"
+      },
+      "manageTabindex": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "false = focus-nav-only mode (the APG accordion contract): every trigger stays tabbable and arrows are convenience navigation, not a roving tab stop. The controller then NEVER writes tabindex - not on connect, not on mutation, not on focus moves."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "keydown"
+    ],
+    "events": [
+      "poetry--core--roving-focus:entry"
+    ],
+    "method_docs": {
+      "connect": "Stamps the initial tab stops and starts the item-mutation re-stamping (the header's second-Tab-stop hazard).",
+      "disconnect": "Stops the mutation observer.",
+      "keydown": "The group root's keydown action: arrows/Home/End move the roving focus - orientation-gated, RTL-aware, loop-wrapping. The caret guard leaves text-entry controls their keys until the caret reaches the travel-direction boundary."
+    }
+  },
+  "poetry--core--search-field": {
+    "doc": "The SearchField seams: Escape CLEARS a non-empty field and is consumed - the NEXT press reaches the dismissal layer and closes a parent overlay; an already-empty field lets Escape propagate untouched. Emptiness is checked against the RAW input value (autofill and scripts poke the DOM directly). The clear button keeps focus in the input by preventing the press's focus steal at pointerdown - on mobile that is what keeps the virtual keyboard up. Enter is never intercepted: native form submission is the Rails path.",
+    "targets": [
+      "clear",
+      "input"
+    ],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "changed",
+      "clear",
+      "connect",
+      "holdFocus",
+      "keydown"
+    ],
+    "events": [
+      "poetry:search-field:clear"
+    ],
+    "method_docs": {
+      "changed": "The input action: keeps data-empty and the clear affordance honest.",
+      "clear": "The clear button's click action: empties the field (dispatching a REAL input event so live-search listeners react) and refocuses it. No-op while disabled or readonly.",
+      "connect": "Reflects the initial emptiness (data-empty + the clear affordance).",
+      "holdFocus": "The clear button's pointerdown action: keeps focus (and the mobile keyboard) in the input - the later click acts.",
+      "keydown": "The input's keydown action: Escape CLEARS a non-empty field and is consumed; an already-empty field lets it propagate to the dismissal layer (the seam the header documents)."
+    }
+  },
+  "poetry--core--select": {
+    "doc": "The Select listbox controller - the APG select-only combobox on the menus MACHINERY (popper markup-owned + focus-scope/dismissable/roving-focus activated as layers + the shared typeahead helper) but deliberately NOT a mode of poetry--core--menu: everything menu-specific (submenus, close_on_select, checkbox/radio aria-checked, edge-navigate, Tab-closes, pointer-open-no-focus) is wrong for a listbox, and everything here is dead weight for menus.\n\nTHE SYNC INVARIANT (the component): native_select.value, the value Value, aria-selected/data-selected on options, and the display text never diverge - every write path (commit, closed-trigger typeahead, autofill adoption, programmatic setValue) funnels through #apply, which writes the NATIVE SELECT FIRST (serialization truth is never behind the facade), dispatches real bubbling change/input on it (Turbo auto-submit and friends work unmodified), flips aria-selected + data-selected TOGETHER on every option, syncs the value display from the option's item-text (data-text-value override), toggles trigger[data-placeholder], then fires poetry:select:change.\n\nThree deltas vs the menu family, all deliberate and contractual: - Tab while open is INERT (a value picker resolves by commit or Esc); - open focuses the SELECTED option for EVERY reason, pointer included; - typeahead on the CLOSED trigger COMMITS the match without opening (native <select> behavior), while open typeahead only moves focus.",
+    "targets": [],
+    "values": {
+      "open": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether the listbox is open."
+      },
+      "value": {
+        "type": "String",
+        "default": "",
+        "doc": "The selected option's value; empty when none is selected."
+      },
+      "modal": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "Whether the open listbox traps focus and blocks outside pointer events."
+      },
+      "loop": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether arrow keys wrap from the last option to the first, and back."
+      },
+      "typeaheadTimeout": {
+        "type": "Number",
+        "default": 1000,
+        "doc": "How long, in milliseconds, typed characters accumulate into one typeahead search."
+      },
+      "alignItemWithTrigger": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether the listbox opens with the selected option over the trigger (fine pointers only)."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "close",
+      "commit",
+      "connect",
+      "disconnect",
+      "keydown",
+      "nativeChanged",
+      "open",
+      "openValueChanged",
+      "scrollHoldStart",
+      "scrollHoldStop",
+      "setValue",
+      "syncScrollButtons",
+      "toggle",
+      "triggerKeydown",
+      "valueValueChanged"
+    ],
+    "events": [
+      "poetry:select:change",
+      "poetry:select:closed",
+      "poetry:select:open",
+      "poetry:select:select"
+    ],
+    "method_docs": {
+      "close": "Programmatically closes.",
+      "commit": "Each option's click action (markup-declared); the delegated content click claims first, so both paths never double-commit.",
+      "connect": "Captures the placeholder, reconciles silently from the native select (the serialization truth) or the given Value, wires the content listeners, and catches a server-open listbox up (layers + the late portal).",
+      "disconnect": "Restores portaled content (drop-never-strand), unwires the content listeners, resets typeahead and the scroll hold, and abandons any exit.",
+      "keydown": "The content's keydown route (also wired programmatically): Enter and Space commit the focused option (Space defers to a live typeahead), Tab is INERT while open (a value picker resolves by commit or Esc - contractual), Left/Right no-op (flat listbox), and printable keys move focus via typeahead - selection never follows focus.",
+      "nativeChanged": "The hidden native select's change action: browser autofill (or any programmatic write) fires change there - the UI adopts it without re-writing the native (no loop).",
+      "open": "Programmatically opens.",
+      "openValueChanged": "Stimulus value callback - controllable open state.",
+      "scrollHoldStart": "The scroll buttons' pointerenter action: scrolls the viewport a few px per frame while hovered (hold-to-scroll).",
+      "scrollHoldStop": "The scroll buttons' pointerleave action: stops the held scroll.",
+      "setValue": "The programmatic controllable-state surface: applies a value through the full sync pipeline.",
+      "syncScrollButtons": "The viewport's scroll action (also run on open): shows each scroll button only while scroll room remains on its side.",
+      "toggle": "The trigger's click action: open <-> close.",
+      "triggerKeydown": "The trigger's keydown action: Enter / Space / ArrowDown / ArrowUp open and focus the SELECTED option (closed arrows never step the value). A printable key on the CLOSED trigger commits the typeahead match WITHOUT opening (native <select> behavior - the full commit pipeline minus open/close).",
+      "valueValueChanged": "Stimulus value callback - controllable value (no-ops on the applied echo)."
+    }
+  },
+  "poetry--core--sensitive-input": {
+    "doc": "The SensitiveInput machine, adapted from an MIT-licensed source (source and license in THIRD_PARTY_NOTICES.md): a secret field in three states - masked | revealed | empty - where data-state on the root carries the truth and CSS renders it. Masked-with-value turns the MASK OVERLAY into the reveal affordance (role=button + label + sr-hint; only text spans inside - a role on the surrounding group would trip axe nested-interactive around the inert input) while the real input stays rendered for layout but goes inert (aria-hidden, tabindex -1, readonly, transparent). Reveal: click anywhere on the group (mask clicks bubble) or Enter/Space on the mask, focus moves into the input. Re-mask: Escape (focus returns to the mask - the input just lost its tab stop), leaving the component, or the eye. Typing into an empty field auto-reveals so composition happens in type=text. The no-JS story is a plain password input.",
+    "targets": [
+      "hint",
+      "input",
+      "mask",
+      "toggle"
+    ],
+    "values": {
+      "maskedLabel": {
+        "type": "String",
+        "doc": "\"{label}, masked.\" - built server-side so i18n stays in Rails."
+      },
+      "hiddenMessage": {
+        "type": "String",
+        "doc": "The re-mask announcement (\"Value hidden\")."
+      },
+      "readOnly": {
+        "type": "Boolean",
+        "doc": "The host-declared readonly (the controller borrows the input's readOnly while masked, so the option needs its own home)."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "blurred",
+      "changed",
+      "connect",
+      "inputKeydown",
+      "maskKeydown",
+      "reveal",
+      "toggle"
+    ],
+    "events": [
+      "poetry:sensitive-input:mask",
+      "poetry:sensitive-input:reveal"
+    ],
+    "method_docs": {
+      "blurred": "The root's focusout action: leaving the component with a value re-masks.",
+      "changed": "The input action: emptiness drives the state; the first character typed into an empty field reveals (composition belongs in type=text).",
+      "connect": "Adopts the server-rendered data-state and re-derives the reflection.",
+      "inputKeydown": "The input's keydown action: Escape re-masks and is consumed - the NEXT press reaches the dismissal layer.",
+      "maskKeydown": "The mask overlay's keydown action: Enter/Space reveals (the overlay is the reveal affordance while masked).",
+      "reveal": "The group's click action: click anywhere on the bordered group reveals (the mask button's own clicks bubble here too). Addon-cell clicks and synthetic label clicks are filtered (the body comments).",
+      "toggle": "The eye's click action: re-masks and hands focus to the mask button - the eye is about to hide (it only exists while revealed)."
+    }
+  },
+  "poetry--core--sheet": {
+    "doc": "The Sheet: the dialog machinery, animated end to end. Everything hard about the overlay is inherited (native <dialog> platform trap, backdrop-click discrimination, scroll lock, hotkey) - including the presence-hold close, which the base controller owns (exit flips the pair to data-closed and holds the dialog through the slide-out before the native close()). This subclass only upgrades the ENTER: open rides enterPresence so the data-starting-style hook fires like every other presence consumer.",
+    "targets": [
+      "dialog"
+    ],
+    "values": {
+      "dismissible": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "Set false for AlertDialog-style confirmations: backdrop clicks stop dismissing."
+      },
+      "hotkey": {
+        "type": "String",
+        "default": "",
+        "doc": "OPT-IN global shortcut (\"meta+k\") toggling the dialog - the command-palette ⌘K affordance, shipped here because every consumer would otherwise write the same ten lines. \"meta\" matches metaKey OR ctrlKey (⌘K on mac, ^K elsewhere - the command-palette convention)."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "backdropClose",
+      "close",
+      "connect",
+      "disconnect",
+      "lockScroll",
+      "open",
+      "toggle",
+      "unlockScroll"
+    ],
+    "events": [],
+    "method_docs": {
+      "backdropClose": "The click action discriminating backdrop presses: a backdrop click targets the <dialog> element itself AND lands outside its bounding rect (the backdrop is rendered by the dialog). The target check alone is not enough: clicks on the dialog's own padding / grid gaps also target the element (found in a live browser pass - they were incorrectly dismissing).",
+      "close": "Closes with the presence hold: flips the pair to data-closed and holds the dialog through its CSS exit animation before the native close() and the unlock (synchronous when no exit animation applies). The native cancel event (Esc) routes through here so state stays in sync.",
+      "connect": "Heals a restored zombie snapshot, subscribes the before-cache close, and arms the opt-in global hotkey.",
+      "disconnect": "Balances the scroll lock and unwires the hotkey and before-cache subscriptions.",
+      "lockScroll": "Takes the shared refcounted body scroll lock (scrollbar-width compensated) - subclasses (sheet/drawer/sidebar) inherit these entry points unchanged; the instance flag keeps double-unlocks (disconnect after close) balanced.",
+      "open": "Opens with the animated entry: showModal(), then the presence enter so the data-starting-style hook fires like every other presence consumer (the exit half is inherited - the base close() already holds through the slide-out).",
+      "toggle": "The toggle action (and the hotkey's landing): open <-> close.",
+      "unlockScroll": "Balances {@link lockScroll}; safe when already unlocked."
+    }
+  },
+  "poetry--core--sidebar": {
+    "doc": "The Sidebar state machine (desktop plus the mobile mode): expand/collapse coordination for the app shell. The COLLAPSE itself is pure CSS - the peer sidebar carries data-state=expanded|collapsed and the dictionary's group-data-[state=collapsed] classes do all the width/transform work; this controller only flips that attribute (plus data-collapsible, which the source sets to the mode WHILE collapsed and \"\" while expanded), persists the choice to a cookie (so the SERVER can read it and render the right initial state - poetry's server-first angle), and binds the Cmd/Ctrl+B shortcut.\n\nMOBILE (DOM-move): below md the trigger routes to a separate never-persisted openMobile state (only desktop toggles write the cookie). Opening ADOPTS the server-rendered nav children from the desktop inner into the mobile <dialog> (one render, no duplicate ids - the render-twice rejection) and shows it through the sheet presence path; closing holds through the slide-out, then moves the children back. Crossing to desktop while open restores INSTANTLY. The component-facing event namespace (the poetry:<component> rule).",
+    "targets": [
+      "inner",
+      "mobileDialog",
+      "mobileInner",
+      "sidebar"
+    ],
+    "values": {
+      "open": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "Whether the sidebar is expanded."
+      },
+      "collapsible": {
+        "type": "String",
+        "default": "offcanvas",
+        "doc": "The collapse mode written to data-collapsible while collapsed (offcanvas | icon); \"none\" means the shortcut/trigger are inert."
+      },
+      "cookieName": {
+        "type": "String",
+        "default": "sidebar_state",
+        "doc": "The cookie that remembers the open state across requests."
+      },
+      "cookieMaxAge": {
+        "type": "Number",
+        "default": 604800,
+        "doc": "How long the cookie lives, in seconds."
+      },
+      "shortcut": {
+        "type": "String",
+        "default": "b",
+        "doc": "7 days"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "close",
+      "closeMobile",
+      "connect",
+      "disconnect",
+      "mobileBackdropClose",
+      "open",
+      "toggle"
+    ],
+    "events": [
+      "poetry:sidebar:mobile-toggle",
+      "poetry:sidebar:toggle"
+    ],
+    "method_docs": {
+      "close": "Programmatically collapses the desktop sidebar (persisted).",
+      "closeMobile": "The mobile dialog's cancel action (and the close affordances): closes through the sheet exit, then moves the nav children home.",
+      "connect": "Heals a restored zombie snapshot, reflects the server value once (the body comment explains why not openValueChanged), starts the breakpoint watcher, subscribes the before-cache close, and binds the shortcut.",
+      "disconnect": "Unwires the shortcut / watcher / before-cache subscriptions and balances the scroll lock.",
+      "mobileBackdropClose": "The mobile dialog's click action - the dialog's coordinate discrimination (a backdrop click targets the <dialog> itself AND lands outside its bounding rect).",
+      "open": "Programmatically expands the desktop sidebar (persisted).",
+      "toggle": "The trigger's (and rail's) click action - also the shortcut's landing. On mobile the SAME trigger routes to the sheet; on desktop it flips the collapse (inert when collapsible is \"none\")."
+    }
+  },
+  "poetry--core--slider": {
+    "doc": "The Slider machine - the only form control with real math. Three concerns, nothing else:\n\n1. THE VALUE MATH (the pure core, unit-tested exhaustively): snap to the step grid with decimal-precision rounding (a 0.1 grid lands on 0.3, never 0.30000000000000004), clamp to [min, max], and clamp against neighbor thumbs +- the min gap (minStepsBetweenThumbs * step) so range thumbs can never cross.\n\n2. TWO INPUT PATHS feeding it: the APG keyboard map per thumb (arrows +-step, Shift+Arrow / PageUp / PageDown +-step*10, Home/End to the thumb's EFFECTIVE min/max) with the orientation x RTL x inverted resolution - horizontal RTL swaps Left/Right only, inverted flips the whole axis, both compose (rtl + inverted = ltr math); and pointer capture on the root - pointerdown jumps the NEAREST thumb (ties to the later index, so stacked thumbs stay separable), the track box is read ONCE at pointerdown (no per-frame layout), pointermove projects the value ABSOLUTELY from the pointer position (overshoot past a neighbor clamps, never swaps), pointerup commits.\n\n3. THE DOM PROJECTION: aria-valuemin/max/now per role=slider thumb - the range bounds are DYNAMIC (neighbor-clamped, rewritten on every neighbor move: APG multithumb), the --slider-start/--slider-end geometry vars consumed by the calc() rules, and one hidden native input per thumb. poetry:slider:change fires per mutation; commit (pointerup / each keydown) syncs the hidden inputs + dispatches native input/change so Rails listeners get one event per gesture, not per frame.",
+    "targets": [
+      "input",
+      "range",
+      "thumb",
+      "track"
+    ],
+    "values": {
+      "min": {
+        "type": "Number",
+        "default": 0,
+        "doc": "The lowest value of the track."
+      },
+      "max": {
+        "type": "Number",
+        "default": 100,
+        "doc": "The highest value of the track."
+      },
+      "step": {
+        "type": "Number",
+        "default": 1,
+        "doc": "The amount an arrow key changes a thumb by."
+      },
+      "value": {
+        "type": "Array",
+        "default": [],
+        "doc": "The thumb values, one per thumb, in order."
+      },
+      "minStepsBetweenThumbs": {
+        "type": "Number",
+        "default": 0,
+        "doc": "The least number of steps two thumbs keep between them."
+      },
+      "orientation": {
+        "type": "String",
+        "default": "horizontal",
+        "doc": "horizontal runs the track left to right; vertical runs it bottom to top."
+      },
+      "inverted": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether the track runs in the opposite direction."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "keydown",
+      "pointerdown",
+      "setValue",
+      "valueValueChanged"
+    ],
+    "events": [
+      "poetry:slider:change",
+      "poetry:slider:commit"
+    ],
+    "method_docs": {
+      "connect": "Adopts the value (the Value, else the server-rendered aria-valuenow), projects, and primes the hidden inputs silently.",
+      "disconnect": "Ends any in-flight gesture without committing.",
+      "keydown": "Each thumb's keydown action: the APG map (arrows step, Shift/Page = large step, Home/End to the thumb's EFFECTIVE bounds) under the orientation x RTL x inverted resolution; every keyboard change commits.",
+      "pointerdown": "The root's pointerdown action: jumps the NEAREST thumb to the pointer (ties to the later index), reads the track box once, and starts the window-level drag; pointerup commits.",
+      "setValue": "The programmatic controllable-state surface: must keep the thumb count; changes commit.",
+      "valueValueChanged": "Stimulus value callback - controllable state: a host (outlet / Turbo Stream) may own the value."
+    }
+  },
+  "poetry--core--state": {
+    "doc": "The controllable-state controller: seeds the data-open/ data-closed pair from a Value default when no other layer owns it, and exposes toggle/open/close actions. \"Controlled vs uncontrolled\" is just which layer wrote the attribute - a server re-render, the URL, an Outlet, or this default - the controller code is identical either way.\n\nOptional reflection targets (the Collapsible contract): a trigger target mirrors aria-expanded; a content target rides the presence helper (the pair flip deferred through animationend, hidden applied only after the exit animation finishes).",
+    "targets": [
+      "content",
+      "trigger"
+    ],
+    "values": {
+      "state": {
+        "type": "String",
+        "default": "closed",
+        "doc": "The state seeded on the element when it carries none: open or closed."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "close",
+      "connect",
+      "disconnect",
+      "open",
+      "toggle"
+    ],
+    "events": [],
+    "method_docs": {
+      "close": "Closes: flips the pair and holds the content target through its exit animation before hiding it (the presence contract).",
+      "connect": "Seeds the pair from the Value default when no other layer wrote it, then reflects the current state onto the optional targets.",
+      "disconnect": "Abandons any exit animation still holding the content.",
+      "open": "Opens: flips the pair, unhides the content target (when present) and runs its entry presence, mirrors aria-expanded onto the trigger.",
+      "toggle": "The toggle action: open when closed, close when open."
+    }
+  },
+  "poetry--core--table-selection": {
+    "doc": "The table row-selection engine (the SelectionManager contract, checkbox-flavored): per-row checkboxes are the form value (selected_ids[] - no JS means plain checkboxes in a form, the honest fallback), this controller adds what HTML cannot:\n\n- select-all with a real INDETERMINATE middle state (a JS property, never an attribute), computed over ENABLED rows only (disabled rows are skipped by select-all and ranges - disabledBehavior 'selection'). - Shift-click range selection off the ANCHOR model: the anchor is the last plainly-toggled row; Shift sets every row in anchor..target to the ANCHOR row's state (the checkbox idiom). - aria-selected + data-selected mirrored onto rows, count announcements through the announce singleton, and a bubbling selection-change event the ActionBar block feeds on. - poetry:data-table:clear-selection (dispatched by the ActionBar's Escape) clears everything from anywhere inside the wrapper.",
+    "targets": [
+      "all"
+    ],
+    "values": {
+      "label": {
+        "type": "String",
+        "default": "%{count} selected",
+        "doc": "The selection announcement, with %{count} replaced by the number of selected rows."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "press",
+      "toggleAll",
+      "toggled"
+    ],
+    "events": [
+      "poetry:data-table:selection-change"
+    ],
+    "method_docs": {
+      "connect": "Wires the ActionBar's clear-selection listener and reflects silently.",
+      "disconnect": "Unwires the clear-selection listener.",
+      "press": "The pointerdown/keydown seam: remembers whether the NEXT change was a shift-gesture (change events themselves carry no modifiers).",
+      "toggleAll": "The select-all checkbox's change action: fans its new state out to every ENABLED row and clears the anchor.",
+      "toggled": "Each row checkbox's change action. Shift ranges ride the click that produced the change (change events carry no modifiers - press captures the gesture): a shift-toggle sets anchor..target to the ANCHOR row's state; a plain toggle re-anchors."
+    }
+  },
+  "poetry--core--tabs": {
+    "doc": "The Tabs activation machine: this controller owns ONLY the active-value state + attribute writes; the shared poetry--core--roving-focus on the tablist owns the keyboard (default tabindex-managing mode - one Tab stop). Triggers are DUMB buttons (click -> tabs#activate; with automatic activation - the APG default for tabs - focusin activates too, so arrow keys both move focus AND switch panels).\n\nThe state vocabulary: the active trigger carries data-active (the styled token) + aria-selected; inactive panels carry the hidden property + data-hidden. data-activation-direction is deliberately NOT emitted - no shipped class consumes it (add it with the animated indicator, when something does).\n\nPanels are scoped to THIS root (a nested Tabs inside a panel owns its own triggers/panels - the DOM is the registry, same rule as roving-focus).",
+    "targets": [],
+    "values": {
+      "activateOnFocus": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "false = manual activation (arrows only move focus; Enter/Space - the native button click - activates). true is the APG-recommended default."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "activate",
+      "connect",
+      "focusActivate",
+      "setValue"
+    ],
+    "events": [
+      "poetry:tabs:change"
+    ],
+    "method_docs": {
+      "activate": "Each trigger's click action: activates the pressed trigger's value.",
+      "connect": "Reconcile-on-connect: derives the full vocabulary from the server-rendered data-active truth (the body comment holds the rules).",
+      "focusActivate": "The tablist's roving-focus entry action - automatic activation follows the roving focus via the roving controller's entry event (deterministic: never depends on the platform firing focusin for a programmatic .focus()). A raw focusin routes here too, so hand-wired hosts get the same behavior.",
+      "setValue": "The programmatic controllable-state surface: setValue(\"account\"). Unknown values are ignored (the contract's guard). Returns the resulting state - what an agent tool reports back - so a no-op is visible as changed: false."
+    }
+  },
+  "poetry--core--tag-group": {
+    "doc": "The TagGroup removal engine (the tag-group contract): navigation itself rides the roving-focus controller (the toolbar precedent) - this controller owns what tags add on top:\n\n- Delete/Backspace on a focused tag removes it (row-origin keys only; keys from a tag's inner remove button must not drive the grid). - The remove button removes exactly its own tag. - Focus recovery after removal is the reference walk: FORWARD through the pre-removal order to the first surviving enabled tag, then backward; when the last tag goes, the CONTAINER takes focus, flips role grid->group, and becomes the tab stop. - The container is a live region ONLY while focus is within (polite, additions) - SRs hear tags added while working in the group without spam from elsewhere.\n\nRemoval is CANCELABLE (poetry:tag-group:remove): a Turbo-driven host preventDefault()s and re-renders; otherwise this controller removes the row (and the hidden input riding it - form mode serializes name[] per tag).",
+    "targets": [],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "keydown",
+      "remove"
+    ],
+    "events": [
+      "poetry:tag-group:remove"
+    ],
+    "method_docs": {
+      "connect": "Wires the focus-scoped live-region toggling and reflects emptiness (role, tab stop, data-empty).",
+      "disconnect": "Unwires the focus listeners.",
+      "keydown": "The container's keydown action: Delete/Backspace on a focused tag ROW removes it - row-origin keys only (keys from a tag's inner remove button must not drive the grid).",
+      "remove": "The remove button's click action: removes exactly its own tag."
+    }
+  },
+  "poetry--core--toast": {
+    "doc": "One toast item (poetry's own Toast - the stacked-toaster genre with strict a11y semantics). The item is role=status aria-live=off: it never announces itself - on connect it speaks ONCE through the announce singleton at its politeness (destructive -> assertive, wired server-side via the politeness value). The auto-dismiss timer follows APG/WCAG 2.2.1 timing: it PAUSES on hover, focus-within, window blur and tab-hidden (reasons are refcounted so overlapping pauses cannot resume early), and duration <= 0 means persistent (required for undo/action toasts). Dismiss flips data-open -> data-closed, dispatches poetry:toast:dismiss {id, reason} (the toaster's reflow + focus-return seam), then presence holds the node until its exit animation finishes before removal.\n\nSwipe-to-dismiss is a browser-verification-GATED enhancement (contract) - it does not ship in this pass; the swipe reason is reserved.",
+    "targets": [
+      "action",
+      "close"
+    ],
+    "values": {
+      "duration": {
+        "type": "Number",
+        "default": 5000,
+        "doc": "How long the toast stays, in milliseconds; 0 keeps it until dismissed."
+      },
+      "politeness": {
+        "type": "String",
+        "default": "polite",
+        "doc": "The live-region politeness the message is announced with: polite or assertive."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "dismiss",
+      "pause",
+      "resume"
+    ],
+    "events": [
+      "poetry:toast:dismiss",
+      "poetry:toast:show"
+    ],
+    "method_docs": {
+      "connect": "Assigns an id when missing, adopts the open pair, announces ONCE through the singleton, wires the pause sources and the toast-local Escape, and starts the auto-dismiss timer (queued/hidden toasts hold theirs).",
+      "disconnect": "Stops the timer and unwires every listener.",
+      "dismiss": "Dismisses the toast. Reasons: timeout | close-press | action | swipe(reserved) | manual - the family reason vocabulary plus poetry's own timeout/action/queued/manual extensions. A click on the action slot reports \"action\"; the close button \"close-press\". The dismiss event goes out BEFORE removal (the toaster's reflow + focus-return seam); presence then holds the node through its exit animation.",
+      "pause": "Holds the auto-dismiss timer under a reason (hover/focus derive from events; the toaster and window paths pass strings). Reasons pool in a set, so overlapping pauses cannot resume early.",
+      "resume": "Releases one pause reason; the timer restarts when none remain."
+    }
+  },
+  "poetry--core--toast-trigger": {
+    "doc": "The client-side toast delivery trigger (poetry's no-round-trip path - what a toast() JS factory does elsewhere, done with server-rendered markup): press -> dispatch poetry:toaster:stamp, and the toaster clones the addressed <template>'s toast into its region. The toast inside the template is byte-for-byte what a Turbo Stream would deliver.",
+    "targets": [],
+    "values": {
+      "template": {
+        "type": "String",
+        "doc": "The <template> element id holding the rendered toast."
+      },
+      "toaster": {
+        "type": "String",
+        "doc": "Optional toaster region id - omit for the page's toaster."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "fire"
+    ],
+    "events": [
+      "poetry:toaster:stamp"
+    ],
+    "method_docs": {
+      "fire": "The click action: stamps the addressed template's toast into the toaster region (the no-round-trip delivery the header describes)."
+    }
+  },
+  "poetry--core--toaster": {
+    "doc": "The toast viewport (one per page): the labeled role=region <ol> that is the Turbo Stream append target (id=poetry-toaster, data-turbo-permanent). It ACQUIRES the announce singleton for its lifetime (items announce through it on connect), owns the F8 hotkey (focus moves to the most recent toast; the prior focus is remembered so dismissal returns it), enforces the visible LIMIT (default 3 - the oldest overflow toasts queue hidden with their timers held, promoted as newer ones dismiss), and owns the stack reflow (--poetry-toast-index, newest = 0, for the offset/scale stack styling).\n\nItems arrive by server render, Turbo Stream append, or a stamp (the poetry:toaster:stamp window event - poetry_toast_trigger's no-round-trip path, cloning a <template> toast into the region); a childList MutationObserver reconciles limit + reflow on every change, so no append path needs to know about the toaster.",
+    "targets": [
+      "item"
+    ],
+    "values": {
+      "hotkey": {
+        "type": "String",
+        "default": "F8",
+        "doc": "The shortcut that moves focus into the toaster, in the hotkey syntax."
+      },
+      "limit": {
+        "type": "Number",
+        "default": 3,
+        "doc": "How many toasts may be open at once; older ones are dismissed past it."
+      },
+      "position": {
+        "type": "String",
+        "doc": "The corner or edge the toasts stack against."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "focusRegion",
+      "reflow"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Acquires the announce singleton, wires the hotkey / stamp / dismiss listeners, and starts the childList reconciler.",
+      "disconnect": "Unwires everything and releases the announce singleton.",
+      "focusRegion": "The hotkey's landing (F8 default, configurable): moves focus into the region - onto the most recent visible toast, else the region itself. The prior focus is remembered for the dismiss return.",
+      "reflow": "Stack reflow: newest toast = index 0 (the front of the stack), written as the offset/scale custom property."
+    }
+  },
+  "poetry--core--toggle-group": {
+    "doc": "The ToggleGroup value-set machine (the Accordion composition, second consumer): this controller owns ONLY the pressed-values set + attribute writes; the shared poetry--core--roving-focus on the same root owns the keyboard (default tabindex-managing mode - one Tab stop). Items are DUMB buttons (data-action -> group#toggle; poetry--core--pressed is NOT attached in group context - one owner, no event soup).\n\nThe role/vocabulary split, enforced here: type=single is RADIO semantics - items carry aria-checked (aria-pressed stripped) and re-pressing the sole pressed item deselects to EMPTY; type=multiple is toolbar semantics - independent aria-pressed items. The controller reads type once and never mixes vocabularies; the bare data-pressed presence boolean styles both types identically (Toggle's classes just work).\n\nAfter every transition the PRESSED item becomes the roving tab stop (re-entering the group lands on the selection) - written directly as the tabindex stamp roving-focus adopts.",
+    "targets": [],
+    "values": {
+      "type": {
+        "type": "String",
+        "default": "single",
+        "doc": "single presses one item at a time; multiple lets any number stay pressed."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "setValue",
+      "toggle"
+    ],
+    "events": [
+      "poetry:toggle-group:change"
+    ],
+    "method_docs": {
+      "connect": "Reconcile-on-connect: re-derives the type-correct aria vocabulary from the server-rendered data-pressed truth, then prefers the pressed tab stop.",
+      "setValue": "The programmatic controllable-state surface: setValue(\"b\") in single mode (\"\" / null clears); setValue([\"a\", \"b\"]) in multiple mode. Validated against type; unknown values are ignored (logged in dev - the contract's guard).",
+      "toggle": "Each item's click action (Space/Enter arrive via native button activation): single mode is radio semantics with deselect-to-empty; multiple XORs the value in and out."
+    }
+  },
+  "poetry--core--tooltip": {
+    "doc": "The Tooltip controller (the popper-consumer trio's timing machine): open DELAYS (provider delay_duration, default 0), the provider-scoped WARM grace (one tooltip open - or closed less than skip_delay_duration ms ago - lets siblings in the same provider scope open instantly), ONE OPEN GLOBALLY (the document-level will-open event), close-on-scroll, and the pointer-vs-focus open paths with their latches.\n\nA11y is the strictest of the trio: the content is role=tooltip and the trigger's aria-describedby is set on open and REMOVED on close (describedby must never reference hidden content); focus-scope is NOT composed at all - focus never enters a tooltip; touch NEVER opens one (no long-press path, deliberately). Esc rides a token-activated dismissable layer while open, so a tooltip above a Dialog peels first.\n\nTHE WARM REGISTRY (the provider mechanism): a module-level WeakMap keyed by the [data-slot=tooltip-provider] ancestor (document fallback) holding {openCount, warmUntil}. The DOM ancestor IS the provider scope; the WeakMap lets morphed/replaced providers garbage-collect (no Turbo leaks).",
+    "targets": [],
+    "values": {
+      "open": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether the tooltip is open."
+      },
+      "delayDuration": {
+        "type": "Number",
+        "default": -1,
+        "doc": "How long the pointer must rest on the trigger, in milliseconds, before the tooltip opens; -1 follows the provider."
+      },
+      "disableHoverableContent": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "-1 = inherit the provider (default 0)"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "blurClose",
+      "clickClose",
+      "connect",
+      "disconnect",
+      "focusOpen",
+      "openValueChanged",
+      "pointerDown",
+      "pointerLeave",
+      "pointerMove"
+    ],
+    "events": [
+      "poetry:tooltip:closed",
+      "poetry:tooltip:open"
+    ],
+    "method_docs": {
+      "blurClose": "The trigger's blur action: closes (the focus interaction's exit).",
+      "clickClose": "The trigger's click action: an activation dismisses its hint.",
+      "connect": "Wires the content listeners plus the document-level will-open listener, and reconciles a server-pinned tooltip (describedby, layer, scope count catch up; the DOM wins).",
+      "disconnect": "Clears the timers, balances the warm-scope count for an open tooltip, drops the scroll listener, restores portaled content (drop-never-strand), and unwires everything.",
+      "focusOpen": "The trigger's focus action: opens INSTANTLY (skipping all delays) - unless the focus was caused by a pointerdown (the latch).",
+      "openValueChanged": "Stimulus value callback - controllable state: pinned tooltips (Turbo Stream / Outlet ownership).",
+      "pointerDown": "The trigger's pointerdown action: activating the control dismisses its hint; the latch also suppresses the focus-open until pointerup (pointer users never get a focus-opened tooltip - contractual).",
+      "pointerLeave": "The trigger's pointerleave action: cancels a pending open; with hoverable content the close waits its grace, else it closes now.",
+      "pointerMove": "The trigger's pointermove action (not pointerenter, deliberately): opens once per hover via the latch - instantly when the provider scope is warm, else after the delay; touch pointerType is EXCLUDED entirely."
+    }
+  },
+  "poetry--core--tree": {
+    "doc": "The Tree engine (the flat-treegrid contract): the server renders a FLAT list of role=row siblings - hierarchy lives entirely in aria-level/posinset/setsize (static per render) - so this controller owns only what HTML cannot: roving focus over VISIBLE rows, the four-branch ArrowLeft/Right expansion logic (including focus-to-parent), Enter-toggles-expandable (the no-action default), typeahead, and subtree show/hide that preserves nested collapsed state (a row is visible iff every ancestor is expanded).\n\nExpansion state IS the DOM (aria-expanded + hidden); the host persists it by listening for poetry:tree:toggle. Selection modes are deferred (the TagGroup reasoning).",
+    "targets": [],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "connect",
+      "keydown",
+      "press",
+      "pressStart",
+      "toggle"
+    ],
+    "events": [
+      "poetry:tree:toggle"
+    ],
+    "method_docs": {
+      "connect": "Applies ancestor-expansion visibility and settles the single tab stop.",
+      "keydown": "The treegrid container's keydown action (row-origin keys only): arrows rove the visible rows, the direction-aware expand/collapse pair runs the four-branch logic (collapse on a leaf focuses the parent), Home/End jump the edges, Enter toggles expandables, and printable keys run typeahead.",
+      "press": "Each row's click action: toggles when expandable (the default press behavior with no action/link/selection); clicks on inner controls (links, the chevron) stay their own.",
+      "pressStart": "The chevron's pointerdown action: never steal focus from the row.",
+      "toggle": "The chevron's click action (the chevron rides tabindex -1; its pointerdown is preventDefault'd via pressStart so focus never leaves the row): toggles, then refocuses the row."
+    }
+  }
+}

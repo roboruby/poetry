@@ -1,0 +1,17 @@
+# Herb toolchain configuration (linter / formatter / language server).
+# https://herb-tools.dev/configuration
+#
+# Rules are version-gated: a newer linter never enables new rules here
+# until `version` is bumped deliberately (bump + re-lint in one change).
+version: 0.10.3
+
+framework: actionview
+# Every template is gated to compile under Herb::Engine (rake
+# herb:compile), the stricter of the two engines a host may run.
+template_engine: herb
+
+linter:
+  enabled: true
+
+formatter:
+  enabled: false

@@ -1,0 +1,351 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Core
+    # Generates the component-usage Claude Code skill from the registry -
+    # the same never-hand-maintained discipline as LlmsText, one delivery
+    # surface over: a lean SKILL.md menu (guardrails + family index) over
+    # references/ files an agent loads selectively, so a 65-component
+    # catalog stays inside the context budget.
+    # The family partition itself belongs to the UI gem (it knows its
+    # roster); this class only formats.
+    #
+    # @example The installable skill file map
+    #   Poetry::Core::SkillText.new(registry: registry, families: families).files
+    #
+    # @api private
+    class SkillText < LlmsText
+      # The skill text over the registries and the family map.
+      # @param registry [Registry] the component registry the skill describes
+      # @param families [Hash{String => Array<String>}] family name => component names
+      # @param charts_registry [Registry, nil] the charts registry, when the gem is present
+      # @param builder_family [String] the family whose reference carries the registry's
+      #   form_builder section (rules, method summaries, the f.input as: vocabulary)
+      # @param host_registry [Registry, nil] the app's own components
+      #   (HostComponents.registry) - a references/app.md of their own
+      def initialize(registry:, families:, charts_registry: nil, builder_family: "forms", host_registry: nil)
+        super(registry: registry)
+        @families = families
+        @charts_registry = charts_registry
+        @builder_family = builder_family
+        @host_registry = host_registry if host_registry&.entries&.any?
+      end
+
+      # The installable file map, paths relative to .claude/skills/poetry/.
+      def files
+        files = { "SKILL.md" => skill_md }
+        @families.each_key { |family| files["references/#{family}.md"] = family_reference(family) }
+        files["references/blocks.md"] = blocks_reference
+        files["references/deciding.md"] = self.class.deciding_reference
+        files["references/charts.md"] = charts_reference if @charts_registry
+        files["references/app.md"] = app_reference if @host_registry
+        files
+      end
+
+      # Contract sections for every entry, llms-full format - public here
+      # (unlike LlmsText's internals) so a charts-registry instance can
+      # lend its sections to the main skill's charts reference.
+      def sections(paths = nil)
+        entries = paths ? @registry.entries.slice(*paths) : @registry.entries
+        entries.map { |path, entry| component_section(path, entry) }.join("\n")
+      end
+
+      # The component decision tree: curated head-to-heads keyed on the
+      # INTERACTION MODEL. The
+      # roster facts it names are gate-checked (doc-prose scans installed
+      # skill prose), so keep every claim registry-true. A PUBLIC class
+      # method: the boot-free MCP agent serves it too (the guidance tool),
+      # without a registry in hand.
+      def self.deciding_reference
+        <<~MD
+          # deciding - which component
+
+          Match the INTERACTION MODEL first - what the user does - and the
+          visual treatment second. The look is the theme's job; the
+          component's job is behavior. When a whole screen is the brief,
+          the `compose` MCP tool routes to a vetted block BEFORE any of
+          this (see `references/blocks.md`).
+
+          ## Options are VALUES vs options DO things
+
+          - Choosing writes a form value: Select (closed pick),
+            NativeSelect (zero-JS forms), Combobox (filter to pick),
+            Combobox `multiple:` (pick several - chips), RadioGroup (few
+            always-visible exclusive choices), ToggleGroup `type: :single`
+            (exclusive UI state, no form machinery).
+          - Choosing runs an action: DropdownMenu (per-item actions),
+            ContextMenu (right-click/long-press), Menubar (app-wide command
+            strip), Command (searchable palette).
+          - The rule: if the choice submits, it is never a menu; if it
+            navigates or mutates, it is never a select.
+
+          ## Overlays
+
+          - Dialog: interrupt for a task; focus trapped; explicit close.
+          - AlertDialog: confirm a destructive or irreversible act - no
+            light dismiss, the cancel action is the default focus.
+          - Sheet: a side panel for secondary work while the page stays
+            visible; Drawer: the bottom-edge mobile-first surface.
+          - Popover: a light-dismiss micro-surface anchored to its trigger.
+          - HoverCard: a hover PREVIEW - never interactive controls.
+          - Tooltip: one line of labeling; never actions, never required
+            information.
+
+          ## Chips, toggles, badges
+
+          - Exists until removed (recipients, filters): TagGroup.
+          - On/off UI state: Toggle; exclusive set: ToggleGroup.
+          - Picked from options: Combobox `multiple:` (its chips remove
+            back into the option list; TagGroup chips are just gone).
+          - Static status: Badge - never clickable.
+
+          ## Quantity, progress, waiting
+
+          - A quantity within a known range (disk, seats, strength): Meter.
+          - An operation completing over time: Progress (determinate only).
+          - Unknown duration: Spinner; structure-shaped waits: Skeleton;
+            Turbo-loaded regions: Deferred.
+
+          ## Text and value entry
+
+          - One line: Input; multi-line: Textarea; search: SearchField
+            (Escape clears, the clear affordance rides it).
+          - Fixed format: Input `mask:`; numbers: NumberField; one-time
+            codes: InputOtp.
+          - Dates and times: DateField / TimeField (segmented editing);
+            DatePicker when a calendar aids the pick; Calendar alone for
+            in-page selection; Slider / range for magnitudes.
+          - File upload: FileInput (`variant: :dropzone` when dragging is
+            the point).
+
+          ## Structure and records
+
+          - Tabular records with sort/filter/page: DataTable
+            (server-driven URL state); plain semantics: Table.
+          - Label:value facts on a detail page: MetadataList; one KPI:
+            Stat; grouped content: Card; freeform rows: Item.
+          - Hierarchy that expands and collapses: Tree; app navigation:
+            Sidebar (shell) / NavigationMenu (site) / Tabs (views of one
+            thing); progressive disclosure: Accordion (a one-off:
+            Collapsible).
+          - Grouped controls in ONE Tab stop: Toolbar; visually fused
+            buttons: ButtonGroup.
+
+          ## When two still fit
+
+          Prefer the narrower component (Stat over a hand-built Card;
+          SearchField over Input-plus-button), and prefer the one whose
+          KEYBOARD contract matches what the user expects to press. If the
+          answer still is not obvious, the block catalog probably already
+          composed it - check `references/blocks.md` before building.
+        MD
+      end
+
+      private
+
+      # The skill's front matter and body.
+      def skill_md
+        <<~MD
+          ---
+          name: poetry
+          description: >-
+            Build Rails views with the poetry component library: helper
+            contracts, options, slots, blocks, and the check workflow. Use
+            whenever writing or editing ERB/UI in an app that has poetry
+            installed.
+          ---
+
+          # poetry - component usage
+
+          Generated from the poetry registry (#{census}). After updating
+          poetry gems, regenerate with `bin/rails g poetry:skill`.
+
+          ## Guardrails
+
+          - FIRST MOVE, for every brief: call the poetry MCP `compose` tool
+            with the task text, before writing any ERB. It routes you to the
+            matching vetted block (source included, adapt in place - the
+            known winning path for screens) or to the right components for
+            single-component work. No MCP? Open `references/blocks.md` and
+            `bin/rails g poetry:block --list`. Composing a screen from
+            scratch when a block matched is the known losing path.
+          - Compose with the `poetry_<name>` helpers; never hand-write `cn-*`
+            classes, raw hex/oklch colors, or off-scale arbitrary values -
+            tokens and variants carry the design.
+          - Options are keywords; content is the block. Helpers take at most
+            the positional arguments their contract lists - most take none.
+          - A typed slot renders another component: the call takes THAT
+            component's props, never a render block.
+          - Icon names are kebab-case symbols: `:"circle-check"`, never
+            `:circle_check`.
+          - Status reads as a set: one badge treatment family per surface -
+            never mix solid (default/destructive) and soft
+            (success/warning/info) pills in one table.
+          - Page framing: a section that IS the page's subject keeps its
+            container and breathing room (`mx-auto max-w-* p-6`); a bare
+            component at the viewport origin reads cramped. Drop the wrapper
+            when composing into an already-padded frame.
+          - One visual theme per app (chosen at install); components read
+            tokens, never restate them.
+          - Browser agents (WebMCP): opt a rendered component into the user's
+            own agent with `webmcp: "name"` on the call - only components that
+            declare tools (Combobox, Dialog, Sheet, Drawer, Tabs; `describe_component`
+            at `full` lists them); a form becomes a tool with
+            `poetry_webmcp_form(tool: { name:, description: })` (autosubmit is
+            GET-only). Needs the poetry-agent gem; check gates the opt-ins.
+          - Check comes LAST: run `bin/rails poetry:check` (or the poetry MCP
+            `check` tool - instant, no app boot) as the FINAL action, after
+            your last edit. An edit made after your last check is unverified
+            markup - re-run check before finishing, every time.
+
+          ## Find your component
+
+          Not sure WHICH component the job calls for? Open
+          `references/deciding.md` first - the decision tree matches the
+          INTERACTION MODEL (what the user does), never the visual look.
+
+          Load the reference for the family you are composing in - each file
+          carries the full contracts (options, variants, slots, wiring, RULE
+          lines) for its components:
+
+          #{family_index}
+
+          ## Composing a page? Load poetry-design
+
+          Building or restyling a full page, screen, or dashboard - not a
+          lone component? Load the `poetry-design` skill BEFORE composing:
+          theme fit, page macrostructure, hierarchy, status color, and the
+          finishing audit live there. Component contracts alone do not make
+          a composed page - and neither does guidance: start the page from
+          `compose`'s block match and adapt, don't rebuild its advice from
+          a blank file.
+
+          ## Authoring a component? Load poetry-component
+
+          Building a component of your own - one this catalog doesn't
+          cover? Load the `poetry-component` skill BEFORE writing the
+          class: the canonical anatomy (section order), the documentation
+          standard, and the audit checklist live there.
+        MD
+      end
+
+      # The component, chart, app and block counts as a phrase.
+      def census
+        parts = ["#{@registry.entries.size} components"]
+        parts << "#{@charts_registry.entries.size} chart components" if @charts_registry
+        parts << "#{@host_registry.entries.size} app components" if @host_registry
+        blocks = @registry.blocks
+        parts << "#{blocks.size} blocks" if blocks&.any?
+        parts.join(" + ")
+      end
+
+      # One line per family reference file, with its members.
+      def family_index
+        lines = @families.map do |family, members|
+          "- **#{family}** (`references/#{family}.md`): #{members.join(", ")}"
+        end
+        lines << "- **blocks** (`references/blocks.md`): #{(@registry.blocks || {}).keys.join(", ")}"
+        lines << "- **charts** (`references/charts.md`): #{chart_names.join(", ")}" if @charts_registry
+        lines << "- **app** (`references/app.md`): #{app_helper_names.join(", ")}" if @host_registry
+        lines.join("\n")
+      end
+
+      # The chart components' names.
+      def chart_names
+        @charts_registry.entries.keys.map { |path| path.split("/").drop(2).join("_") }
+      end
+
+      # One family's reference: the contracts of its components.
+      def family_reference(family)
+        members = @families.fetch(family)
+        paths = @registry.entries.keys.select do |path|
+          members.include?(path.split("/").drop(2).join("_"))
+        end
+        <<~MD
+          # poetry #{family} components
+
+          Contracts generated from the registry. `RULE` lines are constraints,
+          not suggestions. Options are keywords; content is the block.
+
+          #{sections(paths)}
+          #{builder_reference if family == @builder_family}
+        MD
+      end
+
+      # The registry's form_builder section rides the family that hosts the
+      # form controls: the builder's RULE lines, its method summaries, and
+      # the f.input as: vocabulary. A registry without one (charts, a host
+      # without the UI gem) contributes nothing.
+      def builder_reference
+        section = @registry.respond_to?(:form_builder) ? @registry.form_builder : nil
+        return "" unless section.is_a?(Hash) && section.any?
+
+        out = ["## Form builder (model-bound forms)", "",
+               "Inside `form_with(model:, builder:)` forms the builder derives label, hint, error, " \
+               "and aria from the model; these `RULE` lines bind there."]
+        rules = Array(section["rules"])
+        out << "" << rules.map { |rule| "- RULE: #{rule}" }.join("\n") if rules.any?
+        methods = section["methods"]
+        if methods.is_a?(Hash) && methods.any?
+          out << "" << "Methods:" << "" << methods.map { |name, summary| "- `#{name}` - #{summary}" }.join("\n")
+        end
+        types = Array(section["input_types"])
+        out << "" << "`f.input` `as:` values: #{types.join(", ")}" if types.any?
+        out.join("\n")
+      end
+
+      # The blocks reference inlines every block's full source - the block
+      # WITH source is the load-bearing agent path.
+      def blocks_reference
+        <<~MD
+          # poetry blocks - vetted composed screens
+
+          Blocks are the DEFAULT starting point for a screen, not a
+          fallback: the MCP `compose` tool routes a brief to the right one
+          automatically (call it first); this file carries the same catalog
+          with full source. `bin/rails g poetry:block <name>` copies one
+          into app/views/blocks/ as source the app owns. Blocks carry the
+          composed patterns - containment, status color-coding, page
+          furniture, realistic content - so a screen starts composed, not
+          blank. The sample content is meant to be replaced.
+          #{blocks_full}
+        MD
+      end
+
+      # The app components' helpers.
+      def app_helper_names
+        @host_registry.entries.map { |path, entry| helper(path, entry) }
+      end
+
+      # The app's own components: the same contract format as the gem
+      # families, under the helpers the app declared.
+      def app_reference
+        app = self.class.new(registry: @host_registry, families: {})
+        <<~MD
+          # This application's own components
+
+          Components the app defines on the Poetry DSL, rendered with the
+          helper named in each heading. Same contract as the gem families:
+          `RULE` lines are constraints, options are keywords, content is the
+          block.
+
+          #{app.sections}
+        MD
+      end
+
+      # The charts reference: the contracts of the chart components.
+      def charts_reference
+        charts = self.class.new(registry: @charts_registry, families: {})
+        <<~MD
+          # poetry chart components
+
+          Contracts generated from the charts registry. Chart data is
+          server-rendered; the `poetry_chart(type, ...)` shorthand takes the
+          chart type as its one positional argument.
+
+          #{charts.sections}
+        MD
+      end
+    end
+  end
+end

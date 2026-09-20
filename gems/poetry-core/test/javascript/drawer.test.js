@@ -1,0 +1,359 @@
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { Application } from "@hotwired/stimulus"
+import { registerPoetryControllers } from "@poetry/controllers"
+import { resetScrollLock } from "@poetry/controllers/helpers/scroll_lock"
+
+// poetry--core--drawer JS-unit: the swipe gesture + the presence-hold
+// close, on top of the inherited dialog machinery. What this file proves:
+// the CSS-var contract (--drawer-swipe-movement-*/progress written to the
+// <dialog> during a drag, data-swiping after the slop), the release
+// physics (past-half or flicked -> strength-scaled dismissal; short+slow
+// -> snap back), gesture guards (interactive targets and toward-gesture
+// scrollable content own the pointer; the handle always swipes), and the
+// animated close path flipping the open/closed pair. Real transition
+// timing is the browser rig's job - jsdom reports no transitions, so
+// exitPresence settles synchronously here.
+
+const nextFrame = () => new Promise((resolve) => setTimeout(resolve, 0))
+const el = (id) => document.getElementById(id)
+
+const markup = ({ direction = "down", modal = true, snap = null, inner = "" } = {}) => `
+  <div id="root" data-controller="poetry--core--drawer"
+       data-poetry--core--drawer-direction-value="${direction}"
+       data-poetry--core--drawer-modal-value="${modal}"
+       ${snap ? `data-poetry--core--drawer-snap-points-value='${JSON.stringify(snap)}'` : ""}>
+    <button id="trigger" type="button" data-action="click->poetry--core--drawer#open">Open</button>
+    <dialog id="dialog" data-slot="drawer-content" data-closed
+            data-poetry--core--drawer-target="dialog"
+            data-action="cancel->poetry--core--drawer#close click->poetry--core--drawer#backdropClose
+                         keydown->poetry--core--drawer#escapeClose
+                         pointerdown->poetry--core--drawer#swipeStart pointermove->poetry--core--drawer#swipeMove
+                         pointerup->poetry--core--drawer#swipeEnd pointercancel->poetry--core--drawer#swipeCancel">
+      <div data-slot="drawer-swipe-handle" id="handle" aria-hidden="true"></div>
+      <p id="body-text">Drawer body</p>
+      <button id="inner-button" type="button">Action</button>
+      ${inner}
+    </dialog>
+  </div>`
+
+async function mount(html) {
+  document.body.innerHTML = html
+  // jsdom lacks the dialog methods (the known shim, see dialog tests).
+  if (!HTMLDialogElement.prototype.showModal || HTMLDialogElement.prototype.__vitestShim) {
+    HTMLDialogElement.prototype.__vitestShim = true
+    HTMLDialogElement.prototype.showModal = function () { this.setAttribute("open", "") }
+    HTMLDialogElement.prototype.show = function () { this.setAttribute("open", "") }
+    HTMLDialogElement.prototype.close = function () { this.removeAttribute("open") }
+  }
+  Element.prototype.setPointerCapture ||= () => {}
+  Element.prototype.releasePointerCapture ||= () => {}
+  const application = Application.start()
+  registerPoetryControllers(application)
+  await nextFrame()
+  return application
+}
+
+const pointer = (type, target, { x = 0, y = 0, id = 1, time } = {}) => {
+  const event = new MouseEvent(type, { bubbles: true, cancelable: true, clientX: x, clientY: y, button: 0 })
+  Object.defineProperty(event, "pointerId", { value: id })
+  Object.defineProperty(event, "pointerType", { value: "touch" })
+  if (time !== undefined) Object.defineProperty(event, "timeStamp", { value: time })
+  target.dispatchEvent(event)
+}
+
+const dragFromHandle = async (movements, { time = 0 } = {}) => {
+  const handle = el("handle")
+  pointer("pointerdown", handle, { y: 100, time })
+  for (const [y, t] of movements) pointer("pointermove", el("dialog"), { y, time: t })
+}
+
+describe("poetry--core--drawer", () => {
+  let application
+
+  beforeEach(async () => {
+    application = await mount(markup())
+    el("trigger").click()
+    await nextFrame()
+    // Give the dialog a measurable height for progress math.
+    Object.defineProperty(el("dialog"), "offsetHeight", { value: 400, configurable: true })
+    return async () => {
+      application.stop()
+      document.body.replaceChildren()
+      await nextFrame()
+    }
+  })
+
+  it("open flips the pair and rides the starting-style two-frame trick", () => {
+    const dialog = el("dialog")
+
+    expect(dialog.hasAttribute("open")).toBe(true)
+    expect(dialog.hasAttribute("data-open")).toBe(true)
+    expect(dialog.hasAttribute("data-closed")).toBe(false)
+  })
+
+  it("a drag past the slop writes the CSS-var contract onto the dialog", async () => {
+    await dragFromHandle([[110, 16], [200, 32]])
+    const dialog = el("dialog")
+
+    expect(dialog.hasAttribute("data-swiping")).toBe(true)
+    expect(dialog.style.getPropertyValue("--drawer-swipe-movement-y")).toBe("100px")
+    expect(dialog.style.getPropertyValue("--drawer-swipe-progress")).toBe("0.25")
+  })
+
+  it("released past half the height dismisses with a strength-scaled exit", async () => {
+    const dialog = el("dialog")
+    // jsdom has no transitions, so exitPresence settles (and resets the
+    // vars) synchronously - observe the strength write via a spy.
+    const setProperty = vi.spyOn(dialog.style, "setProperty")
+
+    await dragFromHandle([[150, 16], [350, 48]])
+    pointer("pointerup", dialog, { y: 350, time: 64 })
+    await nextFrame()
+
+    // 250px of 400 = 0.625 progress -> strength 0.375.
+    expect(setProperty).toHaveBeenCalledWith("--drawer-swipe-strength", "0.375")
+    expect(dialog.hasAttribute("data-swiping")).toBe(false)
+    expect(dialog.hasAttribute("data-closed")).toBe(true)
+    expect(dialog.hasAttribute("open")).toBe(false)
+  })
+
+  it("a fast flick dismisses even from a short distance", async () => {
+    // 80px in 40ms = 2 px/ms - far past the velocity threshold.
+    await dragFromHandle([[140, 20], [180, 40]])
+    pointer("pointerup", el("dialog"), { y: 180, time: 40 })
+    await nextFrame()
+
+    expect(el("dialog").hasAttribute("data-closed")).toBe(true)
+  })
+
+  it("a short slow drag snaps back instead of dismissing", async () => {
+    await dragFromHandle([[120, 300], [160, 900]])
+    pointer("pointerup", el("dialog"), { y: 160, time: 1500 })
+    // The snap-back write rides requestAnimationFrame - wait for a real frame.
+    await new Promise((resolve) => requestAnimationFrame(() => resolve()))
+    await nextFrame()
+
+    const dialog = el("dialog")
+
+    expect(dialog.hasAttribute("data-open")).toBe(true)
+    expect(dialog.hasAttribute("data-swiping")).toBe(false)
+    expect(dialog.style.getPropertyValue("--drawer-swipe-movement-y")).toBe("0px")
+  })
+
+  it("the click after a press that started inside the panel never dismisses (the ghost click)", async () => {
+    const dialog = el("dialog")
+    dialog.getBoundingClientRect = () => ({ top: 400, bottom: 800, left: 0, right: 1000, width: 1000, height: 400 })
+    const click = (y) => dialog.dispatchEvent(new MouseEvent("click", { bubbles: true, clientX: 500, clientY: y }))
+
+    // A press on the panel, dragged up against the clamp, released over
+    // the backdrop: the browser's compat click lands at the release point.
+    pointer("pointerdown", el("body-text"), { x: 500, y: 420 })
+    pointer("pointermove", dialog, { x: 500, y: 300, time: 200 })
+    pointer("pointerup", dialog, { x: 500, y: 300, time: 300 })
+    click(300)
+
+    expect(dialog.hasAttribute("data-open")).toBe(true)
+
+    // A press that started on the backdrop still dismisses.
+    pointer("pointerdown", dialog, { x: 500, y: 100 })
+    pointer("pointerup", dialog, { x: 500, y: 100 })
+    click(100)
+    await nextFrame()
+
+    expect(dialog.hasAttribute("data-open")).toBe(false)
+  })
+
+  it("interactive targets own the pointer - no drag starts from a button", () => {
+    pointer("pointerdown", el("inner-button"), { y: 100 })
+    pointer("pointermove", el("dialog"), { y: 200 })
+
+    expect(el("dialog").hasAttribute("data-swiping")).toBe(false)
+  })
+
+  it("content scrolled toward the gesture owns the pointer", async () => {
+    application.stop()
+    application = await mount(markup({
+      inner: '<div id="scroller"><p>tall content</p></div>'
+    }))
+    el("trigger").click()
+    await nextFrame()
+    const scroller = el("scroller")
+    Object.defineProperty(scroller, "scrollHeight", { value: 500, configurable: true })
+    Object.defineProperty(scroller, "clientHeight", { value: 200, configurable: true })
+    scroller.scrollTop = 50 // scrolled down - a down-swipe would fight scroll-up
+
+    pointer("pointerdown", scroller, { y: 100 })
+    pointer("pointermove", el("dialog"), { y: 200 })
+
+    expect(el("dialog").hasAttribute("data-swiping")).toBe(false)
+  })
+
+  it("the swipe vars reset once the drawer is closed", async () => {
+    await dragFromHandle([[150, 16], [350, 48]])
+    pointer("pointerup", el("dialog"), { y: 350, time: 64 })
+    await nextFrame()
+
+    const dialog = el("dialog")
+
+    expect(dialog.style.getPropertyValue("--drawer-swipe-progress")).toBe("")
+    expect(dialog.style.getPropertyValue("--drawer-swipe-strength")).toBe("")
+  })
+
+  it("a modal drawer leaves Esc to the native cancel - escapeClose no-ops", async () => {
+    el("inner-button").dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true })
+    )
+    await nextFrame()
+
+    expect(el("dialog").hasAttribute("open")).toBe(true)
+  })
+})
+
+// modal: false - the source's modal={false}: show() instead of
+// showModal(), page interactive, no scroll lock, Esc via escapeClose
+// (a non-modal dialog never fires cancel).
+describe("poetry--core--drawer non-modal", () => {
+  let application
+
+  beforeEach(async () => {
+    resetScrollLock()
+    document.body.style.overflow = ""
+    application = await mount(markup({ direction: "right", modal: false }))
+    return async () => {
+      application.stop()
+      document.body.replaceChildren()
+      await nextFrame()
+    }
+  })
+
+  it("opens with show() - no top layer entry, no scroll lock", async () => {
+    const dialog = el("dialog")
+    const show = vi.spyOn(dialog, "show")
+    const showModal = vi.spyOn(dialog, "showModal")
+
+    el("trigger").click()
+    await nextFrame()
+
+    expect(show).toHaveBeenCalledOnce()
+    expect(showModal).not.toHaveBeenCalled()
+    expect(dialog.hasAttribute("data-open")).toBe(true)
+    expect(document.body.style.overflow).toBe("")
+  })
+
+  it("Escape closes it through the animated path", async () => {
+    el("trigger").click()
+    await nextFrame()
+
+    el("inner-button").dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true })
+    )
+    await nextFrame()
+
+    const dialog = el("dialog")
+
+    expect(dialog.hasAttribute("open")).toBe(false)
+    expect(dialog.hasAttribute("data-closed")).toBe(true)
+  })
+
+  it("a claimed Escape stays claimed - defaultPrevented is respected", async () => {
+    el("trigger").click()
+    await nextFrame()
+
+    const event = new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true })
+    event.preventDefault()
+    el("inner-button").dispatchEvent(event)
+    await nextFrame()
+
+    expect(el("dialog").hasAttribute("open")).toBe(true)
+  })
+})
+
+// Snap points (source parity: snapPoints) - a down sheet with preset
+// resting heights: opens at the compact peek, drags BOTH ways between
+// points, dismisses only past the peek's half. Height 400 here, points
+// [0.25, 1] -> offsets [300, 0]; "5rem" = 80px under the 16px root.
+describe("poetry--core--drawer snap points", () => {
+  let application
+
+  const settle = async () => {
+    await new Promise((resolve) => requestAnimationFrame(() => resolve()))
+    await nextFrame()
+  }
+
+  const drag = async (movements) => {
+    const [[startY, startTime = 0], ...rest] = movements
+    pointer("pointerdown", el("handle"), { y: startY, time: startTime })
+    for (const [y, time] of rest) {
+      pointer("pointermove", el("dialog"), { y, time })
+    }
+  }
+
+  const mountSnap = async (snap) => {
+    application = await mount(markup({ snap }))
+    Object.defineProperty(el("dialog"), "offsetHeight", { value: 400, configurable: true })
+    el("trigger").click()
+    await nextFrame()
+  }
+
+  beforeEach(() => {
+    return async () => {
+      application.stop()
+      document.body.replaceChildren()
+      await nextFrame()
+    }
+  })
+
+  it("opens at the first snap point", async () => {
+    await mountSnap([0.25, 1])
+    const dialog = el("dialog")
+
+    expect(dialog.style.getPropertyValue("--drawer-snap-point-offset")).toBe("300px")
+    // Progress stays unwritten until a drag - the backdrop calc's
+    // var(--drawer-swipe-progress, 0) fallback reads it as zero.
+    expect(dialog.style.getPropertyValue("--drawer-swipe-progress")).toBe("")
+  })
+
+  it("CSS-length points resolve px and rem against the root font size", async () => {
+    await mountSnap(["5rem", "150px"])
+
+    expect(el("dialog").style.getPropertyValue("--drawer-snap-point-offset")).toBe("320px")
+  })
+
+  it("an up-drag settles on the nearest fuller point", async () => {
+    await mountSnap([0.25, 1])
+    await drag([[350, 0], [100, 40]]) // -250px of the 300px offset
+    pointer("pointerup", el("dialog"), { y: 100, time: 900 }) // slow release
+    await settle()
+
+    const dialog = el("dialog")
+
+    expect(dialog.style.getPropertyValue("--drawer-snap-point-offset")).toBe("0px")
+    expect(dialog.style.getPropertyValue("--drawer-swipe-movement-y")).toBe("0px")
+    expect(dialog.hasAttribute("open")).toBe(true)
+  })
+
+  it("a down-flick from the full point steps down one snap, never out", async () => {
+    await mountSnap([0.25, 1])
+    await drag([[350, 0], [100, 40]])
+    pointer("pointerup", el("dialog"), { y: 100, time: 900 })
+    await settle()
+
+    await drag([[100, 1000], [180, 1010]]) // fast: 80px in 10ms
+    pointer("pointerup", el("dialog"), { y: 180, time: 1010 })
+    await settle()
+
+    const dialog = el("dialog")
+
+    expect(dialog.style.getPropertyValue("--drawer-snap-point-offset")).toBe("300px")
+    expect(dialog.hasAttribute("open")).toBe(true)
+  })
+
+  it("released past half the peek dismisses", async () => {
+    await mountSnap([0.25, 1])
+    await drag([[300, 0], [360, 200]]) // +60 of the 100px peek, slow
+    pointer("pointerup", el("dialog"), { y: 360, time: 900 })
+    await settle()
+
+    expect(el("dialog").hasAttribute("open")).toBe(false)
+  })
+})

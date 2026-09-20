@@ -1,0 +1,133 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Core
+    module CSS
+      # The .cn-* override contract - an intent-vs-accident distinction for
+      # poetry's one un-contracted styling surface. Hosts MAY restyle
+      # theme-owned cn-* classes from their own CSS (any unlayered rule
+      # beats the theme's layer(base)) - but every such override must be
+      # DECLARED: a dated, reasoned, scoped entry under `overrides:` in
+      # config/poetry_components.yml. Undeclared overrides are drift;
+      # declared ones are design intent that travels into DESIGN.md's
+      # "Intentional deviations" section.
+      #
+      # Pure logic: {relative_path => css} sources + raw declaration hashes
+      # in, findings out. The poetry:design:overrides task feeds and prints
+      # it. Declaration rules: `reason` is required; `cn: "*"` must be
+      # file-scoped - a repo-wide blanket cannot happen by accident.
+      #
+      # An override is a rule against a class the THEME owns: the cn-* names
+      # the gem dictionaries emit plus the ones the installed fragment
+      # defines on purpose (the same two sets the theme-coverage gate holds
+      # against each other). A host's own cn-* classes - a kit's dictionary,
+      # a page's helper class - are the host's business and never findings.
+      # The task passes that set as `owned:`; nil (the gem's own tests) means
+      # every cn-* name is owned.
+      #
+      # @example
+      #   scan = Poetry::Core::CSS::OverrideScan.new(
+      #     sources: { "app/assets/site.css" => css },
+      #     declarations: YAML.load_file("config/poetry_components.yml")["overrides"],
+      #     owned: theme_owned_names
+      #   )
+      #   scan.ok? || scan.undeclared # => [["app/assets/site.css", ["cn-button"]]]
+      #
+      # @api private
+      class OverrideScan
+        CN_TOKEN = /\.(cn-[a-z0-9-]+)/
+        COMMENT = %r{/\*.*?\*/}m
+
+        # One override declaration from the overrides section, with its match state.
+        Declaration = Struct.new(:cn, :files, :reason, :created, :index, :matched, keyword_init: true) do
+          # Whether the declaration covers every cn class.
+          def wildcard? = cn == "*"
+
+          # Whether the declaration covers a cn class in a file.
+          def covers?(path, cn_class)
+            return false unless wildcard? || Array(cn).include?(cn_class)
+            return true if files.nil? || files.empty?
+
+            files.any? { |glob| File.fnmatch(glob, path, File::FNM_PATHNAME | File::FNM_EXTGLOB) }
+          end
+        end
+
+        # The findings: undeclared overrides, invalid declarations, stale ones, and the declared count.
+        attr_reader :undeclared, :invalid, :stale, :declared_count
+
+        # Scans the host CSS for cn overrides against the declarations.
+        # @param sources [Hash{String => String}] relative path => host CSS
+        # @param declarations [Array<Hash>] the raw `overrides:` entries
+        # @param owned [Enumerable<String>, nil] the theme-owned cn-* names;
+        #   nil treats every cn-* name as owned
+        def initialize(sources:, declarations:, owned: nil)
+          @owned = owned&.to_set(&:to_s)
+          @declarations, @invalid = normalize(Array(declarations))
+          @undeclared = []
+          @declared_count = 0
+          scan(sources)
+          @stale = @declarations.reject(&:matched)
+        end
+
+        # Whether nothing is undeclared or invalid.
+        def ok? = @undeclared.empty? && @invalid.empty?
+
+        # The exact YAML to paste for an undeclared override - a finding
+        # ships its own exception command.
+        def snippet_for(path, classes)
+          cn = classes.size == 1 ? classes.first.inspect : "\"*\""
+          <<~YAML
+            - cn: #{cn}
+              files: ["#{path}"]
+              reason: "TODO - why this override is intentional"
+              created: #{Time.now.strftime("%Y-%m-%d")}
+          YAML
+        end
+
+        private
+
+        # The declarations as records, with the malformed ones reported.
+        def normalize(raw)
+          valid = []
+          invalid = []
+          raw.each_with_index do |entry, index|
+            unless entry.is_a?(Hash)
+              invalid << "overrides[#{index}]: not a mapping"
+              next
+            end
+            files = Array(entry["files"]).map(&:to_s)
+            declaration = Declaration.new(cn: entry["cn"] || "*", files: files,
+                                          reason: entry["reason"].to_s, created: entry["created"],
+                                          index: index, matched: false)
+            if declaration.reason.strip.empty?
+              invalid << "overrides[#{index}]: `reason` is required - an override without a why is drift"
+            elsif declaration.wildcard? && files.empty?
+              invalid << "overrides[#{index}]: `cn: \"*\"` must be file-scoped (add `files:`) - " \
+                         "a repo-wide blanket cannot happen by accident"
+            else
+              valid << declaration
+            end
+          end
+          [valid, invalid]
+        end
+
+        # Records each file's cn classes no declaration covers.
+        def scan(sources)
+          sources.each do |path, css|
+            classes = css.gsub(COMMENT, "").scan(CN_TOKEN).flatten.uniq.sort
+            classes = classes.select { |cn_class| @owned.include?(cn_class) } if @owned
+            next if classes.empty?
+
+            open = classes.reject do |cn_class|
+              hit = @declarations.select { |declaration| declaration.covers?(path, cn_class) }
+              hit.each { |declaration| declaration.matched = true }
+              @declared_count += 1 if hit.any?
+              hit.any?
+            end
+            @undeclared << [path, open] if open.any?
+          end
+        end
+      end
+    end
+  end
+end

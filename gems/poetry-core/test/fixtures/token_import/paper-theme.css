@@ -1,0 +1,18 @@
+/* Sample CSS custom-property theme in the shape a Paper "Copy theme" export
+   or a shadcn drop-in emits: a :root light block, a .dark block, hex/rgb/oklch
+   values, a var() alias, a --radius dimension, and a non-color var. */
+:root {
+  --background: oklch(1 0 0);
+  --foreground: #171717;
+  --primary: #1a1a1a;
+  --primary-foreground: oklch(0.985 0 0);
+  --ring: var(--primary);
+  --muted-foreground: rgb(142, 142, 142);
+  --radius: 0.5rem;
+  --font-sans: "Inter", sans-serif;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: oklch(0.985 0 0);
+}

@@ -1,0 +1,5 @@
+# GitHub language stats (Linguist): the vendored floating-ui dists and the
+# JS test suite are not this gem's source; without this the repo reads as
+# JavaScript instead of Ruby.
+app/javascript/poetry/core/vendor/** linguist-vendored
+test/javascript/** linguist-vendored

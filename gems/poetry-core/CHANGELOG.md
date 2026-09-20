@@ -1,0 +1,95 @@
+# Changelog
+
+## [0.1.6]
+
+### Fixed
+
+- The API reference reads a declaration's `doc:` string as Ruby does: an escaped quote in the source (`\"16/9\"`) is a quote on the page, not a backslash and a quote. The doc-build handler kit decodes each string piece by its quote character; a test covers the kit for the first time.
+
+## [0.1.5] - 2026-09-18
+
+### Added
+
+- The controllers manifest carries the prose beside each controller: its purpose (a JSDoc block above the class), the meaning of every value, and a summary of every action method, harvested when the manifest is generated; `rake stimulus:docs` holds the count of gaps at a committed floor, now zero.
+- `poetry check` warns when app Ruby or a template names one of the family's internal namespaces (`internal-constant`): a class or module the reference hides with `@api private` works today and may change without notice. The registries carry the list (`internals`, read from source by `Poetry::Core::ApiInternals` at generation), so the check, the MCP `check` tool and a host's editor hook all read the same contract without booting; core's own internals join every catalog.
+- `Poetry::Core::Component#root_attributes`, the root element's attributes ready to splat: the caller's `html_attributes` (classes already merged with the dictionary's) over the component's own root markup - `data-slot` (`root_slot`, the component title in kebab form, or the one passed), `data-component`, and the root's Stimulus wiring whenever a `use_stimulus` block declares `:root`. A component adds its markup by overriding and passing it up (`super("role" => "status")`); the template writes `tag.div(**root_attributes)`. The private `root_attributes` every component and the guide's sample wrote by hand is the default now.
+- `Poetry::Core::Component#element_attributes(part, markup, stimulus:)`, the builder for a part's attributes, ready to splat: the part's `data-slot` (the root slot and the part name), the dictionary's classes for it when the Style declares the element, the part's Stimulus wiring when a `use_stimulus` block declares an element of that name, and the markup over all three (its own `"data-slot"` or `"class"` wins; `stimulus:` names another element, or `false` for none). The wiring merges the safe way: plain `Hash#merge` of markup with wiring dropped one side's `data-controller` or `data-action` when both carried one, and this concatenates them. Build every part here and write `tag.div(**content_attributes)`; `to_attributes` leaves the templates.
+
+### Fixed
+
+- A message scroller opening at the end (or the last anchor) no longer settles at the top of the thread when its controller connects before the page's render-blocking stylesheet lands. The opening position counted as applied against a viewport that had nothing to scroll yet; it now finalizes only against a laid-out viewport, else on the first resize pass, and the opening hold (`data-pending-scroll`) releases there.
+
+### Changed
+
+- 133 methods the reference already hid with `@api private` are Ruby-private now: each was called only by its own class or template, so the runtime enforces what the tag only stated. A host that reached one gets a NoMethodError instead of an internal that may change without notice. The tag remains on the internals the family shares between its gems and on whole internal classes.
+- Every class, module and method carries a one-sentence description, private helpers included: `rake yard:coverage:all` measures the whole tree (a tag-only docstring counts as blank) and the committed floor now stands at zero.
+- `Poetry::Core::RequiresAny.phrase` states an any-of contract once for `poetry check`, llms.txt and the MCP server; the registry entry builder, the slot surface builder and the host manifest's literal scanner are split into named steps with no change in output (the committed registries rebuild byte for byte).
+
+## [0.1.4] - 2026-09-15
+
+Lockstep release with the family; no changes in this gem.
+
+## [0.1.3] - 2026-09-13
+
+### Fixed
+
+- `poetry check` no longer flags `with_trigger(compose: true) do |wiring|` (any composed slot) as a yieldless block: `compose: true` is the slot's other contract, and the setter yields the wiring for the caller's own control.
+- The app's own `poetry_*` helper methods are valid names for `poetry check` and the MCP `check` tool: `Poetry::Core::HostComponents.helper_methods` reads `def poetry_*` from `app/helpers` boot-free (the adapter `poetry:pagination` copies in, a wrapper the host wrote), and such a call is linted for its wiring only, since no registry describes its options or its block. A registry helper of the same name keeps the registry's contract.
+
+## [0.1.2] - 2026-09-13
+
+### Added
+
+- `helper :name` on a component: an application's (or an engine's) own component written on the DSL names its view helper. The engine defines that helper on Action View at boot and on every reload, and `Poetry::Core::HostComponents` discovers the app's components by convention (under `app/`, outside the `poetry/` namespace, published), builds their registry live, and reads their declared helpers boot-free from source. The registry entry carries `helper`; `poetry check` lints a declared helper under its own name (options, variants, arity, stable identity); llms.txt and the generated skill take an app registry and render an App components section and a `references/app.md`.
+- The runtime values tier. A component built with an off-list style value or a missing required option raises at construction in development and test, naming the allowed values with a did-you-mean, and logs in production while rendering as before (the passthrough guard's posture, at the same seam, so it holds whatever a component does in `before_render`). Only the DSL's own validations are enforced; a component's custom validators keep their own policy. An omitted style is nil, not an off-list value (`allow_nil` on the inclusion validations). The check is a direct lookup over the declared vocabulary (`style` variants, `required`, and `validates ... inclusion: { in: [...] }` on a declared attribute), not an ActiveModel validation pass.
+- Render cost. Measured on 200 Buttons in one view context, a Button went from 0.122 ms to 0.089 ms: the values tier is a direct lookup instead of a validation pass, construction converts the caller's attributes once, and the Style resolver memoises its dictionary walk per variant tuple (bounded by the variant space, cleared when the dictionary changes). The remaining time is ViewComponent's own render (about forty percent) and attribute assignment (a quarter).
+- The class-name merger follows the kit's CSS mode (`Poetry::Core::CSS::Modes.merger_for`): a `:bem` kit merges with a `BemMerger`, a `:tailwind` kit with a `TailwindMerger`. The global `classname_merger` is honoured whenever it is of the right kind, so a customised Tailwind merger still reaches poetry-ui and a host's BEM merger still reaches its BEM kit; a mismatch falls back to the stock merger of the mode. A host that set the global mode to `:bem` without a merger now gets the BEM merger on its kit, the pairing the guide always asked for. Attribute objects keep their assigned merger across copies.
+- `css_mode` is decided per kit. A component class declares it (`css_mode :bem`, inherited), or a kit pins its namespace (`Poetry::Core::CSS::Modes.pin("Acme::Ui", :bem)`); the global `Config.current.css_mode` is the default for kits that declare nothing, and a `css_mode:` keyword on a `css` call still wins over all of them. poetry-ui and poetry-charts pin `:tailwind`, so a host's global never reaches them and a BEM kit on the DSL renders beside them in one app. Before, the global was the only switch and setting it to `:bem` silently stripped poetry-ui's styling.
+- `OverrideScan` takes `owned:`, the theme-owned `cn-*` names; only a rule against one of those is an override. A host's own `cn-*` classes (a kit's dictionary, a page helper) are never findings. Nil keeps the old meaning (every `cn-*` name).
+- The host controllers manifest. `Poetry::Core::Stimulus::HostManifest` reads `app/javascript/controllers` (static targets, values in both forms, classes, `static events`, the class body's own methods) and writes `config/controllers_manifest.json`, the file a gem commits; the engine registers every loaded engine's and the app's manifest by convention before components load. A host controller then validates like poetry's: `use_stimulus` by Symbol at class load, template wiring in `poetry check` (the value-attribute rule now covers any registered controller), and its API in the registry's controllers section. The reader masks comments and string, template and regex literals before it reads structure, so a comment inside `static values`, a brace in a string, a one-line method body or an arrow-function class field all read correctly; it scrubs stray bytes and a BOM. An entry is complete or absent: a parent that is another host controller (relative import) or a poetry controller (`@poetry/controllers`, file or barrel import; charts and agent by their packages) merges child-first; an unresolvable parent, a computed static, a getter or a spread yields no entry and a named skip. A hand-written entry for a skipped identifier survives regeneration and never reads as stale (the gate compares only the controllers the reader read). Events are validated only from a literal `static events`; a controller that only calls `dispatch()` keeps them unknown, never empty. A Symbol declaration resolves to a gem's namespaced controller before a host controller of the same bare name, so a host `tabs_controller.js` never hijacks `controller :tabs`; the unknown-Symbol message names `bin/rails poetry:stimulus:manifest`. `Manifest.register_roots`, `Manifest.forget`; `Registry.gem_roots(registry: false)` lists every bundled root for the manifest walk.
+- Registry roots by convention. `Poetry::Core::Registry.roots` (booted: every loaded engine whose root carries a published registry, then the app when it committed one), `.gem_roots` (boot-free, from the bundle, plus an app root), and `.merged` (one view over several roots, block templates resolved to absolute paths). A registry can mark itself `internal: true` and consumers skip it; poetry-core's own is now marked, since its building blocks have no helpers. `HostComponents.committed_state` reports the app's committed registry as missing, fresh, or stale against the live build.
+- `Poetry::Core::CSS::TokenCollisions`: scans a host app's stylesheets for declarations of Poetry's token names (`--primary`, `--accent`, `--radius`, ...) and Tailwind theme keys (`--color-*`, `--radius-*`), and reports each with its location and what the role paints in Poetry's components. `poetry:install` and `poetry:check` run it.
+
+### Changed
+
+- A namespace pin follows the dictionary: a component's mode is its own declaration, else the pin of the root-most pinned ancestor (`Modes.inherited_for`), else the global, so a host subclass of a poetry-ui component stays Tailwind inside a BEM-pinned namespace while a host component written on the DSL takes the pin.
+- A dictionary merges by its own mode at every level: the resolver takes its class merger from the Style's sidecar component (its declaration, its kit's pin, or the global), so a host's global BEM merger never reaches a Tailwind kit's element-level joins, not only its root. A style redeclared without variants is open, whatever the parent listed: an inherited inclusion validator no longer narrows it. The "Style class not found" debug line is logged once per class.
+
+- `poetry check` validates every descriptor of a `data-action`, not only the last (a bogus first descriptor was invisible); a `data-<controller>-<name>-value` or `-target` attribute resolves to the controller the element declares when several registered identifiers fit (`foo` and `foo-bar`), a plain `data-foo-value` is the host's own attribute, a host controller's targets validate like poetry's, and an attribute whose value carries ERB skips the wiring rules instead of type-checking its fragments. A declared app helper matches bare calls only (`u.badge` is somebody's method); the stable-identity pass agrees. A file the runner cannot read or decode is one `unreadable` warning naming it, never the end of the sweep. `Check.mail_template?(path, root:)` judges the path inside the app root (an app checked out under a folder called `acme_mailer` keeps its pages) and knows Devise's `devise/mailer/`.
+
+- Every registry names every helper. A gem entry carries its `poetry_` convention name and an app entry the name it declared with `helper :name`; `Registry.helper_for(path, entry)` is the one resolver every surface reads (llms.txt, the check, the skill, the MCP server), so an app component that declared no helper is listed by class and no surface invents a `poetry_` name for it. The committed gem registries regenerate with the added key and nothing else.
+- Host helpers are checked before any is defined: a clash (a name Action View, poetry-ui, or the app's own `ApplicationController` helpers already carry, private methods included) or two components declaring one name raises naming both sides, leaves the module untouched, and the next reload after the fix starts clean. `Registry.read_file` is the one validated reader of a committed registry file; an empty, malformed, or wrong-shaped file reads as no registry (`Registry.invalid_at?`) instead of raising in whichever surface opened it first. The boot-free `HostComponents.declared_helpers` parses component sources with Prism, so a mention in a string, heredoc, or comment is not a declaration and `helper(:x)`, `helper "x"`, and `self.helper :x` are. `poetry:registry` leaves an engine's own components to that engine's registry.
+
+- `poetry check` leaves a mailer template's colors alone: under a `*_mailer/` directory or in the mailer layout, an inline hex or a color literal in a utility class is the only paint an email client honours (no stylesheet, no tokens), so the raw-color rule stays quiet there while every other rule runs as on a page. `Check.lint` takes `mail:` for a source string; the runner derives it from the path (`Check.mail_template?`).
+
+- The generated Tailwind theme mapping is `@theme inline default`. A host `@theme` value for the same key (its own `--color-primary`, a `--radius-sm` it set before Poetry arrived) wins whether it is declared before or after the mapping; Poetry's value still applies wherever the host set nothing. Before, the mapping replaced the host's keys wholesale, so every `rounded-sm` in an existing app changed size.
+
+## [0.1.1] - 2026-09-08
+
+### Added
+
+- `identity:` on every component: the one sanctioned way for a component that renders as another component's root to name it (its `data-component`). Universal like `key:`, never an HTML attribute.
+- `poetry check` rule `reserved-attribute`: `data-component` passed through a helper, as a string key or `data: { component: }`, is an error.
+
+### Changed
+
+- The passthrough contract is enforced at render. A keyword that is not an option still renders as an HTML attribute on the root, but a near miss of a declared option (`varient:`) raises in development and test with a did-you-mean and logs in production; `data-component` is never overridable (raised in development and test, dropped in production); `data-slot` stays open as a composition seam. `poetry check`'s `unknown-option` finding is an error, no longer a warning.
+- `poetry--core--hover-card`: `touchGuard` (on touchstart) is replaced by `pointerDown` (on pointerdown). `poetry--core--number-field`: the `focus` action is removed. A host that wired either by hand updates the action strings; poetry-ui's components already have.
+- `css_mode :bem` is documented as the mode for kits authored on the DSL that write their own templates; poetry-ui is Tailwind-native and not a `:bem` consumer.
+
+### Fixed
+
+- HoverCard: a tap on the trigger keeps its click on touch devices. The touchstart guard cancelled the click; a pointerdown latch held through the tap's compatibility mouse events replaces it.
+- MessageScroller: `data-pending-scroll` holds the root and the viewport until the opening position (`end` or `last-anchor`) is applied, releases at once for an empty transcript, is stripped when a Turbo morph re-stamps it, and is re-armed at `turbo:before-cache`, so a server-rendered or restored transcript never shows the top of the thread first.
+- NumberField: a sideways trackpad gesture over a wheel-enabled field scrolls the page instead of stepping, Shift on the horizontal axis steps large, and an event with no movement is neither stepped nor cancelled. Focus keeps the browser's own selection (Tab selects the value, a click places the caret); the steppers park the caret at the end.
+- NavigationMenu: a disabled trigger never opens, by hover or click, and the arrows step over it; ArrowDown on a trigger opens its panel with focus staying on the trigger; removing the open trigger's item, as a morph can, closes the bar and drops its orphaned panel.
+- Drawer: the click that follows a press inside the panel never dismisses, so a drag against the clamp released over the backdrop no longer closes the sheet.
+
+## [0.1.0] - 2026-09-05
+
+Initial public release. The family releases in lockstep; every gem pins its siblings at the same version.
+
+- The component framework on ViewComponent: the `Component` base class with the options, slots, variants, states, and parts DSL, class merging, HTML attribute handling, and the Stimulus wiring builders every component runs through.
+- Design tokens authored once and compiled to a Tailwind v4 theme or BEM CSS behind a contrast gate, with nine visual themes.
+- The component registry that every other surface projects from: `poetry check` verification of Herb-parsed ERB, llms.txt generation, registry items in the shadcn registry format, and stable ids for Turbo morphs and fragment caches.
+- Shared Stimulus controllers (`@poetry/core`), the preview infrastructure, the agent tools DSL for WebMCP declarations, and the install-time class safelist.
