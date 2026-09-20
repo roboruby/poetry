@@ -33,10 +33,19 @@ Gem::Specification.new do |spec|
                      config/hook_coverage config/theme_states]
   dev_only_files = %w[Gemfile Gemfile.lock Rakefile AGENTS.md .gitignore .rubocop.yml .yardopts .yard_coverage
                       .herb.yml package.json package-lock.json vitest.config.js]
-  spec.files = IO.popen(%w[git ls-files -z], chdir: __dir__, err: IO::NULL) do |ls|
-    ls.readlines("\x0", chomp: true).reject do |f|
-      (f == gemspec) || f.start_with?(*dev_only_dirs) || dev_only_files.include?(File.basename(f))
-    end
+  tracked = begin
+    IO.popen(%w[git ls-files -z], chdir: __dir__, err: IO::NULL) { |ls| ls.readlines("\x0", chomp: true) }
+  rescue SystemCallError
+    [] # no git on this machine (a slim runtime image)
+  end
+  if tracked.empty?
+    # Outside a git checkout (a deploy image, a path gem beside a host app) git
+    # lists nothing, so walk the tree instead; the rejects below still apply.
+    tracked = Dir.chdir(__dir__) { Dir.glob("**/*", File::FNM_DOTMATCH).select { |f| File.file?(f) } }
+    tracked.reject! { |f| f.start_with?(".git/", ".bundle/", "node_modules/", "coverage/", "doc/", "pkg/") }
+  end
+  spec.files = tracked.reject do |f|
+    (f == gemspec) || f.start_with?(*dev_only_dirs) || dev_only_files.include?(File.basename(f))
   end
   spec.bindir = "exe"
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
