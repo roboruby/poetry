@@ -1,0 +1,101 @@
+<%
+  connected_integrations = [
+    { name: "Slack", icon: :"message-square", detail: "Workspace acme-corp · Last synced 3 minutes ago", status: "Operational", badge_variant: :success },
+    { name: "Stripe", icon: :"credit-card", detail: "Live mode · Last synced 12 minutes ago", status: "Operational", badge_variant: :success },
+    { name: "GitHub", icon: :github, detail: "3 repositories linked · Webhook delivery delayed", status: "Degraded", badge_variant: :warning },
+    { name: "Zendesk", icon: :"life-buoy", detail: "42 tickets synced today", status: "Operational", badge_variant: :success },
+    { name: "Google Analytics", icon: :"bar-chart-2", detail: "Sync failed 2 hours ago · Reconnect required", status: "Down", badge_variant: :destructive },
+  ]
+
+  integration_catalog = {
+    "Communication" => [
+      { name: "Microsoft Teams", icon: :"message-circle", description: "Bring channel notifications and approvals into Teams." },
+      { name: "Twilio", icon: :phone, description: "Send SMS and voice alerts triggered by workspace events." },
+    ],
+    "Payments" => [
+      { name: "PayPal", icon: :"credit-card", description: "Accept PayPal as a checkout option alongside cards." },
+      { name: "Chargebee", icon: :"file-text", description: "Sync subscriptions and invoices with your billing system." },
+    ],
+    "Analytics" => [
+      { name: "Mixpanel", icon: :"bar-chart-2", description: "Track product events and funnels in real time." },
+      { name: "Amplitude", icon: :activity, description: "Analyze retention and engagement across cohorts." },
+    ],
+    "Developer tools" => [
+      { name: "Jira", icon: :"list-todo", description: "Turn flagged issues into tracked Jira tickets automatically." },
+      { name: "Datadog", icon: :server, description: "Stream infrastructure and app logs into your dashboards." },
+    ],
+    "Productivity" => [
+      { name: "Notion", icon: :"file-text", description: "Publish reports and docs straight to a Notion workspace." },
+      { name: "Asana", icon: :"check-square", description: "Create Asana tasks from flagged items and comments." },
+    ],
+  }
+%>
+<div class="mx-auto max-w-6xl space-y-10 p-6">
+  <header class="flex flex-col gap-4">
+    <%= poetry_breadcrumb do |crumb| %>
+      <% crumb.with_item("Settings", href: "/settings") %>
+      <% crumb.with_item("Integrations") %>
+    <% end %>
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Integrations</h1>
+      <p class="text-sm text-muted-foreground">Connect the tools your team already uses, and keep an eye on the health of what's linked today.</p>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <section aria-labelledby="connected-heading" class="space-y-4">
+    <div class="flex items-end justify-between gap-4">
+      <h2 id="connected-heading" class="text-lg font-semibold tracking-tight">Connected</h2>
+      <span class="text-sm text-muted-foreground"><%= connected_integrations.size %> connected</span>
+    </div>
+
+    <%= poetry_card do |card| %>
+      <%= poetry_item_group do %>
+        <% connected_integrations.each_with_index do |integration, index| %>
+          <%= poetry_item(media_variant: :icon, role: "listitem") do |item| %>
+            <% item.with_media { poetry_icon(name: integration[:icon]) } %>
+            <% item.with_title { integration[:name] } %>
+            <% item.with_description { integration[:detail] } %>
+            <% item.with_actions do %>
+              <div class="flex items-center gap-3">
+                <%= poetry_badge(variant: integration[:badge_variant]) { integration[:status] } %>
+                <%= poetry_button(variant: :outline, size: :sm) { "Manage" } %>
+              </div>
+            <% end %>
+          <% end %>
+          <% if index < connected_integrations.size - 1 %>
+            <%= poetry_item_separator %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </section>
+
+  <section aria-labelledby="catalog-heading" class="space-y-6">
+    <div class="space-y-1">
+      <h2 id="catalog-heading" class="text-lg font-semibold tracking-tight">Browse integrations</h2>
+      <p class="text-sm text-muted-foreground">Add a new integration to extend your workspace.</p>
+    </div>
+
+    <% integration_catalog.each do |category, integrations| %>
+      <div class="space-y-3">
+        <h3 class="text-sm font-medium text-muted-foreground uppercase tracking-wide"><%= category %></h3>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <% integrations.each do |integration| %>
+            <%= poetry_card do |card| %>
+              <% card.with_title { integration[:name] } %>
+              <% card.with_description { integration[:description] } %>
+              <% card.with_action { poetry_icon(name: integration[:icon], class: "size-5 text-muted-foreground") } %>
+              <% card.with_footer do %>
+                <%= poetry_button(variant: :outline, size: :sm, class: "w-full") do |button| %>
+                  <% button.with_leading { poetry_icon(name: :plug) } %>
+                  Connect
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </section>
+</div>

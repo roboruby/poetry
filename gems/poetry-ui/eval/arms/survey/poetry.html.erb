@@ -1,0 +1,19 @@
+<%# The poetry arm: three questions, one at a time - required choice,
+    optional multi-select, required closer with a free answer. %>
+<%= poetry_questionnaire(url: "#", shortcuts: :letters) do |q| %>
+  <% q.with_progress %>
+  <% q.with_item(name: "role", title: "What best describes your role?", required: true) do |item| %>
+    <% item.with_choice(value: "engineer", label: "Engineer") %>
+    <% item.with_choice(value: "designer", label: "Designer") %>
+    <% item.with_choice(value: "other", label: "Something else") %>
+  <% end %>
+  <% q.with_item(name: "channels", title: "Where did you hear about us?", multiple: true) do |item| %>
+    <% item.with_choice(value: "friend", label: "A friend") %>
+    <% item.with_choice(value: "social", label: "Social media") %>
+    <% item.with_choice(value: "search", label: "Search") %>
+  <% end %>
+  <% q.with_item(name: "feedback", title: "What should we build next?", required: true) do |item| %>
+    <% item.with_choice(value: "integrations", label: "More integrations") %>
+    <% item.with_input(label: "Your idea", placeholder: "Describe it…") %>
+  <% end %>
+<% end %>

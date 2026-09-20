@@ -1,0 +1,26 @@
+<%# The raw-Tailwind arm for the same table task - realistic: a competent
+    real <table> with <th> headers, but the tells: no <caption> (the
+    accessible table name is skipped), no overflow container, and hand-
+    written borders instead of a system. %>
+<table class="w-full text-sm">
+  <thead class="border-b">
+    <tr>
+      <th class="h-10 px-2 text-left font-medium">Invoice</th>
+      <th class="h-10 px-2 text-left font-medium">Status</th>
+      <th class="h-10 px-2 text-right font-medium">Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="border-b">
+      <td class="p-2 font-medium">INV001</td>
+      <td class="p-2">Paid</td>
+      <td class="p-2 text-right">$250.00</td>
+    </tr>
+  </tbody>
+  <tfoot class="border-t font-medium">
+    <tr>
+      <td class="p-2" colspan="2">Total</td>
+      <td class="p-2 text-right">$250.00</td>
+    </tr>
+  </tfoot>
+</table>

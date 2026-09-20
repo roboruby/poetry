@@ -1,0 +1,10 @@
+<%# The raw-Tailwind arm for the same alert task - realistic: the visual
+    treatment is fine, but it is a styled div with no live-region or
+    alert semantics and a decorative icon exposed to AT. %>
+<div class="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mt-0.5 size-4"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/></svg>
+  <div>
+    <p class="font-medium">Payment failed</p>
+    <p class="text-sm">Your card was declined. Update your billing details and retry.</p>
+  </div>
+</div>

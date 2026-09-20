@@ -1,0 +1,40 @@
+<% members = [
+  { name: "Priya Anand", initials: "PA", description: "Product Design Lead" },
+  { name: "Marcus Webb", initials: "MW", description: "Senior Backend Engineer" },
+  { name: "Sofia Chen", initials: "SC", description: "Engineering Manager, Platform" },
+  { name: "Diego Ramirez", initials: "DR", description: "Staff Frontend Engineer" },
+  { name: "Aisha Khan", initials: "AK", description: "Product Manager, Growth" },
+  { name: "Tom Whitfield", initials: "TW", description: "DevOps Engineer" }
+] %>
+
+<section class="flex flex-col gap-6 p-6">
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Home", href: "/") %>
+    <% crumb.with_item("Team", href: "/team") %>
+    <% crumb.with_item("Directory") %>
+  <% end %>
+
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Directory</h1>
+    <p class="text-sm text-muted-foreground">Everyone on the team, with a quick way to reach out.</p>
+  </div>
+
+  <%= poetry_separator %>
+
+  <%= poetry_item_group(class: "rounded-lg border") do %>
+    <% members.each_with_index do |member, index| %>
+      <%= poetry_item(role: "listitem") do |item| %>
+        <% item.with_media { poetry_avatar(label: member[:name]) { member[:initials] } } %>
+        <% item.with_title { member[:name] } %>
+        <% item.with_description { member[:description] } %>
+        <% item.with_actions do %>
+          <%= poetry_button(variant: :outline, size: :sm) do |button| %>
+            <% button.with_leading { poetry_icon(name: :"message-circle") } %>
+            Message
+          <% end %>
+        <% end %>
+      <% end %>
+      <%= poetry_item_separator unless index == members.length - 1 %>
+    <% end %>
+  <% end %>
+</section>

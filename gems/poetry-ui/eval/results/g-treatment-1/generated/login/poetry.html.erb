@@ -1,0 +1,53 @@
+<div class="flex min-h-screen items-center justify-center bg-muted/50 px-4 py-12">
+  <div class="w-full max-w-sm">
+    <div class="mb-6 flex flex-col items-center gap-2 text-center">
+      <span class="flex size-10 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground" aria-hidden="true">N</span>
+      <span class="text-lg font-semibold tracking-tight">Northwind</span>
+    </div>
+
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Sign in" } %>
+      <% card.with_description { "Enter your work email and password to continue" } %>
+
+      <% card.with_footer do %>
+        <div class="flex w-full flex-col items-center gap-3 border-t pt-4 text-sm">
+          <%= poetry_link(href: "#", underline: :hover) { "Forgot your password?" } %>
+          <span class="text-muted-foreground">
+            Don&#39;t have an account?
+            <%= poetry_link(href: "#", underline: :hover) { "Request access" } %>
+          </span>
+        </div>
+      <% end %>
+
+      <% if flash[:alert] %>
+        <%= poetry_alert(variant: :destructive, class: "mb-4") do |alert| %>
+          <% alert.with_title { "Sign-in failed" } %>
+          <%= flash[:alert] %>
+        <% end %>
+      <% end %>
+
+      <%= form_with url: "#", method: :post, scope: :session, class: "space-y-4" do |f| %>
+        <%= poetry_field(id: "session_email", label_text: "Email", required: true) do |field| %>
+          <%= poetry_input(**field.control_attributes, type: "email", name: "session[email]", placeholder: "you@company.com", autocomplete: "email", required: true) %>
+        <% end %>
+
+        <%= poetry_field(id: "session_password", label_text: "Password", required: true) do |field| %>
+          <%= poetry_sensitive_input(**field.control_attributes, name: "session[password]", label: "Password", required: true) %>
+        <% end %>
+
+        <%= poetry_button(type: :submit, class: "w-full") { "Sign in" } %>
+
+        <div class="flex items-center gap-3" role="presentation">
+          <%= poetry_separator(class: "shrink") %>
+          <span class="text-xs text-muted-foreground">OR</span>
+          <%= poetry_separator(class: "shrink") %>
+        </div>
+
+        <%= poetry_button(variant: :outline, type: :button, class: "w-full") do %>
+          <%= poetry_icon(name: :"log-in", class: "size-4") %>
+          Continue with single sign-on
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

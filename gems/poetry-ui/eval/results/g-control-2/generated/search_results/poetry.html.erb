@@ -1,0 +1,107 @@
+<div class="mx-auto max-w-4xl p-6 space-y-8">
+  <div class="space-y-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Search results</h1>
+      <p class="text-sm text-muted-foreground">14 results for &ldquo;deployment&rdquo;</p>
+    </div>
+
+    <%= poetry_search_field(name: "q", value: "deployment", label: "Search", placeholder: "Search projects, documents, and people…") %>
+  </div>
+
+  <%= poetry_separator %>
+
+  <section class="space-y-3">
+    <div class="flex items-center justify-between gap-4">
+      <h2 class="text-lg font-semibold">Projects</h2>
+      <%= poetry_badge(variant: :secondary) { "6 results" } %>
+    </div>
+
+    <%= poetry_item_group(class: "rounded-lg border border-border") do %>
+      <%= poetry_item(tag: :a, href: "#", role: "listitem", media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :"folder-kanban") } %>
+        <% item.with_title { "Deployment Pipeline Redesign" } %>
+        <% item.with_description { "Full rollout plan for the new <mark>deployment</mark> pipeline covering staging, canary, and production rings.".html_safe } %>
+        <% item.with_footer { tag.span("Engineering · Updated 2 hours ago", class: "text-xs text-muted-foreground") } %>
+        <% item.with_actions { poetry_icon(name: :"chevron-right", label: nil) } %>
+      <% end %>
+
+      <%= poetry_item_separator %>
+
+      <%= poetry_item(tag: :a, href: "#", role: "listitem", media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :"folder-kanban") } %>
+        <% item.with_title { "Zero-Downtime Deployment" } %>
+        <% item.with_description { "Blue-green <mark>deployment</mark> strategy to eliminate downtime during weekly releases.".html_safe } %>
+        <% item.with_footer { tag.span("Platform · Updated yesterday", class: "text-xs text-muted-foreground") } %>
+        <% item.with_actions { poetry_icon(name: :"chevron-right", label: nil) } %>
+      <% end %>
+
+      <%= poetry_item_separator %>
+
+      <%= poetry_item(tag: :a, href: "#", role: "listitem", media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :"folder-kanban") } %>
+        <% item.with_title { "Mobile App Deployment Automation" } %>
+        <% item.with_description { "Automating App Store and Play Store <mark>deployment</mark> steps with fastlane." } %>
+        <% item.with_footer { tag.span("Mobile · Updated 3 days ago", class: "text-xs text-muted-foreground") } %>
+        <% item.with_actions { poetry_icon(name: :"chevron-right", label: nil) } %>
+      <% end %>
+    <% end %>
+
+    <%= poetry_link(href: "#", underline: :hover) { "View all 6 projects" } %>
+  </section>
+
+  <%= poetry_separator %>
+
+  <section class="space-y-3">
+    <div class="flex items-center justify-between gap-4">
+      <h2 class="text-lg font-semibold">Documents</h2>
+      <%= poetry_badge(variant: :secondary) { "8 results" } %>
+    </div>
+
+    <%= poetry_item_group(class: "rounded-lg border border-border") do %>
+      <%= poetry_item(tag: :a, href: "#", role: "listitem", media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :"file-text") } %>
+        <% item.with_title { "Deployment Runbook.md" } %>
+        <% item.with_description { "Step-by-step <mark>deployment</mark> checklist for on-call engineers, including rollback procedures.".html_safe } %>
+        <% item.with_footer { tag.span("docs/ops · Updated 5 days ago by Priya Shah", class: "text-xs text-muted-foreground") } %>
+        <% item.with_actions { poetry_icon(name: :"chevron-right", label: nil) } %>
+      <% end %>
+
+      <%= poetry_item_separator %>
+
+      <%= poetry_item(tag: :a, href: "#", role: "listitem", media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :"file-text") } %>
+        <% item.with_title { "Q3 Deployment Postmortem" } %>
+        <% item.with_description { "Root cause analysis for the delayed <mark>deployment</mark> on September 14th and the remediation plan.".html_safe } %>
+        <% item.with_footer { tag.span("docs/incidents · Updated 1 week ago by Sam Ortiz", class: "text-xs text-muted-foreground") } %>
+        <% item.with_actions { poetry_icon(name: :"chevron-right", label: nil) } %>
+      <% end %>
+
+      <%= poetry_item_separator %>
+
+      <%= poetry_item(tag: :a, href: "#", role: "listitem", media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :"file-text") } %>
+        <% item.with_title { "CI/CD Deployment Standards" } %>
+        <% item.with_description { "Team conventions for staged <mark>deployment</mark>s, required approvals, and environment promotion." } %>
+        <% item.with_footer { tag.span("docs/engineering · Updated 2 weeks ago by Priya Shah", class: "text-xs text-muted-foreground") } %>
+        <% item.with_actions { poetry_icon(name: :"chevron-right", label: nil) } %>
+      <% end %>
+    <% end %>
+
+    <%= poetry_link(href: "#", underline: :hover) { "View all 8 documents" } %>
+  </section>
+
+  <%= poetry_separator %>
+
+  <section class="space-y-3">
+    <div class="flex items-center justify-between gap-4">
+      <h2 class="text-lg font-semibold">People</h2>
+      <%= poetry_badge(variant: :secondary) { "0 results" } %>
+    </div>
+
+    <%= poetry_empty(media_variant: :icon) do |empty| %>
+      <% empty.with_media { poetry_icon(name: :users) } %>
+      <% empty.with_title { "No people matched &ldquo;deployment&rdquo;".html_safe } %>
+      <% empty.with_description { "Try searching by a person&rsquo;s name or team instead. Their projects and documents may still appear above.".html_safe } %>
+    <% end %>
+  </section>
+</div>

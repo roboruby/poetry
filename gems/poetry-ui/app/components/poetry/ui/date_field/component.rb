@@ -1,0 +1,215 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Ui
+    # DateField family: the segmented date editor over a native input.
+    module DateField
+      # A segmented date editor: a real native <input type=date> IS the
+      # form value - with no JS the native picker works and the value is
+      # already ISO - progressively enhanced into per-segment
+      # role=spinbutton editing. The locale decides segment order and
+      # numerals; arrows cycle values, typed digits accumulate and
+      # auto-advance, and blur constrains impossible dates like
+      # February 31st. The enhanced input drops out of the tab order but
+      # keeps carrying name/required/min/max - native constraint
+      # validation stays on.
+      #
+      # @example
+      #   render Poetry::Ui::DateField::Component.new(name: "event[on]", label: "Event date")
+      class Component < Poetry::Core::Component
+        include Poetry::Ui::InputGroupField
+
+        # Projected into the registry, llms.txt, and the agent surface.
+        AGENT_RULES = [
+          "Date entry is a DateField (poetry_date_field / form.date_field) - never a masked " \
+          "Input, three selects, or a bare input type=date when the design system is in play.",
+          "The native input is the form value: params[<name>] is ISO (yyyy-mm-dd) with or " \
+          "without JS; min:/max: take Date or ISO strings and ride native validation.",
+          "Pair with a Label/Field for the accessible name (label for= the input id); " \
+          "standalone use takes label: - segments announce it themselves.",
+          "Locale drives segment order and numerals automatically; pass locale: only to pin " \
+          "a field to a different locale than the page."
+        ].freeze
+
+        # TimeField subclasses this and EXTENDS the root element with its
+        # seconds/hour-cycle values - the declarations-inheritance seam.
+        use_stimulus do
+          on :root do
+            controller :date_field do
+              register
+              value :locale, if: -> { locale.present? }
+              value :placeholder, from: :placeholder_iso
+              value :labels, from: :segment_labels_json
+              value :placeholders, from: :segment_placeholders_json
+            end
+          end
+          on :group do
+            controller :date_field do
+              target :group
+              action :focusGap, on: :click
+              action :settle, on: :focusout
+            end
+          end
+          on :input do
+            controller(:date_field) { target :input }
+          end
+        end
+
+        option :name, :string, required: true,
+                               doc: "The form field name - required; the value posts as ISO yyyy-mm-dd with or " \
+                                    "without JS."
+        option :value, ActiveModel::Type::Value.new, doc: "Date, or an ISO yyyy-mm-dd string; nil renders empty."
+        option :min, ActiveModel::Type::Value.new,
+               doc: "The earliest allowed date (Date or ISO string) - rides native constraint validation."
+        option :max, ActiveModel::Type::Value.new,
+               doc: "The latest allowed date (Date or ISO string) - rides native constraint validation."
+        option :required, :boolean, default: false, doc: "Marks the native input required."
+        option :disabled, :boolean, default: false, doc: "Disables the field; the segment group dims and goes inert."
+        option :readonly, :boolean, default: false, doc: "The value shows but cannot be edited."
+        option :invalid, :boolean, default: false, doc: "Paints the destructive border/ring and sets aria-invalid."
+        option :id, :string, doc: "The native input's DOM id - the Field label target."
+        option :label, :string,
+               doc: "Standalone accessible name; inside a form the Field label wires ids instead. Segments announce " \
+                    "it themselves."
+        option :described_by, :string, doc: "Ids for aria-describedby (hint or error text)."
+        option :locale, :string, doc: "Pins the field to a locale other than the page's."
+        option :placeholder_value, ActiveModel::Type::Value.new,
+               doc: "What the first arrow press on an empty segment lands on; defaults to today."
+
+        part "date-field", "Root - the controller and the enhanced/disabled surface ride here",
+             states: {
+               "data-enhanced" => "the controller connected and built segments (no JS = the " \
+                                  "native input, visible and styled)",
+               "data-disabled" => "disabled: is set",
+               "data-invalid" => "invalid: is set (the group wears the destructive ring)"
+             }
+        # The segments themselves are controller-BUILT (the FileInput list
+        # precedent, so they are prose here, not parts): each editable
+        # segment is span[data-slot=date-field-segment] with data-type=
+        # year|month|day|hour|minute|second|dayPeriod, role=spinbutton
+        # (role=textbox on iOS, where VoiceOver cannot focus spinbuttons),
+        # and data-placeholder while unfilled; locale separators are
+        # span[data-slot=date-field-literal] aria-hidden. Those data-slot
+        # names are the restyle seam.
+        part "date-field-group", "The bordered segment row (cn-input chrome, focus-within " \
+                                 "ring) - hidden until enhancement, then the editing surface " \
+                                 "the controller fills with segments",
+             states: {
+               "data-disabled" => "disabled: is set (chrome dims, pointer events off)",
+               "data-invalid" => "invalid: is set (destructive border + ring)"
+             }
+        part "date-field-input", "The native <input type=date> - THE form value in both " \
+                                 "modes; tabindex -1 + aria-hidden once segments exist"
+
+        # Attributes for the field root.
+        def root_attributes
+          attrs = {
+            "data-slot" => slot_prefix,
+            "class" => css
+          }
+          attrs["data-disabled"] = "" if disabled
+          attrs["data-invalid"] = "" if invalid
+          super(attrs)
+        end
+
+        # Attributes for the segment row the controller fills.
+        # @api private
+        def group_attributes
+          attrs = {
+            "role" => "presentation",
+            "data-slot" => "#{slot_prefix}-group",
+            "class" => group_classes
+          }
+          attrs["aria-label"] = label if label.present?
+          attrs["data-invalid"] = "" if invalid
+          attrs["data-disabled"] = "" if disabled
+          element_attributes(:group, attrs)
+        end
+
+        # Attributes for the native input - the form value.
+        # @api private
+        def input_attributes
+          attrs = {
+            "type" => input_type,
+            "name" => name,
+            "id" => control_id,
+            "data-slot" => "#{slot_prefix}-input",
+            "class" => "#{Input::Style.css} #{css(:input)}"
+          }
+          attrs["value"] = iso(value) if value.present?
+          attrs["min"] = iso(min) if min.present?
+          attrs["max"] = iso(max) if max.present?
+          attrs["aria-label"] = label if label.present?
+          attrs["aria-invalid"] = "true" if invalid && !disabled
+          attrs["aria-describedby"] = described_by if described_by.present?
+          attrs["required"] = "" if required
+          attrs["disabled"] = "" if disabled
+          attrs["readonly"] = "" if readonly
+          element_attributes(:input, attrs)
+        end
+
+        private
+
+        # The native input type.
+        def input_type
+          "date"
+        end
+
+        # The data-slot prefix for the field's parts.
+        def slot_prefix
+          "date-field"
+        end
+
+        # The group's classes.
+        def group_classes
+          css(:group)
+        end
+
+        # A value as an ISO date string.
+        def iso(candidate)
+          candidate.respond_to?(:strftime) ? candidate.strftime("%F") : candidate.to_s
+        end
+
+        # The placeholder as an ISO date, today by default.
+        def placeholder_iso
+          placeholder_value.present? ? iso(placeholder_value) : Date.current.strftime("%F")
+        end
+
+        # The AT-facing strings (segment-name fallbacks + the Empty
+        # valuetext) and the visual placeholder text per segment - the
+        # only translated surface; dates localize themselves via Intl.
+        def segment_labels
+          {
+            empty: t("poetry.date_field.empty"),
+            year: t("poetry.date_field.year"),
+            month: t("poetry.date_field.month"),
+            day: t("poetry.date_field.day"),
+            hour: t("poetry.date_field.hour"),
+            minute: t("poetry.date_field.minute"),
+            second: t("poetry.date_field.second"),
+            dayPeriod: t("poetry.date_field.day_period")
+          }
+        end
+
+        # The visual placeholder text per segment.
+        def segment_placeholders
+          {
+            year: t("poetry.date_field.placeholder_year"),
+            month: t("poetry.date_field.placeholder_month"),
+            day: t("poetry.date_field.placeholder_day"),
+            hour: t("poetry.date_field.placeholder_time"),
+            minute: t("poetry.date_field.placeholder_time"),
+            second: t("poetry.date_field.placeholder_time")
+          }
+        end
+
+        # The segment labels as JSON.
+        def segment_labels_json = segment_labels.to_json
+        # The segment placeholders as JSON.
+        def segment_placeholders_json = segment_placeholders.to_json
+
+        private :group_attributes, :input_attributes
+      end
+    end
+  end
+end

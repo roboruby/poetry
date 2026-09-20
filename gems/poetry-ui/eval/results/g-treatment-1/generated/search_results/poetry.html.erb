@@ -1,0 +1,144 @@
+<div class="mx-auto max-w-4xl space-y-8 p-6 md:p-8">
+  <header class="space-y-4">
+    <%= poetry_search_field(
+      name: "q",
+      label: "Search",
+      value: "deployment",
+      placeholder: "Search projects, documents, and people"
+    ) %>
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Search results</h1>
+      <p class="text-sm text-muted-foreground">7 results for &ldquo;deployment&rdquo;</p>
+    </div>
+  </header>
+
+  <%= poetry_separator %>
+
+  <div class="space-y-10">
+    <section aria-labelledby="results-projects" class="space-y-4">
+      <div class="flex items-center justify-between gap-4">
+        <h2 id="results-projects" class="text-lg font-semibold tracking-tight">Projects</h2>
+        <%= poetry_badge(variant: :secondary) { "3 results" } %>
+      </div>
+
+      <%= poetry_item_group do %>
+        <%= poetry_item(tag: :a, href: "/projects/atlas-deployment-pipeline", media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :folder) } %>
+          <% item.with_title { "Atlas Deployment Pipeline" } %>
+          <% item.with_description do %>
+            Automates the staged rollout for Atlas services, including canary <mark class="rounded bg-primary/15 px-0.5 text-foreground">deployment</mark> windows and automatic rollback triggers.
+          <% end %>
+          <% item.with_actions do %>
+            <%= poetry_badge(variant: :success) { "Active" } %>
+          <% end %>
+          <p class="mt-1 text-xs text-muted-foreground">Project &middot; Owner: Priya Shah &middot; Updated 3 days ago</p>
+        <% end %>
+
+        <%= poetry_item_separator %>
+
+        <%= poetry_item(tag: :a, href: "/projects/nimbus-cloud-deployment", media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :folder) } %>
+          <% item.with_title { "Nimbus Cloud Deployment" } %>
+          <% item.with_description do %>
+            Infrastructure-as-code project covering the Nimbus <mark class="rounded bg-primary/15 px-0.5 text-foreground">deployment</mark> targets across staging and production regions.
+          <% end %>
+          <% item.with_actions do %>
+            <%= poetry_badge(variant: :success) { "Active" } %>
+          <% end %>
+          <p class="mt-1 text-xs text-muted-foreground">Project &middot; Owner: Derek Owusu &middot; Updated 1 week ago</p>
+        <% end %>
+
+        <%= poetry_item_separator %>
+
+        <%= poetry_item(tag: :a, href: "/projects/q3-deployment-freeze-tracker", media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :folder) } %>
+          <% item.with_title { "Q3 Deployment Freeze Tracker" } %>
+          <% item.with_description do %>
+            Tracks the change freeze window ahead of the holiday <mark class="rounded bg-primary/15 px-0.5 text-foreground">deployment</mark> blackout and lists approved emergency releases.
+          <% end %>
+          <% item.with_actions do %>
+            <%= poetry_badge(variant: :secondary) { "Archived" } %>
+          <% end %>
+          <p class="mt-1 text-xs text-muted-foreground">Project &middot; Owner: Maya Lindqvist &middot; Updated 2 weeks ago</p>
+        <% end %>
+      <% end %>
+    </section>
+
+    <section aria-labelledby="results-documents" class="space-y-4">
+      <div class="flex items-center justify-between gap-4">
+        <h2 id="results-documents" class="text-lg font-semibold tracking-tight">Documents</h2>
+        <%= poetry_badge(variant: :secondary) { "4 results" } %>
+      </div>
+
+      <%= poetry_item_group do %>
+        <%= poetry_item(tag: :a, href: "/documents/zero-downtime-deployment-guide", media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :"file-text") } %>
+          <% item.with_title { "Zero-Downtime Deployment Guide.docx" } %>
+          <% item.with_description do %>
+            Step-by-step runbook for a zero-downtime <mark class="rounded bg-primary/15 px-0.5 text-foreground">deployment</mark>, covering blue-green traffic shifts and health-check gating.
+          <% end %>
+          <% item.with_actions do %>
+            <%= poetry_badge(variant: :outline) { "DOCX" } %>
+          <% end %>
+          <p class="mt-1 text-xs text-muted-foreground">Document &middot; Edited by Priya Shah &middot; 2 days ago</p>
+        <% end %>
+
+        <%= poetry_item_separator %>
+
+        <%= poetry_item(tag: :a, href: "/documents/deployment-checklist-production", media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :"file-text") } %>
+          <% item.with_title { "Deployment Checklist — Production.pdf" } %>
+          <% item.with_description do %>
+            The pre-flight checklist every engineer signs off before a production <mark class="rounded bg-primary/15 px-0.5 text-foreground">deployment</mark>, from migrations to on-call handoff.
+          <% end %>
+          <% item.with_actions do %>
+            <%= poetry_badge(variant: :outline) { "PDF" } %>
+          <% end %>
+          <p class="mt-1 text-xs text-muted-foreground">Document &middot; Edited by Owen Fitzgerald &middot; 5 days ago</p>
+        <% end %>
+
+        <%= poetry_item_separator %>
+
+        <%= poetry_item(tag: :a, href: "/documents/incident-postmortem-deployment-rollback", media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :"file-text") } %>
+          <% item.with_title { "Incident Postmortem: Deployment Rollback" } %>
+          <% item.with_description do %>
+            Root-cause analysis for the failed <mark class="rounded bg-primary/15 px-0.5 text-foreground">deployment</mark> on June 30, including the rollback timeline and follow-up actions.
+          <% end %>
+          <% item.with_actions do %>
+            <%= poetry_badge(variant: :outline) { "PDF" } %>
+          <% end %>
+          <p class="mt-1 text-xs text-muted-foreground">Document &middot; Edited by Maya Lindqvist &middot; 3 weeks ago</p>
+        <% end %>
+
+        <%= poetry_item_separator %>
+
+        <%= poetry_item(tag: :a, href: "/documents/release-deployment-runbook-v3", media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :"file-text") } %>
+          <% item.with_title { "Release Deployment Runbook v3" } %>
+          <% item.with_description do %>
+            The current on-call reference for coordinating a multi-service <mark class="rounded bg-primary/15 px-0.5 text-foreground">deployment</mark>, including rollback and paging steps.
+          <% end %>
+          <% item.with_actions do %>
+            <%= poetry_badge(variant: :outline) { "MD" } %>
+          <% end %>
+          <p class="mt-1 text-xs text-muted-foreground">Document &middot; Edited by Derek Owusu &middot; 1 month ago</p>
+        <% end %>
+      <% end %>
+    </section>
+
+    <section aria-labelledby="results-people" class="space-y-4">
+      <div class="flex items-center justify-between gap-4">
+        <h2 id="results-people" class="text-lg font-semibold tracking-tight">People</h2>
+        <%= poetry_badge(variant: :outline) { "0 results" } %>
+      </div>
+
+      <%= poetry_empty(media_variant: :icon) do |empty| %>
+        <% empty.with_media { poetry_icon(name: :users) } %>
+        <% empty.with_title { "No people matched “deployment”" } %>
+        <% empty.with_description { "Try a different name, or search by team, role, or email instead." } %>
+        <%= poetry_link(href: "/people", underline: :always) { "Browse all people" } %>
+      <% end %>
+    </section>
+  </div>
+</div>

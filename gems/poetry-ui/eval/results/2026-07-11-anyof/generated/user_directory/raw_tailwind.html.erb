@@ -1,0 +1,63 @@
+<% members = [
+  { name: "Aisha Patel", role: "Product Design Lead", initials: "AP", color: "bg-rose-500" },
+  { name: "Marcus Chen", role: "Senior Backend Engineer", initials: "MC", color: "bg-blue-500" },
+  { name: "Elena Torres", role: "Engineering Manager", initials: "ET", color: "bg-emerald-500" },
+  { name: "James O'Connor", role: "Frontend Engineer", initials: "JO", color: "bg-amber-500" },
+  { name: "Priya Shah", role: "QA & Release Engineer", initials: "PS", color: "bg-violet-500" },
+  { name: "David Kim", role: "DevOps Engineer", initials: "DK", color: "bg-cyan-500" },
+  { name: "Sofia Rossi", role: "Customer Success Manager", initials: "SR", color: "bg-pink-500" },
+  { name: "Liam Walsh", role: "Data Analyst", initials: "LW", color: "bg-indigo-500" },
+] %>
+
+<div class="mx-auto max-w-4xl px-6 py-10">
+  <nav aria-label="Breadcrumb" class="mb-6">
+    <ol class="flex items-center gap-2 text-sm text-gray-500">
+      <li>
+        <a href="#" class="hover:text-gray-700 hover:underline">Home</a>
+      </li>
+      <li aria-hidden="true" class="text-gray-300">/</li>
+      <li>
+        <a href="#" class="hover:text-gray-700 hover:underline">Team</a>
+      </li>
+      <li aria-hidden="true" class="text-gray-300">/</li>
+      <li aria-current="page" class="font-medium text-gray-900">
+        Directory
+      </li>
+    </ol>
+  </nav>
+
+  <div class="mb-6">
+    <h1 class="text-2xl font-semibold text-gray-900">Team Directory</h1>
+    <p class="mt-1 text-sm text-gray-500">
+      Browse everyone on the team and reach out directly.
+    </p>
+  </div>
+
+  <ul class="divide-y divide-gray-200 rounded-lg border border-gray-200 bg-white shadow-sm">
+    <% members.each do |member| %>
+      <li class="flex items-center gap-4 px-5 py-4">
+        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full <%= member[:color] %> text-sm font-semibold text-white">
+          <%= member[:initials] %>
+        </div>
+
+        <div class="min-w-0 flex-1">
+          <p class="truncate text-sm font-medium text-gray-900">
+            <%= member[:name] %>
+          </p>
+          <p class="truncate text-sm text-gray-500">
+            <%= member[:role] %>
+          </p>
+        </div>
+
+        <div class="shrink-0">
+          <a
+            href="#"
+            class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Message
+          </a>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+</div>

@@ -1,0 +1,8 @@
+<div class="mx-auto max-w-3xl p-6">
+  <%= poetry_pagination(
+        current: 4,
+        total: 10,
+        current_variant: :filled,
+        path: ->(page) { "?page=#{page}" }
+      ) %>
+</div>

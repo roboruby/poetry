@@ -1,0 +1,507 @@
+{
+  "units": {
+    "card": {
+      "raw_tailwind": {
+        "cost_usd": 0.1487,
+        "num_turns": 4,
+        "duration_s": 31.3,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.6049,
+        "num_turns": 19,
+        "duration_s": 128.3,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "alert": {
+      "raw_tailwind": {
+        "cost_usd": 0.1705,
+        "num_turns": 4,
+        "duration_s": 27.3,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.5022,
+        "num_turns": 21,
+        "duration_s": 95.8,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "artwork_carousel": {
+      "poetry": {
+        "cost_usd": 0.7952,
+        "num_turns": 21,
+        "duration_s": 217.2,
+        "attempts": 1,
+        "artifact": true
+      },
+      "raw_tailwind": {
+        "cost_usd": 0.4993,
+        "num_turns": 5,
+        "duration_s": 165.4,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "app_shell": {
+      "poetry": {
+        "error": "max turns (40) exhausted, $1.49 spent",
+        "artifact": false
+      },
+      "raw_tailwind": {
+        "cost_usd": 0.5358,
+        "num_turns": 4,
+        "duration_s": 200.8,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "button": {
+      "poetry": {
+        "cost_usd": 0.5123,
+        "num_turns": 19,
+        "duration_s": 90.4,
+        "attempts": 1,
+        "artifact": true
+      },
+      "raw_tailwind": {
+        "cost_usd": 0.1733,
+        "num_turns": 4,
+        "duration_s": 25.4,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "chat_transcript": {
+      "raw_tailwind": {
+        "cost_usd": 0.1853,
+        "num_turns": 5,
+        "duration_s": 35.4,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.9153,
+        "num_turns": 22,
+        "duration_s": 260.9,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "command_palette": {
+      "raw_tailwind": {
+        "cost_usd": 0.7555,
+        "num_turns": 10,
+        "duration_s": 228.2,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 1.721,
+        "num_turns": 36,
+        "duration_s": 315.2,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "data_table": {
+      "raw_tailwind": {
+        "cost_usd": 0.3851,
+        "num_turns": 5,
+        "duration_s": 117.0,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 1.4847,
+        "num_turns": 37,
+        "duration_s": 313.3,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "date_field": {
+      "poetry": {
+        "cost_usd": 0.6558,
+        "num_turns": 20,
+        "duration_s": 130.3,
+        "attempts": 1,
+        "artifact": true
+      },
+      "raw_tailwind": {
+        "cost_usd": 0.6318,
+        "num_turns": 3,
+        "duration_s": 222.5,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "deferred_region": {
+      "poetry": {
+        "cost_usd": 0.8475,
+        "num_turns": 23,
+        "duration_s": 179.7,
+        "attempts": 1,
+        "artifact": true
+      },
+      "raw_tailwind": {
+        "cost_usd": 1.151,
+        "num_turns": 8,
+        "duration_s": 548.6,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "dialog": {
+      "raw_tailwind": {
+        "cost_usd": 0.193,
+        "num_turns": 4,
+        "duration_s": 35.2,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.7335,
+        "num_turns": 24,
+        "duration_s": 166.4,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "disclosure": {
+      "poetry": {
+        "cost_usd": 0.8596,
+        "num_turns": 25,
+        "duration_s": 206.9,
+        "attempts": 1,
+        "artifact": true
+      },
+      "raw_tailwind": {
+        "cost_usd": 0.2057,
+        "num_turns": 4,
+        "duration_s": 35.8,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "empty_state": {
+      "raw_tailwind": {
+        "cost_usd": 0.1579,
+        "num_turns": 4,
+        "duration_s": 18.5,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.5321,
+        "num_turns": 19,
+        "duration_s": 91.0,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "filter_toolbar": {
+      "raw_tailwind": {
+        "cost_usd": 0.1858,
+        "num_turns": 5,
+        "duration_s": 28.1,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.8883,
+        "num_turns": 20,
+        "duration_s": 190.1,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "floating": {
+      "poetry": {
+        "cost_usd": 0.9931,
+        "num_turns": 29,
+        "duration_s": 224.8,
+        "attempts": 1,
+        "artifact": true
+      },
+      "raw_tailwind": {
+        "cost_usd": 0.4247,
+        "num_turns": 5,
+        "duration_s": 141.6,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "form_field": {
+      "raw_tailwind": {
+        "cost_usd": 0.1456,
+        "num_turns": 4,
+        "duration_s": 13.4,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.7064,
+        "num_turns": 21,
+        "duration_s": 157.2,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "form_controls": {
+      "raw_tailwind": {
+        "cost_usd": 0.5641,
+        "num_turns": 5,
+        "duration_s": 207.8,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 2.6307,
+        "num_turns": 47,
+        "duration_s": 572.9,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "menu": {
+      "poetry": {
+        "error": "max turns (40) exhausted, $1.85 spent",
+        "artifact": false
+      },
+      "raw_tailwind": {
+        "cost_usd": 0.8033,
+        "num_turns": 5,
+        "duration_s": 335.5,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "mobile_sheet": {
+      "raw_tailwind": {
+        "cost_usd": 0.3788,
+        "num_turns": 3,
+        "duration_s": 141.2,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.8305,
+        "num_turns": 10,
+        "duration_s": 208.6,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "pagination": {
+      "raw_tailwind": {
+        "cost_usd": 0.162,
+        "num_turns": 4,
+        "duration_s": 19.6,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.6061,
+        "num_turns": 19,
+        "duration_s": 128.4,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "overlay": {
+      "poetry": {
+        "cost_usd": 1.0696,
+        "num_turns": 24,
+        "duration_s": 240.6,
+        "attempts": 1,
+        "artifact": true
+      },
+      "raw_tailwind": {
+        "cost_usd": 0.5832,
+        "num_turns": 5,
+        "duration_s": 215.3,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "primitives": {
+      "raw_tailwind": {
+        "cost_usd": 0.1519,
+        "num_turns": 4,
+        "duration_s": 21.5,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.8339,
+        "num_turns": 19,
+        "duration_s": 206.4,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "scrollable_tags": {
+      "raw_tailwind": {
+        "cost_usd": 0.1482,
+        "num_turns": 4,
+        "duration_s": 16.0,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.5265,
+        "num_turns": 15,
+        "duration_s": 113.3,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "searchable_select": {
+      "raw_tailwind": {
+        "cost_usd": 0.3691,
+        "num_turns": 8,
+        "duration_s": 76.2,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.6979,
+        "num_turns": 18,
+        "duration_s": 149.4,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "site_nav": {
+      "raw_tailwind": {
+        "cost_usd": 0.1656,
+        "num_turns": 5,
+        "duration_s": 20.1,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.8071,
+        "num_turns": 31,
+        "duration_s": 102.6,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "settings_tabs": {
+      "poetry": {
+        "cost_usd": 1.1355,
+        "num_turns": 23,
+        "duration_s": 282.8,
+        "attempts": 1,
+        "artifact": true
+      },
+      "raw_tailwind": {
+        "cost_usd": 0.7545,
+        "num_turns": 3,
+        "duration_s": 320.9,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "table": {
+      "raw_tailwind": {
+        "cost_usd": 0.1835,
+        "num_turns": 4,
+        "duration_s": 26.6,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.7029,
+        "num_turns": 22,
+        "duration_s": 152.9,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "split_editor": {
+      "poetry": {
+        "cost_usd": 1.2983,
+        "num_turns": 28,
+        "duration_s": 334.4,
+        "attempts": 1,
+        "artifact": true
+      },
+      "raw_tailwind": {
+        "cost_usd": 0.8581,
+        "num_turns": 10,
+        "duration_s": 305.5,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "upload_progress": {
+      "raw_tailwind": {
+        "cost_usd": 0.1449,
+        "num_turns": 4,
+        "duration_s": 13.8,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.5898,
+        "num_turns": 20,
+        "duration_s": 101.9,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "toast": {
+      "raw_tailwind": {
+        "cost_usd": 0.3116,
+        "num_turns": 8,
+        "duration_s": 80.3,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.6496,
+        "num_turns": 17,
+        "duration_s": 167.2,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "user_directory": {
+      "raw_tailwind": {
+        "cost_usd": 0.2474,
+        "num_turns": 7,
+        "duration_s": 39.3,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.641,
+        "num_turns": 22,
+        "duration_s": 128.9,
+        "attempts": 1,
+        "artifact": true
+      }
+    }
+  },
+  "config": {
+    "model": "claude-sonnet-5",
+    "max_turns": 40,
+    "toolbelts": {
+      "poetry": "Read,Glob,Grep,Write,Bash(bin/check:*)",
+      "raw_tailwind": "Read,Glob,Grep,Write"
+    }
+  },
+  "usage": {
+    "units_recorded": 62,
+    "unit_cost_sum_usd": 37.5465,
+    "receipted_cost_usd": 73.3602
+  }
+}

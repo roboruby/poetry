@@ -1,0 +1,137 @@
+<%
+  members = [
+    { name: "Ava Thompson",     email: "ava.thompson@northwind.co",    role: "Admin",  initials: "AT", notify: true },
+    { name: "Marcus Webb",      email: "marcus.webb@northwind.co",     role: "Editor", initials: "MW", notify: true },
+    { name: "Priya Natarajan",  email: "priya.natarajan@northwind.co", role: "Viewer", initials: "PN", notify: false },
+    { name: "Diego Fernandez",  email: "diego.fernandez@northwind.co", role: "Editor", initials: "DF", notify: false },
+    { name: "Sarah Kim",        email: "sarah.kim@northwind.co",       role: "Admin",  initials: "SK", notify: true },
+  ]
+%>
+<div class="min-h-screen bg-gray-50">
+  <!-- App menubar -->
+  <div role="menubar" aria-label="Application menu" class="flex items-center gap-0.5 border-b border-gray-200 bg-white px-2 py-1">
+    <details class="group relative">
+      <summary
+        role="menuitem"
+        aria-haspopup="true"
+        class="list-none [&::-webkit-details-marker]:hidden flex cursor-default select-none items-center rounded px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 group-open:bg-gray-100 group-open:text-gray-900"
+      >
+        File
+      </summary>
+      <div role="menu" aria-label="File" class="absolute left-0 top-full z-30 mt-0.5 w-64 rounded-md border border-gray-200 bg-white py-1 text-sm shadow-lg ring-1 ring-black/5">
+        <button type="button" role="menuitem" class="flex w-full items-center justify-between px-3 py-1.5 text-left text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:bg-gray-100">
+          <span>New Member&hellip;</span><span class="text-xs text-gray-400">&#8984;N</span>
+        </button>
+        <button type="button" role="menuitem" class="block w-full px-3 py-1.5 text-left text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:bg-gray-100">Import CSV&hellip;</button>
+        <button type="button" role="menuitem" class="block w-full px-3 py-1.5 text-left text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:bg-gray-100">Export CSV&hellip;</button>
+        <div role="separator" class="my-1 border-t border-gray-100"></div>
+        <button type="button" role="menuitem" class="flex w-full items-center justify-between px-3 py-1.5 text-left text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:bg-gray-100">
+          <span>Print List&hellip;</span><span class="text-xs text-gray-400">&#8984;P</span>
+        </button>
+        <div role="separator" class="my-1 border-t border-gray-100"></div>
+        <button type="button" role="menuitem" class="block w-full px-3 py-1.5 text-left text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:bg-gray-100">Close Window</button>
+      </div>
+    </details>
+
+    <details class="group relative">
+      <summary
+        role="menuitem"
+        aria-haspopup="true"
+        class="list-none [&::-webkit-details-marker]:hidden flex cursor-default select-none items-center rounded px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 group-open:bg-gray-100 group-open:text-gray-900"
+      >
+        View
+      </summary>
+      <div role="menu" aria-label="View" class="absolute left-0 top-full z-30 mt-0.5 w-64 rounded-md border border-gray-200 bg-white py-1 text-sm shadow-lg ring-1 ring-black/5">
+        <label role="menuitemcheckbox" aria-checked="true" class="flex w-full cursor-pointer items-center gap-2 px-3 py-1.5 text-gray-700 hover:bg-gray-100">
+          <input type="checkbox" checked class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0">
+          <span>Show Sidebar</span>
+        </label>
+        <label role="menuitemcheckbox" aria-checked="true" class="flex w-full cursor-pointer items-center gap-2 px-3 py-1.5 text-gray-700 hover:bg-gray-100">
+          <input type="checkbox" checked class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0">
+          <span>Show Toolbar</span>
+        </label>
+        <label role="menuitemcheckbox" aria-checked="false" class="flex w-full cursor-pointer items-center gap-2 px-3 py-1.5 text-gray-700 hover:bg-gray-100">
+          <input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0">
+          <span>Show Status Bar</span>
+        </label>
+        <div role="separator" class="my-1 border-t border-gray-100"></div>
+        <button type="button" role="menuitem" class="flex w-full items-center justify-between px-3 py-1.5 text-left text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:bg-gray-100">
+          <span>Zoom In</span><span class="text-xs text-gray-400">&#8984;+</span>
+        </button>
+        <button type="button" role="menuitem" class="flex w-full items-center justify-between px-3 py-1.5 text-left text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:bg-gray-100">
+          <span>Zoom Out</span><span class="text-xs text-gray-400">&#8984;-</span>
+        </button>
+        <button type="button" role="menuitem" class="block w-full px-3 py-1.5 text-left text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:bg-gray-100">Actual Size</button>
+      </div>
+    </details>
+  </div>
+
+  <!-- Page content -->
+  <div class="mx-auto max-w-5xl px-6 py-8">
+    <div class="mb-6">
+      <h1 class="text-xl font-semibold text-gray-900">Team Members</h1>
+      <p class="mt-1 text-sm text-gray-500">Click a row for a context menu, or use the Options button to manage an account.</p>
+    </div>
+
+    <div class="rounded-lg border border-gray-200 bg-white shadow-sm">
+      <ul role="list" class="divide-y divide-gray-100">
+        <% members.each do |member| %>
+          <li>
+            <div class="flex items-center justify-between gap-4 px-4 py-3">
+              <!-- Right-click / row context menu -->
+              <details class="group relative min-w-0 flex-1">
+                <summary
+                  aria-haspopup="true"
+                  aria-label="Open context menu for <%= member[:name] %>"
+                  title="Click for the row context menu"
+                  class="list-none [&::-webkit-details-marker]:hidden -mx-2 -my-1.5 flex min-w-0 cursor-context-menu items-center gap-3 rounded-md px-2 py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 group-open:bg-gray-50"
+                >
+                  <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700">
+                    <%= member[:initials] %>
+                  </span>
+                  <span class="min-w-0">
+                    <span class="block truncate text-sm font-medium text-gray-900"><%= member[:name] %></span>
+                    <span class="block truncate text-sm text-gray-500"><%= member[:email] %></span>
+                  </span>
+                  <span class="ml-2 inline-flex shrink-0 items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600"><%= member[:role] %></span>
+                </summary>
+                <div role="menu" aria-label="<%= member[:name] %> context menu" class="absolute left-0 top-full z-30 mt-1 w-64 rounded-md border border-gray-200 bg-white py-1 text-sm shadow-lg ring-1 ring-black/5">
+                  <button type="button" role="menuitem" class="block w-full px-3 py-1.5 text-left text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:bg-gray-100">Open Profile</button>
+                  <button type="button" role="menuitem" class="block w-full px-3 py-1.5 text-left text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:bg-gray-100">Copy Email Address</button>
+                  <button type="button" role="menuitem" class="block w-full px-3 py-1.5 text-left text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:bg-gray-100">Send Message</button>
+                  <div role="separator" class="my-1 border-t border-gray-100"></div>
+                  <button type="button" role="menuitem" class="block w-full px-3 py-1.5 text-left text-red-600 hover:bg-red-50 focus:outline-none focus-visible:bg-red-50">Remove From Team</button>
+                </div>
+              </details>
+
+              <!-- Row Options dropdown -->
+              <details class="group relative shrink-0">
+                <summary
+                  aria-haspopup="true"
+                  class="list-none [&::-webkit-details-marker]:hidden inline-flex cursor-pointer items-center gap-1 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 group-open:bg-gray-50"
+                >
+                  Options
+                  <svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 text-gray-400" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd" />
+                  </svg>
+                </summary>
+                <div role="menu" aria-label="<%= member[:name] %> options" class="absolute right-0 top-full z-30 mt-1 w-64 rounded-md border border-gray-200 bg-white py-1 text-sm shadow-lg ring-1 ring-black/5">
+                  <button type="button" role="menuitem" class="block w-full px-3 py-1.5 text-left text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:bg-gray-100">View Account</button>
+                  <button type="button" role="menuitem" class="block w-full px-3 py-1.5 text-left text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:bg-gray-100">Edit Permissions</button>
+                  <button type="button" role="menuitem" class="block w-full px-3 py-1.5 text-left text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:bg-gray-100">Reset Password</button>
+                  <div role="separator" class="my-1 border-t border-gray-100"></div>
+                  <label role="menuitemcheckbox" aria-checked="<%= member[:notify] %>" class="flex w-full cursor-pointer items-center gap-2 px-3 py-1.5 text-gray-700 hover:bg-gray-100">
+                    <input type="checkbox" <%= "checked" if member[:notify] %> class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0">
+                    <span>Email notifications</span>
+                  </label>
+                  <div role="separator" class="my-1 border-t border-gray-100"></div>
+                  <button type="button" role="menuitem" class="block w-full px-3 py-1.5 text-left text-red-600 hover:bg-red-50 focus:outline-none focus-visible:bg-red-50">Delete Account</button>
+                </div>
+              </details>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</div>

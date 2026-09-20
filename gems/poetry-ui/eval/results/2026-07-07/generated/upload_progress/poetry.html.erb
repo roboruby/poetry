@@ -1,0 +1,18 @@
+<div class="mx-auto max-w-xl px-6 py-12">
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Uploading file" } %>
+    <% card.with_description { "Keep this tab open until the upload finishes." } %>
+    <% card.with_action do %>
+      <%= poetry_badge(variant: :secondary) { "In progress" } %>
+    <% end %>
+
+    <div class="flex flex-col gap-2">
+      <%= poetry_progress(label: "quarterly-report.pdf", value: 60, max: 100, show_value: true) %>
+      <p class="text-sm text-muted-foreground">About 2 minutes remaining</p>
+    </div>
+
+    <% card.with_footer do %>
+      <%= poetry_button(variant: :outline, size: :sm) { "Cancel upload" } %>
+    <% end %>
+  <% end %>
+</div>

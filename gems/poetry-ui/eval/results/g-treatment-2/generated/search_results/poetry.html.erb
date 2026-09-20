@@ -1,0 +1,128 @@
+<div class="mx-auto max-w-4xl space-y-8 p-6">
+  <header class="flex flex-col gap-4">
+    <%= poetry_breadcrumb do |crumb| %>
+      <% crumb.with_item("Home", href: "/") %>
+      <% crumb.with_item("Search results") %>
+    <% end %>
+
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Search results</h1>
+      <p class="text-sm text-muted-foreground">
+        8 results for &ldquo;<span class="font-medium text-foreground">deployment</span>&rdquo;
+      </p>
+    </div>
+
+    <%= poetry_search_field(name: "q", value: "deployment", label: "Search projects, documents, and people", placeholder: "Search everything…") %>
+
+    <%= poetry_separator %>
+  </header>
+
+  <section class="space-y-4">
+    <%= poetry_card do |card| %>
+      <% card.with_title(title_tag: :h2) { "Projects" } %>
+      <% card.with_action do %>
+        <%= poetry_badge(variant: :secondary) { "3 results" } %>
+      <% end %>
+
+      <%= poetry_item_group do %>
+        <%= poetry_item(media_variant: :icon, tag: :a, href: "/projects/deployment-pipeline-revamp", role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :folder) } %>
+          <% item.with_title { "Deployment Pipeline Revamp" } %>
+          <% item.with_description do %>
+            Standardizing the <mark class="rounded bg-warning/30 px-0.5 text-foreground">deployment</mark> pipeline across every service, cutting release time by roughly 40%.
+          <% end %>
+          <% item.with_footer { "Engineering · 12 members · Updated 2 days ago" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(media_variant: :icon, tag: :a, href: "/projects/q3-deployment-readiness", role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :folder) } %>
+          <% item.with_title { "Q3 Deployment Readiness" } %>
+          <% item.with_description do %>
+            Tracks the staging and production <mark class="rounded bg-warning/30 px-0.5 text-foreground">deployment</mark> checklist ahead of the Q3 freeze window.
+          <% end %>
+          <% item.with_footer { "Platform · 5 members · Updated 1 week ago" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(media_variant: :icon, tag: :a, href: "/projects/atlas-deployment-automation", role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :folder) } %>
+          <% item.with_title { "Atlas Deployment Automation" } %>
+          <% item.with_description do %>
+            Scripts and Terraform modules that automate <mark class="rounded bg-warning/30 px-0.5 text-foreground">deployment</mark> for the Atlas infrastructure stack.
+          <% end %>
+          <% item.with_footer { "Infrastructure · 8 members · Updated 3 weeks ago" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </section>
+
+  <section class="space-y-4">
+    <%= poetry_card do |card| %>
+      <% card.with_title(title_tag: :h2) { "Documents" } %>
+      <% card.with_action do %>
+        <%= poetry_badge(variant: :secondary) { "5 results" } %>
+      <% end %>
+
+      <%= poetry_item_group do %>
+        <%= poetry_item(media_variant: :icon, tag: :a, href: "/documents/deployment-runbook-v4", role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :"file-text") } %>
+          <% item.with_title { "Deployment Runbook v4" } %>
+          <% item.with_description do %>
+            Step-by-step checks required before a production <mark class="rounded bg-warning/30 px-0.5 text-foreground">deployment</mark>, including rollback procedures.
+          <% end %>
+          <% item.with_footer { "PDF · by Priya Nair · Updated yesterday" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(media_variant: :icon, tag: :a, href: "/documents/zero-downtime-deployment-guide", role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :"file-text") } %>
+          <% item.with_title { "Zero-Downtime Deployment Guide" } %>
+          <% item.with_description do %>
+            Patterns for a blue-green <mark class="rounded bg-warning/30 px-0.5 text-foreground">deployment</mark> that avoids downtime during cutover.
+          <% end %>
+          <% item.with_footer { "Doc · by Marcus Webb · Updated 4 days ago" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(media_variant: :icon, tag: :a, href: "/documents/deployment-checklist-template", role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :"file-text") } %>
+          <% item.with_title { "Deployment Checklist Template" } %>
+          <% item.with_description do %>
+            A reusable checklist covering pre-flight, <mark class="rounded bg-warning/30 px-0.5 text-foreground">deployment</mark>, and post-release verification steps.
+          <% end %>
+          <% item.with_footer { "Sheet · by Priya Nair · Updated 1 week ago" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(media_variant: :icon, tag: :a, href: "/documents/incident-postmortem-failed-deployment", role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :"file-text") } %>
+          <% item.with_title { "Incident Postmortem: Failed Deployment" } %>
+          <% item.with_description do %>
+            Root-cause analysis of the March 3 <mark class="rounded bg-warning/30 px-0.5 text-foreground">deployment</mark> failure and the follow-up action items.
+          <% end %>
+          <% item.with_footer { "Doc · by Elena Kim · Updated 2 weeks ago" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(media_variant: :icon, tag: :a, href: "/documents/release-and-deployment-policy", role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :"file-text") } %>
+          <% item.with_title { "Release & Deployment Policy" } %>
+          <% item.with_description do %>
+            Company-wide policy defining who can approve a <mark class="rounded bg-warning/30 px-0.5 text-foreground">deployment</mark> to production.
+          <% end %>
+          <% item.with_footer { "Doc · by Legal & Compliance · Updated 1 month ago" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </section>
+
+  <section class="space-y-4">
+    <%= poetry_card do |card| %>
+      <% card.with_title(title_tag: :h2) { "People" } %>
+      <% card.with_action do %>
+        <%= poetry_badge(variant: :outline) { "0 results" } %>
+      <% end %>
+
+      <%= poetry_empty(media_variant: :icon, title_tag: :h3) do |empty| %>
+        <% empty.with_media { poetry_icon(name: :users, label: "No people found") } %>
+        <% empty.with_title { "No people matched “deployment”" } %>
+        <% empty.with_description { "Try searching by a person's name, role, or team instead." } %>
+      <% end %>
+    <% end %>
+  </section>
+</div>

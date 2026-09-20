@@ -1,0 +1,83 @@
+<div class="mx-auto max-w-2xl p-6">
+  <div class="mb-6 space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Account settings</h1>
+    <p class="text-sm text-muted-foreground">Manage your profile, password, and notification preferences.</p>
+  </div>
+
+  <%= poetry_tabs(default: "account", label: "Account settings") do |tabs| %>
+    <% tabs.with_tab("Account", value: "account") do %>
+      <div class="pt-4">
+        <%= poetry_card do |card| %>
+          <% card.with_title { "Profile" } %>
+          <% card.with_description { "This is how others will see you." } %>
+          <% card.with_footer do %>
+            <div class="flex w-full justify-end">
+              <%= poetry_button(type: :submit) { "Save changes" } %>
+            </div>
+          <% end %>
+          <div class="space-y-4">
+            <%= poetry_field(id: "account_name", label_text: "Full name") do |field| %>
+              <%= poetry_input(**field.control_attributes, name: "account[name]", value: "Jordan Ellis") %>
+            <% end %>
+            <%= poetry_field(id: "account_email", label_text: "Email") do |field| %>
+              <%= poetry_input(**field.control_attributes, name: "account[email]", type: "email", value: "jordan@example.com") %>
+            <% end %>
+            <%= poetry_field(id: "account_username", label_text: "Username", hint: "This appears on your public profile.") do |field| %>
+              <%= poetry_input(**field.control_attributes, name: "account[username]", value: "jordan.ellis") %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% tabs.with_tab("Password", value: "password") do %>
+      <div class="pt-4">
+        <%= poetry_card do |card| %>
+          <% card.with_title { "Password" } %>
+          <% card.with_description { "Update your password. You'll be signed out of other sessions." } %>
+          <% card.with_footer do %>
+            <div class="flex w-full justify-end">
+              <%= poetry_button(type: :submit) { "Update password" } %>
+            </div>
+          <% end %>
+          <div class="space-y-4">
+            <%= poetry_field(id: "password_current", label_text: "Current password") do |field| %>
+              <%= poetry_input(**field.control_attributes, name: "password[current]", type: "password") %>
+            <% end %>
+            <%= poetry_field(id: "password_new", label_text: "New password", hint: "At least 8 characters.") do |field| %>
+              <%= poetry_input(**field.control_attributes, name: "password[new]", type: "password") %>
+            <% end %>
+            <%= poetry_field(id: "password_confirmation", label_text: "Confirm new password") do |field| %>
+              <%= poetry_input(**field.control_attributes, name: "password[confirmation]", type: "password") %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% tabs.with_tab("Notifications", value: "notifications") do %>
+      <div class="pt-4">
+        <%= poetry_card do |card| %>
+          <% card.with_title { "Notifications" } %>
+          <% card.with_description { "Choose what you want to hear about." } %>
+          <% card.with_footer do %>
+            <div class="flex w-full justify-end">
+              <%= poetry_button(type: :submit) { "Save preferences" } %>
+            </div>
+          <% end %>
+          <div class="space-y-4">
+            <%= poetry_field(orientation: :horizontal, id: "notify_email", label_text: "Email notifications", hint: "Get a daily summary emailed to you.") do |field| %>
+              <%= poetry_switch(**field.control_attributes, name: "notifications[email]", checked: true) %>
+            <% end %>
+            <%= poetry_field(orientation: :horizontal, id: "notify_push", label_text: "Push notifications", hint: "Get notified on your devices in real time.") do |field| %>
+              <%= poetry_switch(**field.control_attributes, name: "notifications[push]", checked: true) %>
+            <% end %>
+            <%= poetry_field(orientation: :horizontal, id: "notify_marketing", label_text: "Marketing emails", hint: "Occasional product news and tips.") do |field| %>
+              <%= poetry_switch(**field.control_attributes, name: "notifications[marketing]") %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

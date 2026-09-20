@@ -1,0 +1,9 @@
+<%# The poetry arm: a bounded tag list - focusable, named native scroll
+    region with themed scrollbars. %>
+<%= poetry_scroll_area(label: "Version tags", class: "h-48 w-48 rounded-md border") do %>
+  <div class="p-4">
+    <% 20.times do |n| %>
+      <div class="border-b py-2 text-sm last:border-0">v1.2.0-beta.<%= n + 1 %></div>
+    <% end %>
+  </div>
+<% end %>

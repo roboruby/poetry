@@ -1,0 +1,386 @@
+<main class="min-h-screen bg-slate-50 px-8 py-10">
+  <div class="mx-auto max-w-7xl space-y-8">
+
+    <header class="flex items-end justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Analytics Overview</h1>
+        <p class="mt-1 text-sm text-slate-500">Workspace performance across all active projects &middot; week of Jul 20&ndash;26, 2026</p>
+      </div>
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200">
+        <svg class="h-1.5 w-1.5 fill-emerald-500" viewBox="0 0 6 6" aria-hidden="true"><circle cx="3" cy="3" r="3" /></svg>
+        Synced 4 minutes ago
+      </span>
+    </header>
+
+    <!-- Headline stats -->
+    <section aria-label="Headline metrics" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <dt class="text-sm font-medium text-slate-500">Active Projects</dt>
+        <dd class="mt-2 flex items-baseline gap-2">
+          <span class="text-3xl font-semibold text-slate-900">12</span>
+          <span class="text-sm font-medium text-emerald-600">+2 this month</span>
+        </dd>
+        <p class="mt-1 text-xs text-slate-400">3 launching next sprint</p>
+      </div>
+
+      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <dt class="text-sm font-medium text-slate-500">Tasks Completed This Week</dt>
+        <dd class="mt-2 flex items-baseline gap-2">
+          <span class="text-3xl font-semibold text-slate-900">184</span>
+          <span class="text-sm font-medium text-emerald-600">+18%</span>
+        </dd>
+        <p class="mt-1 text-xs text-slate-400">vs. 156 last week</p>
+      </div>
+
+      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <dt class="text-sm font-medium text-slate-500">Overdue Items</dt>
+        <dd class="mt-2 flex items-baseline gap-2">
+          <span class="text-3xl font-semibold text-slate-900">9</span>
+          <span class="text-sm font-medium text-rose-600">+3</span>
+        </dd>
+        <p class="mt-1 text-xs text-slate-400">4 flagged high priority</p>
+      </div>
+
+      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <dt class="text-sm font-medium text-slate-500">Team Velocity</dt>
+        <dd class="mt-2 flex items-baseline gap-2">
+          <span class="text-3xl font-semibold text-slate-900">42</span>
+          <span class="text-sm text-slate-400">pts/wk</span>
+        </dd>
+        <p class="mt-1 text-xs text-slate-400">6-week rolling average</p>
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+
+      <!-- Per-project progress -->
+      <section aria-labelledby="project-progress-heading" class="lg:col-span-2 rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+          <h2 id="project-progress-heading" class="text-base font-semibold text-slate-900">Project Progress</h2>
+          <span class="text-xs text-slate-400">12 active</span>
+        </div>
+
+        <ul class="divide-y divide-slate-100">
+          <li class="px-5 py-4">
+            <div class="flex items-center justify-between gap-4">
+              <div class="min-w-0">
+                <p class="truncate text-sm font-medium text-slate-900">Nova Checkout Redesign</p>
+                <p class="text-xs text-slate-500">32 of 40 tasks &middot; due Aug 4, 2026</p>
+              </div>
+              <span class="shrink-0 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200">On track</span>
+            </div>
+            <div class="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" aria-label="Nova Checkout Redesign progress">
+              <div class="h-full rounded-full bg-emerald-500" style="width: 80%"></div>
+            </div>
+          </li>
+
+          <li class="px-5 py-4">
+            <div class="flex items-center justify-between gap-4">
+              <div class="min-w-0">
+                <p class="truncate text-sm font-medium text-slate-900">Mobile Onboarding v2</p>
+                <p class="text-xs text-slate-500">18 of 44 tasks &middot; due Aug 15, 2026</p>
+              </div>
+              <span class="shrink-0 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200">At risk</span>
+            </div>
+            <div class="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuenow="41" aria-valuemin="0" aria-valuemax="100" aria-label="Mobile Onboarding v2 progress">
+              <div class="h-full rounded-full bg-amber-500" style="width: 41%"></div>
+            </div>
+          </li>
+
+          <li class="px-5 py-4">
+            <div class="flex items-center justify-between gap-4">
+              <div class="min-w-0">
+                <p class="truncate text-sm font-medium text-slate-900">Billing API Migration</p>
+                <p class="text-xs text-slate-500">51 of 58 tasks &middot; due Jul 28, 2026</p>
+              </div>
+              <span class="shrink-0 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200">On track</span>
+            </div>
+            <div class="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100" aria-label="Billing API Migration progress">
+              <div class="h-full rounded-full bg-emerald-500" style="width: 88%"></div>
+            </div>
+          </li>
+
+          <li class="px-5 py-4">
+            <div class="flex items-center justify-between gap-4">
+              <div class="min-w-0">
+                <p class="truncate text-sm font-medium text-slate-900">Data Warehouse Sync</p>
+                <p class="text-xs text-slate-500">7 of 30 tasks &middot; due Sep 1, 2026</p>
+              </div>
+              <span class="shrink-0 rounded-full bg-rose-50 px-2.5 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-200">Delayed</span>
+            </div>
+            <div class="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuenow="23" aria-valuemin="0" aria-valuemax="100" aria-label="Data Warehouse Sync progress">
+              <div class="h-full rounded-full bg-rose-500" style="width: 23%"></div>
+            </div>
+          </li>
+
+          <li class="px-5 py-4">
+            <div class="flex items-center justify-between gap-4">
+              <div class="min-w-0">
+                <p class="truncate text-sm font-medium text-slate-900">Design System Refresh</p>
+                <p class="text-xs text-slate-500">22 of 26 tasks &middot; due Jul 30, 2026</p>
+              </div>
+              <span class="shrink-0 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200">On track</span>
+            </div>
+            <div class="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" aria-label="Design System Refresh progress">
+              <div class="h-full rounded-full bg-emerald-500" style="width: 85%"></div>
+            </div>
+          </li>
+        </ul>
+
+        <details class="border-t border-slate-100">
+          <summary class="cursor-pointer select-none px-5 py-3 text-sm font-medium text-indigo-600 hover:text-indigo-700">
+            Show 7 more projects
+          </summary>
+          <ul class="divide-y divide-slate-100">
+            <li class="px-5 py-4">
+              <div class="flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="truncate text-sm font-medium text-slate-900">Support Portal Revamp</p>
+                  <p class="text-xs text-slate-500">14 of 20 tasks &middot; due Aug 10, 2026</p>
+                </div>
+                <span class="shrink-0 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200">On track</span>
+              </div>
+              <div class="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" aria-label="Support Portal Revamp progress">
+                <div class="h-full rounded-full bg-emerald-500" style="width: 70%"></div>
+              </div>
+            </li>
+            <li class="px-5 py-4">
+              <div class="flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="truncate text-sm font-medium text-slate-900">Analytics Pipeline v3</p>
+                  <p class="text-xs text-slate-500">9 of 35 tasks &middot; due Sep 12, 2026</p>
+                </div>
+                <span class="shrink-0 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200">At risk</span>
+              </div>
+              <div class="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuenow="26" aria-valuemin="0" aria-valuemax="100" aria-label="Analytics Pipeline v3 progress">
+                <div class="h-full rounded-full bg-amber-500" style="width: 26%"></div>
+              </div>
+            </li>
+            <li class="px-5 py-4">
+              <div class="flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="truncate text-sm font-medium text-slate-900">Marketing Site Rebuild</p>
+                  <p class="text-xs text-slate-500">29 of 33 tasks &middot; due Jul 27, 2026</p>
+                </div>
+                <span class="shrink-0 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200">On track</span>
+              </div>
+              <div class="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100" aria-label="Marketing Site Rebuild progress">
+                <div class="h-full rounded-full bg-emerald-500" style="width: 88%"></div>
+              </div>
+            </li>
+            <li class="px-5 py-4">
+              <div class="flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="truncate text-sm font-medium text-slate-900">Vendor Integrations</p>
+                  <p class="text-xs text-slate-500">4 of 19 tasks &middot; due Sep 20, 2026</p>
+                </div>
+                <span class="shrink-0 rounded-full bg-rose-50 px-2.5 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-200">Delayed</span>
+              </div>
+              <div class="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuenow="21" aria-valuemin="0" aria-valuemax="100" aria-label="Vendor Integrations progress">
+                <div class="h-full rounded-full bg-rose-500" style="width: 21%"></div>
+              </div>
+            </li>
+            <li class="px-5 py-4">
+              <div class="flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="truncate text-sm font-medium text-slate-900">Internal Tooling Cleanup</p>
+                  <p class="text-xs text-slate-500">33 of 37 tasks &middot; due Jul 29, 2026</p>
+                </div>
+                <span class="shrink-0 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200">On track</span>
+              </div>
+              <div class="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuenow="89" aria-valuemin="0" aria-valuemax="100" aria-label="Internal Tooling Cleanup progress">
+                <div class="h-full rounded-full bg-emerald-500" style="width: 89%"></div>
+              </div>
+            </li>
+            <li class="px-5 py-4">
+              <div class="flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="truncate text-sm font-medium text-slate-900">Customer Health Dashboard</p>
+                  <p class="text-xs text-slate-500">16 of 28 tasks &middot; due Aug 22, 2026</p>
+                </div>
+                <span class="shrink-0 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200">At risk</span>
+              </div>
+              <div class="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuenow="57" aria-valuemin="0" aria-valuemax="100" aria-label="Customer Health Dashboard progress">
+                <div class="h-full rounded-full bg-amber-500" style="width: 57%"></div>
+              </div>
+            </li>
+            <li class="px-5 py-4">
+              <div class="flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="truncate text-sm font-medium text-slate-900">Security Audit Remediation</p>
+                  <p class="text-xs text-slate-500">11 of 15 tasks &middot; due Jul 25, 2026</p>
+                </div>
+                <span class="shrink-0 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200">On track</span>
+              </div>
+              <div class="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuenow="73" aria-valuemin="0" aria-valuemax="100" aria-label="Security Audit Remediation progress">
+                <div class="h-full rounded-full bg-emerald-500" style="width: 73%"></div>
+              </div>
+            </li>
+          </ul>
+        </details>
+      </section>
+
+      <!-- Recent activity -->
+      <section aria-labelledby="recent-activity-heading" class="rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+          <h2 id="recent-activity-heading" class="text-base font-semibold text-slate-900">Recent Activity</h2>
+        </div>
+
+        <ol class="max-h-[640px] space-y-0 overflow-y-auto divide-y divide-slate-100">
+          <li class="flex gap-3 px-5 py-3.5">
+            <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-emerald-500" aria-hidden="true"></span>
+            <div class="min-w-0">
+              <p class="text-sm text-slate-700"><span class="font-medium text-slate-900">Priya Nair</span> completed <span class="font-medium">Checkout API contract tests</span></p>
+              <p class="text-xs text-slate-400">Nova Checkout Redesign &middot; 12 minutes ago</p>
+            </div>
+          </li>
+          <li class="flex gap-3 px-5 py-3.5">
+            <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-indigo-500" aria-hidden="true"></span>
+            <div class="min-w-0">
+              <p class="text-sm text-slate-700"><span class="font-medium text-slate-900">Marcus Ellery</span> opened <span class="font-medium">Retry queue for webhook failures</span></p>
+              <p class="text-xs text-slate-400">Billing API Migration &middot; 38 minutes ago</p>
+            </div>
+          </li>
+          <li class="flex gap-3 px-5 py-3.5">
+            <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-rose-500" aria-hidden="true"></span>
+            <div class="min-w-0">
+              <p class="text-sm text-slate-700"><span class="font-medium text-slate-900">Devon Cole</span> marked <span class="font-medium">ETL backfill job</span> overdue</p>
+              <p class="text-xs text-slate-400">Data Warehouse Sync &middot; 1 hour ago</p>
+            </div>
+          </li>
+          <li class="flex gap-3 px-5 py-3.5">
+            <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-emerald-500" aria-hidden="true"></span>
+            <div class="min-w-0">
+              <p class="text-sm text-slate-700"><span class="font-medium text-slate-900">Ana Reyes</span> completed <span class="font-medium">Token grid audit</span></p>
+              <p class="text-xs text-slate-400">Design System Refresh &middot; 2 hours ago</p>
+            </div>
+          </li>
+          <li class="flex gap-3 px-5 py-3.5">
+            <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-amber-500" aria-hidden="true"></span>
+            <div class="min-w-0">
+              <p class="text-sm text-slate-700"><span class="font-medium text-slate-900">Jonah Kessler</span> reassigned <span class="font-medium">Push notification opt-in flow</span></p>
+              <p class="text-xs text-slate-400">Mobile Onboarding v2 &middot; 3 hours ago</p>
+            </div>
+          </li>
+          <li class="flex gap-3 px-5 py-3.5">
+            <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-indigo-500" aria-hidden="true"></span>
+            <div class="min-w-0">
+              <p class="text-sm text-slate-700"><span class="font-medium text-slate-900">Priya Nair</span> commented on <span class="font-medium">Rate limit thresholds</span></p>
+              <p class="text-xs text-slate-400">Billing API Migration &middot; 4 hours ago</p>
+            </div>
+          </li>
+          <li class="flex gap-3 px-5 py-3.5">
+            <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-emerald-500" aria-hidden="true"></span>
+            <div class="min-w-0">
+              <p class="text-sm text-slate-700"><span class="font-medium text-slate-900">Sam Whitfield</span> completed <span class="font-medium">Ticket macros migration</span></p>
+              <p class="text-xs text-slate-400">Support Portal Revamp &middot; 5 hours ago</p>
+            </div>
+          </li>
+          <li class="flex gap-3 px-5 py-3.5">
+            <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-rose-500" aria-hidden="true"></span>
+            <div class="min-w-0">
+              <p class="text-sm text-slate-700"><span class="font-medium text-slate-900">Devon Cole</span> flagged <span class="font-medium">Vendor SLA review</span> at risk</p>
+              <p class="text-xs text-slate-400">Vendor Integrations &middot; yesterday</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+    </div>
+
+    <!-- Overdue items -->
+    <section aria-labelledby="overdue-heading" class="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+        <h2 id="overdue-heading" class="text-base font-semibold text-slate-900">Overdue Items</h2>
+        <span class="rounded-full bg-rose-50 px-2.5 py-0.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-200">9 total</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+          <thead>
+            <tr class="border-b border-slate-100 text-xs uppercase tracking-wide text-slate-400">
+              <th scope="col" class="px-5 py-2.5 font-medium">Task</th>
+              <th scope="col" class="px-5 py-2.5 font-medium">Project</th>
+              <th scope="col" class="px-5 py-2.5 font-medium">Assignee</th>
+              <th scope="col" class="px-5 py-2.5 font-medium">Due</th>
+              <th scope="col" class="px-5 py-2.5 font-medium">Days overdue</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <tr>
+              <td class="px-5 py-3 font-medium text-slate-900">ETL backfill job</td>
+              <td class="px-5 py-3 text-slate-500">Data Warehouse Sync</td>
+              <td class="px-5 py-3 text-slate-500">Devon Cole</td>
+              <td class="px-5 py-3 text-slate-500">Jul 15, 2026</td>
+              <td class="px-5 py-3"><span class="font-medium text-rose-600">7 days</span></td>
+            </tr>
+            <tr>
+              <td class="px-5 py-3 font-medium text-slate-900">Vendor SLA review</td>
+              <td class="px-5 py-3 text-slate-500">Vendor Integrations</td>
+              <td class="px-5 py-3 text-slate-500">Devon Cole</td>
+              <td class="px-5 py-3 text-slate-500">Jul 17, 2026</td>
+              <td class="px-5 py-3"><span class="font-medium text-rose-600">5 days</span></td>
+            </tr>
+            <tr>
+              <td class="px-5 py-3 font-medium text-slate-900">Push notification opt-in flow</td>
+              <td class="px-5 py-3 text-slate-500">Mobile Onboarding v2</td>
+              <td class="px-5 py-3 text-slate-500">Jonah Kessler</td>
+              <td class="px-5 py-3 text-slate-500">Jul 19, 2026</td>
+              <td class="px-5 py-3"><span class="font-medium text-rose-600">3 days</span></td>
+            </tr>
+            <tr>
+              <td class="px-5 py-3 font-medium text-slate-900">Rate limit thresholds doc</td>
+              <td class="px-5 py-3 text-slate-500">Billing API Migration</td>
+              <td class="px-5 py-3 text-slate-500">Priya Nair</td>
+              <td class="px-5 py-3 text-slate-500">Jul 20, 2026</td>
+              <td class="px-5 py-3"><span class="font-medium text-rose-600">2 days</span></td>
+            </tr>
+            <tr>
+              <td class="px-5 py-3 font-medium text-slate-900">Customer health scoring model</td>
+              <td class="px-5 py-3 text-slate-500">Customer Health Dashboard</td>
+              <td class="px-5 py-3 text-slate-500">Ana Reyes</td>
+              <td class="px-5 py-3 text-slate-500">Jul 21, 2026</td>
+              <td class="px-5 py-3"><span class="font-medium text-rose-600">1 day</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="border-t border-slate-100">
+        <summary class="cursor-pointer select-none px-5 py-3 text-sm font-medium text-indigo-600 hover:text-indigo-700">
+          Show 4 more overdue items
+        </summary>
+        <table class="w-full text-left text-sm">
+          <tbody class="divide-y divide-slate-100">
+            <tr>
+              <td class="px-5 py-3 font-medium text-slate-900">Analytics pipeline schema review</td>
+              <td class="px-5 py-3 text-slate-500">Analytics Pipeline v3</td>
+              <td class="px-5 py-3 text-slate-500">Marcus Ellery</td>
+              <td class="px-5 py-3 text-slate-500">Jul 21, 2026</td>
+              <td class="px-5 py-3"><span class="font-medium text-rose-600">1 day</span></td>
+            </tr>
+            <tr>
+              <td class="px-5 py-3 font-medium text-slate-900">Security patch verification</td>
+              <td class="px-5 py-3 text-slate-500">Security Audit Remediation</td>
+              <td class="px-5 py-3 text-slate-500">Sam Whitfield</td>
+              <td class="px-5 py-3 text-slate-500">Jul 21, 2026</td>
+              <td class="px-5 py-3"><span class="font-medium text-rose-600">1 day</span></td>
+            </tr>
+            <tr>
+              <td class="px-5 py-3 font-medium text-slate-900">Internal tooling changelog</td>
+              <td class="px-5 py-3 text-slate-500">Internal Tooling Cleanup</td>
+              <td class="px-5 py-3 text-slate-500">Ana Reyes</td>
+              <td class="px-5 py-3 text-slate-500">Jul 22, 2026</td>
+              <td class="px-5 py-3"><span class="font-medium text-rose-600">Due today</span></td>
+            </tr>
+            <tr>
+              <td class="px-5 py-3 font-medium text-slate-900">Marketing site copy freeze</td>
+              <td class="px-5 py-3 text-slate-500">Marketing Site Rebuild</td>
+              <td class="px-5 py-3 text-slate-500">Priya Nair</td>
+              <td class="px-5 py-3 text-slate-500">Jul 22, 2026</td>
+              <td class="px-5 py-3"><span class="font-medium text-rose-600">Due today</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </details>
+    </section>
+
+  </div>
+</main>

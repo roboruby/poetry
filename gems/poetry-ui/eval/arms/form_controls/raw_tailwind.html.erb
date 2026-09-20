@@ -1,0 +1,54 @@
+<%# The raw-Tailwind arm for the same settings panel - realistic, not a
+    strawman: the checkbox is a real native input (form participation
+    holds) and the switch carries role/aria-checked with a wired label.
+    The characteristic tells: the view switcher is aria-pressed buttons
+    with NO radio semantics (the exclusivity lives only in JS the markup
+    never promises), the icon-only bookmark button ships nameless, the
+    volume slider is a styled div with no role/aria-value* (operable by
+    pointer-JS only), the textarea leans on placeholder-as-label, the
+    confirmation code is the classic per-cell six-input build (six Tab
+    stops, broken paste, broken SMS autofill), and the active paint is a
+    raw hex that bypasses the theme. %>
+<div class="space-y-6">
+  <div class="flex items-center gap-3">
+    <input id="terms" name="settings[terms]" type="checkbox"
+           class="size-4 rounded border-gray-300 focus-visible:ring-2">
+    <label for="terms" class="text-sm font-medium">Accept terms and conditions</label>
+  </div>
+  <div class="flex items-center gap-3">
+    <button type="button" role="switch" aria-checked="true" id="email-alerts"
+            class="relative inline-flex h-5 w-9 items-center rounded-full bg-[#6366f1] focus-visible:ring-2">
+      <span class="inline-block size-4 translate-x-4 rounded-full bg-white"></span>
+    </button>
+    <label for="email-alerts" class="text-sm font-medium">Email alerts</label>
+  </div>
+  <div class="flex items-center gap-3">
+    <button type="button" class="rounded-md border p-2 hover:bg-gray-100">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" aria-hidden="true" class="size-4"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+    </button>
+    <div class="inline-flex rounded-md border">
+      <button type="button" aria-pressed="true"
+              class="rounded-l-md bg-[#6366f1] px-3 py-1.5 text-sm text-white">List</button>
+      <button type="button" aria-pressed="false" class="px-3 py-1.5 text-sm">Grid</button>
+    </div>
+  </div>
+  <div class="flex items-center gap-3">
+    <span class="text-sm font-medium">Alert volume</span>
+    <div class="relative h-1.5 w-48 rounded-full bg-gray-200">
+      <div class="absolute inset-y-0 left-0 w-3/5 rounded-full bg-[#6366f1]"></div>
+      <div class="absolute top-1/2 left-3/5 size-4 -translate-x-1/2 -translate-y-1/2 rounded-full border bg-white shadow"></div>
+    </div>
+  </div>
+  <textarea name="settings[note]" placeholder="Unsubscribe note"
+            class="min-h-16 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></textarea>
+  <div>
+    <span class="text-sm font-medium">Confirmation code</span>
+    <div class="mt-2 flex gap-2">
+      <% 6.times do |i| %>
+        <input type="text" maxlength="1" name="settings[code][<%= i %>]" aria-label="Digit <%= i + 1 %>"
+               class="size-9 rounded-md border border-gray-300 text-center text-sm">
+      <% end %>
+    </div>
+  </div>
+</div>

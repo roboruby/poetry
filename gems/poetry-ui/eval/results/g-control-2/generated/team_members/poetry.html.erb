@@ -1,0 +1,193 @@
+<div class="mx-auto max-w-5xl p-6 space-y-8">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Members</h1>
+    <p class="text-sm text-muted-foreground">Invite teammates, manage roles, and review who has access to this workspace.</p>
+  </div>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Invite a teammate" } %>
+    <% card.with_description { "They'll receive an email with a link to join this workspace." } %>
+    <%= form_with url: "#", method: :post, class: "flex flex-wrap items-end gap-4" do %>
+      <%= poetry_field(id: "invite-email", label_text: "Email address", class: "min-w-64 flex-1") do |field| %>
+        <%= poetry_input(**field.control_attributes, type: "email", name: "invite[email]", placeholder: "teammate@company.com") %>
+      <% end %>
+      <%= poetry_field(id: "invite-role", label_text: "Role", class: "w-44") do |field| %>
+        <%= poetry_native_select(**field.control_attributes, name: "invite[role]",
+                                 options: [["Member", "member"], ["Admin", "admin"], ["Billing manager", "billing"]]) %>
+      <% end %>
+      <%= poetry_button(type: :submit) do |button| %>
+        <% button.with_leading { poetry_icon(name: :"user-plus") } %>
+        Send invite
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <section class="space-y-4">
+    <div class="space-y-1">
+      <h2 class="text-lg font-semibold tracking-tight">Workspace members</h2>
+      <p class="text-sm text-muted-foreground">6 people have access to this workspace.</p>
+    </div>
+    <%= form_with url: "#", method: :get, class: "max-w-xs" do %>
+      <%= poetry_search_field(name: "q", label: "Search members", placeholder: "Search by name or email…") %>
+    <% end %>
+    <div class="overflow-hidden rounded-lg border">
+      <%= poetry_table do %>
+        <%= poetry_table_caption(class: "sr-only") { "Workspace members with role and last-active time." } %>
+        <%= poetry_table_header do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_head { "Member" } %>
+            <%= poetry_table_head { "Role" } %>
+            <%= poetry_table_head { "Last active" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_body do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-3">
+                <%= poetry_avatar(label: "Riley Chen", size: :sm) { "RC" } %>
+                <div class="grid leading-tight">
+                  <span class="text-sm font-medium">Riley Chen</span>
+                  <span class="text-xs text-muted-foreground">riley@acme.co</span>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Owner" } } %>
+            <%= poetry_table_cell(class: "text-sm text-muted-foreground") { "Active now" } %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-3">
+                <%= poetry_avatar(label: "Priya Nair", size: :sm) { "PN" } %>
+                <div class="grid leading-tight">
+                  <span class="text-sm font-medium">Priya Nair</span>
+                  <span class="text-xs text-muted-foreground">priya@acme.co</span>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Admin" } } %>
+            <%= poetry_table_cell(class: "text-sm text-muted-foreground") { "2 hours ago" } %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-3">
+                <%= poetry_avatar(label: "Marcus Bell", size: :sm) { "MB" } %>
+                <div class="grid leading-tight">
+                  <span class="text-sm font-medium">Marcus Bell</span>
+                  <span class="text-xs text-muted-foreground">marcus@acme.co</span>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Member" } } %>
+            <%= poetry_table_cell(class: "text-sm text-muted-foreground") { "Yesterday" } %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-3">
+                <%= poetry_avatar(label: "Elena Petrov", size: :sm) { "EP" } %>
+                <div class="grid leading-tight">
+                  <span class="text-sm font-medium">Elena Petrov</span>
+                  <span class="text-xs text-muted-foreground">elena@acme.co</span>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Member" } } %>
+            <%= poetry_table_cell(class: "text-sm text-muted-foreground") { "3 days ago" } %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-3">
+                <%= poetry_avatar(label: "Owen Frost", size: :sm) { "OF" } %>
+                <div class="grid leading-tight">
+                  <span class="text-sm font-medium">Owen Frost</span>
+                  <span class="text-xs text-muted-foreground">owen@acme.co</span>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Billing manager" } } %>
+            <%= poetry_table_cell(class: "text-sm text-muted-foreground") { "1 week ago" } %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-3">
+                <%= poetry_avatar(label: "Sofia Reyes", size: :sm) { "SR" } %>
+                <div class="grid leading-tight">
+                  <span class="text-sm font-medium">Sofia Reyes</span>
+                  <span class="text-xs text-muted-foreground">sofia@acme.co</span>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Member" } } %>
+            <%= poetry_table_cell(class: "text-sm text-muted-foreground") { "3 weeks ago" } %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="space-y-4">
+    <div class="space-y-1">
+      <h2 class="text-lg font-semibold tracking-tight">Pending invitations</h2>
+      <p class="text-sm text-muted-foreground">Invites that haven't been accepted yet.</p>
+    </div>
+    <div class="overflow-hidden rounded-lg border">
+      <%= poetry_table do %>
+        <%= poetry_table_caption(class: "sr-only") { "Pending invitations with role, invited date, and actions." } %>
+        <%= poetry_table_header do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_head { "Email" } %>
+            <%= poetry_table_head { "Role" } %>
+            <%= poetry_table_head { "Invited" } %>
+            <%= poetry_table_head(class: "text-right") { "Actions" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_body do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { "sam.rivera@acme.co" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Member" } } %>
+            <%= poetry_table_cell(class: "text-sm text-muted-foreground") { "3 days ago" } %>
+            <%= poetry_table_cell(class: "text-right") do %>
+              <div class="flex items-center justify-end gap-2">
+                <%= form_with url: "#", method: :post, class: "inline-flex" do %>
+                  <%= poetry_button(variant: :outline, size: :sm, type: :submit) { "Resend" } %>
+                <% end %>
+                <%= form_with url: "#", method: :delete, class: "inline-flex" do %>
+                  <%= poetry_button(variant: :destructive, size: :sm, type: :submit) { "Revoke" } %>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { "devon.walsh@acme.co" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Admin" } } %>
+            <%= poetry_table_cell(class: "text-sm text-muted-foreground") { "5 days ago" } %>
+            <%= poetry_table_cell(class: "text-right") do %>
+              <div class="flex items-center justify-end gap-2">
+                <%= form_with url: "#", method: :post, class: "inline-flex" do %>
+                  <%= poetry_button(variant: :outline, size: :sm, type: :submit) { "Resend" } %>
+                <% end %>
+                <%= form_with url: "#", method: :delete, class: "inline-flex" do %>
+                  <%= poetry_button(variant: :destructive, size: :sm, type: :submit) { "Revoke" } %>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { "yuki.tanaka@acme.co" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Billing manager" } } %>
+            <%= poetry_table_cell(class: "text-sm text-muted-foreground") { "1 week ago" } %>
+            <%= poetry_table_cell(class: "text-right") do %>
+              <div class="flex items-center justify-end gap-2">
+                <%= form_with url: "#", method: :post, class: "inline-flex" do %>
+                  <%= poetry_button(variant: :outline, size: :sm, type: :submit) { "Resend" } %>
+                <% end %>
+                <%= form_with url: "#", method: :delete, class: "inline-flex" do %>
+                  <%= poetry_button(variant: :destructive, size: :sm, type: :submit) { "Revoke" } %>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+</div>

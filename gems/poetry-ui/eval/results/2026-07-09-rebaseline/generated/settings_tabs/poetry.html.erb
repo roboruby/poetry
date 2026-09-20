@@ -1,0 +1,95 @@
+<div class="mx-auto max-w-3xl p-6 space-y-6">
+  <header class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Settings</h1>
+    <p class="text-sm text-muted-foreground">Manage your account details, password, and notification preferences.</p>
+  </header>
+
+  <%= poetry_tabs(default: "account", label: "Account settings") do |tabs| %>
+    <% tabs.with_tab("Account", value: "account") do %>
+      <%= poetry_card(title_tag: :h2, class: "mt-4") do |card| %>
+        <% card.with_title { "Account" } %>
+        <% card.with_description { "Update your name, email, and public bio." } %>
+        <%= form_with url: "#", method: :patch, class: "space-y-4" do %>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <%= poetry_field(id: "account-name", label_text: "Full name") do |field| %>
+              <%= poetry_input(**field.control_attributes, name: "name", value: "Ada Lovelace") %>
+            <% end %>
+            <%= poetry_field(id: "account-email", label_text: "Email address") do |field| %>
+              <%= poetry_input(**field.control_attributes, type: "email", name: "email", value: "ada@example.com") %>
+            <% end %>
+          </div>
+          <%= poetry_field(id: "account-bio", label_text: "Bio", hint: "Shown on your public profile.") do |field| %>
+            <%= poetry_textarea(**field.control_attributes, name: "bio", rows: 3, placeholder: "Tell us a little about yourself…") %>
+          <% end %>
+        <% end %>
+        <% card.with_footer do %>
+          <div class="flex w-full items-center justify-end gap-2">
+            <%= poetry_button(variant: :outline) { "Cancel" } %>
+            <%= poetry_button(type: :submit) { "Save changes" } %>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% tabs.with_tab("Password", value: "password") do %>
+      <%= poetry_card(title_tag: :h2, class: "mt-4") do |card| %>
+        <% card.with_title { "Password" } %>
+        <% card.with_description { "Choose a strong password you don't use elsewhere." } %>
+        <%= form_with url: "#", method: :patch, class: "space-y-4" do %>
+          <%= poetry_field(id: "password-current", label_text: "Current password") do |field| %>
+            <%= poetry_input(**field.control_attributes, type: "password", name: "current_password") %>
+          <% end %>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <%= poetry_field(id: "password-new", label_text: "New password", hint: "At least 8 characters.") do |field| %>
+              <%= poetry_input(**field.control_attributes, type: "password", name: "password") %>
+            <% end %>
+            <%= poetry_field(id: "password-confirm", label_text: "Confirm new password") do |field| %>
+              <%= poetry_input(**field.control_attributes, type: "password", name: "password_confirmation") %>
+            <% end %>
+          </div>
+        <% end %>
+        <% card.with_footer do %>
+          <div class="flex w-full items-center justify-end gap-2">
+            <%= poetry_button(variant: :outline) { "Cancel" } %>
+            <%= poetry_button(type: :submit) { "Update password" } %>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% tabs.with_tab("Notifications", value: "notifications") do %>
+      <%= poetry_card(title_tag: :h2, class: "mt-4") do |card| %>
+        <% card.with_title { "Notifications" } %>
+        <% card.with_description { "Choose what you're notified about and how." } %>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between gap-4">
+            <div class="space-y-0.5">
+              <p class="text-sm font-medium">Email notifications</p>
+              <p class="text-sm text-muted-foreground">Receive account activity updates by email.</p>
+            </div>
+            <%= poetry_switch(name: "notify_email", checked: true, label: "Email notifications") %>
+          </div>
+          <%= poetry_separator %>
+          <div class="flex items-center justify-between gap-4">
+            <div class="space-y-0.5">
+              <p class="text-sm font-medium">Push notifications</p>
+              <p class="text-sm text-muted-foreground">Get a push alert on your devices for important events.</p>
+            </div>
+            <%= poetry_switch(name: "notify_push", checked: true, label: "Push notifications") %>
+          </div>
+          <%= poetry_separator %>
+          <div class="flex items-center justify-between gap-4">
+            <div class="space-y-0.5">
+              <p class="text-sm font-medium">Marketing emails</p>
+              <p class="text-sm text-muted-foreground">Occasional product news, tips, and offers.</p>
+            </div>
+            <%= poetry_switch(name: "notify_marketing", checked: false, label: "Marketing emails") %>
+          </div>
+        </div>
+        <% card.with_footer do %>
+          <p class="text-xs text-muted-foreground">Changes to notification settings save instantly.</p>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,361 @@
+{
+  "summary": {
+    "arms": 12,
+    "blocks_surface": 12,
+    "compose_called": 12,
+    "poetry_skill": 12,
+    "design_skill": 12,
+    "ran_check": 10,
+    "check_last": 8
+  },
+  "arms": {
+    "analytics_overview": {
+      "transcript": "32e949cd-4d9e-4960-908f-8893fb33510a.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "The analytics overview for a project-management workspace: h"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": false,
+      "tool_counts": {
+        "Read": 2,
+        "ToolSearch": 4,
+        "Skill": 2,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_block": 3,
+        "mcp__poetry__describe_component": 11,
+        "mcp__poetry__list_components": 1,
+        "Grep": 6,
+        "mcp__poetry__check": 2,
+        "Write": 1
+      }
+    },
+    "billing_settings": {
+      "transcript": "be4be101-2559-4437-907b-270ef89b1249.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "The billing page for a team workspace: the current plan with"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 2,
+        "Skill": 2,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_block": 3,
+        "mcp__poetry__describe_component": 12,
+        "Grep": 3,
+        "Write": 1,
+        "mcp__poetry__check": 2
+      }
+    },
+    "team_members": {
+      "transcript": "5c86b4e1-2647-46d5-90f7-aef56db1ec77.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "The members page of a workspace admin area: invite a teammat"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Skill": 2,
+        "ToolSearch": 3,
+        "Read": 5,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_block": 1,
+        "mcp__poetry__describe_component": 16,
+        "Grep": 6,
+        "Write": 1,
+        "mcp__poetry__check": 2,
+        "Bash": 1
+      }
+    },
+    "login": {
+      "transcript": "37f60ee6-20cd-4347-b7a1-f287961b7cee.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "The sign-in screen for a business app: email and password wi"
+      ],
+      "list_blocks": false,
+      "describe_block": false,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 6,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "Skill": 2,
+        "Bash": 1,
+        "Glob": 5,
+        "mcp__poetry__describe_component": 5,
+        "Grep": 2,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "onboarding_checklist": {
+      "transcript": "1927901d-7c1c-4039-aa01-51949d68312d.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "First-run screen after a user creates a workspace: a short w"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 3,
+        "Skill": 2,
+        "ToolSearch": 2,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_block": 2,
+        "mcp__poetry__describe_component": 9,
+        "Grep": 3,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "pricing": {
+      "transcript": "f226a9f6-6716-4607-8b56-8921ebe1892f.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "The public pricing page: three tiers with monthly prices and"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 6,
+        "Skill": 2,
+        "ToolSearch": 2,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_block": 2,
+        "mcp__poetry__describe_component": 4,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "audit_log": {
+      "transcript": "3ed03cfa-cd7b-47cb-ac74-5534e823da60.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "The audit log for a workspace: a filterable list of security"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 8,
+        "Skill": 2,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_block": 3,
+        "mcp__poetry__describe_component": 7,
+        "Grep": 6,
+        "Glob": 2,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "project_detail": {
+      "transcript": "84c5aad6-5e52-4c93-9701-51f4d9eca0ff.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A single project's page: name, status and description up top"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 7,
+        "Skill": 2,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_block": 3,
+        "mcp__poetry__list_components": 1,
+        "mcp__poetry__describe_component": 13,
+        "Grep": 5,
+        "Bash": 1,
+        "Glob": 2,
+        "mcp__poetry__check": 2,
+        "Write": 1
+      }
+    },
+    "integrations": {
+      "transcript": "c0ce72ea-f2e0-4777-adb6-7be08351ed7c.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "Integrations page: currently connected services with health "
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": false,
+      "tool_counts": {
+        "Read": 6,
+        "Skill": 2,
+        "ToolSearch": 3,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_block": 3,
+        "Grep": 5,
+        "mcp__poetry__describe_component": 4,
+        "mcp__poetry__list_components": 1,
+        "Write": 1,
+        "mcp__poetry__check": 1,
+        "Edit": 2
+      }
+    },
+    "activity_inbox": {
+      "transcript": "2f93eb84-1455-42fd-918d-8e942df57e3a.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "The activity inbox: a stream of mentions, assignments and st"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": false,
+      "check_last": false,
+      "tool_counts": {
+        "Read": 2,
+        "Skill": 2,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 14,
+        "mcp__poetry__describe_block": 1,
+        "mcp__poetry__list_components": 1,
+        "Grep": 5,
+        "Write": 1,
+        "Edit": 2
+      }
+    },
+    "search_results": {
+      "transcript": "189afce6-2616-4366-8496-5382cbc4824d.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "Global search results page for the query 'deployment': match"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": false,
+      "check_last": false,
+      "tool_counts": {
+        "Read": 3,
+        "Skill": 2,
+        "ToolSearch": 3,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 18,
+        "mcp__poetry__describe_block": 2,
+        "Grep": 5,
+        "Write": 1,
+        "Edit": 2
+      }
+    },
+    "status_page": {
+      "transcript": "3bcbcfbc-9fad-425a-b8b1-4eacc75c557e.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "The public status page for a hosted product: an overall stat"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 11,
+        "Skill": 2,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__list_components": 1,
+        "mcp__poetry__describe_component": 14,
+        "Grep": 8,
+        "Glob": 2,
+        "mcp__poetry__describe_block": 3,
+        "Write": 2,
+        "Edit": 3,
+        "mcp__poetry__check": 1
+      }
+    }
+  }
+}

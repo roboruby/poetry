@@ -1,0 +1,20 @@
+<%# The raw-Tailwind arm for the same transcript - realistic, not a
+    strawman: plausible layout and copy, with the typical tells (the
+    quick reply is a styled div with an onclick, the live status is
+    plain styled text with no live region, the decorative icon is
+    exposed to AT, one arbitrary hex). %>
+<div class="flex flex-col gap-2 text-sm">
+  <div class="flex items-center gap-2 text-xs text-gray-500"><span class="h-px flex-1 bg-gray-200"></span>Yesterday<span class="h-px flex-1 bg-gray-200"></span></div>
+  <div class="flex gap-2">
+    <div class="flex flex-col gap-1">
+      <span class="px-3 text-xs font-medium text-gray-500">Assistant</span>
+      <div class="w-fit rounded-xl bg-gray-100 px-3 py-2">Here's the report you asked for.</div>
+      <div class="flex w-fit items-center gap-2 rounded-xl border p-2">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4"><path d="M14 2v6h6"/></svg>
+        <div><span class="block font-medium">quarterly-report.pdf</span><span class="text-xs text-gray-500">1.2 MB</span></div>
+      </div>
+      <div class="w-fit cursor-pointer rounded-xl border px-3 py-2 hover:bg-gray-50" onclick="summarize()">Summarize it</div>
+    </div>
+  </div>
+  <div class="flex items-center gap-2 text-xs text-[#8b5cf6]">✦ Assistant is thinking…</div>
+</div>

@@ -1,0 +1,17 @@
+<div class="mx-auto max-w-md p-6">
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Team workspaces" } %>
+    <% card.with_description { "Shared projects and permissions for your whole org." } %>
+    <% card.with_action do %>
+      <%= poetry_badge(variant: :secondary) { "Beta" } %>
+    <% end %>
+    <% card.with_footer do %>
+      <%= poetry_link(href: "/docs/team-workspaces", underline: :always, class: "inline-flex items-center gap-1") do %>
+        Learn more <%= poetry_icon(name: :"arrow-right", class: "size-3.5") %>
+      <% end %>
+    <% end %>
+    <div class="text-sm">
+      <p>Group people, projects, and billing under one workspace. Roles and permissions apply across every project automatically, so new members get the right access the moment they're invited.</p>
+    </div>
+  <% end %>
+</div>

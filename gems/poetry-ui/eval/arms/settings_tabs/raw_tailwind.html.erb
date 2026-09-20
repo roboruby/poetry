@@ -1,0 +1,12 @@
+<%# The raw arm: plausible LLM output - "tabs" as onclick buttons with no
+    roles, no aria-selected, and panels toggled by an inline script. %>
+<div>
+  <div class="inline-flex rounded-lg bg-gray-100 p-1 text-sm">
+    <button class="rounded-md bg-white px-3 py-1 font-medium shadow-sm" onclick="showTab('account')">Account</button>
+    <button class="px-3 py-1 text-gray-500" onclick="showTab('password')">Password</button>
+    <button class="px-3 py-1 text-gray-500" onclick="showTab('notifications')">Notifications</button>
+  </div>
+  <div id="tab-account" class="mt-2 text-sm"><p>Make changes to your account here.</p></div>
+  <div id="tab-password" class="mt-2 hidden text-sm"><p>Change your password here.</p></div>
+  <div id="tab-notifications" class="mt-2 hidden text-sm"><p>Choose what you hear about.</p></div>
+</div>

@@ -1,0 +1,19 @@
+<%# Two-input architecture (Base UI): the group holds the formatted
+    visible text input between two stepper addons; the hidden number
+    input beside it is the form/validation truth. %>
+<%= content_tag(:div, **root_attributes) do %>
+  <%= content_tag(:div, **group_attributes) do %>
+    <%= content_tag(:div, **addon_attributes(:start)) do %>
+      <%= render stepper(:decrement) do %>
+        <%= render Poetry::Ui::Icon::Component.new(name: stepper_icon(:decrement)) %>
+      <% end %>
+    <% end %>
+    <%= tag.input(**input_attributes) %>
+    <%= content_tag(:div, **addon_attributes(:end)) do %>
+      <%= render stepper(:increment) do %>
+        <%= render Poetry::Ui::Icon::Component.new(name: stepper_icon(:increment)) %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <%= tag.input(**hidden_attributes) %>
+<% end %>

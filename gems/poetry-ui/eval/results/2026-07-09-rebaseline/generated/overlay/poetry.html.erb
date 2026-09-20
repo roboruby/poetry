@@ -1,0 +1,153 @@
+<div class="mx-auto max-w-5xl p-6 space-y-6">
+  <header class="flex flex-col gap-4">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="space-y-1">
+        <h1 class="text-2xl font-semibold tracking-tight">API keys</h1>
+        <p class="text-sm text-muted-foreground">Manage the keys used to authenticate requests against the Meridian API.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <%= poetry_sheet(side: :right) do |sheet| %>
+          <% sheet.with_trigger do %>
+            <%= poetry_button(variant: :outline) do |button| %>
+              <% button.with_leading { poetry_icon(name: :"list-filter") } %>
+              Filter results
+            <% end %>
+          <% end %>
+          <% sheet.with_title { "Filter results" } %>
+          <% sheet.with_description { "Narrow the list below by status, scope, and when the key was created." } %>
+          <div class="space-y-6 px-4 py-2">
+            <div class="space-y-2">
+              <%= poetry_label(for_id: "filter-search") { "Search" } %>
+              <%= poetry_input(id: "filter-search", name: "q", type: "search", placeholder: "Search by name or prefix…") %>
+            </div>
+            <div class="space-y-2">
+              <%= poetry_label(for_id: "filter-status") { "Status" } %>
+              <%= poetry_native_select(id: "filter-status", name: "status",
+                                       options: [["All statuses", "all"], ["Active", "active"], ["Revoked", "revoked"]]) %>
+            </div>
+            <div class="space-y-2">
+              <span class="text-sm font-medium">Scope</span>
+              <div class="space-y-2">
+                <%= poetry_checkbox(label: "Read", name: "scope[]", value: "read") %>
+                <%= poetry_checkbox(label: "Write", name: "scope[]", value: "write") %>
+                <%= poetry_checkbox(label: "Admin", name: "scope[]", value: "admin") %>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <%= poetry_label(for_id: "filter-created") { "Created" } %>
+              <%= poetry_native_select(id: "filter-created", name: "created",
+                                       options: [["Any time", "any"], ["Last 7 days", "7d"], ["Last 30 days", "30d"], ["Last 90 days", "90d"]]) %>
+            </div>
+          </div>
+          <% sheet.with_footer do %>
+            <%= poetry_button(variant: :outline) { "Reset" } %>
+            <%= poetry_button { "Apply filters" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_button do |button| %>
+          <% button.with_leading { poetry_icon(name: :plus) } %>
+          New key
+        <% end %>
+      </div>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <div class="overflow-hidden rounded-lg border">
+    <%= poetry_table do %>
+      <%= poetry_table_caption(class: "sr-only") { "API keys with scope, status, and last-used time." } %>
+      <%= poetry_table_header do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_head { "Name" } %>
+          <%= poetry_table_head { "Key" } %>
+          <%= poetry_table_head { "Scope" } %>
+          <%= poetry_table_head { "Status" } %>
+          <%= poetry_table_head { "Last used" } %>
+          <%= poetry_table_head(class: "text-right") { "Actions" } %>
+        <% end %>
+      <% end %>
+      <%= poetry_table_body do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { "Production server" } %>
+          <%= poetry_table_cell(class: "font-mono text-xs text-muted-foreground") { "sk_live_••••aB3f" } %>
+          <%= poetry_table_cell { "Read & write" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :success) { "Active" } } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "2 minutes ago" } %>
+          <%= poetry_table_cell(class: "text-right") do %>
+            <%= poetry_alert_dialog do |dialog| %>
+              <% dialog.with_trigger do %>
+                <%= poetry_button(variant: :ghost, size: :"icon-sm", label: "Delete key: Production server") do %>
+                  <%= poetry_icon(name: :trash) %>
+                <% end %>
+              <% end %>
+              <% dialog.with_title { "Delete API key?" } %>
+              <% dialog.with_description { "Production server will immediately lose access. Requests signed with this key start failing right away, and the key cannot be recovered once deleted." } %>
+              <% dialog.with_cancel { "Cancel" } %>
+              <% dialog.with_action(variant: :destructive) { "Delete key" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { "CI pipeline" } %>
+          <%= poetry_table_cell(class: "font-mono text-xs text-muted-foreground") { "sk_live_••••9Qk2" } %>
+          <%= poetry_table_cell { "Read only" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :success) { "Active" } } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "1 hour ago" } %>
+          <%= poetry_table_cell(class: "text-right") do %>
+            <%= poetry_alert_dialog do |dialog| %>
+              <% dialog.with_trigger do %>
+                <%= poetry_button(variant: :ghost, size: :"icon-sm", label: "Delete key: CI pipeline") do %>
+                  <%= poetry_icon(name: :trash) %>
+                <% end %>
+              <% end %>
+              <% dialog.with_title { "Delete API key?" } %>
+              <% dialog.with_description { "CI pipeline will immediately lose access. Requests signed with this key start failing right away, and the key cannot be recovered once deleted." } %>
+              <% dialog.with_cancel { "Cancel" } %>
+              <% dialog.with_action(variant: :destructive) { "Delete key" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { "Staging worker" } %>
+          <%= poetry_table_cell(class: "font-mono text-xs text-muted-foreground") { "sk_test_••••7Lm1" } %>
+          <%= poetry_table_cell { "Read & write" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :success) { "Active" } } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "3 days ago" } %>
+          <%= poetry_table_cell(class: "text-right") do %>
+            <%= poetry_alert_dialog do |dialog| %>
+              <% dialog.with_trigger do %>
+                <%= poetry_button(variant: :ghost, size: :"icon-sm", label: "Delete key: Staging worker") do %>
+                  <%= poetry_icon(name: :trash) %>
+                <% end %>
+              <% end %>
+              <% dialog.with_title { "Delete API key?" } %>
+              <% dialog.with_description { "Staging worker will immediately lose access. Requests signed with this key start failing right away, and the key cannot be recovered once deleted." } %>
+              <% dialog.with_cancel { "Cancel" } %>
+              <% dialog.with_action(variant: :destructive) { "Delete key" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { "Legacy import job" } %>
+          <%= poetry_table_cell(class: "font-mono text-xs text-muted-foreground") { "sk_live_••••x0Zt" } %>
+          <%= poetry_table_cell { "Admin" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :outline) { "Revoked" } } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "62 days ago" } %>
+          <%= poetry_table_cell(class: "text-right") do %>
+            <%= poetry_alert_dialog do |dialog| %>
+              <% dialog.with_trigger do %>
+                <%= poetry_button(variant: :ghost, size: :"icon-sm", label: "Delete key: Legacy import job") do %>
+                  <%= poetry_icon(name: :trash) %>
+                <% end %>
+              <% end %>
+              <% dialog.with_title { "Delete API key?" } %>
+              <% dialog.with_description { "Legacy import job will be permanently removed. This key is already revoked, so this only clears it from the list — the action cannot be undone." } %>
+              <% dialog.with_cancel { "Cancel" } %>
+              <% dialog.with_action(variant: :destructive) { "Delete key" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

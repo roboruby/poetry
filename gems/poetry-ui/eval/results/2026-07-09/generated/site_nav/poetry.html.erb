@@ -1,0 +1,18 @@
+<header class="w-full border-b border-border bg-background">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+    <%= poetry_link "Meridian", href: "/", underline: :none, class: "text-lg font-semibold text-foreground" %>
+
+    <%= poetry_navigation_menu label: "Main" do |nav| %>
+      <% nav.with_item("Products", value: "products") do %>
+        <div class="grid w-80 gap-1 p-2">
+          <%= poetry_navigation_menu_link "Analytics", href: "/products/analytics", description: "Track usage and trends across your workspace", icon: "chart-bar" %>
+          <%= poetry_navigation_menu_link "Automation", href: "/products/automation", description: "Build workflows that run themselves", icon: "bolt" %>
+          <%= poetry_navigation_menu_link "Billing", href: "/products/billing", description: "Invoicing and subscription management", icon: "credit-card" %>
+          <%= poetry_navigation_menu_link "Integrations", href: "/products/integrations", description: "Connect the tools your team already uses", icon: "puzzle-piece" %>
+        </div>
+      <% end %>
+      <% nav.with_link "Pricing", href: "/pricing" %>
+      <% nav.with_link "Docs", href: "/docs" %>
+    <% end %>
+  </div>
+</header>

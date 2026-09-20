@@ -1,0 +1,74 @@
+<section aria-label="Chat transcript" class="mx-auto flex max-w-2xl flex-col gap-6 px-6 py-10">
+
+  <!-- Date divider -->
+  <div class="flex items-center gap-3">
+    <div class="h-px flex-1 bg-gray-200"></div>
+    <time datetime="2026-07-13" class="text-xs font-medium uppercase tracking-wide text-gray-400">Today</time>
+    <div class="h-px flex-1 bg-gray-200"></div>
+  </div>
+
+  <!-- Assistant message with attachment and quick reply -->
+  <article class="flex items-start gap-3">
+    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white" aria-hidden="true">
+      A
+    </div>
+
+    <div class="flex min-w-0 max-w-[85%] flex-col gap-2">
+      <div class="rounded-2xl rounded-tl-sm bg-gray-100 px-4 py-3 text-sm leading-relaxed text-gray-800">
+        <p>
+          I pulled together the Q3 numbers you asked for. Revenue is up 12% quarter-over-quarter,
+          and I've attached the full breakdown below.
+        </p>
+      </div>
+
+      <!-- Attachment -->
+      <a href="#"
+         download
+         class="group flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm transition hover:border-indigo-300 hover:shadow-md">
+        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-5 w-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l4.414 4.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2Z" />
+          </svg>
+        </span>
+        <span class="flex min-w-0 flex-col">
+          <span class="truncate text-sm font-medium text-gray-900">Q3-Financial-Report.pdf</span>
+          <span class="text-xs text-gray-500">2.4 MB &middot; PDF document</span>
+        </span>
+        <span class="ml-auto shrink-0 text-xs font-medium text-indigo-600 opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100">
+          Download
+        </span>
+      </a>
+
+      <!-- Quick reply -->
+      <div class="mt-1 flex flex-wrap gap-2">
+        <button type="button" class="rounded-full border border-indigo-200 bg-indigo-50 px-3.5 py-1.5 text-xs font-medium text-indigo-700 transition hover:bg-indigo-100">
+          Looks good, thanks!
+        </button>
+        <button type="button" class="rounded-full border border-gray-200 bg-white px-3.5 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50">
+          Can you break this down by region?
+        </button>
+        <button type="button" class="rounded-full border border-gray-200 bg-white px-3.5 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50">
+          Send to the team
+        </button>
+      </div>
+
+      <time datetime="2026-07-13T10:42:00" class="px-1 text-[11px] text-gray-400">10:42 AM</time>
+    </div>
+  </article>
+
+  <!-- Live thinking status -->
+  <div class="flex items-center gap-3" role="status" aria-live="polite">
+    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white" aria-hidden="true">
+      A
+    </div>
+    <div class="flex items-center gap-2 rounded-2xl rounded-tl-sm bg-gray-100 px-4 py-3">
+      <span class="sr-only">Assistant is thinking</span>
+      <span class="flex items-center gap-1" aria-hidden="true">
+        <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.3s]"></span>
+        <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.15s]"></span>
+        <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400"></span>
+      </span>
+    </div>
+  </div>
+
+</section>

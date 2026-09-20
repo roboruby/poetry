@@ -1,0 +1,69 @@
+<div class="flex min-h-screen w-full items-center justify-center bg-muted/40 p-6">
+  <div class="w-full max-w-sm space-y-6">
+    <div class="flex flex-col items-center gap-3 text-center">
+      <div class="flex size-11 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+        <%= poetry_icon(name: :"shield-check", label: "Acme") %>
+      </div>
+      <p class="text-sm font-semibold tracking-tight text-foreground">Acme</p>
+    </div>
+
+    <% if flash[:alert].present? %>
+      <%= poetry_alert(variant: :destructive) do |alert| %>
+        <% alert.with_icon(name: :"triangle-alert") %>
+        <% alert.with_title { "Sign-in failed" } %>
+        <%= flash[:alert] %>
+      <% end %>
+    <% end %>
+
+    <% if flash[:locked].present? %>
+      <%= poetry_alert(variant: :destructive) do |alert| %>
+        <% alert.with_icon(name: :"lock") %>
+        <% alert.with_title { "Too many attempts" } %>
+        <%= flash[:locked] %>
+      <% end %>
+    <% end %>
+
+    <%= poetry_card(title_tag: :h1) do |card| %>
+      <% card.with_title { "Sign in" } %>
+      <% card.with_description { "Enter your work email and password to continue." } %>
+
+      <%= form_with url: "#", method: :post, class: "space-y-5" do |form| %>
+        <%= poetry_field(id: "session-email", label_text: "Email", required: true) do |field| %>
+          <%= poetry_input(**field.control_attributes, type: "email", name: "session[email]", placeholder: "you@company.com", autofocus: true) %>
+        <% end %>
+
+        <div class="space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <%= poetry_label(for_id: "session-password") { "Password" } %>
+            <%= poetry_link(href: "#", underline: :hover, class: "text-sm") { "Forgot password?" } %>
+          </div>
+          <%= poetry_sensitive_input(id: "session-password", name: "session[password]", label: "Password", placeholder: "••••••••", required: true) %>
+          <p class="text-xs text-muted-foreground">Passwords are case-sensitive.</p>
+        </div>
+
+        <%= poetry_button(type: :submit, class: "w-full", data: { turbo_submits_with: "Signing in…" }) { "Sign in" } %>
+
+        <div class="relative py-1">
+          <div class="absolute inset-0 flex items-center">
+            <%= poetry_separator %>
+          </div>
+          <div class="relative flex justify-center">
+            <span class="bg-card px-2 text-xs uppercase text-muted-foreground">Or continue with</span>
+          </div>
+        </div>
+
+        <%= poetry_button(variant: :outline, tag: :a, href: "#", class: "w-full") do |button| %>
+          <% button.with_leading { poetry_icon(name: :"key-round") } %>
+          Continue with SSO
+        <% end %>
+      <% end %>
+
+      <% card.with_footer(class: "justify-center") do %>
+        <p class="text-sm text-muted-foreground">
+          New here?
+          <%= poetry_link(href: "#", underline: :hover) { "Request access" } %>
+        </p>
+      <% end %>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,70 @@
+<%# Notification settings panel: instant-effect and UI-only controls sit
+    outside the form (nothing waits on Save for them); the checkbox,
+    digest-frequency choice, volume, note, and confirmation code are real
+    submitting form data staged behind one "Save changes" button. %>
+<section class="mx-auto max-w-2xl px-6 py-12">
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Notification settings" } %>
+    <% card.with_description { "Choose what you hear about, and how you hear about it." } %>
+
+    <div class="flex flex-col gap-6">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex flex-col gap-0.5">
+          <%= poetry_label(for_id: "settings-email-alerts") { "Email alerts" } %>
+          <p class="text-muted-foreground text-sm">Applies immediately - no need to save.</p>
+        </div>
+        <%= poetry_switch(name: "settings[email_alerts]", checked: true, id: "settings-email-alerts") %>
+      </div>
+
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex flex-col gap-0.5">
+          <span class="text-sm font-medium">Quick actions</span>
+          <p class="text-muted-foreground text-sm">
+            Bookmark this page, or switch how the alerts feed below is displayed.
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <%= poetry_toggle(variant: :outline, label: "Bookmark") { poetry_icon(name: :bookmark) } %>
+          <%= poetry_toggle_group(type: :single, variant: :outline, value: "list", label: "View") do |group| %>
+            <% group.with_item(value: "list", label: "List view") { poetry_icon(name: :list) } %>
+            <% group.with_item(value: "grid", label: "Grid view") { poetry_icon(name: :"layout-grid") } %>
+          <% end %>
+        </div>
+      </div>
+
+      <%= poetry_separator %>
+
+      <form class="flex flex-col gap-6">
+        <div class="flex items-center gap-3">
+          <%= poetry_checkbox(name: "settings[terms]", id: "settings-terms", required: true) %>
+          <%= poetry_label(for_id: "settings-terms") { "Accept terms and conditions" } %>
+        </div>
+
+        <%= poetry_radio_group(name: "settings[digest]", value: "weekly", label: "Digest frequency") do |group| %>
+          <% group.with_item(value: "daily", label: "Daily digest") %>
+          <% group.with_item(value: "weekly", label: "Weekly digest") %>
+          <% group.with_item(value: "monthly", label: "Monthly digest") %>
+        <% end %>
+
+        <%= poetry_slider(name: "settings[alert_volume]", value: 60, label: "Alert volume",
+                          value_text: ->(value) { "#{value}%" }) %>
+
+        <div class="grid gap-2">
+          <%= poetry_label(for_id: "settings-note") { "Unsubscribe note" } %>
+          <%= poetry_textarea(name: "settings[note]", id: "settings-note",
+                              placeholder: "Tell us why you're leaving.") %>
+        </div>
+
+        <%= poetry_field(id: "settings-code", label_text: "Confirmation code",
+                         hint: "Enter the 6-digit code we sent to confirm this device.") do |field| %>
+          <%= poetry_input_otp(name: "settings[code]", length: 6, groups: [3, 3],
+                               **field.control_attributes.transform_keys(&:to_sym)) %>
+        <% end %>
+
+        <div class="flex justify-end">
+          <%= poetry_button(type: :submit) { "Save changes" } %>
+        </div>
+      </form>
+    </div>
+  <% end %>
+</section>

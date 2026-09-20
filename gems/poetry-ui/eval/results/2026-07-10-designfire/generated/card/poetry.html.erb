@@ -1,0 +1,20 @@
+<div class="mx-auto max-w-2xl p-6">
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Workspace Insights" } %>
+    <% card.with_description { "Usage trends and anomaly detection across your connected workspaces." } %>
+    <% card.with_action do %>
+      <%= poetry_badge(variant: :info) { "Beta" } %>
+    <% end %>
+
+    <p class="text-sm text-muted-foreground">
+      Insights surfaces week-over-week changes in seat activity, storage growth,
+      and integration errors, then groups them into a single digest so nothing
+      gets lost in the noise. While it's in beta, digests refresh once a day
+      and cover the last 30 days of activity - feedback shapes what ships next.
+    </p>
+
+    <% card.with_footer do %>
+      <%= poetry_link(href: "#", external: true) { "Learn more" } %>
+    <% end %>
+  <% end %>
+</div>

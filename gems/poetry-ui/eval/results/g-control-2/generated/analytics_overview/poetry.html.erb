@@ -1,0 +1,116 @@
+<div class="mx-auto max-w-7xl space-y-6 p-6">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Analytics overview</h1>
+      <p class="text-sm text-muted-foreground">Performance across every active project this week.</p>
+    </div>
+    <%= poetry_button(variant: :outline) do |button| %>
+      <% button.with_leading { poetry_icon(name: :download) } %>
+      Export report
+    <% end %>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <%= poetry_card do |card| %>
+      <%= poetry_stat(label: "Active projects", delta: "+2", trend: :up) do %>14<% end %>
+    <% end %>
+    <%= poetry_card do |card| %>
+      <%= poetry_stat(label: "Tasks completed this week", delta: "+23%", trend: :up) do %>182<% end %>
+    <% end %>
+    <%= poetry_card do |card| %>
+      <%= poetry_stat(label: "Overdue items", delta: "+4", trend: :up, sentiment: :negative) do %>9<% end %>
+    <% end %>
+    <%= poetry_card do |card| %>
+      <%= poetry_stat(label: "Team velocity", delta: "-6%", trend: :down, sentiment: :negative) do %>38 pts/wk<% end %>
+    <% end %>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-3">
+    <%= poetry_card(title_tag: :h2, class: "lg:col-span-2") do |card| %>
+      <% card.with_title { "Project progress" } %>
+      <% card.with_description { "Completion across every active project" } %>
+      <% card.with_footer do %>
+        <%= poetry_link(href: "/projects") { "View all projects" } %>
+      <% end %>
+
+      <%= poetry_item_group do %>
+        <%= poetry_item(role: "listitem") do |item| %>
+          <% item.with_media { poetry_avatar(label: "Priya Natarajan", size: :sm) { "PN" } } %>
+          <% item.with_title { "Redesign the checkout flow" } %>
+          <% item.with_description { "Priya Natarajan · 24 of 30 tasks · due Aug 2" } %>
+          <% item.with_actions { poetry_badge(variant: :success) { "On track" } } %>
+          <%= poetry_progress(label: "Redesign the checkout flow completion", value: 80, class: "mt-2") %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem") do |item| %>
+          <% item.with_media { poetry_avatar(label: "Marcus Tan", size: :sm) { "MT" } } %>
+          <% item.with_title { "Mobile app offline sync" } %>
+          <% item.with_description { "Marcus Tan · 11 of 24 tasks · due Aug 15" } %>
+          <% item.with_actions { poetry_badge(variant: :warning) { "At risk" } } %>
+          <%= poetry_progress(label: "Mobile app offline sync completion", value: 46, class: "mt-2") %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem") do |item| %>
+          <% item.with_media { poetry_avatar(label: "Elena Reyes", size: :sm) { "ER" } } %>
+          <% item.with_title { "Customer data platform migration" } %>
+          <% item.with_description { "Elena Reyes · 42 of 50 tasks · due Jul 30" } %>
+          <% item.with_actions { poetry_badge(variant: :success) { "On track" } } %>
+          <%= poetry_progress(label: "Customer data platform migration completion", value: 84, class: "mt-2") %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem") do |item| %>
+          <% item.with_media { poetry_avatar(label: "Sam Kessler", size: :sm) { "SK" } } %>
+          <% item.with_title { "Q3 marketing site refresh" } %>
+          <% item.with_description { "Sam Kessler · 6 of 18 tasks · due Aug 20" } %>
+          <% item.with_actions { poetry_badge(variant: :warning) { "At risk" } } %>
+          <%= poetry_progress(label: "Q3 marketing site refresh completion", value: 33, class: "mt-2") %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem") do |item| %>
+          <% item.with_media { poetry_avatar(label: "Devon Lowe", size: :sm) { "DL" } } %>
+          <% item.with_title { "Internal API v2" } %>
+          <% item.with_description { "Devon Lowe · 9 of 40 tasks · due Sep 5" } %>
+          <% item.with_actions { poetry_badge(variant: :info) { "Planning" } } %>
+          <%= poetry_progress(label: "Internal API v2 completion", value: 23, class: "mt-2") %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem") do |item| %>
+          <% item.with_media { poetry_avatar(label: "Priya Natarajan", size: :sm) { "PN" } } %>
+          <% item.with_title { "Billing dashboard revamp" } %>
+          <% item.with_description { "Priya Natarajan · 30 of 30 tasks · due Jul 18" } %>
+          <% item.with_actions { poetry_badge(variant: :outline) { "Completed" } } %>
+          <%= poetry_progress(label: "Billing dashboard revamp completion", value: 100, class: "mt-2") %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <%= poetry_card(title_tag: :h2) do |card| %>
+      <% card.with_title { "Recent activity" } %>
+      <% card.with_description { "Latest updates across the workspace" } %>
+      <% card.with_footer do %>
+        <%= poetry_link(href: "/activity") { "View all activity" } %>
+      <% end %>
+
+      <%= poetry_timeline do |tl| %>
+        <% tl.with_item(title: "Priya marked checkout redesign 80% complete", time: "12m ago", completed: true) do %>
+          Redesign the checkout flow moved from 70% to 80%.
+        <% end %>
+        <% tl.with_item(title: "Marcus flagged offline sync as at risk", time: "47m ago", completed: true) do %>
+          Mobile app offline sync slipped behind its milestone.
+        <% end %>
+        <% tl.with_item(title: "Elena closed 6 tasks", time: "1h ago", completed: true) do %>
+          Customer data platform migration: 6 tasks closed in one sprint session.
+        <% end %>
+        <% tl.with_item(title: "Sam commented on marketing site refresh", time: "3h ago", completed: true) do %>
+          Left feedback on the new homepage layout draft.
+        <% end %>
+        <% tl.with_item(title: "Devon created Internal API v2", time: "Yesterday", completed: true) do %>
+          New project added to the workspace, planning stage.
+        <% end %>
+        <% tl.with_item(title: "Billing dashboard revamp marked complete", time: "2 days ago", completed: true) do %>
+          All 30 tasks closed; project archived from the active list.
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

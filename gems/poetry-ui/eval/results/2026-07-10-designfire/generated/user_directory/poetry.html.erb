@@ -1,0 +1,91 @@
+<div class="mx-auto max-w-3xl p-6 space-y-6">
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Home", href: "/") %>
+    <% crumb.with_item("Team", href: "/team") %>
+    <% crumb.with_item("Directory") %>
+  <% end %>
+
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Team Directory</h1>
+    <p class="text-sm text-muted-foreground">Everyone across the workspace, with a quick way to say hello.</p>
+  </div>
+
+  <%= poetry_item_group do %>
+    <%= poetry_item(size: :default, variant: :default, role: "listitem") do |item| %>
+      <% item.with_media { poetry_avatar(label: "Ava Thompson") { "AT" } } %>
+      <% item.with_title { "Ava Thompson" } %>
+      <% item.with_description { "Product Design · Leads design systems and component work." } %>
+      <% item.with_actions do %>
+        <%= poetry_button(variant: :outline, size: :sm) do |button| %>
+          <% button.with_leading { poetry_icon(name: :mail) } %>
+          Message
+        <% end %>
+      <% end %>
+    <% end %>
+    <%= poetry_item_separator %>
+
+    <%= poetry_item(size: :default, variant: :default, role: "listitem") do |item| %>
+      <% item.with_media { poetry_avatar(label: "Marcus Chen") { "MC" } } %>
+      <% item.with_title { "Marcus Chen" } %>
+      <% item.with_description { "Engineering · Backend infrastructure and platform reliability." } %>
+      <% item.with_actions do %>
+        <%= poetry_button(variant: :outline, size: :sm) do |button| %>
+          <% button.with_leading { poetry_icon(name: :mail) } %>
+          Message
+        <% end %>
+      <% end %>
+    <% end %>
+    <%= poetry_item_separator %>
+
+    <%= poetry_item(size: :default, variant: :default, role: "listitem") do |item| %>
+      <% item.with_media { poetry_avatar(label: "Priya Raman") { "PR" } } %>
+      <% item.with_title { "Priya Raman" } %>
+      <% item.with_description { "Product Management · Owns the roadmap for billing and payments." } %>
+      <% item.with_actions do %>
+        <%= poetry_button(variant: :outline, size: :sm) do |button| %>
+          <% button.with_leading { poetry_icon(name: :mail) } %>
+          Message
+        <% end %>
+      <% end %>
+    <% end %>
+    <%= poetry_item_separator %>
+
+    <%= poetry_item(size: :default, variant: :default, role: "listitem") do |item| %>
+      <% item.with_media { poetry_avatar(label: "Jordan Blake") { "JB" } } %>
+      <% item.with_title { "Jordan Blake" } %>
+      <% item.with_description { "Customer Success · Partners with enterprise accounts on onboarding." } %>
+      <% item.with_actions do %>
+        <%= poetry_button(variant: :outline, size: :sm) do |button| %>
+          <% button.with_leading { poetry_icon(name: :mail) } %>
+          Message
+        <% end %>
+      <% end %>
+    <% end %>
+    <%= poetry_item_separator %>
+
+    <%= poetry_item(size: :default, variant: :default, role: "listitem") do |item| %>
+      <% item.with_media { poetry_avatar(label: "Sofia Alvarez") { "SA" } } %>
+      <% item.with_title { "Sofia Alvarez" } %>
+      <% item.with_description { "Marketing · Owns brand voice and lifecycle campaigns." } %>
+      <% item.with_actions do %>
+        <%= poetry_button(variant: :outline, size: :sm) do |button| %>
+          <% button.with_leading { poetry_icon(name: :mail) } %>
+          Message
+        <% end %>
+      <% end %>
+    <% end %>
+    <%= poetry_item_separator %>
+
+    <%= poetry_item(size: :default, variant: :default, role: "listitem") do |item| %>
+      <% item.with_media { poetry_avatar(label: "Ethan Wright") { "EW" } } %>
+      <% item.with_title { "Ethan Wright" } %>
+      <% item.with_description { "Data & Analytics · Builds the reporting pipeline and dashboards." } %>
+      <% item.with_actions do %>
+        <%= poetry_button(variant: :outline, size: :sm) do |button| %>
+          <% button.with_leading { poetry_icon(name: :mail) } %>
+          Message
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

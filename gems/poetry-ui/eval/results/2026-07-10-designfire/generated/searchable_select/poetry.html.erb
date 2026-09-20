@@ -1,0 +1,19 @@
+<section class="mx-auto max-w-lg p-6 space-y-6">
+  <div class="space-y-1">
+    <h1 class="text-lg font-semibold text-foreground">Project setup</h1>
+    <p class="text-sm text-muted-foreground">Pick the framework this project is built on.</p>
+  </div>
+
+  <%= form_with url: "#", method: :get, local: true, class: "space-y-6" do %>
+    <%= poetry_field(id: "framework", label_text: "Framework", hint: "Search by name to filter the list") do |field| %>
+      <%= poetry_combobox(**field.control_attributes, name: "framework", placeholder: "Select a framework...", search_placeholder: "Search frameworks...") do |c| %>
+        <% c.with_empty { "No framework found." } %>
+        <% c.with_item(value: "nextjs") { "Next.js" } %>
+        <% c.with_item(value: "sveltekit") { "SvelteKit" } %>
+        <% c.with_item(value: "nuxtjs") { "Nuxt.js" } %>
+        <% c.with_item(value: "remix") { "Remix" } %>
+        <% c.with_item(value: "astro") { "Astro" } %>
+      <% end %>
+    <% end %>
+  <% end %>
+</section>

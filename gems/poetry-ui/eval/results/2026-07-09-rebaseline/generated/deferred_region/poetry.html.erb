@@ -1,0 +1,43 @@
+<div class="mx-auto max-w-2xl p-6">
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Recent activity" } %>
+    <% card.with_description { "Latest events across your workspace, most recent first." } %>
+    <% card.with_action do %>
+      <%= poetry_badge(variant: :secondary) { "Live" } %>
+    <% end %>
+    <% card.with_footer do %>
+      <div class="flex w-full items-center justify-between gap-4">
+        <span class="text-xs text-muted-foreground">Updates automatically as new events arrive</span>
+        <%= poetry_link(href: "/dashboard/activity", underline: :always, class: "inline-flex items-center gap-1") do %>
+          View all activity <%= poetry_icon(name: :"arrow-right", class: "size-3.5") %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%= poetry_deferred(src: "/dashboard/activity_feed", loading: :lazy) do %>
+      <div class="space-y-4">
+        <div class="flex items-center gap-3">
+          <%= poetry_skeleton(class: "size-8 shrink-0 rounded-full") %>
+          <div class="flex-1 space-y-2">
+            <%= poetry_skeleton(class: "h-4 w-3/4") %>
+            <%= poetry_skeleton(class: "h-3 w-1/2") %>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <%= poetry_skeleton(class: "size-8 shrink-0 rounded-full") %>
+          <div class="flex-1 space-y-2">
+            <%= poetry_skeleton(class: "h-4 w-2/3") %>
+            <%= poetry_skeleton(class: "h-3 w-1/3") %>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <%= poetry_skeleton(class: "size-8 shrink-0 rounded-full") %>
+          <div class="flex-1 space-y-2">
+            <%= poetry_skeleton(class: "h-4 w-5/6") %>
+            <%= poetry_skeleton(class: "h-3 w-2/5") %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>

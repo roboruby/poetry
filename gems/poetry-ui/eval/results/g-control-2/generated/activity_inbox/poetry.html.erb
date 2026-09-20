@@ -1,0 +1,348 @@
+<div class="mx-auto max-w-3xl space-y-6 p-6">
+  <header class="flex flex-col gap-4">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="space-y-1">
+        <h1 class="text-2xl font-semibold tracking-tight">Activity</h1>
+        <p class="text-sm text-muted-foreground">Mentions, assignments, and status changes across your work.</p>
+      </div>
+      <%= poetry_button(variant: :outline) do |button| %>
+        <% button.with_leading { poetry_icon(name: :"check-check") } %>
+        Mark all as read
+      <% end %>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <%= poetry_tabs(label: "Filter activity by type", default: "all") do |tabs| %>
+    <% tabs.with_tab("All · 9", value: "all") do %>
+      <div class="space-y-4 pt-4">
+        <%= poetry_marker(variant: :separator) { "Today" } %>
+        <%= poetry_item_group(role: "list", "aria-label": "Today's activity", class: "space-y-2") do %>
+          <%= poetry_item(role: "listitem", variant: :default) do |item| %>
+            <% item.with_media(variant: :icon) { poetry_icon(name: :"at-sign") } %>
+            <% item.with_title do %>
+              Priya Shah mentioned you in <%= poetry_link(href: "#") { "Q3 Roadmap Review" } %>
+              <%= poetry_badge(variant: :info) { "Unread" } %>
+            <% end %>
+            <% item.with_description { "Mention · 25 minutes ago" } %>
+            <% item.with_actions do %>
+              <%= poetry_button(variant: :ghost, size: :sm) do |button| %>
+                <% button.with_leading { poetry_icon(name: :check) } %>
+                Mark as read
+              <% end %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#", tag: :a) do |button| %>
+                Open
+                <% button.with_trailing { poetry_icon(name: :"arrow-up-right") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_item(role: "listitem", variant: :default) do |item| %>
+            <% item.with_media(variant: :icon) { poetry_icon(name: :"user-plus") } %>
+            <% item.with_title do %>
+              Sam Okafor assigned you <%= poetry_link(href: "#") { "Fix checkout timeout" } %>
+              <%= poetry_badge(variant: :info) { "Unread" } %>
+            <% end %>
+            <% item.with_description { "Assignment · 1 hour ago" } %>
+            <% item.with_actions do %>
+              <%= poetry_button(variant: :ghost, size: :sm) do |button| %>
+                <% button.with_leading { poetry_icon(name: :check) } %>
+                Mark as read
+              <% end %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#", tag: :a) do |button| %>
+                Open
+                <% button.with_trailing { poetry_icon(name: :"arrow-up-right") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_item(role: "listitem", variant: :default) do |item| %>
+            <% item.with_media(variant: :icon) { poetry_icon(name: :"refresh-cw") } %>
+            <% item.with_title do %>
+              <%= poetry_link(href: "#") { "Payments migration" } %> moved to Blocked by Sam Okafor
+              <%= poetry_badge(variant: :info) { "Unread" } %>
+            <% end %>
+            <% item.with_description { "Status change · 2 hours ago" } %>
+            <% item.with_actions do %>
+              <%= poetry_button(variant: :ghost, size: :sm) do |button| %>
+                <% button.with_leading { poetry_icon(name: :check) } %>
+                Mark as read
+              <% end %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#", tag: :a) do |button| %>
+                Open
+                <% button.with_trailing { poetry_icon(name: :"arrow-up-right") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_item(role: "listitem", variant: :default) do |item| %>
+            <% item.with_media(variant: :icon) { poetry_icon(name: :"at-sign") } %>
+            <% item.with_title do %>
+              Diego Alvarez mentioned you in <%= poetry_link(href: "#") { "PR #482" } %>
+              <%= poetry_badge(variant: :info) { "Unread" } %>
+            <% end %>
+            <% item.with_description { "Mention · 3 hours ago" } %>
+            <% item.with_actions do %>
+              <%= poetry_button(variant: :ghost, size: :sm) do |button| %>
+                <% button.with_leading { poetry_icon(name: :check) } %>
+                Mark as read
+              <% end %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#", tag: :a) do |button| %>
+                Open
+                <% button.with_trailing { poetry_icon(name: :"arrow-up-right") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+
+        <%= poetry_marker(variant: :separator) { "Yesterday" } %>
+        <%= poetry_item_group(role: "list", "aria-label": "Yesterday's activity", class: "space-y-2") do %>
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(variant: :icon) { poetry_icon(name: :"user-plus") } %>
+            <% item.with_title do %>
+              Diego Alvarez assigned you review of <%= poetry_link(href: "#") { "PR #501" } %>
+            <% end %>
+            <% item.with_description { "Assignment · Yesterday at 4:12 PM" } %>
+            <% item.with_actions do %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#", tag: :a) do |button| %>
+                Open
+                <% button.with_trailing { poetry_icon(name: :"arrow-up-right") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(variant: :icon) { poetry_icon(name: :"at-sign") } %>
+            <% item.with_title do %>
+              Fatima Noor mentioned you in <%= poetry_link(href: "#") { "Design crit notes" } %>
+            <% end %>
+            <% item.with_description { "Mention · Yesterday at 2:47 PM" } %>
+            <% item.with_actions do %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#", tag: :a) do |button| %>
+                Open
+                <% button.with_trailing { poetry_icon(name: :"arrow-up-right") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(variant: :icon) { poetry_icon(name: :"user-plus") } %>
+            <% item.with_title do %>
+              Priya Shah assigned you <%= poetry_link(href: "#") { "Update onboarding copy" } %>
+            <% end %>
+            <% item.with_description { "Assignment · Yesterday at 11:30 AM" } %>
+            <% item.with_actions do %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#", tag: :a) do |button| %>
+                Open
+                <% button.with_trailing { poetry_icon(name: :"arrow-up-right") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(variant: :icon) { poetry_icon(name: :"refresh-cw") } %>
+            <% item.with_title do %>
+              <%= poetry_link(href: "#") { "Fix checkout timeout" } %> moved to In Review
+            <% end %>
+            <% item.with_description { "Status change · Yesterday at 10:05 AM" } %>
+            <% item.with_actions do %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#", tag: :a) do |button| %>
+                Open
+                <% button.with_trailing { poetry_icon(name: :"arrow-up-right") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(variant: :icon) { poetry_icon(name: :"refresh-cw") } %>
+            <% item.with_title do %>
+              <%= poetry_link(href: "#") { "Q3 Roadmap Review" } %> marked Done
+            <% end %>
+            <% item.with_description { "Status change · Yesterday at 9:15 AM" } %>
+            <% item.with_actions do %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#", tag: :a) do |button| %>
+                Open
+                <% button.with_trailing { poetry_icon(name: :"arrow-up-right") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+
+        <%= poetry_empty(media_variant: :icon, title_tag: :h2) do |empty| %>
+          <% empty.with_media { poetry_icon(name: :"party-popper") } %>
+          <% empty.with_title { "You're all caught up" } %>
+          <% empty.with_description { "No more activity to review right now." } %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% tabs.with_tab("Mentions · 3", value: "mentions") do %>
+      <div class="space-y-4 pt-4">
+        <%= poetry_item_group(role: "list", "aria-label": "Mentions", class: "space-y-2") do %>
+          <%= poetry_item(role: "listitem", variant: :default) do |item| %>
+            <% item.with_media(variant: :icon) { poetry_icon(name: :"at-sign") } %>
+            <% item.with_title do %>
+              Priya Shah mentioned you in <%= poetry_link(href: "#") { "Q3 Roadmap Review" } %>
+              <%= poetry_badge(variant: :info) { "Unread" } %>
+            <% end %>
+            <% item.with_description { "Mention · 25 minutes ago" } %>
+            <% item.with_actions do %>
+              <%= poetry_button(variant: :ghost, size: :sm) do |button| %>
+                <% button.with_leading { poetry_icon(name: :check) } %>
+                Mark as read
+              <% end %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#", tag: :a) do |button| %>
+                Open
+                <% button.with_trailing { poetry_icon(name: :"arrow-up-right") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_item(role: "listitem", variant: :default) do |item| %>
+            <% item.with_media(variant: :icon) { poetry_icon(name: :"at-sign") } %>
+            <% item.with_title do %>
+              Diego Alvarez mentioned you in <%= poetry_link(href: "#") { "PR #482" } %>
+              <%= poetry_badge(variant: :info) { "Unread" } %>
+            <% end %>
+            <% item.with_description { "Mention · 3 hours ago" } %>
+            <% item.with_actions do %>
+              <%= poetry_button(variant: :ghost, size: :sm) do |button| %>
+                <% button.with_leading { poetry_icon(name: :check) } %>
+                Mark as read
+              <% end %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#", tag: :a) do |button| %>
+                Open
+                <% button.with_trailing { poetry_icon(name: :"arrow-up-right") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(variant: :icon) { poetry_icon(name: :"at-sign") } %>
+            <% item.with_title do %>
+              Fatima Noor mentioned you in <%= poetry_link(href: "#") { "Design crit notes" } %>
+            <% end %>
+            <% item.with_description { "Mention · Yesterday at 2:47 PM" } %>
+            <% item.with_actions do %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#", tag: :a) do |button| %>
+                Open
+                <% button.with_trailing { poetry_icon(name: :"arrow-up-right") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+
+        <%= poetry_empty(media_variant: :icon, title_tag: :h2) do |empty| %>
+          <% empty.with_media { poetry_icon(name: :"party-popper") } %>
+          <% empty.with_title { "You're all caught up" } %>
+          <% empty.with_description { "No more mentions to review right now." } %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% tabs.with_tab("Assignments · 3", value: "assignments") do %>
+      <div class="space-y-4 pt-4">
+        <%= poetry_item_group(role: "list", "aria-label": "Assignments", class: "space-y-2") do %>
+          <%= poetry_item(role: "listitem", variant: :default) do |item| %>
+            <% item.with_media(variant: :icon) { poetry_icon(name: :"user-plus") } %>
+            <% item.with_title do %>
+              Sam Okafor assigned you <%= poetry_link(href: "#") { "Fix checkout timeout" } %>
+              <%= poetry_badge(variant: :info) { "Unread" } %>
+            <% end %>
+            <% item.with_description { "Assignment · 1 hour ago" } %>
+            <% item.with_actions do %>
+              <%= poetry_button(variant: :ghost, size: :sm) do |button| %>
+                <% button.with_leading { poetry_icon(name: :check) } %>
+                Mark as read
+              <% end %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#", tag: :a) do |button| %>
+                Open
+                <% button.with_trailing { poetry_icon(name: :"arrow-up-right") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(variant: :icon) { poetry_icon(name: :"user-plus") } %>
+            <% item.with_title do %>
+              Diego Alvarez assigned you review of <%= poetry_link(href: "#") { "PR #501" } %>
+            <% end %>
+            <% item.with_description { "Assignment · Yesterday at 4:12 PM" } %>
+            <% item.with_actions do %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#", tag: :a) do |button| %>
+                Open
+                <% button.with_trailing { poetry_icon(name: :"arrow-up-right") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(variant: :icon) { poetry_icon(name: :"user-plus") } %>
+            <% item.with_title do %>
+              Priya Shah assigned you <%= poetry_link(href: "#") { "Update onboarding copy" } %>
+            <% end %>
+            <% item.with_description { "Assignment · Yesterday at 11:30 AM" } %>
+            <% item.with_actions do %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#", tag: :a) do |button| %>
+                Open
+                <% button.with_trailing { poetry_icon(name: :"arrow-up-right") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+
+        <%= poetry_empty(media_variant: :icon, title_tag: :h2) do |empty| %>
+          <% empty.with_media { poetry_icon(name: :"party-popper") } %>
+          <% empty.with_title { "You're all caught up" } %>
+          <% empty.with_description { "No more assignments to review right now." } %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% tabs.with_tab("Status changes · 3", value: "status") do %>
+      <div class="space-y-4 pt-4">
+        <%= poetry_item_group(role: "list", "aria-label": "Status changes", class: "space-y-2") do %>
+          <%= poetry_item(role: "listitem", variant: :default) do |item| %>
+            <% item.with_media(variant: :icon) { poetry_icon(name: :"refresh-cw") } %>
+            <% item.with_title do %>
+              <%= poetry_link(href: "#") { "Payments migration" } %> moved to Blocked by Sam Okafor
+              <%= poetry_badge(variant: :info) { "Unread" } %>
+            <% end %>
+            <% item.with_description { "Status change · 2 hours ago" } %>
+            <% item.with_actions do %>
+              <%= poetry_button(variant: :ghost, size: :sm) do |button| %>
+                <% button.with_leading { poetry_icon(name: :check) } %>
+                Mark as read
+              <% end %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#", tag: :a) do |button| %>
+                Open
+                <% button.with_trailing { poetry_icon(name: :"arrow-up-right") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(variant: :icon) { poetry_icon(name: :"refresh-cw") } %>
+            <% item.with_title do %>
+              <%= poetry_link(href: "#") { "Fix checkout timeout" } %> moved to In Review
+            <% end %>
+            <% item.with_description { "Status change · Yesterday at 10:05 AM" } %>
+            <% item.with_actions do %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#", tag: :a) do |button| %>
+                Open
+                <% button.with_trailing { poetry_icon(name: :"arrow-up-right") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(variant: :icon) { poetry_icon(name: :"refresh-cw") } %>
+            <% item.with_title do %>
+              <%= poetry_link(href: "#") { "Q3 Roadmap Review" } %> marked Done
+            <% end %>
+            <% item.with_description { "Status change · Yesterday at 9:15 AM" } %>
+            <% item.with_actions do %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#", tag: :a) do |button| %>
+                Open
+                <% button.with_trailing { poetry_icon(name: :"arrow-up-right") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+
+        <%= poetry_empty(media_variant: :icon, title_tag: :h2) do |empty| %>
+          <% empty.with_media { poetry_icon(name: :"party-popper") } %>
+          <% empty.with_title { "You're all caught up" } %>
+          <% empty.with_description { "No more status changes to review right now." } %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,18 @@
+<header class="flex items-center justify-between border-b px-6 py-3">
+  <%= poetry_link(href: "/", underline: :none) do %>
+    <span class="text-base font-semibold tracking-tight">Acme</span>
+  <% end %>
+
+  <%= poetry_navigation_menu(label: "Main") do |nav| %>
+    <% nav.with_item("Products", value: "products") do %>
+      <div class="grid w-64 gap-1">
+        <%= poetry_navigation_menu_link(href: "/products/analytics") { "Analytics" } %>
+        <%= poetry_navigation_menu_link(href: "/products/automation") { "Automation" } %>
+        <%= poetry_navigation_menu_link(href: "/products/reports") { "Reports" } %>
+        <%= poetry_navigation_menu_link(href: "/products/integrations") { "Integrations" } %>
+      </div>
+    <% end %>
+    <% nav.with_link("Pricing", href: "/pricing") %>
+    <% nav.with_link("Docs", href: "/docs") %>
+  <% end %>
+</header>

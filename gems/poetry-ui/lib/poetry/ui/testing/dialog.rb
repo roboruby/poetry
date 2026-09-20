@@ -1,0 +1,75 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Ui
+    module Testing
+      # The Dialog interaction contract: the trigger opens, focus is
+      # trapped inside, Escape (or the close affordance) dismisses, and
+      # focus RETURNS to the trigger. The root you hand this tester is the
+      # element carrying data-component=dialog (trigger + content).
+      #
+      # @example Opening, asserting, dismissing
+      #   dialog = poetry_dialog("[data-component='dialog']")
+      #   dialog.open(via: :keyboard)
+      #   assert_equal "Are you sure?", dialog.title
+      #   dialog.close
+      class Dialog < Tester
+        # Whether the dialog is currently open.
+        #
+        # @param wait [Numeric] seconds to wait for the state before answering
+        # @return [Boolean]
+        def open?(wait: 0)
+          part?("dialog-content", wait: wait) &&
+            !hidden_part("dialog-content")["data-open"].nil?
+        rescue Capybara::ElementNotFound
+          false
+        end
+
+        # Opens the dialog (no-op when already open). via: :keyboard
+        # focuses the trigger and presses Enter; :mouse presses it.
+        #
+        # @param via [Symbol] :mouse presses the trigger, :keyboard focuses it and presses the key that opens
+        # @return [Dialog] self
+        def open(via: :mouse)
+          return self if open?
+
+          case via
+          when :keyboard
+            focus(trigger)
+            keys(:enter)
+          else
+            press(trigger)
+          end
+
+          root.assert_selector("[data-slot='dialog-content'][data-open]")
+          self
+        end
+
+        # Escape-closes the open dialog and waits for the closed state.
+        #
+        # @return [Dialog] self
+        def close
+          keys(:escape) if open?
+          root.assert_selector("[data-slot='dialog-content'][data-closed]", visible: :all)
+          self
+        end
+
+        # The dialog's accessible title text.
+        #
+        # @return [String]
+        def title
+          part("dialog-title").text
+        end
+
+        private
+
+        # The trigger has no slot of its own - it is the consumer's Button
+        # wired to the dialog controller's open action (the contract).
+        def trigger
+          root.find("[data-action*='#{Poetry::Ui::Dialog::Component.stimulus_action(:open)}']",
+                    match: :first)
+        end
+      end
+    end
+  end
+end

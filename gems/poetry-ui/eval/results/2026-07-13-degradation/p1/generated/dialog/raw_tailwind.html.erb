@@ -1,0 +1,117 @@
+<section class="min-h-[80vh] flex items-center justify-center bg-gray-50 p-8">
+  <div class="text-center">
+    <h1 class="text-lg font-semibold text-gray-900">Account</h1>
+    <p class="mt-1 text-sm text-gray-500">Manage preferences for your workspace.</p>
+
+    <button
+      type="button"
+      popovertarget="settings-dialog"
+      class="mt-6 inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+    >
+      <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M8.34 1.804A1 1 0 0 1 9.32 1h1.36a1 1 0 0 1 .98.804l.331 1.652a6.993 6.993 0 0 1 1.929 1.115l1.598-.54a1 1 0 0 1 1.186.447l.68 1.178a1 1 0 0 1-.204 1.243l-1.267 1.14a7.047 7.047 0 0 1 0 2.228l1.267 1.14a1 1 0 0 1 .204 1.243l-.68 1.178a1 1 0 0 1-1.186.447l-1.598-.54a6.993 6.993 0 0 1-1.929 1.115l-.33 1.652a1 1 0 0 1-.98.804H9.32a1 1 0 0 1-.98-.804l-.331-1.652a6.993 6.993 0 0 1-1.929-1.115l-1.598.54a1 1 0 0 1-1.186-.447l-.68-1.178a1 1 0 0 1 .204-1.243l1.267-1.14a7.047 7.047 0 0 1 0-2.228L2.82 6.899a1 1 0 0 1-.204-1.243l.68-1.178a1 1 0 0 1 1.186-.447l1.598.54A6.993 6.993 0 0 1 8.01 3.456l.33-1.652ZM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
+      </svg>
+      Open settings
+    </button>
+  </div>
+
+  <div
+    id="settings-dialog"
+    popover="auto"
+    aria-labelledby="settings-dialog-title"
+    aria-describedby="settings-dialog-description"
+    class="m-auto w-full max-w-md rounded-xl bg-white p-6 shadow-xl ring-1 ring-black/5 backdrop:bg-gray-900/50 open:animate-none"
+  >
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <h2 id="settings-dialog-title" class="text-base font-semibold text-gray-900">Workspace settings</h2>
+        <p id="settings-dialog-description" class="mt-1 text-sm text-gray-500">
+          Update how notifications and access work for everyone in this workspace. Changes apply immediately after you confirm.
+        </p>
+      </div>
+      <button
+        type="button"
+        popovertarget="settings-dialog"
+        popovertargetaction="hide"
+        aria-label="Close settings dialog"
+        class="shrink-0 rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+      >
+        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+        </svg>
+      </button>
+    </div>
+
+    <form class="mt-5 space-y-4 border-t border-gray-100 pt-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <label for="setting-notifications" class="block text-sm font-medium text-gray-900">Email notifications</label>
+          <p class="text-sm text-gray-500">Receive a summary of activity each day.</p>
+        </div>
+        <input
+          id="setting-notifications"
+          name="setting-notifications"
+          type="checkbox"
+          checked
+          class="h-5 w-5 shrink-0 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+        />
+      </div>
+
+      <div class="flex items-center justify-between">
+        <div>
+          <label for="setting-visibility" class="block text-sm font-medium text-gray-900">Public profile</label>
+          <p class="text-sm text-gray-500">Let other members view your profile.</p>
+        </div>
+        <input
+          id="setting-visibility"
+          name="setting-visibility"
+          type="checkbox"
+          class="h-5 w-5 shrink-0 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+        />
+      </div>
+
+      <div class="flex items-center justify-between">
+        <div>
+          <label for="setting-2fa" class="block text-sm font-medium text-gray-900">Require two-factor auth</label>
+          <p class="text-sm text-gray-500">Enforce 2FA for all workspace members.</p>
+        </div>
+        <input
+          id="setting-2fa"
+          name="setting-2fa"
+          type="checkbox"
+          checked
+          class="h-5 w-5 shrink-0 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+        />
+      </div>
+    </form>
+
+    <div class="mt-5 flex items-center gap-2 border-t border-gray-100 pt-5">
+      <input
+        id="setting-dont-show-again"
+        name="setting-dont-show-again"
+        type="checkbox"
+        class="h-4 w-4 shrink-0 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+      />
+      <label for="setting-dont-show-again" class="text-sm text-gray-700">Don't show this again</label>
+    </div>
+
+    <div class="mt-4 flex justify-end gap-3">
+      <button
+        type="button"
+        popovertarget="settings-dialog"
+        popovertargetaction="hide"
+        class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        popovertarget="settings-dialog"
+        popovertargetaction="hide"
+        class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+      >
+        Confirm changes
+      </button>
+    </div>
+  </div>
+</section>

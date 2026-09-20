@@ -1,0 +1,126 @@
+<div class="mx-auto max-w-7xl p-6">
+  <header class="mb-6 border-b border-border pb-4">
+    <h1 class="text-2xl font-semibold tracking-tight text-foreground">Split Editor</h1>
+    <p class="mt-1 text-sm text-muted-foreground">
+      Browse project files on the left, edit the active file on the right. Drag the divider to resize either pane.
+    </p>
+  </header>
+
+  <%= poetry_resizable(direction: :horizontal, grip: true, class: "h-[600px]") do |resizable| %>
+    <% resizable.with_panel(default_size: 24, min_size: 15, max_size: 40) do %>
+      <div class="flex h-full flex-col gap-3 p-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-medium text-foreground">Files</h2>
+          <%= poetry_badge(variant: :secondary) { "8" } %>
+        </div>
+
+        <%= poetry_scroll_area(label: "Project files", class: "h-full") do %>
+          <details open class="text-sm">
+            <summary class="flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5 font-medium text-foreground hover:bg-accent">
+              <%= poetry_icon(name: :"folder-open") %>
+              app
+            </summary>
+            <div class="ml-4 mt-1 space-y-1 border-l border-border pl-2">
+              <details open>
+                <summary class="flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5 text-foreground hover:bg-accent">
+                  <%= poetry_icon(name: :folder) %>
+                  controllers
+                </summary>
+                <%= poetry_item_group(class: "ml-4") do %>
+                  <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+                    <% item.with_media { poetry_icon(name: :"file-code") } %>
+                    <% item.with_title { "posts_controller.rb" } %>
+                  <% end %>
+                  <%= poetry_item(size: :sm, media_variant: :icon, variant: :muted, role: "listitem") do |item| %>
+                    <% item.with_media { poetry_icon(name: :"file-code") } %>
+                    <% item.with_title { "application_controller.rb" } %>
+                  <% end %>
+                <% end %>
+              </details>
+
+              <details>
+                <summary class="flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5 text-foreground hover:bg-accent">
+                  <%= poetry_icon(name: :folder) %>
+                  models
+                </summary>
+                <%= poetry_item_group(class: "ml-4") do %>
+                  <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+                    <% item.with_media { poetry_icon(name: :"file-code") } %>
+                    <% item.with_title { "post.rb" } %>
+                  <% end %>
+                  <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+                    <% item.with_media { poetry_icon(name: :"file-code") } %>
+                    <% item.with_title { "comment.rb" } %>
+                  <% end %>
+                <% end %>
+              </details>
+
+              <details>
+                <summary class="flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5 text-foreground hover:bg-accent">
+                  <%= poetry_icon(name: :folder) %>
+                  views/posts
+                </summary>
+                <%= poetry_item_group(class: "ml-4") do %>
+                  <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+                    <% item.with_media { poetry_icon(name: :file) } %>
+                    <% item.with_title { "index.html.erb" } %>
+                  <% end %>
+                  <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+                    <% item.with_media { poetry_icon(name: :file) } %>
+                    <% item.with_title { "show.html.erb" } %>
+                  <% end %>
+                <% end %>
+              </details>
+            </div>
+          </details>
+
+          <%= poetry_item_group(class: "mt-1") do %>
+            <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+              <% item.with_media { poetry_icon(name: :file) } %>
+              <% item.with_title { "config/routes.rb" } %>
+            <% end %>
+            <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+              <% item.with_media { poetry_icon(name: :file) } %>
+              <% item.with_title { "Gemfile" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% resizable.with_panel(default_size: 76, min_size: 40) do %>
+      <div class="flex h-full flex-col">
+        <div class="flex items-center justify-between border-b border-border px-4 py-2">
+          <div class="flex items-center gap-2 text-sm text-muted-foreground">
+            <%= poetry_icon(name: :"file-code", label: "Ruby file") %>
+            app/controllers/posts_controller.rb
+          </div>
+          <%= poetry_button_group(orientation: :horizontal) do %>
+            <%= poetry_button(variant: :ghost, size: :sm) { "Format" } %>
+            <%= poetry_button(variant: :default, size: :sm) { "Save" } %>
+          <% end %>
+        </div>
+
+        <div class="flex-1 overflow-hidden p-4">
+          <%= poetry_tabs(default: "posts_controller", label: "Open files") do |tabs| %>
+            <% tabs.with_tab("posts_controller.rb", value: "posts_controller") do %>
+              <%= poetry_field(id: "posts_controller_code", label_text: "posts_controller.rb", group: true) do |field| %>
+                <%= poetry_textarea(rows: 20, value: "class PostsController < ApplicationController\n  def index\n    @posts = Post.order(created_at: :desc)\n  end\n\n  def show\n    @post = Post.find(params[:id])\n  end\nend\n", class: "font-mono text-sm", **field.control_attributes) %>
+              <% end %>
+            <% end %>
+            <% tabs.with_tab("post.rb", value: "post_model") do %>
+              <%= poetry_field(id: "post_model_code", label_text: "post.rb", group: true) do |field| %>
+                <%= poetry_textarea(rows: 20, value: "class Post < ApplicationRecord\n  belongs_to :author\n  has_many :comments, dependent: :destroy\n\n  validates :title, presence: true\nend\n", class: "font-mono text-sm", **field.control_attributes) %>
+              <% end %>
+            <% end %>
+            <% tabs.with_tab("routes.rb", value: "routes") do %>
+              <%= poetry_field(id: "routes_code", label_text: "routes.rb", group: true) do |field| %>
+                <%= poetry_textarea(rows: 20, value: "Rails.application.routes.draw do\n  resources :posts do\n    resources :comments, only: %i[create destroy]\n  end\n\n  root \"posts#index\"\nend\n", class: "font-mono text-sm", **field.control_attributes) %>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>

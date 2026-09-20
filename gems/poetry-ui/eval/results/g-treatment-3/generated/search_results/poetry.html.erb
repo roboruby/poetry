@@ -1,0 +1,107 @@
+<div class="mx-auto max-w-4xl space-y-8 p-6">
+  <header class="space-y-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Search results</h1>
+      <p class="text-sm text-muted-foreground">7 results for &ldquo;deployment&rdquo; across projects, documents, and people.</p>
+    </div>
+    <form action="/search" method="get" class="max-w-md">
+      <%= poetry_search_field(name: "q", value: "deployment", label: "Search", placeholder: "Search projects, documents, and people…") %>
+    </form>
+    <%= poetry_separator %>
+  </header>
+
+  <section class="space-y-4" aria-labelledby="results-projects-heading">
+    <div class="flex items-center justify-between gap-4">
+      <h2 id="results-projects-heading" class="text-lg font-semibold tracking-tight">Projects</h2>
+      <%= poetry_badge(variant: :secondary) { "3 results" } %>
+    </div>
+    <div role="list" class="divide-y rounded-lg border">
+      <%= poetry_item(tag: :a, href: "/projects/deployment-pipeline-revamp", media_variant: :icon, role: "listitem", class: "px-4 py-3 hover:bg-muted/50") do |item| %>
+        <% item.with_media { poetry_icon(name: :folder) } %>
+        <% item.with_title { "Deployment Pipeline Revamp" } %>
+        <% item.with_description do %>
+          Consolidating the <span class="font-semibold text-foreground">deployment</span> pipeline into a single Terraform module ahead of the Q3 freeze.
+        <% end %>
+        <% item.with_actions { poetry_badge(variant: :success) { "Active" } } %>
+        <div class="text-xs text-muted-foreground">Atlas · Riley Chen · Updated 2 hours ago</div>
+      <% end %>
+      <%= poetry_item(tag: :a, href: "/projects/edge-deployment-rollout", media_variant: :icon, role: "listitem", class: "px-4 py-3 hover:bg-muted/50") do |item| %>
+        <% item.with_media { poetry_icon(name: :folder) } %>
+        <% item.with_title { "Edge Deployment Rollout" } %>
+        <% item.with_description do %>
+          Gradual <span class="font-semibold text-foreground">deployment</span> rollout across edge regions using canary weights.
+        <% end %>
+        <% item.with_actions { poetry_badge(variant: :success) { "Active" } } %>
+        <div class="text-xs text-muted-foreground">Northwind Traders · Priya Nair · Updated yesterday</div>
+      <% end %>
+      <%= poetry_item(tag: :a, href: "/projects/q3-deployment-readiness", media_variant: :icon, role: "listitem", class: "px-4 py-3 hover:bg-muted/50") do |item| %>
+        <% item.with_media { poetry_icon(name: :folder) } %>
+        <% item.with_title { "Q3 Deployment Readiness" } %>
+        <% item.with_description do %>
+          Tracking <span class="font-semibold text-foreground">deployment</span> readiness checklist items before the Q3 review.
+        <% end %>
+        <% item.with_actions { poetry_badge(variant: :info) { "Planning" } } %>
+        <div class="text-xs text-muted-foreground">Fern &amp; Field · Sam Okafor · Updated 3 days ago</div>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="space-y-4" aria-labelledby="results-documents-heading">
+    <div class="flex items-center justify-between gap-4">
+      <h2 id="results-documents-heading" class="text-lg font-semibold tracking-tight">Documents</h2>
+      <%= poetry_badge(variant: :secondary) { "4 results" } %>
+    </div>
+    <div role="list" class="divide-y rounded-lg border">
+      <%= poetry_item(tag: :a, href: "/documents/deployment-runbook", media_variant: :icon, role: "listitem", class: "px-4 py-3 hover:bg-muted/50") do |item| %>
+        <% item.with_media { poetry_icon(name: :"file-text") } %>
+        <% item.with_title { "Deployment Runbook.pdf" } %>
+        <% item.with_description do %>
+          Step-by-step <span class="font-semibold text-foreground">deployment</span> runbook covering rollback triggers and on-call escalation.
+        <% end %>
+        <% item.with_actions { poetry_badge(variant: :outline) { "PDF" } } %>
+        <div class="text-xs text-muted-foreground">2.4 MB · Riley Chen · Updated 5 days ago</div>
+      <% end %>
+      <%= poetry_item(tag: :a, href: "/documents/deployment-outage-postmortem", media_variant: :icon, role: "listitem", class: "px-4 py-3 hover:bg-muted/50") do |item| %>
+        <% item.with_media { poetry_icon(name: :"file-text") } %>
+        <% item.with_title { "Incident Postmortem — Deployment Outage" } %>
+        <% item.with_description do %>
+          Root cause analysis of the March <span class="font-semibold text-foreground">deployment</span> outage and the mitigations shipped since.
+        <% end %>
+        <% item.with_actions { poetry_badge(variant: :outline) { "Doc" } } %>
+        <div class="text-xs text-muted-foreground">640 KB · Priya Nair · Updated 1 week ago</div>
+      <% end %>
+      <%= poetry_item(tag: :a, href: "/documents/deployment-checklist", media_variant: :icon, role: "listitem", class: "px-4 py-3 hover:bg-muted/50") do |item| %>
+        <% item.with_media { poetry_icon(name: :"file-text") } %>
+        <% item.with_title { "Deployment Checklist" } %>
+        <% item.with_description do %>
+          Pre-<span class="font-semibold text-foreground">deployment</span> checklist covering migrations, feature flags, and smoke tests.
+        <% end %>
+        <% item.with_actions { poetry_badge(variant: :outline) { "Doc" } } %>
+        <div class="text-xs text-muted-foreground">128 KB · Sam Okafor · Updated 2 weeks ago</div>
+      <% end %>
+      <%= poetry_item(tag: :a, href: "/documents/release-notes-v2-3", media_variant: :icon, role: "listitem", class: "px-4 py-3 hover:bg-muted/50") do |item| %>
+        <% item.with_media { poetry_icon(name: :"file-text") } %>
+        <% item.with_title { "Release Notes — v2.3 Deployment" } %>
+        <% item.with_description do %>
+          Notes on the v2.3 <span class="font-semibold text-foreground">deployment</span> changes: config schema updates and a new health endpoint.
+        <% end %>
+        <% item.with_actions { poetry_badge(variant: :outline) { "Doc" } } %>
+        <div class="text-xs text-muted-foreground">96 KB · Jordan Lee · Updated 3 weeks ago</div>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="space-y-4" aria-labelledby="results-people-heading">
+    <div class="flex items-center justify-between gap-4">
+      <h2 id="results-people-heading" class="text-lg font-semibold tracking-tight">People</h2>
+      <%= poetry_badge(variant: :secondary) { "0 results" } %>
+    </div>
+    <div class="rounded-lg border p-8">
+      <%= poetry_empty(media_variant: :icon) do |empty| %>
+        <% empty.with_media { poetry_icon(name: :users) } %>
+        <% empty.with_title { "No people matched “deployment”" } %>
+        <% empty.with_description { "Try a name, team, or role instead of a project keyword." } %>
+      <% end %>
+    </div>
+  </section>
+</div>

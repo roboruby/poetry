@@ -1,0 +1,861 @@
+{
+  "summary": {
+    "arms": 31,
+    "blocks_surface": 31,
+    "compose_called": 31,
+    "poetry_skill": 29,
+    "design_skill": 22,
+    "ran_check": 31,
+    "check_last": 28
+  },
+  "arms": {
+    "button": {
+      "transcript": "c39a0ba5-54d5-40c9-a8e1-2d39abd3a788.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A destructive 'Delete account' button with a leading trash i"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 1,
+        "Skill": 1,
+        "ToolSearch": 3,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 2,
+        "Grep": 1,
+        "mcp__poetry__describe_block": 1,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "dialog": {
+      "transcript": "8ed704d3-7a1b-4ed3-b322-aa7ce0f2bbe6.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A settings dialog opened by a button, with a description and"
+      ],
+      "list_blocks": false,
+      "describe_block": false,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 3,
+        "Skill": 1,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 3,
+        "Grep": 3,
+        "Write": 2,
+        "mcp__poetry__check": 2
+      }
+    },
+    "form_field": {
+      "transcript": "17f4159f-3fef-4a8a-ac1c-4cfab78d7c97.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "An email field labeled 'Work email', required, with a hint a"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": false,
+      "tool_counts": {
+        "Read": 3,
+        "Skill": 2,
+        "ToolSearch": 3,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 2,
+        "Grep": 4,
+        "Bash": 1,
+        "Glob": 3,
+        "mcp__poetry__describe_block": 1,
+        "mcp__poetry__check": 1,
+        "Write": 1
+      }
+    },
+    "form_controls": {
+      "transcript": "f221c13b-8664-4147-9ae9-a44d4d5550fe.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A notification settings panel: an 'Accept terms' checkbox st"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Skill": 2,
+        "ToolSearch": 2,
+        "Read": 4,
+        "mcp__poetry__compose": 1,
+        "Grep": 2,
+        "Bash": 7,
+        "mcp__poetry__describe_component": 11,
+        "mcp__poetry__describe_block": 1,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "alert": {
+      "transcript": "cd90a8ed-20f7-4f61-9550-e0217dabf9f9.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A destructive alert 'Payment failed' with a description and "
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry"
+      ],
+      "ran_check": true,
+      "check_last": false,
+      "tool_counts": {
+        "Read": 3,
+        "Skill": 1,
+        "ToolSearch": 3,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 2,
+        "mcp__poetry__describe_block": 1,
+        "Grep": 1,
+        "mcp__poetry__check": 2,
+        "Write": 1
+      }
+    },
+    "chat_transcript": {
+      "transcript": "8f5634d4-3941-4e29-98ff-1eaa9dbaa0a6.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A chat transcript: date divider, assistant message with an a"
+      ],
+      "list_blocks": false,
+      "describe_block": false,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": false,
+      "tool_counts": {
+        "Read": 6,
+        "Skill": 2,
+        "ToolSearch": 2,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 8,
+        "mcp__poetry__list_components": 1,
+        "Grep": 4,
+        "mcp__poetry__check": 1,
+        "Write": 1
+      }
+    },
+    "disclosure": {
+      "transcript": "9d02e6ae-92f4-4395-bcf6-4605f9fcc249.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "FAQ accordion (one open at a time) plus a 'show advanced opt"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 4,
+        "Skill": 2,
+        "ToolSearch": 2,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 13,
+        "mcp__poetry__describe_block": 1,
+        "Grep": 1,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "menu": {
+      "transcript": "6346da9d-730a-4e8f-bf11-ccc4ae4c60f9.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "An app menubar (File/View menus), a row-actions dropdown men"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 5,
+        "Skill": 2,
+        "ToolSearch": 3,
+        "mcp__poetry__compose": 1,
+        "Grep": 3,
+        "mcp__poetry__describe_component": 4,
+        "Bash": 2,
+        "Glob": 2,
+        "mcp__poetry__describe_block": 1,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "command_palette": {
+      "transcript": "5a36b524-183b-4a21-9203-8665234757cd.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A command palette: a search box filtering a grouped list of "
+      ],
+      "list_blocks": false,
+      "describe_block": false,
+      "poetry_block_cli": false,
+      "skills": [],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 5,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 2,
+        "Glob": 2,
+        "Grep": 9,
+        "Write": 1,
+        "mcp__poetry__check": 2
+      }
+    },
+    "searchable_select": {
+      "transcript": "e9e94d47-dd21-44a8-a70a-05355b5f41d8.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A labelled framework picker: a combobox-role control with a "
+      ],
+      "list_blocks": false,
+      "describe_block": false,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 3,
+        "Skill": 2,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 4,
+        "Grep": 3,
+        "Bash": 1,
+        "Glob": 1,
+        "mcp__poetry__check": 4,
+        "Write": 1
+      }
+    },
+    "overlay": {
+      "transcript": "c7f1fe09-eeed-42e5-b8e3-9f2243b8be5f.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A destructive 'Delete API key' confirmation that must be ans"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 4,
+        "Skill": 1,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 15,
+        "mcp__poetry__describe_block": 3,
+        "Grep": 1,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "floating": {
+      "transcript": "fa142fca-a010-44f3-a485-ff87ee2b9072.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "The popper-consumer trio end-to-end: a 'Dimensions' popover "
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 4,
+        "Skill": 1,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 11,
+        "Grep": 3,
+        "mcp__poetry__describe_block": 2,
+        "mcp__poetry__list_components": 1,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "toast": {
+      "transcript": "d61485c7-32d9-420e-bfe2-10e5443373fd.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A notifications region hosting a 'Saved' success toast and a"
+      ],
+      "list_blocks": false,
+      "describe_block": false,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 2,
+        "Skill": 1,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 4,
+        "Grep": 2,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "primitives": {
+      "transcript": "a20cd6fa-a55c-4fab-bb21-30f642aad81a.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A loading state: a labelled spinner, a skeleton row, a separ"
+      ],
+      "list_blocks": false,
+      "describe_block": false,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 5,
+        "Skill": 2,
+        "ToolSearch": 2,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 4,
+        "Grep": 3,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "pagination": {
+      "transcript": "5c9f6900-034e-4678-8956-9b2e42d1b7ba.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "Pagination for page 4 of 10, with a current-page marker"
+      ],
+      "list_blocks": false,
+      "describe_block": false,
+      "poetry_block_cli": false,
+      "skills": [],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 1,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 1,
+        "Glob": 1,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "empty_state": {
+      "transcript": "2bd9f3d6-8f2d-4abc-b248-506ea1b21306.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A 'no projects yet' empty state: an icon tile, a title, a de"
+      ],
+      "list_blocks": false,
+      "describe_block": false,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 1,
+        "Skill": 2,
+        "ToolSearch": 2,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 3,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "app_shell": {
+      "transcript": "03d6580e-d260-4d76-980a-55b23fedc27a.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "An application shell: a collapsible sidebar with a Platform "
+      ],
+      "list_blocks": false,
+      "describe_block": false,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 1,
+        "Skill": 2,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "date_field": {
+      "transcript": "4bd3547f-1761-41e6-bed5-ea7acd2c82b1.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A due-date field: a button showing the selected date that op"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 5,
+        "Skill": 2,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 5,
+        "Grep": 3,
+        "mcp__poetry__describe_block": 1,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "site_nav": {
+      "transcript": "e4fb962a-77f9-4056-a330-e5da0202e40c.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A site navigation bar: a Products dropdown of links, plus Pr"
+      ],
+      "list_blocks": false,
+      "describe_block": false,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 1,
+        "Skill": 2,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "artwork_carousel": {
+      "transcript": "3664c585-3366-4004-8ac5-b450faf1d5d3.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A three-slide artwork carousel with previous/next controls"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 2,
+        "Skill": 2,
+        "ToolSearch": 2,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 6,
+        "mcp__poetry__describe_block": 1,
+        "Write": 2,
+        "mcp__poetry__check": 2,
+        "Edit": 2
+      }
+    },
+    "split_editor": {
+      "transcript": "7c9cf889-3c1d-4477-9000-8a554dd75a57.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A two-pane resizable split (Files | Editor) with a draggable"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 3,
+        "Skill": 2,
+        "ToolSearch": 2,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 11,
+        "Grep": 3,
+        "mcp__poetry__describe_block": 1,
+        "Bash": 1,
+        "Glob": 1,
+        "mcp__poetry__list_components": 1,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "mobile_sheet": {
+      "transcript": "591e1681-60f2-441a-994f-0feea746106f.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A bottom drawer for setting a daily activity goal: trigger, "
+      ],
+      "list_blocks": false,
+      "describe_block": false,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 6,
+        "Skill": 2,
+        "ToolSearch": 2,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 6,
+        "Grep": 4,
+        "Bash": 3,
+        "Glob": 2,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "deferred_region": {
+      "transcript": "9dbcd88f-e989-48ba-a9e1-c686afaf461d.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A dashboard activity panel that loads only when scrolled int"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 4,
+        "Skill": 2,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 4,
+        "Grep": 7,
+        "mcp__poetry__describe_block": 1,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "scrollable_tags": {
+      "transcript": "4ba770a6-c737-4c65-a340-9ea37238ac84.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A bounded, scrollable list of 20 version tags in a 12rem box"
+      ],
+      "list_blocks": false,
+      "describe_block": false,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 3,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__list_components": 1,
+        "mcp__poetry__describe_component": 4,
+        "Grep": 6,
+        "Skill": 1,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "settings_tabs": {
+      "transcript": "a5e46dbe-7a43-4272-a6e3-41c8a9de9918.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "Account settings tabs (Account / Password / Notifications) w"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 5,
+        "Skill": 2,
+        "ToolSearch": 2,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 8,
+        "Grep": 4,
+        "mcp__poetry__describe_block": 1,
+        "Write": 2,
+        "Edit": 2,
+        "mcp__poetry__check": 1
+      }
+    },
+    "filter_toolbar": {
+      "transcript": "0a0873d1-8854-4bce-adad-46d517960932.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A filter toolbar: a search box with a leading icon and ⌘K hi"
+      ],
+      "list_blocks": false,
+      "describe_block": false,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 4,
+        "Skill": 2,
+        "ToolSearch": 3,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 3,
+        "Grep": 3,
+        "Bash": 1,
+        "Glob": 2,
+        "Write": 2,
+        "mcp__poetry__check": 2,
+        "Edit": 3
+      }
+    },
+    "user_directory": {
+      "transcript": "d484b2ba-e621-46f5-8a84-c90ebd53fdde.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A team directory: a breadcrumb trail (Home / Team / Director"
+      ],
+      "list_blocks": false,
+      "describe_block": true,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 3,
+        "Skill": 2,
+        "ToolSearch": 3,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 5,
+        "mcp__poetry__describe_block": 1,
+        "mcp__poetry__list_components": 1,
+        "Grep": 2,
+        "Bash": 1,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "upload_progress": {
+      "transcript": "34b07936-20ca-4705-89ca-9560f6ca4995.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A determinate upload progress bar at 60%, with a visible lab"
+      ],
+      "list_blocks": false,
+      "describe_block": false,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 3,
+        "Skill": 2,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 5,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "data_table": {
+      "transcript": "6fe268b8-d2f9-4bf7-96db-9ae28ed1739a.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A sortable, filterable invoices table: sorted by invoice num"
+      ],
+      "list_blocks": false,
+      "describe_block": false,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 7,
+        "Skill": 3,
+        "ToolSearch": 2,
+        "mcp__poetry__compose": 1,
+        "mcp__poetry__describe_component": 1,
+        "Grep": 2,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "table": {
+      "transcript": "db0d37da-d8f8-4789-a9e0-c070e0670ae6.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "An invoices table with a caption, column headers, and a foot"
+      ],
+      "list_blocks": false,
+      "describe_block": false,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 2,
+        "Skill": 2,
+        "ToolSearch": 2,
+        "mcp__poetry__compose": 1,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    },
+    "card": {
+      "transcript": "d3860600-a860-458b-8bf7-a0c7b962f19d.jsonl",
+      "blocks_surface": true,
+      "compose_called": true,
+      "compose_briefs": [
+        "A plan card: title, description, a 'beta' badge, body copy, "
+      ],
+      "list_blocks": false,
+      "describe_block": false,
+      "poetry_block_cli": false,
+      "skills": [
+        "poetry",
+        "poetry-design"
+      ],
+      "ran_check": true,
+      "check_last": true,
+      "tool_counts": {
+        "Read": 2,
+        "Skill": 2,
+        "ToolSearch": 1,
+        "mcp__poetry__compose": 1,
+        "Write": 1,
+        "mcp__poetry__check": 1
+      }
+    }
+  }
+}

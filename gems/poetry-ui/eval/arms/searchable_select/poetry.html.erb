@@ -1,0 +1,12 @@
+<%# The poetry arm: "a labelled framework picker - a combobox-role control
+    with a hidden form serialization opening a type-to-filter popup" (the
+    shadcn combobox-demo composition, form story included). %>
+<%= poetry_combobox(name: "framework", value: "next.js", placeholder: "Select framework...",
+                    search_placeholder: "Search framework...", "aria-label": "Framework") do |combobox| %>
+  <% combobox.with_item(value: "next.js") { "Next.js" } %>
+  <% combobox.with_item(value: "sveltekit") { "SvelteKit" } %>
+  <% combobox.with_item(value: "nuxt.js") { "Nuxt.js" } %>
+  <% combobox.with_item(value: "remix") { "Remix" } %>
+  <% combobox.with_item(value: "astro") { "Astro" } %>
+  <% combobox.with_empty { "No framework found." } %>
+<% end %>

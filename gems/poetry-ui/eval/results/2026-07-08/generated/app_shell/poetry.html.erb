@@ -1,0 +1,94 @@
+<%
+  sidebar_open = cookies[:sidebar_state] != "false"
+%>
+<%= poetry_sidebar(open: sidebar_open, collapsible: :icon) do |sidebar| %>
+  <% sidebar.with_nav do %>
+    <%= poetry_sidebar_header do %>
+      <div class="flex items-center gap-2 px-2 py-1.5">
+        <%= poetry_icon(name: "layers", label: "Acme") %>
+        <span class="text-sm font-semibold">Acme Platform</span>
+      </div>
+    <% end %>
+
+    <%= poetry_sidebar_content do %>
+      <%= poetry_sidebar_group do |group| %>
+        <% group.with_label { "Platform" } %>
+        <%= poetry_sidebar_menu do %>
+          <%= poetry_sidebar_menu_item do %>
+            <%= poetry_sidebar_menu_button(href: "#", active: true) do %>
+              <%= poetry_icon(name: "layout-dashboard") %>
+              <span>Dashboard</span>
+            <% end %>
+          <% end %>
+          <%= poetry_sidebar_menu_item do %>
+            <%= poetry_sidebar_menu_button(href: "#") do %>
+              <%= poetry_icon(name: "bar-chart") %>
+              <span>Analytics</span>
+            <% end %>
+          <% end %>
+          <%= poetry_sidebar_menu_item do %>
+            <%= poetry_sidebar_menu_button(href: "#") do %>
+              <%= poetry_icon(name: "folder") %>
+              <span>Projects</span>
+            <% end %>
+          <% end %>
+          <%= poetry_sidebar_menu_item do %>
+            <%= poetry_sidebar_menu_button(href: "#") do %>
+              <%= poetry_icon(name: "users") %>
+              <span>Team</span>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <%= poetry_sidebar_footer do %>
+      <%= poetry_sidebar_menu do %>
+        <%= poetry_sidebar_menu_item do %>
+          <%= poetry_sidebar_menu_button(href: "#") do %>
+            <%= poetry_icon(name: "settings") %>
+            <span>Settings</span>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% sidebar.with_inset do %>
+    <div class="flex h-14 items-center gap-2 px-4">
+      <%= poetry_sidebar_trigger %>
+      <%= poetry_separator(orientation: :vertical) %>
+      <%= poetry_breadcrumb do |breadcrumb| %>
+        <% breadcrumb.with_item("Platform", href: "#") %>
+        <% breadcrumb.with_item("Dashboard") %>
+      <% end %>
+    </div>
+
+    <%= poetry_separator %>
+
+    <main class="flex-1 space-y-6 p-6">
+      <div class="space-y-1">
+        <h1 class="text-xl font-semibold">Dashboard</h1>
+        <p class="text-sm">Overview of your workspace.</p>
+      </div>
+
+      <div class="grid grid-cols-3 gap-4">
+        <%= poetry_card do |card| %>
+          <% card.with_title { "Active users" } %>
+          <% card.with_description { "Last 30 days" } %>
+          <p class="text-2xl font-semibold">1,284</p>
+        <% end %>
+        <%= poetry_card do |card| %>
+          <% card.with_title { "Revenue" } %>
+          <% card.with_description { "This month" } %>
+          <p class="text-2xl font-semibold">$12,480</p>
+        <% end %>
+        <%= poetry_card do |card| %>
+          <% card.with_title { "Open issues" } %>
+          <% card.with_description { "Needs attention" } %>
+          <p class="text-2xl font-semibold">7</p>
+        <% end %>
+      </div>
+    </main>
+  <% end %>
+<% end %>

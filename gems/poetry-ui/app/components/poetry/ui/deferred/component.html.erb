@@ -1,0 +1,16 @@
+<%= content_tag(:"turbo-frame", **root_attributes) do %>
+  <div <%= tag.attributes(**stimulus_attributes_for(:placeholder)) %>>
+    <%= content.presence || render(Poetry::Ui::Skeleton::Component.new(class: "h-24 w-full")) %>
+  </div>
+  <template <%= tag.attributes(**stimulus_attributes_for(:error_template)) %>>
+    <div data-slot="deferred-error" class="flex flex-col items-start gap-2">
+      <p class="text-sm text-destructive"><%= t("poetry.deferred.failed") %></p>
+      <%= render(Poetry::Ui::Button::Component.new(
+                   variant: :outline, size: :sm,
+                   **stimulus_attributes_for(:retry)
+                 )) do %>
+        <%= t("poetry.deferred.retry") %>
+      <% end %>
+    </div>
+  </template>
+<% end %>

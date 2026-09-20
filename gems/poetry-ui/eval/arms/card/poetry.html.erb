@@ -1,0 +1,18 @@
+<%# The poetry arm: "a plan card: title, description, a 'beta' badge,
+    body copy, and a 'Learn more' link". %>
+<%= poetry_card do |card| %>
+  <% card.with_title { "Team plan" } %>
+  <% card.with_description { "Everything in Starter, plus shared workspaces." } %>
+  <% card.with_action do %>
+    <%= poetry_badge(variant: :secondary) { "beta" } %>
+  <% end %>
+  <% card.with_footer do %>
+    <%= poetry_link(href: "/plans/team") { "Learn more" } %>
+  <% end %>
+  Invite unlimited collaborators and manage roles from one place.
+  <%# The plan's fact sheet: a real <dl>, never label/value divs. %>
+  <%= poetry_metadata_list(class: "mt-4") do |list| %>
+    <% list.with_item(label: "Seats") { "Up to 25" } %>
+    <% list.with_item(label: "Billing") { "Monthly or annual" } %>
+  <% end %>
+<% end %>

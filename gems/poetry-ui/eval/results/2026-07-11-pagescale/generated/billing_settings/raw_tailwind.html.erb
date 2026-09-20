@@ -1,0 +1,234 @@
+<div class="min-h-full bg-gray-50 py-10">
+  <div class="mx-auto max-w-6xl px-6">
+
+    <header class="mb-8 flex items-end justify-between">
+      <div>
+        <p class="text-sm font-medium text-indigo-600">Acme Inc workspace</p>
+        <h1 class="mt-1 text-2xl font-semibold text-gray-900">Billing</h1>
+        <p class="mt-1 text-sm text-gray-500">Manage your plan, payment method, usage and invoice history.</p>
+      </div>
+      <a href="#" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+        Contact billing support
+      </a>
+    </header>
+
+    <div class="grid grid-cols-3 gap-6">
+
+      <!-- Current plan -->
+      <section aria-labelledby="plan-heading" class="col-span-2 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div class="flex items-start justify-between">
+          <div>
+            <h2 id="plan-heading" class="text-sm font-medium text-gray-500">Current plan</h2>
+            <div class="mt-1 flex items-baseline gap-2">
+              <p class="text-xl font-semibold text-gray-900">Team Plan</p>
+              <span class="inline-flex items-center rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700">Active</span>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-xl font-semibold text-gray-900">$49<span class="text-sm font-normal text-gray-500">/month</span></p>
+            <p class="text-sm text-gray-500">billed monthly</p>
+          </div>
+        </div>
+
+        <dl class="mt-6 grid grid-cols-2 gap-4 border-t border-gray-100 pt-4 sm:grid-cols-3">
+          <div>
+            <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Renews on</dt>
+            <dd class="mt-1 text-sm font-medium text-gray-900">August 11, 2026</dd>
+          </div>
+          <div>
+            <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Billing cycle</dt>
+            <dd class="mt-1 text-sm font-medium text-gray-900">Monthly</dd>
+          </div>
+          <div>
+            <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Seats included</dt>
+            <dd class="mt-1 text-sm font-medium text-gray-900">Up to 25 members</dd>
+          </div>
+        </dl>
+
+        <div class="mt-6 flex gap-3 border-t border-gray-100 pt-4">
+          <a href="#" class="inline-flex items-center rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500">
+            Change plan
+          </a>
+          <a href="#" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+            Cancel plan
+          </a>
+        </div>
+      </section>
+
+      <!-- Payment method -->
+      <section aria-labelledby="payment-heading" class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 id="payment-heading" class="text-sm font-medium text-gray-500">Payment method</h2>
+
+        <div class="mt-3 flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
+          <div class="flex h-8 w-12 flex-none items-center justify-center rounded bg-gray-900 text-[10px] font-bold tracking-wide text-white">
+            VISA
+          </div>
+          <div class="min-w-0">
+            <p class="text-sm font-medium text-gray-900">Visa ending in 4242</p>
+            <p class="text-sm text-gray-500">Expires 08/2027</p>
+          </div>
+        </div>
+
+        <p class="mt-3 text-xs text-gray-500">Billing name: Matt Solt · Invoices are sent to <span class="font-medium text-gray-700">billing@acme-inc.example</span></p>
+
+        <div class="mt-4 flex flex-col gap-2">
+          <a href="#" class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+            Update payment method
+          </a>
+          <a href="#" class="inline-flex justify-center rounded-md px-3.5 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+            Edit billing address
+          </a>
+        </div>
+      </section>
+
+      <!-- Usage this period -->
+      <section aria-labelledby="usage-heading" class="col-span-3 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div class="flex items-baseline justify-between">
+          <h2 id="usage-heading" class="text-sm font-medium text-gray-500">Usage this period</h2>
+          <p class="text-xs text-gray-500">Jul 11 &ndash; Aug 11, 2026</p>
+        </div>
+
+        <div class="mt-4 grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-4">
+
+          <div>
+            <div class="flex items-baseline justify-between">
+              <p class="text-sm font-medium text-gray-700">Team members</p>
+              <p class="text-sm text-gray-500">18 / 25</p>
+            </div>
+            <progress class="mt-2 h-2 w-full overflow-hidden rounded-full [&::-webkit-progress-bar]:rounded-full [&::-webkit-progress-bar]:bg-gray-100 [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:bg-indigo-600 [&::-moz-progress-bar]:rounded-full [&::-moz-progress-bar]:bg-indigo-600" value="18" max="25"></progress>
+            <p class="mt-1 text-xs text-gray-500">72% used</p>
+          </div>
+
+          <div>
+            <div class="flex items-baseline justify-between">
+              <p class="text-sm font-medium text-gray-700">Storage</p>
+              <p class="text-sm text-gray-500">42.3 GB / 100 GB</p>
+            </div>
+            <progress class="mt-2 h-2 w-full overflow-hidden rounded-full [&::-webkit-progress-bar]:rounded-full [&::-webkit-progress-bar]:bg-gray-100 [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:bg-indigo-600 [&::-moz-progress-bar]:rounded-full [&::-moz-progress-bar]:bg-indigo-600" value="42.3" max="100"></progress>
+            <p class="mt-1 text-xs text-gray-500">42% used</p>
+          </div>
+
+          <div>
+            <div class="flex items-baseline justify-between">
+              <p class="text-sm font-medium text-gray-700">API requests</p>
+              <p class="text-sm text-gray-500">84,200 / 100,000</p>
+            </div>
+            <progress class="mt-2 h-2 w-full overflow-hidden rounded-full [&::-webkit-progress-bar]:rounded-full [&::-webkit-progress-bar]:bg-gray-100 [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:bg-amber-500 [&::-moz-progress-bar]:rounded-full [&::-moz-progress-bar]:bg-amber-500" value="84200" max="100000"></progress>
+            <p class="mt-1 text-xs text-amber-600">84% used &middot; approaching limit</p>
+          </div>
+
+          <div>
+            <div class="flex items-baseline justify-between">
+              <p class="text-sm font-medium text-gray-700">Projects</p>
+              <p class="text-sm text-gray-500">12 / 20</p>
+            </div>
+            <progress class="mt-2 h-2 w-full overflow-hidden rounded-full [&::-webkit-progress-bar]:rounded-full [&::-webkit-progress-bar]:bg-gray-100 [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:bg-indigo-600 [&::-moz-progress-bar]:rounded-full [&::-moz-progress-bar]:bg-indigo-600" value="12" max="20"></progress>
+            <p class="mt-1 text-xs text-gray-500">60% used</p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Invoice history -->
+      <section aria-labelledby="invoices-heading" class="col-span-3 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div class="flex items-baseline justify-between">
+          <h2 id="invoices-heading" class="text-sm font-medium text-gray-500">Invoice history</h2>
+          <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">View all invoices</a>
+        </div>
+
+        <table class="mt-4 w-full text-left text-sm">
+          <thead>
+            <tr class="border-b border-gray-200 text-xs uppercase tracking-wide text-gray-500">
+              <th scope="col" class="py-2 pr-4 font-medium">Date</th>
+              <th scope="col" class="py-2 pr-4 font-medium">Description</th>
+              <th scope="col" class="py-2 pr-4 font-medium">Amount</th>
+              <th scope="col" class="py-2 pr-4 font-medium">Status</th>
+              <th scope="col" class="py-2 pl-4 text-right font-medium">Receipt</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr>
+              <td class="py-3 pr-4 text-gray-900">Jul 11, 2026</td>
+              <td class="py-3 pr-4 text-gray-500">Team Plan &middot; monthly</td>
+              <td class="py-3 pr-4 text-gray-900">$49.00</td>
+              <td class="py-3 pr-4">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700">
+                  <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span> Paid
+                </span>
+              </td>
+              <td class="py-3 pl-4 text-right">
+                <a href="#" download class="font-medium text-indigo-600 hover:text-indigo-500">Download</a>
+              </td>
+            </tr>
+            <tr>
+              <td class="py-3 pr-4 text-gray-900">Jun 11, 2026</td>
+              <td class="py-3 pr-4 text-gray-500">Team Plan &middot; monthly</td>
+              <td class="py-3 pr-4 text-gray-900">$49.00</td>
+              <td class="py-3 pr-4">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700">
+                  <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span> Paid
+                </span>
+              </td>
+              <td class="py-3 pl-4 text-right">
+                <a href="#" download class="font-medium text-indigo-600 hover:text-indigo-500">Download</a>
+              </td>
+            </tr>
+            <tr>
+              <td class="py-3 pr-4 text-gray-900">May 11, 2026</td>
+              <td class="py-3 pr-4 text-gray-500">Team Plan &middot; monthly</td>
+              <td class="py-3 pr-4 text-gray-900">$49.00</td>
+              <td class="py-3 pr-4">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700">
+                  <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span> Failed
+                </span>
+              </td>
+              <td class="py-3 pl-4 text-right">
+                <a href="#" download class="font-medium text-indigo-600 hover:text-indigo-500">Download</a>
+              </td>
+            </tr>
+            <tr>
+              <td class="py-3 pr-4 text-gray-900">Apr 11, 2026</td>
+              <td class="py-3 pr-4 text-gray-500">Team Plan &middot; monthly</td>
+              <td class="py-3 pr-4 text-gray-900">$49.00</td>
+              <td class="py-3 pr-4">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700">
+                  <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span> Paid
+                </span>
+              </td>
+              <td class="py-3 pl-4 text-right">
+                <a href="#" download class="font-medium text-indigo-600 hover:text-indigo-500">Download</a>
+              </td>
+            </tr>
+            <tr>
+              <td class="py-3 pr-4 text-gray-900">Mar 11, 2026</td>
+              <td class="py-3 pr-4 text-gray-500">Team Plan &middot; monthly</td>
+              <td class="py-3 pr-4 text-gray-900">$49.00</td>
+              <td class="py-3 pr-4">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-yellow-50 px-2.5 py-0.5 text-xs font-medium text-yellow-700">
+                  <span class="h-1.5 w-1.5 rounded-full bg-yellow-500"></span> Pending
+                </span>
+              </td>
+              <td class="py-3 pl-4 text-right">
+                <span class="text-gray-300">Unavailable</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="py-3 pr-4 text-gray-900">Feb 11, 2026</td>
+              <td class="py-3 pr-4 text-gray-500">Team Plan &middot; monthly</td>
+              <td class="py-3 pr-4 text-gray-900">$49.00</td>
+              <td class="py-3 pr-4">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700">
+                  <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span> Paid
+                </span>
+              </td>
+              <td class="py-3 pl-4 text-right">
+                <a href="#" download class="font-medium text-indigo-600 hover:text-indigo-500">Download</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+    </div>
+  </div>
+</div>

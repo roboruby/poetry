@@ -1,0 +1,59 @@
+<section class="mx-auto max-w-3xl p-6">
+  <div class="space-y-1 mb-6">
+    <h1 class="text-2xl font-semibold tracking-tight">Featured artwork</h1>
+    <p class="text-sm text-muted-foreground">A rotating selection from the current collection.</p>
+  </div>
+
+  <%= poetry_carousel(label: "Featured artwork", show_controls: true) do |carousel| %>
+    <% carousel.with_item(classes: "basis-full") do %>
+      <div class="space-y-4">
+        <%= poetry_aspect_ratio(ratio: "16/10") do %>
+          <div class="flex h-full w-full items-center justify-center rounded-lg bg-muted">
+            <%= poetry_icon(name: :image, label: "Artwork placeholder", class: "size-12 text-muted-foreground") %>
+          </div>
+        <% end %>
+        <div class="flex items-start justify-between gap-4">
+          <div class="space-y-1">
+            <h2 class="text-lg font-semibold tracking-tight">Sunset Over the Bay</h2>
+            <p class="text-sm text-muted-foreground">Mira Alston &middot; Oil on canvas &middot; 2019</p>
+          </div>
+          <%= poetry_badge(variant: :secondary) { "Painting" } %>
+        </div>
+      </div>
+    <% end %>
+
+    <% carousel.with_item(classes: "basis-full") do %>
+      <div class="space-y-4">
+        <%= poetry_aspect_ratio(ratio: "16/10") do %>
+          <div class="flex h-full w-full items-center justify-center rounded-lg bg-accent">
+            <%= poetry_icon(name: :image, label: "Artwork placeholder", class: "size-12 text-accent-foreground/60") %>
+          </div>
+        <% end %>
+        <div class="flex items-start justify-between gap-4">
+          <div class="space-y-1">
+            <h2 class="text-lg font-semibold tracking-tight">Fractured Light</h2>
+            <p class="text-sm text-muted-foreground">Devon Kwan &middot; Mixed media &middot; 2021</p>
+          </div>
+          <%= poetry_badge(variant: :secondary) { "Mixed media" } %>
+        </div>
+      </div>
+    <% end %>
+
+    <% carousel.with_item(classes: "basis-full") do %>
+      <div class="space-y-4">
+        <%= poetry_aspect_ratio(ratio: "16/10") do %>
+          <div class="flex h-full w-full items-center justify-center rounded-lg bg-secondary">
+            <%= poetry_icon(name: :image, label: "Artwork placeholder", class: "size-12 text-secondary-foreground/60") %>
+          </div>
+        <% end %>
+        <div class="flex items-start justify-between gap-4">
+          <div class="space-y-1">
+            <h2 class="text-lg font-semibold tracking-tight">Quiet Orchard</h2>
+            <p class="text-sm text-muted-foreground">Naomi Ferreira &middot; Watercolor &middot; 2023</p>
+          </div>
+          <%= poetry_badge(variant: :secondary) { "Watercolor" } %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</section>

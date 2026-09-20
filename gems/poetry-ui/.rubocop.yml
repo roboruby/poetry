@@ -1,0 +1,98 @@
+plugins:
+  - rubocop-performance
+  - rubocop-minitest
+  - rubocop-rake
+  - rubocop-yard
+
+AllCops:
+  TargetRubyVersion: 3.4
+  Exclude:
+    - "test/tmp/**/*" # generator-test destinations
+    - "test/dummy/tmp/**/*"
+    - "lib/generators/poetry/pagination/templates/**/*" # generated host-app code; its style belongs to the host
+    - "test/dommy_tier/support/browser_harness.rb" # vendored from dommy-js-quickjs, kept byte-identical
+    - "vendor/**/*"
+  NewCops: enable
+  SuggestExtensions: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+Layout/LineLength:
+  Max: 120
+
+Metrics/ParameterLists:
+  # Keyword-only signatures are the house norm; counting keywords
+  # penalizes self-documenting APIs.
+  CountKeywordArgs: false
+
+Metrics/BlockLength:
+  # use_stimulus declaration blocks are the component's wiring contract -
+  # element-major and legitimately long on multi-element components.
+  AllowedMethods:
+    - refine
+    - use_stimulus
+  Exclude:
+    - "test/**/*"
+    - "*.gemspec"
+    # ActiveSupport::Concern `class_methods do ... end` blocks carry the ported DSL.
+    - "app/components/poetry/core/concerns/*.rb"
+    # Rake namespace blocks are naturally long task lists.
+    - "rakelib/**/*.rake"
+    - "lib/tasks/**/*.rake"
+
+Naming/FileName:
+  # lib/poetry-core.rb is the hyphenated Bundler auto-require entrypoint for the
+  # Poetry::Core namespace; its name must match the gem, not snake_case.
+  Exclude:
+    - "lib/poetry-ui.rb"
+    - Archspec.rb # ArchSpec reads the spec by that name
+
+# --- poetry-core framework port ---------------------------------------------
+# The framework layer is ported intact from view_component_plus (which used
+# `standard`). A few RuboCop defaults flag legitimate, proven patterns in that
+# ported code; relax the advisory cops rather than refactor battle-tested logic.
+
+# The ported code is thoroughly YARD-documented, but on the inner modules/classes
+# rather than the compact `module Poetry::Core` namespace wrappers.
+Style/Documentation:
+  Enabled: false
+
+# The fox_tail-derived attribute/stimulus merging methods are inherently dense.
+Metrics/AbcSize:
+  Enabled: false
+Metrics/CyclomaticComplexity:
+  Enabled: false
+Metrics/PerceivedComplexity:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Metrics/ClassLength:
+  Enabled: false
+Metrics/ModuleLength:
+  Enabled: false
+
+# The Tokens::Color API is keyed on the OKLCH color axes; `l`/`c`/`h` are the
+# domain-standard names (defaults for this cop kept, plus the three axes).
+Naming/MethodParameterName:
+  AllowedNames: ["as", "at", "by", "cc", "db", "id", "if", "in", "io", "ip", "of", "on", "os", "pp", "to", "l", "c", "h", "q"]
+
+# `has_attribute?` is part of the public HTML::Attributes contract; the
+# `has_*_attribute?` predicates are part of the public Styles/Options DSL contract.
+Naming/PredicatePrefix:
+  AllowedMethods:
+    - has_attribute?
+    - has_style_attribute?
+    - has_option_attribute?
+
+# Comprehensive, multi-assertion unit tests are intentional.
+Minitest/MultipleAssertions:
+  Enabled: false
+
+# YARD tags are the contract the docs, the skill and the agents read;
+# the long collection form (Array<String>) is the house style.
+YARD/CollectionStyle:
+  EnforcedStyle: long

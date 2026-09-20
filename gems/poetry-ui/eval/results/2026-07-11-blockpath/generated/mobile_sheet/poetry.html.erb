@@ -1,0 +1,45 @@
+<div class="mx-auto max-w-md space-y-6 p-6">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Daily activity goal</h1>
+    <p class="text-sm text-muted-foreground">
+      Set a target to stay consistent with your movement each day.
+    </p>
+  </div>
+
+  <%= form_with url: "#", method: :post, local: true do %>
+    <%= poetry_drawer(direction: :down, show_swipe_handle: true) do |drawer| %>
+      <% drawer.with_trigger do %>
+        <%= poetry_button do %>
+          Set daily goal
+        <% end %>
+      <% end %>
+
+      <% drawer.with_title { "Set daily activity goal" } %>
+      <% drawer.with_description { "Choose an activity and how many minutes you want to hit each day." } %>
+
+      <div class="space-y-4">
+        <%= poetry_native_select(
+              id: "daily_goal_activity",
+              name: "daily_goal[activity]",
+              label: "Activity",
+              options: [
+                ["Walking", "walking"],
+                ["Running", "running"],
+                ["Cycling", "cycling"],
+                ["Swimming", "swimming"],
+                ["Yoga", "yoga"]
+              ],
+              selected: "walking"
+            ) %>
+
+        <%= poetry_field(id: "daily_goal_minutes", label_text: "Daily target (minutes)", hint: "Between 5 and 180 minutes.") do |field| %>
+          <%= poetry_input(**field.control_attributes, type: "number", name: "daily_goal[minutes]", value: "30") %>
+        <% end %>
+      </div>
+
+      <% drawer.with_footer do %>
+        <%= poetry_button(type: :submit) { "Save goal" } %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

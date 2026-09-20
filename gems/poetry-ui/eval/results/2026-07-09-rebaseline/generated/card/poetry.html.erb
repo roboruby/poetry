@@ -1,0 +1,17 @@
+<div class="mx-auto max-w-md p-6">
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Team Plan" } %>
+    <% card.with_description { "Collaborate with your whole team on one shared workspace." } %>
+    <% card.with_action do %>
+      <%= poetry_badge(variant: :secondary) { "Beta" } %>
+    <% end %>
+    <% card.with_footer do %>
+      <%= poetry_link(href: "/plans/team", underline: :always, class: "inline-flex items-center gap-1") do %>
+        Learn more <%= poetry_icon(name: :"arrow-right", class: "size-3.5") %>
+      <% end %>
+    <% end %>
+    <div class="space-y-3 text-sm">
+      <p>Everything in the Starter plan, plus shared workspaces, role-based permissions, and priority support for teams of any size.</p>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,136 @@
+<div class="mx-auto max-w-5xl space-y-6 p-6">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">API keys</h1>
+      <p class="text-sm text-muted-foreground">Keys your integrations use to authenticate with this workspace.</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <%= poetry_sheet(side: :right) do |sheet| %>
+        <% sheet.with_trigger do %>
+          <%= poetry_button(variant: :outline) do |button| %>
+            <% button.with_leading { poetry_icon(name: :"list-filter") } %>
+            Filter results
+          <% end %>
+        <% end %>
+        <% sheet.with_title { "Filter results" } %>
+        <% sheet.with_description { "Narrow the key list by status, environment, and scope." } %>
+
+        <div class="space-y-5 px-4">
+          <%= poetry_field(id: "filter-search", label_text: "Name or prefix") do %>
+            <%= poetry_input(id: "filter-search", name: "q", placeholder: "e.g. sk_live or “Billing worker”") %>
+          <% end %>
+
+          <%= poetry_field(id: "filter-status", label_text: "Status") do %>
+            <%= poetry_native_select(id: "filter-status", name: "status",
+                                     options: [["All statuses", "all"], ["Active", "active"],
+                                               ["Revoked", "revoked"], ["Expired", "expired"]]) %>
+          <% end %>
+
+          <%= poetry_field(id: "filter-environment", label_text: "Environment") do %>
+            <%= poetry_native_select(id: "filter-environment", name: "environment",
+                                     options: [["All environments", "all"], ["Production", "production"],
+                                               ["Staging", "staging"], ["Development", "development"]]) %>
+          <% end %>
+
+          <div class="space-y-2">
+            <span class="text-sm font-medium">Scopes</span>
+            <div class="space-y-2">
+              <%= poetry_checkbox(name: "scopes[]", value: "read", label: "Read") %>
+              <%= poetry_checkbox(name: "scopes[]", value: "write", label: "Write") %>
+              <%= poetry_checkbox(name: "scopes[]", value: "admin", label: "Admin") %>
+            </div>
+          </div>
+        </div>
+
+        <% sheet.with_footer do %>
+          <%= poetry_button(variant: :outline) { "Reset" } %>
+          <%= poetry_button { "Apply filters" } %>
+        <% end %>
+      <% end %>
+
+      <%= poetry_button do |button| %>
+        <% button.with_leading { poetry_icon(name: :plus) } %>
+        Create key
+      <% end %>
+    </div>
+  </div>
+
+  <div class="overflow-hidden rounded-lg border">
+    <%= poetry_table do %>
+      <%= poetry_table_caption(class: "sr-only") { "API keys with status, environment, and last use." } %>
+      <%= poetry_table_header do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_head { "Name" } %>
+          <%= poetry_table_head { "Key" } %>
+          <%= poetry_table_head { "Status" } %>
+          <%= poetry_table_head { "Last used" } %>
+          <%= poetry_table_head(class: "text-right") { "Actions" } %>
+        <% end %>
+      <% end %>
+      <%= poetry_table_body do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { "Billing worker" } %>
+          <%= poetry_table_cell(class: "font-mono text-muted-foreground") { "sk_live_••••a91f" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :success) { "Active" } } %>
+          <%= poetry_table_cell { "2 hours ago" } %>
+          <%= poetry_table_cell(class: "text-right") do %>
+            <%= poetry_alert_dialog do |dialog| %>
+              <% dialog.with_trigger do %>
+                <%= poetry_button(variant: :ghost, size: :sm) do |button| %>
+                  <% button.with_leading { poetry_icon(name: :trash) } %>
+                  Delete
+                <% end %>
+              <% end %>
+              <% dialog.with_title { "Delete “Billing worker”?" } %>
+              <% dialog.with_description { "This key stops authenticating immediately. Any integration still using it will fail until a replacement key is configured. This cannot be undone." } %>
+              <% dialog.with_cancel { "Cancel" } %>
+              <% dialog.with_action(variant: :destructive) { "Delete API key" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { "Nightly sync" } %>
+          <%= poetry_table_cell(class: "font-mono text-muted-foreground") { "sk_live_••••220c" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :success) { "Active" } } %>
+          <%= poetry_table_cell { "Yesterday" } %>
+          <%= poetry_table_cell(class: "text-right") do %>
+            <%= poetry_alert_dialog do |dialog| %>
+              <% dialog.with_trigger do %>
+                <%= poetry_button(variant: :ghost, size: :sm) do |button| %>
+                  <% button.with_leading { poetry_icon(name: :trash) } %>
+                  Delete
+                <% end %>
+              <% end %>
+              <% dialog.with_title { "Delete “Nightly sync”?" } %>
+              <% dialog.with_description { "This key stops authenticating immediately. Any integration still using it will fail until a replacement key is configured. This cannot be undone." } %>
+              <% dialog.with_cancel { "Cancel" } %>
+              <% dialog.with_action(variant: :destructive) { "Delete API key" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { "Staging smoke tests" } %>
+          <%= poetry_table_cell(class: "font-mono text-muted-foreground") { "sk_test_••••7b3e" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :outline) { "Revoked" } } %>
+          <%= poetry_table_cell { "3 weeks ago" } %>
+          <%= poetry_table_cell(class: "text-right") do %>
+            <%= poetry_alert_dialog do |dialog| %>
+              <% dialog.with_trigger do %>
+                <%= poetry_button(variant: :ghost, size: :sm, disabled: true) do |button| %>
+                  <% button.with_leading { poetry_icon(name: :trash) } %>
+                  Delete
+                <% end %>
+              <% end %>
+              <% dialog.with_title { "Delete “Staging smoke tests”?" } %>
+              <% dialog.with_description { "This key is already revoked and no longer authenticates. Deleting it removes it from this list permanently. This cannot be undone." } %>
+              <% dialog.with_cancel { "Cancel" } %>
+              <% dialog.with_action(variant: :destructive) { "Delete API key" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <p class="text-sm text-muted-foreground">Showing 3 of 3 API keys</p>
+</div>

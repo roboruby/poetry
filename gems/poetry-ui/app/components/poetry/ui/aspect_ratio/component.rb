@@ -1,0 +1,61 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Ui
+    # Ratio-locked media containers.
+    module AspectRatio
+      # A container that locks its width:height ratio (CSS aspect-ratio
+      # via the --ratio custom property). The content is whatever should
+      # keep the shape: an image, an embed, a placeholder.
+      #
+      # @example A 16:9 media box
+      #   render Poetry::Ui::AspectRatio::Component.new(ratio: "16/9") do
+      #     image_tag "cover.jpg", class: "size-full object-cover"
+      #   end
+      class Component < Poetry::Core::Component
+        # The accepted CSS <ratio> grammar for ratio: ("16/9", "1", "1.5").
+        RATIO = %r{\A\d+(\.\d+)?(\s*/\s*\d+(\.\d+)?)?\z}
+
+        # Projected into the registry, llms.txt, and the agent surface.
+        AGENT_RULES = [
+          "Pass ratio: as a string fraction ('16/9', '1/1') - Ruby's 16/9 is integer division (1).",
+          "The child fills the box itself (size-full object-cover on an image)."
+        ].freeze
+
+        option :ratio, :string, required: true,
+                                doc: "A CSS <ratio>: \"16/9\", \"1\", \"1.5\" - kept a string so the fraction " \
+                                     "survives verbatim into the --ratio custom property."
+
+        part "aspect-ratio", "The ratio-locked box - the content block fills it",
+             vars: {
+               "--ratio" => "always - the ratio: fraction verbatim ('16/9'), consumed by the " \
+                            "theme's aspect-ratio rule"
+             }
+
+        # Validates the ratio: grammar.
+        # @api private
+        def before_render
+          return if ratio.present? && ratio.match?(RATIO)
+
+          raise ArgumentError,
+                "AspectRatio ratio: must be a CSS ratio ('16/9', '1', '1.5') - got #{ratio.inspect}"
+        end
+
+        # Renders the ratio box around the content.
+        # @api private
+        def call
+          content_tag(:div, content, **root_attributes)
+        end
+
+        # The root's attributes: this component's markup over the core default.
+        def root_attributes
+          super(
+            {
+              "style" => "--ratio: #{ratio}"
+            }
+          )
+        end
+      end
+    end
+  end
+end

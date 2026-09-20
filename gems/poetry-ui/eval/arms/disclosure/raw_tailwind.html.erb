@@ -1,0 +1,20 @@
+<%# The raw-Tailwind arm for the same task - realistic: plausible FAQ
+    markup with the classic tells (styled divs with onclick toggles, no
+    aria-expanded/controls, the "heading" is a styled div, panels are
+    unlabelled). %>
+<div class="divide-y rounded-lg border">
+  <div>
+    <div class="flex cursor-pointer items-center justify-between p-4 text-sm font-medium" onclick="this.nextElementSibling.classList.toggle('hidden')">
+      How fast is shipping? <span class="text-gray-400">⌄</span>
+    </div>
+    <div class="p-4 pt-0 text-sm">Two business days, worldwide.</div>
+  </div>
+  <div>
+    <div class="flex cursor-pointer items-center justify-between p-4 text-sm font-medium" onclick="this.nextElementSibling.classList.toggle('hidden')">
+      What is the return policy? <span class="text-gray-400">⌄</span>
+    </div>
+    <div class="hidden p-4 pt-0 text-sm">Thirty days, no questions asked.</div>
+  </div>
+</div>
+<div class="mt-3 cursor-pointer text-sm font-medium underline" onclick="document.getElementById('adv').classList.toggle('hidden')">Show advanced options</div>
+<div id="adv" class="hidden pt-2 text-sm text-gray-500">Advanced configuration lives here.</div>

@@ -1,0 +1,52 @@
+<section aria-labelledby="recent-activity-heading" class="w-full max-w-2xl">
+  <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <header class="flex items-start justify-between gap-4 border-b border-gray-100 px-6 py-5">
+      <div class="flex items-start gap-3">
+        <span class="mt-0.5 flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-5 w-5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+          </svg>
+        </span>
+        <div>
+          <h2 id="recent-activity-heading" class="text-base font-semibold text-gray-900">
+            Recent Activity
+          </h2>
+          <p class="mt-0.5 text-sm text-gray-500">
+            Updates from your team. Loads automatically as this panel scrolls into view.
+          </p>
+        </div>
+      </div>
+
+      <a
+        href="."
+        target="recent-activity-frame"
+        aria-label="Retry loading recent activity"
+        class="inline-flex flex-none items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4 w-4" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-4.99m0 4.99a8.25 8.25 0 00-13.803-3.7L2.985 9.348m4.992 11.296v-4.99m0 4.99h-4.99m0 0l3.181-3.183a8.25 8.25 0 0013.803-3.7" />
+        </svg>
+        Retry
+      </a>
+    </header>
+
+    <div class="relative bg-gray-50">
+      <iframe
+        title="Recent activity feed"
+        name="recent-activity-frame"
+        loading="lazy"
+        sandbox=""
+        srcdoc='<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#374151;background:#f9fafb;}ul{list-style:none;margin:0;padding:0.5rem 1.25rem;}li{display:flex;gap:0.75rem;align-items:flex-start;padding:0.85rem 0;border-bottom:1px solid #e5e7eb;}li:last-child{border-bottom:0;}.dot{width:0.5rem;height:0.5rem;border-radius:9999px;background:#818cf8;margin-top:0.45rem;flex:none;}.title{font-size:0.875rem;color:#111827;}.meta{font-size:0.75rem;color:#9ca3af;margin-top:0.125rem;}</style></head><body><ul><li><span class="dot"></span><div><div class="title">Maria closed ticket #482</div><div class="meta">2 minutes ago</div></div></li><li><span class="dot"></span><div><div class="title">New comment on &quot;Q3 Roadmap&quot;</div><div class="meta">18 minutes ago</div></div></li><li><span class="dot"></span><div><div class="title">Deploy to production succeeded</div><div class="meta">1 hour ago</div></div></li><li><span class="dot"></span><div><div class="title">Priya invited jordan@acme.com to Workspace</div><div class="meta">3 hours ago</div></div></li></ul></body></html>'
+        class="block h-72 w-full border-0"
+      ></iframe>
+    </div>
+
+    <footer class="border-t border-gray-100 px-6 py-3">
+      <p class="text-xs text-gray-400">
+        Having trouble? Use the
+        <a href="." target="recent-activity-frame" class="font-medium text-indigo-600 underline decoration-indigo-200 underline-offset-2 hover:text-indigo-700">Retry</a>
+        button above if activity fails to load.
+      </p>
+    </footer>
+  </div>
+</section>

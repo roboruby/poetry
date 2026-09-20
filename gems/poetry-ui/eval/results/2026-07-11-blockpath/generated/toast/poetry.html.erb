@@ -1,0 +1,21 @@
+<div class="mx-auto max-w-xl p-6 space-y-4">
+  <div class="space-y-1">
+    <h1 class="text-lg font-semibold">Notifications</h1>
+    <p class="text-sm text-muted-foreground">Toasts surface here as background actions complete.</p>
+  </div>
+
+  <%= poetry_toaster(position: :"top-right") do %>
+    <%= poetry_toast(variant: :success) do |t| %>
+      <% t.with_title { "Saved" } %>
+      <% t.with_description { "Your changes have been saved." } %>
+    <% end %>
+
+    <%= poetry_toast(variant: :destructive, politeness: :assertive) do |t| %>
+      <% t.with_title { "Payment failed" } %>
+      <% t.with_description { "We couldn't process your payment. Please try again." } %>
+      <% t.with_action do %>
+        <%= poetry_button(label: "Retry", size: :sm, variant: :outline) %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

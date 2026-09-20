@@ -1,0 +1,22 @@
+<%# Shared template for the Fieldset previews: the legend/hint pair over a
+    FieldGroup of real wired Fields (the canonical composition). %>
+<div class="w-96 p-4">
+  <%= render component do %>
+    <%= render Poetry::Ui::FieldGroup::Component.new do %>
+      <%= render Poetry::Ui::Field::Component.new(id: "fieldset-preview-street", label_text: "Street address") do |field| %>
+        <%= render Poetry::Ui::Input::Component.new(name: "street", placeholder: "123 Main St",
+                                                    **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+      <div class="grid grid-cols-2 gap-4">
+        <%= render Poetry::Ui::Field::Component.new(id: "fieldset-preview-city", label_text: "City") do |field| %>
+          <%= render Poetry::Ui::Input::Component.new(name: "city", placeholder: "New York",
+                                                      **field.control_attributes.transform_keys(&:to_sym)) %>
+        <% end %>
+        <%= render Poetry::Ui::Field::Component.new(id: "fieldset-preview-zip", label_text: "Postal code") do |field| %>
+          <%= render Poetry::Ui::Input::Component.new(name: "zip", placeholder: "90502",
+                                                      **field.control_attributes.transform_keys(&:to_sym)) %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

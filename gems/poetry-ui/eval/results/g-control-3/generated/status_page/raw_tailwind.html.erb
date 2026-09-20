@@ -1,0 +1,190 @@
+<%
+  status_meta = {
+    operational:  { label: "Operational",         dot: "bg-emerald-500", bar: "bg-emerald-400", text: "text-emerald-700" },
+    degraded:     { label: "Degraded Performance", dot: "bg-amber-500",   bar: "bg-amber-400",   text: "text-amber-700" },
+    outage:       { label: "Major Outage",         dot: "bg-red-500",     bar: "bg-red-400",     text: "text-red-700" },
+    maintenance:  { label: "Maintenance",          dot: "bg-blue-500",    bar: "bg-blue-400",    text: "text-blue-700" },
+  }
+
+  services = [
+    { name: "Website",         status: :operational, uptime: 100.00, incidents: {} },
+    { name: "API",             status: :operational, uptime: 99.98,  incidents: { 62 => :degraded } },
+    { name: "Authentication",  status: :operational, uptime: 99.99,  incidents: { 12 => :degraded } },
+    { name: "Payments API",    status: :degraded,    uptime: 98.62,  incidents: { 89 => :degraded, 55 => :outage, 30 => :maintenance } },
+    { name: "Database",        status: :operational, uptime: 100.00, incidents: {} },
+    { name: "CDN",             status: :operational, uptime: 99.91,  incidents: { 5 => :outage } },
+  ]
+
+  overall_status =
+    if services.any? { |s| s[:status] == :outage }
+      :outage
+    elsif services.any? { |s| s[:status] == :degraded }
+      :degraded
+    else
+      :operational
+    end
+
+  overall_copy = {
+    operational: "All Systems Operational",
+    degraded:    "Degraded Performance",
+    outage:      "Major System Outage",
+  }
+
+  updated_at = Time.current
+%>
+<div class="mx-auto max-w-5xl px-6 py-10 sm:py-14 text-slate-900">
+
+  <header class="mb-8 flex flex-wrap items-center justify-between gap-2">
+    <div>
+      <p class="text-sm font-semibold text-slate-500">Acme Cloud</p>
+      <p class="text-lg font-semibold">System Status</p>
+    </div>
+    <p class="text-sm text-slate-500">
+      Last updated <time datetime="<%= updated_at.iso8601 %>"><%= updated_at.strftime("%b %-d, %Y, %-I:%M %p %Z") %></time>
+    </p>
+  </header>
+
+  <section aria-labelledby="status-heading" class="mb-10 rounded-xl border p-6 sm:p-8 <%= overall_status == :operational ? "border-emerald-200 bg-emerald-50" : overall_status == :degraded ? "border-amber-200 bg-amber-50" : "border-red-200 bg-red-50" %>">
+    <div class="flex items-start gap-4">
+      <span class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full <%= overall_status == :operational ? "bg-emerald-100 text-emerald-600" : overall_status == :degraded ? "bg-amber-100 text-amber-600" : "bg-red-100 text-red-600" %>" aria-hidden="true">
+        <% if overall_status == :operational %>
+          <svg viewBox="0 0 20 20" fill="currentColor" class="h-6 w-6"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+        <% else %>
+          <svg viewBox="0 0 20 20" fill="currentColor" class="h-6 w-6"><path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 6a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 6zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg>
+        <% end %>
+      </span>
+      <div>
+        <h1 id="status-heading" class="text-2xl font-semibold <%= overall_status == :operational ? "text-emerald-900" : overall_status == :degraded ? "text-amber-900" : "text-red-900" %>">
+          <%= overall_copy[overall_status] %>
+        </h1>
+        <p class="mt-1 text-sm <%= overall_status == :operational ? "text-emerald-700" : overall_status == :degraded ? "text-amber-700" : "text-red-700" %>">
+          <% if overall_status == :operational %>
+            All services are running normally.
+          <% else %>
+            We're aware of an issue affecting one or more services. See the active incident below for details.
+          <% end %>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="services-heading" class="mb-10">
+    <h2 id="services-heading" class="mb-4 text-base font-semibold text-slate-900">Services</h2>
+    <div class="rounded-xl border border-slate-200 bg-white">
+      <ul class="divide-y divide-slate-200">
+        <% services.each do |service| %>
+          <% meta = status_meta[service[:status]] %>
+          <li class="p-5">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-2.5">
+                <span class="h-2.5 w-2.5 shrink-0 rounded-full <%= meta[:dot] %>" aria-hidden="true"></span>
+                <span class="font-medium text-slate-900"><%= service[:name] %></span>
+              </div>
+              <div class="flex items-center gap-4 text-sm">
+                <span class="text-slate-500"><%= number_with_precision(service[:uptime], precision: 2) %>% uptime</span>
+                <span class="font-medium <%= meta[:text] %>"><%= meta[:label] %></span>
+              </div>
+            </div>
+
+            <div class="mt-4" role="img" aria-label="90-day uptime history for <%= service[:name] %>: <%= number_with_precision(service[:uptime], precision: 2) %>% uptime">
+              <div class="flex items-end gap-px" aria-hidden="true">
+                <% 90.times do |i| %>
+                  <% day_status = service[:incidents][i] || :operational %>
+                  <% day_meta = status_meta[day_status] %>
+                  <% date = Date.current - (89 - i) %>
+                  <span class="h-7 flex-1 rounded-sm <%= day_meta[:bar] %>" title="<%= date.strftime("%b %-d, %Y") %> &middot; <%= day_meta[:label] %>"></span>
+                <% end %>
+              </div>
+              <div class="mt-1.5 flex justify-between text-xs text-slate-400">
+                <span>90 days ago</span>
+                <span>Today</span>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </section>
+
+  <section aria-labelledby="incident-heading" class="mb-10">
+    <h2 id="incident-heading" class="mb-4 text-base font-semibold text-slate-900">Active Incident</h2>
+
+    <div class="rounded-xl border border-red-200 bg-white p-6">
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h3 class="text-lg font-semibold text-slate-900">Elevated error rates on Payments API</h3>
+          <p class="mt-1 text-sm text-slate-500">Affecting: <span class="font-medium text-slate-700">Payments API</span></p>
+        </div>
+        <span class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">Monitoring</span>
+      </div>
+
+      <ol class="mt-6 space-y-6 border-l border-slate-200 pl-6">
+        <li class="relative">
+          <span class="absolute -left-[29px] top-1 h-3 w-3 rounded-full bg-blue-500 ring-4 ring-white" aria-hidden="true"></span>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-sm font-semibold text-blue-700">Monitoring</span>
+            <time class="text-xs text-slate-400" datetime="<%= Time.current.change(hour: 10, min: 15).iso8601 %>">Jul 22, 2026 &middot; 10:15 AM UTC</time>
+          </div>
+          <p class="mt-1 text-sm text-slate-600">A fix has been deployed and we are monitoring the results. Error rates have returned to normal levels for the majority of traffic.</p>
+        </li>
+        <li class="relative">
+          <span class="absolute -left-[29px] top-1 h-3 w-3 rounded-full bg-amber-500 ring-4 ring-white" aria-hidden="true"></span>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-sm font-semibold text-amber-700">Identified</span>
+            <time class="text-xs text-slate-400" datetime="<%= Time.current.change(hour: 9, min: 40).iso8601 %>">Jul 22, 2026 &middot; 9:40 AM UTC</time>
+          </div>
+          <p class="mt-1 text-sm text-slate-600">We've identified the cause as a misconfigured rate limiter on our payment gateway integration and are rolling out a fix.</p>
+        </li>
+        <li class="relative">
+          <span class="absolute -left-[29px] top-1 h-3 w-3 rounded-full bg-red-500 ring-4 ring-white" aria-hidden="true"></span>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-sm font-semibold text-red-700">Investigating</span>
+            <time class="text-xs text-slate-400" datetime="<%= Time.current.change(hour: 8, min: 52).iso8601 %>">Jul 22, 2026 &middot; 8:52 AM UTC</time>
+          </div>
+          <p class="mt-1 text-sm text-slate-600">We are investigating elevated error rates and slow response times affecting card payments.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section aria-labelledby="subscribe-heading">
+    <div class="rounded-xl border border-slate-200 bg-white p-6 sm:p-8">
+      <h2 id="subscribe-heading" class="text-base font-semibold text-slate-900">Get notified of updates</h2>
+      <p class="mt-1 text-sm text-slate-500">Subscribe to receive an email whenever we post a new status update.</p>
+
+      <form class="mt-4">
+        <div class="flex flex-col gap-3 sm:flex-row">
+          <label for="subscribe-email" class="sr-only">Email address</label>
+          <input
+            id="subscribe-email"
+            name="email"
+            type="email"
+            required
+            placeholder="you@example.com"
+            class="w-full min-w-0 flex-1 rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300 sm:max-w-sm"
+          >
+          <button
+            type="submit"
+            class="inline-flex shrink-0 items-center justify-center rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2"
+          >
+            Subscribe
+          </button>
+        </div>
+
+        <details class="mt-4 group">
+          <summary class="cursor-pointer text-sm font-medium text-slate-600 hover:text-slate-900">Choose which services to follow</summary>
+          <fieldset class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+            <legend class="sr-only">Services to follow</legend>
+            <% services.each_with_index do |service, index| %>
+              <label class="flex items-center gap-2 text-sm text-slate-700">
+                <input type="checkbox" name="services[]" value="<%= service[:name] %>" checked class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-400">
+                <%= service[:name] %>
+              </label>
+            <% end %>
+          </fieldset>
+        </details>
+      </form>
+    </div>
+  </section>
+
+</div>

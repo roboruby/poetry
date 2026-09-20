@@ -1,0 +1,58 @@
+<div class="mx-auto max-w-2xl space-y-6 p-6">
+  <header class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Notification settings</h1>
+    <p class="text-sm text-muted-foreground">Control how, when, and how loudly we reach you.</p>
+  </header>
+
+  <div class="flex items-center justify-between gap-4">
+    <%= poetry_toggle(label: "Bookmark") do %>
+      <%= poetry_icon(name: :bookmark) %>
+    <% end %>
+    <%= poetry_toggle_group(type: :single, value: "list", label: "View") do |group| %>
+      <% group.with_item(value: "list", label: "List view") { poetry_icon(name: :list) } %>
+      <% group.with_item(value: "grid", label: "Grid view") { poetry_icon(name: :"layout-grid") } %>
+    <% end %>
+  </div>
+
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Email alerts" } %>
+    <% card.with_description { "Applies immediately - no save required." } %>
+    <%= form_with url: "#", method: :patch, local: true do %>
+      <%= poetry_switch(name: "email_alerts", checked: true, label: "Email alerts") %>
+    <% end %>
+  <% end %>
+
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Preferences" } %>
+    <% card.with_description { "Review your changes, then save." } %>
+    <%= form_with url: "#", method: :patch, local: true, class: "space-y-6" do %>
+      <%= poetry_checkbox(name: "accept_terms", value: "1", label: "I accept the updated notification terms") %>
+
+      <%= poetry_field(id: "digest_frequency", label_text: "Digest frequency", hint: "How often we bundle updates into one email.") do |field| %>
+        <%= poetry_select(**field.control_attributes, name: "digest_frequency", placeholder: "Select a frequency") do |select| %>
+          <% select.with_trigger %>
+          <% select.with_item(value: "realtime") { "Real-time" } %>
+          <% select.with_item(value: "daily") { "Daily" } %>
+          <% select.with_item(value: "weekly") { "Weekly" } %>
+          <% select.with_item(value: "monthly") { "Monthly" } %>
+        <% end %>
+      <% end %>
+
+      <%= poetry_field(id: "alert_volume", label_text: "Alert volume", hint: "How loud in-app alert sounds play.") do |field| %>
+        <%= poetry_slider(**field.control_attributes, name: "alert_volume", label: "Alert volume", value: 60, value_text: "60%") %>
+      <% end %>
+
+      <%= poetry_field(id: "unsubscribe_note", label_text: "Unsubscribe note", hint: "Optional - tell us why, seen only by our team.") do |field| %>
+        <%= poetry_textarea(**field.control_attributes, name: "unsubscribe_note", placeholder: "Optional feedback...", rows: 3) %>
+      <% end %>
+
+      <%= poetry_field(id: "confirmation_code", label_text: "Confirmation code", hint: "Enter the 6-digit code we sent to confirm these changes.") do |field| %>
+        <%= poetry_input_otp(**field.control_attributes, name: "confirmation_code", length: 6) %>
+      <% end %>
+
+      <div class="flex justify-end">
+        <%= poetry_button(type: :submit) { "Save preferences" } %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

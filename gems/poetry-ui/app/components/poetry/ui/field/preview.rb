@@ -1,0 +1,72 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Ui
+    module Field
+      # The Field preview matrix - the label/control/hint/error quartet with
+      # the control wired through control_attributes (the aria plumbing the
+      # component exists to own). Rendering rides the sidecar preview.html.erb:
+      # nesting a control inside the field needs a real view context, and
+      # Preview#render inside a content block is the render_args DSL, not
+      # ActionView's render.
+      class Preview < Poetry::Core::Preview::Base
+        def default
+          render_with(component: Component.new(id: "field-email", label_text: "Email"),
+                      input_options: { type: "email", name: "email" })
+        end
+
+        def with_hint
+          render_with(component: Component.new(id: "field-handle", label_text: "Handle",
+                                               hint: "Public, letters and dashes only."),
+                      input_options: { name: "handle" })
+        end
+
+        def with_error
+          render_with(component: Component.new(id: "field-work-email", label_text: "Work email",
+                                               hint: "We never share it.", error: "can't be blank",
+                                               required: true),
+                      input_options: { type: "email", name: "work_email" })
+        end
+
+        # The block-form hint: ERB-authored markup (the link) rides the
+        # same cn-field-description skin and aria-describedby wiring as
+        # the hint: option.
+        def with_hint_link
+          render_with(component: Component.new(id: "field-workspace", label_text: "Workspace"),
+                      input_options: { name: "workspace" }, hint_link: true)
+        end
+
+        # The SETTING ROW: label + hint stacked left, control right and
+        # centered on the label line (upstream's content-first horizontal
+        # Field - the switch-description pattern).
+        def setting_with_switch
+          render_with(component: Component.new(id: "field-share", label_text: "Share across devices",
+                                               hint: "Focus is shared across devices, and turns " \
+                                                     "off when you leave the app.",
+                                               orientation: :setting),
+                      switch_options: { name: "share" })
+        end
+
+        # The container-driven layout: stacked by default, label-left /
+        # control-right once the FieldGroup container passes the md mark
+        # (the sidecar wraps this one in the FieldGroup @container scope).
+        def responsive
+          render_with(component: Component.new(id: "field-display-name", label_text: "Display name",
+                                               hint: "Shown on your public profile.",
+                                               orientation: :responsive),
+                      input_options: { name: "display_name" }, group: true)
+        end
+
+        # The boolean-control layout: control left, label + hint stacked
+        # right, box centered on the label line (the checkbox/switch field
+        # pattern upstream demos with orientation=horizontal).
+        def horizontal_with_checkbox
+          render_with(component: Component.new(id: "field-newsletter", label_text: "Email newsletter",
+                                               hint: "Sent weekly. Unsubscribe anytime.",
+                                               orientation: :horizontal),
+                      checkbox_options: { name: "newsletter", checked: true })
+        end
+      end
+    end
+  end
+end

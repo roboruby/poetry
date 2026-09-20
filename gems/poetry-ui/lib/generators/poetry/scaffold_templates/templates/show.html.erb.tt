@@ -1,0 +1,18 @@
+<%% content_for :title, "<%= human_name %>" %>
+
+<div class="flex max-w-2xl flex-col gap-6">
+  <header class="flex flex-wrap items-end justify-between gap-3">
+    <h1 class="text-2xl font-semibold tracking-tight"><%= human_name %></h1>
+    <div class="flex items-center gap-2">
+      <%%= poetry_button(tag: :a, variant: :outline, href: <%= edit_helper(type: :path) %>) { "Edit" } %>
+      <%%= poetry_button(tag: :a, variant: :ghost, href: <%= index_helper(type: :path) %>) { "Back to <%= human_name.pluralize.downcase %>" } %>
+    </div>
+  </header>
+
+  <%%= render @<%= singular_table_name %> %>
+
+  <%%= form_with(model: @<%= singular_table_name %>, method: :delete,
+                data: { turbo_confirm: "Are you sure?" }) do %>
+    <%%= poetry_button(type: :submit, variant: :destructive) { "Destroy this <%= human_name.downcase %>" } %>
+  <%% end %>
+</div>

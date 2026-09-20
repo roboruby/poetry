@@ -1,0 +1,41 @@
+<%# The raw-Tailwind arm: a FROZEN, representative agent generation for
+    the same floating task - deliberately realistic, not a strawman: the
+    panel gets role=dialog and plausible styling, with the typical raw
+    tells (inline onclick wiring, no aria-haspopup/expanded advertising,
+    an unnamed dialog, no focus-visible treatment, no anchored
+    positioning - just an absolutely-placed div; the tooltip is the
+    classic group-hover div with no role=tooltip/describedby and an
+    icon-only button with no accessible name; the hover-card is a
+    group-hover div behind an href="#" mention that puts a Follow BUTTON
+    inside the pointer-only preview - the classic misuse). %>
+<p class="text-sm">
+  Built by
+  <span class="group relative inline-block">
+    <a href="#" class="font-medium underline-offset-4 hover:underline">@nextjs</a>
+    <span class="invisible absolute top-full left-1/2 z-50 mt-2 block w-80 -translate-x-1/2 rounded-md border bg-white p-4 shadow-md group-hover:visible">
+      <span class="block font-semibold">@nextjs</span>
+      <span class="block">The React Framework - created and maintained by @vercel.</span>
+      <span class="mt-1 block text-xs text-gray-500">Joined December 2021</span>
+      <button class="mt-2 rounded-md bg-gray-900 px-3 py-1 text-xs text-white">Follow</button>
+    </span>
+  </span>
+</p>
+<div class="group relative inline-block">
+  <button class="rounded-md border p-2 hover:bg-gray-50">
+    <svg aria-hidden="true" viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+  <div class="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 rounded-md bg-gray-900 px-3 py-1.5 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100">
+    Add to library
+  </div>
+</div>
+<div class="relative inline-block">
+  <button class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-gray-50" onclick="document.getElementById('dimensions-popover').classList.toggle('hidden')">
+    Open popover
+  </button>
+  <div id="dimensions-popover" role="dialog" class="absolute left-0 top-full z-50 mt-2 hidden w-80 rounded-md border bg-white p-4 shadow-md">
+    <h2 class="text-sm font-medium">Dimensions</h2>
+    <p class="text-sm text-gray-500">Set the dimensions for the layer.</p>
+    <label for="raw-floating-width" class="mt-3 block text-sm">Width</label>
+    <input id="raw-floating-width" name="width" value="100%" class="mt-1 w-full rounded-md border px-3 py-1 text-sm" />
+  </div>
+</div>

@@ -1,0 +1,162 @@
+<div class="space-y-6">
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Home", href: "/") %>
+    <% crumb.with_item("Projects", href: "/projects") %>
+    <% crumb.with_item("Atlas Platform Migration") %>
+  <% end %>
+
+  <header class="flex flex-col gap-4">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div class="space-y-2">
+        <div class="flex flex-wrap items-center gap-3">
+          <h1 class="text-2xl font-semibold tracking-tight">Atlas Platform Migration</h1>
+          <%= poetry_badge(variant: :info) { "In progress" } %>
+        </div>
+        <p class="max-w-2xl text-sm text-muted-foreground">
+          Migrate the legacy billing services onto the Atlas platform, consolidating
+          invoicing, metering, and payments behind a single set of APIs.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <%= poetry_button(variant: :outline, href: "/projects/atlas-platform-migration/edit") do |button| %>
+          <% button.with_leading { poetry_icon(name: :pencil) } %>
+          Edit
+        <% end %>
+
+        <%= poetry_alert_dialog do |dialog| %>
+          <% dialog.with_trigger(variant: :outline) do %>
+            <%= poetry_icon(name: :archive) %>
+            Archive
+          <% end %>
+          <% dialog.with_title { "Archive this project?" } %>
+          <% dialog.with_description { "Atlas Platform Migration will be moved out of active projects. Tasks and milestones stay intact and you can restore it later from the archive." } %>
+          <% dialog.with_cancel(variant: :outline) { "Cancel" } %>
+          <% dialog.with_action(variant: :destructive) { "Archive project" } %>
+        <% end %>
+      </div>
+    </div>
+
+    <%= poetry_separator %>
+  </header>
+
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <div class="space-y-6 lg:col-span-2">
+      <%= poetry_card do |card| %>
+        <% card.with_title { "Milestones" } %>
+        <% card.with_description { "Progress through the migration plan" } %>
+
+        <%= poetry_timeline do |timeline| %>
+          <% timeline.with_item(title: "Discovery complete", time: "Mar 3, 2026", completed: true) do %>
+            Legacy billing services audited and dependency map signed off.
+          <% end %>
+          <% timeline.with_item(title: "Design review", time: "Apr 18, 2026", completed: true) do %>
+            API contracts and data model approved by platform architecture.
+          <% end %>
+          <% timeline.with_item(title: "Beta launch", time: "Jul 14, 2026", completed: true) do %>
+            Metering service live for the first cohort of internal customers.
+          <% end %>
+          <% timeline.with_item(title: "GA release", time: "Sep 1, 2026") do %>
+            Full rollout to all billing customers with legacy services decommissioned.
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <%= poetry_card do |card| %>
+        <% card.with_title { "Recent tasks" } %>
+        <% card.with_description { "The five most recently updated tasks" } %>
+
+        <%= poetry_table do %>
+          <%= poetry_table_header do %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_head { "Task" } %>
+              <%= poetry_table_head { "Assignee" } %>
+              <%= poetry_table_head { "Status" } %>
+              <%= poetry_table_head { "Due date" } %>
+            <% end %>
+          <% end %>
+
+          <%= poetry_table_body do %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_cell { "Cut over metering webhooks to Atlas events" } %>
+              <%= poetry_table_cell do %>
+                <div class="flex items-center gap-2">
+                  <%= poetry_avatar(label: "Priya Nair", size: :sm) { "PN" } %>
+                  <span>Priya Nair</span>
+                </div>
+              <% end %>
+              <%= poetry_table_cell { poetry_badge(variant: :warning) { "In progress" } } %>
+              <%= poetry_table_cell { "Jul 24, 2026" } %>
+            <% end %>
+
+            <%= poetry_table_row do %>
+              <%= poetry_table_cell { "Reconcile invoice totals against legacy ledger" } %>
+              <%= poetry_table_cell do %>
+                <div class="flex items-center gap-2">
+                  <%= poetry_avatar(label: "Marcus Webb", size: :sm) { "MW" } %>
+                  <span>Marcus Webb</span>
+                </div>
+              <% end %>
+              <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Not started" } } %>
+              <%= poetry_table_cell { "Jul 25, 2026" } %>
+            <% end %>
+
+            <%= poetry_table_row do %>
+              <%= poetry_table_cell { "Draft customer communication for GA rollout" } %>
+              <%= poetry_table_cell do %>
+                <div class="flex items-center gap-2">
+                  <%= poetry_avatar(label: "Sofia Ramirez", size: :sm) { "SR" } %>
+                  <span>Sofia Ramirez</span>
+                </div>
+              <% end %>
+              <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Not started" } } %>
+              <%= poetry_table_cell { "Jul 28, 2026" } %>
+            <% end %>
+
+            <%= poetry_table_row do %>
+              <%= poetry_table_cell { "Load test payments service at 3x traffic" } %>
+              <%= poetry_table_cell do %>
+                <div class="flex items-center gap-2">
+                  <%= poetry_avatar(label: "Devon Ellis", size: :sm) { "DE" } %>
+                  <span>Devon Ellis</span>
+                </div>
+              <% end %>
+              <%= poetry_table_cell { poetry_badge(variant: :success) { "Done" } } %>
+              <%= poetry_table_cell { "Jul 20, 2026" } %>
+            <% end %>
+
+            <%= poetry_table_row do %>
+              <%= poetry_table_cell { "Update runbook for legacy service decommission" } %>
+              <%= poetry_table_cell do %>
+                <div class="flex items-center gap-2">
+                  <%= poetry_avatar(label: "Priya Nair", size: :sm) { "PN" } %>
+                  <span>Priya Nair</span>
+                </div>
+              <% end %>
+              <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Not started" } } %>
+              <%= poetry_table_cell { "Aug 5, 2026" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="space-y-6">
+      <%= poetry_card do |card| %>
+        <% card.with_title { "Details" } %>
+
+        <%= poetry_metadata_list(orientation: :horizontal) do |list| %>
+          <% list.with_item(label: "Owner") do %>
+            <div class="flex items-center gap-2">
+              <%= poetry_avatar(label: "Priya Nair", size: :sm) { "PN" } %>
+              <span>Priya Nair</span>
+            </div>
+          <% end %>
+          <% list.with_item(label: "Start date") { "Mar 3, 2026" } %>
+          <% list.with_item(label: "Target date") { "Sep 1, 2026" } %>
+          <% list.with_item(label: "Last updated") { "Jul 21, 2026" } %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

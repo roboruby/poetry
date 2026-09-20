@@ -1,0 +1,92 @@
+<%
+  invoices = [
+    { number: "INV-1001", customer: "Northwind Traders",   issued_on: "Jul 1, 2026",  amount: "$1,250.00", status: :paid },
+    { number: "INV-1002", customer: "Lumen Labs",          issued_on: "Jul 2, 2026",  amount: "$482.50",   status: :overdue },
+    { number: "INV-1003", customer: "Aperture Optics",     issued_on: "Jul 3, 2026",  amount: "$96.00",    status: :overdue },
+    { number: "INV-1004", customer: "Gable & Sons",        issued_on: "Jul 5, 2026",  amount: "$2,040.00", status: :paid },
+    { number: "INV-1005", customer: "Fern & Field",        issued_on: "Jul 6, 2026",  amount: "$318.75",   status: :paid },
+    { number: "INV-1006", customer: "Cobalt Systems",      issued_on: "Jul 8, 2026",  amount: "$745.20",   status: :draft },
+    { number: "INV-1007", customer: "Harborline Freight",  issued_on: "Jul 9, 2026",  amount: "$1,890.00", status: :paid },
+    { number: "INV-1008", customer: "Marrow & Co",         issued_on: "Jul 11, 2026", amount: "$212.40",   status: :overdue },
+  ]
+
+  status_variant = { paid: :success, overdue: :warning, draft: :outline }
+  status_label   = { paid: "Paid", overdue: "Overdue", draft: "Draft" }
+
+  current_sort_key = "number"
+  current_sort_dir = :asc
+
+  sort_column = ->(label, key) do
+    active    = current_sort_key == key
+    next_dir  = active && current_sort_dir == :asc ? "desc" : "asc"
+    icon_name = active ? (current_sort_dir == :asc ? :"arrow-up" : :"arrow-down") : :"arrow-up-down"
+    { label: label, href: "?sort=#{key}&dir=#{next_dir}", active: active, icon: icon_name }
+  end
+
+  columns = [
+    sort_column.call("Invoice #", "number"),
+    sort_column.call("Customer", "customer"),
+    sort_column.call("Issued", "issued_on"),
+    sort_column.call("Amount", "amount"),
+  ]
+
+  page_total = number_to_currency(invoices.sum { |invoice| invoice[:amount].delete("$,").to_f })
+%>
+<section class="mx-auto max-w-6xl space-y-4 p-6">
+  <div class="space-y-1">
+    <h2 class="text-lg font-semibold tracking-tight">Invoices</h2>
+    <p class="text-sm text-muted-foreground">Every invoice issued this quarter, sorted by invoice number.</p>
+  </div>
+
+  <%= form_with url: "", method: :get, class: "flex flex-wrap items-center gap-3" do %>
+    <%= poetry_label(for_id: "invoices-filter", class: "sr-only") { "Filter invoices" } %>
+    <%= poetry_input_group(class: "max-w-xs") do %>
+      <%= poetry_input_group_addon do %>
+        <%= poetry_icon(name: :search) %>
+      <% end %>
+      <%= poetry_input_group_input(id: "invoices-filter", name: "q", placeholder: "Filter by customer or invoice #…") %>
+    <% end %>
+  <% end %>
+
+  <div class="overflow-hidden rounded-lg border">
+    <%= poetry_table do %>
+      <%= poetry_table_caption(class: "sr-only") { "Invoices with customer, issue date, amount, and status." } %>
+      <%= poetry_table_header do %>
+        <%= poetry_table_row do %>
+          <% columns.each_with_index do |col, i| %>
+            <%= poetry_table_head(class: i == 3 ? "text-right" : "") do %>
+              <%= poetry_link(href: col[:href], underline: :none, class: "inline-flex items-center gap-1 text-foreground#{' justify-end' if i == 3}") do %>
+                <%= col[:label] %>
+                <%= poetry_icon(name: col[:icon], label: col[:active] ? "Sorted ascending" : nil) %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_head { "Status" } %>
+        <% end %>
+      <% end %>
+      <%= poetry_table_body do %>
+        <% invoices.each do |invoice| %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { invoice[:number] } %>
+            <%= poetry_table_cell { invoice[:customer] } %>
+            <%= poetry_table_cell { invoice[:issued_on] } %>
+            <%= poetry_table_cell(class: "text-right tabular-nums") { invoice[:amount] } %>
+            <%= poetry_table_cell { poetry_badge(variant: status_variant[invoice[:status]]) { status_label[invoice[:status]] } } %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <%= poetry_table_footer do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(colspan: 3) { "Total (this page)" } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { page_total } %>
+          <%= poetry_table_cell { "" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <p class="text-sm text-muted-foreground">Showing 8 of 42 invoices</p>
+    <%= poetry_pagination(current: 1, total: 6, current_variant: :filled, path: ->(page) { "?page=#{page}" }) %>
+  </div>
+</section>

@@ -1,0 +1,63 @@
+<div class="mx-auto max-w-3xl space-y-12 p-6">
+  <header class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Popper consumers</h1>
+    <p class="text-muted-foreground">Popover, Tooltip, and Hover Card, each anchored the same way.</p>
+  </header>
+
+  <section class="space-y-3">
+    <h2 class="text-lg font-semibold">Popover</h2>
+    <p class="text-sm text-muted-foreground">An interactive panel with a small form.</p>
+
+    <%= poetry_popover do |popover| %>
+      <% popover.with_trigger { poetry_button(variant: :outline) { "Open popover" } } %>
+      <% popover.with_title { "Dimensions" } %>
+      <% popover.with_description { "Set the dimensions for the layer." } %>
+
+      <form action="#" method="get" class="grid gap-4 pt-4">
+        <%= poetry_field(id: "popover-width", label_text: "Width") do |field| %>
+          <%= poetry_input(**field.control_attributes, name: "width", value: "100%") %>
+        <% end %>
+        <%= poetry_field(id: "popover-max-width", label_text: "Max width") do |field| %>
+          <%= poetry_input(**field.control_attributes, name: "max_width", value: "300px") %>
+        <% end %>
+        <%= poetry_field(id: "popover-height", label_text: "Height") do |field| %>
+          <%= poetry_input(**field.control_attributes, name: "height", value: "25px") %>
+        <% end %>
+        <div class="flex justify-end">
+          <%= poetry_button(type: :submit, size: :sm) { "Save changes" } %>
+        </div>
+      </form>
+    <% end %>
+  </section>
+
+  <section class="space-y-3">
+    <h2 class="text-lg font-semibold">Tooltip</h2>
+    <p class="text-sm text-muted-foreground">An icon-only control with a text hint.</p>
+
+    <%= poetry_tooltip do |tooltip| %>
+      <% tooltip.with_trigger { poetry_button(variant: :outline, size: :icon, label: "Add to library") { poetry_icon(name: :"library-big") } } %>
+      Add to library
+    <% end %>
+  </section>
+
+  <section class="space-y-3">
+    <h2 class="text-lg font-semibold">Hover Card</h2>
+    <p class="text-sm text-muted-foreground">A link enriched with a profile preview.</p>
+
+    <p class="text-sm">
+      Built by
+      <%= poetry_hover_card do |hover_card| %>
+        <% hover_card.with_trigger { poetry_link(href: "https://twitter.com/nextjs", external: true) { "@nextjs" } } %>
+        <div class="flex gap-3">
+          <%= poetry_avatar(src: "https://github.com/vercel.png", label: "Next.js") %>
+          <div class="space-y-1">
+            <p class="text-sm font-semibold">Next.js</p>
+            <p class="text-sm text-muted-foreground">The React Framework – created and maintained by Vercel.</p>
+            <p class="text-xs text-muted-foreground">Joined October 2021</p>
+          </div>
+        </div>
+      <% end %>
+      for production.
+    </p>
+  </section>
+</div>

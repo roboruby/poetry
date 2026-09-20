@@ -1,0 +1,128 @@
+<div class="mx-auto max-w-3xl space-y-10 p-6">
+  <header class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Acme Cloud Status</h1>
+    <p class="text-sm text-muted-foreground">Real-time status and uptime history for every Acme Cloud service.</p>
+  </header>
+
+  <%# Overall status banner - color rides the Badge, per the status vocabulary; the
+      container itself stays neutral (bg-muted/50 + border), same containment pattern
+      used across the app. %>
+  <section aria-labelledby="overall-status-heading" class="flex flex-wrap items-center justify-between gap-4 rounded-lg border bg-muted/50 p-6">
+    <div class="flex items-center gap-4">
+      <div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-background">
+        <%= poetry_icon(name: :"triangle-alert", label: "Degraded performance") %>
+      </div>
+      <div class="space-y-1">
+        <h2 id="overall-status-heading" class="text-lg font-semibold tracking-tight">Degraded Performance</h2>
+        <p class="text-sm text-muted-foreground">Payments is experiencing intermittent errors. All other systems are operational.</p>
+      </div>
+    </div>
+    <div class="flex flex-col items-end gap-1">
+      <%= poetry_badge(variant: :warning) { "Degraded Performance" } %>
+      <p class="text-xs text-muted-foreground">Last checked Jul 22, 2026 &middot; 10:20 UTC</p>
+    </div>
+  </section>
+
+  <%# Services - each row is a poetry_item (role=listitem inside the role=list group),
+      with a Meter carrying the 90-day uptime figure as loose content. %>
+  <section aria-labelledby="services-heading" class="space-y-4">
+    <h2 id="services-heading" class="text-lg font-semibold tracking-tight">Services</h2>
+    <div role="list" aria-labelledby="services-heading" class="divide-y rounded-lg border">
+      <%= poetry_item(variant: :outline, role: "listitem") do |item| %>
+        <% item.with_media(media_variant: :icon) { poetry_icon(name: :server) } %>
+        <% item.with_title { "API" } %>
+        <% item.with_description { "Core REST API and webhooks delivery" } %>
+        <% item.with_actions { poetry_badge(variant: :success) { "Operational" } } %>
+        <%= poetry_meter(label: "90-day uptime", value: 9999, max: 10000, value_label: "99.99% uptime (90d)") %>
+      <% end %>
+
+      <%= poetry_item(variant: :outline, role: "listitem") do |item| %>
+        <% item.with_media(media_variant: :icon) { poetry_icon(name: :"layout-dashboard") } %>
+        <% item.with_title { "Web Dashboard" } %>
+        <% item.with_description { "Customer-facing web application" } %>
+        <% item.with_actions { poetry_badge(variant: :success) { "Operational" } } %>
+        <%= poetry_meter(label: "90-day uptime", value: 10000, max: 10000, value_label: "100.00% uptime (90d)") %>
+      <% end %>
+
+      <%= poetry_item(variant: :outline, role: "listitem") do |item| %>
+        <% item.with_media(media_variant: :icon) { poetry_icon(name: :"shield-check") } %>
+        <% item.with_title { "Authentication" } %>
+        <% item.with_description { "Sign-in, session management, and SSO" } %>
+        <% item.with_actions { poetry_badge(variant: :success) { "Operational" } } %>
+        <%= poetry_meter(label: "90-day uptime", value: 9998, max: 10000, value_label: "99.98% uptime (90d)") %>
+      <% end %>
+
+      <%= poetry_item(variant: :outline, role: "listitem") do |item| %>
+        <% item.with_media(media_variant: :icon) { poetry_icon(name: :"credit-card") } %>
+        <% item.with_title { "Payments" } %>
+        <% item.with_description { "Card processing and payouts" } %>
+        <% item.with_actions { poetry_badge(variant: :warning) { "Degraded Performance" } } %>
+        <%= poetry_meter(label: "90-day uptime", value: 9842, max: 10000, value_label: "98.42% uptime (90d)") %>
+      <% end %>
+
+      <%= poetry_item(variant: :outline, role: "listitem") do |item| %>
+        <% item.with_media(media_variant: :icon) { poetry_icon(name: :webhook) } %>
+        <% item.with_title { "Webhooks" } %>
+        <% item.with_description { "Outbound event delivery" } %>
+        <% item.with_actions { poetry_badge(variant: :success) { "Operational" } } %>
+        <%= poetry_meter(label: "90-day uptime", value: 9995, max: 10000, value_label: "99.95% uptime (90d)") %>
+      <% end %>
+
+      <%= poetry_item(variant: :outline, role: "listitem") do |item| %>
+        <% item.with_media(media_variant: :icon) { poetry_icon(name: :mail) } %>
+        <% item.with_title { "Email Delivery" } %>
+        <% item.with_description { "Transactional email and notifications" } %>
+        <% item.with_actions { poetry_badge(variant: :success) { "Operational" } } %>
+        <%= poetry_meter(label: "90-day uptime", value: 9999, max: 10000, value_label: "99.99% uptime (90d)") %>
+      <% end %>
+    </div>
+  </section>
+
+  <%# Active incident - Card header carries the status Badge, MetadataList gives the
+      quick facts, Timeline records the chronological updates. %>
+  <section aria-labelledby="incident-heading" class="space-y-4">
+    <h2 id="incident-heading" class="text-lg font-semibold tracking-tight">Active Incident</h2>
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Elevated error rates on Payments" } %>
+      <% card.with_description { "Payments processing is experiencing intermittent failures for a subset of transactions." } %>
+      <% card.with_action { poetry_badge(variant: :warning) { "Identified" } } %>
+      <div class="space-y-6">
+        <%= poetry_metadata_list(columns: :two) do |list| %>
+          <% list.with_item(label: "Started") { "Jul 22, 2026, 09:14 UTC" } %>
+          <% list.with_item(label: "Affected service") { poetry_badge(variant: :warning) { "Payments" } } %>
+        <% end %>
+        <%= poetry_timeline do |timeline| %>
+          <% timeline.with_item(title: "Investigating", time: "09:14 UTC", completed: true) do %>
+            We received alerts for elevated error rates on payment processing and began investigating.
+          <% end %>
+          <% timeline.with_item(title: "Identified", time: "09:42 UTC", completed: true) do %>
+            The issue has been identified as a timeout in our payment gateway's connection pool. A fix is being deployed.
+          <% end %>
+          <% timeline.with_item(title: "Monitoring", time: "10:15 UTC", completed: false) do %>
+            A fix has been deployed and error rates are trending down. We are continuing to monitor the results.
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+
+  <%# Subscribe to updates - a plain native form; no backend route is wired for this
+      preview, so it submits nowhere. %>
+  <section aria-labelledby="subscribe-heading" class="space-y-4 rounded-lg border p-6">
+    <div class="space-y-1">
+      <h2 id="subscribe-heading" class="text-lg font-semibold tracking-tight">Subscribe to updates</h2>
+      <p class="text-sm text-muted-foreground">Get an email whenever we open, update, or resolve an incident.</p>
+    </div>
+    <form action="#" method="post" class="flex flex-wrap items-end gap-3">
+      <div class="min-w-64 flex-1">
+        <%= poetry_field(id: "subscriber_email", label_text: "Email address", hint: "We'll only email you about incidents and scheduled maintenance.") do |field| %>
+          <%= poetry_input(**field.control_attributes, type: "email", name: "email", placeholder: "you@example.com", required: true) %>
+        <% end %>
+      </div>
+      <%= poetry_button(type: :submit) do |button| %>
+        <% button.with_leading { poetry_icon(name: :bell) } %>
+        Subscribe
+      <% end %>
+    </form>
+  </section>
+</div>

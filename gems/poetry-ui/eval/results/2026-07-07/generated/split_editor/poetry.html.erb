@@ -1,0 +1,77 @@
+<section class="mx-auto flex h-[70vh] min-h-[420px] max-w-6xl flex-col gap-4 p-6" aria-labelledby="split-editor-heading">
+  <div>
+    <h1 id="split-editor-heading" class="text-lg font-semibold">Editor</h1>
+    <p class="text-sm text-muted-foreground">Browse project files on the left and edit the selected file on the right. Drag the divider to resize.</p>
+  </div>
+
+  <div class="min-h-0 flex-1 overflow-hidden rounded-lg border">
+    <%= poetry_resizable(direction: :horizontal, grip: true) do |split| %>
+      <% split.with_panel(default_size: 22, min_size: 15, max_size: 40) do %>
+        <div class="flex h-full flex-col">
+          <div class="flex items-center justify-between border-b px-3 py-2">
+            <h2 class="text-sm font-medium">Files</h2>
+            <%= poetry_button(variant: :ghost, size: :"icon-xs", label: "New file") do %>
+              <%= poetry_icon(name: :plus) %>
+            <% end %>
+          </div>
+
+          <%= poetry_scroll_area(label: "Project files", class: "flex-1 min-h-0") do %>
+            <div class="p-2">
+              <%= poetry_accordion(type: :single, collapsible: true, open: %w[app], heading_level: :h3) do |accordion| %>
+                <% accordion.with_item(value: "app", title: "app") do %>
+                  <%= poetry_item_group(class: "flex flex-col gap-0.5") do %>
+                    <%= poetry_item(tag: :a, href: "#", size: :sm, variant: :outline, role: "listitem", "aria-current": "page") do |item| %>
+                      <% item.with_title { "user.rb" } %>
+                    <% end %>
+                    <%= poetry_item(tag: :a, href: "#", size: :sm, variant: :default, role: "listitem") do |item| %>
+                      <% item.with_title { "post.rb" } %>
+                    <% end %>
+                    <%= poetry_item(tag: :a, href: "#", size: :sm, variant: :default, role: "listitem") do |item| %>
+                      <% item.with_title { "comment.rb" } %>
+                    <% end %>
+                  <% end %>
+                <% end %>
+
+                <% accordion.with_item(value: "config", title: "config") do %>
+                  <%= poetry_item_group(class: "flex flex-col gap-0.5") do %>
+                    <%= poetry_item(tag: :a, href: "#", size: :sm, variant: :default, role: "listitem") do |item| %>
+                      <% item.with_title { "routes.rb" } %>
+                    <% end %>
+                    <%= poetry_item(tag: :a, href: "#", size: :sm, variant: :default, role: "listitem") do |item| %>
+                      <% item.with_title { "application.rb" } %>
+                    <% end %>
+                  <% end %>
+                <% end %>
+
+                <% accordion.with_item(value: "test", title: "test") do %>
+                  <%= poetry_item_group(class: "flex flex-col gap-0.5") do %>
+                    <%= poetry_item(tag: :a, href: "#", size: :sm, variant: :default, role: "listitem") do |item| %>
+                      <% item.with_title { "user_test.rb" } %>
+                    <% end %>
+                  <% end %>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% split.with_panel(default_size: 78, min_size: 40) do %>
+        <div class="flex h-full flex-col">
+          <div class="flex items-center justify-between border-b px-3 py-2">
+            <%= poetry_label(for_id: "editor-source", class: "font-mono text-sm font-medium") { "app/models/user.rb" } %>
+            <%= poetry_button(variant: :secondary, size: :sm) { "Save" } %>
+          </div>
+
+          <%= poetry_textarea(
+                id: "editor-source",
+                name: "source",
+                rows: 28,
+                class: "h-full flex-1 w-full resize-none rounded-none border-0 font-mono text-sm focus-visible:ring-0",
+                value: "class User < ApplicationRecord\n  has_many :posts\n  has_many :comments, through: :posts\n\n  validates :email, presence: true, uniqueness: true\n\n  def full_name\n    \"\#{first_name} \#{last_name}\"\n  end\nend\n"
+              ) %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</section>

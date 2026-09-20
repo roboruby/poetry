@@ -1,0 +1,500 @@
+<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+
+  <%# Header %>
+  <div class="flex flex-col gap-4 border-b border-gray-200 pb-6 sm:flex-row sm:items-start sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight text-gray-900">Audit log</h1>
+      <p class="mt-1 max-w-2xl text-sm text-gray-500">
+        Security-relevant activity for <span class="font-medium text-gray-700">Acme Workspace</span> —
+        who did what, when, and from where.
+      </p>
+    </div>
+
+    <div class="flex shrink-0 items-center gap-2">
+      <details class="group relative">
+        <summary class="flex list-none cursor-pointer items-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2">
+          <svg class="h-4 w-4 text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M10 3a1 1 0 0 1 1 1v7.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 1 1 1.414-1.414L9 11.586V4a1 1 0 0 1 1-1Z" />
+            <path d="M4 14a1 1 0 0 1 1 1v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a1 1 0 1 1 2 0v1a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-1a1 1 0 0 1 1-1Z" />
+          </svg>
+          Export
+          <svg class="h-4 w-4 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.938a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd" />
+          </svg>
+        </summary>
+        <div class="absolute right-0 z-20 mt-2 w-52 overflow-hidden rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+          <p class="px-4 py-1.5 text-xs font-medium uppercase tracking-wide text-gray-400">Export current view</p>
+          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Export as CSV</a>
+          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Export as JSON</a>
+          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Export as PDF summary</a>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <%# Filters %>
+  <form method="get" action="" class="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
+      <div class="lg:col-span-2">
+        <label for="q" class="block text-xs font-medium text-gray-600">Search</label>
+        <div class="relative mt-1">
+          <svg class="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd" />
+          </svg>
+          <input type="text" name="q" id="q" placeholder="Actor, action, target, IP…"
+            class="block w-full rounded-md border border-gray-300 py-2 pl-9 pr-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+        </div>
+      </div>
+
+      <div>
+        <label for="actor" class="block text-xs font-medium text-gray-600">Actor</label>
+        <select id="actor" name="actor"
+          class="mt-1 block w-full rounded-md border border-gray-300 py-2 pl-3 pr-8 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+          <option value="">All members</option>
+          <option>Priya Natarajan</option>
+          <option>Devon Marsh</option>
+          <option>Laila Hassan</option>
+          <option>System</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="event-type" class="block text-xs font-medium text-gray-600">Event type</label>
+        <select id="event-type" name="event_type"
+          class="mt-1 block w-full rounded-md border border-gray-300 py-2 pl-3 pr-8 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+          <option value="">All events</option>
+          <option>Authentication</option>
+          <option>Permissions</option>
+          <option>Membership</option>
+          <option>Data export</option>
+          <option>API keys</option>
+          <option>Billing</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="severity" class="block text-xs font-medium text-gray-600">Severity</label>
+        <select id="severity" name="severity"
+          class="mt-1 block w-full rounded-md border border-gray-300 py-2 pl-3 pr-8 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+          <option value="">Any severity</option>
+          <option>Critical</option>
+          <option>High</option>
+          <option>Medium</option>
+          <option>Low</option>
+        </select>
+      </div>
+
+      <div>
+        <span class="block text-xs font-medium text-gray-600">Date range</span>
+        <div class="mt-1 flex items-center gap-1">
+          <label for="from" class="sr-only">From</label>
+          <input type="date" id="from" name="from" value="2026-07-15"
+            class="block w-full rounded-md border border-gray-300 py-2 px-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+          <span class="text-gray-400">–</span>
+          <label for="to" class="sr-only">To</label>
+          <input type="date" id="to" name="to" value="2026-07-22"
+            class="block w-full rounded-md border border-gray-300 py-2 px-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-gray-200 pt-4">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-xs font-medium text-gray-500">Active:</span>
+        <span class="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-300">
+          Last 7 days
+        </span>
+        <span class="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-300">
+          All severities
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="#" class="text-sm font-medium text-gray-500 hover:text-gray-700">Reset filters</a>
+        <button type="submit"
+          class="rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2">
+          Apply filters
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <%# Results summary %>
+  <div class="mt-6 flex items-center justify-between">
+    <p class="text-sm text-gray-500">Showing <span class="font-medium text-gray-700">11</span> events across <span class="font-medium text-gray-700">3</span> days</p>
+    <div class="flex items-center gap-3 text-xs text-gray-500">
+      <span class="inline-flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-red-500"></span>Critical</span>
+      <span class="inline-flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-orange-500"></span>High</span>
+      <span class="inline-flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-amber-400"></span>Medium</span>
+      <span class="inline-flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-sky-400"></span>Low</span>
+    </div>
+  </div>
+
+  <%# Event groups %>
+  <div class="mt-4 space-y-8">
+
+    <%# Today %>
+    <section aria-labelledby="day-2026-07-22">
+      <div class="flex items-baseline gap-2 rounded-md bg-gray-50 px-3 py-1.5">
+        <h2 id="day-2026-07-22" class="text-sm font-semibold text-gray-900">Today — Wednesday, July 22, 2026</h2>
+        <span class="text-xs text-gray-500">4 events</span>
+      </div>
+
+      <div class="mt-2 overflow-x-auto rounded-md border border-gray-200">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-white">
+            <tr>
+              <th scope="col" class="w-24 py-2.5 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Time</th>
+              <th scope="col" class="w-28 px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Severity</th>
+              <th scope="col" class="w-56 px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Actor</th>
+              <th scope="col" class="px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Action</th>
+              <th scope="col" class="w-56 px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Location / IP</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 bg-white">
+            <tr class="hover:bg-gray-50">
+              <td class="whitespace-nowrap py-3 pl-4 pr-3 align-top text-sm text-gray-500">9:42 AM</td>
+              <td class="px-3 py-3 align-top">
+                <span class="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>Critical
+                </span>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-rose-100 text-xs font-medium text-rose-700">?</span>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Unknown</p>
+                    <p class="text-xs text-gray-500">unrecognized credential</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="text-sm text-gray-900">Failed sign-in attempt <span class="text-gray-500">— 5 consecutive failures, account temporarily locked</span></p>
+                <p class="mt-0.5 text-xs text-gray-500">Target: <span class="font-medium text-gray-600">devon@acme.co</span></p>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="font-mono text-xs text-gray-700">203.0.113.44</p>
+                <p class="text-xs text-gray-500">Lagos, Nigeria · Unrecognized device</p>
+              </td>
+            </tr>
+
+            <tr class="hover:bg-gray-50">
+              <td class="whitespace-nowrap py-3 pl-4 pr-3 align-top text-sm text-gray-500">9:15 AM</td>
+              <td class="px-3 py-3 align-top">
+                <span class="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2 py-1 text-xs font-medium text-orange-700 ring-1 ring-inset ring-orange-600/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-orange-500"></span>High
+                </span>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-medium text-indigo-700">PN</span>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Priya Natarajan</p>
+                    <p class="text-xs text-gray-500">Owner</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="text-sm text-gray-900">Disabled two-factor authentication requirement</p>
+                <p class="mt-0.5 text-xs text-gray-500">Target: <span class="font-medium text-gray-600">Workspace security policy</span></p>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="font-mono text-xs text-gray-700">198.51.100.12</p>
+                <p class="text-xs text-gray-500">Austin, TX, US · Chrome on macOS</p>
+              </td>
+            </tr>
+
+            <tr class="hover:bg-gray-50">
+              <td class="whitespace-nowrap py-3 pl-4 pr-3 align-top text-sm text-gray-500">8:03 AM</td>
+              <td class="px-3 py-3 align-top">
+                <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-1 text-xs font-medium text-amber-800 ring-1 ring-inset ring-amber-600/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>Medium
+                </span>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-medium text-indigo-700">LH</span>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Laila Hassan</p>
+                    <p class="text-xs text-gray-500">Admin</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="text-sm text-gray-900">Downloaded a full data export</p>
+                <p class="mt-0.5 text-xs text-gray-500">Target: <span class="font-medium text-gray-600">workspace-export-2026-07-22.zip</span></p>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="font-mono text-xs text-gray-700">198.51.100.7</p>
+                <p class="text-xs text-gray-500">Toronto, ON, CA · Firefox on Windows</p>
+              </td>
+            </tr>
+
+            <tr class="hover:bg-gray-50">
+              <td class="whitespace-nowrap py-3 pl-4 pr-3 align-top text-sm text-gray-500">7:51 AM</td>
+              <td class="px-3 py-3 align-top">
+                <span class="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-1 text-xs font-medium text-sky-700 ring-1 ring-inset ring-sky-600/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-sky-400"></span>Low
+                </span>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-medium text-indigo-700">PN</span>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Priya Natarajan</p>
+                    <p class="text-xs text-gray-500">Owner</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="text-sm text-gray-900">Signed in</p>
+                <p class="mt-0.5 text-xs text-gray-500">Target: <span class="font-medium text-gray-600">Workspace session</span></p>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="font-mono text-xs text-gray-700">198.51.100.12</p>
+                <p class="text-xs text-gray-500">Austin, TX, US · Chrome on macOS</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <%# Yesterday %>
+    <section aria-labelledby="day-2026-07-21">
+      <div class="flex items-baseline gap-2 rounded-md bg-gray-50 px-3 py-1.5">
+        <h2 id="day-2026-07-21" class="text-sm font-semibold text-gray-900">Yesterday — Tuesday, July 21, 2026</h2>
+        <span class="text-xs text-gray-500">4 events</span>
+      </div>
+
+      <div class="mt-2 overflow-x-auto rounded-md border border-gray-200">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-white">
+            <tr>
+              <th scope="col" class="w-24 py-2.5 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Time</th>
+              <th scope="col" class="w-28 px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Severity</th>
+              <th scope="col" class="w-56 px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Actor</th>
+              <th scope="col" class="px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Action</th>
+              <th scope="col" class="w-56 px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Location / IP</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 bg-white">
+            <tr class="hover:bg-gray-50">
+              <td class="whitespace-nowrap py-3 pl-4 pr-3 align-top text-sm text-gray-500">6:20 PM</td>
+              <td class="px-3 py-3 align-top">
+                <span class="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2 py-1 text-xs font-medium text-orange-700 ring-1 ring-inset ring-orange-600/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-orange-500"></span>High
+                </span>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-medium text-indigo-700">DM</span>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Devon Marsh</p>
+                    <p class="text-xs text-gray-500">Admin</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="text-sm text-gray-900">Created a new API key with <span class="font-medium">full read/write</span> scope</p>
+                <p class="mt-0.5 text-xs text-gray-500">Target: <span class="font-medium text-gray-600">key sk_live_••••3f9a</span></p>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="font-mono text-xs text-gray-700">192.0.2.55</p>
+                <p class="text-xs text-gray-500">Denver, CO, US · Safari on iOS</p>
+              </td>
+            </tr>
+
+            <tr class="hover:bg-gray-50">
+              <td class="whitespace-nowrap py-3 pl-4 pr-3 align-top text-sm text-gray-500">3:47 PM</td>
+              <td class="px-3 py-3 align-top">
+                <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-1 text-xs font-medium text-amber-800 ring-1 ring-inset ring-amber-600/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>Medium
+                </span>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-medium text-indigo-700">PN</span>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Priya Natarajan</p>
+                    <p class="text-xs text-gray-500">Owner</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="text-sm text-gray-900">Changed role for <span class="font-medium">Laila Hassan</span> from Member to Admin</p>
+                <p class="mt-0.5 text-xs text-gray-500">Target: <span class="font-medium text-gray-600">laila@acme.co</span></p>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="font-mono text-xs text-gray-700">198.51.100.12</p>
+                <p class="text-xs text-gray-500">Austin, TX, US · Chrome on macOS</p>
+              </td>
+            </tr>
+
+            <tr class="hover:bg-gray-50">
+              <td class="whitespace-nowrap py-3 pl-4 pr-3 align-top text-sm text-gray-500">1:12 PM</td>
+              <td class="px-3 py-3 align-top">
+                <span class="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-1 text-xs font-medium text-sky-700 ring-1 ring-inset ring-sky-600/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-sky-400"></span>Low
+                </span>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-medium text-indigo-700">DM</span>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Devon Marsh</p>
+                    <p class="text-xs text-gray-500">Admin</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="text-sm text-gray-900">Invited a new member</p>
+                <p class="mt-0.5 text-xs text-gray-500">Target: <span class="font-medium text-gray-600">sam.reyes@acme.co</span></p>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="font-mono text-xs text-gray-700">192.0.2.55</p>
+                <p class="text-xs text-gray-500">Denver, CO, US · Safari on iOS</p>
+              </td>
+            </tr>
+
+            <tr class="hover:bg-gray-50">
+              <td class="whitespace-nowrap py-3 pl-4 pr-3 align-top text-sm text-gray-500">10:05 AM</td>
+              <td class="px-3 py-3 align-top">
+                <span class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-gray-400"></span>Info
+                </span>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-medium text-gray-600">SY</span>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">System</p>
+                    <p class="text-xs text-gray-500">Automated</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="text-sm text-gray-900">Billing plan renewed</p>
+                <p class="mt-0.5 text-xs text-gray-500">Target: <span class="font-medium text-gray-600">Business plan · $199/mo</span></p>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="font-mono text-xs text-gray-700">—</p>
+                <p class="text-xs text-gray-500">Internal scheduler</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <%# Earlier %>
+    <section aria-labelledby="day-2026-07-18">
+      <div class="flex items-baseline gap-2 rounded-md bg-gray-50 px-3 py-1.5">
+        <h2 id="day-2026-07-18" class="text-sm font-semibold text-gray-900">Saturday, July 18, 2026</h2>
+        <span class="text-xs text-gray-500">3 events</span>
+      </div>
+
+      <div class="mt-2 overflow-x-auto rounded-md border border-gray-200">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-white">
+            <tr>
+              <th scope="col" class="w-24 py-2.5 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Time</th>
+              <th scope="col" class="w-28 px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Severity</th>
+              <th scope="col" class="w-56 px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Actor</th>
+              <th scope="col" class="px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Action</th>
+              <th scope="col" class="w-56 px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Location / IP</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 bg-white">
+            <tr class="hover:bg-gray-50">
+              <td class="whitespace-nowrap py-3 pl-4 pr-3 align-top text-sm text-gray-500">4:58 PM</td>
+              <td class="px-3 py-3 align-top">
+                <span class="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>Critical
+                </span>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-medium text-indigo-700">PN</span>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Priya Natarajan</p>
+                    <p class="text-xs text-gray-500">Owner</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="text-sm text-gray-900">Removed member and revoked all active sessions</p>
+                <p class="mt-0.5 text-xs text-gray-500">Target: <span class="font-medium text-gray-600">jordan.k@acme.co</span></p>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="font-mono text-xs text-gray-700">198.51.100.12</p>
+                <p class="text-xs text-gray-500">Austin, TX, US · Chrome on macOS</p>
+              </td>
+            </tr>
+
+            <tr class="hover:bg-gray-50">
+              <td class="whitespace-nowrap py-3 pl-4 pr-3 align-top text-sm text-gray-500">11:30 AM</td>
+              <td class="px-3 py-3 align-top">
+                <span class="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2 py-1 text-xs font-medium text-orange-700 ring-1 ring-inset ring-orange-600/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-orange-500"></span>High
+                </span>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-medium text-indigo-700">LH</span>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Laila Hassan</p>
+                    <p class="text-xs text-gray-500">Admin</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="text-sm text-gray-900">Enforced SSO for all workspace sign-ins</p>
+                <p class="mt-0.5 text-xs text-gray-500">Target: <span class="font-medium text-gray-600">Workspace security policy</span></p>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="font-mono text-xs text-gray-700">198.51.100.7</p>
+                <p class="text-xs text-gray-500">Toronto, ON, CA · Firefox on Windows</p>
+              </td>
+            </tr>
+
+            <tr class="hover:bg-gray-50">
+              <td class="whitespace-nowrap py-3 pl-4 pr-3 align-top text-sm text-gray-500">9:02 AM</td>
+              <td class="px-3 py-3 align-top">
+                <span class="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-1 text-xs font-medium text-sky-700 ring-1 ring-inset ring-sky-600/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-sky-400"></span>Low
+                </span>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-medium text-indigo-700">DM</span>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Devon Marsh</p>
+                    <p class="text-xs text-gray-500">Admin</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="text-sm text-gray-900">Signed in</p>
+                <p class="mt-0.5 text-xs text-gray-500">Target: <span class="font-medium text-gray-600">Workspace session</span></p>
+              </td>
+              <td class="px-3 py-3 align-top">
+                <p class="font-mono text-xs text-gray-700">192.0.2.55</p>
+                <p class="text-xs text-gray-500">Denver, CO, US · Safari on iOS</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <%# Pagination %>
+  <nav aria-label="Pagination" class="mt-6 flex items-center justify-between border-t border-gray-200 pt-4">
+    <span class="text-sm text-gray-500">Page 1 of 6</span>
+    <div class="flex items-center gap-2">
+      <span aria-disabled="true" class="cursor-not-allowed rounded-md border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-300">Previous</span>
+      <a href="#" class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">Next</a>
+    </div>
+  </nav>
+
+</div>

@@ -1,0 +1,71 @@
+<section class="mx-auto max-w-4xl space-y-4 p-6">
+  <div class="space-y-1">
+    <h2 class="text-lg font-semibold tracking-tight">Invoices</h2>
+    <p class="text-sm text-muted-foreground">Recent invoices and their payment status.</p>
+  </div>
+
+  <div class="overflow-hidden rounded-lg border">
+    <%= poetry_table do %>
+      <%= poetry_table_caption { "A list of your recent invoices for July 2026." } %>
+      <%= poetry_table_header do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_head { "Invoice" } %>
+          <%= poetry_table_head { "Customer" } %>
+          <%= poetry_table_head { "Issue date" } %>
+          <%= poetry_table_head { "Status" } %>
+          <%= poetry_table_head(class: "text-right") { "Amount" } %>
+        <% end %>
+      <% end %>
+      <%= poetry_table_body do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { "INV-2031" } %>
+          <%= poetry_table_cell { "Acme Corp" } %>
+          <%= poetry_table_cell { "Jul 1, 2026" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :success) { "Paid" } } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$420.00" } %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { "INV-2032" } %>
+          <%= poetry_table_cell { "Globex LLC" } %>
+          <%= poetry_table_cell { "Jul 2, 2026" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :success) { "Paid" } } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$1,180.50" } %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { "INV-2033" } %>
+          <%= poetry_table_cell { "Initech" } %>
+          <%= poetry_table_cell { "Jul 4, 2026" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :warning) { "Pending" } } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$275.25" } %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { "INV-2034" } %>
+          <%= poetry_table_cell { "Umbrella Co" } %>
+          <%= poetry_table_cell { "Jul 5, 2026" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :destructive) { "Overdue" } } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$640.00" } %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { "INV-2035" } %>
+          <%= poetry_table_cell { "Soylent Inc" } %>
+          <%= poetry_table_cell { "Jul 7, 2026" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :success) { "Paid" } } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$960.75" } %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { "INV-2036" } %>
+          <%= poetry_table_cell { "Stark Industries" } %>
+          <%= poetry_table_cell { "Jul 8, 2026" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :warning) { "Pending" } } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$325.00" } %>
+        <% end %>
+      <% end %>
+      <%= poetry_table_footer do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(colspan: 4) { "Total" } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$3,801.50" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</section>

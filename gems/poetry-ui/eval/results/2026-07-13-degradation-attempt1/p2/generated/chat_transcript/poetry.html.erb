@@ -1,0 +1,83 @@
+<div class="mx-auto max-w-2xl p-6">
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Support chat" } %>
+    <% card.with_description { "Conversation with Nova" } %>
+
+    <%= poetry_message_scroller(id: "transcript", auto_scroll: true, jump_button: false) do %>
+      <%= poetry_message_scroller_item(id: "divider-today") do %>
+        <div class="flex items-center gap-3 py-2">
+          <%= poetry_separator(class: "flex-1") %>
+          <span class="text-xs font-medium text-muted-foreground">Today</span>
+          <%= poetry_separator(class: "flex-1") %>
+        </div>
+      <% end %>
+
+      <%= poetry_message_scroller_item(id: "msg-1") do %>
+        <%= poetry_message(align: :start) do |m| %>
+          <% m.with_avatar do %>
+            <%= poetry_avatar(label: "Nova") { "N" } %>
+          <% end %>
+          <% m.with_header { "Nova · 9:41 AM" } %>
+
+          <div class="flex flex-col items-start gap-2">
+            <%= poetry_bubble(variant: :muted, align: :start) do %>
+              Here's the file you asked for, plus a quick option below if you'd like me to keep going.
+            <% end %>
+
+            <%= poetry_attachment(orientation: :horizontal, size: :default, state: :done) do |a| %>
+              <% a.with_media(variant: :icon) do %>
+                <%= poetry_icon(name: :"file-text", label: "PDF file") %>
+              <% end %>
+              <% a.with_title { "Q3-report.pdf" } %>
+              <% a.with_description { "248 KB" } %>
+              <% a.with_action(label: "Download") do %>
+                <%= poetry_icon(name: :download) %>
+              <% end %>
+            <% end %>
+
+            <%= poetry_bubble(tag: :button, variant: :outline, align: :start) do %>
+              Sounds good, thanks!
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+
+      <%= poetry_message_scroller_item(id: "msg-2") do %>
+        <%= poetry_message(align: :end) do |m| %>
+          <% m.with_avatar do %>
+            <%= poetry_avatar(label: "You") { "Y" } %>
+          <% end %>
+          <% m.with_header { "You · 9:42 AM" } %>
+
+          <%= poetry_bubble(variant: :default) do %>
+            Thanks, that works!
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <%= poetry_message_scroller_item(id: "divider-unread") do %>
+        <div class="flex items-center gap-3 py-2">
+          <%= poetry_separator(class: "flex-1 bg-primary/40") %>
+          <span class="text-xs font-medium text-primary">New messages</span>
+          <%= poetry_separator(class: "flex-1 bg-primary/40") %>
+        </div>
+      <% end %>
+
+      <%= poetry_message_scroller_item(id: "msg-3", anchor: true) do %>
+        <%= poetry_message(align: :start) do |m| %>
+          <% m.with_avatar do %>
+            <%= poetry_avatar(label: "Nova") { "N" } %>
+          <% end %>
+          <% m.with_header { "Nova" } %>
+
+          <%= poetry_bubble(variant: :ghost, align: :start) do %>
+            <div class="flex items-center gap-2 text-muted-foreground">
+              <%= poetry_spinner(label: "Nova is thinking") %>
+              <span class="text-sm">Thinking…</span>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

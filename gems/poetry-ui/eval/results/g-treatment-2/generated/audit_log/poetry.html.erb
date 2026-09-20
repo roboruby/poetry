@@ -1,0 +1,329 @@
+<section class="space-y-6">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Audit log</h1>
+      <p class="text-sm text-muted-foreground">Security-relevant activity across the Northwind workspace.</p>
+    </div>
+    <%= poetry_button(tag: :a, href: "?format=csv", variant: :outline) do |button| %>
+      <% button.with_leading { poetry_icon(name: :download) } %>
+      Export
+    <% end %>
+  </div>
+
+  <form method="get" class="flex flex-wrap items-center gap-3 rounded-lg border p-3">
+    <%= poetry_label(for_id: "audit-search", class: "sr-only") { "Search events" } %>
+    <%= poetry_input_group(class: "max-w-xs") do %>
+      <%= poetry_input_group_addon do %>
+        <%= poetry_icon(name: :search) %>
+      <% end %>
+      <%= poetry_input_group_input(id: "audit-search", name: "q", placeholder: "Search actor, event, IP…") %>
+    <% end %>
+
+    <%= poetry_label(for_id: "audit-severity", class: "sr-only") { "Filter by severity" } %>
+    <%= poetry_native_select(name: "severity", id: "audit-severity",
+                              options: [["All severities", "all"], ["Critical", "critical"],
+                                        ["High", "high"], ["Medium", "medium"], ["Low", "low"]]) %>
+
+    <%= poetry_label(for_id: "audit-event-type", class: "sr-only") { "Filter by event type" } %>
+    <%= poetry_native_select(name: "event_type", id: "audit-event-type",
+                              options: [["All event types", "all"], ["Authentication", "auth"],
+                                        ["Access control", "access"], ["Data export", "export"],
+                                        ["Configuration", "config"]]) %>
+
+    <%= poetry_label(for_id: "audit-actor", class: "sr-only") { "Filter by actor" } %>
+    <%= poetry_native_select(name: "actor", id: "audit-actor",
+                              options: [["All actors", "all"], ["People", "people"], ["System", "system"],
+                                        ["API keys", "api_keys"]]) %>
+
+    <%= poetry_label(for_id: "audit-range", class: "sr-only") { "Filter by time range" } %>
+    <%= poetry_native_select(name: "range", id: "audit-range",
+                              options: [["Last 24 hours", "24h"], ["Last 7 days", "7d"],
+                                        ["Last 30 days", "30d"], ["Custom range", "custom"]]) %>
+
+    <div class="ml-auto flex items-center gap-2">
+      <%= poetry_button(tag: :a, href: "?", variant: :ghost, size: :sm) { "Clear" } %>
+      <%= poetry_button(type: :submit, variant: :secondary, size: :sm) { "Apply filters" } %>
+    </div>
+  </form>
+
+  <section class="space-y-3">
+    <div class="flex items-baseline justify-between gap-4">
+      <h2 class="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Today · July 22, 2026</h2>
+      <span class="text-xs text-muted-foreground">4 events</span>
+    </div>
+    <div class="overflow-hidden rounded-lg border">
+      <%= poetry_table do %>
+        <%= poetry_table_caption(class: "sr-only") { "Security events for July 22, 2026, with severity, actor, location, and time." } %>
+        <%= poetry_table_header do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_head { "Severity" } %>
+            <%= poetry_table_head { "Event" } %>
+            <%= poetry_table_head { "Actor" } %>
+            <%= poetry_table_head { "Location" } %>
+            <%= poetry_table_head(class: "text-right") { "Time" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_body do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell { poetry_badge(variant: :destructive) { "Critical" } } %>
+            <%= poetry_table_cell do %>
+              <div class="font-medium">Deleted API key</div>
+              <div class="text-xs text-muted-foreground">prod-deploy-key · api_keys</div>
+            <% end %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-2">
+                <%= poetry_avatar(label: "Priya Natarajan", size: :sm) { "PN" } %>
+                <div>
+                  <div class="text-sm font-medium">Priya Natarajan</div>
+                  <div class="text-xs text-muted-foreground">priya@northwind.dev</div>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell do %>
+              <div class="text-sm">203.0.113.42</div>
+              <div class="text-xs text-muted-foreground">Austin, US · Chrome on macOS</div>
+            <% end %>
+            <%= poetry_table_cell(class: "text-right tabular-nums text-sm text-muted-foreground") do %>
+              <time datetime="2026-07-22T14:32:07Z" title="Jul 22, 2026, 14:32:07 UTC">14:32:07</time>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell { poetry_badge(variant: :warning) { "High" } } %>
+            <%= poetry_table_cell do %>
+              <div class="font-medium">Granted admin role</div>
+              <div class="text-xs text-muted-foreground">to jordan@northwind.dev · members</div>
+            <% end %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-2">
+                <%= poetry_avatar(label: "Priya Natarajan", size: :sm) { "PN" } %>
+                <div>
+                  <div class="text-sm font-medium">Priya Natarajan</div>
+                  <div class="text-xs text-muted-foreground">priya@northwind.dev</div>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell do %>
+              <div class="text-sm">203.0.113.42</div>
+              <div class="text-xs text-muted-foreground">Austin, US · Chrome on macOS</div>
+            <% end %>
+            <%= poetry_table_cell(class: "text-right tabular-nums text-sm text-muted-foreground") do %>
+              <time datetime="2026-07-22T13:05:52Z" title="Jul 22, 2026, 13:05:52 UTC">13:05:52</time>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell { poetry_badge(variant: :info) { "Medium" } } %>
+            <%= poetry_table_cell do %>
+              <div class="font-medium">Exported billing report</div>
+              <div class="text-xs text-muted-foreground">Q2 invoices · reports</div>
+            <% end %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-2">
+                <%= poetry_avatar(label: "Lumen Labs Integration", size: :sm) { "LL" } %>
+                <div>
+                  <div class="text-sm font-medium">Lumen Labs Integration</div>
+                  <div class="text-xs text-muted-foreground">API key · sk_live_…af21</div>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell do %>
+              <div class="text-sm">198.51.100.7</div>
+              <div class="text-xs text-muted-foreground">Remote · server-to-server</div>
+            <% end %>
+            <%= poetry_table_cell(class: "text-right tabular-nums text-sm text-muted-foreground") do %>
+              <time datetime="2026-07-22T09:41:18Z" title="Jul 22, 2026, 09:41:18 UTC">09:41:18</time>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Low" } } %>
+            <%= poetry_table_cell do %>
+              <div class="font-medium">Signed in with SSO</div>
+              <div class="text-xs text-muted-foreground">sessions</div>
+            <% end %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-2">
+                <%= poetry_avatar(label: "Fern Whitaker", size: :sm) { "FW" } %>
+                <div>
+                  <div class="text-sm font-medium">Fern Whitaker</div>
+                  <div class="text-xs text-muted-foreground">fern@northwind.dev</div>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell do %>
+              <div class="text-sm">203.0.113.88</div>
+              <div class="text-xs text-muted-foreground">Austin, US · Safari on iOS</div>
+            <% end %>
+            <%= poetry_table_cell(class: "text-right tabular-nums text-sm text-muted-foreground") do %>
+              <time datetime="2026-07-22T08:12:04Z" title="Jul 22, 2026, 08:12:04 UTC">08:12:04</time>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="space-y-3">
+    <div class="flex items-baseline justify-between gap-4">
+      <h2 class="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Yesterday · July 21, 2026</h2>
+      <span class="text-xs text-muted-foreground">3 events</span>
+    </div>
+    <div class="overflow-hidden rounded-lg border">
+      <%= poetry_table do %>
+        <%= poetry_table_caption(class: "sr-only") { "Security events for July 21, 2026, with severity, actor, location, and time." } %>
+        <%= poetry_table_header do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_head { "Severity" } %>
+            <%= poetry_table_head { "Event" } %>
+            <%= poetry_table_head { "Actor" } %>
+            <%= poetry_table_head { "Location" } %>
+            <%= poetry_table_head(class: "text-right") { "Time" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_body do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell { poetry_badge(variant: :destructive) { "Critical" } } %>
+            <%= poetry_table_cell do %>
+              <div class="font-medium">Failed sign-in (5 attempts)</div>
+              <div class="text-xs text-muted-foreground">account locked · sessions</div>
+            <% end %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-2">
+                <%= poetry_avatar(label: "Unknown", size: :sm) { "?" } %>
+                <div>
+                  <div class="text-sm font-medium">jordan@northwind.dev</div>
+                  <div class="text-xs text-muted-foreground">unrecognized device</div>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell do %>
+              <div class="text-sm">45.33.12.190</div>
+              <div class="text-xs text-muted-foreground">Bucharest, RO · Firefox on Windows</div>
+            <% end %>
+            <%= poetry_table_cell(class: "text-right tabular-nums text-sm text-muted-foreground") do %>
+              <time datetime="2026-07-21T22:47:31Z" title="Jul 21, 2026, 22:47:31 UTC">22:47:31</time>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell { poetry_badge(variant: :warning) { "High" } } %>
+            <%= poetry_table_cell do %>
+              <div class="font-medium">Rotated API key</div>
+              <div class="text-xs text-muted-foreground">prod-deploy-key · api_keys</div>
+            <% end %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-2">
+                <%= poetry_avatar(label: "Priya Natarajan", size: :sm) { "PN" } %>
+                <div>
+                  <div class="text-sm font-medium">Priya Natarajan</div>
+                  <div class="text-xs text-muted-foreground">priya@northwind.dev</div>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell do %>
+              <div class="text-sm">203.0.113.42</div>
+              <div class="text-xs text-muted-foreground">Austin, US · Chrome on macOS</div>
+            <% end %>
+            <%= poetry_table_cell(class: "text-right tabular-nums text-sm text-muted-foreground") do %>
+              <time datetime="2026-07-21T17:23:09Z" title="Jul 21, 2026, 17:23:09 UTC">17:23:09</time>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell { poetry_badge(variant: :info) { "Medium" } } %>
+            <%= poetry_table_cell do %>
+              <div class="font-medium">Updated workspace SSO settings</div>
+              <div class="text-xs text-muted-foreground">enforced MFA · settings</div>
+            <% end %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-2">
+                <%= poetry_avatar(label: "Fern Whitaker", size: :sm) { "FW" } %>
+                <div>
+                  <div class="text-sm font-medium">Fern Whitaker</div>
+                  <div class="text-xs text-muted-foreground">fern@northwind.dev</div>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell do %>
+              <div class="text-sm">203.0.113.88</div>
+              <div class="text-xs text-muted-foreground">Austin, US · Safari on macOS</div>
+            <% end %>
+            <%= poetry_table_cell(class: "text-right tabular-nums text-sm text-muted-foreground") do %>
+              <time datetime="2026-07-21T10:02:44Z" title="Jul 21, 2026, 10:02:44 UTC">10:02:44</time>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="space-y-3">
+    <div class="flex items-baseline justify-between gap-4">
+      <h2 class="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Monday · July 20, 2026</h2>
+      <span class="text-xs text-muted-foreground">2 events</span>
+    </div>
+    <div class="overflow-hidden rounded-lg border">
+      <%= poetry_table do %>
+        <%= poetry_table_caption(class: "sr-only") { "Security events for July 20, 2026, with severity, actor, location, and time." } %>
+        <%= poetry_table_header do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_head { "Severity" } %>
+            <%= poetry_table_head { "Event" } %>
+            <%= poetry_table_head { "Actor" } %>
+            <%= poetry_table_head { "Location" } %>
+            <%= poetry_table_head(class: "text-right") { "Time" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_body do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Low" } } %>
+            <%= poetry_table_cell do %>
+              <div class="font-medium">Invited new member</div>
+              <div class="text-xs text-muted-foreground">gable@northwind.dev · members</div>
+            <% end %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-2">
+                <%= poetry_avatar(label: "Priya Natarajan", size: :sm) { "PN" } %>
+                <div>
+                  <div class="text-sm font-medium">Priya Natarajan</div>
+                  <div class="text-xs text-muted-foreground">priya@northwind.dev</div>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell do %>
+              <div class="text-sm">203.0.113.42</div>
+              <div class="text-xs text-muted-foreground">Austin, US · Chrome on macOS</div>
+            <% end %>
+            <%= poetry_table_cell(class: "text-right tabular-nums text-sm text-muted-foreground") do %>
+              <time datetime="2026-07-20T16:55:00Z" title="Jul 20, 2026, 16:55:00 UTC">16:55:00</time>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell { poetry_badge(variant: :info) { "Medium" } } %>
+            <%= poetry_table_cell do %>
+              <div class="font-medium">Changed billing plan</div>
+              <div class="text-xs text-muted-foreground">Team → Business · billing</div>
+            <% end %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-2">
+                <%= poetry_avatar(label: "Fern Whitaker", size: :sm) { "FW" } %>
+                <div>
+                  <div class="text-sm font-medium">Fern Whitaker</div>
+                  <div class="text-xs text-muted-foreground">fern@northwind.dev</div>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell do %>
+              <div class="text-sm">203.0.113.88</div>
+              <div class="text-xs text-muted-foreground">Austin, US · Safari on macOS</div>
+            <% end %>
+            <%= poetry_table_cell(class: "text-right tabular-nums text-sm text-muted-foreground") do %>
+              <time datetime="2026-07-20T11:30:27Z" title="Jul 20, 2026, 11:30:27 UTC">11:30:27</time>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <p class="text-sm text-muted-foreground">Showing 9 of 214 events</p>
+    <%= poetry_pagination(current: 1, total: 12, current_variant: :filled, path: ->(page) { "?page=#{page}" }) %>
+  </div>
+</section>

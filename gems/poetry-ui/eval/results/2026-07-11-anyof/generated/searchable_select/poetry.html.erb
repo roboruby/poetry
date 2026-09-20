@@ -1,0 +1,17 @@
+<div class="mx-auto max-w-md p-6">
+  <h1 class="text-lg font-semibold text-foreground">Choose a framework</h1>
+  <p class="mt-1 text-sm text-muted-foreground">Search and select the framework this project uses.</p>
+
+  <div class="mt-6">
+    <%= poetry_field(id: "framework", label_text: "Framework", hint: "Type to filter Next.js, SvelteKit, Nuxt.js, Remix, or Astro.") do |field| %>
+      <%= poetry_combobox(**field.control_attributes, name: "framework", placeholder: "Select framework...", search_placeholder: "Search frameworks...", width: "w-full") do |combobox| %>
+        <% combobox.with_empty { "No framework found." } %>
+        <% combobox.with_item(value: "nextjs") { "Next.js" } %>
+        <% combobox.with_item(value: "sveltekit") { "SvelteKit" } %>
+        <% combobox.with_item(value: "nuxtjs") { "Nuxt.js" } %>
+        <% combobox.with_item(value: "remix") { "Remix" } %>
+        <% combobox.with_item(value: "astro") { "Astro" } %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

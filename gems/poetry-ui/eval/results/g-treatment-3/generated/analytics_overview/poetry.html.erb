@@ -1,0 +1,155 @@
+<div class="mx-auto flex max-w-7xl flex-col gap-6 p-6">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Analytics overview</h1>
+      <p class="text-sm text-muted-foreground">Portfolio health across every active project, week of Jul 14–20.</p>
+    </div>
+    <%= poetry_button(variant: :outline) do |button| %>
+      <% button.with_leading { poetry_icon(name: :download) } %>
+      Export report
+    <% end %>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-4">
+    <%= poetry_card(title_tag: :h2) do |card| %>
+      <% card.with_title { "Active projects" } %>
+      <%= poetry_stat(label: "Active projects", delta: "+2", trend: :up) { "12" } %>
+      <p class="text-xs text-muted-foreground">3 launching this month</p>
+    <% end %>
+    <%= poetry_card(title_tag: :h2) do |card| %>
+      <% card.with_title { "Tasks completed this week" } %>
+      <%= poetry_stat(label: "Tasks completed this week", delta: "+18%", trend: :up) { "184" } %>
+      <p class="text-xs text-muted-foreground">vs. 156 last week</p>
+    <% end %>
+    <%= poetry_card(title_tag: :h2) do |card| %>
+      <% card.with_title { "Overdue items" } %>
+      <%= poetry_stat(label: "Overdue items", delta: "+3", trend: :up, sentiment: :negative) { "7" } %>
+      <p class="text-xs text-muted-foreground">Across 4 projects</p>
+    <% end %>
+    <%= poetry_card(title_tag: :h2) do |card| %>
+      <% card.with_title { "Team velocity" } %>
+      <%= poetry_stat(label: "Team velocity", delta: "-4 pts", trend: :down) { "42 pts" } %>
+      <p class="text-xs text-muted-foreground">Trailing 3-sprint average: 46 pts</p>
+    <% end %>
+  </div>
+
+  <div class="grid gap-4 lg:grid-cols-3">
+    <%= poetry_card(title_tag: :h2, class: "lg:col-span-2") do |card| %>
+      <% card.with_title { "Project progress" } %>
+      <% card.with_description { "Task completion by project, current sprint" } %>
+      <div class="space-y-5">
+        <div>
+          <div class="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium">Atlas Redesign</span>
+              <%= poetry_badge(variant: :success) { "On track" } %>
+            </div>
+            <span class="text-xs text-muted-foreground tabular-nums">38 / 50 tasks</span>
+          </div>
+          <%= poetry_progress(label: "Atlas Redesign completion", value: 76, show_value: true) %>
+        </div>
+        <div>
+          <div class="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium">Beacon Mobile</span>
+              <%= poetry_badge(variant: :warning) { "At risk" } %>
+            </div>
+            <span class="text-xs text-muted-foreground tabular-nums">21 / 40 tasks</span>
+          </div>
+          <%= poetry_progress(label: "Beacon Mobile completion", value: 53, show_value: true) %>
+        </div>
+        <div>
+          <div class="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium">Ledger API</span>
+              <%= poetry_badge(variant: :destructive) { "Behind" } %>
+            </div>
+            <span class="text-xs text-muted-foreground tabular-nums">9 / 30 tasks</span>
+          </div>
+          <%= poetry_progress(label: "Ledger API completion", value: 30, show_value: true) %>
+        </div>
+        <div>
+          <div class="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium">Northstar Data</span>
+              <%= poetry_badge(variant: :success) { "On track" } %>
+            </div>
+            <span class="text-xs text-muted-foreground tabular-nums">44 / 48 tasks</span>
+          </div>
+          <%= poetry_progress(label: "Northstar Data completion", value: 92, show_value: true) %>
+        </div>
+        <div>
+          <div class="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium">Voyager Onboarding</span>
+              <%= poetry_badge(variant: :success) { "On track" } %>
+            </div>
+            <span class="text-xs text-muted-foreground tabular-nums">15 / 20 tasks</span>
+          </div>
+          <%= poetry_progress(label: "Voyager Onboarding completion", value: 75, show_value: true) %>
+        </div>
+      </div>
+    <% end %>
+
+    <%= poetry_card(title_tag: :h2) do |card| %>
+      <% card.with_title { "Recent activity" } %>
+      <% card.with_description { "Latest updates across your projects" } %>
+      <ul class="space-y-4 text-sm">
+        <li class="flex items-start gap-3">
+          <span class="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-muted">
+            <%= poetry_icon(name: :check, class: "size-3.5") %>
+          </span>
+          <div class="flex-1 space-y-0.5">
+            <p>Priya Nair completed <span class="font-medium">Checkout redesign QA</span></p>
+            <p class="text-xs text-muted-foreground">Atlas Redesign · 12m ago</p>
+          </div>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-muted">
+            <%= poetry_icon(name: :plus, class: "size-3.5") %>
+          </span>
+          <div class="flex-1 space-y-0.5">
+            <p>Jordan Lee opened 3 new tasks in Sprint 14</p>
+            <p class="text-xs text-muted-foreground">Beacon Mobile · 41m ago</p>
+          </div>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-muted">
+            <%= poetry_icon(name: :"alert-triangle", class: "size-3.5") %>
+          </span>
+          <div class="flex-1 space-y-0.5">
+            <p>Sam Okafor flagged <span class="font-medium">Payment webhook retries</span> as overdue</p>
+            <p class="text-xs text-muted-foreground">Ledger API · 1h ago</p>
+          </div>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-muted">
+            <%= poetry_icon(name: :"git-merge", class: "size-3.5") %>
+          </span>
+          <div class="flex-1 space-y-0.5">
+            <p>Casey Wu merged the onboarding flow branch</p>
+            <p class="text-xs text-muted-foreground">Atlas Redesign · 2h ago</p>
+          </div>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-muted">
+            <%= poetry_icon(name: :"message-square", class: "size-3.5") %>
+          </span>
+          <div class="flex-1 space-y-0.5">
+            <p>Devon Park commented on <span class="font-medium">Vendor sync</span></p>
+            <p class="text-xs text-muted-foreground">Northstar Data · 4h ago</p>
+          </div>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-muted">
+            <%= poetry_icon(name: :check, class: "size-3.5") %>
+          </span>
+          <div class="flex-1 space-y-0.5">
+            <p>Priya Nair completed <span class="font-medium">Rate limit tuning</span></p>
+            <p class="text-xs text-muted-foreground">Ledger API · Yesterday</p>
+          </div>
+        </li>
+      </ul>
+    <% end %>
+  </div>
+</div>

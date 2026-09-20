@@ -1,0 +1,25 @@
+<div class="mx-auto flex max-w-xl flex-col gap-4 p-8">
+  <div class="flex items-center gap-4">
+    <span id="order-flag" data-order="<%= params[:order] == "desc" ? "desc" : "asc" %>"
+          class="text-sm font-medium">order: <%= params[:order] == "desc" ? "desc" : "asc" %></span>
+    <%# data-turbo-action=replace on the SAME path: Turbo classifies the
+        visit as a page refresh and morphs (the behavior under test). %>
+    <a id="reorder" data-turbo-action="replace" class="cn-link text-sm underline"
+       href="?<%= { keyed: params[:keyed], order: params[:order] == "desc" ? "asc" : "desc" }.to_query %>">reorder</a>
+  </div>
+
+  <% @messages.each do |message| %>
+    <div id="<%= "message_#{message.id}" %>" class="flex items-center justify-between rounded-md border p-4">
+      <span class="text-sm"><%= message.subject %></span>
+      <%# Plain id-less input: the user-visible state carrier. Dirty
+          .value rides the NODE, so it survives exactly when the keyed
+          row's subtree is matched (moved), and dies when replaced. %>
+      <input type="text" data-role="note" class="w-32 rounded border px-2 py-1 text-sm">
+      <%= poetry_dropdown_menu(**(@keyed ? { key: message } : {})) do |menu| %>
+        <% menu.with_trigger(variant: :outline, size: :sm) { "Actions" } %>
+        <% menu.with_item { "Archive" } %>
+        <% menu.with_item { "Move" } %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

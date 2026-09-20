@@ -1,0 +1,63 @@
+<div class="mx-auto max-w-2xl space-y-8 p-6">
+  <div class="space-y-2">
+    <h1 class="text-2xl font-semibold tracking-tight">Welcome to your new workspace</h1>
+    <p class="text-sm text-muted-foreground">
+      Your workspace is ready. Finish a few quick steps to get your team up and running.
+    </p>
+  </div>
+
+  <%= poetry_progress(label: "Setup progress", value: 1, max: 3, show_value: true) %>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Get set up" } %>
+    <% card.with_description { "Three steps to finish onboarding this workspace." } %>
+
+    <%= poetry_item_group do %>
+      <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :check, class: "size-4", label: "Completed") } %>
+        <% item.with_title { "Connect a repository" } %>
+        <% item.with_description { "Link your codebase so activity and deploys show up in the workspace." } %>
+        <% item.with_actions do %>
+          <%= poetry_badge(variant: :success) { "Complete" } %>
+        <% end %>
+      <% end %>
+
+      <%= poetry_item_separator %>
+
+      <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :"user-plus", class: "size-4") } %>
+        <% item.with_title { "Invite the team" } %>
+        <% item.with_description { "Bring in teammates so work can be assigned and reviewed." } %>
+        <% item.with_actions do %>
+          <%= poetry_badge(variant: :secondary) { "Not started" } %>
+          <%= poetry_button(tag: :a, href: "#", variant: :outline, size: :sm) do |button| %>
+            <% button.with_leading { poetry_icon(name: :"user-plus") } %>
+            Invite
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <%= poetry_item_separator %>
+
+      <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :folder, class: "size-4") } %>
+        <% item.with_title { "Create your first project" } %>
+        <% item.with_description { "Set up a project so your team has somewhere to start working." } %>
+        <% item.with_actions do %>
+          <%= poetry_badge(variant: :secondary) { "Not started" } %>
+          <%= poetry_button(tag: :a, href: "#", variant: :outline, size: :sm) do |button| %>
+            <% button.with_leading { poetry_icon(name: :plus) } %>
+            Create project
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% card.with_footer do %>
+      <div class="flex w-full items-center justify-between gap-4">
+        <span class="text-xs text-muted-foreground">You can finish these steps anytime from workspace settings.</span>
+        <%= poetry_link(href: "#", underline: :hover) { "Skip for now" } %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

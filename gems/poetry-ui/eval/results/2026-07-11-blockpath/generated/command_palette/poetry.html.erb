@@ -1,0 +1,70 @@
+<div class="mx-auto flex w-full max-w-xl flex-col gap-6 py-16">
+  <div class="flex flex-col items-center gap-1 text-center">
+    <h1 class="text-2xl font-semibold tracking-tight">Command Palette</h1>
+    <p class="text-muted-foreground text-sm">
+      Type to filter commands, use the arrow keys to highlight one, and press Enter to run it.
+    </p>
+  </div>
+
+  <%= poetry_command(placeholder: "Type a command or search...", list_label: "Command Palette") do |c| %>
+    <% c.with_group(heading: "Suggestions") do |g| %>
+      <% g.with_item(value: "calendar", keywords: %w[calendar date schedule event]) do %>
+        <div class="flex w-full items-center gap-2">
+          <%= poetry_icon(name: :calendar) %>
+          <span class="flex-1">Calendar</span>
+        </div>
+      <% end %>
+      <% g.with_item(value: "search-emoji", keywords: %w[emoji smiley reaction sticker]) do %>
+        <div class="flex w-full items-center gap-2">
+          <%= poetry_icon(name: :smile) %>
+          <span class="flex-1">Search Emoji</span>
+        </div>
+      <% end %>
+      <% g.with_item(value: "calculator", keywords: %w[calculator math number]) do %>
+        <div class="flex w-full items-center gap-2">
+          <%= poetry_icon(name: :calculator) %>
+          <span class="flex-1">Calculator</span>
+        </div>
+      <% end %>
+    <% end %>
+
+    <% c.with_separator %>
+
+    <% c.with_group(heading: "Settings") do |g| %>
+      <% g.with_item(value: "profile", keywords: %w[profile account]) do %>
+        <div class="flex w-full items-center gap-2">
+          <%= poetry_icon(name: :user) %>
+          <span class="flex-1">Profile</span>
+          <div class="inline-flex items-center gap-1">
+            <%= poetry_kbd { "⌘" } %>
+            <%= poetry_kbd { "P" } %>
+          </div>
+        </div>
+      <% end %>
+      <% g.with_item(value: "billing", keywords: %w[billing payment invoice plan]) do %>
+        <div class="flex w-full items-center gap-2">
+          <%= poetry_icon(name: :"credit-card") %>
+          <span class="flex-1">Billing</span>
+          <div class="inline-flex items-center gap-1">
+            <%= poetry_kbd { "⌘" } %>
+            <%= poetry_kbd { "B" } %>
+          </div>
+        </div>
+      <% end %>
+      <% g.with_item(value: "settings", keywords: %w[settings preferences]) do %>
+        <div class="flex w-full items-center gap-2">
+          <%= poetry_icon(name: :settings) %>
+          <span class="flex-1">Settings</span>
+          <div class="inline-flex items-center gap-1">
+            <%= poetry_kbd { "⌘" } %>
+            <%= poetry_kbd { "S" } %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+
+    <% c.with_empty do %>
+      No results found.
+    <% end %>
+  <% end %>
+</div>

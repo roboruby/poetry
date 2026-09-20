@@ -1,0 +1,7 @@
+<%# The poetry arm: "a destructive alert 'Payment failed' with a
+    description and a warning icon". %>
+<%= poetry_alert(variant: :destructive) do |alert| %>
+  <% alert.with_icon(name: "circle-alert") %>
+  <% alert.with_title { "Payment failed" } %>
+  Your card was declined. Update your billing details and retry.
+<% end %>

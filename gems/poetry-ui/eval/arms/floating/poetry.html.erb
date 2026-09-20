@@ -1,0 +1,32 @@
+<%# The poetry arm: what an agent WITH poetry writes for the floating task
+    "a 'Dimensions' popover behind an 'Open popover' button hosting a
+    small form, plus an icon-only 'Add to library' control with a
+    tooltip, plus an '@nextjs' link enriched with a profile hover-card
+    (the card's content lives at the link's destination - the
+    reachable-elsewhere rule)". %>
+<p class="text-sm">
+  Built by
+  <%= poetry_hover_card(content_class: "w-80") do |card| %>
+    <% card.with_trigger(href: "https://github.com/nextjs", class: "font-medium underline-offset-4 hover:underline") { "@nextjs" } %>
+    <div class="flex flex-col gap-1 text-sm">
+      <h4 class="font-semibold">@nextjs</h4>
+      <p>The React Framework - created and maintained by @vercel.</p>
+      <div class="text-xs text-muted-foreground">Joined December 2021</div>
+    </div>
+  <% end %>
+</p>
+<%= poetry_tooltip_provider do %>
+  <%= poetry_tooltip do |tooltip| %>
+    <% tooltip.with_trigger(variant: :outline, size: :icon, label: "Add to library") do %>
+      <%= poetry_icon(name: :plus) %>
+    <% end %>
+    Add to library
+  <% end %>
+<% end %>
+<%= poetry_popover(content_class: "w-80") do |popover| %>
+  <% popover.with_trigger(variant: :outline) { "Open popover" } %>
+  <% popover.with_title { "Dimensions" } %>
+  <% popover.with_description { "Set the dimensions for the layer." } %>
+  <%= poetry_label(for_id: "floating-width") { "Width" } %>
+  <%= poetry_input(name: "width", value: "100%", id: "floating-width") %>
+<% end %>

@@ -1,0 +1,66 @@
+<div class="mx-auto max-w-2xl p-6">
+  <header class="mb-6">
+    <h1 class="text-2xl font-semibold tracking-tight">Order support</h1>
+    <p class="text-sm text-muted-foreground">Conversation with the Acme support assistant</p>
+  </header>
+
+  <%= poetry_message_scroller(id: "support-transcript") do %>
+    <div class="flex justify-center py-2">
+      <%= poetry_marker(variant: :separator) do %>
+        Today
+      <% end %>
+    </div>
+
+    <%= poetry_message_scroller_item(id: "msg-1") do %>
+      <%= poetry_message(align: :start) do |message| %>
+        <% message.with_avatar do %>
+          <%= poetry_avatar(label: "Acme Assistant", size: :sm) { "AA" } %>
+        <% end %>
+        <% message.with_header do %>
+          Acme Assistant
+        <% end %>
+        <% message.with_footer do %>
+          10:42 AM
+        <% end %>
+
+        <%= poetry_bubble(variant: :muted) do %>
+          I pulled up your invoice — looks like the PDF failed to attach the first time. Here's the corrected copy.
+        <% end %>
+
+        <%= poetry_attachment(orientation: :horizontal, size: :sm, state: :done) do |a| %>
+          <% a.with_media(variant: :icon) do %>
+            <%= poetry_icon(name: :"file-text", label: "PDF document") %>
+          <% end %>
+          <% a.with_title do %>
+            invoice-40218.pdf
+          <% end %>
+          <% a.with_description do %>
+            248 KB
+          <% end %>
+          <% a.with_action(label: "Download") do %>
+            <%= poetry_icon(name: :download) %>
+          <% end %>
+        <% end %>
+
+        <%= poetry_bubble(variant: :outline, tag: :button) do %>
+          Thanks, that's exactly what I needed
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <%= poetry_message_scroller_item(id: "msg-thinking") do %>
+      <%= poetry_message(align: :start) do |message| %>
+        <% message.with_avatar do %>
+          <%= poetry_avatar(label: "Acme Assistant", size: :sm) { "AA" } %>
+        <% end %>
+
+        <%= poetry_bubble(variant: :ghost) do %>
+          <span class="inline-flex items-center gap-2">
+            <%= poetry_spinner(label: "Assistant is thinking") %>
+            <span class="text-muted-foreground">Thinking…</span>
+          </span>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

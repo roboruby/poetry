@@ -1,0 +1,71 @@
+<div class="mx-auto max-w-3xl p-6">
+  <%= poetry_table do %>
+    <%= poetry_table_caption do %>
+      A list of your recent invoices.
+    <% end %>
+    <%= poetry_table_header do %>
+      <%= poetry_table_row do %>
+        <%= poetry_table_head { "Invoice" } %>
+        <%= poetry_table_head { "Status" } %>
+        <%= poetry_table_head { "Method" } %>
+        <%= poetry_table_head(class: "text-right") { "Amount" } %>
+      <% end %>
+    <% end %>
+    <%= poetry_table_body do %>
+      <%= poetry_table_row do %>
+        <%= poetry_table_cell(class: "font-medium") { "INV001" } %>
+        <%= poetry_table_cell do %>
+          <%= poetry_badge(variant: :secondary) { "Paid" } %>
+        <% end %>
+        <%= poetry_table_cell { "Credit Card" } %>
+        <%= poetry_table_cell(class: "text-right") { "$250.00" } %>
+      <% end %>
+      <%= poetry_table_row do %>
+        <%= poetry_table_cell(class: "font-medium") { "INV002" } %>
+        <%= poetry_table_cell do %>
+          <%= poetry_badge(variant: :outline) { "Pending" } %>
+        <% end %>
+        <%= poetry_table_cell { "PayPal" } %>
+        <%= poetry_table_cell(class: "text-right") { "$150.00" } %>
+      <% end %>
+      <%= poetry_table_row do %>
+        <%= poetry_table_cell(class: "font-medium") { "INV003" } %>
+        <%= poetry_table_cell do %>
+          <%= poetry_badge(variant: :destructive) { "Unpaid" } %>
+        <% end %>
+        <%= poetry_table_cell { "Bank Transfer" } %>
+        <%= poetry_table_cell(class: "text-right") { "$350.00" } %>
+      <% end %>
+      <%= poetry_table_row do %>
+        <%= poetry_table_cell(class: "font-medium") { "INV004" } %>
+        <%= poetry_table_cell do %>
+          <%= poetry_badge(variant: :secondary) { "Paid" } %>
+        <% end %>
+        <%= poetry_table_cell { "Credit Card" } %>
+        <%= poetry_table_cell(class: "text-right") { "$450.00" } %>
+      <% end %>
+      <%= poetry_table_row do %>
+        <%= poetry_table_cell(class: "font-medium") { "INV005" } %>
+        <%= poetry_table_cell do %>
+          <%= poetry_badge(variant: :secondary) { "Paid" } %>
+        <% end %>
+        <%= poetry_table_cell { "PayPal" } %>
+        <%= poetry_table_cell(class: "text-right") { "$550.00" } %>
+      <% end %>
+      <%= poetry_table_row do %>
+        <%= poetry_table_cell(class: "font-medium") { "INV006" } %>
+        <%= poetry_table_cell do %>
+          <%= poetry_badge(variant: :outline) { "Pending" } %>
+        <% end %>
+        <%= poetry_table_cell { "Bank Transfer" } %>
+        <%= poetry_table_cell(class: "text-right") { "$200.00" } %>
+      <% end %>
+    <% end %>
+    <%= poetry_table_footer do %>
+      <%= poetry_table_row do %>
+        <%= poetry_table_cell(colspan: 3) { "Total" } %>
+        <%= poetry_table_cell(class: "text-right") { "$1,950.00" } %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,19 @@
+<div class="mx-auto max-w-md p-6">
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Team plan" } %>
+    <% card.with_description { "Collaborative workspace for growing teams, billed monthly." } %>
+    <% card.with_action do %>
+      <%= poetry_badge(variant: :secondary) { "Beta" } %>
+    <% end %>
+    <% card.with_footer do %>
+      <div class="flex w-full items-center justify-end">
+        <%= poetry_link(href: "/plans/team", underline: :always, class: "inline-flex items-center gap-1") do %>
+          Learn more <%= poetry_icon(name: :"arrow-right", class: "size-3.5") %>
+        <% end %>
+      </div>
+    <% end %>
+    <div class="space-y-3 text-sm">
+      <p>Everything in the free plan, plus shared workspaces, role-based permissions, and priority support. Currently in beta while we tune limits based on early feedback.</p>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,30 @@
+<%# The raw arm: plausible LLM output - the breadcrumb is styled divs with
+    slash text (no nav landmark, no current-page), the "list" is bare divs,
+    and the avatars are naked <img>s with no accessible name or fallback. %>
+<div class="space-y-4">
+  <div class="flex items-center gap-2 text-sm text-gray-500">
+    <a href="/" class="hover:text-gray-900">Home</a>
+    <span>/</span>
+    <a href="/team" class="hover:text-gray-900">Team</a>
+    <span>/</span>
+    <span class="text-gray-900">Directory</span>
+  </div>
+  <div class="flex flex-col gap-4">
+    <div class="flex items-center gap-3 rounded-md border p-4">
+      <img src="/avatars/grace.jpg" class="size-8 rounded-full object-cover">
+      <div class="flex-1">
+        <div class="text-sm font-medium">Grace Hopper</div>
+        <div class="text-sm text-gray-500">Rear admiral, compiler pioneer.</div>
+      </div>
+      <button class="rounded-md border px-3 py-1.5 text-sm">Message</button>
+    </div>
+    <div class="flex items-center gap-3 rounded-md border p-4">
+      <img src="/avatars/ada.jpg" class="size-8 rounded-full object-cover">
+      <div class="flex-1">
+        <div class="text-sm font-medium">Ada Lovelace</div>
+        <div class="text-sm text-gray-500">Analyst, first programmer.</div>
+      </div>
+      <button class="rounded-md border px-3 py-1.5 text-sm">Message</button>
+    </div>
+  </div>
+</div>

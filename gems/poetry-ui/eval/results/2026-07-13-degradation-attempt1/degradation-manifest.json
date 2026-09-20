@@ -1,0 +1,1367 @@
+{
+  "units": {
+    "alert": {
+      "raw_tailwind": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 0.1025,
+            "num_turns": 3,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.02,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.0238,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.0292,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.0869,
+            "num_turns": 4,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.0158,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.0149,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.0656,
+            "num_turns": 3,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      },
+      "poetry": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 0.3665,
+            "num_turns": 12,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.1679,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.0309,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.0344,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.2936,
+            "num_turns": 7,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.1067,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.0271,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.1274,
+            "num_turns": 3,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      }
+    },
+    "app_shell": {
+      "raw_tailwind": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 0.2991,
+            "num_turns": 4,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.0217,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.0243,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.0305,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.0641,
+            "num_turns": 2,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.0233,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.0208,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.0737,
+            "num_turns": 3,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      },
+      "poetry": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 0.4315,
+            "num_turns": 13,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.181,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.0309,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.0366,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.3456,
+            "num_turns": 6,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.0325,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.0549,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.1286,
+            "num_turns": 3,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      }
+    },
+    "button": {
+      "poetry": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 0.2348,
+            "num_turns": 11,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.0495,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.0236,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.0269,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.2095,
+            "num_turns": 6,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.0368,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.0182,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.1022,
+            "num_turns": 4,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      },
+      "raw_tailwind": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 0.1411,
+            "num_turns": 4,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.0228,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.025,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.028,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.1417,
+            "num_turns": 4,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.0206,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.0182,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.0917,
+            "num_turns": 3,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      }
+    },
+    "chat_transcript": {
+      "raw_tailwind": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 0.2071,
+            "num_turns": 4,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.021,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.0236,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.0288,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.1042,
+            "num_turns": 4,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.0168,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.0169,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.0942,
+            "num_turns": 3,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      },
+      "poetry": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 0.8232,
+            "num_turns": 32,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.2534,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.0369,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.0439,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.2896,
+            "num_turns": 6,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.0744,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.0291,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.1528,
+            "num_turns": 3,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      }
+    },
+    "data_table": {
+      "raw_tailwind": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 0.2515,
+            "num_turns": 6,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.0225,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.0246,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.0287,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.1216,
+            "num_turns": 3,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.0274,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.0218,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.0761,
+            "num_turns": 2,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      },
+      "poetry": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 1.067,
+            "num_turns": 41,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.2886,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.0363,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.0418,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.304,
+            "num_turns": 6,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.0883,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.0307,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.3189,
+            "num_turns": 6,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      }
+    },
+    "dialog": {
+      "raw_tailwind": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 0.1668,
+            "num_turns": 3,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.0238,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.0263,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.0291,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.0882,
+            "num_turns": 4,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.017,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.0172,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.0466,
+            "num_turns": 2,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      },
+      "poetry": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 0.8733,
+            "num_turns": 33,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.3241,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.0391,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.0426,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.4621,
+            "num_turns": 4,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.0495,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.0303,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.1236,
+            "num_turns": 3,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      }
+    },
+    "empty_state": {
+      "poetry": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 0.353,
+            "num_turns": 15,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.1806,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.0293,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.0343,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.3261,
+            "num_turns": 6,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.0368,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.0218,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.0844,
+            "num_turns": 3,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      },
+      "raw_tailwind": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 0.14,
+            "num_turns": 5,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.0203,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.0231,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.0282,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.0851,
+            "num_turns": 4,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.021,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.018,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.0627,
+            "num_turns": 3,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      }
+    },
+    "form_controls": {
+      "raw_tailwind": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 0.3791,
+            "num_turns": 4,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.0268,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.0297,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.0346,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.1544,
+            "num_turns": 4,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.0266,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.023,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.0934,
+            "num_turns": 3,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      },
+      "poetry": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 1.4219,
+            "num_turns": 34,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.4391,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.0452,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.0492,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.5704,
+            "num_turns": 3,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.0637,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.0365,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.151,
+            "num_turns": 3,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      }
+    },
+    "menu": {
+      "raw_tailwind": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 0.4089,
+            "num_turns": 5,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.0257,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.0296,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.0336,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.1247,
+            "num_turns": 5,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.0272,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.0226,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.0427,
+            "num_turns": 2,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      },
+      "poetry": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 1.2505,
+            "num_turns": 39,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.431,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.0461,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.0492,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.5828,
+            "num_turns": 4,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.0582,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.0364,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.1463,
+            "num_turns": 3,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      }
+    },
+    "settings_tabs": {
+      "poetry": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 0.7917,
+            "num_turns": 21,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.3587,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.0406,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.0448,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.4994,
+            "num_turns": 4,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.0967,
+            "num_turns": 2,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.0366,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.252,
+            "num_turns": 5,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      },
+      "raw_tailwind": {
+        "messages": [
+          {
+            "kind": "brief",
+            "index": null,
+            "cost_usd": 0.3317,
+            "num_turns": 4,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 0,
+            "cost_usd": 0.0244,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 1,
+            "cost_usd": 0.0286,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 2,
+            "cost_usd": 0.0339,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 0,
+            "cost_usd": 0.0885,
+            "num_turns": 3,
+            "exhausted": false
+          },
+          {
+            "kind": "distractor",
+            "index": null,
+            "cost_usd": 0.0203,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "filler",
+            "index": 3,
+            "cost_usd": 0.0186,
+            "num_turns": 1,
+            "exhausted": false
+          },
+          {
+            "kind": "follow_up",
+            "index": 1,
+            "cost_usd": 0.0558,
+            "num_turns": 2,
+            "exhausted": false
+          }
+        ],
+        "probes": {
+          "p0": true,
+          "p1": true,
+          "p2": true
+        }
+      }
+    }
+  },
+  "config": {
+    "model": "claude-sonnet-5",
+    "sample": [
+      "alert",
+      "app_shell",
+      "button",
+      "chat_transcript",
+      "data_table",
+      "dialog",
+      "empty_state",
+      "form_controls",
+      "menu",
+      "settings_tabs"
+    ],
+    "budgets": {
+      "brief": 40,
+      "filler": 4,
+      "follow_up": 25,
+      "distractor": 4
+    },
+    "sequence": [
+      "message:brief",
+      "probe:p0",
+      "message:filler:0",
+      "message:filler:1",
+      "message:filler:2",
+      "message:follow_up:0",
+      "probe:p1",
+      "message:distractor",
+      "message:filler:3",
+      "message:follow_up:1",
+      "probe:p2"
+    ],
+    "toolbelts": {
+      "poetry": "Read,Glob,Grep,Write,Skill,Bash(bin/check:*),mcp__poetry__compose,mcp__poetry__check,mcp__poetry__describe_component,mcp__poetry__list_components,mcp__poetry__list_blocks,mcp__poetry__describe_block",
+      "raw_tailwind": "Read,Glob,Grep,Write,Skill"
+    }
+  },
+  "usage": {
+    "units_recorded": 20,
+    "unit_cost_sum_usd": 22.8753,
+    "receipted_cost_usd": 22.8753
+  }
+}

@@ -1,0 +1,17 @@
+<div class="mx-auto max-w-3xl p-6">
+  <%= poetry_empty(media_variant: :icon) do |empty| %>
+    <% empty.with_media do %>
+      <%= poetry_icon(name: :"folder-plus", label: "Projects") %>
+    <% end %>
+    <% empty.with_title { "No projects yet" } %>
+    <% empty.with_description do %>
+      Projects keep your work organized in one place. Create a new project from
+      scratch, or import an existing one to get started.
+    <% end %>
+
+    <div class="flex items-center justify-center gap-3">
+      <%= poetry_button(variant: :default) { "Create project" } %>
+      <%= poetry_button(variant: :outline) { "Import project" } %>
+    </div>
+  <% end %>
+</div>

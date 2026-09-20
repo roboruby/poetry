@@ -1,0 +1,97 @@
+<main class="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12">
+  <div class="w-full max-w-sm">
+    <div class="mb-8 flex flex-col items-center text-center">
+      <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6" aria-hidden="true">
+          <path d="M12 2 3 6v6c0 5 3.8 8.7 9 10 5.2-1.3 9-5 9-10V6l-9-4Z" />
+          <path d="m9 12 2 2 4-4" />
+        </svg>
+      </div>
+      <h1 class="mt-4 text-xl font-semibold tracking-tight text-slate-900">Nimbus Ledger</h1>
+      <p class="mt-1 text-sm text-slate-500">Sign in to your workspace</p>
+    </div>
+
+    <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+      <form action="/session" method="post" class="space-y-5">
+        <div>
+          <label for="email" class="block text-sm font-medium text-slate-700">Email address</label>
+          <div class="mt-1.5">
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+              placeholder="you@company.com"
+              class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+            >
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between">
+            <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
+            <a href="/password/new" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+              Forgot password?
+            </a>
+          </div>
+          <div class="mt-1.5">
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+              placeholder="••••••••"
+              class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+            >
+          </div>
+        </div>
+
+        <div class="flex items-center">
+          <input
+            id="remember_me"
+            name="remember_me"
+            type="checkbox"
+            value="1"
+            class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500/30"
+          >
+          <label for="remember_me" class="ml-2 block text-sm text-slate-600">Remember me for 30 days</label>
+        </div>
+
+        <button
+          type="submit"
+          class="flex w-full items-center justify-center rounded-lg bg-indigo-600 px-3 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        >
+          Sign in
+        </button>
+      </form>
+
+      <div class="my-6 flex items-center gap-3" role="separator">
+        <div class="h-px flex-1 bg-slate-200"></div>
+        <span class="text-xs font-medium uppercase tracking-wide text-slate-400">or</span>
+        <div class="h-px flex-1 bg-slate-200"></div>
+      </div>
+
+      <form action="/session/sso" method="post">
+        <button
+          type="submit"
+          class="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="10" rx="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          Continue with single sign-on
+        </button>
+      </form>
+    </div>
+
+    <p class="mt-6 text-center text-sm text-slate-500">
+      New to Nimbus Ledger?
+      <a href="/access-requests/new" class="font-medium text-indigo-600 hover:text-indigo-500">
+        Request access
+      </a>
+    </p>
+  </div>
+</main>

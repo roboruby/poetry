@@ -1,0 +1,209 @@
+{
+  "units": {
+    "analytics_overview": {
+      "raw_tailwind": {
+        "cost_usd": 0.238,
+        "num_turns": 5,
+        "duration_s": 56.2,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 1.0462,
+        "num_turns": 36,
+        "duration_s": 205.2,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "activity_inbox": {
+      "raw_tailwind": {
+        "cost_usd": 0.6059,
+        "num_turns": 5,
+        "duration_s": 217.3,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.8227,
+        "num_turns": 33,
+        "duration_s": 217.4,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "billing_settings": {
+      "raw_tailwind": {
+        "cost_usd": 0.2445,
+        "num_turns": 4,
+        "duration_s": 58.5,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.7671,
+        "num_turns": 30,
+        "duration_s": 177.1,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "audit_log": {
+      "poetry": {
+        "cost_usd": 1.5188,
+        "num_turns": 35,
+        "duration_s": 334.9,
+        "attempts": 1,
+        "artifact": true
+      },
+      "raw_tailwind": {
+        "cost_usd": 0.6309,
+        "num_turns": 5,
+        "duration_s": 192.7,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "login": {
+      "raw_tailwind": {
+        "cost_usd": 0.1745,
+        "num_turns": 4,
+        "duration_s": 42.3,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.7073,
+        "num_turns": 28,
+        "duration_s": 142.8,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "integrations": {
+      "raw_tailwind": {
+        "cost_usd": 0.3499,
+        "num_turns": 4,
+        "duration_s": 90.5,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 1.1638,
+        "num_turns": 32,
+        "duration_s": 210.3,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "onboarding_checklist": {
+      "raw_tailwind": {
+        "cost_usd": 0.1637,
+        "num_turns": 4,
+        "duration_s": 32.9,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.5712,
+        "num_turns": 27,
+        "duration_s": 103.2,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "pricing": {
+      "raw_tailwind": {
+        "cost_usd": 0.2508,
+        "num_turns": 4,
+        "duration_s": 58.8,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.7563,
+        "num_turns": 22,
+        "duration_s": 152.8,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "project_detail": {
+      "raw_tailwind": {
+        "cost_usd": 0.222,
+        "num_turns": 5,
+        "duration_s": 52.6,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 1.1419,
+        "num_turns": 42,
+        "duration_s": 214.4,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "search_results": {
+      "raw_tailwind": {
+        "cost_usd": 0.237,
+        "num_turns": 5,
+        "duration_s": 63.6,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.7756,
+        "num_turns": 40,
+        "duration_s": 168.1,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "status_page": {
+      "raw_tailwind": {
+        "cost_usd": 0.2638,
+        "num_turns": 5,
+        "duration_s": 84.6,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 1.7751,
+        "num_turns": 52,
+        "duration_s": 399.2,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "team_members": {
+      "raw_tailwind": {
+        "cost_usd": 0.3168,
+        "num_turns": 5,
+        "duration_s": 84.2,
+        "attempts": 1,
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 1.5394,
+        "num_turns": 41,
+        "duration_s": 335.9,
+        "attempts": 1,
+        "artifact": true
+      }
+    }
+  },
+  "config": {
+    "model": "claude-sonnet-5",
+    "max_turns": 40,
+    "toolbelts": {
+      "poetry": "Read,Glob,Grep,Write,Skill,Bash(bin/check:*),mcp__poetry__compose,mcp__poetry__check,mcp__poetry__describe_component,mcp__poetry__list_components,mcp__poetry__list_blocks,mcp__poetry__describe_block",
+      "raw_tailwind": "Read,Glob,Grep,Write,Skill"
+    }
+  },
+  "usage": {
+    "units_recorded": 24,
+    "unit_cost_sum_usd": 16.2832,
+    "receipted_cost_usd": 16.2834
+  }
+}

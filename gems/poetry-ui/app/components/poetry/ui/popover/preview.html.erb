@@ -1,0 +1,29 @@
+<%# Class-wide sidecar (it displaces poetry-core's generic preview.html.erb
+    fallback, so it must keep that contract): examples that pass their own
+    composition flow through unchanged; the template-owned examples
+    (default/modal) render the upstream popover-demo form - grid gap-2 rows,
+    each grid-cols-3 with the input spanning two columns at h-8 - the layout
+    the port originally dropped (bare label+input pairs had no spacing). %>
+<div class="<%= defined?(container_class) && container_class.presence || "p-4" %>">
+  <% if local_assigns[:content_block] %>
+    <%= render(component, &content_block) %>
+  <% else %>
+    <%= render component do |popover| %>
+      <% popover.with_trigger(variant: :outline) { "Open popover" } %>
+      <% popover.with_title { "Dimensions" } %>
+      <% popover.with_description { "Set the dimensions for the layer." } %>
+      <div class="grid gap-2">
+        <div class="grid grid-cols-3 items-center gap-4">
+          <%= render Poetry::Ui::Label::Component.new(for_id: "popover-demo-width").with_content("Width") %>
+          <%= render Poetry::Ui::Input::Component.new(name: "width", value: "100%",
+                                                      id: "popover-demo-width", class: "col-span-2 h-8") %>
+        </div>
+        <div class="grid grid-cols-3 items-center gap-4">
+          <%= render Poetry::Ui::Label::Component.new(for_id: "popover-demo-height").with_content("Height") %>
+          <%= render Poetry::Ui::Input::Component.new(name: "height", value: "25px",
+                                                      id: "popover-demo-height", class: "col-span-2 h-8") %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>

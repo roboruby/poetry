@@ -1,0 +1,25 @@
+<div class="mx-auto max-w-2xl p-6">
+  <div class="mb-6">
+    <h1 class="text-2xl font-semibold tracking-tight">Schedule</h1>
+    <p class="text-sm text-muted-foreground">Set when this task is due.</p>
+  </div>
+
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Due date" } %>
+    <% card.with_description { "Pick the day this task needs to be finished by." } %>
+
+    <div class="max-w-xs">
+      <%= poetry_date_picker(
+            name: "task[due_date]",
+            label: "Due date",
+            placeholder: "Pick a due date",
+            value: Date.today + 7
+          ) %>
+    </div>
+
+    <% card.with_footer do %>
+      <%= poetry_button(variant: :outline) { "Cancel" } %>
+      <%= poetry_button(type: :submit) { "Save due date" } %>
+    <% end %>
+  <% end %>
+</div>

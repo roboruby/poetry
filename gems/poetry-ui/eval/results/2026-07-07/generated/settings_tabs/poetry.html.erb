@@ -1,0 +1,134 @@
+<div class="mx-auto max-w-3xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Settings</h1>
+    <p class="text-sm">Manage your account details, password, and notification preferences.</p>
+  </div>
+
+  <%= poetry_tabs(default: "account", label: "Account settings") do |tabs| %>
+    <% tabs.with_tab("Account", value: "account") do %>
+      <div class="pt-6">
+        <%= poetry_card(title_tag: :h2) do |card| %>
+          <% card.with_title { "Profile" } %>
+          <% card.with_description { "This information will be displayed publicly, so be careful what you share." } %>
+
+          <div class="flex items-center gap-4">
+            <%= poetry_avatar(label: "Jordan Lee") { "JL" } %>
+            <div class="flex gap-2">
+              <%= poetry_button(variant: :outline, size: :sm) { "Change photo" } %>
+              <%= poetry_button(variant: :ghost, size: :sm) { "Remove" } %>
+            </div>
+          </div>
+
+          <div class="my-6">
+            <%= poetry_separator %>
+          </div>
+
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <%= poetry_field(id: "account_full_name", label_text: "Full name", required: true) do |field| %>
+              <%= poetry_input(**field.control_attributes, name: "account[full_name]", value: "Jordan Lee") %>
+            <% end %>
+
+            <%= poetry_field(id: "account_email", label_text: "Email address", required: true, hint: "We'll send a confirmation link if you change this.") do |field| %>
+              <%= poetry_input(**field.control_attributes, name: "account[email]", type: "email", value: "jordan@example.com") %>
+            <% end %>
+          </div>
+
+          <div class="mt-6">
+            <%= poetry_field(id: "account_bio", label_text: "Bio", hint: "A short description shown on your public profile.") do |field| %>
+              <%= poetry_textarea(**field.control_attributes, name: "account[bio]", rows: 3, placeholder: "Tell us about yourself") %>
+            <% end %>
+          </div>
+
+          <% card.with_footer do %>
+            <div class="flex justify-end gap-2">
+              <%= poetry_button(variant: :outline) { "Cancel" } %>
+              <%= poetry_button { "Save changes" } %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% tabs.with_tab("Password", value: "password") do %>
+      <div class="pt-6">
+        <%= poetry_card(title_tag: :h2) do |card| %>
+          <% card.with_title { "Password" } %>
+          <% card.with_description { "Update the password associated with your account." } %>
+
+          <div class="space-y-6">
+            <%= poetry_field(id: "password_current", label_text: "Current password", required: true) do |field| %>
+              <%= poetry_input(**field.control_attributes, name: "password[current]", type: "password") %>
+            <% end %>
+
+            <%= poetry_field(id: "password_new", label_text: "New password", required: true, hint: "At least 8 characters, with a number and a symbol.") do |field| %>
+              <%= poetry_input(**field.control_attributes, name: "password[new]", type: "password") %>
+            <% end %>
+
+            <%= poetry_field(id: "password_confirmation", label_text: "Confirm new password", required: true) do |field| %>
+              <%= poetry_input(**field.control_attributes, name: "password[confirmation]", type: "password") %>
+            <% end %>
+          </div>
+
+          <% card.with_footer do %>
+            <div class="flex justify-end">
+              <%= poetry_button { "Update password" } %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% tabs.with_tab("Notifications", value: "notifications") do %>
+      <div class="pt-6">
+        <%= poetry_card(title_tag: :h2) do |card| %>
+          <% card.with_title { "Notifications" } %>
+          <% card.with_description { "Choose what you'd like to hear about, and how." } %>
+
+          <%= poetry_item_group do %>
+            <%= poetry_item(role: "listitem", variant: :outline) do |item| %>
+              <% item.with_title { "Email notifications" } %>
+              <% item.with_description { "Account activity, security alerts, and billing receipts." } %>
+              <% item.with_actions do %>
+                <%= poetry_switch(name: "notifications[email]", label: "Email notifications", checked: true) %>
+              <% end %>
+            <% end %>
+
+            <%= poetry_item_separator %>
+
+            <%= poetry_item(role: "listitem", variant: :outline) do |item| %>
+              <% item.with_title { "Push notifications" } %>
+              <% item.with_description { "Real-time alerts sent to this device." } %>
+              <% item.with_actions do %>
+                <%= poetry_switch(name: "notifications[push]", label: "Push notifications", checked: true) %>
+              <% end %>
+            <% end %>
+
+            <%= poetry_item_separator %>
+
+            <%= poetry_item(role: "listitem", variant: :outline) do |item| %>
+              <% item.with_title { "Marketing emails" } %>
+              <% item.with_description { "Product news, tips, and occasional offers." } %>
+              <% item.with_actions do %>
+                <%= poetry_switch(name: "notifications[marketing]", label: "Marketing emails", checked: false) %>
+              <% end %>
+            <% end %>
+          <% end %>
+
+          <div class="mt-6">
+            <%= poetry_radio_group(name: "notifications[frequency]", label: "Digest frequency", value: "immediate") do |group| %>
+              <% group.with_item(value: "immediate", label: "Immediately") %>
+              <% group.with_item(value: "daily", label: "Daily digest") %>
+              <% group.with_item(value: "weekly", label: "Weekly digest") %>
+            <% end %>
+          </div>
+
+          <% card.with_footer do %>
+            <div class="flex justify-end">
+              <%= poetry_button { "Save preferences" } %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

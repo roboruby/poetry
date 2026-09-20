@@ -1,0 +1,143 @@
+<div class="mx-auto max-w-6xl space-y-6 p-6">
+  <header class="flex flex-col gap-4">
+    <%= poetry_breadcrumb do |crumb| %>
+      <% crumb.with_item("Home", href: "/") %>
+      <% crumb.with_item("Projects", href: "/projects") %>
+      <% crumb.with_item("Atlas Redesign") %>
+    <% end %>
+
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div class="space-y-2">
+        <div class="flex items-center gap-3">
+          <h1 class="text-2xl font-semibold tracking-tight">Atlas Redesign</h1>
+          <%= poetry_badge(variant: :info) { "In progress" } %>
+        </div>
+        <p class="max-w-2xl text-sm text-muted-foreground">
+          Rebuild the customer-facing dashboard on the new design system, migrating existing
+          widgets and reporting views without disrupting active workspaces.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <%= poetry_button(variant: :outline) do |button| %>
+          <% button.with_leading { poetry_icon(name: :archive) } %>
+          Archive
+        <% end %>
+        <%= poetry_button do |button| %>
+          <% button.with_leading { poetry_icon(name: :pencil) } %>
+          Edit project
+        <% end %>
+      </div>
+    </div>
+
+    <%= poetry_separator %>
+  </header>
+
+  <div class="grid grid-cols-3 gap-6">
+    <div class="col-span-2 space-y-6">
+      <%= poetry_card(title_tag: :h2) do |card| %>
+        <% card.with_title { "Milestones" } %>
+        <% card.with_description { "Key checkpoints from kickoff to launch." } %>
+        <%= poetry_timeline do |timeline| %>
+          <% timeline.with_item(title: "Kickoff", time: "Apr 1", completed: true) { "Charter approved and workstreams assigned." } %>
+          <% timeline.with_item(title: "Design review", time: "May 12", completed: true) { "Component audit and visual direction signed off." } %>
+          <% timeline.with_item(title: "Beta launch", time: "Jul 28", completed: false) { "Rollout to internal workspaces for feedback." } %>
+          <% timeline.with_item(title: "Public launch", time: "Sep 15", completed: false) { "General availability across all workspaces." } %>
+        <% end %>
+      <% end %>
+
+      <%= poetry_card(title_tag: :h2) do |card| %>
+        <% card.with_title { "Recent tasks" } %>
+        <% card.with_description { "The five most recently updated tasks on this project." } %>
+        <% card.with_footer do %>
+          <%= poetry_link(href: "/projects/atlas-redesign/tasks") { "View all tasks" } %>
+        <% end %>
+
+        <%= poetry_table(caption: "Five most recent tasks") do |table| %>
+          <% table.with_header do %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_head { "Task" } %>
+              <%= poetry_table_head { "Assignee" } %>
+              <%= poetry_table_head { "Due date" } %>
+              <%= poetry_table_head { "Status" } %>
+            <% end %>
+          <% end %>
+          <% table.with_body do %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_cell { "Migrate widget grid to new layout engine" } %>
+              <%= poetry_table_cell do %>
+                <div class="flex items-center gap-2">
+                  <%= poetry_avatar(label: "Jordan Lee", size: :sm) { "JL" } %>
+                  <span>Jordan Lee</span>
+                </div>
+              <% end %>
+              <%= poetry_table_cell { "Jul 24, 2026" } %>
+              <%= poetry_table_cell { poetry_badge(variant: :warning) { "In review" } } %>
+            <% end %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_cell { "Wire up reporting API for weekly exports" } %>
+              <%= poetry_table_cell do %>
+                <div class="flex items-center gap-2">
+                  <%= poetry_avatar(label: "Priya Nair", size: :sm) { "PN" } %>
+                  <span>Priya Nair</span>
+                </div>
+              <% end %>
+              <%= poetry_table_cell { "Jul 25, 2026" } %>
+              <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Open" } } %>
+            <% end %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_cell { "Accessibility pass on dashboard components" } %>
+              <%= poetry_table_cell do %>
+                <div class="flex items-center gap-2">
+                  <%= poetry_avatar(label: "Sam Okafor", size: :sm) { "SO" } %>
+                  <span>Sam Okafor</span>
+                </div>
+              <% end %>
+              <%= poetry_table_cell { "Jul 29, 2026" } %>
+              <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Open" } } %>
+            <% end %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_cell { "Write migration guide for legacy widgets" } %>
+              <%= poetry_table_cell do %>
+                <div class="flex items-center gap-2">
+                  <%= poetry_avatar(label: "Jordan Lee", size: :sm) { "JL" } %>
+                  <span>Jordan Lee</span>
+                </div>
+              <% end %>
+              <%= poetry_table_cell { "Aug 1, 2026" } %>
+              <%= poetry_table_cell { poetry_badge(variant: :info) { "Blocked" } } %>
+            <% end %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_cell { "QA sign-off on beta workspace rollout" } %>
+              <%= poetry_table_cell do %>
+                <div class="flex items-center gap-2">
+                  <%= poetry_avatar(label: "Priya Nair", size: :sm) { "PN" } %>
+                  <span>Priya Nair</span>
+                </div>
+              <% end %>
+              <%= poetry_table_cell { "Aug 4, 2026" } %>
+              <%= poetry_table_cell { poetry_badge(variant: :success) { "Done" } } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="col-span-1">
+      <%= poetry_card(title_tag: :h2) do |card| %>
+        <% card.with_title { "Details" } %>
+        <%= poetry_metadata_list do |list| %>
+          <% list.with_item(label: "Owner") do %>
+            <div class="flex items-center gap-2">
+              <%= poetry_avatar(label: "Jordan Lee", size: :sm) { "JL" } %>
+              <span>Jordan Lee</span>
+            </div>
+          <% end %>
+          <% list.with_item(label: "Start date") { "Apr 1, 2026" } %>
+          <% list.with_item(label: "Due date") { "Sep 15, 2026" } %>
+          <% list.with_item(label: "Last updated") { "Jul 21, 2026" } %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

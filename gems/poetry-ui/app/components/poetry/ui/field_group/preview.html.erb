@@ -1,0 +1,30 @@
+<%# Shared template for the FieldGroup previews: default stacks wired
+    quartet fields around a separator; choices: packs horizontal
+    checkbox rows (the tighter run the variant exists for). %>
+<div class="w-96 p-4">
+  <%= render component do %>
+    <% if local_assigns[:choices] %>
+      <%= render Poetry::Ui::Field::Component.new(id: "field-group-preview-disks", label_text: "Hard disks",
+                                                  orientation: :horizontal) do |field| %>
+        <%= render Poetry::Ui::Checkbox::Component.new(name: "disks", checked: true,
+                                                       **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+      <%= render Poetry::Ui::Field::Component.new(id: "field-group-preview-external", label_text: "External disks",
+                                                  orientation: :horizontal) do |field| %>
+        <%= render Poetry::Ui::Checkbox::Component.new(name: "external",
+                                                       **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+    <% else %>
+      <%= render Poetry::Ui::Field::Component.new(id: "field-group-preview-email", label_text: "Email") do |field| %>
+        <%= render Poetry::Ui::Input::Component.new(type: "email", name: "email",
+                                                    **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+      <%= render Poetry::Ui::FieldSeparator::Component.new.with_content("Or continue with") %>
+      <%= render Poetry::Ui::Field::Component.new(id: "field-group-preview-sso", label_text: "SSO domain",
+                                                  hint: "Your identity provider's domain.") do |field| %>
+        <%= render Poetry::Ui::Input::Component.new(name: "sso",
+                                                    **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

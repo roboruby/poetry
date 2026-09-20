@@ -1,0 +1,17 @@
+<%# The raw arm: plausible LLM output - the search input and the select
+    are UNLABELLED, and the "groups" are bare flex divs (no role=group). %>
+<div class="flex items-center gap-3">
+  <div class="flex max-w-xs items-center rounded-md border px-2">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" class="size-4 text-gray-400"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input name="q" placeholder="Search…" class="h-9 flex-1 border-0 px-2 text-sm outline-none">
+  </div>
+  <select name="sort" class="h-9 rounded-md border px-2 text-sm">
+    <option value="newest">Newest</option>
+    <option value="oldest">Oldest</option>
+  </select>
+  <div class="flex">
+    <button class="rounded-l-md border px-3 py-1.5 text-sm">List</button>
+    <button class="rounded-r-md border border-l-0 px-3 py-1.5 text-sm">Grid</button>
+  </div>
+</div>

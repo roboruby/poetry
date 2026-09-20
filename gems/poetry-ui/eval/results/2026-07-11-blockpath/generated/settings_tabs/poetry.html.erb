@@ -1,0 +1,90 @@
+<div class="mx-auto max-w-3xl p-6 space-y-6">
+  <header class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Account settings</h1>
+    <p class="text-sm text-muted-foreground">Manage your profile, password, and notification preferences.</p>
+  </header>
+
+  <%= poetry_tabs(default: "account", label: "Account settings") do |tabs| %>
+    <% tabs.with_tab("Account", value: "account") do %>
+      <%= poetry_card(title_tag: :h2) do |card| %>
+        <% card.with_title { "Profile" } %>
+        <% card.with_description { "This information is visible to other members of your workspace." } %>
+        <% card.with_footer do %>
+          <div class="flex w-full justify-end">
+            <%= poetry_button { "Save changes" } %>
+          </div>
+        <% end %>
+
+        <div class="space-y-6">
+          <div class="flex items-center gap-4">
+            <%= poetry_avatar(label: "Matt Solt", size: :lg) { "MS" } %>
+            <div class="flex items-center gap-2">
+              <%= poetry_button(variant: :outline, size: :sm) { "Change avatar" } %>
+              <%= poetry_button(variant: :ghost, size: :sm) { "Remove" } %>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <%= poetry_field(id: "account_first_name", label_text: "First name") do |field| %>
+              <%= poetry_input(**field.control_attributes, name: "account[first_name]", value: "Matt") %>
+            <% end %>
+            <%= poetry_field(id: "account_last_name", label_text: "Last name") do |field| %>
+              <%= poetry_input(**field.control_attributes, name: "account[last_name]", value: "Solt") %>
+            <% end %>
+          </div>
+
+          <%= poetry_field(id: "account_email", label_text: "Email address", hint: "Used for sign-in and receipts.") do |field| %>
+            <%= poetry_input(**field.control_attributes, name: "account[email]", type: "email", value: "mattsolt@gmail.com") %>
+          <% end %>
+
+          <%= poetry_field(id: "account_bio", label_text: "Bio", hint: "A short description shown on your profile.") do |field| %>
+            <%= poetry_textarea(**field.control_attributes, name: "account[bio]", rows: 3, placeholder: "Tell us a little about yourself") %>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+
+    <% tabs.with_tab("Password", value: "password") do %>
+      <%= poetry_card(title_tag: :h2) do |card| %>
+        <% card.with_title { "Password" } %>
+        <% card.with_description { "Choose a strong password you don't use elsewhere." } %>
+        <% card.with_footer do %>
+          <div class="flex w-full justify-end">
+            <%= poetry_button { "Update password" } %>
+          </div>
+        <% end %>
+
+        <div class="space-y-6">
+          <%= poetry_field(id: "password_current", label_text: "Current password") do |field| %>
+            <%= poetry_input(**field.control_attributes, name: "password[current]", type: "password") %>
+          <% end %>
+          <%= poetry_field(id: "password_new", label_text: "New password", hint: "At least 12 characters.") do |field| %>
+            <%= poetry_input(**field.control_attributes, name: "password[new]", type: "password") %>
+          <% end %>
+          <%= poetry_field(id: "password_confirmation", label_text: "Confirm new password") do |field| %>
+            <%= poetry_input(**field.control_attributes, name: "password[confirmation]", type: "password") %>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+
+    <% tabs.with_tab("Notifications", value: "notifications") do %>
+      <%= poetry_card(title_tag: :h2) do |card| %>
+        <% card.with_title { "Notifications" } %>
+        <% card.with_description { "Choose what you want to hear about, and how." } %>
+        <% card.with_footer do %>
+          <div class="flex w-full justify-end">
+            <%= poetry_button { "Save preferences" } %>
+          </div>
+        <% end %>
+
+        <div class="space-y-4">
+          <%= poetry_checkbox(name: "notifications[product_updates]", label: "Product updates", checked: true) %>
+          <%= poetry_checkbox(name: "notifications[security_alerts]", label: "Security alerts", checked: true) %>
+          <%= poetry_checkbox(name: "notifications[weekly_summary]", label: "Weekly summary email") %>
+          <%= poetry_checkbox(name: "notifications[marketing]", label: "Marketing and tips") %>
+        </div>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,164 @@
+<% query = "deployment" %>
+<main class="max-w-5xl mx-auto px-6 py-10">
+  <header class="mb-8">
+    <h1 class="text-2xl font-semibold text-gray-900">
+      Search results for &ldquo;<span class="text-gray-900"><%= query %></span>&rdquo;
+    </h1>
+    <p class="mt-1 text-sm text-gray-500">12 results across 3 categories</p>
+  </header>
+
+  <nav aria-label="Result categories" class="mb-8 flex items-center gap-2 border-b border-gray-200 pb-4">
+    <a href="#projects-results" class="inline-flex items-center gap-2 rounded-full bg-gray-900 px-3 py-1.5 text-sm font-medium text-white">
+      Projects
+      <span class="rounded-full bg-white/20 px-1.5 py-0.5 text-xs">3</span>
+    </a>
+    <a href="#documents-results" class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100">
+      Documents
+      <span class="rounded-full bg-gray-200 px-1.5 py-0.5 text-xs text-gray-700">4</span>
+    </a>
+    <a href="#people-results" class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100">
+      People
+      <span class="rounded-full bg-gray-200 px-1.5 py-0.5 text-xs text-gray-700">0</span>
+    </a>
+  </nav>
+
+  <div class="space-y-10">
+
+    <!-- Projects -->
+    <section id="projects-results" aria-labelledby="projects-heading">
+      <div class="mb-3 flex items-center justify-between">
+        <h2 id="projects-heading" class="flex items-center gap-2 text-lg font-semibold text-gray-900">
+          <svg class="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5h18M3 12h18M3 16.5h18" />
+          </svg>
+          Projects
+        </h2>
+        <span class="text-sm text-gray-500">3 matches</span>
+      </div>
+
+      <ul class="divide-y divide-gray-200 rounded-lg border border-gray-200 bg-white">
+        <li class="p-4 hover:bg-gray-50">
+          <a href="#" class="block">
+            <div class="flex items-start justify-between gap-4">
+              <h3 class="font-medium text-blue-700">Q3 <mark class="bg-yellow-100 text-inherit">Deployment</mark> Pipeline</h3>
+              <span class="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">Active</span>
+            </div>
+            <p class="mt-1 text-sm text-gray-600">
+              Coordinating the automated <mark class="bg-yellow-100">deployment</mark> pipeline for the Q3 release, covering staging rollout, smoke tests, and production promotion.
+            </p>
+            <p class="mt-2 text-xs text-gray-400">
+              Project &middot; Owned by Priya Nair &middot; Updated 2 days ago &middot; 14 members
+            </p>
+          </a>
+        </li>
+        <li class="p-4 hover:bg-gray-50">
+          <a href="#" class="block">
+            <div class="flex items-start justify-between gap-4">
+              <h3 class="font-medium text-blue-700"><mark class="bg-yellow-100">Deployment</mark> Automation Toolkit</h3>
+              <span class="shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">On hold</span>
+            </div>
+            <p class="mt-1 text-sm text-gray-600">
+              Internal tooling to standardize <mark class="bg-yellow-100">deployment</mark> scripts across services, including rollback and canary release helpers.
+            </p>
+            <p class="mt-2 text-xs text-gray-400">
+              Project &middot; Owned by Marcus Webb &middot; Updated 3 weeks ago &middot; 6 members
+            </p>
+          </a>
+        </li>
+        <li class="p-4 hover:bg-gray-50">
+          <a href="#" class="block">
+            <div class="flex items-start justify-between gap-4">
+              <h3 class="font-medium text-blue-700">Infra <mark class="bg-yellow-100">Deployment</mark> Runbook</h3>
+              <span class="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">Active</span>
+            </div>
+            <p class="mt-1 text-sm text-gray-600">
+              Living runbook describing the manual steps required for a safe <mark class="bg-yellow-100">deployment</mark> to production during a maintenance window.
+            </p>
+            <p class="mt-2 text-xs text-gray-400">
+              Project &middot; Owned by Sana Iqbal &middot; Updated 5 days ago &middot; 9 members
+            </p>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Documents -->
+    <section id="documents-results" aria-labelledby="documents-heading">
+      <div class="mb-3 flex items-center justify-between">
+        <h2 id="documents-heading" class="flex items-center gap-2 text-lg font-semibold text-gray-900">
+          <svg class="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+          </svg>
+          Documents
+        </h2>
+        <span class="text-sm text-gray-500">4 matches</span>
+      </div>
+
+      <ul class="divide-y divide-gray-200 rounded-lg border border-gray-200 bg-white">
+        <li class="p-4 hover:bg-gray-50">
+          <a href="#" class="block">
+            <h3 class="font-medium text-blue-700"><mark class="bg-yellow-100">Deployment</mark> Checklist.docx</h3>
+            <p class="mt-1 text-sm text-gray-600">
+              Pre-<mark class="bg-yellow-100">deployment</mark> checklist covering database migrations, feature flags, and rollback criteria before shipping.
+            </p>
+            <p class="mt-2 text-xs text-gray-400">
+              Document &middot; /Engineering/Runbooks &middot; Edited yesterday by Priya Nair
+            </p>
+          </a>
+        </li>
+        <li class="p-4 hover:bg-gray-50">
+          <a href="#" class="block">
+            <h3 class="font-medium text-blue-700">Production <mark class="bg-yellow-100">Deployment</mark> Guide</h3>
+            <p class="mt-1 text-sm text-gray-600">
+              Step-by-step guide for deploying the main application to production, including environment variables and health checks.
+            </p>
+            <p class="mt-2 text-xs text-gray-400">
+              Document &middot; /Engineering/Guides &middot; Edited 4 days ago by Marcus Webb
+            </p>
+          </a>
+        </li>
+        <li class="p-4 hover:bg-gray-50">
+          <a href="#" class="block">
+            <h3 class="font-medium text-blue-700"><mark class="bg-yellow-100">Deployment</mark> Rollback Procedure</h3>
+            <p class="mt-1 text-sm text-gray-600">
+              Emergency steps for rolling back a failed <mark class="bg-yellow-100">deployment</mark>, including who to notify and how to restore the previous version.
+            </p>
+            <p class="mt-2 text-xs text-gray-400">
+              Document &middot; /Engineering/Runbooks &middot; Edited 2 weeks ago by Sana Iqbal
+            </p>
+          </a>
+        </li>
+        <li class="p-4 hover:bg-gray-50">
+          <a href="#" class="block">
+            <h3 class="font-medium text-blue-700">Release &amp; <mark class="bg-yellow-100">Deployment</mark> Notes Q2</h3>
+            <p class="mt-1 text-sm text-gray-600">
+              Summary of Q2 releases and their <mark class="bg-yellow-100">deployment</mark> dates, along with known issues and follow-up actions.
+            </p>
+            <p class="mt-2 text-xs text-gray-400">
+              Document &middot; /Shared/Release Notes &middot; Edited 1 month ago by Priya Nair
+            </p>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <!-- People -->
+    <section id="people-results" aria-labelledby="people-heading">
+      <div class="mb-3 flex items-center justify-between">
+        <h2 id="people-heading" class="flex items-center gap-2 text-lg font-semibold text-gray-900">
+          <svg class="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+          </svg>
+          People
+        </h2>
+        <span class="text-sm text-gray-500">0 matches</span>
+      </div>
+
+      <div class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-center">
+        <p class="text-sm font-medium text-gray-700">No people matched &ldquo;<%= query %>&rdquo;</p>
+        <p class="mt-1 text-sm text-gray-500">Try searching by a person&rsquo;s name, team, or email address instead.</p>
+      </div>
+    </section>
+
+  </div>
+</main>

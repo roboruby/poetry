@@ -1,0 +1,57 @@
+<section class="mx-auto max-w-3xl space-y-10 p-6">
+  <div class="space-y-1">
+    <h1 class="text-lg font-semibold tracking-tight">Workspace</h1>
+    <p class="text-sm text-muted-foreground">
+      An app menu bar, a row's own actions menu, and its right-click context menu.
+    </p>
+  </div>
+
+  <%= poetry_menubar(label: "Main menu") do |menubar| %>
+    <% menubar.with_menu do |menu| %>
+      <% menu.with_trigger { "File" } %>
+      <% menu.with_item(shortcut: "⌘N") { "New file" } %>
+      <% menu.with_item(shortcut: "⌘O") { "Open…" } %>
+      <% menu.with_item(shortcut: "⌘S") { "Save" } %>
+      <% menu.with_separator %>
+      <% menu.with_item(shortcut: "⌘W") { "Close window" } %>
+    <% end %>
+    <% menubar.with_menu do |menu| %>
+      <% menu.with_trigger { "View" } %>
+      <% menu.with_checkbox_item(checked: true) { "Show sidebar" } %>
+      <% menu.with_checkbox_item(checked: false) { "Show status bar" } %>
+      <% menu.with_separator %>
+      <% menu.with_item { "Reload" } %>
+    <% end %>
+  <% end %>
+
+  <div role="list" class="rounded-lg border">
+    <%= poetry_context_menu(label: "Row actions") do |cm| %>
+      <% cm.with_trigger do %>
+        <div role="listitem" class="flex items-center justify-between gap-4 p-4">
+          <div class="space-y-1">
+            <p class="text-sm font-medium">Acme Corp</p>
+            <p class="text-sm text-muted-foreground">Enterprise plan · 12 members</p>
+          </div>
+
+          <%= poetry_dropdown_menu(align: :end) do |dd| %>
+            <% dd.with_trigger(variant: :outline, size: :sm) { "Options" } %>
+            <% dd.with_label { "Account" } %>
+            <% dd.with_item { "View profile" } %>
+            <% dd.with_item { "Switch account" } %>
+            <% dd.with_separator %>
+            <% dd.with_checkbox_item(checked: true) { "Pin to sidebar" } %>
+            <% dd.with_separator %>
+            <% dd.with_item(variant: :destructive) { "Delete workspace" } %>
+          <% end %>
+        </div>
+      <% end %>
+      <% cm.with_label { "Account" } %>
+      <% cm.with_item { "View profile" } %>
+      <% cm.with_item { "Switch account" } %>
+      <% cm.with_separator %>
+      <% cm.with_checkbox_item(checked: true) { "Pin to sidebar" } %>
+      <% cm.with_separator %>
+      <% cm.with_item(variant: :destructive) { "Delete workspace" } %>
+    <% end %>
+  </div>
+</section>

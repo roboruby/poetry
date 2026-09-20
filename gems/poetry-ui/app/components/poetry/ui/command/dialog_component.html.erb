@@ -1,0 +1,14 @@
+<%= content_tag(:div, **root_attributes) do %>
+  <%= trigger %>
+  <%= content_tag(:dialog, **dialog_attributes) do %>
+    <%# sr-only header (source-exact): the dialog stays labelled/described
+        while the palette owns the visible surface. %>
+    <div data-slot="dialog-header" class="sr-only">
+      <h2 id="<%= title_id %>" data-slot="dialog-title"><%= title %></h2>
+      <p id="<%= description_id %>" data-slot="dialog-description"><%= description %></p>
+    </div>
+    <%# The close X (when shown) rides INSIDE the command's input row - the
+        embedded Command renders it as the row's trailing item. %>
+    <%= render(command) %>
+  <% end %>
+<% end %>

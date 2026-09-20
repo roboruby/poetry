@@ -1,0 +1,25 @@
+<%# The raw-Tailwind arm for the same survey - realistic, not a strawman:
+    all three questions render stacked (no one-at-a-time machinery), the
+    fieldset/legend grouping is right, but required-ness is only an
+    asterisk, nothing validates before submit, and there is no progress
+    announcement. %>
+<form action="#" method="post" class="max-w-md space-y-6">
+  <p class="text-xs font-medium text-gray-500">Question 1 of 3</p>
+  <fieldset class="space-y-2">
+    <legend class="text-base font-medium">What best describes your role? *</legend>
+    <label class="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm"><input type="radio" name="role" value="engineer" /> Engineer</label>
+    <label class="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm"><input type="radio" name="role" value="designer" /> Designer</label>
+    <label class="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm"><input type="radio" name="role" value="other" /> Something else</label>
+  </fieldset>
+  <fieldset class="space-y-2">
+    <legend class="text-base font-medium">Where did you hear about us?</legend>
+    <label class="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm"><input type="checkbox" name="channels" value="friend" /> A friend</label>
+    <label class="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm"><input type="checkbox" name="channels" value="social" /> Social media</label>
+  </fieldset>
+  <fieldset class="space-y-2">
+    <legend class="text-base font-medium">What should we build next? *</legend>
+    <label class="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm"><input type="radio" name="feedback" value="integrations" /> More integrations</label>
+    <input type="text" name="feedback" placeholder="Describe it…" class="w-full rounded-lg border px-3 py-2 text-sm" />
+  </fieldset>
+  <button type="submit" class="rounded-lg bg-black px-4 py-2 text-sm text-white">Submit</button>
+</form>

@@ -1,0 +1,14 @@
+<section class="mx-auto max-w-md px-6 py-12">
+  <h1 class="text-lg font-semibold text-foreground">Task details</h1>
+  <p class="mt-1 text-sm text-muted-foreground">Set a due date for this task.</p>
+
+  <div class="mt-6">
+    <%= poetry_date_picker(
+      name: "task[due_date]",
+      label: "Due date",
+      placeholder: "Pick a due date",
+      value: Date.new(2026, 7, 14),
+      min: Date.current
+    ) %>
+  </div>
+</section>

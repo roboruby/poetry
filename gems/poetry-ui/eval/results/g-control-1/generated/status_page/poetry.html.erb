@@ -1,0 +1,112 @@
+<div class="mx-auto max-w-4xl space-y-10 p-6">
+  <header class="space-y-4">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="space-y-1">
+        <h1 class="text-2xl font-semibold tracking-tight">Nimbus Cloud Status</h1>
+        <p class="text-sm text-muted-foreground">Live status and incident updates for Nimbus Cloud services.</p>
+      </div>
+      <p class="text-xs text-muted-foreground">Last checked 2 minutes ago</p>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <div class="flex flex-wrap items-center justify-between gap-4 rounded-lg border bg-card p-4">
+    <div class="flex items-center gap-3">
+      <%= poetry_icon(name: :"triangle-alert", class: "size-5 text-muted-foreground") %>
+      <div>
+        <p class="font-medium">Degraded performance</p>
+        <p class="text-sm text-muted-foreground">One service is experiencing elevated latency. See the incident below for details.</p>
+      </div>
+    </div>
+    <%= poetry_badge(variant: :warning) { "Degraded" } %>
+  </div>
+
+  <section class="space-y-4">
+    <h2 class="text-lg font-semibold tracking-tight">Services</h2>
+    <div class="overflow-hidden rounded-lg border">
+      <%= poetry_table do %>
+        <%= poetry_table_caption(class: "sr-only") { "Current status and 90-day uptime for each service." } %>
+        <%= poetry_table_header do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_head { "Service" } %>
+            <%= poetry_table_head { "Status" } %>
+            <%= poetry_table_head { "Uptime (90 days)" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_body do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { "API" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :warning) { "Degraded performance" } } %>
+            <%= poetry_table_cell { poetry_meter(label: "API uptime", value: 9987, max: 10_000, value_label: "99.87%", class: "w-48") } %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { "Web Dashboard" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :success) { "Operational" } } %>
+            <%= poetry_table_cell { poetry_meter(label: "Web Dashboard uptime", value: 9999, max: 10_000, value_label: "99.99%", class: "w-48") } %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { "Authentication" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :success) { "Operational" } } %>
+            <%= poetry_table_cell { poetry_meter(label: "Authentication uptime", value: 10_000, max: 10_000, value_label: "100.00%", class: "w-48") } %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { "Webhooks" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :success) { "Operational" } } %>
+            <%= poetry_table_cell { poetry_meter(label: "Webhooks uptime", value: 9995, max: 10_000, value_label: "99.95%", class: "w-48") } %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { "Billing" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :success) { "Operational" } } %>
+            <%= poetry_table_cell { poetry_meter(label: "Billing uptime", value: 10_000, max: 10_000, value_label: "100.00%", class: "w-48") } %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { "Notifications" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :success) { "Operational" } } %>
+            <%= poetry_table_cell { poetry_meter(label: "Notifications uptime", value: 9992, max: 10_000, value_label: "99.92%", class: "w-48") } %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="space-y-4">
+    <h2 class="text-lg font-semibold tracking-tight">Active incident</h2>
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Elevated API latency" } %>
+      <% card.with_description { "Investigating slower-than-normal response times on API requests." } %>
+      <% card.with_action do %>
+        <%= poetry_badge(variant: :warning) { "Investigating" } %>
+      <% end %>
+      <% card.with_footer do %>
+        <p class="text-xs text-muted-foreground">Started July 22, 2026 · 09:14 UTC · Affects API</p>
+      <% end %>
+      <%= poetry_timeline do |timeline| %>
+        <% timeline.with_item(title: "Investigating", time: "09:14 UTC", completed: true) do %>
+          We are investigating reports of elevated response times on API endpoints.
+        <% end %>
+        <% timeline.with_item(title: "Identified", time: "09:52 UTC", completed: true) do %>
+          Root cause traced to a saturated connection pool on the primary API database.
+        <% end %>
+        <% timeline.with_item(title: "Monitoring", time: "10:42 UTC") do %>
+          A fix has been deployed and we are monitoring API latency before marking this incident resolved.
+        <% end %>
+      <% end %>
+    <% end %>
+  </section>
+
+  <section class="space-y-4">
+    <h2 class="text-lg font-semibold tracking-tight">Subscribe to updates</h2>
+    <%= poetry_card do |card| %>
+      <% card.with_description { "Get an email whenever an incident is opened, updated, or resolved." } %>
+      <form action="/status/subscriptions" method="post" class="flex flex-col gap-4 sm:flex-row sm:items-end">
+        <div class="flex-1">
+          <%= poetry_field(id: "subscribe-email", label_text: "Email address", hint: "We'll only email you about incident updates.", required: true) do |field| %>
+            <%= poetry_input(**field.control_attributes, type: "email", name: "subscription[email]", placeholder: "you@example.com") %>
+          <% end %>
+        </div>
+        <%= poetry_button(type: :submit) { "Subscribe" } %>
+      <% end %>
+    <% end %>
+    </form>
+  </section>
+</div>

@@ -1,0 +1,155 @@
+<%
+  invoices = [
+    { number: "INV-1042", customer: "Alder & Finch LLC",     issued_on: "2026-06-01", due_on: "2026-06-15", amount: 1_240.00, status: "Paid"    },
+    { number: "INV-1043", customer: "Brightwater Studio",    issued_on: "2026-06-02", due_on: "2026-06-16", amount:   860.50, status: "Pending" },
+    { number: "INV-1044", customer: "Cascade Robotics",      issued_on: "2026-06-03", due_on: "2026-06-17", amount: 4_512.75, status: "Overdue" },
+    { number: "INV-1045", customer: "Driftwood Coffee Co.",  issued_on: "2026-06-04", due_on: "2026-06-18", amount:   210.00, status: "Paid"    },
+    { number: "INV-1046", customer: "Ember Analytics",       issued_on: "2026-06-05", due_on: "2026-06-19", amount: 3_075.20, status: "Pending" },
+    { number: "INV-1047", customer: "Farrow Legal Group",    issued_on: "2026-06-06", due_on: "2026-06-20", amount:   975.00, status: "Paid"    },
+    { number: "INV-1048", customer: "Glasswing Media",       issued_on: "2026-06-08", due_on: "2026-06-22", amount: 1_688.40, status: "Overdue" },
+    { number: "INV-1049", customer: "Harbor Freight Supply",  issued_on: "2026-06-09", due_on: "2026-06-23", amount:   540.00, status: "Paid"    },
+    { number: "INV-1050", customer: "Ironclad Logistics",    issued_on: "2026-06-10", due_on: "2026-06-24", amount: 2_960.10, status: "Pending" },
+    { number: "INV-1051", customer: "Juniper & Sage",        issued_on: "2026-06-11", due_on: "2026-06-25", amount:   325.60, status: "Paid"    },
+  ]
+
+  status_classes = {
+    "Paid"    => "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
+    "Pending" => "bg-amber-50 text-amber-700 ring-amber-600/20",
+    "Overdue" => "bg-rose-50 text-rose-700 ring-rose-600/20",
+  }
+%>
+<section class="mx-auto max-w-7xl px-6 py-10">
+  <div class="sm:flex sm:items-end sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight text-gray-900">Invoices</h1>
+      <p class="mt-1 text-sm text-gray-500">Browse, filter, and sort all invoices. Currently sorted by invoice number, ascending.</p>
+    </div>
+  </div>
+
+  <form action="" method="get" role="search" class="mt-6 flex flex-wrap items-end gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
+    <div class="flex flex-col gap-1">
+      <label for="invoice-filter" class="text-xs font-medium text-gray-600">Filter</label>
+      <input
+        type="search"
+        id="invoice-filter"
+        name="q"
+        placeholder="Search invoice # or customer&hellip;"
+        class="w-64 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+      >
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label for="status-filter" class="text-xs font-medium text-gray-600">Status</label>
+      <select
+        id="status-filter"
+        name="status"
+        class="w-40 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+      >
+        <option value="">All statuses</option>
+        <option value="paid">Paid</option>
+        <option value="pending">Pending</option>
+        <option value="overdue">Overdue</option>
+      </select>
+    </div>
+
+    <div class="flex gap-2">
+      <button
+        type="submit"
+        class="rounded-md bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+      >
+        Apply filters
+      </button>
+      <a href="" class="rounded-md px-4 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100">
+        Reset
+      </a>
+    </div>
+  </form>
+
+  <div class="mt-6 overflow-hidden rounded-lg border border-gray-200">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <a href="?sort=number&amp;direction=asc" class="inline-flex items-center gap-1 text-blue-700 hover:text-blue-900" aria-current="true">
+              Invoice #
+              <svg viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5" aria-hidden="true">
+                <path fill-rule="evenodd" d="M10 3a.75.75 0 01.75.75v10.638l3.96-4.158a.75.75 0 111.08 1.04l-5.25 5.5a.75.75 0 01-1.08 0l-5.25-5.5a.75.75 0 111.08-1.04l3.96 4.158V3.75A.75.75 0 0110 3z" clip-rule="evenodd" transform="rotate(180 10 10)" />
+              </svg>
+            </a>
+            <span class="sr-only">, sorted ascending</span>
+          </th>
+          <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <a href="?sort=customer&amp;direction=asc" class="inline-flex items-center gap-1 hover:text-gray-700">Customer</a>
+          </th>
+          <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <a href="?sort=issued_on&amp;direction=asc" class="inline-flex items-center gap-1 hover:text-gray-700">Issued</a>
+          </th>
+          <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <a href="?sort=due_on&amp;direction=asc" class="inline-flex items-center gap-1 hover:text-gray-700">Due</a>
+          </th>
+          <th scope="col" class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <a href="?sort=amount&amp;direction=asc" class="inline-flex items-center gap-1 hover:text-gray-700">Amount</a>
+          </th>
+          <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <a href="?sort=status&amp;direction=asc" class="inline-flex items-center gap-1 hover:text-gray-700">Status</a>
+          </th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100 bg-white">
+        <% invoices.each do |invoice| %>
+          <tr class="hover:bg-gray-50">
+            <td class="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900"><%= invoice[:number] %></td>
+            <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-700"><%= invoice[:customer] %></td>
+            <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500"><%= invoice[:issued_on] %></td>
+            <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500"><%= invoice[:due_on] %></td>
+            <td class="whitespace-nowrap px-4 py-3 text-right text-sm tabular-nums text-gray-900">
+              $<%= number_with_delimiter(format("%.2f", invoice[:amount])) %>
+            </td>
+            <td class="whitespace-nowrap px-4 py-3 text-sm">
+              <span class={"inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset #{status_classes[invoice[:status]]}"}>
+                <%= invoice[:status] %>
+              </span>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <nav aria-label="Pagination" class="mt-4 flex items-center justify-between">
+    <p class="text-sm text-gray-500">
+      Showing <span class="font-medium text-gray-700">1</span>&ndash;<span class="font-medium text-gray-700">10</span>
+      of <span class="font-medium text-gray-700">47</span> invoices
+    </p>
+    <ul class="flex items-center gap-1">
+      <li>
+        <span class="inline-flex cursor-not-allowed items-center rounded-md px-3 py-1.5 text-sm font-medium text-gray-300" aria-disabled="true">
+          Previous
+        </span>
+      </li>
+      <li>
+        <a href="?page=1" aria-current="page" class="inline-flex items-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white">1</a>
+      </li>
+      <li>
+        <a href="?page=2" class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100">2</a>
+      </li>
+      <li>
+        <a href="?page=3" class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100">3</a>
+      </li>
+      <li>
+        <a href="?page=4" class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100">4</a>
+      </li>
+      <li>
+        <span class="px-1 text-sm text-gray-400">&hellip;</span>
+      </li>
+      <li>
+        <a href="?page=5" class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100">5</a>
+      </li>
+      <li>
+        <a href="?page=2" class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100">
+          Next
+        </a>
+      </li>
+    </ul>
+  </nav>
+</section>

@@ -1,0 +1,100 @@
+<%# The poetry arm: "a notification settings panel - an 'Accept terms'
+    checkbox staged for submit, an instant-effect 'Email alerts' switch, a
+    bookmark toggle, an exclusive list/grid view switcher, and a digest
+    frequency choice". The family decision tree on one panel: Checkbox
+    stages a form value (the hidden native input IS the store), Switch
+    flips an effect now (role=switch announces on/off), Toggle is pressed
+    UI state (no form machinery), the single ToggleGroup wears radiogroup
+    semantics for UI-only exclusivity, and the SUBMITTING exclusive choice
+    is a RadioGroup (one hidden native radio per item -
+    collection_radio_buttons-identical params). %>
+<div class="flex w-fit flex-col gap-6">
+  <div class="flex items-center gap-3">
+    <%= poetry_checkbox(name: "settings[terms]", id: "settings-terms") %>
+    <%= poetry_label(for_id: "settings-terms") { "Accept terms and conditions" } %>
+  </div>
+  <div class="flex items-center gap-3">
+    <%= poetry_switch(name: "settings[email_alerts]", checked: true, id: "settings-email-alerts") %>
+    <%= poetry_label(for_id: "settings-email-alerts") { "Email alerts" } %>
+  </div>
+  <div class="flex items-center gap-3">
+    <%= poetry_toggle(variant: :outline, pressed: true, label: "Bookmark") { poetry_icon(name: :bookmark) } %>
+    <%= poetry_toggle_group(type: :single, variant: :outline, value: "list", label: "View") do |group| %>
+      <% group.with_item(value: "list", label: "List view") { poetry_icon(name: :list) } %>
+      <% group.with_item(value: "grid", label: "Grid view") { poetry_icon(name: :"layout-grid") } %>
+    <% end %>
+  </div>
+  <%# Removable chips are a TagGroup: grid semantics, Delete
+      removal with focus recovery, one hidden name[] input per tag. %>
+  <%= poetry_tag_group(name: "settings[topics]", label: "Muted topics") do |group| %>
+    <% group.with_tag(value: "billing") { "Billing" } %>
+    <% group.with_tag(value: "digest") { "Digest" } %>
+  <% end %>
+  <%= poetry_radio_group(name: "settings[digest]", value: "weekly", label: "Digest frequency") do |group| %>
+    <% group.with_item(value: "daily", label: "Daily digest") %>
+    <% group.with_item(value: "weekly", label: "Weekly digest") %>
+  <% end %>
+  <%= poetry_slider(name: "settings[alert_volume]", value: 60, label: "Alert volume",
+                    value_text: ->(value) { "#{value}%" }) %>
+  <div class="grid gap-2">
+    <%= poetry_label(for_id: "settings-sound") { "Notification sound" } %>
+    <%# The value-choosing listbox: options ARE values (actions would be a
+        DropdownMenu). The visually-hidden native <select> serializes the
+        value - it posts before any JS. %>
+    <%= poetry_select(name: "settings[sound]", id: "settings-sound", value: "chime",
+                      placeholder: "Pick a sound") do |select| %>
+      <% select.with_item(value: "chime") { "Chime" } %>
+      <% select.with_item(value: "ping") { "Ping" } %>
+      <% select.with_item(value: "none") { "Silent" } %>
+    <% end %>
+  </div>
+  <div class="grid gap-2">
+    <%= poetry_label(for_id: "settings-note") { "Unsubscribe note" } %>
+    <%= poetry_textarea(name: "settings[note]", id: "settings-note",
+                        placeholder: "Tell us why you're leaving.") %>
+  </div>
+  <div class="grid gap-2">
+    <%= poetry_label(for_id: "settings-code") { "Confirmation code" } %>
+    <%# ONE native input over aria-hidden cells - paste + SMS autofill
+        stay native; never per-cell inputs. %>
+    <%= poetry_input_otp(name: "settings[code]", length: 6, groups: [3, 3], id: "settings-code") %>
+  </div>
+  <div class="grid gap-2">
+    <%= poetry_label(for_id: "settings-seats") { "Seats" } %>
+    <%# The two-input number field: the hidden type=number submits the raw
+        value; steppers are pointer affordances, arrows step on the input. %>
+    <%= poetry_number_field(name: "settings[seats]", id: "settings-seats", value: 5, min: 1, max: 50) %>
+  </div>
+  <div class="grid gap-2">
+    <%= poetry_label(for_id: "settings-renews") { "Renews on" } %>
+    <%# Segmented date editing: the native type=date input IS the
+        form value (ISO with or without JS); segments are the controller's. %>
+    <%= poetry_date_field(name: "settings[renews_on]", id: "settings-renews",
+                          value: Date.new(2026, 8, 1)) %>
+  </div>
+  <div class="grid gap-2">
+    <%= poetry_label(for_id: "settings-digest-at") { "Digest time" } %>
+    <%# TimeField = DateField at hour granularity; the locale decides
+        12- vs 24-hour editing, HH:MM on the wire. %>
+    <%= poetry_time_field(name: "settings[digest_at]", id: "settings-digest-at", value: "09:30") %>
+  </div>
+  <div class="grid gap-2">
+    <%= poetry_label(for_id: "settings-export-at") { "Next export" } %>
+    <%# DateTimeField = DateField with both runs in one row; the native
+        type=datetime-local input IS the form value (local wall time, no zone). %>
+    <%= poetry_date_time_field(name: "settings[export_at]", id: "settings-export-at",
+                               value: "2026-08-01T09:30") %>
+  </div>
+  <div class="grid gap-2">
+    <%= poetry_label(for_id: "settings-contract") { "Signed contract" } %>
+    <%# The native input IS the form value; the dropzone's label
+        text names the control, drag-and-drop rides the controller. %>
+    <%= poetry_file_input(variant: :dropzone, name: "settings[contract]", id: "settings-contract",
+                          accept: ".pdf", hint: "PDF up to 10 MB") %>
+  </div>
+</div>
+
+<%= poetry_autocomplete(name: "city", label: "City", placeholder: "Start typing…") do |auto| %>
+  <% auto.with_item(label: "Springfield") %>
+  <% auto.with_item(label: "Spokane") %>
+<% end %>

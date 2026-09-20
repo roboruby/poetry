@@ -1,0 +1,328 @@
+<%
+  caught_up = capture do
+%>
+    <div class="py-10">
+      <%= poetry_empty do |empty| %>
+        <% empty.with_media { poetry_icon(name: :"circle-check") } %>
+        <% empty.with_title { "You're all caught up" } %>
+        <% empty.with_description { "No new mentions, assignments, or status changes. New activity will appear here." } %>
+      <% end %>
+    </div>
+<%
+  end
+
+  mark_read_button = lambda do |unread|
+    poetry_button(variant: :ghost, size: :"icon-sm", label: unread ? "Mark as read" : "Mark as unread") do
+      poetry_icon(name: unread ? :check : :"circle-dot")
+    end
+  end
+
+  open_button = lambda do
+    poetry_button(variant: :outline, size: :sm, tag: :a, href: "#") do |button|
+      button.with_trailing { poetry_icon(name: :"arrow-up-right") }
+      "Open"
+    end
+  end
+%>
+
+<div class="mx-auto max-w-3xl p-6 space-y-6">
+  <header class="flex flex-col gap-4">
+    <%= poetry_breadcrumb do |crumb| %>
+      <% crumb.with_item("Home", href: "/") %>
+      <% crumb.with_item("Activity") %>
+    <% end %>
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="space-y-1">
+        <h1 class="text-2xl font-semibold tracking-tight">Activity</h1>
+        <p class="text-sm text-muted-foreground">Mentions, assignments, and status changes across your workspace.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <%= poetry_button(variant: :outline) do |button| %>
+          <% button.with_leading { poetry_icon(name: :"check-check") } %>
+          Mark all as read
+        <% end %>
+      </div>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <%= poetry_tabs(default: "all", label: "Filter activity by type", variant: :line) do |tabs| %>
+    <% tabs.with_tab("All", value: "all") do %>
+      <div class="pt-4">
+        <%= poetry_item_group do %>
+          <%= poetry_item(role: "listitem") do |item| %>
+            <% item.with_media(media_variant: :image) { poetry_avatar(label: "Priya Nair", size: :default) { "PN" } } %>
+            <% item.with_title do %>
+              <div class="flex items-center gap-2">
+                <span class="font-medium">Priya Nair mentioned you in "Q3 Roadmap Review"</span>
+                <%= poetry_badge(variant: :info) { "Unread" } %>
+              </div>
+            <% end %>
+            <% item.with_description { "“cc @you can you confirm the timeline for the API migration?”" } %>
+            <% item.with_footer { "12 minutes ago" } %>
+            <% item.with_actions do %>
+              <div class="flex items-center gap-1">
+                <%= mark_read_button.call(true) %>
+                <%= open_button.call %>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+
+          <%= poetry_item(role: "listitem") do |item| %>
+            <% item.with_media(media_variant: :image) { poetry_avatar(label: "Jordan Blake", size: :default) { "JB" } } %>
+            <% item.with_title do %>
+              <div class="flex items-center gap-2">
+                <span class="font-medium">Jordan Blake assigned you to "Fix checkout redirect bug"</span>
+                <%= poetry_badge(variant: :info) { "Unread" } %>
+              </div>
+            <% end %>
+            <% item.with_description { "Priority: high · Due Friday" } %>
+            <% item.with_footer { "45 minutes ago" } %>
+            <% item.with_actions do %>
+              <div class="flex items-center gap-1">
+                <%= mark_read_button.call(true) %>
+                <%= open_button.call %>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+
+          <%= poetry_item(role: "listitem") do |item| %>
+            <% item.with_media(media_variant: :icon) { poetry_icon(name: :"credit-card") } %>
+            <% item.with_title do %>
+              <div class="flex items-center gap-2">
+                <span class="font-medium">Invoice #4521 was marked Paid</span>
+                <%= poetry_badge(variant: :info) { "Unread" } %>
+              </div>
+            <% end %>
+            <% item.with_description { "Billing · Acme Corp" } %>
+            <% item.with_footer { "1 hour ago" } %>
+            <% item.with_actions do %>
+              <div class="flex items-center gap-1">
+                <%= mark_read_button.call(true) %>
+                <%= open_button.call %>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(media_variant: :image) { poetry_avatar(label: "Sam Okafor", size: :default) { "SO" } } %>
+            <% item.with_title { "Sam Okafor mentioned you in \"Design System Handoff\"" } %>
+            <% item.with_description { "“Let's finalize the button spacing before we hand this to engineering.”" } %>
+            <% item.with_footer { "3 hours ago" } %>
+            <% item.with_actions do %>
+              <div class="flex items-center gap-1">
+                <%= mark_read_button.call(false) %>
+                <%= open_button.call %>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(media_variant: :icon) { poetry_icon(name: :"cloud-upload") } %>
+            <% item.with_title { "Deploy \"release-2026.07.22\" completed successfully" } %>
+            <% item.with_description { "Engineering · production" } %>
+            <% item.with_footer { "5 hours ago" } %>
+            <% item.with_actions do %>
+              <div class="flex items-center gap-1">
+                <%= mark_read_button.call(false) %>
+                <%= open_button.call %>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(media_variant: :image) { poetry_avatar(label: "Casey Lin", size: :default) { "CL" } } %>
+            <% item.with_title { "Casey Lin assigned you to \"Review onboarding copy\"" } %>
+            <% item.with_description { "Priority: normal · Due next week" } %>
+            <% item.with_footer { "Yesterday" } %>
+            <% item.with_actions do %>
+              <div class="flex items-center gap-1">
+                <%= mark_read_button.call(false) %>
+                <%= open_button.call %>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(media_variant: :image) { poetry_avatar(label: "Priya Nair", size: :default) { "PN" } } %>
+            <% item.with_title { "Priya Nair mentioned you in \"Sprint Retro Notes\"" } %>
+            <% item.with_description { "“Great point about the API latency — let's follow up next sprint.”" } %>
+            <% item.with_footer { "Yesterday" } %>
+            <% item.with_actions do %>
+              <div class="flex items-center gap-1">
+                <%= mark_read_button.call(false) %>
+                <%= open_button.call %>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(media_variant: :icon) { poetry_icon(name: :"git-merge") } %>
+            <% item.with_title { "PR #892 changed status to Merged" } %>
+            <% item.with_description { "Engineering · checkout-service" } %>
+            <% item.with_footer { "2 days ago" } %>
+            <% item.with_actions do %>
+              <div class="flex items-center gap-1">
+                <%= mark_read_button.call(false) %>
+                <%= open_button.call %>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= caught_up %>
+      </div>
+    <% end %>
+
+    <% tabs.with_tab("Mentions", value: "mentions") do %>
+      <div class="pt-4">
+        <%= poetry_item_group do %>
+          <%= poetry_item(role: "listitem") do |item| %>
+            <% item.with_media(media_variant: :image) { poetry_avatar(label: "Priya Nair", size: :default) { "PN" } } %>
+            <% item.with_title do %>
+              <div class="flex items-center gap-2">
+                <span class="font-medium">Priya Nair mentioned you in "Q3 Roadmap Review"</span>
+                <%= poetry_badge(variant: :info) { "Unread" } %>
+              </div>
+            <% end %>
+            <% item.with_description { "“cc @you can you confirm the timeline for the API migration?”" } %>
+            <% item.with_footer { "12 minutes ago" } %>
+            <% item.with_actions do %>
+              <div class="flex items-center gap-1">
+                <%= mark_read_button.call(true) %>
+                <%= open_button.call %>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(media_variant: :image) { poetry_avatar(label: "Sam Okafor", size: :default) { "SO" } } %>
+            <% item.with_title { "Sam Okafor mentioned you in \"Design System Handoff\"" } %>
+            <% item.with_description { "“Let's finalize the button spacing before we hand this to engineering.”" } %>
+            <% item.with_footer { "3 hours ago" } %>
+            <% item.with_actions do %>
+              <div class="flex items-center gap-1">
+                <%= mark_read_button.call(false) %>
+                <%= open_button.call %>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(media_variant: :image) { poetry_avatar(label: "Priya Nair", size: :default) { "PN" } } %>
+            <% item.with_title { "Priya Nair mentioned you in \"Sprint Retro Notes\"" } %>
+            <% item.with_description { "“Great point about the API latency — let's follow up next sprint.”" } %>
+            <% item.with_footer { "Yesterday" } %>
+            <% item.with_actions do %>
+              <div class="flex items-center gap-1">
+                <%= mark_read_button.call(false) %>
+                <%= open_button.call %>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= caught_up %>
+      </div>
+    <% end %>
+
+    <% tabs.with_tab("Assignments", value: "assignments") do %>
+      <div class="pt-4">
+        <%= poetry_item_group do %>
+          <%= poetry_item(role: "listitem") do |item| %>
+            <% item.with_media(media_variant: :image) { poetry_avatar(label: "Jordan Blake", size: :default) { "JB" } } %>
+            <% item.with_title do %>
+              <div class="flex items-center gap-2">
+                <span class="font-medium">Jordan Blake assigned you to "Fix checkout redirect bug"</span>
+                <%= poetry_badge(variant: :info) { "Unread" } %>
+              </div>
+            <% end %>
+            <% item.with_description { "Priority: high · Due Friday" } %>
+            <% item.with_footer { "45 minutes ago" } %>
+            <% item.with_actions do %>
+              <div class="flex items-center gap-1">
+                <%= mark_read_button.call(true) %>
+                <%= open_button.call %>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(media_variant: :image) { poetry_avatar(label: "Casey Lin", size: :default) { "CL" } } %>
+            <% item.with_title { "Casey Lin assigned you to \"Review onboarding copy\"" } %>
+            <% item.with_description { "Priority: normal · Due next week" } %>
+            <% item.with_footer { "Yesterday" } %>
+            <% item.with_actions do %>
+              <div class="flex items-center gap-1">
+                <%= mark_read_button.call(false) %>
+                <%= open_button.call %>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= caught_up %>
+      </div>
+    <% end %>
+
+    <% tabs.with_tab("Status changes", value: "status") do %>
+      <div class="pt-4">
+        <%= poetry_item_group do %>
+          <%= poetry_item(role: "listitem") do |item| %>
+            <% item.with_media(media_variant: :icon) { poetry_icon(name: :"credit-card") } %>
+            <% item.with_title do %>
+              <div class="flex items-center gap-2">
+                <span class="font-medium">Invoice #4521 was marked Paid</span>
+                <%= poetry_badge(variant: :info) { "Unread" } %>
+              </div>
+            <% end %>
+            <% item.with_description { "Billing · Acme Corp" } %>
+            <% item.with_footer { "1 hour ago" } %>
+            <% item.with_actions do %>
+              <div class="flex items-center gap-1">
+                <%= mark_read_button.call(true) %>
+                <%= open_button.call %>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(media_variant: :icon) { poetry_icon(name: :"cloud-upload") } %>
+            <% item.with_title { "Deploy \"release-2026.07.22\" completed successfully" } %>
+            <% item.with_description { "Engineering · production" } %>
+            <% item.with_footer { "5 hours ago" } %>
+            <% item.with_actions do %>
+              <div class="flex items-center gap-1">
+                <%= mark_read_button.call(false) %>
+                <%= open_button.call %>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+
+          <%= poetry_item(role: "listitem", variant: :muted) do |item| %>
+            <% item.with_media(media_variant: :icon) { poetry_icon(name: :"git-merge") } %>
+            <% item.with_title { "PR #892 changed status to Merged" } %>
+            <% item.with_description { "Engineering · checkout-service" } %>
+            <% item.with_footer { "2 days ago" } %>
+            <% item.with_actions do %>
+              <div class="flex items-center gap-1">
+                <%= mark_read_button.call(false) %>
+                <%= open_button.call %>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= caught_up %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

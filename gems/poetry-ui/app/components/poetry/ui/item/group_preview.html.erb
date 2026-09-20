@@ -1,0 +1,15 @@
+<%# A grouped list: rows in poetry_item_group (role=list) - each row wears
+    role=listitem (upstream omits it and fails aria-required-children). %>
+<div class="p-4">
+  <%= poetry_item_group do %>
+    <%= poetry_item(variant: :muted, size: :sm, role: "listitem") do |item| %>
+      <% item.with_title { "Invoices synced" } %>
+      <% item.with_description { "All invoices are up to date." } %>
+    <% end %>
+    <%= poetry_item_separator %>
+    <%= poetry_item(size: :sm, role: "listitem") do |item| %>
+      <% item.with_title { "Payment pending" } %>
+      <% item.with_description { "One transfer awaits confirmation." } %>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,155 @@
+<div class="mx-auto max-w-6xl space-y-8 p-6">
+  <header class="flex flex-col gap-4">
+    <%= poetry_breadcrumb do |crumb| %>
+      <% crumb.with_item("Home", href: "/") %>
+      <% crumb.with_item("Settings", href: "/settings") %>
+      <% crumb.with_item("Billing") %>
+    <% end %>
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="space-y-1">
+        <h1 class="text-2xl font-semibold tracking-tight">Billing</h1>
+        <p class="text-sm text-muted-foreground">Plan, payment method, usage, and invoice history for the Northwind workspace.</p>
+      </div>
+      <%= poetry_button(variant: :outline, tag: :a, href: "#current-plan") do |button| %>
+        <% button.with_leading { poetry_icon(name: :"credit-card") } %>
+        Manage subscription
+      <% end %>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <div id="current-plan" class="lg:col-span-2">
+      <%= poetry_card(title_tag: :h2) do |card| %>
+        <% card.with_title { "Team Pro plan" } %>
+        <% card.with_description { "Renews August 22, 2026" } %>
+        <% card.with_action { poetry_badge(variant: :success) { "Active" } } %>
+        <% card.with_footer do %>
+          <div class="flex w-full flex-wrap items-center justify-between gap-4">
+            <span class="text-xs text-muted-foreground">Next charge $810.00 on Aug 22, 2026</span>
+            <div class="flex items-center gap-2">
+              <%= poetry_button(variant: :outline, size: :sm) { "Change plan" } %>
+              <%= poetry_button(variant: :ghost, size: :sm) { "Cancel plan" } %>
+            </div>
+          </div>
+        <% end %>
+        <%= poetry_metadata_list(columns: :two) do |list| %>
+          <% list.with_item(label: "Billing cycle") { "Monthly" } %>
+          <% list.with_item(label: "Seats") { "18 of 25 included" } %>
+          <% list.with_item(label: "Plan price") { "$45.00 per seat / month" } %>
+          <% list.with_item(label: "Current period") { "Jul 22 – Aug 22, 2026" } %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div>
+      <%= poetry_card(title_tag: :h2) do |card| %>
+        <% card.with_title { "Payment method" } %>
+        <% card.with_description { "Used for plan and usage charges" } %>
+        <% card.with_footer do %>
+          <%= poetry_link(href: "#", underline: :always) { "Manage billing address" } %>
+        <% end %>
+        <%= poetry_item_group do %>
+          <%= poetry_item(media_variant: :icon, role: "listitem") do |item| %>
+            <% item.with_media { poetry_icon(name: :"credit-card") } %>
+            <% item.with_title { "Visa •••• 4242" } %>
+            <% item.with_description { "Expires 09/2027" } %>
+            <% item.with_actions { poetry_button(variant: :outline, size: :sm) { "Update" } } %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Usage this period" } %>
+    <% card.with_description { "Jul 22 – Aug 22, 2026 billing cycle" } %>
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+      <%= poetry_meter(label: "Seats", value: 18, max: 25, value_label: "18 of 25 seats") %>
+      <%= poetry_meter(label: "API requests", value: 842_000, max: 1_000_000, value_label: "842,000 of 1,000,000 requests") %>
+      <%= poetry_meter(label: "Storage", value: 128, max: 500, value_label: "128 GB of 500 GB") %>
+    </div>
+  <% end %>
+
+  <section class="space-y-4">
+    <div class="space-y-1">
+      <h2 class="text-lg font-semibold tracking-tight">Invoice history</h2>
+      <p class="text-sm text-muted-foreground">Every invoice issued to this workspace, with a downloadable receipt once payment settles.</p>
+    </div>
+    <div class="overflow-hidden rounded-lg border">
+      <%= poetry_table do %>
+        <%= poetry_table_caption(class: "sr-only") { "Invoice history with date, amount, payment status, and receipt." } %>
+        <%= poetry_table_header do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_head { "Invoice" } %>
+            <%= poetry_table_head { "Date" } %>
+            <%= poetry_table_head(class: "text-right") { "Amount" } %>
+            <%= poetry_table_head { "Status" } %>
+            <%= poetry_table_head(class: "text-right") { "Receipt" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_body do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { "INV-2026-1042" } %>
+            <%= poetry_table_cell { "Jun 22, 2026" } %>
+            <%= poetry_table_cell(class: "text-right tabular-nums") { "$810.00" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :warning) { "Pending" } } %>
+            <%= poetry_table_cell(class: "text-right text-sm text-muted-foreground") { "Not yet available" } %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { "INV-2026-1041" } %>
+            <%= poetry_table_cell { "May 22, 2026" } %>
+            <%= poetry_table_cell(class: "text-right tabular-nums") { "$810.00" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :success) { "Paid" } } %>
+            <%= poetry_table_cell(class: "text-right") do %>
+              <%= poetry_button(variant: :ghost, size: :"icon-sm", tag: :a, href: "#", download: "invoice-2026-1041.pdf", label: "Download receipt for invoice 2026-1041") { poetry_icon(name: :download) } %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { "INV-2026-1040" } %>
+            <%= poetry_table_cell { "Apr 22, 2026" } %>
+            <%= poetry_table_cell(class: "text-right tabular-nums") { "$765.00" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :success) { "Paid" } } %>
+            <%= poetry_table_cell(class: "text-right") do %>
+              <%= poetry_button(variant: :ghost, size: :"icon-sm", tag: :a, href: "#", download: "invoice-2026-1040.pdf", label: "Download receipt for invoice 2026-1040") { poetry_icon(name: :download) } %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { "INV-2026-1039" } %>
+            <%= poetry_table_cell { "Mar 22, 2026" } %>
+            <%= poetry_table_cell(class: "text-right tabular-nums") { "$765.00" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :info) { "Refunded" } } %>
+            <%= poetry_table_cell(class: "text-right") do %>
+              <%= poetry_button(variant: :ghost, size: :"icon-sm", tag: :a, href: "#", download: "invoice-2026-1039.pdf", label: "Download receipt for invoice 2026-1039") { poetry_icon(name: :download) } %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { "INV-2026-1038" } %>
+            <%= poetry_table_cell { "Feb 22, 2026" } %>
+            <%= poetry_table_cell(class: "text-right tabular-nums") { "$720.00" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :success) { "Paid" } } %>
+            <%= poetry_table_cell(class: "text-right") do %>
+              <%= poetry_button(variant: :ghost, size: :"icon-sm", tag: :a, href: "#", download: "invoice-2026-1038.pdf", label: "Download receipt for invoice 2026-1038") { poetry_icon(name: :download) } %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { "INV-2026-1037" } %>
+            <%= poetry_table_cell { "Jan 22, 2026" } %>
+            <%= poetry_table_cell(class: "text-right tabular-nums") { "$720.00" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :success) { "Paid" } } %>
+            <%= poetry_table_cell(class: "text-right") do %>
+              <%= poetry_button(variant: :ghost, size: :"icon-sm", tag: :a, href: "#", download: "invoice-2026-1037.pdf", label: "Download receipt for invoice 2026-1037") { poetry_icon(name: :download) } %>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_footer do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(colspan: 2) { "Total paid in 2026" } %>
+            <%= poetry_table_cell(class: "text-right tabular-nums") { "$3,015.00" } %>
+            <%= poetry_table_cell(colspan: 2) { "" } %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+</div>

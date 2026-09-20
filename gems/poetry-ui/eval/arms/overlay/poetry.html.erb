@@ -1,0 +1,19 @@
+<%# The poetry arm: what an agent WITH poetry writes for the overlay task
+    "a destructive 'Delete API key' confirmation that must be answered,
+    plus a 'Filter results' panel sliding in from the right edge". %>
+<%= poetry_alert_dialog do |confirm| %>
+  <% confirm.with_trigger(variant: :destructive) { "Delete API key" } %>
+  <% confirm.with_title { "Delete API key?" } %>
+  <% confirm.with_description { "This immediately revokes access for anything still using it." } %>
+  <% confirm.with_cancel { "Cancel" } %>
+  <% confirm.with_action(variant: :destructive) { "Delete API key" } %>
+<% end %>
+<%= poetry_sheet(side: :right) do |sheet| %>
+  <% sheet.with_trigger(variant: :outline) { "Filter results" } %>
+  <% sheet.with_title { "Filter results" } %>
+  <% sheet.with_description { "Narrow the list by status and owner." } %>
+  <% sheet.with_footer do %>
+    <%= poetry_button { "Apply filters" } %>
+  <% end %>
+  Filter controls go here.
+<% end %>

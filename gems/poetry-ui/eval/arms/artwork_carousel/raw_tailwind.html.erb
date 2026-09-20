@@ -1,0 +1,13 @@
+<%# The raw arm: plausible LLM output - a transform "carousel" with onclick
+    arrows: no region/slide semantics, content unreachable without the JS. %>
+<div class="relative mx-14 w-64">
+  <div class="overflow-hidden">
+    <div id="track" class="flex transition-transform" style="transform: translateX(0%)">
+      <div class="flex aspect-square w-full shrink-0 items-center justify-center rounded-md border bg-gray-100 text-2xl">1</div>
+      <div class="flex aspect-square w-full shrink-0 items-center justify-center rounded-md border bg-gray-100 text-2xl">2</div>
+      <div class="flex aspect-square w-full shrink-0 items-center justify-center rounded-md border bg-gray-100 text-2xl">3</div>
+    </div>
+  </div>
+  <button class="absolute inset-y-0 -left-12 my-auto size-8 rounded-full border" onclick="slide(-1)">‹</button>
+  <button class="absolute inset-y-0 -right-12 my-auto size-8 rounded-full border" onclick="slide(1)">›</button>
+</div>

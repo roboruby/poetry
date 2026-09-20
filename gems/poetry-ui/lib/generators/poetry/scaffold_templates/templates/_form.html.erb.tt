@@ -1,0 +1,31 @@
+<%%= form_with(model: <%= model_resource_name %>, builder: Poetry::Ui::FormBuilder, class: "flex max-w-xl flex-col gap-4") do |form| %>
+  <%% if <%= singular_table_name %>.errors.any? %>
+    <%%= poetry_alert(variant: :destructive) do |alert| %>
+      <%% alert.with_title { "#{pluralize(<%= singular_table_name %>.errors.count, "error")} prohibited this <%= human_name.downcase %> from being saved" } %>
+      <ul class="list-inside list-disc">
+        <%% <%= singular_table_name %>.errors.each do |error| %>
+          <li><%%= error.full_message %></li>
+        <%% end %>
+      </ul>
+    <%% end %>
+  <%% end %>
+
+<% attributes.each do |attribute| -%>
+<% required = attribute.attr_options[:null] == false ? ", required: true" : "" -%>
+<% if attribute.password_digest? -%>
+  <%%= form.input :password %>
+  <%%= form.input :password_confirmation %>
+<% elsif attribute.rich_text? -%>
+  <%%= form.input :<%= attribute.column_name %>, as: :text<%= required %> %>
+<% elsif attribute.attachments? -%>
+  <%%= form.input :<%= attribute.column_name %>, multiple: true<%= required %> %>
+<% else -%>
+  <%%= form.input :<%= attribute.column_name %><%= required %> %>
+<% end -%>
+<% end -%>
+
+  <div class="flex items-center gap-3">
+    <%%= form.submit %>
+    <%%= poetry_button(tag: :a, variant: :ghost, href: <%= index_helper(type: :path) %>) { "Cancel" } %>
+  </div>
+<%% end %>

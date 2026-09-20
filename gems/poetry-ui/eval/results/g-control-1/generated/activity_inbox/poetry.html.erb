@@ -1,0 +1,102 @@
+<%
+  activities = [
+    { type: :mention, icon: :"at-sign", type_label: "Mention", unread: true,
+      actor: "Priya Shah", action: "mentioned you in \"Q3 roadmap review\"",
+      detail: "\"Can you confirm the API migration timeline before Friday?\"", time: "12m ago" },
+    { type: :assignment, icon: :"user-check", type_label: "Assignment", unread: true,
+      actor: "Marcus Webb", action: "assigned you \"Fix checkout timeout bug\"",
+      detail: "Priority: High · Due Thursday", time: "38m ago" },
+    { type: :status, icon: :"refresh-cw", type_label: "Status change", unread: true,
+      actor: "CI Pipeline", action: "moved \"Billing export job\" to Failed",
+      detail: "Build #4821 failed 2 tests", time: "1h ago" },
+    { type: :mention, icon: :"at-sign", type_label: "Mention", unread: false,
+      actor: "Dana Kim", action: "mentioned you in \"Design review notes\"",
+      detail: "\"Great catch on the spacing — updating now.\"", time: "3h ago" },
+    { type: :assignment, icon: :"user-check", type_label: "Assignment", unread: false,
+      actor: "Aisha Bello", action: "assigned you \"Write release notes\"",
+      detail: "Priority: Medium · Due next Monday", time: "5h ago" },
+    { type: :status, icon: :"refresh-cw", type_label: "Status change", unread: false,
+      actor: "Tom Reyes", action: "moved \"Onboarding flow\" to In Review",
+      detail: "Ready for design sign-off", time: "6h ago" },
+    { type: :mention, icon: :"at-sign", type_label: "Mention", unread: false,
+      actor: "Priya Shah", action: "replied to your comment on \"Sprint retro\"",
+      detail: "\"Agreed, let's revisit the estimates.\"", time: "Yesterday" },
+    { type: :status, icon: :"refresh-cw", type_label: "Status change", unread: false,
+      actor: "Marcus Webb", action: "moved \"API rate limiting\" to Done",
+      detail: "Deployed to production", time: "Yesterday" },
+  ]
+  unread_count = activities.count { |a| a[:unread] }
+  by_type = activities.group_by { |a| a[:type] }
+  tab_defs = [
+    { value: "all", title: "All", items: activities },
+    { value: "mentions", title: "Mentions", items: by_type[:mention] || [] },
+    { value: "assignments", title: "Assignments", items: by_type[:assignment] || [] },
+    { value: "status", title: "Status changes", items: by_type[:status] || [] },
+  ]
+%>
+<div class="mx-auto max-w-4xl p-6 space-y-6">
+  <header class="flex flex-col gap-4">
+    <%= poetry_breadcrumb do |crumb| %>
+      <% crumb.with_item("Home", href: "#") %>
+      <% crumb.with_item("Activity Inbox") %>
+    <% end %>
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="space-y-1">
+        <div class="flex items-center gap-2">
+          <h1 class="text-2xl font-semibold tracking-tight">Activity Inbox</h1>
+          <%= poetry_badge(variant: :info) { "#{unread_count} unread" } %>
+        </div>
+        <p class="text-sm text-muted-foreground">Mentions, assignments, and status changes across your projects.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <%= poetry_button(variant: :outline) do |button| %>
+          <% button.with_leading { poetry_icon(name: :"check-check") } %>
+          Mark all as read
+        <% end %>
+      </div>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <%= poetry_tabs(default: "all", label: "Filter activity by type") do |tabs| %>
+    <% tab_defs.each do |tab_def| %>
+      <% tabs.with_tab("#{tab_def[:title]} (#{tab_def[:items].size})", value: tab_def[:value]) do %>
+        <div class="pt-4 space-y-6">
+          <% if tab_def[:items].any? %>
+            <%= poetry_item_group do %>
+              <% tab_def[:items].each_with_index do |a, i| %>
+                <%= poetry_item(variant: a[:unread] ? :outline : :muted, media_variant: :icon) do |item| %>
+                  <% item.with_media(variant: :icon) { poetry_icon(name: a[:icon]) } %>
+                  <% item.with_title do %>
+                    <span class="flex flex-wrap items-center gap-2">
+                      <% if a[:unread] %>
+                        <span class="size-2 shrink-0 rounded-full bg-primary" aria-hidden="true"></span>
+                      <% end %>
+                      <span class="<%= a[:unread] ? 'font-semibold' : 'font-medium' %>"><%= a[:actor] %> <%= a[:action] %></span>
+                      <%= poetry_badge(variant: :outline) { a[:type_label] } %>
+                    </span>
+                  <% end %>
+                  <% item.with_description { "#{a[:detail]} · #{a[:time]}" } %>
+                  <% item.with_actions do %>
+                    <%= poetry_button(variant: :ghost, size: :sm) { a[:unread] ? "Mark as read" : "Mark as unread" } %>
+                    <%= poetry_button(variant: :outline, size: :sm, tag: :a, href: "#") { "Open" } %>
+                  <% end %>
+                <% end %>
+                <% unless i == tab_def[:items].size - 1 %>
+                  <%= poetry_item_separator %>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+
+          <%= poetry_empty(media_variant: :icon) do |empty| %>
+            <% empty.with_media { poetry_icon(name: :"circle-check") } %>
+            <% empty.with_title { "You're all caught up" } %>
+            <% empty.with_description { "No more #{tab_def[:title].downcase} to review right now." } %>
+            <%= poetry_button(variant: :ghost, size: :sm, tag: :a, href: "#") { "Manage notification settings" } %>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

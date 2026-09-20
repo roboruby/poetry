@@ -1,0 +1,11 @@
+<div class="mx-auto max-w-md p-6">
+  <%= poetry_field(
+        id: "work_email",
+        label_text: "Work email",
+        hint: "We'll use this to send project updates and receipts.",
+        error: "Can't be blank",
+        required: true
+      ) do |field| %>
+    <%= poetry_input(**field.control_attributes, type: "email", name: "work_email", placeholder: "you@company.com") %>
+  <% end %>
+</div>

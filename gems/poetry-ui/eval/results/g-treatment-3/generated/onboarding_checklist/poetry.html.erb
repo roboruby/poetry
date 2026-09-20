@@ -1,0 +1,91 @@
+<%# First-run onboarding: server-owned completion state (no JS beyond
+    native form/links). Wire connected/invited/has_project from the
+    workspace model; the sample below shows one step already done. %>
+<% connected_repo = local_assigns[:connected_repo] || false %>
+<% invited_team = local_assigns[:invited_team] || true %>
+<% created_project = local_assigns[:created_project] || false %>
+<% completed_count = [connected_repo, invited_team, created_project].count(true) %>
+
+<div class="mx-auto max-w-2xl space-y-8 p-6">
+  <div class="space-y-2 text-center">
+    <h1 class="text-2xl font-semibold tracking-tight">Welcome to Acme Robotics</h1>
+    <p class="text-sm text-muted-foreground">Your workspace is ready. A few quick steps get your team fully set up.</p>
+  </div>
+
+  <%= poetry_progress(label: "Setup progress", value: completed_count, max: 3, show_value: true) %>
+
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Finish setting up your workspace" } %>
+    <% card.with_description { "Complete these steps whenever you're ready - nothing here blocks you from exploring." } %>
+
+    <%= poetry_item_group do %>
+      <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+        <% item.with_media do %>
+          <% if connected_repo %>
+            <%= poetry_icon(name: :check, class: "size-4", label: "Completed") %>
+          <% else %>
+            <%= poetry_icon(name: :"git-branch", class: "size-4", label: "Not started") %>
+          <% end %>
+        <% end %>
+        <% item.with_title { "Connect a repository" } %>
+        <% item.with_description { "Link your GitHub or GitLab repo so commits and deploys show up here." } %>
+        <% item.with_actions do %>
+          <% if connected_repo %>
+            <%= poetry_badge(variant: :success) { "Connected" } %>
+          <% else %>
+            <%= poetry_button(tag: :a, href: "#", size: :sm) { "Connect repository" } %>
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <%= poetry_item_separator %>
+
+      <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+        <% item.with_media do %>
+          <% if invited_team %>
+            <%= poetry_icon(name: :check, class: "size-4", label: "Completed") %>
+          <% else %>
+            <%= poetry_icon(name: :"user-plus", class: "size-4", label: "Not started") %>
+          <% end %>
+        <% end %>
+        <% item.with_title { "Invite the team" } %>
+        <% item.with_description { "Bring in teammates so work can be reviewed and shared from day one." } %>
+        <% item.with_actions do %>
+          <% if invited_team %>
+            <%= poetry_badge(variant: :success) { "Invited" } %>
+          <% else %>
+            <%= poetry_button(tag: :a, href: "#", size: :sm) { "Invite teammates" } %>
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <%= poetry_item_separator %>
+
+      <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+        <% item.with_media do %>
+          <% if created_project %>
+            <%= poetry_icon(name: :check, class: "size-4", label: "Completed") %>
+          <% else %>
+            <%= poetry_icon(name: :"folder-plus", class: "size-4", label: "Not started") %>
+          <% end %>
+        <% end %>
+        <% item.with_title { "Create your first project" } %>
+        <% item.with_description { "Set up a project to organize work and start tracking progress." } %>
+        <% item.with_actions do %>
+          <% if created_project %>
+            <%= poetry_badge(variant: :success) { "Created" } %>
+          <% else %>
+            <%= poetry_button(tag: :a, href: "#", size: :sm) { "Create project" } %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% card.with_footer do %>
+      <div class="flex w-full items-center justify-between">
+        <%= poetry_link(href: "#", underline: :hover, class: "text-sm text-muted-foreground") { "Skip for now" } %>
+        <%= poetry_button(tag: :a, href: "#", variant: :outline, size: :sm) { "Go to dashboard" } %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

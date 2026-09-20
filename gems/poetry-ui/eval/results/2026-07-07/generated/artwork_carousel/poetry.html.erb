@@ -1,0 +1,41 @@
+<section class="mx-auto max-w-2xl px-6 py-16" aria-labelledby="artwork-carousel-heading">
+  <div class="mb-8 text-center">
+    <h1 id="artwork-carousel-heading" class="text-3xl font-semibold tracking-tight">Gallery Highlights</h1>
+    <p class="mt-2 text-muted-foreground">Three works from this season's collection.</p>
+  </div>
+
+  <% artworks = [
+       {
+         title: "Quiet Harbor",
+         meta: "Elena Cho — 2019, oil on canvas",
+         note: "Muted tones capture first light over a fishing village.",
+       },
+       {
+         title: "Fractured Sky",
+         meta: "Devon Marsh — 2021, acrylic on panel",
+         note: "Sharp geometric planes fracture a storm-lit horizon.",
+       },
+       {
+         title: "Wildflower Field",
+         meta: "Priya Anand — 2023, watercolor",
+         note: "Loose washes of color drift across an open meadow.",
+       },
+     ] %>
+
+  <%= poetry_carousel(label: "Gallery highlights") do |carousel| %>
+    <% artworks.each do |artwork| %>
+      <% carousel.with_item do %>
+        <%= poetry_card do |card| %>
+          <% card.with_title { artwork[:title] } %>
+          <% card.with_description { artwork[:meta] } %>
+          <%= poetry_aspect_ratio(ratio: "4/3") do %>
+            <div class="flex size-full items-center justify-center rounded-md bg-muted" aria-hidden="true">
+              <span class="text-sm font-medium text-muted-foreground"><%= artwork[:title] %></span>
+            </div>
+          <% end %>
+          <p class="mt-4 text-sm text-muted-foreground"><%= artwork[:note] %></p>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</section>

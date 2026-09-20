@@ -1,0 +1,479 @@
+<%
+  severity_badge = {
+    "critical" => "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20",
+    "high"     => "bg-orange-50 text-orange-700 ring-1 ring-inset ring-orange-600/20",
+    "medium"   => "bg-amber-50 text-amber-800 ring-1 ring-inset ring-amber-600/20",
+    "low"      => "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/20",
+    "info"     => "bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-500/10",
+  }
+  severity_dot = {
+    "critical" => "bg-red-500",
+    "high"     => "bg-orange-500",
+    "medium"   => "bg-amber-500",
+    "low"      => "bg-blue-500",
+    "info"     => "bg-slate-400",
+  }
+  severity_label = {
+    "critical" => "Critical",
+    "high"     => "High",
+    "medium"   => "Medium",
+    "low"      => "Low",
+    "info"     => "Info",
+  }
+  avatar_color = {
+    "PN"  => "bg-indigo-100 text-indigo-700",
+    "MW"  => "bg-teal-100 text-teal-700",
+    "JV"  => "bg-rose-100 text-rose-700",
+    "SO"  => "bg-violet-100 text-violet-700",
+    "ER"  => "bg-cyan-100 text-cyan-700",
+    "SYS" => "bg-slate-200 text-slate-600",
+  }
+
+  days = [
+    {
+      label: "Today",
+      date: "Wednesday, July 22, 2026",
+      events: [
+        {
+          time: "9:42 AM", actor: "Priya Nandakumar", initials: "PN",
+          action: "Signed in via SSO (Okta)", target: "Success",
+          ip: "203.0.113.42", location: "San Francisco, CA, US", device: "Chrome 126 on macOS",
+          severity: "info",
+          details: { "session_id" => "sess_9f21ac", "auth_method" => "saml", "mfa" => "not required (sso)" },
+        },
+        {
+          time: "9:15 AM", actor: "Marcus Webb", initials: "MW",
+          action: "Failed sign-in attempt", target: "Incorrect password · 3rd attempt this hour",
+          ip: "198.51.100.7", location: "Chicago, IL, US", device: "Safari 17 on iOS",
+          severity: "medium",
+          details: { "reason" => "invalid_credentials", "attempt" => "3 of 5 before lockout", "account" => "marcus.webb@acme.com" },
+        },
+        {
+          time: "8:50 AM", actor: "System", initials: "SYS",
+          action: "Rotated API key", target: "ci-deploy-key",
+          ip: "10.0.4.18", location: "Internal · scheduled job", device: "Automation worker",
+          severity: "low",
+          details: { "key_id" => "key_8f2a1c", "scopes" => "deploy:write, artifacts:read", "rotation_policy" => "90 days" },
+        },
+        {
+          time: "8:02 AM", actor: "Priya Nandakumar", initials: "PN",
+          action: "Updated workspace IP allowlist", target: "Added 203.0.113.0/24",
+          ip: "203.0.113.42", location: "San Francisco, CA, US", device: "Chrome 126 on macOS",
+          severity: "high",
+          details: { "cidr_added" => "203.0.113.0/24", "previous_entries" => "4", "enforced" => "true" },
+        },
+        {
+          time: "7:30 AM", actor: "Elena Ruiz", initials: "ER",
+          action: "Exported member directory", target: "CSV · 214 rows",
+          ip: "192.0.2.11", location: "Austin, TX, US", device: "Firefox 128 on Windows",
+          severity: "critical",
+          details: { "export_format" => "csv", "row_count" => "214", "fields" => "name, email, role, last_active" },
+        },
+      ],
+    },
+    {
+      label: "Yesterday",
+      date: "Tuesday, July 21, 2026",
+      events: [
+        {
+          time: "6:48 PM", actor: "Jordan Vasquez", initials: "JV",
+          action: "Disabled two-factor authentication", target: "On own account",
+          ip: "198.51.100.22", location: "Denver, CO, US", device: "Chrome 126 on macOS",
+          severity: "critical",
+          details: { "account" => "jordan.vasquez@acme.com", "previous_state" => "enforced", "new_state" => "disabled" },
+        },
+        {
+          time: "3:20 PM", actor: "Sam Okafor", initials: "SO",
+          action: "Invited new member", target: "finance@partner.co · Admin role",
+          ip: "203.0.113.9", location: "Atlanta, GA, US", device: "Edge 126 on Windows",
+          severity: "high",
+          details: { "invited_email" => "finance@partner.co", "role_granted" => "admin", "invited_by" => "sam.okafor@acme.com" },
+        },
+        {
+          time: "1:05 PM", actor: "Priya Nandakumar", initials: "PN",
+          action: "Created API key", target: "reporting-readonly",
+          ip: "203.0.113.42", location: "San Francisco, CA, US", device: "Chrome 126 on macOS",
+          severity: "medium",
+          details: { "key_id" => "key_3b7e90", "scopes" => "reports:read", "expires" => "never" },
+        },
+        {
+          time: "10:44 AM", actor: "System", initials: "SYS",
+          action: "Renewed SSO certificate", target: "Okta connection",
+          ip: "10.0.4.2", location: "Internal · scheduled job", device: "Automation worker",
+          severity: "info",
+          details: { "provider" => "okta", "cert_expiry" => "2027-07-21", "renewed_by" => "auto-renewal" },
+        },
+        {
+          time: "9:02 AM", actor: "Marcus Webb", initials: "MW",
+          action: "Signed in with password", target: "Success",
+          ip: "198.51.100.7", location: "Chicago, IL, US", device: "Safari 17 on iOS",
+          severity: "info",
+          details: { "session_id" => "sess_2e88df", "auth_method" => "password", "mfa" => "verified" },
+        },
+      ],
+    },
+    {
+      label: "Monday",
+      date: "July 20, 2026",
+      events: [
+        {
+          time: "5:12 PM", actor: "Elena Ruiz", initials: "ER",
+          action: "Changed billing plan", target: "Team → Enterprise",
+          ip: "192.0.2.11", location: "Austin, TX, US", device: "Firefox 128 on Windows",
+          severity: "medium",
+          details: { "previous_plan" => "team", "new_plan" => "enterprise", "effective" => "next billing cycle" },
+        },
+        {
+          time: "2:37 PM", actor: "Jordan Vasquez", initials: "JV",
+          action: "Revoked active session", target: "Device: iPhone 13 Pro · marcus.webb@acme.com",
+          ip: "198.51.100.22", location: "Denver, CO, US", device: "Chrome 126 on macOS",
+          severity: "medium",
+          details: { "revoked_session" => "sess_1a44be", "target_user" => "marcus.webb@acme.com", "reason" => "device reported lost" },
+        },
+        {
+          time: "11:58 AM", actor: "Sam Okafor", initials: "SO",
+          action: "Removed member", target: "alex.tran@acme.com",
+          ip: "203.0.113.9", location: "Atlanta, GA, US", device: "Edge 126 on Windows",
+          severity: "high",
+          details: { "removed_user" => "alex.tran@acme.com", "prior_role" => "editor", "data_retained" => "30 days" },
+        },
+        {
+          time: "9:15 AM", actor: "System", initials: "SYS",
+          action: "Disabled webhook endpoint", target: "https://hooks.partner.co/audit",
+          ip: "10.0.4.9", location: "Internal · delivery monitor", device: "Automation worker",
+          severity: "medium",
+          details: { "endpoint" => "https://hooks.partner.co/audit", "failures" => "5 consecutive", "status" => "auto-disabled" },
+        },
+        {
+          time: "8:31 AM", actor: "Priya Nandakumar", initials: "PN",
+          action: "Signed in via SSO (Okta)", target: "Success",
+          ip: "203.0.113.42", location: "San Francisco, CA, US", device: "Chrome 126 on macOS",
+          severity: "info",
+          details: { "session_id" => "sess_7c10aa", "auth_method" => "saml", "mfa" => "not required (sso)" },
+        },
+      ],
+    },
+  ]
+
+  older_days = [
+    {
+      label: "Friday",
+      date: "July 17, 2026",
+      events: [
+        {
+          time: "4:02 PM", actor: "Sam Okafor", initials: "SO",
+          action: "Updated password policy", target: "Minimum length 8 → 12, rotation enabled",
+          ip: "203.0.113.9", location: "Atlanta, GA, US", device: "Edge 126 on Windows",
+          severity: "high",
+          details: { "min_length" => "12", "rotation_days" => "180", "applies_to" => "all non-sso accounts" },
+        },
+        {
+          time: "10:20 AM", actor: "Elena Ruiz", initials: "ER",
+          action: "Signed in with password", target: "Success",
+          ip: "192.0.2.11", location: "Austin, TX, US", device: "Firefox 128 on Windows",
+          severity: "info",
+          details: { "session_id" => "sess_5f31cd", "auth_method" => "password", "mfa" => "verified" },
+        },
+      ],
+    },
+    {
+      label: "Thursday",
+      date: "July 16, 2026",
+      events: [
+        {
+          time: "1:47 PM", actor: "Jordan Vasquez", initials: "JV",
+          action: "Granted role change", target: "marcus.webb@acme.com · Editor → Admin",
+          ip: "198.51.100.22", location: "Denver, CO, US", device: "Chrome 126 on macOS",
+          severity: "high",
+          details: { "target_user" => "marcus.webb@acme.com", "previous_role" => "editor", "new_role" => "admin" },
+        },
+      ],
+    },
+  ]
+
+  all_days = days + older_days
+  total_events = all_days.sum { |d| d[:events].size }
+  severity_counts = Hash.new(0)
+  all_days.each { |d| d[:events].each { |e| severity_counts[e[:severity]] += 1 } }
+%>
+<div class="mx-auto max-w-6xl px-6 py-8">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <p class="text-sm font-medium text-slate-500">Acme Inc workspace</p>
+      <h1 class="mt-1 text-2xl font-semibold tracking-tight text-slate-900">Audit log</h1>
+      <p class="mt-1 max-w-2xl text-sm text-slate-500">
+        Security-relevant activity across your workspace &mdash; who did what, when, and from where.
+      </p>
+    </div>
+
+    <details class="relative">
+      <summary class="flex cursor-pointer list-none items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+        <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 3a.75.75 0 01.75.75v7.19l2.22-2.22a.75.75 0 111.06 1.06l-3.5 3.5a.75.75 0 01-1.06 0l-3.5-3.5a.75.75 0 111.06-1.06l2.22 2.22V3.75A.75.75 0 0110 3zM4 14.25a.75.75 0 01.75.75v.5c0 .414.336.75.75.75h9a.75.75 0 00.75-.75v-.5a.75.75 0 011.5 0v.5A2.25 2.25 0 0114.5 17.5h-9A2.25 2.25 0 013.25 15.5v-.5a.75.75 0 01.75-.75z" clip-rule="evenodd" />
+        </svg>
+        Export
+        <svg class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+        </svg>
+      </summary>
+      <div class="absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-md border border-slate-200 bg-white shadow-lg ring-1 ring-black/5">
+        <a href="?export=csv" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Export as CSV</a>
+        <a href="?export=json" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Export as JSON</a>
+        <a href="?export=pdf" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Export summary as PDF</a>
+        <div class="border-t border-slate-100 px-4 py-2 text-xs text-slate-400">Includes events matching current filters</div>
+      </div>
+    </details>
+  </div>
+
+  <dl class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+    <div class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm">
+      <dt class="text-xs font-medium text-slate-500">Total events</dt>
+      <dd class="mt-1 text-xl font-semibold text-slate-900"><%= total_events %></dd>
+    </div>
+    <% %w[critical high medium low info].each do |sev| %>
+      <div class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm">
+        <dt class="flex items-center gap-1.5 text-xs font-medium text-slate-500">
+          <span class="h-2 w-2 rounded-full <%= severity_dot[sev] %>"></span>
+          <%= severity_label[sev] %>
+        </dt>
+        <dd class="mt-1 text-xl font-semibold text-slate-900"><%= severity_counts[sev] %></dd>
+      </div>
+    <% end %>
+  </dl>
+
+  <form method="get" action="" class="mt-6 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
+      <div class="lg:col-span-2">
+        <label for="audit-q" class="block text-xs font-medium text-slate-500">Search</label>
+        <div class="relative mt-1">
+          <svg class="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+          </svg>
+          <input type="search" id="audit-q" name="q" placeholder="Actor, action, IP address&hellip;"
+                 class="w-full rounded-md border border-slate-300 py-2 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500" />
+        </div>
+      </div>
+
+      <div>
+        <label for="audit-event-type" class="block text-xs font-medium text-slate-500">Event type</label>
+        <select id="audit-event-type" name="event_type"
+                class="mt-1 w-full rounded-md border border-slate-300 py-2 pl-3 pr-8 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500">
+          <option value="">All events</option>
+          <option value="authentication">Authentication</option>
+          <option value="authorization">Authorization &amp; roles</option>
+          <option value="members">Members</option>
+          <option value="data">Data access &amp; export</option>
+          <option value="api_keys">API keys</option>
+          <option value="billing">Billing</option>
+          <option value="security_settings">Security settings</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="audit-severity" class="block text-xs font-medium text-slate-500">Severity</label>
+        <select id="audit-severity" name="severity"
+                class="mt-1 w-full rounded-md border border-slate-300 py-2 pl-3 pr-8 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500">
+          <option value="">All severities</option>
+          <option value="critical">Critical</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+          <option value="info">Info</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="audit-from" class="block text-xs font-medium text-slate-500">From</label>
+        <input type="date" id="audit-from" name="from" value="2026-07-16"
+               class="mt-1 w-full rounded-md border border-slate-300 py-2 px-3 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500" />
+      </div>
+
+      <div>
+        <label for="audit-to" class="block text-xs font-medium text-slate-500">To</label>
+        <input type="date" id="audit-to" name="to" value="2026-07-22"
+               class="mt-1 w-full rounded-md border border-slate-300 py-2 px-3 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500" />
+      </div>
+    </div>
+
+    <div class="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
+      <div class="flex flex-wrap gap-2">
+        <a href="?" class="rounded-full bg-slate-900 px-3 py-1 text-xs font-medium text-white">All activity</a>
+        <a href="?severity=critical" class="rounded-full border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50">Critical only</a>
+        <a href="?event_type=authentication&amp;q=failed" class="rounded-full border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50">Failed sign-ins</a>
+        <a href="?event_type=authorization" class="rounded-full border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50">Permission changes</a>
+        <a href="?event_type=data" class="rounded-full border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50">Data exports</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="?" class="text-sm text-slate-500 hover:text-slate-700">Reset filters</a>
+        <button type="submit" class="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">Apply filters</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="mt-8 space-y-8">
+    <% days.each_with_index do |day, day_index| %>
+      <section aria-labelledby="day-heading-<%= day_index %>">
+        <h2 id="day-heading-<%= day_index %>" class="flex items-baseline gap-2 text-sm font-semibold text-slate-700">
+          <%= day[:label] %>
+          <span class="font-normal text-slate-400">&middot; <%= day[:date] %></span>
+        </h2>
+
+        <div class="mt-3 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+          <table class="min-w-full divide-y divide-slate-200">
+            <caption class="sr-only">Audit events for <%= day[:date] %></caption>
+            <thead class="bg-slate-50">
+              <tr>
+                <th scope="col" class="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Time</th>
+                <th scope="col" class="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Actor</th>
+                <th scope="col" class="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Event</th>
+                <th scope="col" class="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Location &amp; IP</th>
+                <th scope="col" class="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Severity</th>
+                <th scope="col" class="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"><span class="sr-only">Details</span></th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <% day[:events].each do |e| %>
+                <tr class="align-top hover:bg-slate-50/60">
+                  <td class="whitespace-nowrap px-4 py-3 text-sm text-slate-500"><%= e[:time] %></td>
+                  <td class="px-4 py-3">
+                    <div class="flex items-center gap-2">
+                      <span class="inline-flex h-8 w-8 flex-none items-center justify-center rounded-full text-xs font-semibold <%= avatar_color[e[:initials]] %>">
+                        <%= e[:initials] %>
+                      </span>
+                      <span class="text-sm font-medium text-slate-900"><%= e[:actor] %></span>
+                    </div>
+                  </td>
+                  <td class="px-4 py-3">
+                    <p class="text-sm font-medium text-slate-900"><%= e[:action] %></p>
+                    <p class="text-sm text-slate-500"><%= e[:target] %></p>
+                  </td>
+                  <td class="px-4 py-3">
+                    <p class="font-mono text-xs text-slate-500"><%= e[:ip] %></p>
+                    <p class="text-sm text-slate-500"><%= e[:location] %></p>
+                  </td>
+                  <td class="px-4 py-3">
+                    <span class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium <%= severity_badge[e[:severity]] %>">
+                      <span class="h-1.5 w-1.5 rounded-full <%= severity_dot[e[:severity]] %>"></span>
+                      <%= severity_label[e[:severity]] %>
+                    </span>
+                  </td>
+                  <td class="px-4 py-3 text-right">
+                    <details class="text-left">
+                      <summary class="cursor-pointer list-none text-sm font-medium text-slate-500 hover:text-slate-700 [&::-webkit-details-marker]:hidden">
+                        Details
+                      </summary>
+                      <div class="mt-2 w-64 rounded-md border border-slate-200 bg-slate-50 p-3">
+                        <dl class="space-y-1">
+                          <div class="flex justify-between gap-2 text-xs">
+                            <dt class="text-slate-500">Device</dt>
+                            <dd class="text-right text-slate-700"><%= e[:device] %></dd>
+                          </div>
+                          <% e[:details].each do |k, v| %>
+                            <div class="flex justify-between gap-2 text-xs">
+                              <dt class="text-slate-500"><%= k %></dt>
+                              <dd class="text-right font-mono text-slate-700"><%= v %></dd>
+                            </div>
+                          <% end %>
+                        </dl>
+                      </div>
+                    </details>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    <% end %>
+
+    <details class="group rounded-lg border border-slate-200 bg-white shadow-sm">
+      <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+        <span>Show earlier activity (<%= older_days.sum { |d| d[:events].size } %> events)</span>
+        <svg class="h-4 w-4 text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+        </svg>
+      </summary>
+      <div class="space-y-6 border-t border-slate-100 p-4">
+        <% older_days.each_with_index do |day, day_index| %>
+          <section aria-labelledby="older-day-heading-<%= day_index %>">
+            <h2 id="older-day-heading-<%= day_index %>" class="flex items-baseline gap-2 text-sm font-semibold text-slate-700">
+              <%= day[:label] %>
+              <span class="font-normal text-slate-400">&middot; <%= day[:date] %></span>
+            </h2>
+
+            <div class="mt-3 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+              <table class="min-w-full divide-y divide-slate-200">
+                <caption class="sr-only">Audit events for <%= day[:date] %></caption>
+                <thead class="bg-slate-50">
+                  <tr>
+                    <th scope="col" class="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Time</th>
+                    <th scope="col" class="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Actor</th>
+                    <th scope="col" class="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Event</th>
+                    <th scope="col" class="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Location &amp; IP</th>
+                    <th scope="col" class="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Severity</th>
+                    <th scope="col" class="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"><span class="sr-only">Details</span></th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  <% day[:events].each do |e| %>
+                    <tr class="align-top hover:bg-slate-50/60">
+                      <td class="whitespace-nowrap px-4 py-3 text-sm text-slate-500"><%= e[:time] %></td>
+                      <td class="px-4 py-3">
+                        <div class="flex items-center gap-2">
+                          <span class="inline-flex h-8 w-8 flex-none items-center justify-center rounded-full text-xs font-semibold <%= avatar_color[e[:initials]] %>">
+                            <%= e[:initials] %>
+                          </span>
+                          <span class="text-sm font-medium text-slate-900"><%= e[:actor] %></span>
+                        </div>
+                      </td>
+                      <td class="px-4 py-3">
+                        <p class="text-sm font-medium text-slate-900"><%= e[:action] %></p>
+                        <p class="text-sm text-slate-500"><%= e[:target] %></p>
+                      </td>
+                      <td class="px-4 py-3">
+                        <p class="font-mono text-xs text-slate-500"><%= e[:ip] %></p>
+                        <p class="text-sm text-slate-500"><%= e[:location] %></p>
+                      </td>
+                      <td class="px-4 py-3">
+                        <span class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium <%= severity_badge[e[:severity]] %>">
+                          <span class="h-1.5 w-1.5 rounded-full <%= severity_dot[e[:severity]] %>"></span>
+                          <%= severity_label[e[:severity]] %>
+                        </span>
+                      </td>
+                      <td class="px-4 py-3 text-right">
+                        <details class="text-left">
+                          <summary class="cursor-pointer list-none text-sm font-medium text-slate-500 hover:text-slate-700 [&::-webkit-details-marker]:hidden">
+                            Details
+                          </summary>
+                          <div class="mt-2 w-64 rounded-md border border-slate-200 bg-slate-50 p-3">
+                            <dl class="space-y-1">
+                              <div class="flex justify-between gap-2 text-xs">
+                                <dt class="text-slate-500">Device</dt>
+                                <dd class="text-right text-slate-700"><%= e[:device] %></dd>
+                              </div>
+                              <% e[:details].each do |k, v| %>
+                                <div class="flex justify-between gap-2 text-xs">
+                                  <dt class="text-slate-500"><%= k %></dt>
+                                  <dd class="text-right font-mono text-slate-700"><%= v %></dd>
+                                </div>
+                              <% end %>
+                            </dl>
+                          </div>
+                        </details>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        <% end %>
+      </div>
+    </details>
+  </div>
+
+  <div class="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4 text-sm text-slate-500">
+    <p>Showing <%= total_events %> events from the last 7 days. Full audit history is retained for 400 days per workspace policy.</p>
+    <a href="?range=all" class="font-medium text-slate-700 hover:text-slate-900">View full history &rarr;</a>
+  </div>
+</div>

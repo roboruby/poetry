@@ -1,0 +1,64 @@
+# Theme-state allowlist for test/poetry/ui/theme_states_test.rb - the
+# "styled state must be an emitted state" gate. Every data-* variant a
+# theme rule applies to its own element must be a state the parts wearing
+# that hook declare (Concerns::Parts `part ... states:`), unless recorded
+# here with a reason. Two-way: an entry no rule needs any more fails as
+# stale. Attribute-wide entries (attrs:) apply to every hook.
+attrs: []
+rules:
+  - hook: cn-context-menu-sub-trigger
+    attr: data-open
+    reason: &subtrigger poetry marks a sub-menu trigger data-popup-open (the Base UI attribute the
+      controller writes); the source rule styles both data-open and data-popup-open.
+  - hook: cn-dropdown-menu-sub-trigger
+    attr: data-open
+    reason: *subtrigger
+  - hook: cn-menubar-sub-trigger
+    attr: data-open
+    reason: *subtrigger
+  - hook: cn-dropdown-menu-sub-trigger
+    attr: data-variant
+    reason: sub-menu triggers take no variant; the source styles its destructive variant here.
+  - hook: cn-select-item
+    attr: data-variant
+    reason: select items take no variant; the source styles its destructive variant here.
+  - hook: cn-context-menu-checkbox-item
+    attr: data-inset
+    reason: &inset checkbox and radio items take no inset (items and labels do); the source styles
+      inset on every row kind.
+  - hook: cn-context-menu-radio-item
+    attr: data-inset
+    reason: *inset
+  - hook: cn-dropdown-menu-checkbox-item
+    attr: data-inset
+    reason: *inset
+  - hook: cn-dropdown-menu-radio-item
+    attr: data-inset
+    reason: *inset
+  - hook: cn-menubar-checkbox-item
+    attr: data-inset
+    reason: *inset
+  - hook: cn-menubar-radio-item
+    attr: data-inset
+    reason: *inset
+  - hook: cn-navigation-menu-content
+    attr: data-motion
+    reason: the source's radix-era motion attribute; poetry slides on data-activation-direction
+      (the dictionary's starting-style chain).
+  - hook: cn-tooltip-content
+    attr: data-state
+    reason: the source's delayed-open state; poetry has one open state (data-open) and the rule
+      carries both.
+  - hook: cn-card
+    attr: data-size
+    reason: Card has no size option; the source's size axis.
+  - hook: cn-combobox-list
+    attr: data-empty
+    reason: the command engine marks emptiness by unhiding the empty part; emitting data-empty on
+      the list is a banked lead (it would make the source's data-empty:p-0 live).
+  - hook: cn-context-menu-sub-trigger
+    attr: data-variant
+    reason: sub-menu triggers take no variant; the source styles its destructive variant here.
+  - hook: cn-menubar-sub-trigger
+    attr: data-variant
+    reason: sub-menu triggers take no variant; the source styles its destructive variant here.

@@ -1,0 +1,117 @@
+<div class="flex h-full flex-col gap-4 p-6">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Code editor</h1>
+      <p class="text-sm text-muted-foreground">Browse the project tree on the left and edit files on the right.</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <%= poetry_button(variant: :outline) do |button| %>
+        <% button.with_leading { poetry_icon(name: :plus) } %>
+        New file
+      <% end %>
+      <%= poetry_button do |button| %>
+        <% button.with_leading { poetry_icon(name: :save) } %>
+        Save
+      <% end %>
+    </div>
+  </div>
+
+  <%= poetry_separator %>
+
+  <div class="h-[640px] overflow-hidden rounded-lg border">
+    <%= poetry_resizable(direction: :horizontal, grip: true) do |split| %>
+      <% split.with_panel(default_size: 24, min_size: 16, max_size: 40, classes: "flex flex-col overflow-hidden bg-muted/30") do %>
+        <div class="flex items-center justify-between border-b px-3 py-2.5">
+          <span class="text-sm font-medium">Files</span>
+          <%= poetry_icon(name: :folder, label: "Project files") %>
+        </div>
+
+        <%= poetry_scroll_area(label: "File explorer", class: "flex-1 p-2") do %>
+          <%= poetry_collapsible(open: true) do |folder| %>
+            <% folder.with_trigger do %>
+              <span class="flex items-center gap-2">
+                <%= poetry_icon(name: :folder) %>
+                <span class="text-sm font-medium">app</span>
+              </span>
+            <% end %>
+
+            <div class="mb-2 ml-4 mt-1">
+              <%= poetry_item_group do %>
+                <%= poetry_item(tag: :a, href: "#", size: :sm, role: "listitem") do |item| %>
+                  <% item.with_media(variant: :icon) { poetry_icon(name: :file) } %>
+                  <% item.with_title { "application_controller.rb" } %>
+                  <% item.with_description { "controllers" } %>
+                <% end %>
+                <%= poetry_item_separator %>
+                <%= poetry_item(tag: :a, href: "#", size: :sm, variant: :outline, role: "listitem") do |item| %>
+                  <% item.with_media(variant: :icon) { poetry_icon(name: :file) } %>
+                  <% item.with_title { "user.rb" } %>
+                  <% item.with_description { "models" } %>
+                <% end %>
+                <%= poetry_item_separator %>
+                <%= poetry_item(tag: :a, href: "#", size: :sm, role: "listitem") do |item| %>
+                  <% item.with_media(variant: :icon) { poetry_icon(name: :file) } %>
+                  <% item.with_title { "split_editor.html.erb" } %>
+                  <% item.with_description { "views/eval" } %>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+
+          <%= poetry_collapsible(open: false) do |folder| %>
+            <% folder.with_trigger do %>
+              <span class="flex items-center gap-2">
+                <%= poetry_icon(name: :folder) %>
+                <span class="text-sm font-medium">config</span>
+              </span>
+            <% end %>
+
+            <div class="mb-2 ml-4 mt-1">
+              <%= poetry_item_group do %>
+                <%= poetry_item(tag: :a, href: "#", size: :sm, role: "listitem") do |item| %>
+                  <% item.with_media(variant: :icon) { poetry_icon(name: :file) } %>
+                  <% item.with_title { "routes.rb" } %>
+                <% end %>
+                <%= poetry_item_separator %>
+                <%= poetry_item(tag: :a, href: "#", size: :sm, role: "listitem") do |item| %>
+                  <% item.with_media(variant: :icon) { poetry_icon(name: :file) } %>
+                  <% item.with_title { "application.rb" } %>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+
+          <%= poetry_separator(class: "my-2") %>
+
+          <%= poetry_item_group do %>
+            <%= poetry_item(tag: :a, href: "#", size: :sm, role: "listitem") do |item| %>
+              <% item.with_media(variant: :icon) { poetry_icon(name: :file) } %>
+              <% item.with_title { "Gemfile" } %>
+            <% end %>
+            <%= poetry_item_separator %>
+            <%= poetry_item(tag: :a, href: "#", size: :sm, role: "listitem") do |item| %>
+              <% item.with_media(variant: :icon) { poetry_icon(name: :file) } %>
+              <% item.with_title { "README.md" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <% split.with_panel(default_size: 76, min_size: 40, classes: "flex flex-col overflow-hidden") do %>
+        <%= poetry_tabs(default: "user_model", label: "Open files") do |tabs| %>
+          <% tabs.with_tab("application_controller.rb", value: "app_controller") do %>
+            <%= poetry_field(id: "editor_app_controller", label_text: "application_controller.rb", hint: "app/controllers/application_controller.rb") do |field| %>
+              <%= poetry_textarea(**field.control_attributes, name: "files[app_controller]", rows: 20, class: "font-mono text-sm", value: "class ApplicationController < ActionController::Base\n  protect_from_forgery with: :exception\nend\n") %>
+            <% end %>
+          <% end %>
+
+          <% tabs.with_tab("user.rb", value: "user_model") do %>
+            <%= poetry_field(id: "editor_user_model", label_text: "user.rb", hint: "app/models/user.rb") do |field| %>
+              <%= poetry_textarea(**field.control_attributes, name: "files[user_model]", rows: 20, class: "font-mono text-sm", value: "class User < ApplicationRecord\n  has_many :posts\n\n  validates :email, presence: true, uniqueness: true\nend\n") %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

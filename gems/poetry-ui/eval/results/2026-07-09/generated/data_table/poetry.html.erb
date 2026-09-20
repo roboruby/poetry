@@ -1,0 +1,149 @@
+<section class="mx-auto max-w-6xl space-y-6 p-6">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="space-y-1">
+      <h2 class="text-lg font-semibold tracking-tight">Invoices</h2>
+      <p class="text-sm text-muted-foreground">All invoices issued to customers, sorted by invoice number.</p>
+    </div>
+    <%= poetry_button do |button| %>
+      <% button.with_leading { poetry_icon(name: :plus) } %>
+      New invoice
+    <% end %>
+  </div>
+
+  <form action="" method="get" class="flex flex-wrap items-center gap-3">
+    <%= poetry_label(for_id: "invoices-search", class: "sr-only") { "Filter invoices" } %>
+    <%= poetry_input_group(class: "max-w-xs") do %>
+      <%= poetry_input_group_addon do %>
+        <%= poetry_icon(name: :search) %>
+      <% end %>
+      <%= poetry_input_group_input(id: "invoices-search", name: "q", placeholder: "Filter by number or customer…") %>
+    <% end %>
+    <%= poetry_label(for_id: "invoices-status", class: "sr-only") { "Filter by status" } %>
+    <%= poetry_native_select(name: "status", id: "invoices-status",
+                             options: [["All statuses", "all"], ["Draft", "draft"], ["Sent", "sent"],
+                                       ["Paid", "paid"], ["Overdue", "overdue"], ["Void", "void"]]) %>
+    <%= poetry_button(type: :submit, variant: :secondary) do |button| %>
+      <% button.with_leading { poetry_icon(name: :filter) } %>
+      Apply
+    <% end %>
+    <%= poetry_link(href: "?", underline: :hover, class: "text-sm") { "Reset" } %>
+  </form>
+
+  <div class="overflow-hidden rounded-lg border">
+    <%= poetry_table do %>
+      <%= poetry_table_caption(class: "sr-only") { "Invoices sorted by invoice number ascending, filterable by number, customer, or status." } %>
+      <%= poetry_table_header do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_head(scope: "col", "aria-sort": "ascending") do %>
+            <%= poetry_link(href: "?sort=number&direction=desc", underline: :none, class: "inline-flex items-center gap-1 text-foreground") do %>
+              Invoice #
+              <%= poetry_icon(name: :"arrow-up") %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_head(scope: "col") do %>
+            <%= poetry_link(href: "?sort=customer&direction=asc", underline: :none, class: "inline-flex items-center gap-1 text-muted-foreground hover:text-foreground") do %>
+              Customer
+              <%= poetry_icon(name: :"chevrons-up-down", class: "size-3.5") %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_head(scope: "col") { "Status" } %>
+          <%= poetry_table_head(scope: "col") do %>
+            <%= poetry_link(href: "?sort=issued&direction=asc", underline: :none, class: "inline-flex items-center gap-1 text-muted-foreground hover:text-foreground") do %>
+              Issued
+              <%= poetry_icon(name: :"chevrons-up-down", class: "size-3.5") %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_head(scope: "col") do %>
+            <%= poetry_link(href: "?sort=due&direction=asc", underline: :none, class: "inline-flex items-center gap-1 text-muted-foreground hover:text-foreground") do %>
+              Due
+              <%= poetry_icon(name: :"chevrons-up-down", class: "size-3.5") %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_head(scope: "col", class: "text-right") do %>
+            <%= poetry_link(href: "?sort=amount&direction=desc", underline: :none, class: "inline-flex items-center justify-end gap-1 text-muted-foreground hover:text-foreground") do %>
+              Amount
+              <%= poetry_icon(name: :"chevrons-up-down", class: "size-3.5") %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <%= poetry_table_body do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium tabular-nums") { "INV-1001" } %>
+          <%= poetry_table_cell { "Northwind Traders" } %>
+          <%= poetry_table_cell { poetry_badge { "Paid" } } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "Jun 1, 2026" } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "Jun 15, 2026" } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$1,240.00" } %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium tabular-nums") { "INV-1002" } %>
+          <%= poetry_table_cell { "Lumen Labs" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Sent" } } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "Jun 3, 2026" } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "Jun 17, 2026" } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$860.50" } %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium tabular-nums") { "INV-1003" } %>
+          <%= poetry_table_cell { "Aperture Optics" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :destructive) { "Overdue" } } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "May 20, 2026" } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "Jun 4, 2026" } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$2,015.00" } %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium tabular-nums") { "INV-1004" } %>
+          <%= poetry_table_cell { "Gable & Sons" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :outline) { "Draft" } } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "Jun 10, 2026" } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "Jun 24, 2026" } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$475.25" } %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium tabular-nums") { "INV-1005" } %>
+          <%= poetry_table_cell { "Fern & Field" } %>
+          <%= poetry_table_cell { poetry_badge { "Paid" } } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "Jun 12, 2026" } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "Jun 26, 2026" } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$3,120.00" } %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium tabular-nums") { "INV-1006" } %>
+          <%= poetry_table_cell { "Cobalt Systems" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Sent" } } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "Jun 15, 2026" } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "Jun 29, 2026" } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$998.00" } %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium tabular-nums") { "INV-1007" } %>
+          <%= poetry_table_cell { "Marigold Co." } %>
+          <%= poetry_table_cell { poetry_badge(variant: :outline) { "Void" } } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "Jun 18, 2026" } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "Jul 2, 2026" } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$0.00" } %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium tabular-nums") { "INV-1008" } %>
+          <%= poetry_table_cell { "Hearth & Home" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :destructive) { "Overdue" } } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "May 28, 2026" } %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { "Jun 11, 2026" } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$1,560.75" } %>
+        <% end %>
+      <% end %>
+      <%= poetry_table_footer do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(colspan: 5) { "Page total" } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$10,269.50" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <p class="text-sm text-muted-foreground">Showing 1–8 of 42 invoices</p>
+    <%= poetry_pagination(current: 1, total: 6, path: ->(page) { "?page=#{page}" }) %>
+  </div>
+</section>

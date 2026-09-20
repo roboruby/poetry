@@ -1,0 +1,23 @@
+<%# The poetry arm: a team directory - breadcrumb trail, then a role=list
+    of Items with Avatar media (initials fallback under the image layer). %>
+<div class="space-y-4">
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Home", href: "/") %>
+    <% crumb.with_item("Team", href: "/team") %>
+    <% crumb.with_item("Directory") %>
+  <% end %>
+  <%= poetry_item_group do %>
+    <%= poetry_item(variant: :outline, role: "listitem") do |item| %>
+      <% item.with_media { poetry_avatar(label: "Grace Hopper", src: "/avatars/grace.jpg") { "GH" } } %>
+      <% item.with_title { "Grace Hopper" } %>
+      <% item.with_description { "Rear admiral, compiler pioneer." } %>
+      <% item.with_actions { poetry_button(size: :sm, variant: :outline) { "Message" } } %>
+    <% end %>
+    <%= poetry_item(variant: :outline, role: "listitem") do |item| %>
+      <% item.with_media { poetry_avatar(label: "Ada Lovelace") { "AL" } } %>
+      <% item.with_title { "Ada Lovelace" } %>
+      <% item.with_description { "Analyst, first programmer." } %>
+      <% item.with_actions { poetry_button(size: :sm, variant: :outline) { "Message" } } %>
+    <% end %>
+  <% end %>
+</div>

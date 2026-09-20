@@ -1,0 +1,21 @@
+<section class="mx-auto max-w-3xl space-y-6 p-6">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold">Search results</h1>
+    <p class="text-muted-foreground text-sm">Showing page 4 of 10</p>
+  </div>
+
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Items 31–40" } %>
+    <% card.with_description { "100 results total, 10 per page" } %>
+    <p class="text-muted-foreground text-sm">
+      Use the pagination controls below to move between pages.
+    </p>
+  <% end %>
+
+  <%= poetry_pagination(
+        current: 4,
+        total: 10,
+        label: "Search results pagination",
+        path: ->(page) { "?page=#{page}" }
+      ) %>
+</section>

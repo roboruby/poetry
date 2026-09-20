@@ -1,0 +1,108 @@
+<div class="mx-auto max-w-3xl p-6 space-y-8">
+  <header class="flex flex-col gap-4">
+    <%= poetry_breadcrumb do |crumb| %>
+      <% crumb.with_item("Home", href: "/") %>
+      <% crumb.with_item("Help Center") %>
+    <% end %>
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="space-y-1">
+        <h1 class="text-2xl font-semibold tracking-tight">Help Center</h1>
+        <p class="text-sm text-muted-foreground">Answers to common questions about billing, your account, and integrations.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <%= poetry_button(variant: :outline) do |button| %>
+          <% button.with_leading { poetry_icon(name: :mail) } %>
+          Contact support
+        <% end %>
+      </div>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Search the FAQ" } %>
+    <% card.with_description { "Find answers by keyword, or narrow results with advanced filters." } %>
+
+    <div class="space-y-4">
+      <div class="flex items-end gap-2">
+        <div class="flex-1">
+          <%= poetry_field(id: "faq-search", label_text: "Keyword") do |field| %>
+            <%= poetry_input(**field.control_attributes, type: "search", placeholder: "e.g. refund, seats, API key") %>
+          <% end %>
+        </div>
+        <%= poetry_button { "Search" } %>
+      </div>
+
+      <%= poetry_collapsible(open: false) do |collapsible| %>
+        <% collapsible.with_trigger { "Show advanced options" } %>
+        <div class="grid grid-cols-2 gap-4 border-t border-border pt-4 mt-4">
+          <%= poetry_field(id: "faq-category", label_text: "Category") do |field| %>
+            <%= poetry_select(**field.control_attributes, placeholder: "All categories") do |select| %>
+              <% select.with_item(label: "Billing", value: "billing") %>
+              <% select.with_item(label: "Account", value: "account") %>
+              <% select.with_item(label: "Integrations", value: "integrations") %>
+              <% select.with_item(label: "Security", value: "security") %>
+            <% end %>
+          <% end %>
+          <%= poetry_field(id: "faq-sort", label_text: "Sort by") do |field| %>
+            <%= poetry_select(**field.control_attributes, value: "relevant") do |select| %>
+              <% select.with_item(label: "Most relevant", value: "relevant") %>
+              <% select.with_item(label: "Newest first", value: "newest") %>
+            <% end %>
+          <% end %>
+          <div class="col-span-2 flex items-center gap-2">
+            <%= poetry_checkbox(id: "faq-archived", name: "include_archived") %>
+            <%= poetry_label(for_id: "faq-archived") { "Include archived articles" } %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Frequently asked questions" } %>
+    <% card.with_description { "12 articles in Billing & Subscription" } %>
+
+    <%= poetry_accordion(type: :single, collapsible: true, open: %w[upgrade]) do |accordion| %>
+      <% accordion.with_item(value: "upgrade", title: "How do I upgrade or downgrade my plan?") do %>
+        <p class="text-sm text-muted-foreground">
+          Go to <strong>Settings &rarr; Billing &rarr; Plan</strong> and choose a new tier. Upgrades apply
+          immediately and are prorated for the rest of the current billing cycle; downgrades take effect
+          at the start of your next cycle so you keep access to your current features until then.
+        </p>
+      <% end %>
+      <% accordion.with_item(value: "billing-cycle", title: "When am I billed and how do refunds work?") do %>
+        <p class="text-sm text-muted-foreground">
+          Monthly plans are billed on the same calendar day you first subscribed; annual plans are billed
+          once a year on that anniversary. We issue prorated refunds for downgrades and cancellations
+          within 14 days of a charge &mdash; reach out to support and we'll take care of it.
+        </p>
+      <% end %>
+      <% accordion.with_item(value: "seats", title: "Can I add or remove seats mid-cycle?") do %>
+        <p class="text-sm text-muted-foreground">
+          Yes. Adding seats charges an immediate prorated amount for the remainder of the cycle. Removing
+          seats doesn't issue a partial refund, but your next invoice reflects the lower seat count.
+        </p>
+      <% end %>
+      <% accordion.with_item(value: "payment-method", title: "How do I update my payment method?") do %>
+        <p class="text-sm text-muted-foreground">
+          Under <strong>Settings &rarr; Billing &rarr; Payment methods</strong>, add a new card and set it
+          as default. We'll automatically retry any failed charges against the new card within 24 hours.
+        </p>
+      <% end %>
+      <% accordion.with_item(value: "cancel-data", title: "What happens to my data if I cancel?") do %>
+        <p class="text-sm text-muted-foreground">
+          Your workspace is kept in a read-only, exportable state for 30 days after cancellation, after
+          which it is permanently deleted. You can export everything as CSV or JSON at any point during
+          that window from <strong>Settings &rarr; Data export</strong>.
+        </p>
+      <% end %>
+      <% accordion.with_item(value: "invoicing", title: "Do you offer invoicing for annual plans?") do %>
+        <p class="text-sm text-muted-foreground">
+          Annual plans on Team or Enterprise tiers can pay by invoice with net-30 terms. Contact support
+          to switch your account to invoiced billing before your next renewal date.
+        </p>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,16 @@
+<%# The raw arm: plausible LLM output - a div bar with an onmouseover
+    dropdown: no nav landmark, no expanded state, hover-only reachability. %>
+<div class="flex items-center justify-center gap-1">
+  <div class="relative" onmouseover="document.getElementById('dd').classList.remove('hidden')"
+       onmouseout="document.getElementById('dd').classList.add('hidden')">
+    <span class="inline-flex h-9 cursor-pointer items-center rounded-md px-4 py-2 text-sm font-medium hover:bg-gray-100">
+      Products ▾
+    </span>
+    <div id="dd" class="absolute top-full left-0 z-50 mt-1.5 hidden w-64 rounded-md border bg-white p-2 shadow">
+      <a href="/analytics" class="block rounded-md p-2 text-sm hover:bg-gray-100">Analytics</a>
+      <a href="/automation" class="block rounded-md p-2 text-sm hover:bg-gray-100">Automation</a>
+    </div>
+  </div>
+  <a href="/pricing" class="inline-flex h-9 items-center rounded-md px-4 py-2 text-sm font-medium hover:bg-gray-100">Pricing</a>
+  <a href="/docs" class="inline-flex h-9 items-center rounded-md px-4 py-2 text-sm font-medium hover:bg-gray-100">Docs</a>
+</div>

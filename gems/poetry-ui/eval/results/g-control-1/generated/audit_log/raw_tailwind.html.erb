@@ -1,0 +1,588 @@
+<main class="mx-auto max-w-6xl px-6 py-8">
+
+  <!-- Page header -->
+  <header class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 pb-6">
+    <div>
+      <p class="text-sm font-medium text-slate-500">Acme Robotics</p>
+      <h1 class="mt-1 text-2xl font-semibold tracking-tight text-slate-900">Audit log</h1>
+      <p class="mt-1 max-w-2xl text-sm text-slate-500">
+        A record of security-relevant activity across this workspace &mdash; sign-ins, permission changes, data access, and administrative actions. Logs are retained for 12 months.
+      </p>
+    </div>
+
+    <!-- Export affordance -->
+    <details class="group relative shrink-0">
+      <summary class="flex cursor-pointer list-none items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+        <svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 text-slate-500">
+          <path fill-rule="evenodd" d="M10 12.5a.75.75 0 0 1-.53-.22l-3.5-3.5a.75.75 0 1 1 1.06-1.06L9.25 9.94V3.25a.75.75 0 0 1 1.5 0v6.69l2.22-2.22a.75.75 0 1 1 1.06 1.06l-3.5 3.5a.75.75 0 0 1-.53.22Z" clip-rule="evenodd" />
+          <path d="M3.5 12.75a.75.75 0 0 1 .75.75v1.5c0 .414.336.75.75.75h10a.75.75 0 0 0 .75-.75v-1.5a.75.75 0 0 1 1.5 0v1.5A2.25 2.25 0 0 1 15 17.5H5a2.25 2.25 0 0 1-2.25-2.25v-1.5a.75.75 0 0 1 .75-.75Z" />
+        </svg>
+        Export
+        <svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 text-slate-400 transition-transform group-open:rotate-180">
+          <path fill-rule="evenodd" d="M5.22 7.22a.75.75 0 0 1 1.06 0L10 10.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 8.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+        </svg>
+      </summary>
+      <div class="absolute right-0 z-10 mt-2 w-56 rounded-md border border-slate-200 bg-white py-1 shadow-lg">
+        <p class="px-3 py-1.5 text-xs font-medium uppercase tracking-wide text-slate-400">Export filtered results</p>
+        <a href="?format=csv" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Export as CSV</a>
+        <a href="?format=json" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Export as JSON</a>
+        <a href="?format=pdf" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Export as PDF summary</a>
+      </div>
+    </details>
+  </header>
+
+  <!-- Filters -->
+  <form method="get" action="" class="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
+    <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+      <div class="col-span-2 lg:col-span-2">
+        <label for="q" class="block text-xs font-medium text-slate-600">Search</label>
+        <input type="search" id="q" name="q" placeholder="Actor, action, IP&hellip;"
+               class="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+      </div>
+
+      <div>
+        <label for="severity" class="block text-xs font-medium text-slate-600">Severity</label>
+        <select id="severity" name="severity"
+                class="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+          <option value="">All severities</option>
+          <option value="critical">Critical</option>
+          <option value="warning">Warning</option>
+          <option value="info">Info</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="event_type" class="block text-xs font-medium text-slate-600">Event type</label>
+        <select id="event_type" name="event_type"
+                class="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+          <option value="">All types</option>
+          <option value="authentication">Authentication</option>
+          <option value="permissions">Permissions &amp; roles</option>
+          <option value="data_access">Data access</option>
+          <option value="billing">Billing</option>
+          <option value="integrations">Integrations &amp; API keys</option>
+          <option value="workspace">Workspace settings</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="actor" class="block text-xs font-medium text-slate-600">Actor</label>
+        <input list="actor-options" id="actor" name="actor" placeholder="Anyone"
+               class="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+        <datalist id="actor-options">
+          <option value="Priya Natarajan"></option>
+          <option value="Jordan Blake"></option>
+          <option value="Sam Ochieng"></option>
+          <option value="Wei Chen"></option>
+          <option value="Automation bot"></option>
+        </datalist>
+      </div>
+
+      <div class="col-span-2 flex gap-2 sm:col-span-3 lg:col-span-1">
+        <div class="flex-1">
+          <label for="from" class="block text-xs font-medium text-slate-600">From</label>
+          <input type="date" id="from" name="from" value="2026-07-18"
+                 class="mt-1 block w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+        </div>
+        <div class="flex-1">
+          <label for="to" class="block text-xs font-medium text-slate-600">To</label>
+          <input type="date" id="to" name="to" value="2026-07-22"
+                 class="mt-1 block w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4 flex items-center justify-between border-t border-slate-200 pt-3">
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
+        <span class="font-medium text-slate-600">Legend:</span>
+        <span class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-red-500"></span>Critical &mdash; requires review</span>
+        <span class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-amber-500"></span>Warning &mdash; unusual activity</span>
+        <span class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-slate-400"></span>Info &mdash; routine activity</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="?" class="text-sm font-medium text-slate-500 hover:text-slate-700">Clear filters</a>
+        <button type="submit" class="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+          Apply filters
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Results summary -->
+  <div class="mt-6 flex items-center justify-between">
+    <p class="text-sm text-slate-500">Showing <span class="font-medium text-slate-700">18</span> events from <span class="font-medium text-slate-700">Jul 18&ndash;22, 2026</span></p>
+    <p class="text-sm text-slate-500">
+      <span class="font-medium text-red-600">2</span> critical &middot;
+      <span class="font-medium text-amber-600">4</span> warning &middot;
+      <span class="font-medium text-slate-600">12</span> info
+    </p>
+  </div>
+
+  <!-- Event groups -->
+  <div class="mt-4 space-y-8">
+
+    <!-- Wednesday, July 22 -->
+    <section aria-labelledby="day-2026-07-22">
+      <h2 id="day-2026-07-22" class="sticky top-0 z-[1] -mx-2 bg-white/95 px-2 py-2 text-sm font-semibold text-slate-900 backdrop-blur">
+        Wednesday, July 22, 2026
+      </h2>
+      <div class="overflow-hidden rounded-lg border border-slate-200">
+        <table class="min-w-full divide-y divide-slate-200 text-sm">
+          <thead class="bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+            <tr>
+              <th scope="col" class="w-24 px-4 py-2">Time</th>
+              <th scope="col" class="w-28 px-4 py-2">Severity</th>
+              <th scope="col" class="px-4 py-2">Event</th>
+              <th scope="col" class="w-40 px-4 py-2">Actor</th>
+              <th scope="col" class="w-44 px-4 py-2">Location</th>
+              <th scope="col" class="w-16 px-4 py-2 text-right">Details</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 bg-white">
+
+            <tr>
+              <td class="whitespace-nowrap px-4 py-3 align-top text-slate-500">9:41 AM</td>
+              <td class="px-4 py-3 align-top">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>Critical
+                </span>
+              </td>
+              <td class="px-4 py-3 align-top text-slate-800">Disabled SSO enforcement for workspace</td>
+              <td class="px-4 py-3 align-top text-slate-600">Priya Natarajan</td>
+              <td class="px-4 py-3 align-top text-slate-500">
+                <div>San Francisco, US</div>
+                <div class="text-xs text-slate-400">198.51.100.14</div>
+              </td>
+              <td class="px-4 py-3 align-top text-right">
+                <details>
+                  <summary class="cursor-pointer text-xs font-medium text-indigo-600 hover:text-indigo-800 [&::-webkit-details-marker]:hidden">View</summary>
+                </details>
+              </td>
+            </tr>
+            <tr class="bg-slate-50/60">
+              <td colspan="6" class="px-4 pb-3">
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-1 rounded-md bg-slate-900/95 p-3 font-mono text-xs text-slate-100 sm:grid-cols-4">
+                  <div><dt class="text-slate-400">event_id</dt><dd>evt_7f2a1c90</dd></div>
+                  <div><dt class="text-slate-400">session_id</dt><dd>sess_88ad3e</dd></div>
+                  <div><dt class="text-slate-400">user_agent</dt><dd>Chrome 126 / macOS</dd></div>
+                  <div><dt class="text-slate-400">prior_value</dt><dd>sso_required: true</dd></div>
+                </dl>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="whitespace-nowrap px-4 py-3 align-top text-slate-500">9:12 AM</td>
+              <td class="px-4 py-3 align-top">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10">
+                  <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span>Info
+                </span>
+              </td>
+              <td class="px-4 py-3 align-top text-slate-800">Signed in</td>
+              <td class="px-4 py-3 align-top text-slate-600">Priya Natarajan</td>
+              <td class="px-4 py-3 align-top text-slate-500">
+                <div>San Francisco, US</div>
+                <div class="text-xs text-slate-400">198.51.100.14</div>
+              </td>
+              <td class="px-4 py-3 align-top text-right">
+                <details>
+                  <summary class="cursor-pointer text-xs font-medium text-indigo-600 hover:text-indigo-800 [&::-webkit-details-marker]:hidden">View</summary>
+                </details>
+              </td>
+            </tr>
+            <tr class="bg-slate-50/60">
+              <td colspan="6" class="px-4 pb-3">
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-1 rounded-md bg-slate-900/95 p-3 font-mono text-xs text-slate-100 sm:grid-cols-4">
+                  <div><dt class="text-slate-400">event_id</dt><dd>evt_1b9903aa</dd></div>
+                  <div><dt class="text-slate-400">session_id</dt><dd>sess_88ad3e</dd></div>
+                  <div><dt class="text-slate-400">method</dt><dd>password + webauthn</dd></div>
+                  <div><dt class="text-slate-400">user_agent</dt><dd>Chrome 126 / macOS</dd></div>
+                </dl>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="whitespace-nowrap px-4 py-3 align-top text-slate-500">8:57 AM</td>
+              <td class="px-4 py-3 align-top">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>Warning
+                </span>
+              </td>
+              <td class="px-4 py-3 align-top text-slate-800">3 failed sign-in attempts, then succeeded</td>
+              <td class="px-4 py-3 align-top text-slate-600">Jordan Blake</td>
+              <td class="px-4 py-3 align-top text-slate-500">
+                <div>Austin, US</div>
+                <div class="text-xs text-slate-400">203.0.113.77</div>
+              </td>
+              <td class="px-4 py-3 align-top text-right">
+                <details>
+                  <summary class="cursor-pointer text-xs font-medium text-indigo-600 hover:text-indigo-800 [&::-webkit-details-marker]:hidden">View</summary>
+                </details>
+              </td>
+            </tr>
+            <tr class="bg-slate-50/60">
+              <td colspan="6" class="px-4 pb-3">
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-1 rounded-md bg-slate-900/95 p-3 font-mono text-xs text-slate-100 sm:grid-cols-4">
+                  <div><dt class="text-slate-400">event_id</dt><dd>evt_4409c2ee</dd></div>
+                  <div><dt class="text-slate-400">failed_attempts</dt><dd>3</dd></div>
+                  <div><dt class="text-slate-400">reason</dt><dd>invalid_password</dd></div>
+                  <div><dt class="text-slate-400">user_agent</dt><dd>Safari 17 / iOS</dd></div>
+                </dl>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Tuesday, July 21 -->
+    <section aria-labelledby="day-2026-07-21">
+      <h2 id="day-2026-07-21" class="sticky top-0 z-[1] -mx-2 bg-white/95 px-2 py-2 text-sm font-semibold text-slate-900 backdrop-blur">
+        Tuesday, July 21, 2026
+      </h2>
+      <div class="overflow-hidden rounded-lg border border-slate-200">
+        <table class="min-w-full divide-y divide-slate-200 text-sm">
+          <thead class="bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+            <tr>
+              <th scope="col" class="w-24 px-4 py-2">Time</th>
+              <th scope="col" class="w-28 px-4 py-2">Severity</th>
+              <th scope="col" class="px-4 py-2">Event</th>
+              <th scope="col" class="w-40 px-4 py-2">Actor</th>
+              <th scope="col" class="w-44 px-4 py-2">Location</th>
+              <th scope="col" class="w-16 px-4 py-2 text-right">Details</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 bg-white">
+
+            <tr>
+              <td class="whitespace-nowrap px-4 py-3 align-top text-slate-500">6:03 PM</td>
+              <td class="px-4 py-3 align-top">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>Critical
+                </span>
+              </td>
+              <td class="px-4 py-3 align-top text-slate-800">Exported full workspace data archive</td>
+              <td class="px-4 py-3 align-top text-slate-600">Wei Chen</td>
+              <td class="px-4 py-3 align-top text-slate-500">
+                <div>Singapore, SG</div>
+                <div class="text-xs text-slate-400">192.0.2.201</div>
+              </td>
+              <td class="px-4 py-3 align-top text-right">
+                <details>
+                  <summary class="cursor-pointer text-xs font-medium text-indigo-600 hover:text-indigo-800 [&::-webkit-details-marker]:hidden">View</summary>
+                </details>
+              </td>
+            </tr>
+            <tr class="bg-slate-50/60">
+              <td colspan="6" class="px-4 pb-3">
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-1 rounded-md bg-slate-900/95 p-3 font-mono text-xs text-slate-100 sm:grid-cols-4">
+                  <div><dt class="text-slate-400">event_id</dt><dd>evt_ee13f001</dd></div>
+                  <div><dt class="text-slate-400">export_size</dt><dd>1.2 GB</dd></div>
+                  <div><dt class="text-slate-400">scope</dt><dd>all_records</dd></div>
+                  <div><dt class="text-slate-400">user_agent</dt><dd>Firefox 128 / Linux</dd></div>
+                </dl>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="whitespace-nowrap px-4 py-3 align-top text-slate-500">4:22 PM</td>
+              <td class="px-4 py-3 align-top">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>Warning
+                </span>
+              </td>
+              <td class="px-4 py-3 align-top text-slate-800">Granted admin role to Sam Ochieng</td>
+              <td class="px-4 py-3 align-top text-slate-600">Wei Chen</td>
+              <td class="px-4 py-3 align-top text-slate-500">
+                <div>Singapore, SG</div>
+                <div class="text-xs text-slate-400">192.0.2.201</div>
+              </td>
+              <td class="px-4 py-3 align-top text-right">
+                <details>
+                  <summary class="cursor-pointer text-xs font-medium text-indigo-600 hover:text-indigo-800 [&::-webkit-details-marker]:hidden">View</summary>
+                </details>
+              </td>
+            </tr>
+            <tr class="bg-slate-50/60">
+              <td colspan="6" class="px-4 pb-3">
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-1 rounded-md bg-slate-900/95 p-3 font-mono text-xs text-slate-100 sm:grid-cols-4">
+                  <div><dt class="text-slate-400">event_id</dt><dd>evt_a06612bb</dd></div>
+                  <div><dt class="text-slate-400">target_user</dt><dd>sam.ochieng@acme.dev</dd></div>
+                  <div><dt class="text-slate-400">prior_role</dt><dd>member</dd></div>
+                  <div><dt class="text-slate-400">new_role</dt><dd>admin</dd></div>
+                </dl>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="whitespace-nowrap px-4 py-3 align-top text-slate-500">11:47 AM</td>
+              <td class="px-4 py-3 align-top">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10">
+                  <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span>Info
+                </span>
+              </td>
+              <td class="px-4 py-3 align-top text-slate-800">Created API key &ldquo;CI/CD deploy&rdquo;</td>
+              <td class="px-4 py-3 align-top text-slate-600">Sam Ochieng</td>
+              <td class="px-4 py-3 align-top text-slate-500">
+                <div>Nairobi, KE</div>
+                <div class="text-xs text-slate-400">203.0.113.9</div>
+              </td>
+              <td class="px-4 py-3 align-top text-right">
+                <details>
+                  <summary class="cursor-pointer text-xs font-medium text-indigo-600 hover:text-indigo-800 [&::-webkit-details-marker]:hidden">View</summary>
+                </details>
+              </td>
+            </tr>
+            <tr class="bg-slate-50/60">
+              <td colspan="6" class="px-4 pb-3">
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-1 rounded-md bg-slate-900/95 p-3 font-mono text-xs text-slate-100 sm:grid-cols-4">
+                  <div><dt class="text-slate-400">event_id</dt><dd>evt_5c7d0021</dd></div>
+                  <div><dt class="text-slate-400">key_id</dt><dd>key_9a2f&hellip;e114</dd></div>
+                  <div><dt class="text-slate-400">scopes</dt><dd>deploy:write</dd></div>
+                  <div><dt class="text-slate-400">user_agent</dt><dd>Chrome 126 / Windows</dd></div>
+                </dl>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="whitespace-nowrap px-4 py-3 align-top text-slate-500">9:05 AM</td>
+              <td class="px-4 py-3 align-top">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10">
+                  <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span>Info
+                </span>
+              </td>
+              <td class="px-4 py-3 align-top text-slate-800">Invited jamie@example.com as Member</td>
+              <td class="px-4 py-3 align-top text-slate-600">Priya Natarajan</td>
+              <td class="px-4 py-3 align-top text-slate-500">
+                <div>San Francisco, US</div>
+                <div class="text-xs text-slate-400">198.51.100.14</div>
+              </td>
+              <td class="px-4 py-3 align-top text-right">
+                <details>
+                  <summary class="cursor-pointer text-xs font-medium text-indigo-600 hover:text-indigo-800 [&::-webkit-details-marker]:hidden">View</summary>
+                </details>
+              </td>
+            </tr>
+            <tr class="bg-slate-50/60">
+              <td colspan="6" class="px-4 pb-3">
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-1 rounded-md bg-slate-900/95 p-3 font-mono text-xs text-slate-100 sm:grid-cols-4">
+                  <div><dt class="text-slate-400">event_id</dt><dd>evt_20aa77c4</dd></div>
+                  <div><dt class="text-slate-400">invitee</dt><dd>jamie@example.com</dd></div>
+                  <div><dt class="text-slate-400">role</dt><dd>member</dd></div>
+                  <div><dt class="text-slate-400">expires</dt><dd>7 days</dd></div>
+                </dl>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Monday, July 20 -->
+    <section aria-labelledby="day-2026-07-20">
+      <h2 id="day-2026-07-20" class="sticky top-0 z-[1] -mx-2 bg-white/95 px-2 py-2 text-sm font-semibold text-slate-900 backdrop-blur">
+        Monday, July 20, 2026
+      </h2>
+      <div class="overflow-hidden rounded-lg border border-slate-200">
+        <table class="min-w-full divide-y divide-slate-200 text-sm">
+          <thead class="bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+            <tr>
+              <th scope="col" class="w-24 px-4 py-2">Time</th>
+              <th scope="col" class="w-28 px-4 py-2">Severity</th>
+              <th scope="col" class="px-4 py-2">Event</th>
+              <th scope="col" class="w-40 px-4 py-2">Actor</th>
+              <th scope="col" class="w-44 px-4 py-2">Location</th>
+              <th scope="col" class="w-16 px-4 py-2 text-right">Details</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 bg-white">
+
+            <tr>
+              <td class="whitespace-nowrap px-4 py-3 align-top text-slate-500">2:14 PM</td>
+              <td class="px-4 py-3 align-top">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10">
+                  <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span>Info
+                </span>
+              </td>
+              <td class="px-4 py-3 align-top text-slate-800">Updated workspace billing plan to Enterprise</td>
+              <td class="px-4 py-3 align-top text-slate-600">Priya Natarajan</td>
+              <td class="px-4 py-3 align-top text-slate-500">
+                <div>San Francisco, US</div>
+                <div class="text-xs text-slate-400">198.51.100.14</div>
+              </td>
+              <td class="px-4 py-3 align-top text-right">
+                <details>
+                  <summary class="cursor-pointer text-xs font-medium text-indigo-600 hover:text-indigo-800 [&::-webkit-details-marker]:hidden">View</summary>
+                </details>
+              </td>
+            </tr>
+            <tr class="bg-slate-50/60">
+              <td colspan="6" class="px-4 pb-3">
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-1 rounded-md bg-slate-900/95 p-3 font-mono text-xs text-slate-100 sm:grid-cols-4">
+                  <div><dt class="text-slate-400">event_id</dt><dd>evt_88bb1120</dd></div>
+                  <div><dt class="text-slate-400">prior_plan</dt><dd>team</dd></div>
+                  <div><dt class="text-slate-400">new_plan</dt><dd>enterprise</dd></div>
+                  <div><dt class="text-slate-400">seats</dt><dd>50</dd></div>
+                </dl>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="whitespace-nowrap px-4 py-3 align-top text-slate-500">10:38 AM</td>
+              <td class="px-4 py-3 align-top">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>Warning
+                </span>
+              </td>
+              <td class="px-4 py-3 align-top text-slate-800">Removed member jordan.p@example.com</td>
+              <td class="px-4 py-3 align-top text-slate-600">Jordan Blake</td>
+              <td class="px-4 py-3 align-top text-slate-500">
+                <div>Austin, US</div>
+                <div class="text-xs text-slate-400">203.0.113.77</div>
+              </td>
+              <td class="px-4 py-3 align-top text-right">
+                <details>
+                  <summary class="cursor-pointer text-xs font-medium text-indigo-600 hover:text-indigo-800 [&::-webkit-details-marker]:hidden">View</summary>
+                </details>
+              </td>
+            </tr>
+            <tr class="bg-slate-50/60">
+              <td colspan="6" class="px-4 pb-3">
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-1 rounded-md bg-slate-900/95 p-3 font-mono text-xs text-slate-100 sm:grid-cols-4">
+                  <div><dt class="text-slate-400">event_id</dt><dd>evt_301fca9d</dd></div>
+                  <div><dt class="text-slate-400">removed_user</dt><dd>jordan.p@example.com</dd></div>
+                  <div><dt class="text-slate-400">reason</dt><dd>offboarding</dd></div>
+                  <div><dt class="text-slate-400">user_agent</dt><dd>Chrome 126 / macOS</dd></div>
+                </dl>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="whitespace-nowrap px-4 py-3 align-top text-slate-500">8:02 AM</td>
+              <td class="px-4 py-3 align-top">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10">
+                  <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span>Info
+                </span>
+              </td>
+              <td class="px-4 py-3 align-top text-slate-800">Rotated API key &ldquo;Analytics pipeline&rdquo;</td>
+              <td class="px-4 py-3 align-top text-slate-600">Automation bot</td>
+              <td class="px-4 py-3 align-top text-slate-500">
+                <div>Internal service</div>
+                <div class="text-xs text-slate-400">10.0.4.12</div>
+              </td>
+              <td class="px-4 py-3 align-top text-right">
+                <details>
+                  <summary class="cursor-pointer text-xs font-medium text-indigo-600 hover:text-indigo-800 [&::-webkit-details-marker]:hidden">View</summary>
+                </details>
+              </td>
+            </tr>
+            <tr class="bg-slate-50/60">
+              <td colspan="6" class="px-4 pb-3">
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-1 rounded-md bg-slate-900/95 p-3 font-mono text-xs text-slate-100 sm:grid-cols-4">
+                  <div><dt class="text-slate-400">event_id</dt><dd>evt_607733e2</dd></div>
+                  <div><dt class="text-slate-400">key_id</dt><dd>key_11c0&hellip;9bd2</dd></div>
+                  <div><dt class="text-slate-400">trigger</dt><dd>scheduled_rotation</dd></div>
+                  <div><dt class="text-slate-400">prior_key_revoked</dt><dd>true</dd></div>
+                </dl>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Saturday, July 18 -->
+    <section aria-labelledby="day-2026-07-18">
+      <h2 id="day-2026-07-18" class="sticky top-0 z-[1] -mx-2 bg-white/95 px-2 py-2 text-sm font-semibold text-slate-900 backdrop-blur">
+        Saturday, July 18, 2026
+      </h2>
+      <div class="overflow-hidden rounded-lg border border-slate-200">
+        <table class="min-w-full divide-y divide-slate-200 text-sm">
+          <thead class="bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+            <tr>
+              <th scope="col" class="w-24 px-4 py-2">Time</th>
+              <th scope="col" class="w-28 px-4 py-2">Severity</th>
+              <th scope="col" class="px-4 py-2">Event</th>
+              <th scope="col" class="w-40 px-4 py-2">Actor</th>
+              <th scope="col" class="w-44 px-4 py-2">Location</th>
+              <th scope="col" class="w-16 px-4 py-2 text-right">Details</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 bg-white">
+
+            <tr>
+              <td class="whitespace-nowrap px-4 py-3 align-top text-slate-500">7:26 PM</td>
+              <td class="px-4 py-3 align-top">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10">
+                  <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span>Info
+                </span>
+              </td>
+              <td class="px-4 py-3 align-top text-slate-800">Disconnected integration &ldquo;Slack&rdquo;</td>
+              <td class="px-4 py-3 align-top text-slate-600">Sam Ochieng</td>
+              <td class="px-4 py-3 align-top text-slate-500">
+                <div>Nairobi, KE</div>
+                <div class="text-xs text-slate-400">203.0.113.9</div>
+              </td>
+              <td class="px-4 py-3 align-top text-right">
+                <details>
+                  <summary class="cursor-pointer text-xs font-medium text-indigo-600 hover:text-indigo-800 [&::-webkit-details-marker]:hidden">View</summary>
+                </details>
+              </td>
+            </tr>
+            <tr class="bg-slate-50/60">
+              <td colspan="6" class="px-4 pb-3">
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-1 rounded-md bg-slate-900/95 p-3 font-mono text-xs text-slate-100 sm:grid-cols-4">
+                  <div><dt class="text-slate-400">event_id</dt><dd>evt_c412008f</dd></div>
+                  <div><dt class="text-slate-400">integration</dt><dd>slack</dd></div>
+                  <div><dt class="text-slate-400">workspace</dt><dd>acme-robotics.slack.com</dd></div>
+                  <div><dt class="text-slate-400">user_agent</dt><dd>Chrome 126 / Windows</dd></div>
+                </dl>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="whitespace-nowrap px-4 py-3 align-top text-slate-500">1:03 PM</td>
+              <td class="px-4 py-3 align-top">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>Critical
+                </span>
+              </td>
+              <td class="px-4 py-3 align-top text-slate-800">Sign-in blocked &mdash; impossible travel detected</td>
+              <td class="px-4 py-3 align-top text-slate-600">Unknown (claimed: Wei Chen)</td>
+              <td class="px-4 py-3 align-top text-slate-500">
+                <div>Warsaw, PL</div>
+                <div class="text-xs text-slate-400">198.51.100.233</div>
+              </td>
+              <td class="px-4 py-3 align-top text-right">
+                <details>
+                  <summary class="cursor-pointer text-xs font-medium text-indigo-600 hover:text-indigo-800 [&::-webkit-details-marker]:hidden">View</summary>
+                </details>
+              </td>
+            </tr>
+            <tr class="bg-slate-50/60">
+              <td colspan="6" class="px-4 pb-3">
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-1 rounded-md bg-slate-900/95 p-3 font-mono text-xs text-slate-100 sm:grid-cols-4">
+                  <div><dt class="text-slate-400">event_id</dt><dd>evt_9f0021ab</dd></div>
+                  <div><dt class="text-slate-400">risk_score</dt><dd>94/100</dd></div>
+                  <div><dt class="text-slate-400">prior_location</dt><dd>Singapore, SG (41 min earlier)</dd></div>
+                  <div><dt class="text-slate-400">action_taken</dt><dd>session_blocked</dd></div>
+                </dl>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer / older events -->
+  <div class="mt-8 flex items-center justify-between border-t border-slate-200 pt-4 text-sm text-slate-500">
+    <p>Events older than 4 days are summarized above by date. Full retention: 12 months.</p>
+    <a href="?from=2025-07-22&amp;to=2026-07-17" class="font-medium text-indigo-600 hover:text-indigo-800">View older events &rarr;</a>
+  </div>
+
+</main>

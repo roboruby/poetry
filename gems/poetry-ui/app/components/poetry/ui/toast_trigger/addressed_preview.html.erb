@@ -1,0 +1,12 @@
+<div class="p-4">
+  <%= render Poetry::Ui::ToastTrigger::Component.new(template: "addressed-preview-toast",
+                                                     toaster: "preview-region") do %>
+    Show in region
+  <% end %>
+</div>
+<template id="addressed-preview-toast">
+  <%= poetry_toast(duration: 4000) do |toast| %>
+    <% toast.with_title { "Addressed stamp" } %>
+  <% end %>
+</template>
+<%= poetry_toaster(id: "preview-region") %>

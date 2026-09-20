@@ -1,0 +1,54 @@
+<div class="flex min-h-screen items-center justify-center bg-muted/30 p-6">
+  <div class="w-full max-w-sm">
+    <div class="mb-8 flex flex-col items-center gap-2 text-center">
+      <div class="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+        <%= poetry_icon(name: :"building-2") %>
+      </div>
+      <span class="text-lg font-semibold">Northwind Business</span>
+    </div>
+
+    <%= poetry_card(title_tag: :h1) do |card| %>
+      <% card.with_title { "Sign in" } %>
+      <% card.with_description { "Enter your email and password to access your workspace." } %>
+
+      <% if flash[:alert].present? %>
+        <%= poetry_alert(variant: :destructive, class: "mb-4") do |alert| %>
+          <% alert.with_title { "Sign-in failed" } %>
+          <%= flash[:alert] %>
+        <% end %>
+      <% end %>
+
+      <%= form_with url: "#", method: :post, class: "space-y-5" do %>
+        <%= poetry_field(id: "email", label_text: "Email", required: true) do |field| %>
+          <%= poetry_input(**field.control_attributes, type: "email", name: "email", placeholder: "you@company.com", value: "") %>
+        <% end %>
+
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <%= poetry_label(for_id: "password") { "Password" } %>
+            <%= poetry_link(href: "#", underline: :hover) { "Forgot password?" } %>
+          </div>
+          <%= poetry_sensitive_input(id: "password", name: "password", label: "Password", required: true, placeholder: "Enter your password") %>
+        </div>
+
+        <%= poetry_button(type: :submit, class: "w-full") { "Sign in" } %>
+      <% end %>
+
+      <div class="relative my-5">
+        <div class="absolute inset-0 flex items-center">
+          <%= poetry_separator %>
+        </div>
+        <div class="relative flex justify-center text-xs uppercase">
+          <span class="bg-card px-2 text-muted-foreground">Or continue with</span>
+        </div>
+      </div>
+
+      <%= poetry_button(variant: :outline, tag: :a, href: "#", class: "w-full") do |button| %>
+        <% button.with_leading { poetry_icon(name: :key) } %>
+        Single sign-on
+      <% end %>
+
+      <% card.with_footer { safe_join([tag.span("New to Northwind Business? ", class: "text-muted-foreground"), poetry_link(href: "#") { "Request access" }]) } %>
+    <% end %>
+  </div>
+</div>

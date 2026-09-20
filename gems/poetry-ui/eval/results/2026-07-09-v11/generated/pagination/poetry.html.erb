@@ -1,0 +1,10 @@
+<section class="mx-auto max-w-3xl space-y-4 p-8">
+  <div class="space-y-1">
+    <h2 class="text-lg font-semibold tracking-tight">Pagination</h2>
+    <p class="text-sm text-muted-foreground">Page 4 of 10 &mdash; the current page is marked and reachable without JavaScript.</p>
+  </div>
+  <div class="flex flex-wrap items-center justify-between gap-4 rounded-lg border p-4">
+    <p class="text-sm text-muted-foreground">Showing 31&ndash;40 of 100 results</p>
+    <%= poetry_pagination(current: 4, total: 10, current_variant: :filled, path: ->(page) { "?page=#{page}" }) %>
+  </div>
+</section>

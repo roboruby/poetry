@@ -1,0 +1,59 @@
+<div class="mx-auto max-w-2xl p-6">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Account</h1>
+    <p class="text-sm text-muted-foreground">
+      Manage how you receive updates and what other people can see.
+    </p>
+  </div>
+
+  <div class="mt-6">
+    <%= poetry_dialog do |dialog| %>
+      <% dialog.with_trigger do %>
+        <%= poetry_button do %>Open settings<% end %>
+      <% end %>
+
+      <% dialog.with_title do %>Settings<% end %>
+      <% dialog.with_description do %>
+        Update your notification and visibility preferences. Changes are
+        applied when you confirm.
+      <% end %>
+
+      <div class="space-y-6 py-2">
+        <div class="flex items-start justify-between gap-4">
+          <div class="space-y-0.5">
+            <p class="text-sm font-medium leading-none">Email notifications</p>
+            <p class="text-sm text-muted-foreground">
+              Get emailed when someone comments on your posts.
+            </p>
+          </div>
+          <%= poetry_checkbox name: "settings[email_notifications]", checked: true, label: "Email notifications" %>
+        </div>
+
+        <div class="flex items-start justify-between gap-4">
+          <div class="space-y-0.5">
+            <p class="text-sm font-medium leading-none">Marketing emails</p>
+            <p class="text-sm text-muted-foreground">
+              Receive occasional product announcements and tips.
+            </p>
+          </div>
+          <%= poetry_checkbox name: "settings[marketing_emails]", checked: false, label: "Marketing emails" %>
+        </div>
+
+        <div class="flex items-start justify-between gap-4">
+          <div class="space-y-0.5">
+            <p class="text-sm font-medium leading-none">Public profile</p>
+            <p class="text-sm text-muted-foreground">
+              Let other members find your profile in search.
+            </p>
+          </div>
+          <%= poetry_checkbox name: "settings[public_profile]", checked: true, label: "Public profile" %>
+        </div>
+      </div>
+
+      <% dialog.with_footer do %>
+        <%= poetry_button variant: :outline do %>Cancel<% end %>
+        <%= poetry_button do %>Save changes<% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

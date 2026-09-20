@@ -1,0 +1,72 @@
+<%= content_tag(:div, **root_attributes) do %>
+  <div data-slot="calendar-nav" class="<%= css(:nav) %>">
+    <%= render Poetry::Ui::Button::Component.new(**previous_options) do |button| %>
+      <% button.with_leading { render Poetry::Ui::Icon::Component.new(name: :"chevron-left") } %>
+    <% end %>
+    <% if dropdown_caption? %>
+      <%# No caption target here: the controller reflects navigation into
+          the selects and their visible labels (data-calendar-unit).
+          Upstream's overlay pattern: the label span
+          is what you SEE (aria-hidden - the select carries the value);
+          the real select sits invisibly on top. %>
+      <div data-slot="calendar-caption" class="<%= css(:caption_dropdowns) %>">
+        <% { "month" => [month_options, @month.month, t("poetry.calendar.month"), month_names_list[@month.month - 1]],
+             "year" => [year_options, @month.year, t("poetry.calendar.year"), @month.year.to_s] }.each do |unit, (options, current, label, text)| %>
+          <span data-slot="calendar-dropdown" data-calendar-unit="<%= unit %>" class="<%= css(:dropdown_root) %>"
+                <%= tag.attributes(**stimulus_attributes_for(:dropdown)) %>>
+            <span data-slot="calendar-caption-label" aria-hidden="true" class="<%= css(:dropdown_label) %>">
+              <span data-slot="calendar-dropdown-value"><%= text %></span>
+              <%= render Poetry::Ui::Icon::Component.new(name: :"chevron-down") %>
+            </span>
+            <select aria-label="<%= label %>" class="<%= css(:dropdown_select) %>">
+              <% options.each do |(option_label, value)| %>
+                <option value="<%= value %>" <% if value == current %>selected<% end %>><%= option_label %></option>
+              <% end %>
+            </select>
+          </span>
+        <% end %>
+      </div>
+    <% else %>
+      <div data-slot="calendar-caption" class="<%= css(:caption) %>" <%= tag.attributes(**stimulus_attributes_for(:caption)) %>><%= caption %></div>
+    <% end %>
+    <%= render Poetry::Ui::Button::Component.new(**next_options) do |button| %>
+      <% button.with_leading { render Poetry::Ui::Icon::Component.new(name: :"chevron-right") } %>
+    <% end %>
+  </div>
+  <div role="grid" data-slot="calendar-grid" class="<%= css(:grid) %>"
+       <%= tag.attributes(**stimulus_attributes_for(:grid)) %>>
+    <div role="row" data-slot="calendar-weekdays" class="<%= css(:weekdays) %>">
+      <% if week_numbers %>
+        <div role="columnheader" data-slot="calendar-week-number" class="<%= css(:weekday) %>"><span class="sr-only">Week</span></div>
+      <% end %>
+      <% weekday_labels.each do |label| %>
+        <div role="columnheader" data-slot="calendar-weekday" class="<%= css(:weekday) %>"><%= label %></div>
+      <% end %>
+    </div>
+    <% cells.each_slice(7) do |week| %>
+      <div role="row" data-slot="calendar-week" class="<%= css(:week) %>">
+        <% if week_numbers %>
+          <div role="rowheader" data-slot="calendar-week-number" class="<%= css(:weekday) %>"><%= iso_week(week) %></div>
+        <% end %>
+        <% week.each do |date| %>
+          <%= content_tag(:div, cell_attributes(date)) do %>
+            <%= content_tag(:button, day_attributes(date)) do %>
+              <span data-slot="calendar-day-label"><%= date.day %></span>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+  <% if name.present? %>
+    <% if range? %>
+      <input type="hidden" name="<%= name %>[start]" value="<%= range_start&.iso8601 %>"
+             <%= tag.attributes(**stimulus_attributes_for(:start_input)) %>>
+      <input type="hidden" name="<%= name %>[end]" value="<%= range_end&.iso8601 %>"
+             <%= tag.attributes(**stimulus_attributes_for(:end_input)) %>>
+    <% else %>
+      <input type="hidden" name="<%= name %>" value="<%= selected&.iso8601 %>"
+             <%= tag.attributes(**stimulus_attributes_for(:hidden_input)) %>>
+    <% end %>
+  <% end %>
+<% end %>

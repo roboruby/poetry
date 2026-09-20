@@ -1,0 +1,267 @@
+<div class="min-h-screen bg-slate-50">
+  <div class="mx-auto max-w-5xl space-y-8 px-6 py-10">
+
+    <header>
+      <h1 class="text-2xl font-semibold text-slate-900">Team members</h1>
+      <p class="mt-1 text-sm text-slate-500">Manage who has access to this workspace, assign roles, and invite new teammates.</p>
+    </header>
+
+    <section aria-labelledby="invite-heading" class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h2 id="invite-heading" class="text-base font-semibold text-slate-900">Invite a teammate</h2>
+      <p class="mt-1 text-sm text-slate-500">They'll receive an email invitation with a link to join this workspace.</p>
+
+      <form action="#" method="post" class="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end">
+        <div class="flex-1">
+          <label for="invite-email" class="block text-sm font-medium text-slate-700">Email address</label>
+          <input
+            type="email"
+            id="invite-email"
+            name="email"
+            required
+            placeholder="teammate@company.com"
+            class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          >
+        </div>
+
+        <div class="sm:w-48">
+          <label for="invite-role" class="block text-sm font-medium text-slate-700">Role</label>
+          <select
+            id="invite-role"
+            name="role"
+            class="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          >
+            <option value="admin">Admin</option>
+            <option value="member" selected>Member</option>
+            <option value="viewer">Viewer</option>
+          </select>
+        </div>
+
+        <div>
+          <button
+            type="submit"
+            class="inline-flex w-full items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+          >
+            Send invite
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section aria-labelledby="members-heading" class="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div class="flex flex-col gap-3 border-b border-slate-200 p-6 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 id="members-heading" class="text-base font-semibold text-slate-900">Members</h2>
+          <p class="mt-1 text-sm text-slate-500">6 people have access to this workspace.</p>
+        </div>
+
+        <form action="#" method="get" role="search" class="sm:w-72">
+          <label for="member-search" class="sr-only">Search members</label>
+          <div class="relative">
+            <svg class="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0a7.5 7.5 0 10-10.6 0 7.5 7.5 0 0010.6 0z" />
+            </svg>
+            <input
+              type="search"
+              id="member-search"
+              name="q"
+              placeholder="Search by name or email"
+              class="block w-full rounded-md border border-slate-300 py-2 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            >
+          </div>
+        </form>
+      </div>
+
+      <table class="w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th scope="col" class="px-6 py-3 font-medium">Member</th>
+            <th scope="col" class="px-6 py-3 font-medium">Role</th>
+            <th scope="col" class="px-6 py-3 font-medium">Last active</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <tr>
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-medium text-indigo-700">AW</div>
+                <div>
+                  <p class="font-medium text-slate-900">Ava Whitfield</p>
+                  <p class="text-xs text-slate-500">ava@northwind.co</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center rounded-full bg-purple-50 px-2.5 py-0.5 text-xs font-medium text-purple-700">Owner</span>
+            </td>
+            <td class="px-6 py-4 text-slate-500">
+              <span class="inline-flex items-center gap-1.5">
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                Active now
+              </span>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-medium text-emerald-700">MC</div>
+                <div>
+                  <p class="font-medium text-slate-900">Marcus Chen</p>
+                  <p class="text-xs text-slate-500">marcus.chen@northwind.co</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700">Admin</span>
+            </td>
+            <td class="px-6 py-4 text-slate-500">Active 2 hours ago</td>
+          </tr>
+
+          <tr>
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-sm font-medium text-amber-700">PN</div>
+                <div>
+                  <p class="font-medium text-slate-900">Priya Natarajan</p>
+                  <p class="text-xs text-slate-500">priya.n@northwind.co</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700">Admin</span>
+            </td>
+            <td class="px-6 py-4 text-slate-500">Active yesterday</td>
+          </tr>
+
+          <tr>
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rose-100 text-sm font-medium text-rose-700">DR</div>
+                <div>
+                  <p class="font-medium text-slate-900">Diego Ramirez</p>
+                  <p class="text-xs text-slate-500">diego.ramirez@northwind.co</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700">Member</span>
+            </td>
+            <td class="px-6 py-4 text-slate-500">Active 3 days ago</td>
+          </tr>
+
+          <tr>
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sm font-medium text-sky-700">SB</div>
+                <div>
+                  <p class="font-medium text-slate-900">Sofia Bianchi</p>
+                  <p class="text-xs text-slate-500">sofia.b@northwind.co</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700">Member</span>
+            </td>
+            <td class="px-6 py-4 text-slate-500">Active 1 week ago</td>
+          </tr>
+
+          <tr>
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-violet-100 text-sm font-medium text-violet-700">TO</div>
+                <div>
+                  <p class="font-medium text-slate-900">Tom O'Reilly</p>
+                  <p class="text-xs text-slate-500">tom.oreilly@northwind.co</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center rounded-full bg-sky-50 px-2.5 py-0.5 text-xs font-medium text-sky-700">Viewer</span>
+            </td>
+            <td class="px-6 py-4 text-slate-500">Active 3 weeks ago</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section aria-labelledby="pending-heading" class="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div class="border-b border-slate-200 p-6">
+        <h2 id="pending-heading" class="text-base font-semibold text-slate-900">Pending invitations</h2>
+        <p class="mt-1 text-sm text-slate-500">Invitations that have been sent but not yet accepted.</p>
+      </div>
+
+      <ul class="divide-y divide-slate-100">
+        <li class="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="text-sm font-medium text-slate-900">jordan.lee@northwind.co</p>
+            <p class="mt-0.5 text-xs text-slate-500">
+              Invited as
+              <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-700">Member</span>
+              &middot; Sent 2 days ago
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <form action="#" method="post">
+              <button type="submit" class="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1">
+                Resend
+              </button>
+            </form>
+            <form action="#" method="post">
+              <button type="submit" class="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1">
+                Revoke
+              </button>
+            </form>
+          </div>
+        </li>
+
+        <li class="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="text-sm font-medium text-slate-900">hana.kim@northwind.co</p>
+            <p class="mt-0.5 text-xs text-slate-500">
+              Invited as
+              <span class="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 font-medium text-indigo-700">Admin</span>
+              &middot; Sent 5 days ago
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <form action="#" method="post">
+              <button type="submit" class="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1">
+                Resend
+              </button>
+            </form>
+            <form action="#" method="post">
+              <button type="submit" class="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1">
+                Revoke
+              </button>
+            </form>
+          </div>
+        </li>
+
+        <li class="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="text-sm font-medium text-slate-900">felix.moore@northwind.co</p>
+            <p class="mt-0.5 text-xs text-slate-500">
+              Invited as
+              <span class="inline-flex items-center rounded-full bg-sky-50 px-2 py-0.5 font-medium text-sky-700">Viewer</span>
+              &middot; Sent 1 week ago
+              <span class="text-amber-600">&middot; Expires in 2 days</span>
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <form action="#" method="post">
+              <button type="submit" class="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1">
+                Resend
+              </button>
+            </form>
+            <form action="#" method="post">
+              <button type="submit" class="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1">
+                Revoke
+              </button>
+            </form>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+  </div>
+</div>

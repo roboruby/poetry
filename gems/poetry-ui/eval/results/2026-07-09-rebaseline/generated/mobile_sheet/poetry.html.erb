@@ -1,0 +1,28 @@
+<div class="mx-auto max-w-md p-6">
+  <%= poetry_drawer(direction: :down, show_swipe_handle: true) do |drawer| %>
+    <% drawer.with_trigger do %>
+      <%= poetry_button do |button| %>
+        <% button.with_leading { poetry_icon(name: :target) } %>
+        Set daily goal
+      <% end %>
+    <% end %>
+
+    <% drawer.with_title { "Set daily activity goal" } %>
+    <% drawer.with_description { "Choose an activity type and a daily target to work toward. You can change this anytime." } %>
+
+    <%= form_with url: "#", method: :post, id: "daily-goal-form", class: "space-y-4 px-4 py-2" do %>
+      <%= poetry_field(id: "goal-activity", label_text: "Activity") do |field| %>
+        <%= poetry_native_select(**field.control_attributes, name: "daily_goal[activity]",
+                                  options: [["Steps", "steps"], ["Active minutes", "minutes"], ["Calories burned", "calories"]]) %>
+      <% end %>
+
+      <%= poetry_field(id: "goal-target", label_text: "Daily target", hint: "e.g. 8,000 steps, 30 minutes, or 500 calories") do |field| %>
+        <%= poetry_input(**field.control_attributes, type: "number", name: "daily_goal[target]", placeholder: "8000") %>
+      <% end %>
+    <% end %>
+
+    <% drawer.with_footer do %>
+      <%= poetry_button(type: :submit, form: "daily-goal-form") { "Submit" } %>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,6 @@
+{
+  "summary": "zero requires-any findings on 31 fresh arms - agents wrote compliant calls (the contract text steered at write time); the one crash (floating) is a DIFFERENT class, correctly not flagged by this tier",
+  "findings": {},
+  "false_positives": [],
+  "note": "false_positives filled after render adjudication"
+}

@@ -1,0 +1,17 @@
+<div class="mx-auto flex max-w-2xl flex-col items-center px-6 py-24 text-center">
+  <%= poetry_empty media_variant: :icon, title_tag: :h2 do |empty| %>
+    <% empty.with_media do %>
+      <%= poetry_icon name: :"folder-plus", label: "Projects" %>
+    <% end %>
+    <% empty.with_title { "No projects yet" } %>
+    <% empty.with_description { "Create a new project to get started, or import one from an existing source." } %>
+    <div class="mt-6 flex items-center justify-center gap-3">
+      <%= poetry_button label: "Create project", variant: :default, tag: :a, href: "#" do |b| %>
+        <% b.with_leading { poetry_icon name: :plus } %>
+      <% end %>
+      <%= poetry_button label: "Import project", variant: :outline, tag: :a, href: "#" do |b| %>
+        <% b.with_leading { poetry_icon name: :"upload" } %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

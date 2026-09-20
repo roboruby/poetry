@@ -1,0 +1,102 @@
+<%
+  projects = [
+    { name: "Customer Portal 2.0", team: "Design team", done: 42, total: 50, pct: 84, status: "On track", badge: :success },
+    { name: "Mobile App Revamp", team: "Growth team", done: 18, total: 40, pct: 45, status: "At risk", badge: :warning },
+    { name: "API Platform Migration", team: "Platform team", done: 9, total: 30, pct: 30, status: "At risk", badge: :warning },
+    { name: "Billing Overhaul", team: "Finance team", done: 55, total: 60, pct: 92, status: "On track", badge: :success },
+    { name: "Internal Analytics Suite", team: "Data team", done: 6, total: 25, pct: 24, status: "Planning", badge: :info },
+    { name: "Onboarding Flow Redesign", team: "Product team", done: 33, total: 38, pct: 87, status: "On track", badge: :success },
+  ]
+
+  activity = [
+    { title: "Sprint 24 marked complete", time: "25m ago", completed: true, icon: nil,
+      description: "Product Redesign — 14 tasks closed by the team." },
+    { title: "Overdue task flagged", time: "1h ago", completed: false, icon: :"alert-triangle",
+      description: "API Platform Migration — “Rate limiting rollout” is 4 days overdue." },
+    { title: "12 tasks marked done", time: "3h ago", completed: true, icon: nil,
+      description: "Mobile App Revamp — bulk update by Priya Nair." },
+    { title: "New project created", time: "5h ago", completed: false, icon: nil,
+      description: "Internal Analytics Suite added to the Data team workspace." },
+    { title: "Weekly velocity report generated", time: "Yesterday", completed: true, icon: nil,
+      description: "Team velocity dipped to 42 points, down from 45 last week." },
+    { title: "Sarah Chen joined the workspace", time: "Yesterday", completed: false, icon: nil,
+      description: "Added to the Growth team with Editor access." },
+  ]
+%>
+<div class="mx-auto max-w-7xl space-y-6 p-6">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Analytics overview</h1>
+      <p class="text-sm text-muted-foreground">Progress, throughput, and activity across the workspace this week.</p>
+    </div>
+    <%= poetry_button(variant: :outline) do |button| %>
+      <% button.with_leading { poetry_icon(name: :download) } %>
+      Export report
+    <% end %>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <%= poetry_card do %>
+      <%= poetry_stat(label: "Active projects", trend: :up, delta: "+2") do |stat| %>
+        <% stat.with_description { "of 18 total projects" } %>
+        14
+      <% end %>
+    <% end %>
+
+    <%= poetry_card do %>
+      <%= poetry_stat(label: "Tasks completed this week", trend: :up, delta: "+18%") do |stat| %>
+        <% stat.with_description { "vs. 108 last week" } %>
+        128
+      <% end %>
+    <% end %>
+
+    <%= poetry_card do %>
+      <%= poetry_stat(label: "Overdue items", trend: :up, delta: "+3", sentiment: :negative) do |stat| %>
+        <% stat.with_description { "across 5 projects" } %>
+        9
+      <% end %>
+    <% end %>
+
+    <%= poetry_card do %>
+      <%= poetry_stat(label: "Team velocity", trend: :down, delta: "-6 pts") do |stat| %>
+        <% stat.with_description { "2-week trailing average: 45 pts" } %>
+        42 pts
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-5">
+    <%= poetry_card(class: "lg:col-span-2", title_tag: :h2) do |card| %>
+      <% card.with_title { "Recent activity" } %>
+      <% card.with_description { "The latest updates across every project." } %>
+      <%= poetry_timeline do |tl| %>
+        <% activity.each do |event| %>
+          <% tl.with_item(title: event[:title], time: event[:time], completed: event[:completed], icon: event[:icon]) { event[:description] } %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <%= poetry_card(class: "lg:col-span-3", title_tag: :h2) do |card| %>
+      <% card.with_title { "Project progress" } %>
+      <% card.with_description { "Completion across active projects this week." } %>
+      <%= poetry_item_group(role: "list", class: "divide-y divide-border") do %>
+        <% projects.each_with_index do |project, index| %>
+          <%= poetry_item(role: "listitem") do |item| %>
+            <% item.with_media(variant: :icon) { poetry_icon(name: :"folder-kanban") } %>
+            <% item.with_title do %>
+              <div class="flex items-center gap-2">
+                <span class="font-medium"><%= project[:name] %></span>
+                <%= poetry_badge(variant: project[:badge]) { project[:status] } %>
+              </div>
+            <% end %>
+            <% item.with_description { "#{project[:team]} · #{project[:done]} of #{project[:total]} tasks" } %>
+            <div class="mt-2 max-w-sm">
+              <%= poetry_progress(label: "#{project[:name]} progress", value: project[:pct], show_value: true) %>
+            </div>
+          <% end %>
+          <%= poetry_item_separator unless index == projects.length - 1 %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

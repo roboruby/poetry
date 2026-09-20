@@ -1,0 +1,68 @@
+<div class="mx-auto max-w-2xl p-6">
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Notification settings" } %>
+    <% card.with_description { "Control how and when you hear from us." } %>
+    <% card.with_action do %>
+      <%= poetry_toggle(variant: :outline, size: :sm, label: "Bookmark") do %>
+        <%= poetry_icon(name: :bookmark) %>
+      <% end %>
+    <% end %>
+
+    <div class="space-y-8">
+      <%= form_with url: "#", method: :patch, local: true, class: "space-y-4" do %>
+        <%= poetry_field(id: "email_alerts", label_text: "Email alerts", hint: "Applies immediately - there's nothing to save.", orientation: :horizontal) do |field| %>
+          <%= poetry_switch(**field.control_attributes, name: "email_alerts", checked: true) %>
+        <% end %>
+
+        <%= poetry_field(id: "product_updates", label_text: "Product updates", hint: "Applies immediately - there's nothing to save.", orientation: :horizontal) do |field| %>
+          <%= poetry_switch(**field.control_attributes, name: "product_updates", checked: false) %>
+        <% end %>
+      <% end %>
+
+      <%= poetry_separator %>
+
+      <div class="space-y-2">
+        <span class="text-sm font-medium">Notification history view</span>
+        <%= poetry_toggle_group(type: :single, value: "list", label: "Notification history view") do |group| %>
+          <% group.with_item(value: "list", label: "List") do %>
+            <%= poetry_icon(name: :list) %>
+          <% end %>
+          <% group.with_item(value: "grid", label: "Grid") do %>
+            <%= poetry_icon(name: :"layout-grid") %>
+          <% end %>
+        <% end %>
+      </div>
+
+      <%= poetry_separator %>
+
+      <%= form_with url: "#", method: :patch, local: true, class: "space-y-6" do %>
+        <%= poetry_field(id: "accept_terms", label_text: "Accept terms", hint: "Required before we can send you anything.", orientation: :horizontal, required: true) do |field| %>
+          <%= poetry_checkbox(**field.control_attributes, name: "accept_terms", required: true) %>
+        <% end %>
+
+        <%= poetry_radio_group(name: "digest_frequency", label: "Digest frequency", value: "daily") do |group| %>
+          <% group.with_item(value: "daily", label: "Daily") %>
+          <% group.with_item(value: "weekly", label: "Weekly") %>
+          <% group.with_item(value: "monthly", label: "Monthly") %>
+          <% group.with_item(value: "never", label: "Never") %>
+        <% end %>
+
+        <%= poetry_field(id: "alert_volume", label_text: "Alert volume", hint: "How loud push alerts sound on your device.") do |field| %>
+          <%= poetry_slider(**field.control_attributes, name: "alert_volume", value: 60.0, value_text: "60%", label: "Alert volume") %>
+        <% end %>
+
+        <%= poetry_field(id: "unsubscribe_note", label_text: "Unsubscribe note", hint: "Optional - tell us why, if you ever opt out.") do |field| %>
+          <%= poetry_textarea(**field.control_attributes, name: "unsubscribe_note", placeholder: "Optional feedback…", rows: 3) %>
+        <% end %>
+
+        <%= poetry_field(id: "confirmation_code", label_text: "Confirmation code", hint: "Enter the 6-digit code we emailed you.") do |field| %>
+          <%= poetry_input_otp(**field.control_attributes, name: "confirmation_code", length: 6) %>
+        <% end %>
+
+        <div class="flex justify-end">
+          <%= poetry_button(type: :submit) { "Save settings" } %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

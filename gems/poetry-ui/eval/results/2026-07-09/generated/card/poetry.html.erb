@@ -1,0 +1,16 @@
+<div class="flex justify-center py-12">
+  <%= poetry_card(class: "max-w-md") do |card| %>
+    <% card.with_title { "Team workspaces" } %>
+    <% card.with_description { "Shared projects, roles, and billing for the whole org." } %>
+    <% card.with_action do %>
+      <%= poetry_badge(variant: :secondary) { "Beta" } %>
+    <% end %>
+    <% card.with_footer do %>
+      <%= poetry_link(href: "/docs/team-workspaces") { "Learn more" } %>
+    <% end %>
+    <div class="space-y-3 text-sm">
+      <p>Group people, projects, and billing under one workspace. Invite teammates, assign roles, and keep every project's usage on a single invoice.</p>
+      <p class="text-muted-foreground">Currently available to a limited set of accounts while we finish polishing permissions and audit logs.</p>
+    </div>
+  <% end %>
+</div>

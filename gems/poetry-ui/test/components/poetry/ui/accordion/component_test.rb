@@ -1,0 +1,115 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+module Poetry
+  module Ui
+    module Accordion
+      class ComponentTest < ViewComponent::TestCase
+        def render_accordion(**)
+          render_inline(Component.new(**)) do |accordion|
+            accordion.with_item(value: "a", title: "First") { "panel a" }
+            accordion.with_item(value: "b", title: "Second") { "panel b" }
+          end.to_html
+        end
+
+        def test_renders_the_apg_structure
+          html = render_accordion(open: %w[a])
+
+          assert_includes html, 'data-component="accordion"'
+          assert_includes html, 'data-controller="poetry--core--accordion poetry--core--roving-focus"'
+          assert_includes html, 'data-poetry--core--roving-focus-manage-tabindex-value="false"'
+          assert_match(/<h3[^>]*data-slot="accordion-header"[^>]*>\s*<button/, html)
+          assert_match(/<div[^>]*role="region"[^>]*aria-labelledby="[^"]+-trigger"/, html)
+        end
+
+        def test_host_supplied_controller_concatenates_with_the_component_wiring
+          # The host-attached-controller contract: a caller's own
+          # data-controller/action on the root must never disconnect the
+          # component's declared wiring (first-wins used to silently drop
+          # it and break the component's JS). Caller tokens stay first.
+          html = render_accordion(open: %w[a],
+                                  data: { controller: "host-thing",
+                                          action: "click->host#track" })
+
+          assert_includes html,
+                          'data-controller="host-thing poetry--core--accordion poetry--core--roving-focus"'
+          assert_match(/data-action="click->host#track [^"]+"/, html)
+        end
+
+        def test_open_state_is_server_rendered
+          html = render_accordion(open: %w[a])
+          panel_a = html[/<div[^c]*?id="[^"]+-a-panel".*?>/m]
+          panel_b = html[/<div[^c]*?id="[^"]+-b-panel".*?>/m]
+
+          assert_match(/data-value="a"[^>]*data-open=""/, html)
+          assert_match(/data-value="b"[^>]*data-closed=""/, html)
+          assert_includes panel_b, %( hidden="hidden")
+          refute_includes panel_a, %( hidden="hidden")
+        end
+
+        def test_single_non_collapsible_marks_the_open_trigger_aria_disabled
+          html = render_accordion(open: %w[a])
+
+          open_trigger = html[%r{data-value="a".*?</h3>}m]
+          closed_trigger = html[%r{data-value="b".*?</h3>}m]
+
+          assert_includes open_trigger, 'aria-disabled="true"'
+          refute_includes closed_trigger, "aria-disabled"
+          refute_includes render_accordion(collapsible: true, open: %w[a]), "aria-disabled"
+        end
+
+        def test_triggers_join_the_roving_collection_and_wire_toggle
+          html = render_accordion
+
+          assert_includes html, "data-poetry-collection-item"
+          # The browser pass caught this missing: the roving keydown action
+          # must be WIRED by the consumer - registration alone is deaf.
+          assert_includes html, "keydown->poetry--core--roving-focus#keydown"
+          assert_includes html, 'data-action="click->poetry--core--accordion#toggle"'
+        end
+
+        def test_heading_level_fits_the_outline
+          html = render_inline(Component.new(heading_level: :h4)) do |accordion|
+            accordion.with_item(value: "x", title: "T") { "p" }
+          end.to_html
+
+          assert_match(/<h4[^>]*data-slot="accordion-header"/, html)
+        end
+
+        def test_items_are_required_and_chevron_ships_built_in
+          assert_raises(ArgumentError) { render_inline(Component.new) { "no items" } }
+          assert_match(/data-slot="accordion-trigger".*?data-component="icon"/m, render_accordion,
+                       "the indicator icon is built in")
+        end
+
+        def test_disabled_item_locks_its_trigger_natively_and_marks_both_for_roving
+          html = render_inline(Component.new(collapsible: true)) do |accordion|
+            accordion.with_item(value: "on", title: "Enabled") { "open" }
+            accordion.with_item(value: "off", title: "Locked", disabled: true) { "locked" }
+          end.to_html
+
+          disabled_item = html[%r{data-value="off".*?</h3>}m]
+          enabled_item = html[%r{data-value="on".*?</h3>}m]
+
+          assert_match(/data-value="off"[^>]*data-disabled=""/, html)
+          assert_includes disabled_item, 'disabled="disabled"'
+          assert_includes disabled_item, 'data-disabled=""'
+          refute_includes enabled_item, "data-disabled"
+          refute_includes enabled_item, 'disabled="disabled"'
+        end
+
+        def test_item_class_merges_with_the_dictionary
+          html = render_inline(Component.new) do |accordion|
+            accordion.with_item(value: "x", title: "T", class: "border-b px-4 last:border-b-0") { "p" }
+          end.to_html
+
+          item = html[/<div[^>]*data-slot="accordion-item"[^>]*>/]
+
+          assert_includes item, "cn-accordion-item"
+          assert_includes item, "border-b px-4 last:border-b-0"
+        end
+      end
+    end
+  end
+end

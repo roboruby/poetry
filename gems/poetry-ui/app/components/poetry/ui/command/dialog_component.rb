@@ -1,0 +1,202 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Ui
+    module Command
+      # The Command palette inside a modal dialog - the app-wide "press
+      # Cmd+K" search. The native <dialog> focus trap does the overlay
+      # work; the dialog's title and description are screen-reader-only
+      # (localized defaults name the dialog), so the visible surface is
+      # the palette itself.
+      #
+      # The global hotkey is OPT-IN (hotkey: "meta+k") and toggles the
+      # dialog from anywhere; the trigger button remains the visible way
+      # in. Items use Command's contract: act on poetry:command:select.
+      #
+      # @example
+      #   render Poetry::Ui::Command::DialogComponent.new(hotkey: "meta+k") do |dialog|
+      #     dialog.with_trigger(variant: :outline) { "Open palette" }
+      #     dialog.with_item(value: "settings") { "Settings" }
+      #   end
+      class DialogComponent < Poetry::Core::Component
+        # The palette surface delegates to the embedded Command - callers
+        # use the same slot API as bare poetry_command.
+        delegate :with_item, :with_group, :with_separator, :with_empty, :with_loading, to: :command
+
+        # Projected into the registry, llms.txt, and the agent surface.
+        AGENT_RULES = [
+          "App-wide palettes use poetry_command_dialog with hotkey: ('meta+k') - never a hand-wired " \
+          "window keydown listener around poetry_dialog.",
+          "Open it with with_trigger(...) too - the hotkey is an accelerator, not the only way in.",
+          "The sr-only title/description default to the source strings - override title:/description: " \
+          "rather than removing them (they are the dialog's accessible name).",
+          "Item wiring is Command's: act on poetry:command:select; close the dialog in the listener if " \
+          "the action should dismiss the palette.",
+          "The close X is off by default (keyboard-first: Esc, the backdrop, or picking an item closes it) " \
+          "and appears with dismissible: false; show_close_button: true forces it - it seats in the input " \
+          "row, never over it."
+        ].freeze
+
+        renders_one :trigger,
+                    doc: "The trigger is a poetry Button wired to open - the Dialog pattern: with_trigger(variant: " \
+                         ":outline) { \"Open palette\" }.",
+                    renders: lambda { |**options, &block|
+                      options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {})
+                      Button::Component.new(**options, &block)
+                    }
+
+        # The SHARED dialog controller (zero new JS) - hotkey included.
+        use_stimulus do
+          on :root do
+            controller :dialog do
+              register
+              value :dismissible
+              value :hotkey, if: -> { hotkey.present? }
+            end
+          end
+          on :content do
+            controller :dialog do
+              target :dialog
+              action :close, on: :cancel
+              action :backdrop_close, on: :click
+            end
+          end
+          on :trigger do
+            controller(:dialog) { action :open }
+          end
+          on :close do
+            controller(:dialog) { action :close }
+          end
+        end
+
+        option :title, :string, default: -> { I18n.t("poetry.command.dialog_title") },
+                                doc: "The dialog's sr-only accessible name (localized default) - override rather " \
+                                     "than remove."
+        option :description, :string, default: -> { I18n.t("poetry.command.dialog_description") },
+                                      doc: "The sr-only description wired to aria-describedby (localized default)."
+        option :hotkey, :string,
+               doc: "A global shortcut (\"meta+k\") that toggles the palette from anywhere; an accelerator, not the " \
+                    "only way in."
+        option :dismissible, :boolean, default: true, doc: "Backdrop clicks close the palette; false keeps it open."
+        option :show_close_button, :boolean,
+               default: -> { !dismissible },
+               doc: "The close X, seated in the input row. Off by default while backdrop clicks close the " \
+                    "palette (Esc, the backdrop, or picking an item all close it); on when dismissible: " \
+                    "false so a pointer has a way out. Pass true to always show it."
+        option :filter, :boolean, default: true, doc: "Passed through to the embedded Command: client-side filtering."
+        option :loop, :boolean, default: false, doc: "Passed through: wraps arrow-key highlight movement at the ends."
+        option :placeholder, :string, doc: "Passed through: the filter input's placeholder text."
+        option :list_label, :string, doc: "Passed through: the listbox's accessible name."
+        option :value, :string, doc: "Passed through: seats the initial highlight on this item value."
+        option :id, :string, doc: "Passed through: the embedded palette's base DOM id."
+
+        part "command-dialog", "Root wrapper around the trigger and the <dialog> - the " \
+                               "palette's own chrome; the embedded Command inside carries its " \
+                               "own part contract"
+        # The dialog-* parts below are Dialog's panel chrome REUSED (same
+        # controller, own template) - declared here because this component
+        # renders them itself, retuned for the palette.
+        part "dialog-content", "The <dialog> panel (Dialog's chrome retuned to overflow-hidden " \
+                               "p-0) - positioning, animation, and the open state ride here",
+             states: {
+               "data-open" => "panel is open (the dialog controller flips the pair at runtime)",
+               "data-closed" => "panel is closed or animating out (the server-rendered state)"
+             }
+        part "dialog-header", "Dialog's title block, sr-only here - the palette owns the " \
+                              "visible surface"
+        part "dialog-title", "The sr-only heading - the dialog's accessible name (defaults to " \
+                             "the source string)"
+        part "dialog-description", "The sr-only description wired to aria-describedby"
+
+        # data-component self-id: "command-dialog", not the path-derived
+        # "dialog" (which would shadow Dialog's own self-identification).
+        # @api private
+        def self.component_title
+          "command-dialog"
+        end
+
+        # The embedded Command. Its sizing inside the dialog is the theme's
+        # own (the default theme's .cn-command-dialog rule carries the
+        # classic h-12 chain; the styled ports keep their well and rows).
+        # @api private
+        def command
+          @command ||= begin
+            options = {
+              filter: filter, loop: loop, value: value,
+              "aria-label" => I18n.t("poetry.command.input_label")
+            }
+            options[:placeholder] = placeholder if placeholder.present?
+            options[:list_label] = list_label if list_label.present?
+            options[:id] = id if id.present?
+            Component.new(**options).tap do |palette|
+              palette.input_trailing = -> { close_button } if show_close_button
+            end
+          end
+        end
+
+        # The close X: Dialog's ghost icon-sm button, seated in the input row
+        # by the embedded Command (static beats the themed absolute offset).
+        # Rendered in THIS component's view context when the row renders.
+        # @api private
+        def close_button
+          classes = Poetry::Ui::Dialog::Style.css(:close, class: Style.css(:dialog_close))
+          render(Poetry::Ui::Button::Component.new(variant: :ghost, size: :"icon-sm",
+                                                   label: t("poetry.dialog.close"),
+                                                   class: classes, data: { action: close_action })) do
+            render(Poetry::Ui::Icon::Component.new(name: :x))
+          end
+        end
+
+        # The sr-only title's id - the dialog's aria-labelledby target.
+        # @api private
+        def title_id
+          "#{instance_id}-title"
+        end
+
+        # The sr-only description's id - the aria-describedby target.
+        # @api private
+        def description_id
+          "#{instance_id}-description"
+        end
+
+        # Attributes for the root wrapper.
+        def root_attributes
+          super("data-slot" => "command-dialog")
+        end
+
+        # Dialog's content chrome retuned for the palette (overflow-hidden
+        # p-0 win on conflicts); labelled/described by the sr-only header.
+        # @api private
+        def dialog_attributes
+          attrs = {
+            "class" => Poetry::Ui::Dialog::Style.css(:content, class: Style.css(:dialog_content)),
+            "data-slot" => "dialog-content",
+            "data-closed" => "",
+            "aria-labelledby" => title_id,
+            "aria-describedby" => description_id
+          }
+          element_attributes(:content, attrs)
+        end
+
+        # Validated action descriptor for the template's close button.
+        # @api private
+        def close_action
+          stimulus_action(:close)
+        end
+
+        private
+
+        # (Descriptor strings resolve through the declared elements above,
+        # never through hand-written wiring.)
+
+        # Server-stable unique id for the aria wiring (two palettes on one
+        # page must not share label ids).
+        def instance_id
+          @instance_id ||= poetry_instance_id("poetry-command-dialog")
+        end
+
+        private :command, :close_button, :title_id, :description_id, :dialog_attributes, :close_action
+      end
+    end
+  end
+end

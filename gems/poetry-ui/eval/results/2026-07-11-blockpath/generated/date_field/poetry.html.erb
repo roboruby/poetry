@@ -1,0 +1,15 @@
+<div class="mx-auto max-w-md p-6">
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Renew SSL certificate" } %>
+    <% card.with_description { "Set when this task needs to be wrapped up." } %>
+    <div class="space-y-4 text-sm">
+      <%= poetry_date_picker(
+            label: "Due date",
+            name: "due_date",
+            value: "2026-07-18",
+            min: "2026-07-11",
+            placeholder: "Pick a due date"
+          ) %>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,80 @@
+<section class="mx-auto max-w-3xl px-6 py-16">
+  <h1 class="text-2xl font-semibold text-gray-900">Account</h1>
+  <p class="mt-1 text-sm text-gray-500">Manage preferences for this account.</p>
+
+  <div class="mt-8 flex items-center justify-between rounded-lg border border-gray-200 p-6">
+    <div>
+      <h2 class="text-sm font-medium text-gray-900">Workspace settings</h2>
+      <p class="mt-1 text-sm text-gray-500">Update notification and visibility preferences.</p>
+    </div>
+    <button
+      type="button"
+      command="show-modal"
+      commandfor="settings-dialog"
+      class="inline-flex items-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2"
+    >
+      Open settings
+    </button>
+  </div>
+
+  <dialog
+    id="settings-dialog"
+    class="m-auto w-full max-w-md rounded-lg border border-gray-200 bg-white p-0 shadow-xl backdrop:bg-gray-900/50"
+  >
+    <form method="dialog" class="flex flex-col">
+      <div class="px-6 pt-6">
+        <h2 class="text-lg font-semibold text-gray-900">Settings</h2>
+        <p class="mt-2 text-sm text-gray-500">
+          Choose how you want to be notified about activity in this workspace. You can change
+          these preferences at any time.
+        </p>
+      </div>
+
+      <fieldset class="mt-5 space-y-3 px-6">
+        <legend class="sr-only">Notification preferences</legend>
+
+        <label class="flex items-start gap-3 rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+          <input
+            type="checkbox"
+            name="notify_email"
+            checked
+            class="mt-0.5 h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-900"
+          />
+          <span>
+            <span class="block text-sm font-medium text-gray-900">Email notifications</span>
+            <span class="block text-sm text-gray-500">Get a summary of important updates by email.</span>
+          </span>
+        </label>
+
+        <label class="flex items-start gap-3 rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+          <input
+            type="checkbox"
+            name="notify_mentions"
+            class="mt-0.5 h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-900"
+          />
+          <span>
+            <span class="block text-sm font-medium text-gray-900">Mentions only</span>
+            <span class="block text-sm text-gray-500">Only notify me when someone mentions me directly.</span>
+          </span>
+        </label>
+      </fieldset>
+
+      <div class="mt-6 flex justify-end gap-3 border-t border-gray-200 px-6 py-4">
+        <button
+          type="submit"
+          value="cancel"
+          class="rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          value="confirm"
+          class="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2"
+        >
+          Save changes
+        </button>
+      </div>
+    </form>
+  </dialog>
+</section>

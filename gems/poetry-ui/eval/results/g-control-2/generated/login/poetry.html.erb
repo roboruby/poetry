@@ -1,0 +1,51 @@
+<div class="flex min-h-screen items-center justify-center bg-muted/50 p-6">
+  <div class="w-full max-w-sm space-y-6">
+    <div class="flex flex-col items-center gap-2 text-center">
+      <div class="flex size-10 items-center justify-center rounded-lg bg-primary font-semibold text-primary-foreground" aria-hidden="true">A</div>
+      <span class="text-sm font-medium text-muted-foreground">Atlas Ops</span>
+    </div>
+
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Sign in" } %>
+      <% card.with_description { "Enter your email and password to access your workspace." } %>
+
+      <%= form_with url: "#", method: :post, class: "space-y-5" do %>
+        <div class="space-y-4">
+          <%= poetry_field(id: "email", label_text: "Email", required: true) do |field| %>
+            <%= poetry_input(type: "email", name: "email", placeholder: "you@company.com", **field.control_attributes) %>
+          <% end %>
+
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <%= poetry_label(for_id: "password") { "Password" } %>
+              <%= poetry_link(href: "#", class: "text-sm") { "Forgot password?" } %>
+            </div>
+            <%= poetry_field(id: "password", required: true) do |field| %>
+              <%= poetry_sensitive_input(name: "password", label: "Password", **field.control_attributes) %>
+            <% end %>
+          </div>
+        </div>
+
+        <%= poetry_button(type: :submit, class: "w-full") { "Sign in" } %>
+      <% end %>
+
+      <div class="relative my-5">
+        <div class="absolute inset-0 flex items-center">
+          <%= poetry_separator %>
+        </div>
+        <div class="relative flex justify-center text-xs uppercase">
+          <span class="bg-card px-2 text-muted-foreground">Or continue with</span>
+        </div>
+      </div>
+
+      <%= poetry_button(variant: :outline, tag: :a, href: "#", class: "w-full") { "Single sign-on" } %>
+
+      <% card.with_footer do %>
+        <p class="w-full text-center text-sm text-muted-foreground">
+          New to Atlas Ops?
+          <%= poetry_link(href: "#", underline: :always) { "Request access" } %>
+        </p>
+      <% end %>
+    <% end %>
+  </div>
+</div>

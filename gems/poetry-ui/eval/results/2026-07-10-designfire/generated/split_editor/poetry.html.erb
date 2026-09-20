@@ -1,0 +1,122 @@
+<div class="mx-auto max-w-6xl space-y-6 p-6">
+  <header class="flex flex-col gap-4">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="space-y-1">
+        <h1 class="text-2xl font-semibold tracking-tight">Editor</h1>
+        <p class="text-sm text-muted-foreground">Browse the project tree and edit the selected file.</p>
+      </div>
+      <%= poetry_button do |button| %>
+        <% button.with_leading { poetry_icon(name: :save) } %>
+        Save file
+      <% end %>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <div class="h-[34rem] overflow-hidden rounded-lg border">
+    <%= poetry_resizable(direction: :horizontal, grip: true) do |split| %>
+      <% split.with_panel(default_size: 25, min_size: 15, max_size: 40, classes: "flex flex-col") do %>
+        <div class="flex items-center justify-between px-3 pt-3 pb-2">
+          <h2 class="text-sm font-medium">Files</h2>
+          <span class="text-xs text-muted-foreground">9 files</span>
+        </div>
+        <%= poetry_scroll_area(label: "Project files", class: "flex-1 min-h-0 px-3 pb-3") do %>
+          <%= poetry_accordion(type: :multiple, open: %w[app-controllers app-models app-views], heading_level: :h3) do |acc| %>
+            <% acc.with_item(value: "app-controllers", title: "app/controllers") do %>
+              <%= poetry_item_group("aria-label": "app/controllers files") do %>
+                <%= poetry_item(size: :sm, variant: :default, media_variant: :icon, role: "listitem") do |item| %>
+                  <% item.with_media { poetry_icon(name: :"file-code") } %>
+                  <% item.with_title { "orders_controller.rb" } %>
+                <% end %>
+                <%= poetry_item(size: :sm, variant: :default, media_variant: :icon, role: "listitem") do |item| %>
+                  <% item.with_media { poetry_icon(name: :"file-code") } %>
+                  <% item.with_title { "users_controller.rb" } %>
+                <% end %>
+              <% end %>
+            <% end %>
+            <% acc.with_item(value: "app-models", title: "app/models") do %>
+              <%= poetry_item_group("aria-label": "app/models files") do %>
+                <%= poetry_item(size: :sm, variant: :muted, media_variant: :icon, role: "listitem") do |item| %>
+                  <% item.with_media { poetry_icon(name: :"file-code") } %>
+                  <% item.with_title { "order.rb" } %>
+                <% end %>
+                <%= poetry_item(size: :sm, variant: :default, media_variant: :icon, role: "listitem") do |item| %>
+                  <% item.with_media { poetry_icon(name: :"file-code") } %>
+                  <% item.with_title { "customer.rb" } %>
+                <% end %>
+                <%= poetry_item(size: :sm, variant: :default, media_variant: :icon, role: "listitem") do |item| %>
+                  <% item.with_media { poetry_icon(name: :"file-code") } %>
+                  <% item.with_title { "line_item.rb" } %>
+                <% end %>
+              <% end %>
+            <% end %>
+            <% acc.with_item(value: "app-views", title: "app/views/orders") do %>
+              <%= poetry_item_group("aria-label": "app/views/orders files") do %>
+                <%= poetry_item(size: :sm, variant: :default, media_variant: :icon, role: "listitem") do |item| %>
+                  <% item.with_media { poetry_icon(name: :"file-code") } %>
+                  <% item.with_title { "index.html.erb" } %>
+                <% end %>
+                <%= poetry_item(size: :sm, variant: :default, media_variant: :icon, role: "listitem") do |item| %>
+                  <% item.with_media { poetry_icon(name: :"file-code") } %>
+                  <% item.with_title { "show.html.erb" } %>
+                <% end %>
+                <%= poetry_item(size: :sm, variant: :default, media_variant: :icon, role: "listitem") do |item| %>
+                  <% item.with_media { poetry_icon(name: :"file-code") } %>
+                  <% item.with_title { "_form.html.erb" } %>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_separator(class: "my-3") %>
+          <%= poetry_item_group("aria-label": "Root files") do %>
+            <%= poetry_item(size: :sm, variant: :default, media_variant: :icon, role: "listitem") do |item| %>
+              <% item.with_media { poetry_icon(name: :"file-cog") } %>
+              <% item.with_title { "config/routes.rb" } %>
+            <% end %>
+            <%= poetry_item(size: :sm, variant: :default, media_variant: :icon, role: "listitem") do |item| %>
+              <% item.with_media { poetry_icon(name: :file) } %>
+              <% item.with_title { "Gemfile" } %>
+            <% end %>
+            <%= poetry_item(size: :sm, variant: :default, media_variant: :icon, role: "listitem") do |item| %>
+              <% item.with_media { poetry_icon(name: :"file-text") } %>
+              <% item.with_title { "README.md" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <% split.with_panel(default_size: 75, min_size: 40, classes: "flex flex-col") do %>
+        <div class="flex items-center justify-between gap-3 border-b px-4 py-2.5">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :"file-code", class: "size-4 text-muted-foreground") %>
+            <span class="font-mono text-sm">app/models/order.rb</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="size-1.5 rounded-full bg-warning" aria-hidden="true"></span>
+            <span class="text-xs text-muted-foreground">Unsaved changes</span>
+            <%= poetry_badge(variant: :outline) { "Ruby" } %>
+          </div>
+        </div>
+        <div class="min-h-0 flex-1 p-3">
+          <%= poetry_label(for_id: "file-content", class: "sr-only") { "File contents" } %>
+          <%= poetry_textarea(name: "file_content", id: "file-content", class: "h-full resize-none font-mono text-sm", value: <<~RUBY) %>
+            class Order < ApplicationRecord
+              belongs_to :customer
+              has_many :line_items, dependent: :destroy
+
+              enum :status, { pending: 0, fulfilled: 1, refunded: 2 }
+
+              validates :customer_name, presence: true
+              validates :total_cents, numericality: { greater_than_or_equal_to: 0 }
+
+              scope :recent, -> { order(created_at: :desc) }
+
+              def total
+                Money.new(total_cents, "USD")
+              end
+            end
+          RUBY
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

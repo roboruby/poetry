@@ -1,0 +1,295 @@
+<div class="min-h-full bg-slate-50">
+  <div class="mx-auto max-w-7xl px-6 py-10">
+
+    <header class="mb-10">
+      <h1 class="text-2xl font-semibold text-slate-900">Integrations</h1>
+      <p class="mt-1 text-sm text-slate-500">
+        Manage the services connected to your workspace and browse the catalog to connect new ones.
+      </p>
+    </header>
+
+    <!-- Connected integrations -->
+    <section aria-labelledby="connected-heading" class="mb-14">
+      <div class="mb-4 flex items-baseline justify-between">
+        <h2 id="connected-heading" class="text-lg font-semibold text-slate-900">Connected</h2>
+        <span class="text-sm text-slate-500">4 active</span>
+      </div>
+
+      <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
+
+        <!-- Slack -->
+        <li class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-purple-100 text-sm font-semibold text-purple-700">
+                Sl
+              </div>
+              <div>
+                <p class="font-medium text-slate-900">Slack</p>
+                <p class="text-xs text-slate-500">Messaging</p>
+              </div>
+            </div>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+              <span class="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true"></span>
+              Healthy
+            </span>
+          </div>
+
+          <p class="mt-4 text-sm text-slate-500">Notifications and alerts posted to your team channels.</p>
+          <p class="mt-3 text-xs text-slate-400">Last synced 3 minutes ago</p>
+
+          <details class="group mt-4">
+            <summary class="flex cursor-pointer list-none items-center justify-center rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+              Manage
+            </summary>
+            <div class="mt-2 space-y-1 rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm">
+              <a href="#" class="block rounded-md px-2 py-1.5 text-slate-700 hover:bg-white">Configure settings</a>
+              <a href="#" class="block rounded-md px-2 py-1.5 text-slate-700 hover:bg-white">View sync logs</a>
+              <a href="#" class="block rounded-md px-2 py-1.5 text-red-600 hover:bg-white">Disconnect</a>
+            </div>
+          </details>
+        </li>
+
+        <!-- Stripe -->
+        <li class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-sm font-semibold text-indigo-700">
+                St
+              </div>
+              <div>
+                <p class="font-medium text-slate-900">Stripe</p>
+                <p class="text-xs text-slate-500">Payments</p>
+              </div>
+            </div>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+              <span class="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true"></span>
+              Healthy
+            </span>
+          </div>
+
+          <p class="mt-4 text-sm text-slate-500">Billing, invoices, and subscription payments.</p>
+          <p class="mt-3 text-xs text-slate-400">Last synced 1 minute ago</p>
+
+          <details class="group mt-4">
+            <summary class="flex cursor-pointer list-none items-center justify-center rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+              Manage
+            </summary>
+            <div class="mt-2 space-y-1 rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm">
+              <a href="#" class="block rounded-md px-2 py-1.5 text-slate-700 hover:bg-white">Configure settings</a>
+              <a href="#" class="block rounded-md px-2 py-1.5 text-slate-700 hover:bg-white">View sync logs</a>
+              <a href="#" class="block rounded-md px-2 py-1.5 text-red-600 hover:bg-white">Disconnect</a>
+            </div>
+          </details>
+        </li>
+
+        <!-- Google Analytics -->
+        <li class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-sm font-semibold text-amber-700">
+                GA
+              </div>
+              <div>
+                <p class="font-medium text-slate-900">Google Analytics</p>
+                <p class="text-xs text-slate-500">Analytics</p>
+              </div>
+            </div>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700">
+              <span class="h-1.5 w-1.5 rounded-full bg-amber-500" aria-hidden="true"></span>
+              Degraded
+            </span>
+          </div>
+
+          <p class="mt-4 text-sm text-slate-500">Traffic and conversion data imported into your dashboards.</p>
+          <p class="mt-3 text-xs text-slate-400">Last synced 2 hours ago &middot; retrying</p>
+
+          <details class="group mt-4">
+            <summary class="flex cursor-pointer list-none items-center justify-center rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+              Manage
+            </summary>
+            <div class="mt-2 space-y-1 rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm">
+              <a href="#" class="block rounded-md px-2 py-1.5 text-slate-700 hover:bg-white">Configure settings</a>
+              <a href="#" class="block rounded-md px-2 py-1.5 text-slate-700 hover:bg-white">View sync logs</a>
+              <a href="#" class="block rounded-md px-2 py-1.5 text-red-600 hover:bg-white">Disconnect</a>
+            </div>
+          </details>
+        </li>
+
+        <!-- GitHub -->
+        <li class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-200 text-sm font-semibold text-slate-700">
+                Gh
+              </div>
+              <div>
+                <p class="font-medium text-slate-900">GitHub</p>
+                <p class="text-xs text-slate-500">Developer tools</p>
+              </div>
+            </div>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">
+              <span class="h-1.5 w-1.5 rounded-full bg-red-500" aria-hidden="true"></span>
+              Disconnected
+            </span>
+          </div>
+
+          <p class="mt-4 text-sm text-slate-500">Repository events and deployment status checks.</p>
+          <p class="mt-3 text-xs text-slate-400">Authorization expired 4 days ago</p>
+
+          <details class="group mt-4">
+            <summary class="flex cursor-pointer list-none items-center justify-center rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+              Manage
+            </summary>
+            <div class="mt-2 space-y-1 rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm">
+              <a href="#" class="block rounded-md px-2 py-1.5 text-slate-700 hover:bg-white">Reconnect</a>
+              <a href="#" class="block rounded-md px-2 py-1.5 text-slate-700 hover:bg-white">View sync logs</a>
+              <a href="#" class="block rounded-md px-2 py-1.5 text-red-600 hover:bg-white">Remove</a>
+            </div>
+          </details>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Catalog -->
+    <section aria-labelledby="catalog-heading">
+      <div class="mb-6">
+        <h2 id="catalog-heading" class="text-lg font-semibold text-slate-900">Browse integrations</h2>
+        <p class="mt-1 text-sm text-slate-500">Connect a new service to extend your workspace.</p>
+      </div>
+
+      <div class="space-y-10">
+
+        <!-- Communication -->
+        <div>
+          <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">Communication</h3>
+          <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <li class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-sm font-semibold text-blue-700">Ms</div>
+                <p class="font-medium text-slate-900">Microsoft Teams</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Send updates and mentions directly to Teams channels.</p>
+              <a href="#" class="mt-4 inline-flex items-center justify-center rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </a>
+            </li>
+            <li class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-sm font-semibold text-sky-700">Tw</div>
+                <p class="font-medium text-slate-900">Twilio</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Send SMS and voice notifications to your customers.</p>
+              <a href="#" class="mt-4 inline-flex items-center justify-center rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </a>
+            </li>
+            <li class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-teal-100 text-sm font-semibold text-teal-700">Ig</div>
+                <p class="font-medium text-slate-900">Intercom</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Sync customer conversations with support tickets.</p>
+              <a href="#" class="mt-4 inline-flex items-center justify-center rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Payments & Billing -->
+        <div>
+          <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">Payments &amp; billing</h3>
+          <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <li class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-sm font-semibold text-indigo-700">Pp</div>
+                <p class="font-medium text-slate-900">PayPal</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Accept payments and reconcile transactions automatically.</p>
+              <a href="#" class="mt-4 inline-flex items-center justify-center rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </a>
+            </li>
+            <li class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-sm font-semibold text-emerald-700">Qb</div>
+                <p class="font-medium text-slate-900">QuickBooks</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Keep invoices and expenses in sync with your books.</p>
+              <a href="#" class="mt-4 inline-flex items-center justify-center rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Analytics -->
+        <div>
+          <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">Analytics</h3>
+          <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <li class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-100 text-sm font-semibold text-orange-700">Mp</div>
+                <p class="font-medium text-slate-900">Mixpanel</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Track product usage and user funnels in real time.</p>
+              <a href="#" class="mt-4 inline-flex items-center justify-center rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </a>
+            </li>
+            <li class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-100 text-sm font-semibold text-violet-700">Sg</div>
+                <p class="font-medium text-slate-900">Segment</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Collect and route customer data to your other tools.</p>
+              <a href="#" class="mt-4 inline-flex items-center justify-center rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Productivity -->
+        <div>
+          <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">Productivity</h3>
+          <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <li class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-rose-100 text-sm font-semibold text-rose-700">No</div>
+                <p class="font-medium text-slate-900">Notion</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Sync docs and wiki pages with your workspace records.</p>
+              <a href="#" class="mt-4 inline-flex items-center justify-center rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </a>
+            </li>
+            <li class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-cyan-100 text-sm font-semibold text-cyan-700">As</div>
+                <p class="font-medium text-slate-900">Asana</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Turn conversations into tracked tasks and projects.</p>
+              <a href="#" class="mt-4 inline-flex items-center justify-center rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </a>
+            </li>
+            <li class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-lime-100 text-sm font-semibold text-lime-700">Gc</div>
+                <p class="font-medium text-slate-900">Google Calendar</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Keep meetings and deadlines in sync automatically.</p>
+              <a href="#" class="mt-4 inline-flex items-center justify-center rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </a>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+</div>

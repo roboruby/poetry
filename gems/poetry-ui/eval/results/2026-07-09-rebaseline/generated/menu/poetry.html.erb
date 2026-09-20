@@ -1,0 +1,125 @@
+<div class="mx-auto max-w-4xl space-y-8 p-6">
+  <header class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Menus</h1>
+    <p class="text-sm text-muted-foreground">An app menubar, a row-actions dropdown menu, and a right-click context menu on each row.</p>
+  </header>
+
+  <div class="rounded-lg border bg-card p-1">
+    <%= poetry_menubar(label: "Application menu") do |menubar| %>
+      <% menubar.with_menu(label: "File") do |menu| %>
+        <% menu.with_item(shortcut: "⌘T") do |item| %>
+          <% item.with_leading { poetry_icon(name: :plus) } %>
+          New tab
+        <% end %>
+        <% menu.with_item(shortcut: "⌘O") do |item| %>
+          <% item.with_leading { poetry_icon(name: :"folder-open") } %>
+          Open…
+        <% end %>
+        <% menu.with_item(shortcut: "⌘S") do |item| %>
+          <% item.with_leading { poetry_icon(name: :save) } %>
+          Save
+        <% end %>
+        <% menu.with_separator %>
+        <% menu.with_item(shortcut: "⌘P") do |item| %>
+          <% item.with_leading { poetry_icon(name: :printer) } %>
+          Print…
+        <% end %>
+        <% menu.with_separator %>
+        <% menu.with_item(shortcut: "⌘W") { "Close tab" } %>
+      <% end %>
+      <% menubar.with_menu(label: "View") do |menu| %>
+        <% menu.with_label { "Appearance" } %>
+        <% menu.with_checkbox_item(checked: true) { "Show sidebar" } %>
+        <% menu.with_checkbox_item(checked: true) { "Show toolbar" } %>
+        <% menu.with_checkbox_item(checked: false) { "Show status bar" } %>
+        <% menu.with_separator %>
+        <% menu.with_label { "Zoom" } %>
+        <% menu.with_radio_group(value: "100") do |group| %>
+          <% group.with_radio_item(value: "75") { "75%" } %>
+          <% group.with_radio_item(value: "100") { "100%" } %>
+          <% group.with_radio_item(value: "125") { "125%" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <section class="space-y-4">
+    <div class="space-y-1">
+      <h2 class="text-lg font-semibold tracking-tight">Team members</h2>
+      <p class="text-sm text-muted-foreground">Right-click a row, or open its Options menu, for account actions.</p>
+    </div>
+
+    <div class="overflow-hidden rounded-lg border">
+      <%= poetry_item_group(role: "list") do %>
+        <% members = [
+             { name: "Riley Chen", email: "riley@meridian.dev", initials: "RC" },
+             { name: "Sam Lee", email: "sam@meridian.dev", initials: "SL" },
+             { name: "Nadia Farouk", email: "nadia@meridian.dev", initials: "NF" },
+           ] %>
+        <% members.each_with_index do |member, index| %>
+          <%= poetry_context_menu(label: "#{member[:name]} actions") do |cm| %>
+            <% cm.with_trigger do %>
+              <%= poetry_item(role: "listitem", media_variant: :image) do |item| %>
+                <% item.with_media { poetry_avatar(label: member[:name], size: :sm) { member[:initials] } } %>
+                <% item.with_title { member[:name] } %>
+                <% item.with_description { member[:email] } %>
+                <% item.with_actions do %>
+                  <%= poetry_dropdown_menu(align: :end) do |menu| %>
+                    <% menu.with_trigger do %>
+                      <%= poetry_button(variant: :outline, size: :sm) do |button| %>
+                        <% button.with_trailing { poetry_icon(name: :"chevron-down") } %>
+                        Options
+                      <% end %>
+                    <% end %>
+                    <% menu.with_label { "Account" } %>
+                    <% menu.with_item do |item2| %>
+                      <% item2.with_leading { poetry_icon(name: :user) } %>
+                      View profile
+                    <% end %>
+                    <% menu.with_item do |item2| %>
+                      <% item2.with_leading { poetry_icon(name: :copy) } %>
+                      Copy email
+                    <% end %>
+                    <% menu.with_separator %>
+                    <% menu.with_checkbox_item(checked: true) { "Email notifications" } %>
+                    <% menu.with_separator %>
+                    <% menu.with_item(variant: :destructive) do |item2| %>
+                      <% item2.with_leading { poetry_icon(name: :trash) } %>
+                      <%= poetry_alert_dialog(size: :sm) do |dialog| %>
+                        <% dialog.with_trigger { "Delete member" } %>
+                        <% dialog.with_title { "Delete #{member[:name]}?" } %>
+                        <% dialog.with_description { "This removes them from every project immediately. This cannot be undone." } %>
+                        <% dialog.with_cancel(variant: :outline) { "Cancel" } %>
+                        <% dialog.with_action(variant: :destructive) { "Delete member" } %>
+                      <% end %>
+                    <% end %>
+                  <% end %>
+                <% end %>
+              <% end %>
+            <% end %>
+            <% cm.with_item do |item2| %>
+              <% item2.with_leading { poetry_icon(name: :user) } %>
+              View profile
+            <% end %>
+            <% cm.with_item do |item2| %>
+              <% item2.with_leading { poetry_icon(name: :copy) } %>
+              Copy email
+            <% end %>
+            <% cm.with_separator %>
+            <% cm.with_item(variant: :destructive) do |item2| %>
+              <% item2.with_leading { poetry_icon(name: :trash) } %>
+              <%= poetry_alert_dialog(size: :sm) do |dialog| %>
+                <% dialog.with_trigger { "Delete member" } %>
+                <% dialog.with_title { "Delete #{member[:name]}?" } %>
+                <% dialog.with_description { "This removes them from every project immediately. This cannot be undone." } %>
+                <% dialog.with_cancel(variant: :outline) { "Cancel" } %>
+                <% dialog.with_action(variant: :destructive) { "Delete member" } %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator unless index == members.length - 1 %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+</div>

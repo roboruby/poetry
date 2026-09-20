@@ -1,0 +1,14 @@
+<section class="mx-auto max-w-md space-y-6 p-6">
+  <div class="space-y-1">
+    <h2 class="text-lg font-semibold tracking-tight">Contact information</h2>
+    <p class="text-sm text-muted-foreground">Where we'll reach you about your account.</p>
+  </div>
+
+  <%= form_with url: "#", method: :post, class: "space-y-6" do %>
+    <%= poetry_field(id: "work_email", label_text: "Work email", hint: "Use the address you check most often for work.", error: "can't be blank", required: true) do |field| %>
+      <%= poetry_input(**field.control_attributes, type: "email", name: "work_email") %>
+    <% end %>
+
+    <%= poetry_button(type: :submit) { "Save" } %>
+  <% end %>
+</section>

@@ -1,0 +1,183 @@
+<%
+  documents = [
+    { name: "Q3 Roadmap.docx",      owner: "Priya Shah",   modified: "Jul 11, 2026", size: "48 KB",  kind: :doc  },
+    { name: "Budget Forecast.xlsx", owner: "Marcus Lee",   modified: "Jul 9, 2026",  size: "112 KB", kind: :sheet },
+    { name: "Brand Guidelines.pdf", owner: "Elena Torres", modified: "Jun 30, 2026", size: "3.2 MB", kind: :pdf },
+    { name: "Team Offsite.png",     owner: "You",          modified: "Jun 21, 2026", size: "1.8 MB", kind: :image },
+  ]
+%>
+<div class="mx-auto max-w-4xl p-6">
+  <div class="overflow-visible rounded-xl border border-gray-200 bg-white shadow-sm">
+
+    <%# ---------- App menubar (File / View) ---------- %>
+    <div class="flex items-center gap-1 rounded-t-xl border-b border-gray-200 bg-gray-50 px-2 py-1 text-sm text-gray-700">
+      <details class="group/menu relative">
+        <summary class="list-none rounded px-2.5 py-1 [&::-webkit-details-marker]:hidden hover:bg-gray-200 group-open/menu:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
+          File
+        </summary>
+        <div class="absolute left-0 top-full z-30 mt-1 w-56 rounded-lg border border-gray-200 bg-white py-1 text-sm shadow-lg">
+          <ul>
+            <li><a href="#" class="flex items-center justify-between px-3 py-1.5 hover:bg-gray-100">New Document <span class="text-xs text-gray-400">⌘N</span></a></li>
+            <li><a href="#" class="flex items-center justify-between px-3 py-1.5 hover:bg-gray-100">Open…<span class="text-xs text-gray-400">⌘O</span></a></li>
+            <li><a href="#" class="flex items-center justify-between px-3 py-1.5 hover:bg-gray-100">Save <span class="text-xs text-gray-400">⌘S</span></a></li>
+            <li><a href="#" class="block px-3 py-1.5 hover:bg-gray-100">Save As…</a></li>
+          </ul>
+          <div class="my-1 border-t border-gray-100"></div>
+          <ul>
+            <li><a href="#" class="block px-3 py-1.5 hover:bg-gray-100">Print…</a></li>
+          </ul>
+          <div class="my-1 border-t border-gray-100"></div>
+          <ul>
+            <li><a href="#" class="block px-3 py-1.5 hover:bg-gray-100">Close</a></li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="group/menu relative">
+        <summary class="list-none rounded px-2.5 py-1 [&::-webkit-details-marker]:hidden hover:bg-gray-200 group-open/menu:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
+          View
+        </summary>
+        <div class="absolute left-0 top-full z-30 mt-1 w-64 rounded-lg border border-gray-200 bg-white py-1 text-sm shadow-lg">
+          <ul>
+            <li>
+              <label class="flex cursor-pointer items-center gap-2 px-3 py-1.5 hover:bg-gray-100">
+                <input type="checkbox" checked class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                Show sidebar
+              </label>
+            </li>
+            <li>
+              <label class="flex cursor-pointer items-center gap-2 px-3 py-1.5 hover:bg-gray-100">
+                <input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                Show status bar
+              </label>
+            </li>
+          </ul>
+          <div class="my-1 border-t border-gray-100"></div>
+          <ul>
+            <li>
+              <label class="flex cursor-pointer items-center gap-2 px-3 py-1.5 hover:bg-gray-100">
+                <input type="radio" name="view_mode" checked class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500">
+                List view
+              </label>
+            </li>
+            <li>
+              <label class="flex cursor-pointer items-center gap-2 px-3 py-1.5 hover:bg-gray-100">
+                <input type="radio" name="view_mode" class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500">
+                Grid view
+              </label>
+            </li>
+          </ul>
+          <div class="my-1 border-t border-gray-100"></div>
+          <ul>
+            <li><a href="#" class="flex items-center justify-between px-3 py-1.5 hover:bg-gray-100">Zoom In <span class="text-xs text-gray-400">⌘+</span></a></li>
+            <li><a href="#" class="flex items-center justify-between px-3 py-1.5 hover:bg-gray-100">Zoom Out <span class="text-xs text-gray-400">⌘-</span></a></li>
+            <li><a href="#" class="block px-3 py-1.5 hover:bg-gray-100">Reset Zoom</a></li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <%# ---------- Document rows ---------- %>
+    <div class="px-1 py-1">
+      <div class="hidden grid-cols-[1.5rem_1fr_9rem_7rem_2.5rem] gap-3 px-4 py-2 text-xs font-medium uppercase tracking-wide text-gray-400 sm:grid">
+        <span></span>
+        <span>Name</span>
+        <span>Owner</span>
+        <span>Modified</span>
+        <span></span>
+      </div>
+
+      <ul class="divide-y divide-gray-100">
+        <% documents.each_with_index do |doc, i| %>
+          <li class="group relative">
+            <%# Right-click / row context menu: full-row trigger sits behind the row's own controls %>
+            <details>
+              <summary
+                class="absolute inset-0 z-0 list-none cursor-context-menu [&::-webkit-details-marker]:hidden"
+                aria-label="Open context menu for <%= doc[:name] %>"
+                title="Right-click for more actions"
+              ></summary>
+              <div class="absolute left-6 top-14 z-30 w-56 rounded-lg border border-gray-200 bg-white py-1 text-sm shadow-lg">
+                <ul>
+                  <li><a href="#" class="block px-3 py-1.5 hover:bg-gray-100">Open</a></li>
+                  <li><a href="#" class="block px-3 py-1.5 hover:bg-gray-100">Open in new tab</a></li>
+                  <li><a href="#" class="block px-3 py-1.5 hover:bg-gray-100">Rename</a></li>
+                  <li><a href="#" class="block px-3 py-1.5 hover:bg-gray-100">Make a copy</a></li>
+                  <li><a href="#" class="block px-3 py-1.5 hover:bg-gray-100">Copy link</a></li>
+                </ul>
+                <div class="my-1 border-t border-gray-100"></div>
+                <ul>
+                  <li><a href="#" class="block px-3 py-1.5 hover:bg-gray-100">Move to folder…</a></li>
+                </ul>
+                <div class="my-1 border-t border-gray-100"></div>
+                <ul>
+                  <li>
+                    <button type="button" class="block w-full px-3 py-1.5 text-left text-red-600 hover:bg-red-50">
+                      Delete
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </details>
+
+            <%# Visible row content, stacked above the context-menu trigger %>
+            <div class="relative z-10 grid grid-cols-[1.5rem_1fr_auto] items-center gap-3 px-4 py-3 group-hover:bg-gray-50 sm:grid-cols-[1.5rem_1fr_9rem_7rem_2.5rem]">
+              <input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" aria-label="Select <%= doc[:name] %>">
+
+              <div class="flex min-w-0 items-center gap-2">
+                <svg viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 shrink-0 text-gray-400">
+                  <path d="M4 3a1 1 0 0 1 1-1h6.586A2 2 0 0 1 13 2.586L16.414 6A2 2 0 0 1 17 7.414V17a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3Z" />
+                </svg>
+                <span class="truncate text-sm font-medium text-gray-900"><%= doc[:name] %></span>
+              </div>
+
+              <span class="hidden truncate text-sm text-gray-500 sm:block"><%= doc[:owner] %></span>
+              <span class="hidden truncate text-sm text-gray-500 sm:block"><%= doc[:modified] %></span>
+
+              <%# Row-actions dropdown behind an "Options" button %>
+              <details class="relative justify-self-end">
+                <summary
+                  class="flex h-8 w-8 list-none items-center justify-center rounded-md text-gray-500 [&::-webkit-details-marker]:hidden hover:bg-gray-200 hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                  aria-label="Options for <%= doc[:name] %>"
+                  title="Options"
+                >
+                  <svg viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+                    <path d="M10 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm0 5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm0 5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z" />
+                  </svg>
+                </summary>
+
+                <div class="absolute right-0 top-full z-30 mt-1 w-64 rounded-lg border border-gray-200 bg-white py-1 text-sm shadow-lg">
+                  <div class="px-3 pb-1 pt-2 text-xs font-medium uppercase tracking-wide text-gray-400">Account</div>
+                  <ul>
+                    <li><a href="#" class="block px-3 py-1.5 text-gray-700 hover:bg-gray-100">Owned by <%= doc[:owner] %></a></li>
+                    <li><a href="#" class="block px-3 py-1.5 text-gray-700 hover:bg-gray-100">Transfer ownership…</a></li>
+                    <li><a href="#" class="block px-3 py-1.5 text-gray-700 hover:bg-gray-100">Share with team…</a></li>
+                  </ul>
+
+                  <div class="my-1 border-t border-gray-100"></div>
+
+                  <label class="flex cursor-pointer items-center gap-2 px-3 py-1.5 hover:bg-gray-100">
+                    <input type="checkbox" name="pin_<%= i %>" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                    Pin to top
+                  </label>
+
+                  <div class="my-1 border-t border-gray-100"></div>
+
+                  <ul>
+                    <li><a href="#" class="block px-3 py-1.5 text-gray-700 hover:bg-gray-100">Duplicate</a></li>
+                  </ul>
+
+                  <div class="my-1 border-t border-gray-100"></div>
+
+                  <button type="button" class="block w-full px-3 py-1.5 text-left text-red-600 hover:bg-red-50">
+                    Delete document
+                  </button>
+                </div>
+              </details>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</div>

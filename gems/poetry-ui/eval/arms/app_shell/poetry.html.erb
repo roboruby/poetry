@@ -1,0 +1,95 @@
+<%# The poetry arm: a real app shell - the sidebar collapse is coordinated
+    (data-state peer + a wired trigger), the inset is a main landmark, nav
+    is real links. %>
+<%= poetry_sidebar(collapsible: :icon) do |shell| %>
+  <% shell.with_nav do %>
+    <%= poetry_sidebar_content do %>
+      <%= poetry_sidebar_group do %>
+        <%= poetry_sidebar_group_label { "Platform" } %>
+        <%= poetry_sidebar_menu do %>
+          <%= poetry_sidebar_menu_item do %>
+            <%= poetry_sidebar_menu_button(href: "/dashboard", active: true) { "Dashboard" } %>
+          <% end %>
+          <%= poetry_sidebar_menu_item do %>
+            <%= poetry_sidebar_menu_button(href: "/inbox") { "Inbox" } %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <% shell.with_inset do %>
+    <div class="flex items-center gap-2 border-b p-3">
+      <%= poetry_sidebar_trigger %>
+      <span class="text-sm font-medium">Dashboard</span>
+    </div>
+    <%# The dashboard's first row: one KPI per Stat, sentiment
+        follows the metric's good direction. %>
+    <div class="grid gap-6 p-4 sm:grid-cols-2">
+      <%= poetry_stat(label: "Active users", delta: "+12.5%", trend: :up) { "2,847" } %>
+      <%= poetry_stat(label: "Error rate", delta: "-0.3%", trend: :down, sentiment: :positive) { "0.42%" } %>
+      <%# A QUANTITY in a range is a Meter (role="meter progressbar"),
+          never Progress - progress is an operation completing. %>
+      <%= poetry_meter(value: 68, label: "Storage used") %>
+    </div>
+    <%# Rendered-markdown prose is a Typeset: bare elements
+        styled by the app-owned typeset.css, never per-element utilities. %>
+    <div class="px-4 pb-2">
+      <%= poetry_typeset(class: "max-w-2xl") do %>
+        <h2>Release notes</h2>
+        <p>The <code>status</code> column shipped. Earlier blocks keep
+        their styling as new ones stream in.</p>
+      <% end %>
+    </div>
+    <%# A hierarchical navigator is a Tree: flat treegrid rows,
+        expansion keys and typeahead ride the controller - never nested
+        <ul>s with click handlers. %>
+    <div class="px-4 pb-4">
+      <%= poetry_tree(label: "Projects") do |tree| %>
+        <% tree.with_item(text: "Acme rollout", value: "acme", expanded: true) do |acme| %>
+          <% acme.with_item(text: "Kickoff notes", value: "kickoff", href: "/projects/acme/kickoff") %>
+          <% acme.with_item(text: "Milestones", value: "milestones", href: "/projects/acme/milestones") %>
+        <% end %>
+        <% tree.with_item(text: "Globex migration", value: "globex") do |globex| %>
+          <% globex.with_item(text: "Runbook", value: "runbook", href: "/projects/globex/runbook") %>
+        <% end %>
+      <% end %>
+    </div>
+    <%# A sequence of dated events is a Timeline: a real <ol>,
+        completed: recolors the rail up to the current step - never a
+        hand-rolled stack of dots and left borders. %>
+    <div class="px-4 pb-4">
+      <%= poetry_timeline do |timeline| %>
+        <% timeline.with_item(title: "Deploy queued", time: "09:12", completed: true) do %>
+          Build #482 passed - waiting on the canary window.
+        <% end %>
+        <% timeline.with_item(title: "Canary live", time: "09:31", completed: true) do %>
+          5% of traffic on the new release.
+        <% end %>
+        <% timeline.with_item(title: "Full rollout", time: "10:00") do %>
+          Promotes automatically when error budget holds.
+        <% end %>
+      <% end %>
+    </div>
+    <%# A run of related fields is a Fieldset (legend names the group);
+        FieldGroup owns the stacking rhythm and the @container scope
+        responsive fields key on; FieldSeparator divides the runs. %>
+    <div class="max-w-md px-4 pb-4">
+      <%= poetry_fieldset(legend: "Notifications", legend_variant: :label,
+                          hint: "Where deploy alerts land.") do %>
+        <%= poetry_field_group(variant: :choices) do %>
+          <%= poetry_field(id: "shell-notify-email", label_text: "Email",
+                           orientation: :horizontal) do |field| %>
+            <%= poetry_checkbox(name: "notify_email", checked: true,
+                                **field.control_attributes.transform_keys(&:to_sym)) %>
+          <% end %>
+          <%= poetry_field_separator %>
+          <%= poetry_field(id: "shell-notify-slack", label_text: "Slack",
+                           orientation: :horizontal) do |field| %>
+            <%= poetry_checkbox(name: "notify_slack",
+                                **field.control_attributes.transform_keys(&:to_sym)) %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

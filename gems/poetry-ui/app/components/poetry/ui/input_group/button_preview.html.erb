@@ -1,0 +1,12 @@
+<%# A trailing action inside the field surface. %>
+<div class="w-80 p-4">
+  <%= poetry_label(for_id: "input-group-url", class: "sr-only") { "Page URL" } %>
+  <%= poetry_input_group do %>
+    <%= poetry_input_group_input(id: "input-group-url", name: "url", value: "https://poetry.example") %>
+    <%= poetry_input_group_addon(align: :"inline-end") do %>
+      <%= poetry_input_group_button(size: :"icon-xs", label: "Copy URL") do %>
+        <%= poetry_icon(name: :copy) %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

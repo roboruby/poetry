@@ -1,0 +1,155 @@
+<%
+  query = params[:q].to_s.strip
+  norm  = query.downcase
+
+  suggestions = [
+    { name: "Calendar",     hint: "Jump to a date",           shortcut: nil,
+      icon: %q{<rect x="3" y="4" width="18" height="17" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="9" x2="21" y2="9"></line>} },
+    { name: "Search Emoji", hint: "Find and insert an emoji", shortcut: nil,
+      icon: %q{<circle cx="12" cy="12" r="9"></circle><path d="M8.5 14.5c1 1 2.2 1.5 3.5 1.5s2.5-.5 3.5-1.5"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line>} },
+    { name: "Calculator",   hint: "Do quick math",            shortcut: nil,
+      icon: %q{<rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="11" x2="8.01" y2="11"></line><line x1="12" y1="11" x2="12.01" y2="11"></line><line x1="16" y1="11" x2="16.01" y2="11"></line><line x1="8" y1="15" x2="8.01" y2="15"></line><line x1="12" y1="15" x2="12.01" y2="15"></line><line x1="16" y1="15" x2="16.01" y2="15"></line><line x1="8" y1="19" x2="16" y2="19"></line>} },
+  ]
+
+  settings = [
+    { name: "Profile",  hint: "Manage your public profile", shortcut: "⌘P",
+      icon: %q{<circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>} },
+    { name: "Billing",  hint: "View invoices and plans",     shortcut: "⌘B",
+      icon: %q{<rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line>} },
+    { name: "Settings", hint: "App preferences",             shortcut: "⌘,",
+      icon: %q{<circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09c0 .68.39 1.28 1 1.51.6.22 1.3.12 1.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06c-.45.52-.55 1.22-.33 1.82.22.6.83 1 1.51 1H21a2 2 0 110 4h-.09c-.68 0-1.29.39-1.51 1z"></path>} },
+  ]
+
+  filtered_suggestions = suggestions.select { |c| norm.empty? || c[:name].downcase.include?(norm) }
+  filtered_settings     = settings.select     { |c| norm.empty? || c[:name].downcase.include?(norm) }
+  total_results = filtered_suggestions.length + filtered_settings.length
+%>
+<div class="w-full flex justify-center px-4 py-12 sm:py-16 bg-gray-50 min-h-full">
+  <div class="w-full max-w-xl">
+    <div class="overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-gray-950/10">
+      <%# Search field %>
+      <form action="<%= request.path %>" method="get" role="search" class="flex items-center gap-3 border-b border-gray-200 px-4 py-3">
+        <svg class="h-5 w-5 shrink-0 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+
+        <label for="command-palette-search" class="sr-only">Type a command or search</label>
+        <input
+          id="command-palette-search"
+          type="text"
+          name="q"
+          value="<%= query %>"
+          autofocus
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="Type a command or search…"
+          class="flex-1 border-0 bg-transparent p-0 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-0"
+        />
+
+        <button type="submit" class="sr-only">Search</button>
+
+        <% if query.present? %>
+          <a
+            href="<%= request.path %>"
+            aria-label="Clear search"
+            class="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          >
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </a>
+        <% end %>
+
+        <kbd class="hidden sm:inline-flex h-5 shrink-0 items-center rounded border border-gray-300 bg-gray-50 px-1.5 font-sans text-[11px] font-medium text-gray-500">esc</kbd>
+      </form>
+
+      <%# Results %>
+      <div class="max-h-96 overflow-y-auto py-2">
+        <% if total_results.zero? %>
+          <p class="px-4 py-10 text-center text-sm text-gray-500">
+            No results found for “<%= query %>”
+          </p>
+        <% else %>
+
+          <% if filtered_suggestions.any? %>
+            <div class="px-2">
+              <h3 class="px-2 pb-1 pt-2 text-xs font-medium uppercase tracking-wide text-gray-400">Suggestions</h3>
+              <ul>
+                <% filtered_suggestions.each do |cmd| %>
+                  <li>
+                    <a
+                      href="#"
+                      class="group flex items-center gap-3 rounded-md px-2 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 focus:outline-none focus-visible:bg-indigo-50 focus-visible:text-indigo-700 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-inset"
+                    >
+                      <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-500 group-hover:bg-indigo-100 group-hover:text-indigo-600">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><%= cmd[:icon].html_safe %></svg>
+                      </span>
+                      <span class="min-w-0 flex-1">
+                        <span class="block truncate font-medium"><%= cmd[:name] %></span>
+                        <span class="block truncate text-xs text-gray-400"><%= cmd[:hint] %></span>
+                      </span>
+                    </a>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <% if filtered_suggestions.any? && filtered_settings.any? %>
+            <div class="my-1 border-t border-gray-100"></div>
+          <% end %>
+
+          <% if filtered_settings.any? %>
+            <div class="px-2">
+              <h3 class="px-2 pb-1 pt-2 text-xs font-medium uppercase tracking-wide text-gray-400">Settings</h3>
+              <ul>
+                <% filtered_settings.each do |cmd| %>
+                  <li>
+                    <a
+                      href="#"
+                      class="group flex items-center gap-3 rounded-md px-2 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 focus:outline-none focus-visible:bg-indigo-50 focus-visible:text-indigo-700 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-inset"
+                    >
+                      <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-500 group-hover:bg-indigo-100 group-hover:text-indigo-600">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><%= cmd[:icon].html_safe %></svg>
+                      </span>
+                      <span class="min-w-0 flex-1">
+                        <span class="block truncate font-medium"><%= cmd[:name] %></span>
+                        <span class="block truncate text-xs text-gray-400"><%= cmd[:hint] %></span>
+                      </span>
+                      <% if cmd[:shortcut] %>
+                        <span class="ml-auto flex shrink-0 items-center gap-0.5">
+                          <% cmd[:shortcut].each_char do |ch| %>
+                            <kbd class="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded border border-gray-300 bg-gray-50 px-1 font-sans text-[11px] font-medium text-gray-500 group-hover:border-indigo-200 group-hover:text-indigo-600"><%= ch %></kbd>
+                          <% end %>
+                        </span>
+                      <% end %>
+                    </a>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+        <% end %>
+      </div>
+
+      <%# Footer keyboard hints %>
+      <div class="flex items-center justify-between border-t border-gray-200 px-4 py-2 text-xs text-gray-400">
+        <div class="flex items-center gap-3">
+          <span class="flex items-center gap-1">
+            <kbd class="inline-flex h-5 w-5 items-center justify-center rounded border border-gray-300 bg-gray-50 font-sans text-[11px] text-gray-500">↑</kbd>
+            <kbd class="inline-flex h-5 w-5 items-center justify-center rounded border border-gray-300 bg-gray-50 font-sans text-[11px] text-gray-500">↓</kbd>
+            <span class="ml-1">Navigate</span>
+          </span>
+          <span class="flex items-center gap-1">
+            <kbd class="inline-flex h-5 w-5 items-center justify-center rounded border border-gray-300 bg-gray-50 font-sans text-[11px] text-gray-500">↵</kbd>
+            <span class="ml-1">Select</span>
+          </span>
+        </div>
+        <span class="font-medium text-gray-400">Command Palette</span>
+      </div>
+    </div>
+  </div>
+</div>

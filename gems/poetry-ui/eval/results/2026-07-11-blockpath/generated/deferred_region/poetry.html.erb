@@ -1,0 +1,23 @@
+<div class="mx-auto max-w-2xl p-6">
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Recent Activity" } %>
+    <% card.with_description { "Latest events across your workspace." } %>
+    <% card.with_action do %>
+      <%= poetry_badge(variant: :outline) { "Live" } %>
+    <% end %>
+
+    <%= poetry_deferred(src: "/dashboard/activity") do %>
+      <div class="space-y-4" aria-busy="true">
+        <% 4.times do %>
+          <div class="flex items-center gap-3">
+            <%= poetry_skeleton(class: "size-9 shrink-0 rounded-full") %>
+            <div class="min-w-0 flex-1 space-y-2">
+              <%= poetry_skeleton(class: "h-4 w-2/5") %>
+              <%= poetry_skeleton(class: "h-3 w-1/4") %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

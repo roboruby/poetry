@@ -1,0 +1,9 @@
+<%# installed by the poetry `screen-settings` recipe - yours to adapt.
+    A settings page composed from three blocks: the page furniture, a
+    contained settings section, and the guarded danger zone. The section
+    blocks carry their own page framing; the stack just orders them. %>
+<div class="mx-auto flex max-w-3xl flex-col gap-8 p-6">
+  <%= render "blocks/page_header" %>
+  <%= render "blocks/section_card" %>
+  <%= render "blocks/destructive_panel" %>
+</div>

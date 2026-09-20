@@ -1,0 +1,77 @@
+<div class="mx-auto max-w-3xl space-y-8 p-6">
+  <div class="space-y-1">
+    <h1 class="text-lg font-semibold tracking-tight">Floating UI</h1>
+    <p class="text-sm text-muted-foreground">Three poppers, each paired with the trigger that earns it: an interactive form, an icon-only hint, and a pointer-only preview.</p>
+  </div>
+
+  <div class="grid gap-6 md:grid-cols-3">
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Dimensions" } %>
+      <% card.with_description { "A form-hosting popover behind a button." } %>
+      <div class="pt-2">
+        <%= poetry_popover(align: :start) do |popover| %>
+          <% popover.with_trigger do %>
+            <%= poetry_button(variant: :outline) { "Open popover" } %>
+          <% end %>
+          <% popover.with_title { "Dimensions" } %>
+          <% popover.with_description { "Set the dimensions for the layer." } %>
+          <%= form_with url: "#", method: :get, class: "grid gap-3 pt-3" do %>
+            <div class="grid grid-cols-3 items-center gap-3">
+              <%= poetry_label(for_id: "floating-width") { "Width" } %>
+              <%= poetry_input(id: "floating-width", name: "width", value: "100%") %>
+            </div>
+            <div class="grid grid-cols-3 items-center gap-3">
+              <%= poetry_label(for_id: "floating-max-width") { "Max. width" } %>
+              <%= poetry_input(id: "floating-max-width", name: "max_width", value: "300px") %>
+            </div>
+            <div class="grid grid-cols-3 items-center gap-3">
+              <%= poetry_label(for_id: "floating-height") { "Height" } %>
+              <%= poetry_input(id: "floating-height", name: "height", value: "25px") %>
+            </div>
+            <div class="grid grid-cols-3 items-center gap-3">
+              <%= poetry_label(for_id: "floating-max-height") { "Max. height" } %>
+              <%= poetry_input(id: "floating-max-height", name: "max_height", value: "none") %>
+            </div>
+            <div class="flex justify-end pt-1">
+              <%= poetry_button(type: :submit, size: :sm) { "Save" } %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Add to library" } %>
+      <% card.with_description { "An icon-only control named by its tooltip." } %>
+      <div class="pt-2">
+        <%= poetry_tooltip do |tooltip| %>
+          <% tooltip.with_trigger do %>
+            <%= poetry_button(variant: :outline, size: :icon, label: "Add to library") do |button| %>
+              <% button.with_leading { poetry_icon(name: :library) } %>
+            <% end %>
+          <% end %>
+          Add to library
+        <% end %>
+      </div>
+    <% end %>
+
+    <%= poetry_card do |card| %>
+      <% card.with_title { "@nextjs" } %>
+      <% card.with_description { "A link enriched with a profile hover card." } %>
+      <div class="pt-2 text-sm">
+        <%= poetry_hover_card(align: :start) do |hover_card| %>
+          <% hover_card.with_trigger do %>
+            <%= poetry_link(href: "https://nextjs.org", external: true) { "@nextjs" } %>
+          <% end %>
+          <div class="flex gap-3">
+            <%= poetry_avatar(label: "Next.js") { "N" } %>
+            <div class="space-y-1">
+              <h4 class="text-sm font-semibold">Next.js</h4>
+              <p class="text-sm text-muted-foreground">The React Framework for the Web — production-grade applications that scale, by Vercel.</p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

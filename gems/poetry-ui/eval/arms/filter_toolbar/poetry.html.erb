@@ -1,0 +1,21 @@
+<%# The poetry arm: a filter toolbar - a search InputGroup (icon + control
+    + kbd), a labelled NativeSelect, and a view ButtonGroup. %>
+<div class="flex items-center gap-3">
+  <%= poetry_label(for_id: "toolbar-search", class: "sr-only") { "Search" } %>
+  <%= poetry_input_group(class: "max-w-xs") do %>
+    <%= poetry_input_group_addon do %>
+      <%= poetry_icon(name: :search) %>
+    <% end %>
+    <%= poetry_input_group_input(id: "toolbar-search", name: "q", placeholder: "Search…") %>
+    <%= poetry_input_group_addon(align: :"inline-end") do %>
+      <%= poetry_kbd { "⌘K" } %>
+    <% end %>
+  <% end %>
+  <%= poetry_label(for_id: "toolbar-sort", class: "sr-only") { "Sort by" } %>
+  <%= poetry_native_select(name: "sort", id: "toolbar-sort",
+                           options: [["Newest", "newest"], ["Oldest", "oldest"]]) %>
+  <%= poetry_button_group("aria-label": "View") do %>
+    <%= poetry_button(variant: :outline, size: :sm) { "List" } %>
+    <%= poetry_button(variant: :outline, size: :sm) { "Grid" } %>
+  <% end %>
+</div>

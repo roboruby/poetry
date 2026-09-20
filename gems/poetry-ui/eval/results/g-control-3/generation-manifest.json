@@ -1,0 +1,430 @@
+{
+  "units": {
+    "billing_settings": {
+      "raw_tailwind": {
+        "cost_usd": 0.1636,
+        "num_turns": 4,
+        "duration_s": 51.5,
+        "attempts": 1,
+        "tools": {
+          "Read": 1,
+          "Glob": 1,
+          "Write": 1
+        },
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.9797,
+        "num_turns": 38,
+        "duration_s": 234.1,
+        "attempts": 1,
+        "tools": {
+          "Read": 4,
+          "Skill": 2,
+          "ToolSearch": 2,
+          "mcp__poetry__compose": 1,
+          "mcp__poetry__build_page": 3,
+          "mcp__poetry__describe_block": 3,
+          "mcp__poetry__describe_component": 12,
+          "Grep": 5,
+          "mcp__poetry__list_components": 1,
+          "Write": 1,
+          "mcp__poetry__check": 1
+        },
+        "artifact": true
+      }
+    },
+    "analytics_overview": {
+      "poetry": {
+        "cost_usd": 0.8514,
+        "num_turns": 25,
+        "duration_s": 197.4,
+        "attempts": 1,
+        "tools": {
+          "Read": 6,
+          "Skill": 2,
+          "ToolSearch": 2,
+          "mcp__poetry__compose": 1,
+          "Grep": 3,
+          "mcp__poetry__describe_component": 6,
+          "Write": 1,
+          "mcp__poetry__check": 1
+        },
+        "artifact": true
+      },
+      "raw_tailwind": {
+        "cost_usd": 0.7194,
+        "num_turns": 11,
+        "duration_s": 258.5,
+        "attempts": 1,
+        "tools": {
+          "Glob": 2,
+          "Read": 5,
+          "Skill": 1,
+          "Write": 1
+        },
+        "artifact": true
+      }
+    },
+    "audit_log": {
+      "raw_tailwind": {
+        "cost_usd": 0.5776,
+        "num_turns": 8,
+        "duration_s": 221.8,
+        "attempts": 1,
+        "tools": {
+          "Read": 2,
+          "Glob": 2,
+          "Skill": 1,
+          "Write": 1
+        },
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 1.2857,
+        "num_turns": 37,
+        "duration_s": 341.9,
+        "attempts": 1,
+        "tools": {
+          "Read": 5,
+          "Skill": 2,
+          "ToolSearch": 1,
+          "mcp__poetry__compose": 1,
+          "mcp__poetry__describe_block": 2,
+          "mcp__poetry__describe_component": 19,
+          "mcp__poetry__list_components": 1,
+          "Write": 1,
+          "Edit": 2
+        },
+        "artifact": true
+      }
+    },
+    "login": {
+      "raw_tailwind": {
+        "cost_usd": 0.0929,
+        "num_turns": 5,
+        "duration_s": 25.8,
+        "attempts": 1,
+        "tools": {
+          "Read": 1,
+          "Glob": 2,
+          "Write": 1
+        },
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.9712,
+        "num_turns": 29,
+        "duration_s": 127.4,
+        "attempts": 1,
+        "tools": {
+          "Read": 6,
+          "Skill": 2,
+          "ToolSearch": 2,
+          "mcp__poetry__compose": 1,
+          "Grep": 5,
+          "Glob": 2,
+          "mcp__poetry__describe_block": 1,
+          "mcp__poetry__describe_component": 2,
+          "Write": 1,
+          "mcp__poetry__check": 1,
+          "Edit": 3
+        },
+        "artifact": true
+      }
+    },
+    "integrations": {
+      "raw_tailwind": {
+        "cost_usd": 0.2933,
+        "num_turns": 4,
+        "duration_s": 95.0,
+        "attempts": 1,
+        "tools": {
+          "Read": 1,
+          "Glob": 1,
+          "Write": 1
+        },
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 1.1908,
+        "num_turns": 36,
+        "duration_s": 241.9,
+        "attempts": 1,
+        "tools": {
+          "Read": 5,
+          "Skill": 2,
+          "ToolSearch": 1,
+          "mcp__poetry__compose": 1,
+          "mcp__poetry__describe_block": 3,
+          "mcp__poetry__describe_component": 7,
+          "mcp__poetry__list_components": 1,
+          "Grep": 5,
+          "Glob": 2,
+          "Write": 1,
+          "mcp__poetry__check": 3,
+          "Edit": 2
+        },
+        "artifact": true
+      }
+    },
+    "onboarding_checklist": {
+      "raw_tailwind": {
+        "cost_usd": 0.1174,
+        "num_turns": 4,
+        "duration_s": 40.2,
+        "attempts": 1,
+        "tools": {
+          "Read": 1,
+          "Glob": 1,
+          "Write": 1
+        },
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.6983,
+        "num_turns": 24,
+        "duration_s": 120.6,
+        "attempts": 1,
+        "tools": {
+          "Read": 6,
+          "Skill": 2,
+          "ToolSearch": 2,
+          "mcp__poetry__compose": 1,
+          "mcp__poetry__describe_block": 1,
+          "Grep": 5,
+          "mcp__poetry__describe_component": 2,
+          "Write": 1,
+          "mcp__poetry__check": 1
+        },
+        "artifact": true
+      }
+    },
+    "activity_inbox": {
+      "poetry": {
+        "cost_usd": 1.1847,
+        "num_turns": 37,
+        "duration_s": 303.7,
+        "attempts": 1,
+        "tools": {
+          "Read": 3,
+          "ToolSearch": 1,
+          "mcp__poetry__compose": 1,
+          "mcp__poetry__list_components": 1,
+          "mcp__poetry__guidance": 1,
+          "mcp__poetry__describe_component": 15,
+          "mcp__poetry__describe_block": 1,
+          "mcp__poetry__get_skill": 1,
+          "Skill": 1,
+          "Grep": 1,
+          "Bash": 1,
+          "Glob": 2,
+          "mcp__poetry__check": 5,
+          "Write": 1
+        },
+        "artifact": true
+      },
+      "raw_tailwind": {
+        "cost_usd": 0.7427,
+        "num_turns": 4,
+        "duration_s": 329.2,
+        "attempts": 1,
+        "tools": {
+          "Read": 1,
+          "Glob": 1,
+          "Write": 1
+        },
+        "artifact": true
+      }
+    },
+    "pricing": {
+      "raw_tailwind": {
+        "cost_usd": 0.1645,
+        "num_turns": 5,
+        "duration_s": 48.6,
+        "attempts": 1,
+        "tools": {
+          "Read": 1,
+          "Glob": 2,
+          "Write": 1
+        },
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.5687,
+        "num_turns": 24,
+        "duration_s": 124.9,
+        "attempts": 1,
+        "tools": {
+          "Read": 1,
+          "ToolSearch": 1,
+          "mcp__poetry__compose": 1,
+          "mcp__poetry__build_page": 3,
+          "mcp__poetry__describe_block": 3,
+          "mcp__poetry__list_components": 1,
+          "mcp__poetry__describe_component": 5,
+          "Grep": 3,
+          "Glob": 2,
+          "mcp__poetry__get_skill": 1,
+          "Write": 1,
+          "mcp__poetry__check": 1
+        },
+        "artifact": true
+      }
+    },
+    "project_detail": {
+      "raw_tailwind": {
+        "cost_usd": 0.1572,
+        "num_turns": 6,
+        "duration_s": 45.6,
+        "attempts": 1,
+        "tools": {
+          "Read": 1,
+          "Glob": 3,
+          "Write": 1
+        },
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.4932,
+        "num_turns": 25,
+        "duration_s": 95.1,
+        "attempts": 1,
+        "tools": {
+          "Read": 1,
+          "ToolSearch": 1,
+          "mcp__poetry__compose": 1,
+          "mcp__poetry__build_page": 4,
+          "mcp__poetry__describe_block": 2,
+          "mcp__poetry__list_blocks": 1,
+          "mcp__poetry__list_components": 1,
+          "mcp__poetry__describe_component": 11,
+          "Write": 1,
+          "mcp__poetry__check": 1
+        },
+        "artifact": true
+      }
+    },
+    "search_results": {
+      "raw_tailwind": {
+        "cost_usd": 0.1807,
+        "num_turns": 6,
+        "duration_s": 52.4,
+        "attempts": 1,
+        "tools": {
+          "Read": 1,
+          "Glob": 1,
+          "Write": 1,
+          "Edit": 2
+        },
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 0.9748,
+        "num_turns": 41,
+        "duration_s": 170.8,
+        "attempts": 1,
+        "tools": {
+          "Read": 5,
+          "ToolSearch": 2,
+          "mcp__poetry__compose": 1,
+          "mcp__poetry__list_components": 1,
+          "mcp__poetry__describe_component": 14,
+          "Skill": 2,
+          "mcp__poetry__build_page": 4,
+          "mcp__poetry__describe_block": 2,
+          "mcp__poetry__get_skill": 2,
+          "Grep": 3,
+          "Write": 1,
+          "mcp__poetry__check": 1
+        },
+        "artifact": true
+      }
+    },
+    "status_page": {
+      "raw_tailwind": {
+        "cost_usd": 0.308,
+        "num_turns": 5,
+        "duration_s": 131.4,
+        "attempts": 1,
+        "tools": {
+          "Read": 1,
+          "Glob": 2,
+          "Write": 1
+        },
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 1.1492,
+        "num_turns": 49,
+        "duration_s": 293.2,
+        "attempts": 1,
+        "tools": {
+          "Read": 5,
+          "Skill": 2,
+          "ToolSearch": 2,
+          "mcp__poetry__build_page": 2,
+          "mcp__poetry__list_blocks": 1,
+          "mcp__poetry__compose": 1,
+          "mcp__poetry__describe_component": 20,
+          "mcp__poetry__list_components": 1,
+          "Grep": 4,
+          "mcp__poetry__describe_block": 3,
+          "Glob": 2,
+          "Write": 1,
+          "Edit": 2
+        },
+        "artifact": true
+      }
+    },
+    "team_members": {
+      "raw_tailwind": {
+        "cost_usd": 0.2902,
+        "num_turns": 7,
+        "duration_s": 114.3,
+        "attempts": 1,
+        "tools": {
+          "Read": 1,
+          "Glob": 4,
+          "Write": 1
+        },
+        "artifact": true
+      },
+      "poetry": {
+        "cost_usd": 1.2261,
+        "num_turns": 33,
+        "duration_s": 219.1,
+        "attempts": 1,
+        "tools": {
+          "Read": 6,
+          "ToolSearch": 2,
+          "mcp__poetry__compose": 1,
+          "Skill": 2,
+          "mcp__poetry__describe_block": 3,
+          "mcp__poetry__describe_component": 4,
+          "Grep": 5,
+          "Glob": 3,
+          "Bash": 1,
+          "Write": 1,
+          "mcp__poetry__check": 2
+        },
+        "artifact": true
+      }
+    }
+  },
+  "config": {
+    "model": "claude-sonnet-5",
+    "max_turns": 40,
+    "guided": false,
+    "build_page_available": true,
+    "toolbelts": {
+      "poetry": "Read,Glob,Grep,Write,Skill,Bash(bin/check:*),mcp__poetry__compose,mcp__poetry__check,mcp__poetry__describe_component,mcp__poetry__list_components,mcp__poetry__list_blocks,mcp__poetry__describe_block,mcp__poetry__build_page",
+      "raw_tailwind": "Read,Glob,Grep,Write,Skill"
+    }
+  },
+  "usage": {
+    "units_recorded": 24,
+    "unit_cost_sum_usd": 15.3813,
+    "receipted_cost_usd": 15.381
+  }
+}

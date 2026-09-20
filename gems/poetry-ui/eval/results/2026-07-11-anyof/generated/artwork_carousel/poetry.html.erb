@@ -1,0 +1,56 @@
+<div class="mx-auto max-w-3xl space-y-6 p-6">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Featured Artworks</h1>
+    <p class="text-sm text-muted-foreground">Three pieces from the permanent collection, on rotation below.</p>
+  </div>
+
+  <%= poetry_carousel(label: "Featured artworks", show_controls: true) do |carousel| %>
+    <% carousel.with_item(classes: "basis-full") do %>
+      <%= poetry_card(title_tag: :h2) do |card| %>
+        <% card.with_title { "Starry Night Over the Rhône" } %>
+        <% card.with_description { "Vincent van Gogh, 1888" } %>
+        <% card.with_action do %>
+          <%= poetry_badge(variant: :secondary) { "Oil on canvas" } %>
+        <% end %>
+        <%= poetry_aspect_ratio(ratio: "16/9") do %>
+          <div class="flex size-full items-center justify-center rounded-md bg-muted">
+            <%= poetry_icon(name: :image, class: "size-12 text-muted-foreground", label: "Artwork placeholder") %>
+          </div>
+        <% end %>
+        <p class="mt-3 text-sm text-muted-foreground">Painted from memory during a clear night in Arles, the canvas sets gaslight against the swirl of the Rhône's reflected stars.</p>
+      <% end %>
+    <% end %>
+
+    <% carousel.with_item(classes: "basis-full") do %>
+      <%= poetry_card(title_tag: :h2) do |card| %>
+        <% card.with_title { "Water Lilies" } %>
+        <% card.with_description { "Claude Monet, 1906" } %>
+        <% card.with_action do %>
+          <%= poetry_badge(variant: :secondary) { "Oil on canvas" } %>
+        <% end %>
+        <%= poetry_aspect_ratio(ratio: "16/9") do %>
+          <div class="flex size-full items-center justify-center rounded-md bg-muted">
+            <%= poetry_icon(name: :image, class: "size-12 text-muted-foreground", label: "Artwork placeholder") %>
+          </div>
+        <% end %>
+        <p class="mt-3 text-sm text-muted-foreground">Part of a series painted in Monet's garden at Giverny, dissolving the pond's surface into drifting color and light.</p>
+      <% end %>
+    <% end %>
+
+    <% carousel.with_item(classes: "basis-full") do %>
+      <%= poetry_card(title_tag: :h2) do |card| %>
+        <% card.with_title { "The Great Wave off Kanagawa" } %>
+        <% card.with_description { "Katsushika Hokusai, c. 1831" } %>
+        <% card.with_action do %>
+          <%= poetry_badge(variant: :secondary) { "Woodblock print" } %>
+        <% end %>
+        <%= poetry_aspect_ratio(ratio: "16/9") do %>
+          <div class="flex size-full items-center justify-center rounded-md bg-muted">
+            <%= poetry_icon(name: :image, class: "size-12 text-muted-foreground", label: "Artwork placeholder") %>
+          </div>
+        <% end %>
+        <p class="mt-3 text-sm text-muted-foreground">A towering wave frames a distant Mount Fuji, part of the Thirty-six Views series that made the image iconic worldwide.</p>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

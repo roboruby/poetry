@@ -1,0 +1,222 @@
+<% activities = [
+  { id: 1, type: :mention, icon: :"at-sign", unread: true,
+    headline: 'Priya Shah mentioned you in "Q3 Roadmap Review"',
+    detail: '"...cc @you — can you confirm the rollout timeline before Friday?"',
+    time: "2 minutes ago" },
+  { id: 2, type: :assignment, icon: :"user-plus", unread: true,
+    headline: 'Jordan Lee assigned you "Fix pagination bug on Orders index"',
+    detail: "Priority: High · Due Thursday",
+    time: "15 minutes ago" },
+  { id: 3, type: :status, icon: :activity, unread: true,
+    headline: '"Checkout flow redesign" moved to In Review',
+    detail: "Moved by Marcus Webb · 2 approvals still needed",
+    time: "5 minutes ago" },
+  { id: 4, type: :mention, icon: :"at-sign", unread: true,
+    headline: 'Marcus Webb mentioned you in "API Rate Limits"',
+    detail: '"...worth looping in @you before we ship the new quota?"',
+    time: "38 minutes ago" },
+  { id: 5, type: :assignment, icon: :"user-plus", unread: true,
+    headline: 'Priya Shah assigned you "Write migration guide for v3"',
+    detail: "Priority: Medium · Due next Monday",
+    time: "1 hour ago" },
+  { id: 6, type: :status, icon: :activity, unread: true,
+    headline: '"Customer webhook retries" moved to Blocked',
+    detail: "Blocked by Elena Torres · waiting on infra ticket #482",
+    time: "Yesterday at 9:03 AM" },
+  { id: 7, type: :mention, icon: :"at-sign", unread: false,
+    headline: 'Elena Torres mentioned you in "Design Critique Notes"',
+    detail: '"...matches what @you proposed last week, nice catch."',
+    time: "Yesterday at 4:12 PM" },
+  { id: 8, type: :assignment, icon: :"user-plus", unread: false,
+    headline: 'Marcus Webb assigned you "Review vendor security questionnaire"',
+    detail: "Priority: Low · Due in 5 days",
+    time: "2 days ago" },
+  { id: 9, type: :status, icon: :activity, unread: false,
+    headline: '"Billing export timeout" marked Resolved',
+    detail: "Resolved by Priya Shah · root cause: connection pool exhaustion",
+    time: "3 hours ago" },
+  { id: 10, type: :status, icon: :activity, unread: false,
+    headline: '"Mobile onboarding copy" marked Done',
+    detail: "Closed by Jordan Lee · shipped in v2.14.0",
+    time: "2 days ago" },
+] %>
+<% unread_count = activities.count { |a| a[:unread] } %>
+<% mention_items = activities.select { |a| a[:type] == :mention } %>
+<% assignment_items = activities.select { |a| a[:type] == :assignment } %>
+<% status_items = activities.select { |a| a[:type] == :status } %>
+
+<div class="mx-auto max-w-3xl space-y-6 p-6">
+  <header class="flex flex-col gap-4">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="space-y-1">
+        <h1 class="text-2xl font-semibold tracking-tight">Activity</h1>
+        <p class="text-sm text-muted-foreground">
+          <% if unread_count > 0 %>
+            You have <%= unread_count %> unread update<%= "s" unless unread_count == 1 %> across mentions, assignments, and status changes.
+          <% else %>
+            You're all caught up — no unread activity right now.
+          <% end %>
+        </p>
+      </div>
+      <%= poetry_button(variant: :outline, size: :sm) do |button| %>
+        <% button.with_leading { poetry_icon(name: :"check-check") } %>
+        Mark all as read
+      <% end %>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <%= poetry_tabs(label: "Filter activity by type", default: "all", variant: :line) do |tabs| %>
+    <% tabs.with_tab("All #{activities.length}", value: "all") do %>
+      <div class="flex flex-col gap-6 pt-4">
+        <%= poetry_item_group(class: "rounded-lg border") do %>
+          <% activities.each_with_index do |a, idx| %>
+            <%= poetry_item(size: :default, variant: (a[:unread] ? :default : :muted), media_variant: :icon, role: "listitem") do |item| %>
+              <% item.with_media { poetry_icon(name: a[:icon]) } %>
+              <% item.with_title do %>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="<%= a[:unread] ? "font-semibold" : "font-medium" %>"><%= a[:headline] %></span>
+                  <% if a[:unread] %>
+                    <%= poetry_badge(variant: :info) { "Unread" } %>
+                  <% end %>
+                </div>
+              <% end %>
+              <% item.with_description { a[:detail] } %>
+              <% item.with_actions do %>
+                <div class="flex items-center gap-3">
+                  <span class="text-xs whitespace-nowrap text-muted-foreground"><%= a[:time] %></span>
+                  <div class="flex items-center gap-2">
+                    <% if a[:unread] %>
+                      <%= poetry_button(variant: :ghost, size: :sm) { "Mark read" } %>
+                    <% end %>
+                    <%= poetry_button(variant: :outline, size: :sm, tag: :a, href: "#") { "Open" } %>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+            <%= poetry_item_separator unless idx == activities.length - 1 %>
+          <% end %>
+        <% end %>
+        <%= poetry_empty(media_variant: :icon) do |empty| %>
+          <% empty.with_media { poetry_icon(name: :"check-check") } %>
+          <% empty.with_title { "You're all caught up" } %>
+          <% empty.with_description { "No more activity to review right now." } %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% tabs.with_tab("Mentions #{mention_items.length}", value: "mentions") do %>
+      <div class="flex flex-col gap-6 pt-4">
+        <%= poetry_item_group(class: "rounded-lg border") do %>
+          <% mention_items.each_with_index do |a, idx| %>
+            <%= poetry_item(size: :default, variant: (a[:unread] ? :default : :muted), media_variant: :icon, role: "listitem") do |item| %>
+              <% item.with_media { poetry_icon(name: a[:icon]) } %>
+              <% item.with_title do %>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="<%= a[:unread] ? "font-semibold" : "font-medium" %>"><%= a[:headline] %></span>
+                  <% if a[:unread] %>
+                    <%= poetry_badge(variant: :info) { "Unread" } %>
+                  <% end %>
+                </div>
+              <% end %>
+              <% item.with_description { a[:detail] } %>
+              <% item.with_actions do %>
+                <div class="flex items-center gap-3">
+                  <span class="text-xs whitespace-nowrap text-muted-foreground"><%= a[:time] %></span>
+                  <div class="flex items-center gap-2">
+                    <% if a[:unread] %>
+                      <%= poetry_button(variant: :ghost, size: :sm) { "Mark read" } %>
+                    <% end %>
+                    <%= poetry_button(variant: :outline, size: :sm, tag: :a, href: "#") { "Open" } %>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+            <%= poetry_item_separator unless idx == mention_items.length - 1 %>
+          <% end %>
+        <% end %>
+        <%= poetry_empty(media_variant: :icon) do |empty| %>
+          <% empty.with_media { poetry_icon(name: :"check-check") } %>
+          <% empty.with_title { "You're all caught up" } %>
+          <% empty.with_description { "No more mentions to review right now." } %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% tabs.with_tab("Assignments #{assignment_items.length}", value: "assignments") do %>
+      <div class="flex flex-col gap-6 pt-4">
+        <%= poetry_item_group(class: "rounded-lg border") do %>
+          <% assignment_items.each_with_index do |a, idx| %>
+            <%= poetry_item(size: :default, variant: (a[:unread] ? :default : :muted), media_variant: :icon, role: "listitem") do |item| %>
+              <% item.with_media { poetry_icon(name: a[:icon]) } %>
+              <% item.with_title do %>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="<%= a[:unread] ? "font-semibold" : "font-medium" %>"><%= a[:headline] %></span>
+                  <% if a[:unread] %>
+                    <%= poetry_badge(variant: :info) { "Unread" } %>
+                  <% end %>
+                </div>
+              <% end %>
+              <% item.with_description { a[:detail] } %>
+              <% item.with_actions do %>
+                <div class="flex items-center gap-3">
+                  <span class="text-xs whitespace-nowrap text-muted-foreground"><%= a[:time] %></span>
+                  <div class="flex items-center gap-2">
+                    <% if a[:unread] %>
+                      <%= poetry_button(variant: :ghost, size: :sm) { "Mark read" } %>
+                    <% end %>
+                    <%= poetry_button(variant: :outline, size: :sm, tag: :a, href: "#") { "Open" } %>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+            <%= poetry_item_separator unless idx == assignment_items.length - 1 %>
+          <% end %>
+        <% end %>
+        <%= poetry_empty(media_variant: :icon) do |empty| %>
+          <% empty.with_media { poetry_icon(name: :"check-check") } %>
+          <% empty.with_title { "You're all caught up" } %>
+          <% empty.with_description { "No more assignments to review right now." } %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% tabs.with_tab("Status changes #{status_items.length}", value: "status") do %>
+      <div class="flex flex-col gap-6 pt-4">
+        <%= poetry_item_group(class: "rounded-lg border") do %>
+          <% status_items.each_with_index do |a, idx| %>
+            <%= poetry_item(size: :default, variant: (a[:unread] ? :default : :muted), media_variant: :icon, role: "listitem") do |item| %>
+              <% item.with_media { poetry_icon(name: a[:icon]) } %>
+              <% item.with_title do %>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="<%= a[:unread] ? "font-semibold" : "font-medium" %>"><%= a[:headline] %></span>
+                  <% if a[:unread] %>
+                    <%= poetry_badge(variant: :info) { "Unread" } %>
+                  <% end %>
+                </div>
+              <% end %>
+              <% item.with_description { a[:detail] } %>
+              <% item.with_actions do %>
+                <div class="flex items-center gap-3">
+                  <span class="text-xs whitespace-nowrap text-muted-foreground"><%= a[:time] %></span>
+                  <div class="flex items-center gap-2">
+                    <% if a[:unread] %>
+                      <%= poetry_button(variant: :ghost, size: :sm) { "Mark read" } %>
+                    <% end %>
+                    <%= poetry_button(variant: :outline, size: :sm, tag: :a, href: "#") { "Open" } %>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+            <%= poetry_item_separator unless idx == status_items.length - 1 %>
+          <% end %>
+        <% end %>
+        <%= poetry_empty(media_variant: :icon) do |empty| %>
+          <% empty.with_media { poetry_icon(name: :"check-check") } %>
+          <% empty.with_title { "You're all caught up" } %>
+          <% empty.with_description { "No more status changes to review right now." } %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

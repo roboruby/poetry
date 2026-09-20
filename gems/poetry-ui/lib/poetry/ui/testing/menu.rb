@@ -1,0 +1,134 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Ui
+    module Testing
+      # The DropdownMenu interaction contract: trigger toggles, open lands
+      # focus in the menu, arrows move data-highlighted, Enter activates
+      # the highlighted item, Escape closes with focus returned to the
+      # trigger.
+      #
+      # CONTENT RESOLVES THROUGH THE ID PAIR, document-wide: portal-on-open
+      # moves the open menu to body (docs/portal-on-open.md), so root
+      # scoping stops holding for the content and its items - the trigger's
+      # aria-controls id is the production controllers' own resolution
+      # rule, and id-anchored selectors keep Capybara's waiting semantics.
+      #
+      # @example Activating a menu item
+      #   menu = poetry_dropdown_menu("#row-actions")
+      #   menu.choose("Archive", via: :keyboard)
+      class Menu < Tester
+        # Whether the menu is currently open.
+        #
+        # @param wait [Numeric] seconds to wait for the state before answering
+        # @return [Boolean]
+        def open?(wait: 0)
+          session.has_selector?("##{content_id}[data-open]", visible: :all, wait: wait)
+        rescue Capybara::ElementNotFound
+          false
+        end
+
+        # Opens the menu (no-op when already open). via: :keyboard focuses
+        # the trigger and presses ArrowDown; :mouse presses it.
+        #
+        # @param via [Symbol] :mouse presses the trigger, :keyboard focuses it and presses the key that opens
+        # @return [Menu] self
+        def open(via: :mouse)
+          return self if open?
+
+          case via
+          when :keyboard
+            focus(trigger)
+            keys(:down)
+          else
+            press(trigger)
+          end
+
+          session.assert_selector("##{content_id}[data-slot='dropdown-menu-content'][data-open][data-side]")
+          self
+        end
+
+        # Escape-closes the open menu and waits for the closed state.
+        #
+        # @return [Menu] self
+        def close
+          keys(:escape) if open?
+          session.assert_selector("##{content_id}[data-closed]", visible: :all)
+          self
+        end
+
+        # Opens first when closed; activates by exact visible text.
+        #
+        # @param text [String] the item's exact visible text
+        # @param via [Symbol] :mouse presses the trigger, :keyboard focuses it and presses the key that opens
+        # @return [Menu] self
+        def choose(text, via: :mouse)
+          self.open(via: via)
+
+          if via == :keyboard
+            walk_highlight_to(text)
+            keys(:enter)
+          else
+            press(item(text))
+          end
+
+          self
+        end
+
+        # The visible item texts (opens the menu first when closed).
+        #
+        # @return [Array<String>]
+        def items
+          open unless open?
+          content.all("[data-slot='dropdown-menu-item']").map(&:text)
+        end
+
+        private
+
+        # Bounded highlight walk: at most one pass over the items - a
+        # missing/mistyped label raises instead of arrowing forever.
+        def walk_highlight_to(text)
+          list = content.all("[data-slot='dropdown-menu-item']")
+
+          (list.size + 1).times do
+            return if highlighted_text == text
+
+            keys(:down)
+          end
+
+          raise Capybara::ElementNotFound,
+                "no option #{text.inspect} reached by ArrowDown - " \
+                "options: #{list.map(&:text).inspect}"
+        end
+
+        # The trigger button.
+        def trigger
+          part("dropdown-menu-trigger")
+        end
+
+        # The trigger's aria-controls names the menu wherever it sits.
+        def content_id
+          @content_id ||= trigger["aria-controls"]
+        end
+
+        # The menu node.
+        def content
+          session.find("##{content_id}", visible: :all)
+        end
+
+        # Substring match, not exact: menu items legitimately carry more
+        # than their label (shortcut glyphs, badges).
+        def item(text)
+          content.find("[data-slot='dropdown-menu-item']", text: text, match: :first)
+        end
+
+        # The highlighted item's text, or nil.
+        def highlighted_text
+          content.find("[data-slot='dropdown-menu-item'][data-highlighted]", wait: 1).text
+        rescue Capybara::ElementNotFound
+          nil
+        end
+      end
+    end
+  end
+end

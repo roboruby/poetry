@@ -1,0 +1,58 @@
+<section class="mx-auto max-w-3xl p-6 space-y-6">
+  <%= poetry_breadcrumb do |breadcrumb| %>
+    <% breadcrumb.with_item("Home", href: "#") %>
+    <% breadcrumb.with_item("Team", href: "#") %>
+    <% breadcrumb.with_item("Directory") %>
+  <% end %>
+
+  <div class="space-y-1">
+    <h1 class="text-lg font-semibold tracking-tight">Directory</h1>
+    <p class="text-sm text-muted-foreground">Everyone on the team, at a glance.</p>
+  </div>
+
+  <div class="overflow-hidden rounded-lg border">
+    <%= poetry_item_group do %>
+      <%= poetry_item(role: "listitem", media_variant: :image) do |item| %>
+        <% item.with_media { poetry_avatar(label: "Priya Nair") { "PN" } } %>
+        <% item.with_title { "Priya Nair" } %>
+        <% item.with_description { "Product design — leads onboarding and activation." } %>
+        <% item.with_actions { poetry_button(variant: :outline, size: :sm) { "Message" } } %>
+      <% end %>
+      <%= poetry_item_separator %>
+      <%= poetry_item(role: "listitem", media_variant: :image) do |item| %>
+        <% item.with_media { poetry_avatar(label: "Marcus Webb") { "MW" } } %>
+        <% item.with_title { "Marcus Webb" } %>
+        <% item.with_description { "Backend engineering — owns billing and payments services." } %>
+        <% item.with_actions { poetry_button(variant: :outline, size: :sm) { "Message" } } %>
+      <% end %>
+      <%= poetry_item_separator %>
+      <%= poetry_item(role: "listitem", media_variant: :image) do |item| %>
+        <% item.with_media { poetry_avatar(label: "Elena Torres") { "ET" } } %>
+        <% item.with_title { "Elena Torres" } %>
+        <% item.with_description { "Customer success — point of contact for enterprise accounts." } %>
+        <% item.with_actions { poetry_button(variant: :outline, size: :sm) { "Message" } } %>
+      <% end %>
+      <%= poetry_item_separator %>
+      <%= poetry_item(role: "listitem", media_variant: :image) do |item| %>
+        <% item.with_media { poetry_avatar(label: "Sam Okafor") { "SO" } } %>
+        <% item.with_title { "Sam Okafor" } %>
+        <% item.with_description { "Data platform — maintains the analytics pipeline and warehouse." } %>
+        <% item.with_actions { poetry_button(variant: :outline, size: :sm) { "Message" } } %>
+      <% end %>
+      <%= poetry_item_separator %>
+      <%= poetry_item(role: "listitem", media_variant: :image) do |item| %>
+        <% item.with_media { poetry_avatar(label: "Grace Lin") { "GL" } } %>
+        <% item.with_title { "Grace Lin" } %>
+        <% item.with_description { "Frontend engineering — builds the design system and component library." } %>
+        <% item.with_actions { poetry_button(variant: :outline, size: :sm) { "Message" } } %>
+      <% end %>
+      <%= poetry_item_separator %>
+      <%= poetry_item(role: "listitem", media_variant: :image) do |item| %>
+        <% item.with_media { poetry_avatar(label: "Devon Brooks") { "DB" } } %>
+        <% item.with_title { "Devon Brooks" } %>
+        <% item.with_description { "People operations — runs hiring and onboarding for new hires." } %>
+        <% item.with_actions { poetry_button(variant: :outline, size: :sm) { "Message" } } %>
+      <% end %>
+    <% end %>
+  </div>
+</section>

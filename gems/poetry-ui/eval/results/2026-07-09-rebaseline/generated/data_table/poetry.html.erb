@@ -1,0 +1,75 @@
+<%
+  invoice_struct = Struct.new(:number, :customer, :date, :amount, :status, keyword_init: true)
+
+  invoices = [
+    invoice_struct.new(number: "INV-0001", customer: "Acme Corp", date: Date.new(2026, 5, 2), amount: 1250.00, status: "paid"),
+    invoice_struct.new(number: "INV-0002", customer: "Globex Industries", date: Date.new(2026, 5, 4), amount: 980.50, status: "paid"),
+    invoice_struct.new(number: "INV-0003", customer: "Initech LLC", date: Date.new(2026, 5, 7), amount: 2400.00, status: "sent"),
+    invoice_struct.new(number: "INV-0004", customer: "Umbrella Group", date: Date.new(2026, 5, 10), amount: 560.00, status: "overdue"),
+    invoice_struct.new(number: "INV-0005", customer: "Stark Industries", date: Date.new(2026, 5, 12), amount: 3120.75, status: "paid"),
+    invoice_struct.new(number: "INV-0006", customer: "Wayne Enterprises", date: Date.new(2026, 5, 15), amount: 875.00, status: "draft"),
+    invoice_struct.new(number: "INV-0007", customer: "Wonka Co", date: Date.new(2026, 5, 18), amount: 430.25, status: "sent"),
+    invoice_struct.new(number: "INV-0008", customer: "Hooli", date: Date.new(2026, 5, 20), amount: 1990.00, status: "paid"),
+    invoice_struct.new(number: "INV-0009", customer: "Soylent Corp", date: Date.new(2026, 5, 22), amount: 275.00, status: "overdue"),
+    invoice_struct.new(number: "INV-0010", customer: "Massive Dynamic", date: Date.new(2026, 5, 25), amount: 4500.00, status: "paid"),
+    invoice_struct.new(number: "INV-0011", customer: "Cyberdyne Systems", date: Date.new(2026, 5, 28), amount: 690.00, status: "sent"),
+    invoice_struct.new(number: "INV-0012", customer: "Oscorp", date: Date.new(2026, 6, 1), amount: 1325.50, status: "draft"),
+    invoice_struct.new(number: "INV-0013", customer: "Gringotts", date: Date.new(2026, 6, 3), amount: 2100.00, status: "paid"),
+    invoice_struct.new(number: "INV-0014", customer: "Pied Piper", date: Date.new(2026, 6, 6), amount: 540.00, status: "sent"),
+    invoice_struct.new(number: "INV-0015", customer: "Aperture Science", date: Date.new(2026, 6, 9), amount: 3300.00, status: "overdue"),
+    invoice_struct.new(number: "INV-0016", customer: "Black Mesa", date: Date.new(2026, 6, 12), amount: 780.00, status: "paid"),
+    invoice_struct.new(number: "INV-0017", customer: "Weyland-Yutani", date: Date.new(2026, 6, 15), amount: 1560.00, status: "draft"),
+    invoice_struct.new(number: "INV-0018", customer: "Tyrell Corp", date: Date.new(2026, 6, 18), amount: 2890.00, status: "sent"),
+    invoice_struct.new(number: "INV-0019", customer: "Vandelay Industries", date: Date.new(2026, 6, 21), amount: 410.00, status: "paid"),
+    invoice_struct.new(number: "INV-0020", customer: "Duff Beer Co", date: Date.new(2026, 6, 24), amount: 620.00, status: "overdue"),
+    invoice_struct.new(number: "INV-0021", customer: "Prestige Worldwide", date: Date.new(2026, 6, 27), amount: 1740.00, status: "paid"),
+    invoice_struct.new(number: "INV-0022", customer: "Sirius Cybernetics", date: Date.new(2026, 6, 30), amount: 990.00, status: "sent"),
+    invoice_struct.new(number: "INV-0023", customer: "Monsters Inc", date: Date.new(2026, 7, 2), amount: 2250.00, status: "paid"),
+    invoice_struct.new(number: "INV-0024", customer: "Genco Pura", date: Date.new(2026, 7, 5), amount: 355.00, status: "draft")
+  ]
+
+  status_variant = { "paid" => :success, "sent" => :info, "overdue" => :warning, "draft" => :outline }
+  status_label = { "paid" => "Paid", "sent" => "Sent", "overdue" => "Overdue", "draft" => "Draft" }
+
+  sortable_columns = %w[number customer date amount]
+  state = Poetry::Ui::DataTable::State.from_params(params, sortable: sortable_columns,
+                                                    default_sort: "number", default_dir: "asc")
+
+  filtered = invoices
+  if state.q.present?
+    query = state.q.downcase
+    filtered = invoices.select do |invoice|
+      invoice.number.downcase.include?(query) ||
+        invoice.customer.downcase.include?(query) ||
+        status_label[invoice.status].downcase.include?(query)
+    end
+  end
+
+  sorted = filtered.sort_by { |invoice| invoice.public_send(state.sort) }
+  sorted.reverse! if state.dir == "desc"
+
+  per_page = 8
+  total_pages = [(sorted.size / per_page.to_f).ceil, 1].max
+  current_page = [state.page, total_pages].min
+  paged_invoices = sorted.each_slice(per_page).to_a[current_page - 1] || []
+
+  path = ->(p) { "?#{p.to_query}" }
+%>
+
+<div class="mx-auto max-w-5xl p-6 space-y-6">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Invoices</h1>
+    <p class="text-sm text-muted-foreground">All invoices, sorted by invoice number.</p>
+  </div>
+
+  <%= poetry_data_table(rows: paged_invoices, state: state, total: total_pages, path: path,
+                        caption: "Invoices sorted by invoice number, filterable by number, customer, or status.",
+                        filter_label: "Filter invoices", filter_placeholder: "Search by number, customer, or status…",
+                        empty_text: "No invoices match your filter.") do |t| %>
+    <% t.with_column("Invoice", key: :number, sortable: true) { |invoice| invoice.number } %>
+    <% t.with_column("Customer", key: :customer, sortable: true) { |invoice| invoice.customer } %>
+    <% t.with_column("Date", key: :date, sortable: true) { |invoice| invoice.date.strftime("%b %-d, %Y") } %>
+    <% t.with_column("Amount", key: :amount, sortable: true, classes: "text-right") { |invoice| number_to_currency(invoice.amount) } %>
+    <% t.with_column("Status") { |invoice| poetry_badge(variant: status_variant[invoice.status]) { status_label[invoice.status] } } %>
+  <% end %>
+</div>

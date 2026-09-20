@@ -1,0 +1,11 @@
+<%# The poetry arm: what an agent WITH poetry writes for the task
+    "a settings dialog opened by a button, with a description and a
+    confirm action". %>
+<%= poetry_dialog do |dialog| %>
+  <% dialog.with_trigger(variant: :outline) { "Settings" } %>
+  <% dialog.with_title { "Settings" } %>
+  <% dialog.with_description { "Manage your workspace preferences." } %>
+  <% dialog.with_footer do %>
+    <%= poetry_button { "Save changes" } %>
+  <% end %>
+<% end %>

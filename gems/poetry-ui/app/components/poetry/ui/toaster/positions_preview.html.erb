@@ -1,0 +1,24 @@
+<%# The four placements no other example renders, on one canvas - a
+    coverage fixture: real layouts run ONE toaster per page, and
+    default/top_center own bottom-right and top-center. This page exists so
+    every declared position renders in the golden and axe walks. %>
+<%= poetry_toaster(position: :"top-left", id: "toaster-top-left") do %>
+  <%= poetry_toast(variant: :default) do |toast| %>
+    <% toast.with_title { "Top left" } %>
+  <% end %>
+<% end %>
+<%= poetry_toaster(position: :"top-right", id: "toaster-top-right") do %>
+  <%= poetry_toast(variant: :default) do |toast| %>
+    <% toast.with_title { "Top right" } %>
+  <% end %>
+<% end %>
+<%= poetry_toaster(position: :"bottom-left", id: "toaster-bottom-left") do %>
+  <%= poetry_toast(variant: :default) do |toast| %>
+    <% toast.with_title { "Bottom left" } %>
+  <% end %>
+<% end %>
+<%= poetry_toaster(position: :"bottom-center", id: "toaster-bottom-center") do %>
+  <%= poetry_toast(variant: :default) do |toast| %>
+    <% toast.with_title { "Bottom center" } %>
+  <% end %>
+<% end %>

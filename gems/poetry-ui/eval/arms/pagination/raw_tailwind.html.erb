@@ -1,0 +1,14 @@
+<%# The raw-Tailwind arm - realistic: a plausible row of page links, but the
+    tells: no <nav aria-label> landmark and no aria-current on the active
+    page (the active state is only a background color). %>
+<div class="mx-auto flex w-full items-center justify-center gap-1">
+  <a href="?page=3" class="inline-flex h-9 items-center rounded-md px-3 text-sm">Previous</a>
+  <a href="?page=1" class="inline-flex size-9 items-center justify-center rounded-md text-sm">1</a>
+  <span class="flex size-9 items-center justify-center">…</span>
+  <a href="?page=3" class="inline-flex size-9 items-center justify-center rounded-md text-sm">3</a>
+  <a href="?page=4" class="inline-flex size-9 items-center justify-center rounded-md bg-gray-100 text-sm font-medium">4</a>
+  <a href="?page=5" class="inline-flex size-9 items-center justify-center rounded-md text-sm">5</a>
+  <span class="flex size-9 items-center justify-center">…</span>
+  <a href="?page=10" class="inline-flex size-9 items-center justify-center rounded-md text-sm">10</a>
+  <a href="?page=5" class="inline-flex h-9 items-center rounded-md px-3 text-sm">Next</a>
+</div>

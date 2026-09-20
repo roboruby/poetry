@@ -1,0 +1,69 @@
+<div class="mx-auto max-w-2xl space-y-8 p-6">
+  <header class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Frequently asked questions</h1>
+    <p class="text-sm text-muted-foreground">Answers our support team hears most. Search below, or narrow the list with the advanced filters.</p>
+  </header>
+
+  <section class="space-y-3" aria-label="Search and filter">
+    <%= poetry_label(for_id: "faq-search", class: "sr-only") { "Search questions" } %>
+    <%= poetry_input_group do %>
+      <% ig = _1 %>
+    <% end if false %>
+    <%= poetry_input_group do %>
+      <%= poetry_input_group_addon do %>
+        <%= poetry_icon(name: :search) %>
+      <% end %>
+      <%= poetry_input_group_input(id: "faq-search", name: "q", placeholder: "Search questions…") %>
+    <% end %>
+
+    <%= poetry_collapsible(open: false) do |collapsible| %>
+      <% collapsible.with_trigger do %>Show advanced options<% end %>
+      <div class="mt-4 space-y-4 rounded-lg border p-4">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="space-y-1.5">
+            <%= poetry_label(for_id: "faq-category") { "Category" } %>
+            <%= poetry_native_select(id: "faq-category", name: "category",
+                                      options: [["All categories", "all"], ["Billing", "billing"],
+                                                ["Account", "account"], ["Security", "security"]]) %>
+          </div>
+          <div class="space-y-1.5">
+            <%= poetry_label(for_id: "faq-sort") { "Sort by" } %>
+            <%= poetry_native_select(id: "faq-sort", name: "sort",
+                                      options: [["Most popular", "popular"], ["Newest first", "newest"],
+                                                ["Alphabetical", "alpha"]]) %>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <%= poetry_checkbox(id: "faq-archived", name: "include_archived", label: "Include archived articles") %>
+          <%= poetry_switch(id: "faq-compact", name: "compact_view", label: "Compact answers", size: :sm) %>
+        </div>
+        <div class="flex justify-end">
+          <%= poetry_button(variant: :outline, size: :sm) { "Apply filters" } %>
+        </div>
+      </div>
+    <% end %>
+  </section>
+
+  <%= poetry_separator %>
+
+  <section class="space-y-4" aria-labelledby="faq-heading">
+    <h2 id="faq-heading" class="text-lg font-semibold tracking-tight">Common questions</h2>
+    <%= poetry_accordion(type: :single, collapsible: true, open: %w[billing-cycle]) do |accordion| %>
+      <% accordion.with_item(value: "billing-cycle", title: "How does billing work?") do %>
+        <p>Plans are billed monthly in advance on the date you subscribed. Usage-based add-ons (extra seats, storage) are metered daily and settled on your next invoice, so your first bill after a change may include a prorated amount.</p>
+      <% end %>
+      <% accordion.with_item(value: "change-plan", title: "Can I change or cancel my plan anytime?") do %>
+        <p>Yes. Upgrades apply immediately and downgrades take effect at the start of your next billing cycle. Cancelling keeps your account active — and your data intact — through the end of the period you already paid for.</p>
+      <% end %>
+      <% accordion.with_item(value: "data-export", title: "Can I export my data?") do %>
+        <p>Every plan can export a full account archive (CSV for records, JSON for structured data) from Settings → Data export. Larger workspaces receive a download link by email once the archive finishes generating.</p>
+      <% end %>
+      <% accordion.with_item(value: "security", title: "How is my data secured?") do %>
+        <p>Data is encrypted in transit and at rest, and access is scoped per workspace. We run regular third-party penetration tests and publish our current compliance certifications on the Trust page.</p>
+      <% end %>
+      <% accordion.with_item(value: "contact-support", title: "How do I contact support?") do %>
+        <p>Use the in-app chat for the fastest response, or email support with your workspace name. Paid plans include priority routing with a same-business-day response target.</p>
+      <% end %>
+    <% end %>
+  </section>
+</div>

@@ -1,0 +1,111 @@
+<div class="mx-auto max-w-3xl space-y-8 p-6">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Nimbus Cloud Status</h1>
+      <p class="text-sm text-muted-foreground">Live status and uptime history for every Nimbus service.</p>
+    </div>
+    <%= poetry_button(variant: :outline, tag: :a, href: "#subscribe") do |button| %>
+      <% button.with_leading { poetry_icon(name: :mail) } %>
+      Subscribe to updates
+    <% end %>
+  </div>
+
+  <%= poetry_alert do |alert| %>
+    <% alert.with_icon(name: "triangle-alert") %>
+    <% alert.with_title { "Partial System Outage" } %>
+    <p>The Payments API and Webhooks delivery are experiencing elevated error rates. All other services are operating normally.</p>
+    <div class="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+      <%= poetry_badge(variant: :warning) { "Degraded Performance" } %>
+      <span>Last checked 2 minutes ago</span>
+    </div>
+  <% end %>
+
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Services" } %>
+    <% card.with_description { "Current status and 90-day uptime for each service." } %>
+    <%= poetry_item_group("aria-label": "Services") do %>
+      <%= poetry_item(role: "listitem") do |item| %>
+        <% item.with_title { "API" } %>
+        <% item.with_description do %>
+          <%= poetry_meter(label: "90-day uptime", value: 9998, max: 10000, value_label: "99.98% uptime") %>
+        <% end %>
+        <% item.with_actions { poetry_badge(variant: :success) { "Operational" } } %>
+      <% end %>
+      <%= poetry_item_separator %>
+      <%= poetry_item(role: "listitem") do |item| %>
+        <% item.with_title { "Web Dashboard" } %>
+        <% item.with_description do %>
+          <%= poetry_meter(label: "90-day uptime", value: 10000, max: 10000, value_label: "100% uptime") %>
+        <% end %>
+        <% item.with_actions { poetry_badge(variant: :success) { "Operational" } } %>
+      <% end %>
+      <%= poetry_item_separator %>
+      <%= poetry_item(role: "listitem") do |item| %>
+        <% item.with_title { "Authentication" } %>
+        <% item.with_description do %>
+          <%= poetry_meter(label: "90-day uptime", value: 9995, max: 10000, value_label: "99.95% uptime") %>
+        <% end %>
+        <% item.with_actions { poetry_badge(variant: :success) { "Operational" } } %>
+      <% end %>
+      <%= poetry_item_separator %>
+      <%= poetry_item(role: "listitem") do |item| %>
+        <% item.with_title { "Payments API" } %>
+        <% item.with_description do %>
+          <%= poetry_meter(label: "90-day uptime", value: 9872, max: 10000, value_label: "98.72% uptime") %>
+        <% end %>
+        <% item.with_actions { poetry_badge(variant: :warning) { "Degraded Performance" } } %>
+      <% end %>
+      <%= poetry_item_separator %>
+      <%= poetry_item(role: "listitem") do |item| %>
+        <% item.with_title { "Webhooks" } %>
+        <% item.with_description do %>
+          <%= poetry_meter(label: "90-day uptime", value: 9910, max: 10000, value_label: "99.10% uptime") %>
+        <% end %>
+        <% item.with_actions { poetry_badge(variant: :warning) { "Degraded Performance" } } %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Elevated error rates on Payments API" } %>
+    <% card.with_description { "We are actively working to restore full functionality for affected customers." } %>
+    <% card.with_action { poetry_badge(variant: :warning) { "Investigating" } } %>
+    <div class="space-y-6">
+      <%= poetry_metadata_list(columns: :two) do |list| %>
+        <% list.with_item(label: "Started") { "Jul 22, 2026 · 10:42 UTC" } %>
+        <% list.with_item(label: "Affected services") { "Payments API, Webhooks" } %>
+      <% end %>
+      <%= poetry_separator %>
+      <%= poetry_timeline do |timeline| %>
+        <% timeline.with_item(title: "Investigating", time: "10:42 UTC", completed: true) do %>
+          We identified elevated error rates on the Payments API and opened an investigation.
+        <% end %>
+        <% timeline.with_item(title: "Identified", time: "11:05 UTC", completed: true) do %>
+          The root cause was traced to database connection pool exhaustion. A fix is being tested.
+        <% end %>
+        <% timeline.with_item(title: "Monitoring", time: "11:38 UTC") do %>
+          A fix has been deployed and error rates are declining. We are monitoring before marking this resolved.
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Subscribe to updates" } %>
+    <% card.with_description { "Get an email whenever we open, update, or resolve an incident." } %>
+    <%= form_tag "#", method: :post, id: "subscribe" do %>
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
+        <div class="flex-1 space-y-1.5">
+          <%= poetry_label(for_id: "subscribe-email") { "Email address" } %>
+          <%= poetry_input_group do %>
+            <%= poetry_input_group_addon do %>
+              <%= poetry_icon(name: :mail) %>
+            <% end %>
+            <%= poetry_input_group_input(id: "subscribe-email", name: "subscriber[email]", type: "email", placeholder: "you@example.com") %>
+          <% end %>
+        </div>
+        <%= poetry_button(type: :submit) { "Subscribe" } %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

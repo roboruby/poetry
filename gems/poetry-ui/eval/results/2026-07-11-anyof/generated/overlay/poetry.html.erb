@@ -1,0 +1,91 @@
+<div class="mx-auto max-w-4xl space-y-6 p-6">
+  <header class="flex flex-col gap-4">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="space-y-1">
+        <h1 class="text-2xl font-semibold tracking-tight">API keys</h1>
+        <p class="text-sm text-muted-foreground">Keys that authenticate requests made on your account's behalf. Deleting a key takes effect immediately.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <%= poetry_sheet(side: :right) do |sheet| %>
+          <% sheet.with_trigger(variant: :outline) { "Filter results" } %>
+          <% sheet.with_title { "Filter results" } %>
+          <% sheet.with_description { "Narrow the list below by name, status, and creation date." } %>
+          <div class="space-y-5 px-4">
+            <div class="space-y-1.5">
+              <%= poetry_label(for_id: "filter-name") { "Key name" } %>
+              <%= poetry_input(id: "filter-name", name: "q", placeholder: "e.g. production-server") %>
+            </div>
+            <div class="space-y-1.5">
+              <%= poetry_label(for_id: "filter-status") { "Status" } %>
+              <%= poetry_native_select(id: "filter-status", name: "status",
+                                       options: [["Any status", "any"], ["Active", "active"],
+                                                 ["Expiring soon", "expiring"], ["Revoked", "revoked"]]) %>
+            </div>
+            <div class="space-y-1.5">
+              <%= poetry_label(for_id: "filter-created-after") { "Created after" } %>
+              <%= poetry_date_picker(name: "created_after", label: "Created after", placeholder: "Any date") %>
+            </div>
+            <fieldset class="space-y-2">
+              <legend class="text-sm font-medium">Scopes</legend>
+              <div class="space-y-2">
+                <%= poetry_checkbox(name: "scopes[]", value: "read", label: "Read") %>
+                <%= poetry_checkbox(name: "scopes[]", value: "write", label: "Write") %>
+                <%= poetry_checkbox(name: "scopes[]", value: "admin", label: "Admin") %>
+              </div>
+            </fieldset>
+          </div>
+          <% sheet.with_footer do %>
+            <%= poetry_button(variant: :outline) { "Reset" } %>
+            <%= poetry_button { "Apply filters" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_button do |button| %>
+          <% button.with_leading { poetry_icon(name: :plus) } %>
+          New API key
+        <% end %>
+      </div>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <div class="overflow-hidden rounded-lg border">
+    <%= poetry_table do %>
+      <%= poetry_table_caption(class: "sr-only") { "API keys with status, creation date, last use, and a delete action." } %>
+      <%= poetry_table_header do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_head { "Name" } %>
+          <%= poetry_table_head { "Key" } %>
+          <%= poetry_table_head { "Status" } %>
+          <%= poetry_table_head { "Created" } %>
+          <%= poetry_table_head { "Last used" } %>
+          <%= poetry_table_head(class: "text-right") { "" } %>
+        <% end %>
+      <% end %>
+      <%= poetry_table_body do %>
+        <% [
+             { name: "production-server", key: "sk_live_••••8a41", status: :success, status_label: "Active", created: "Jan 14, 2026", last_used: "2 hours ago" },
+             { name: "staging-worker", key: "sk_test_••••2c09", status: :success, status_label: "Active", created: "Dec 2, 2025", last_used: "5 days ago" },
+             { name: "ci-pipeline", key: "sk_live_••••f130", status: :warning, status_label: "Expiring soon", created: "Sep 30, 2025", last_used: "1 hour ago" },
+             { name: "legacy-import-script", key: "sk_live_••••90d2", status: :outline, status_label: "Revoked", created: "Mar 8, 2025", last_used: "97 days ago" },
+           ].each do |api_key| %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { api_key[:name] } %>
+            <%= poetry_table_cell(class: "font-mono text-xs text-muted-foreground") { api_key[:key] } %>
+            <%= poetry_table_cell { poetry_badge(variant: api_key[:status]) { api_key[:status_label] } } %>
+            <%= poetry_table_cell { api_key[:created] } %>
+            <%= poetry_table_cell { api_key[:last_used] } %>
+            <%= poetry_table_cell(class: "text-right") do %>
+              <%= poetry_alert_dialog(size: :sm) do |dialog| %>
+                <% dialog.with_trigger(variant: :outline, size: :sm) { "Delete" } %>
+                <% dialog.with_title { "Delete API key?" } %>
+                <% dialog.with_description { "This will permanently delete \"#{api_key[:name]}\". Any requests still using this key will start failing immediately. This action cannot be undone." } %>
+                <% dialog.with_cancel(variant: :outline) { "Cancel" } %>
+                <% dialog.with_action(variant: :destructive) { "Delete API key" } %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

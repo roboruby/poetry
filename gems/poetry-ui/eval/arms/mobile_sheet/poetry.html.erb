@@ -1,0 +1,11 @@
+<%# The poetry arm: a real Drawer - native dialog (focus trap, Esc, top
+    layer), labelled, swipe handle, wired trigger. %>
+<%= poetry_drawer(show_swipe_handle: true) do |drawer| %>
+  <% drawer.with_trigger { "Set goal" } %>
+  <% drawer.with_title { "Move goal" } %>
+  <% drawer.with_description { "Set your daily activity goal." } %>
+  <% drawer.with_footer do %>
+    <%= poetry_button { "Submit" } %>
+  <% end %>
+  <p>350 calories/day</p>
+<% end %>

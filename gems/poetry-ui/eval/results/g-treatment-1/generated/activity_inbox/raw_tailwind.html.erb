@@ -1,0 +1,207 @@
+<main class="mx-auto max-w-3xl px-6 py-10">
+  <header class="flex items-start justify-between gap-4 pb-6 border-b border-slate-200">
+    <div>
+      <h1 class="text-2xl font-semibold text-slate-900">Activity</h1>
+      <p class="mt-1 text-sm text-slate-500">Mentions, assignments, and status changes across your work.</p>
+    </div>
+    <span class="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1 text-sm font-medium text-indigo-700">
+      <span class="h-1.5 w-1.5 rounded-full bg-indigo-600"></span>
+      4 unread
+    </span>
+  </header>
+
+  <div class="mt-6 flex flex-wrap items-center gap-2" role="group" aria-label="Filter by activity type">
+    <input type="radio" name="activity-filter" id="filter-all" class="peer/all sr-only" checked>
+    <label for="filter-all" class="cursor-pointer rounded-full border border-slate-300 px-3.5 py-1.5 text-sm font-medium text-slate-600 peer-checked/all:border-indigo-600 peer-checked/all:bg-indigo-600 peer-checked/all:text-white hover:border-slate-400">
+      All
+    </label>
+
+    <input type="radio" name="activity-filter" id="filter-mentions" class="peer/mentions sr-only">
+    <label for="filter-mentions" class="cursor-pointer rounded-full border border-slate-300 px-3.5 py-1.5 text-sm font-medium text-slate-600 peer-checked/mentions:border-indigo-600 peer-checked/mentions:bg-indigo-600 peer-checked/mentions:text-white hover:border-slate-400">
+      Mentions
+    </label>
+
+    <input type="radio" name="activity-filter" id="filter-assignments" class="peer/assignments sr-only">
+    <label for="filter-assignments" class="cursor-pointer rounded-full border border-slate-300 px-3.5 py-1.5 text-sm font-medium text-slate-600 peer-checked/assignments:border-indigo-600 peer-checked/assignments:bg-indigo-600 peer-checked/assignments:text-white hover:border-slate-400">
+      Assignments
+    </label>
+
+    <input type="radio" name="activity-filter" id="filter-status" class="peer/status sr-only">
+    <label for="filter-status" class="cursor-pointer rounded-full border border-slate-300 px-3.5 py-1.5 text-sm font-medium text-slate-600 peer-checked/status:border-indigo-600 peer-checked/status:bg-indigo-600 peer-checked/status:text-white hover:border-slate-400">
+      Status changes
+    </label>
+  </div>
+
+  <div class="has-[#filter-mentions:checked]:[&_[data-type=assignment]]:hidden has-[#filter-mentions:checked]:[&_[data-type=status]]:hidden has-[#filter-assignments:checked]:[&_[data-type=mention]]:hidden has-[#filter-assignments:checked]:[&_[data-type=status]]:hidden has-[#filter-status:checked]:[&_[data-type=mention]]:hidden has-[#filter-status:checked]:[&_[data-type=assignment]]:hidden">
+    <ul class="mt-4 divide-y divide-slate-200 border-t border-slate-200">
+
+      <li data-type="mention" class="group relative flex items-start gap-3 py-4 pl-4 -mx-4 pr-2 has-[:checked]:opacity-50 hover:bg-slate-50">
+        <input type="checkbox" id="read-1" class="peer/read sr-only">
+        <span class="mt-2 h-2 w-2 shrink-0 rounded-full bg-indigo-600 peer-checked/read:hidden" aria-hidden="true"></span>
+        <span class="mt-2 h-2 w-2 shrink-0 hidden peer-checked/read:inline-block" aria-hidden="true"></span>
+
+        <img src="https://i.pravatar.cc/64?img=12" alt="" class="h-9 w-9 shrink-0 rounded-full">
+
+        <div class="min-w-0 flex-1">
+          <p class="text-sm text-slate-800">
+            <span class="font-semibold text-slate-900">Priya Natarajan</span>
+            mentioned you in
+            <a href="#" class="font-medium text-indigo-600 hover:underline">Q3 roadmap review</a>
+          </p>
+          <p class="mt-0.5 truncate text-sm text-slate-500">"...cc <span class="font-medium text-slate-700">@you</span> can you confirm the timeline for the billing migration before Thursday's sync?"</p>
+          <p class="mt-1 text-xs text-slate-400">12 minutes ago &middot; Mention</p>
+        </div>
+
+        <div class="flex shrink-0 items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 peer-checked/read:opacity-100 transition-opacity">
+          <label for="read-1" class="cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-slate-500 hover:bg-slate-200 hover:text-slate-700">
+            <span class="peer-checked/read:hidden">Mark read</span>
+          </label>
+          <a href="#" class="rounded-md px-2 py-1 text-xs font-medium text-indigo-600 hover:bg-indigo-50">Open</a>
+        </div>
+      </li>
+
+      <li data-type="assignment" class="group relative flex items-start gap-3 py-4 pl-4 -mx-4 pr-2 has-[:checked]:opacity-50 hover:bg-slate-50">
+        <input type="checkbox" id="read-2" class="peer/read sr-only">
+        <span class="mt-2 h-2 w-2 shrink-0 rounded-full bg-indigo-600 peer-checked/read:hidden" aria-hidden="true"></span>
+        <span class="mt-2 h-2 w-2 shrink-0 hidden peer-checked/read:inline-block" aria-hidden="true"></span>
+
+        <span class="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
+
+        <div class="min-w-0 flex-1">
+          <p class="text-sm text-slate-800">
+            <span class="font-semibold text-slate-900">Dana Ferreira</span>
+            assigned you
+            <a href="#" class="font-medium text-indigo-600 hover:underline">Fix checkout timeout on mobile</a>
+          </p>
+          <p class="mt-0.5 truncate text-sm text-slate-500">Priority: High &middot; Due Jul 25</p>
+          <p class="mt-1 text-xs text-slate-400">48 minutes ago &middot; Assignment</p>
+        </div>
+
+        <div class="flex shrink-0 items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 peer-checked/read:opacity-100 transition-opacity">
+          <label for="read-2" class="cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-slate-500 hover:bg-slate-200 hover:text-slate-700">
+            <span class="peer-checked/read:hidden">Mark read</span>
+          </label>
+          <a href="#" class="rounded-md px-2 py-1 text-xs font-medium text-indigo-600 hover:bg-indigo-50">Open</a>
+        </div>
+      </li>
+
+      <li data-type="status" class="group relative flex items-start gap-3 py-4 pl-4 -mx-4 pr-2 has-[:checked]:opacity-50 hover:bg-slate-50">
+        <input type="checkbox" id="read-3" class="peer/read sr-only">
+        <span class="mt-2 h-2 w-2 shrink-0 rounded-full bg-indigo-600 peer-checked/read:hidden" aria-hidden="true"></span>
+        <span class="mt-2 h-2 w-2 shrink-0 hidden peer-checked/read:inline-block" aria-hidden="true"></span>
+
+        <span class="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </span>
+
+        <div class="min-w-0 flex-1">
+          <p class="text-sm text-slate-800">
+            <a href="#" class="font-medium text-indigo-600 hover:underline">Redesign onboarding flow</a>
+            moved to
+            <span class="font-semibold text-emerald-700">Done</span>
+          </p>
+          <p class="mt-0.5 truncate text-sm text-slate-500">Closed by <span class="font-medium text-slate-700">Priya Natarajan</span></p>
+          <p class="mt-1 text-xs text-slate-400">1 hour ago &middot; Status change</p>
+        </div>
+
+        <div class="flex shrink-0 items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 peer-checked/read:opacity-100 transition-opacity">
+          <label for="read-3" class="cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-slate-500 hover:bg-slate-200 hover:text-slate-700">
+            <span class="peer-checked/read:hidden">Mark read</span>
+          </label>
+          <a href="#" class="rounded-md px-2 py-1 text-xs font-medium text-indigo-600 hover:bg-indigo-50">Open</a>
+        </div>
+      </li>
+
+      <li data-type="mention" class="group relative flex items-start gap-3 py-4 pl-4 -mx-4 pr-2 has-[:checked]:opacity-50 hover:bg-slate-50">
+        <input type="checkbox" id="read-4" class="peer/read sr-only">
+        <span class="mt-2 h-2 w-2 shrink-0 rounded-full bg-indigo-600 peer-checked/read:hidden" aria-hidden="true"></span>
+        <span class="mt-2 h-2 w-2 shrink-0 hidden peer-checked/read:inline-block" aria-hidden="true"></span>
+
+        <img src="https://i.pravatar.cc/64?img=33" alt="" class="h-9 w-9 shrink-0 rounded-full">
+
+        <div class="min-w-0 flex-1">
+          <p class="text-sm text-slate-800">
+            <span class="font-semibold text-slate-900">Tom Okafor</span>
+            mentioned you in
+            <a href="#" class="font-medium text-indigo-600 hover:underline">API rate limiting</a>
+          </p>
+          <p class="mt-0.5 truncate text-sm text-slate-500">"worth looping in <span class="font-medium text-slate-700">@you</span> since this touches the auth service you own"</p>
+          <p class="mt-1 text-xs text-slate-400">2 hours ago &middot; Mention</p>
+        </div>
+
+        <div class="flex shrink-0 items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 peer-checked/read:opacity-100 transition-opacity">
+          <label for="read-4" class="cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-slate-500 hover:bg-slate-200 hover:text-slate-700">
+            <span class="peer-checked/read:hidden">Mark read</span>
+          </label>
+          <a href="#" class="rounded-md px-2 py-1 text-xs font-medium text-indigo-600 hover:bg-indigo-50">Open</a>
+        </div>
+      </li>
+
+      <li data-type="assignment" class="group relative flex items-start gap-3 py-4 pl-4 -mx-4 pr-2 has-[:checked]:opacity-50 hover:bg-slate-50">
+        <input type="checkbox" id="read-5" checked class="peer/read sr-only">
+        <span class="mt-2 h-2 w-2 shrink-0 rounded-full bg-indigo-600 peer-checked/read:hidden" aria-hidden="true"></span>
+        <span class="mt-2 h-2 w-2 shrink-0 hidden peer-checked/read:inline-block" aria-hidden="true"></span>
+
+        <span class="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
+
+        <div class="min-w-0 flex-1">
+          <p class="text-sm text-slate-800">
+            <span class="font-semibold text-slate-900">Léa Dubois</span>
+            reassigned
+            <a href="#" class="font-medium text-indigo-600 hover:underline">Update pricing page copy</a>
+            to you
+          </p>
+          <p class="mt-0.5 truncate text-sm text-slate-500">Priority: Low &middot; Due Aug 1</p>
+          <p class="mt-1 text-xs text-slate-400">Yesterday &middot; Assignment</p>
+        </div>
+
+        <div class="flex shrink-0 items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 peer-checked/read:opacity-100 transition-opacity">
+          <label for="read-5" class="cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-slate-500 hover:bg-slate-200 hover:text-slate-700">
+            <span class="peer-checked/read:hidden">Mark read</span>
+          </label>
+          <a href="#" class="rounded-md px-2 py-1 text-xs font-medium text-indigo-600 hover:bg-indigo-50">Open</a>
+        </div>
+      </li>
+
+      <li data-type="status" class="group relative flex items-start gap-3 py-4 pl-4 -mx-4 pr-2 has-[:checked]:opacity-50 hover:bg-slate-50">
+        <input type="checkbox" id="read-6" checked class="peer/read sr-only">
+        <span class="mt-2 h-2 w-2 shrink-0 rounded-full bg-indigo-600 peer-checked/read:hidden" aria-hidden="true"></span>
+        <span class="mt-2 h-2 w-2 shrink-0 hidden peer-checked/read:inline-block" aria-hidden="true"></span>
+
+        <span class="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg>
+        </span>
+
+        <div class="min-w-0 flex-1">
+          <p class="text-sm text-slate-800">
+            <a href="#" class="font-medium text-indigo-600 hover:underline">Payment webhook retries</a>
+            moved to
+            <span class="font-semibold text-rose-700">Blocked</span>
+          </p>
+          <p class="mt-0.5 truncate text-sm text-slate-500">Flagged by <span class="font-medium text-slate-700">Tom Okafor</span> &middot; waiting on infra</p>
+          <p class="mt-1 text-xs text-slate-400">Yesterday &middot; Status change</p>
+        </div>
+
+        <div class="flex shrink-0 items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 peer-checked/read:opacity-100 transition-opacity">
+          <label for="read-6" class="cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-slate-500 hover:bg-slate-200 hover:text-slate-700">
+            <span class="peer-checked/read:hidden">Mark read</span>
+          </label>
+          <a href="#" class="rounded-md px-2 py-1 text-xs font-medium text-indigo-600 hover:bg-indigo-50">Open</a>
+        </div>
+      </li>
+
+    </ul>
+  </div>
+
+  <div class="mt-10 flex flex-col items-center gap-2 border-t border-slate-200 py-12 text-center">
+    <span class="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5.5 w-5.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+    </span>
+    <p class="text-sm font-medium text-slate-700">You're all caught up</p>
+    <p class="text-sm text-slate-400">No more activity to review right now.</p>
+  </div>
+</main>

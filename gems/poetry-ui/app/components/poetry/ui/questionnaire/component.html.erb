@@ -1,0 +1,63 @@
+<%= form_with(url: url, method: http_method, html: root_attributes) do %>
+  <% if progress? %>
+    <% custom_progress = progress.to_s %>
+    <%= content_tag(:div, **progress_attributes(custom: custom_progress.present?)) do %>
+      <%= custom_progress.presence || progress_label %>
+    <% end %>
+  <% end %>
+  <% item_models.each do |item| %>
+    <%= content_tag(:fieldset, **item_attributes(item)) do %>
+      <legend data-slot="questionnaire-title" class="<%= css(:title) %>"><%= item.title %></legend>
+      <% if item.description %>
+        <p data-slot="questionnaire-description" id="<%= item_dom_id(item, "description") %>"
+           class="<%= css(:description) %>"><%= item.description %></p>
+      <% end %>
+      <div data-slot="questionnaire-choices" class="<%= css(:choices) %>">
+        <% item.choices.each_with_index do |choice, index| %>
+          <%= content_tag(:label, **choice_attributes(item, choice, index)) do %>
+            <%= tag.input(**choice_input_attributes(item, choice)) %>
+            <span aria-hidden="true" data-slot="questionnaire-choice-indicator" class="<%= css(:choice_indicator) %>">
+              <span data-slot="questionnaire-choice-indicator-dot" class="<%= css(:choice_indicator_dot) %>"></span>
+              <%= render Poetry::Ui::Icon::Component.new(name: :check, class: css(:choice_indicator_check),
+                                                          data: { slot: "questionnaire-choice-indicator-check" }) %>
+            </span>
+            <span data-slot="questionnaire-choice-label" class="<%= css(:choice_label) %>">
+              <span><%= choice.label %></span>
+              <% if choice.description %>
+                <span data-slot="questionnaire-choice-description" class="<%= css(:choice_description) %>"><%= choice.description %></span>
+              <% end %>
+            </span>
+            <% if (key = shortcut_for(item, index)) %>
+              <span aria-hidden="true" data-slot="questionnaire-choice-shortcut" class="<%= css(:choice_shortcut) %>"><%= key %></span>
+            <% end %>
+          <% end %>
+        <% end %>
+        <% if item.input %>
+          <div data-slot="questionnaire-input-wrapper" class="<%= css(:input_wrapper) %>">
+            <%= tag.input(**input_attributes(item)) %>
+          </div>
+        <% end %>
+      </div>
+      <p data-slot="questionnaire-error" id="<%= item_dom_id(item, "error") %>"
+         class="<%= css(:error) %>" hidden><%= item.error_message %></p>
+    <% end %>
+  <% end %>
+  <div data-slot="questionnaire-actions" class="<%= css(:actions) %>">
+    <%= render(Poetry::Ui::Button::Component.new(
+          variant: :outline, type: :button,
+          **nav_button_options(:previous, hidden: enabled_items.size <= 1 || first?)
+        )) { previous_label } %>
+    <%= render(Poetry::Ui::Button::Component.new(
+          variant: :outline, type: :button,
+          **nav_button_options(:skip, hidden: active_item.required)
+        )) { skip_label } %>
+    <%= render(Poetry::Ui::Button::Component.new(
+          type: :button,
+          **nav_button_options(:next, hidden: enabled_items.size <= 1 || last?)
+        )) { next_label } %>
+    <%= render(Poetry::Ui::Button::Component.new(
+          type: :submit,
+          **nav_button_options(:submit, hidden: !last?)
+        )) { submit_label } %>
+  </div>
+<% end %>

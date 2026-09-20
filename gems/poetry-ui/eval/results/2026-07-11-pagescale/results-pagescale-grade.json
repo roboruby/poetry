@@ -1,0 +1,97 @@
+{
+  "assembled_from": [
+    "results.json",
+    "generated-scorecard.json",
+    "generation-manifest.json",
+    "mechanism-audit.json"
+  ],
+  "gate": "page-scale companion (NEVER the standing headline - pre-registered, permanent)",
+  "tally": {
+    "raw_tailwind": 8,
+    "poetry": 4
+  },
+  "axes": {
+    "hierarchy": {
+      "poetry": 3,
+      "raw_tailwind": 9
+    },
+    "composition": {
+      "poetry": 3,
+      "raw_tailwind": 7
+    },
+    "clarity": {
+      "poetry": 4,
+      "raw_tailwind": 8
+    },
+    "brief_fit": {
+      "poetry": 5,
+      "raw_tailwind": 7
+    }
+  },
+  "router_facts": {
+    "routed_to_blocks": {
+      "analytics_overview": "app-shell",
+      "team_members": "app-shell",
+      "onboarding_checklist": "app-shell"
+    },
+    "note": "3/12 routed (all app-shell); the keyword calibration was fit to the standing briefs and mostly misses this distribution - the gate measured pages largely WITHOUT block assistance"
+  },
+  "win_map": {
+    "activity_inbox": "raw_tailwind",
+    "analytics_overview": "raw_tailwind",
+    "audit_log": "raw_tailwind",
+    "billing_settings": "raw_tailwind",
+    "integrations": "raw_tailwind",
+    "login": "poetry",
+    "onboarding_checklist": "poetry",
+    "pricing": "raw_tailwind",
+    "project_detail": "poetry",
+    "search_results": "raw_tailwind",
+    "status_page": "poetry",
+    "team_members": "raw_tailwind"
+  },
+  "crash_adjudication": {
+    "integrations": {
+      "error": "unknown icon :github (not in this set)",
+      "class": "sequencing - ran check (which flags it: unknown-icon x2) but edited after; check-LAST violated"
+    }
+  },
+  "mechanism_audit": {
+    "arms": 12,
+    "blocks_surface": 12,
+    "compose_called": 12,
+    "poetry_skill": 12,
+    "design_skill": 12,
+    "ran_check": 10,
+    "check_last": 8
+  },
+  "generation_usage": {
+    "units_recorded": 24,
+    "unit_cost_sum_usd": 16.2832,
+    "receipted_cost_usd": 16.2834
+  },
+  "predictions": {
+    "e1": {
+      "statement": "24/24 delivery, zero poetry render crashes",
+      "observed": "delivery 24/24; crashes: integrations",
+      "pass": false
+    },
+    "e2": {
+      "statement": "THE claim: poetry overall >= 7/12 (priors: routed subsets 6/9, 7/9)",
+      "observed": "4/12 ({\"raw_tailwind\" => 8, \"poetry\" => 4})",
+      "pass": false
+    },
+    "e3": {
+      "statement": "composition-axis poetry >= 6/12 (off-frame it runs ~8/31)",
+      "observed": "3/12",
+      "pass": false
+    },
+    "e4": {
+      "statement": "compose >= 10/12; zero contract findings on rendering arms",
+      "observed": "compose 12/12, design skill 12/12, check 10/12, check-last 8/12; contract findings only on the crashed arm (unknown-icon, which check flags)",
+      "pass": true
+    }
+  },
+  "grade": "1/4 pre-registered predictions pass",
+  "decision_rule_executed": "e2 FAIL -> the page-scale claim DIES in its strong form; the Writeup reports component parity (15-15-1) and page-scale unproven-and-now-contradicted; no rescue gates get built. Next head: the Writeup (pre-registered)."
+}

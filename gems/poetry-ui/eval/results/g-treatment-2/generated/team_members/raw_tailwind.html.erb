@@ -1,0 +1,302 @@
+<section class="mx-auto max-w-5xl space-y-10 px-6 py-10">
+
+  <!-- Header -->
+  <header class="flex items-start justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight text-gray-900">Team members</h1>
+      <p class="mt-1 text-sm text-gray-500">Manage who has access to this workspace and what they can do.</p>
+    </div>
+
+    <button
+      type="button"
+      popovertarget="invite-dialog"
+      class="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-indigo-600"
+    >
+      <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path d="M10 3a1 1 0 0 1 1 1v5h5a1 1 0 1 1 0 2h-5v5a1 1 0 1 1-2 0v-5H4a1 1 0 1 1 0-2h5V4a1 1 0 0 1 1-1Z" />
+      </svg>
+      Invite teammate
+    </button>
+  </header>
+
+  <!-- Invite dialog (native Popover API, no JS) -->
+  <div
+    popover
+    id="invite-dialog"
+    class="m-auto w-full max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-2xl backdrop:bg-gray-900/40"
+  >
+    <form method="post" action="#" class="space-y-5">
+      <div>
+        <h2 class="text-lg font-semibold text-gray-900">Invite a teammate</h2>
+        <p class="mt-1 text-sm text-gray-500">They'll receive an email invitation to join this workspace.</p>
+      </div>
+
+      <div>
+        <label for="invite-email" class="block text-sm font-medium text-gray-700">Email address</label>
+        <input
+          type="email"
+          id="invite-email"
+          name="email"
+          required
+          placeholder="teammate@company.com"
+          class="mt-1.5 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:outline focus:outline-2 focus:outline-indigo-100"
+        >
+      </div>
+
+      <fieldset>
+        <legend class="block text-sm font-medium text-gray-700">Role</legend>
+        <select
+          id="invite-role"
+          name="role"
+          class="mt-1.5 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline focus:outline-2 focus:outline-indigo-100"
+        >
+          <option value="admin">Admin — full access, including billing</option>
+          <option value="member" selected>Member — can create and edit</option>
+          <option value="viewer">Viewer — read-only access</option>
+        </select>
+      </fieldset>
+
+      <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-4">
+        <button
+          type="button"
+          popovertarget="invite-dialog"
+          popovertargetaction="hide"
+          class="rounded-md px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
+        >
+          Send invite
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Member list -->
+  <div class="space-y-4">
+    <div class="flex items-center justify-between gap-4">
+      <h2 class="text-sm font-semibold text-gray-900">Members <span class="font-normal text-gray-400">(6)</span></h2>
+
+      <div class="flex items-center gap-2">
+        <div class="relative">
+          <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd" />
+          </svg>
+          <label for="member-search" class="sr-only">Search members</label>
+          <input
+            type="search"
+            id="member-search"
+            name="q"
+            placeholder="Search by name or email"
+            class="w-64 rounded-md border border-gray-300 py-2 pl-9 pr-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:outline focus:outline-2 focus:outline-indigo-100"
+          >
+        </div>
+
+        <label for="role-filter" class="sr-only">Filter by role</label>
+        <select
+          id="role-filter"
+          name="role"
+          class="rounded-md border border-gray-300 bg-white py-2 pl-3 pr-8 text-sm text-gray-700 focus:border-indigo-500 focus:outline focus:outline-2 focus:outline-indigo-100"
+        >
+          <option value="">All roles</option>
+          <option value="admin">Admin</option>
+          <option value="member">Member</option>
+          <option value="viewer">Viewer</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white">
+      <table class="min-w-full divide-y divide-gray-200">
+        <caption class="sr-only">Workspace members</caption>
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Name</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Role</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Last active</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-3">
+                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700">MS</div>
+                <div>
+                  <div class="text-sm font-medium text-gray-900">Matt Solt</div>
+                  <div class="text-sm text-gray-500">matt@northbeam.co</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700">Admin</span>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-500">Active now</td>
+          </tr>
+
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-3">
+                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-100 text-sm font-semibold text-rose-700">PC</div>
+                <div>
+                  <div class="text-sm font-medium text-gray-900">Priya Chandran</div>
+                  <div class="text-sm text-gray-500">priya@northbeam.co</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700">Admin</span>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-500">Active 2 hours ago</td>
+          </tr>
+
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-3">
+                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-sm font-semibold text-amber-700">DK</div>
+                <div>
+                  <div class="text-sm font-medium text-gray-900">Diego Kessler</div>
+                  <div class="text-sm text-gray-500">diego@northbeam.co</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">Member</span>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-500">Active yesterday</td>
+          </tr>
+
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-3">
+                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-semibold text-emerald-700">LW</div>
+                <div>
+                  <div class="text-sm font-medium text-gray-900">Lena Wu</div>
+                  <div class="text-sm text-gray-500">lena@northbeam.co</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">Member</span>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-500">Active 3 days ago</td>
+          </tr>
+
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-3">
+                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sm font-semibold text-sky-700">OA</div>
+                <div>
+                  <div class="text-sm font-medium text-gray-900">Omar Ahmadi</div>
+                  <div class="text-sm text-gray-500">omar@northbeam.co</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">Member</span>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-500">Active 1 week ago</td>
+          </tr>
+
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-3">
+                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-violet-100 text-sm font-semibold text-violet-700">GR</div>
+                <div>
+                  <div class="text-sm font-medium text-gray-900">Grace Reyes</div>
+                  <div class="text-sm text-gray-500">grace@northbeam.co</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center rounded-full bg-sky-50 px-2.5 py-0.5 text-xs font-medium text-sky-700">Viewer</span>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-500">Active 3 weeks ago</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pending invitations -->
+  <div class="space-y-4">
+    <h2 class="text-sm font-semibold text-gray-900">Pending invitations <span class="font-normal text-gray-400">(3)</span></h2>
+
+    <ul class="divide-y divide-gray-200 overflow-hidden rounded-xl border border-gray-200 bg-white">
+      <li class="flex items-center justify-between gap-4 px-4 py-3">
+        <div class="flex items-center gap-3">
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M3 4a2 2 0 0 0-2 2v.01L10 12l9-5.99V6a2 2 0 0 0-2-2H3Z" />
+              <path d="M18 8.24 10 13.5 2 8.24V14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.24Z" />
+            </svg>
+          </div>
+          <div>
+            <div class="text-sm font-medium text-gray-900">hana@northbeam.co</div>
+            <div class="text-sm text-gray-500">Invited as Member &middot; sent 2 days ago</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="hidden items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700 sm:inline-flex">Pending</span>
+          <form method="post" action="#">
+            <button type="submit" class="rounded-md px-3 py-1.5 text-sm font-medium text-indigo-600 hover:bg-indigo-50">Resend</button>
+          </form>
+          <form method="post" action="#">
+            <button type="submit" class="rounded-md px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50">Revoke</button>
+          </form>
+        </div>
+      </li>
+
+      <li class="flex items-center justify-between gap-4 px-4 py-3">
+        <div class="flex items-center gap-3">
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M3 4a2 2 0 0 0-2 2v.01L10 12l9-5.99V6a2 2 0 0 0-2-2H3Z" />
+              <path d="M18 8.24 10 13.5 2 8.24V14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.24Z" />
+            </svg>
+          </div>
+          <div>
+            <div class="text-sm font-medium text-gray-900">ravi@northbeam.co</div>
+            <div class="text-sm text-gray-500">Invited as Admin &middot; sent 5 days ago</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="hidden items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700 sm:inline-flex">Pending</span>
+          <form method="post" action="#">
+            <button type="submit" class="rounded-md px-3 py-1.5 text-sm font-medium text-indigo-600 hover:bg-indigo-50">Resend</button>
+          </form>
+          <form method="post" action="#">
+            <button type="submit" class="rounded-md px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50">Revoke</button>
+          </form>
+        </div>
+      </li>
+
+      <li class="flex items-center justify-between gap-4 px-4 py-3">
+        <div class="flex items-center gap-3">
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M3 4a2 2 0 0 0-2 2v.01L10 12l9-5.99V6a2 2 0 0 0-2-2H3Z" />
+              <path d="M18 8.24 10 13.5 2 8.24V14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.24Z" />
+            </svg>
+          </div>
+          <div>
+            <div class="text-sm font-medium text-gray-900">felix@northbeam.co</div>
+            <div class="text-sm text-gray-500">Invited as Viewer &middot; sent 1 week ago</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="hidden items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700 sm:inline-flex">Pending</span>
+          <form method="post" action="#">
+            <button type="submit" class="rounded-md px-3 py-1.5 text-sm font-medium text-indigo-600 hover:bg-indigo-50">Resend</button>
+          </form>
+          <form method="post" action="#">
+            <button type="submit" class="rounded-md px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50">Revoke</button>
+          </form>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+</section>

@@ -1,0 +1,139 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Ui
+    module Sidebar
+      # Style dictionary for the Sidebar family. The collapse / rail /
+      # inset geometry chains (width vars, offcanvas math, icon-mode
+      # size! pads, peer-size action tops) stay ENTIRELY inline - the
+      # machinery a swapped theme must never break; surfaces, tints, and
+      # type ride the theme. The mobile <dialog> keeps m-0 and the side
+      # margins BOTH inline so the class merger keeps collapsing them.
+      class Style < Poetry::Core::Style
+        base ""
+
+        # The provider wrapper carries the width custom properties.
+        # group/sidebar-wrapper has an in-repo consumer: the app-shell
+        # block's topbar answers the collapsed state
+        # (group-has-data-[collapsible=icon]/sidebar-wrapper)
+        # - the upstream site-header pattern. Two upstream markers stay
+        # dropped: group/menu-button's upstream consumer is a collapsible
+        # menu-button composition poetry does not ship yet, and
+        # group/menu-sub-item has no consumer anywhere in the current
+        # upstream tree.
+        element :wrapper, "group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar"
+
+        # The peer group (the desktop shell; below md the mobile <dialog>
+        # takes over).
+        element :peer, "group peer hidden text-sidebar-foreground md:block"
+
+        # The mobile sheet: open:flex not flex (the Dialog lesson).
+        element :mobile, "cn-sidebar-mobile relative m-0 open:flex h-full max-h-none " \
+                         "w-(--sidebar-width) max-w-none flex-col md:hidden"
+        element :mobile_left, "cn-sidebar-mobile-left mr-auto"
+        element :mobile_right, "cn-sidebar-mobile-right ml-auto"
+        element :mobile_inner, "flex h-full w-full flex-col"
+
+        # The mobile side's edge classes for the <dialog>.
+        def self.mobile_side(value)
+          resolver.render(:"mobile_#{value}")
+        end
+
+        # The desktop gap that pushes the inset over.
+        element :gap, "cn-sidebar-gap relative w-(--sidebar-width) bg-transparent " \
+                      "group-data-[collapsible=offcanvas]:w-0 group-data-[side=right]:rotate-180 " \
+                      "group-data-[collapsible=icon]:w-(--sidebar-width-icon)"
+        element :gap_inset, "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]"
+
+        element :container,
+                "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] " \
+                "duration-200 ease-linear data-[side=left]:left-0 " \
+                "data-[side=left]:group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)] " \
+                "data-[side=right]:right-0 " \
+                "data-[side=right]:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)] " \
+                "md:flex group-data-[collapsible=icon]:w-(--sidebar-width-icon) " \
+                "group-data-[side=left]:border-r group-data-[side=right]:border-l"
+        element :container_inset,
+                "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
+
+        element :inner, "cn-sidebar-inner flex size-full flex-col"
+
+        element :inset, "cn-sidebar-inset relative flex w-full flex-1 flex-col"
+
+        # The rail (desktop-only click strip).
+        element :rail,
+                "cn-sidebar-rail absolute inset-y-0 z-20 hidden w-4 transition-all ease-linear " \
+                "group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 " \
+                "after:start-1/2 after:w-[2px] sm:flex " \
+                "group-data-[collapsible=offcanvas]:translate-x-0 " \
+                "group-data-[collapsible=offcanvas]:after:left-full hover:group-data-[collapsible=offcanvas]:bg-sidebar"
+
+        element :header, "cn-sidebar-header flex flex-col"
+        element :footer, "cn-sidebar-footer flex flex-col"
+        element :separator, "cn-sidebar-separator w-auto"
+        element :content, "cn-sidebar-content no-scrollbar flex min-h-0 flex-1 flex-col overflow-auto " \
+                          "group-data-[collapsible=icon]:overflow-hidden"
+
+        element :group, "cn-sidebar-group relative flex w-full min-w-0 flex-col"
+        element :group_label, "cn-sidebar-group-label flex shrink-0 items-center outline-hidden " \
+                              "transition-[margin,opacity] duration-200 ease-linear " \
+                              "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0 " \
+                              "[&>svg]:shrink-0"
+        element :group_content, "cn-sidebar-group-content w-full"
+
+        element :menu, "cn-sidebar-menu flex w-full min-w-0 flex-col"
+        element :menu_item, "group/menu-item relative"
+        element :menu_button,
+                "cn-sidebar-menu-button peer/menu-button flex w-full items-center overflow-hidden " \
+                "text-left outline-hidden transition-[width,height,padding] " \
+                "group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! " \
+                "disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none " \
+                "aria-disabled:opacity-50 [&_svg]:shrink-0 [&>span:last-child]:truncate " \
+                "[&_svg]:size-4 group/menu-button"
+        element :menu_button_default, "cn-sidebar-menu-button-size-default"
+
+        # The item-corner action + badge - positions and
+        # reveal machinery inline, tints/type themed.
+        element :menu_action,
+                "cn-sidebar-menu-action absolute top-1.5 right-1 flex aspect-square items-center " \
+                "justify-center outline-hidden transition-transform " \
+                "group-data-[collapsible=icon]:hidden " \
+                "peer-data-[size=default]/menu-button:top-1.5 peer-data-[size=lg]/menu-button:top-2.5 " \
+                "peer-data-[size=sm]/menu-button:top-1 after:absolute after:-inset-2 " \
+                "md:after:hidden [&>svg]:shrink-0"
+        element :menu_action_hover,
+                "group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 " \
+                "peer-data-active/menu-button:text-sidebar-accent-foreground aria-expanded:opacity-100 " \
+                "md:opacity-0"
+        # Dictionary-held surfaces so the safelist harvests the classes
+        # (helper strings are invisible to it).
+        element :group_action_button, "cn-sidebar-group-action"
+        element :input_control, "cn-sidebar-input"
+        element :menu_skeleton, "cn-sidebar-menu-skeleton flex items-center"
+        element :menu_skeleton_icon, "cn-sidebar-menu-skeleton-icon"
+        element :menu_skeleton_text, "cn-sidebar-menu-skeleton-text max-w-(--skeleton-width) flex-1"
+
+        element :menu_badge,
+                "cn-sidebar-menu-badge pointer-events-none absolute right-1 flex items-center " \
+                "justify-center select-none group-data-[collapsible=icon]:hidden " \
+                "peer-data-[size=default]/menu-button:top-1.5 peer-data-[size=lg]/menu-button:top-2.5 " \
+                "peer-data-[size=sm]/menu-button:top-1 tabular-nums"
+        element :menu_button_sm, "cn-sidebar-menu-button-size-sm"
+        element :menu_button_lg, "cn-sidebar-menu-button-size-lg group-data-[collapsible=icon]:p-0!"
+
+        element :menu_sub, "cn-sidebar-menu-sub mx-3.5 flex min-w-0 translate-x-px flex-col " \
+                           "group-data-[collapsible=icon]:hidden"
+        element :menu_sub_item, "relative"
+        element :menu_sub_button, "cn-sidebar-menu-sub-button flex min-w-0 -translate-x-px items-center " \
+                                  "overflow-hidden outline-hidden disabled:pointer-events-none " \
+                                  "disabled:opacity-50 aria-disabled:pointer-events-none " \
+                                  "aria-disabled:opacity-50 [&>svg]:shrink-0 [&>span:last-child]:truncate"
+
+        # The size-variant classes for a menu button.
+        def self.menu_button_size(value)
+          css(:"menu_button_#{value}")
+        end
+      end
+    end
+  end
+end

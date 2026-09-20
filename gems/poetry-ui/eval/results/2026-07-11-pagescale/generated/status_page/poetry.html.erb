@@ -1,0 +1,124 @@
+<%
+  services = [
+    { name: "API", state: "Degraded Performance", badge: :warning, icon: :"triangle-alert", icon_class: "text-warning",
+      uptime: "99.86%", days: (Array.new(86, :ok) + Array.new(4, :warn)) },
+    { name: "Web Dashboard", state: "Degraded Performance", badge: :warning, icon: :"triangle-alert", icon_class: "text-warning",
+      uptime: "99.91%", days: (Array.new(87, :ok) + Array.new(3, :warn)) },
+    { name: "Authentication", state: "Operational", badge: :success, icon: :"circle-check", icon_class: "text-success",
+      uptime: "100.00%", days: Array.new(90, :ok) },
+    { name: "Database Cluster", state: "Operational", badge: :success, icon: :"circle-check", icon_class: "text-success",
+      uptime: "99.99%", days: (Array.new(45, :ok) + Array.new(1, :warn) + Array.new(44, :ok)) },
+    { name: "Webhooks & Events", state: "Operational", badge: :success, icon: :"circle-check", icon_class: "text-success",
+      uptime: "99.97%", days: (Array.new(30, :ok) + Array.new(1, :warn) + Array.new(40, :ok) + Array.new(1, :warn) + Array.new(18, :ok)) },
+    { name: "Billing", state: "Operational", badge: :success, icon: :"circle-check", icon_class: "text-success",
+      uptime: "100.00%", days: Array.new(90, :ok) },
+  ]
+
+  incident_updates = [
+    { time: "Jul 11, 2026 · 14:32 UTC", status: "Monitoring", badge: :info, icon: :eye,
+      body: "A fix has been deployed and error rates have returned to normal levels. We're continuing to monitor before marking this resolved." },
+    { time: "Jul 11, 2026 · 13:50 UTC", status: "Identified", badge: :warning, icon: :"triangle-alert",
+      body: "The cause has been identified as a misconfigured rate-limit rule deployed at 13:10 UTC. We are rolling back the change." },
+    { time: "Jul 11, 2026 · 13:15 UTC", status: "Investigating", badge: :warning, icon: :search,
+      body: "We are investigating reports of elevated 5xx errors on the API and intermittent load failures on the Web Dashboard." },
+  ]
+
+  day_color = ->(state) { state == :warn ? "bg-warning" : (state == :down ? "bg-destructive" : "bg-success") }
+%>
+<div class="mx-auto max-w-4xl space-y-8 p-6 lg:py-10">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <h1 class="flex items-center gap-2 text-lg font-semibold tracking-tight">
+      <%= poetry_icon(name: :activity, class: "size-5", label: "Lighthouse Cloud") %>
+      Lighthouse Cloud <span class="font-normal text-muted-foreground">Status</span>
+    </h1>
+    <%= poetry_button(tag: :a, href: "#subscribe", variant: :outline, size: :sm) { "Subscribe to updates" } %>
+  </div>
+
+  <%= poetry_card(title_tag: :h2, class: "border-l-4 border-l-warning") do |card| %>
+    <% card.with_title do %>
+      <div class="flex items-center gap-2">
+        <%= poetry_icon(name: :"triangle-alert", class: "size-5 text-warning") %>
+        <span>Degraded Performance</span>
+      </div>
+    <% end %>
+    <% card.with_description do %>
+      We're seeing elevated error rates on the API affecting some Dashboard functionality. All other systems are operating normally.
+    <% end %>
+    <% card.with_action do %>
+      <%= poetry_button(tag: :a, href: "#subscribe", variant: :outline) { "Subscribe to updates" } %>
+    <% end %>
+    <p class="text-xs text-muted-foreground">Last updated less than a minute ago · Jul 11, 2026, 14:35 UTC</p>
+  <% end %>
+
+  <section class="space-y-3">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <h2 class="text-lg font-semibold tracking-tight">Active Incident</h2>
+      <%= poetry_badge(variant: :info) { "Monitoring" } %>
+    </div>
+    <%= poetry_card(title_tag: :h3) do |card| %>
+      <% card.with_title { "Elevated API error rates" } %>
+      <% card.with_description { "Affected: API, Web Dashboard · Started Jul 11, 2026 at 13:15 UTC" } %>
+      <%= poetry_item_group(class: "space-y-0") do %>
+        <% incident_updates.each_with_index do |update, index| %>
+          <%= poetry_item(size: :sm, variant: :default, media_variant: :icon) do |item| %>
+            <% item.with_media { poetry_icon(name: update[:icon], class: "size-4 #{update[:badge] == :info ? 'text-info' : 'text-warning'}") } %>
+            <% item.with_title do %>
+              <div class="flex items-center gap-2">
+                <span><%= update[:status] %></span>
+                <%= poetry_badge(variant: update[:badge]) { update[:status] } %>
+              </div>
+            <% end %>
+            <% item.with_description { update[:time] } %>
+            <p class="text-sm"><%= update[:body] %></p>
+          <% end %>
+          <% unless index == incident_updates.length - 1 %>
+            <%= poetry_item_separator %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </section>
+
+  <section class="space-y-3">
+    <h2 class="text-lg font-semibold tracking-tight">Service Status</h2>
+    <%= poetry_card do %>
+      <%= poetry_item_group(class: "space-y-0") do %>
+        <% services.each_with_index do |service, index| %>
+          <%= poetry_item(size: :default, variant: :default, media_variant: :icon) do |item| %>
+            <% item.with_media { poetry_icon(name: service[:icon], class: "size-5 #{service[:icon_class]}") } %>
+            <% item.with_title { service[:name] } %>
+            <% item.with_description { "#{service[:uptime]} uptime over the last 90 days" } %>
+            <% item.with_actions { poetry_badge(variant: service[:badge]) { service[:state] } } %>
+            <div class="mt-2 space-y-1">
+              <div class="flex items-end gap-px" aria-hidden="true">
+                <% service[:days].each do |day| %>
+                  <span class="h-6 w-1 rounded-sm <%= day_color.call(day) %>"></span>
+                <% end %>
+              </div>
+              <div class="flex items-center justify-between text-xs text-muted-foreground">
+                <span>90 days ago</span>
+                <span>Today</span>
+              </div>
+            </div>
+          <% end %>
+          <% unless index == services.length - 1 %>
+            <%= poetry_item_separator %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </section>
+
+  <div id="subscribe">
+    <%= poetry_card(title_tag: :h2) do |card| %>
+      <% card.with_title { "Get status updates" } %>
+      <% card.with_description { "Receive an email whenever we open, update, or resolve an incident." } %>
+      <%= form_with url: "#", method: :post, class: "flex flex-wrap items-end gap-3" do %>
+        <%= poetry_field(id: "subscribe-email", label_text: "Email address", required: true) do |field| %>
+          <%= poetry_input(**field.control_attributes, type: "email", name: "subscriber[email]", placeholder: "you@example.com") %>
+        <% end %>
+        <%= poetry_button(type: :submit) { "Subscribe" } %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

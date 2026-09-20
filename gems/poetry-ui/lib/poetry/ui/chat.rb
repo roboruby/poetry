@@ -1,0 +1,337 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Ui
+    # The chat replay DSL: script a user/assistant conversation in
+    # Ruby, get a DETERMINISTIC timeline of
+    # streaming frames to replay through the real Turbo Stream pipeline -
+    # no model, no network, fixed ids, fixed pacing. The DSL is pure data
+    # (transcript + timing); rendering frames into Message rows is the
+    # consumer's job (the docs replay demo is the reference consumer).
+    #
+    # A tool with `approval: true` PAUSES its segment after the input frame;
+    # the frames that follow (its output - or denial - and later parts)
+    # belong to the continuation and are produced by
+    # `continuation_frames(approved:)` - the human-in-the-loop
+    # model, server-shaped: the pause is a rendered form, the continuation
+    # is the stream after the decision.
+    #
+    # @example Scripting a turn with a tool call
+    #   script = Poetry::Ui::Chat.script do
+    #     user "What's the weather in Tokyo?"
+    #     assistant do |w|
+    #       w.reasoning "Check the weather tool first."
+    #       w.tool("getWeather", input: { city: "Tokyo" }, sleep_ms: 800,
+    #              output: { temp: 21, condition: "clear" })
+    #       w.text "Clear skies and 21°C in Tokyo."
+    #     end
+    #   end
+    #   script.segments  # => enumerable segments; assistant segments carry
+    #                    #    frames (accumulated part states + sleeps + versions)
+    module Chat
+      # Builds a Script from the block - instance_eval'd, so bare `user`
+      # and `assistant` calls declare the segments in transcript order.
+      #
+      # @return [Script] the compiled, deterministic script
+      def self.script(&)
+        Script.new(&)
+      end
+
+      # Raised when a script is asked for what its shape cannot give -
+      # continuation frames from a turn that has no approval pause.
+      # Inherits the family base, so `rescue Poetry::Core::Error` covers it.
+      class Error < Poetry::Core::Error; end
+
+      # One rendered state of an assistant row mid-stream.
+      Frame = Struct.new(:parts, :sleep_ms, :version, keyword_init: true)
+
+      # A step of the conversation: :user (text) or :assistant (frames,
+      # possibly pausing for approval).
+      class Segment
+        # kind (:user or :assistant), the deterministic DOM id, the user
+        # text, and the AssistantTurn (assistant segments only).
+        attr_reader :kind, :id, :text, :turn
+
+        # A segment of the scripted conversation.
+        #
+        # @param kind [Symbol] :user or :assistant
+        # @param id [String] the deterministic DOM id
+        # @param text [String, nil] the user text (user segments)
+        # @param turn [AssistantTurn, nil] the turn (assistant segments)
+        def initialize(kind:, id:, text: nil, turn: nil)
+          @kind = kind
+          @id = id
+          @text = text
+          @turn = turn
+        end
+
+        # Whether this segment stops at an approval pause.
+        #
+        # @return [Boolean]
+        def pause? = kind == :assistant && turn.pause?
+
+        # The frame timeline up to (and including) an approval pause, or
+        # the whole turn when nothing pauses.
+        #
+        # @return [Array<Frame>]
+        def frames = turn.frames
+
+        # The frames after the approval pause, resolved by the decision.
+        #
+        # @param approved [Boolean] the human decision at the pause
+        # @return [Array<Frame>]
+        def continuation_frames(approved:) = turn.continuation_frames(approved: approved)
+
+        # The final resting parts (approval segments resolve per decision).
+        #
+        # @param approved [Boolean] how an approval segment resolved: true approves, false denies
+        # @return [Array<Hash>] the part list as last rendered
+        def final_parts(approved: true)
+          return [{ kind: :text, text: text }] if kind == :user
+          return frames.last.parts unless pause?
+
+          continuation_frames(approved: approved).last.parts
+        end
+      end
+
+      # The DSL root: collects user/assistant segments in scripted order
+      # and assigns each a deterministic id.
+      class Script
+        # Per-chunk streaming delay (ms) when a text part names none.
+        DEFAULT_TEXT_DELAY_MS = 30
+        # Words per streamed text chunk in the compiled frames.
+        TEXT_CHUNK_WORDS = 3
+
+        # A script built by evaluating the block.
+        def initialize(&)
+          @segments = []
+          @counter = 0
+          instance_eval(&)
+        end
+
+        # Declares a user message at this point in the transcript.
+        #
+        # @param text [String] the user's message
+        def user(text)
+          @segments << Segment.new(kind: :user, id: next_id, text: text)
+        end
+
+        # Declares an assistant turn: pass plain text, or take the block
+        # form and compose text / reasoning / tool parts in order.
+        #
+        # @param text [String, nil] shortcut for a single text part
+        # @yieldparam writer [Writer] appends parts to the turn
+        def assistant(text = nil, &block)
+          turn = AssistantTurn.new
+          if block
+            yield(turn.writer)
+          elsif text
+            turn.writer.text(text)
+          end
+          @segments << Segment.new(kind: :assistant, id: next_id, turn: turn)
+        end
+
+        # The declared segments, in order.
+        # @return [Array<Segment>] the declared segments, in scripted order
+        attr_reader :segments
+
+        private
+
+        # The next message id.
+        def next_id
+          @counter += 1
+          "chat-msg-#{@counter}"
+        end
+      end
+
+      # Collects writer calls into an ordered part list, then compiles the
+      # deterministic frame timeline.
+      class AssistantTurn
+        # An empty turn.
+        def initialize
+          @parts = []
+        end
+
+        # The Writer collecting this turn's parts (memoized - `assistant`
+        # yields it).
+        #
+        # @return [Writer]
+        def writer = @writer ||= Writer.new(@parts)
+
+        # Whether any tool part requests approval (pausing the segment).
+        #
+        # @return [Boolean]
+        def pause? = @parts.any? { |part| part[:kind] == :tool && part[:approval] }
+
+        # Frames up to (and including) the pause, or the whole turn.
+        #
+        # @return [Array<Frame>]
+        def frames
+          compile(@parts.take_while.with_index { |_part, i| i.zero? || !pause_before?(i) })
+        end
+
+        # Frames AFTER the pause point, resolved by the decision. Versions
+        # continue from the paused prefix so the morph guard stays monotonic.
+        # Parts scripted AFTER an approval tool are the APPROVED path
+        # (denial streams tool-output-denied and stops;
+        # the approved branch carries the follow-through). So a denied
+        # continuation is exactly the resolution frame.
+        #
+        # @param approved [Boolean] the human decision at the pause
+        # @return [Array<Frame>]
+        def continuation_frames(approved:)
+          raise Error, "turn has no approval pause" unless pause?
+
+          resolved = @parts.map do |part|
+            next part unless part[:kind] == :tool && part[:approval]
+
+            part.merge(state: approved ? :done : :denied,
+                       output: approved ? part[:output] : nil)
+          end
+          keep = approved ? resolved : resolved.take(pause_index + 1)
+          compile(keep).drop(frames.length)
+        end
+
+        private
+
+        # The index of the first tool part awaiting approval, or nil.
+        def pause_index
+          @parts.index { |part| part[:kind] == :tool && part[:approval] }
+        end
+
+        # Whether a tool awaiting approval precedes the index.
+        def pause_before?(index)
+          before = @parts.first(index)
+          before.any? { |part| part[:kind] == :tool && part[:approval] }
+        end
+
+        # The accumulated-state timeline: every frame is the FULL part list
+        # as rendered at that instant (streaming morphs the same row).
+        def compile(parts)
+          timeline = Timeline.new
+          parts.each do |part|
+            case part[:kind]
+            when :reasoning, :text then timeline.stream_text(part)
+            when :tool then timeline.stream_tool(part)
+            end
+          end
+          timeline.frames
+        end
+
+        # The frames a turn compiles to, built one push at a time: each push
+        # records the whole part list as rendered at that instant.
+        class Timeline
+          # The frames pushed so far.
+          attr_reader :frames
+
+          # An empty timeline.
+          def initialize
+            @frames = []
+            @acc = []
+            @version = 0
+          end
+
+          # Streams a text or reasoning part a few words at a time, one frame per chunk.
+          #
+          # @param part [Hash] the part, with its text and optional delay_ms
+          def stream_text(part)
+            chunks = part[:text].split(/(?<=\S)\s+/).each_slice(Script::TEXT_CHUNK_WORDS).map { |w| w.join(" ") }
+            delay = part.fetch(:delay_ms, Script::DEFAULT_TEXT_DELAY_MS) || Script::DEFAULT_TEXT_DELAY_MS
+            @acc << part.merge(text: "")
+            chunks.each do |chunk|
+              amend(text: [@acc[-1][:text], chunk].reject(&:empty?).join(" "))
+              push(delay)
+            end
+          end
+
+          # Streams a tool part: loading, then awaiting approval when it asks
+          # for one, then its settled state unless the approval is left open.
+          #
+          # @param part [Hash] the part, with its approval, state, output and sleep_ms
+          def stream_tool(part)
+            @acc << part.merge(state: :loading, output: nil)
+            push(0)
+            # An approval tool always passes through :awaiting_approval -
+            # resolved or not - so the paused prefix and the resolved
+            # timeline share frame counts up to the pause and the
+            # continuation begins AT the resolution frame (a denial with
+            # nothing after it still streams its denial).
+            if part[:approval]
+              amend(state: :awaiting_approval)
+              push(part.fetch(:sleep_ms, 0))
+            end
+            return if part[:approval] && part[:state].nil?
+
+            amend(state: part[:state] || :done, output: part[:output])
+            push(part.fetch(:sleep_ms, 0))
+          end
+
+          private
+
+          # Records a frame of the current parts with its pause.
+          def push(sleep_ms)
+            @version += 1
+            @frames << Frame.new(parts: @acc.map(&:dup), sleep_ms: sleep_ms, version: @version)
+          end
+
+          # Replaces the last part with the changes merged in.
+          def amend(**changes)
+            @acc[-1] = @acc[-1].merge(changes)
+          end
+        end
+      end
+
+      # The builder handed to `assistant do |w| ... end` - each call
+      # appends one part (text / reasoning / tool) to the turn, in order.
+      class Writer
+        # The writer over one assistant turn's parts.
+        #
+        # @param parts [Array<Hash>] the turn's part list, appended to in order
+        def initialize(parts)
+          @parts = parts
+        end
+
+        # Appends a streamed text part.
+        #
+        # @param text [String] the assistant prose
+        # @param delay_ms [Integer, nil] per-chunk delay override (defaults
+        #   to Script::DEFAULT_TEXT_DELAY_MS)
+        # @return [Writer] self, for chaining
+        def text(text, delay_ms: nil)
+          @parts << { kind: :text, text: text, delay_ms: delay_ms }.compact
+          self
+        end
+
+        # Appends a reasoning part - streamed like text, rendered as the
+        # collapsible thinking block.
+        #
+        # @param text [String] the reasoning prose
+        # @param delay_ms [Integer, nil] per-chunk delay override
+        # @return [Writer] self, for chaining
+        def reasoning(text, delay_ms: nil)
+          @parts << { kind: :reasoning, text: text, delay_ms: delay_ms }.compact
+          self
+        end
+
+        # Appends a tool-call part: the input frame streams first (state
+        # :loading), then after sleep_ms the resolution frame carries the
+        # output. approval: true pauses the segment at the input frame for
+        # a human decision; denied: true scripts the denied resolution.
+        #
+        # @param name [String] the tool name as rendered
+        # @param input [Hash] the tool input payload
+        # @param output [Object, nil] the result shown on resolution
+        # @param sleep_ms [Integer] thinking time before the resolution
+        # @param approval [Boolean] pause for a human decision after input
+        # @param denied [Boolean] script the denied resolution
+        # @return [Writer] self, for chaining # -- the writer vocabulary mirrors the tool part's options
+        def tool(name, input:, output: nil, sleep_ms: 0, approval: false, denied: false)
+          @parts << { kind: :tool, name: name, input: input, output: output,
+                      sleep_ms: sleep_ms, approval: approval,
+                      state: denied ? :denied : nil }
+          self
+        end
+      end
+    end
+  end
+end
