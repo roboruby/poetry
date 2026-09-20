@@ -11,3 +11,10 @@ updates:
     directory: /tools/releaser
     schedule:
       interval: weekly
+    ignore:
+      # sigstore 0.2.3 parses its trust root through protobug with options json
+      # 3.0 dropped; the checked-in verification fixture fails the bump. Lift
+      # this, and ship the bump, once sigstore-ruby supports json 3.
+      - dependency-name: json
+        versions:
+          - ">= 3"
