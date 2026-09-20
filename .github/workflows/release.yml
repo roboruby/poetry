@@ -34,12 +34,12 @@ jobs:
     env:
       REF: ${{ github.ref_name }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           fetch-depth: 0 # verify_tag needs main
           persist-credentials: false
       - name: Set up Ruby (the releaser's own bundle)
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@a0102e0972be65f351c307e2d64b9314a57c8073 # v1
         with:
           ruby-version: "4.0"
           bundler-cache: true
@@ -58,7 +58,7 @@ jobs:
         run: cat ../../pkg/SHA256SUMS >> "$GITHUB_STEP_SUMMARY"
       - name: Configure RubyGems credentials (trusted publishing)
         if: github.event_name == 'release'
-        uses: rubygems/configure-rubygems-credentials@v2.1.0
+        uses: rubygems/configure-rubygems-credentials@dc5a8d8553e6ee01fc26761a49e99e733d17954a # v2.1.0
       - name: Push all eight, then wait until every one installs
         if: github.event_name == 'release'
         run: bundle exec rake push
