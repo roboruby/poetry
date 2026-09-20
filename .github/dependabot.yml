@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # The actions are pinned by commit; Dependabot moves the pins.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  # The release bundle: a sigstore or json bump arrives as a PR that the
+  # releaser's tests gate before it can touch a release.
+  - package-ecosystem: bundler
+    directory: /tools/releaser
+    schedule:
+      interval: weekly

@@ -1,0 +1,3 @@
+# Changes to the workflows and the release tooling need the maintainer's review.
+/.github/ @activefx
+/tools/releaser/ @activefx
