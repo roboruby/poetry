@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "rubydex": {
+      "command": "bundle",
+      "args": ["exec", "rdx", "mcp"]
+    }
+  }
+}
