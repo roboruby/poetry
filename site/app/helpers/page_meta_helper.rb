@@ -3,7 +3,7 @@
 # per request so both layouts render the same partial.
 module PageMetaHelper
   SITE_NAME = "poetry"
-  SITE_TITLE = "poetry — The AI-Native UI Component Library for Ruby on Rails"
+  SITE_TITLE = "poetry — The AI-Native Frontend Framework for Ruby on Rails"
   SITE_DESCRIPTION_SUFFIX = "for Rails, rendered on the server in plain Ruby and ERB. No React, no build step."
   OG_IMAGE = "landing-og.jpg"
 
