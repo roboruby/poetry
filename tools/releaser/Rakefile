@@ -118,5 +118,5 @@ end
 desc "Push every gem in pkg/ to RubyGems (idempotent), then wait until each installs"
 task :push do
   Releaser::Push.all(ROOT, version, PKG)
-  Releaser::Push.await(PKG)
+  Releaser::Push.await(version)
 end

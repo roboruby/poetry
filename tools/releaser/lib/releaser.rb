@@ -285,8 +285,8 @@ module Releaser
       root
     end
 
-    def self.await(out_dir)
-      ok = system("rubygems-await", *Dir[File.join(out_dir, "*.gem")].sort)
+    def self.await(version)
+      ok = system("rubygems-await", *GEMS.map { |name| "#{name}:#{version}" })
       raise Error, "rubygems-await failed" unless ok
 
       true
