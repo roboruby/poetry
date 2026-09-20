@@ -302,6 +302,7 @@ namespace :test do
     shoot = lambda do |name|
       baseline = baseline_dir.join(name)
       candidate = Poetry::Ui.root.join("tmp", "visual_candidate.png")
+      candidate.dirname.mkpath # a fresh checkout has no tmp/ yet
       session.driver.save_screenshot(candidate.to_s, full: true)
 
       # Geometry a golden cannot prove on its own: an icon that renders
