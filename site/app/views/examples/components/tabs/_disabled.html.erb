@@ -1,0 +1,7 @@
+<%# Upstream's tabs-disabled: a live tab beside a disabled one - the
+    disabled trigger renders disabled + data-disabled and drops out of
+    the roving-focus collection. List-only like upstream (panel: false). %>
+<%= poetry_tabs(label: "Disabled tab demo") do |tabs| %>
+  <% tabs.with_tab("Home", value: "home", panel: false) %>
+  <% tabs.with_tab("Disabled", value: "settings", disabled: true, panel: false) %>
+<% end %>

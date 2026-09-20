@@ -1,0 +1,5 @@
+<%= poetry_tabs(orientation: :vertical, label: "Project areas", class: "w-full max-w-md") do |tabs| %>
+  <% tabs.with_tab("General", value: "general") { "Project defaults." } %>
+  <% tabs.with_tab("Members", value: "members") { "Who has access." } %>
+  <% tabs.with_tab("Billing", value: "billing", disabled: true) { "Plan and invoices." } %>
+<% end %>

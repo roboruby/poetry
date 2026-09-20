@@ -1,0 +1,28 @@
+<%# side: picks which side of the pointer the menu opens toward
+    (default :right). Collisions still flip it near viewport edges. %>
+<div class="grid w-full max-w-sm grid-cols-2 gap-4">
+  <%= poetry_context_menu(side: :top) do |menu| %>
+    <% menu.with_trigger(tag: :div, class: "flex aspect-video w-full items-center justify-center rounded-md border border-dashed text-sm select-none") { "Right-click (top)" } %>
+    <% menu.with_item { "Back" } %>
+    <% menu.with_item { "Forward" } %>
+    <% menu.with_item { "Reload" } %>
+  <% end %>
+  <%= poetry_context_menu(side: :right) do |menu| %>
+    <% menu.with_trigger(tag: :div, class: "flex aspect-video w-full items-center justify-center rounded-md border border-dashed text-sm select-none") { "Right-click (right)" } %>
+    <% menu.with_item { "Back" } %>
+    <% menu.with_item { "Forward" } %>
+    <% menu.with_item { "Reload" } %>
+  <% end %>
+  <%= poetry_context_menu(side: :bottom) do |menu| %>
+    <% menu.with_trigger(tag: :div, class: "flex aspect-video w-full items-center justify-center rounded-md border border-dashed text-sm select-none") { "Right-click (bottom)" } %>
+    <% menu.with_item { "Back" } %>
+    <% menu.with_item { "Forward" } %>
+    <% menu.with_item { "Reload" } %>
+  <% end %>
+  <%= poetry_context_menu(side: :left) do |menu| %>
+    <% menu.with_trigger(tag: :div, class: "flex aspect-video w-full items-center justify-center rounded-md border border-dashed text-sm select-none") { "Right-click (left)" } %>
+    <% menu.with_item { "Back" } %>
+    <% menu.with_item { "Forward" } %>
+    <% menu.with_item { "Reload" } %>
+  <% end %>
+</div>

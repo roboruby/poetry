@@ -1,0 +1,10 @@
+<%# The base rules are zero-specificity, so a utility class on a single element
+    wins outright — override just the one thing you want, cascade untouched. %>
+<%= poetry_typeset(class: "max-w-xl") do %>
+  <h1 class="text-primary">Field notes</h1>
+  <p class="text-lg">This opening line is nudged larger with a utility while
+  the rest of the prose keeps the typeset rhythm.</p>
+  <p>Nothing here is special-cased. The heading and the lead above simply carry
+  an extra class, and it takes precedence because the base styles add no
+  specificity of their own.</p>
+<% end %>

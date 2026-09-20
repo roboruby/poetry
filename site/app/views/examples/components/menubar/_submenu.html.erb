@@ -1,0 +1,31 @@
+<%# Upstream menubar-submenu: with_sub nests a flyout - the sub
+    trigger carries the chevron, items land in the sub content. %>
+<%= poetry_menubar(label: "File menu", class: "w-72") do |bar| %>
+  <% bar.with_menu do |menu| %>
+    <% menu.with_trigger { "File" } %>
+    <% menu.with_sub do |sub| %>
+      <% sub.with_trigger { "Share" } %>
+      <% sub.with_item { "Email link" } %>
+      <% sub.with_item { "Messages" } %>
+      <% sub.with_item { "Notes" } %>
+    <% end %>
+    <% menu.with_separator %>
+    <% menu.with_item(shortcut: "⌘P") { "Print..." } %>
+  <% end %>
+  <% bar.with_menu do |menu| %>
+    <% menu.with_trigger { "Edit" } %>
+    <% menu.with_item(shortcut: "⌘Z") { "Undo" } %>
+    <% menu.with_item(shortcut: "⇧⌘Z") { "Redo" } %>
+    <% menu.with_separator %>
+    <% menu.with_sub do |sub| %>
+      <% sub.with_trigger { "Find" } %>
+      <% sub.with_item { "Find..." } %>
+      <% sub.with_item { "Find Next" } %>
+      <% sub.with_item { "Find Previous" } %>
+    <% end %>
+    <% menu.with_separator %>
+    <% menu.with_item { "Cut" } %>
+    <% menu.with_item { "Copy" } %>
+    <% menu.with_item { "Paste" } %>
+  <% end %>
+<% end %>

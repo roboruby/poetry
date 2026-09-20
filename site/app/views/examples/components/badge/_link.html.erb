@@ -1,0 +1,6 @@
+<%# href: renders the badge AS a real anchor (upstream badge#link) - the
+    theme's [a&]:hover treatment activates, so the chip darkens on hover. %>
+<%= poetry_badge(href: "#link") do %>
+  Open Link
+  <%= poetry_icon(name: :"arrow-up-right") %>
+<% end %>

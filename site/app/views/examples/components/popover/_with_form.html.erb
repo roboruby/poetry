@@ -1,0 +1,21 @@
+<%# Upstream popover-form: the dimensions form as label+input rows with
+    half-width labels (their Field orientation=horizontal; composed as
+    plain rows here - poetry reserves field horizontal for boolean
+    controls). pb reserves the opened panel's area in the preview card. %>
+<div class="pb-52">
+  <%= poetry_popover(align: :start, content_class: "w-64") do |popover| %>
+    <% popover.with_trigger(variant: :outline) { "Open Popover" } %>
+    <% popover.with_title { "Dimensions" } %>
+    <% popover.with_description { "Set the dimensions for the layer." } %>
+    <form class="grid gap-4">
+      <div class="flex items-center">
+        <%= poetry_label(for_id: "popover-form-width", class: "w-1/2") { "Width" } %>
+        <%= poetry_input(name: "width", value: "100%", id: "popover-form-width") %>
+      </div>
+      <div class="flex items-center">
+        <%= poetry_label(for_id: "popover-form-height", class: "w-1/2") { "Height" } %>
+        <%= poetry_input(name: "height", value: "25px", id: "popover-form-height") %>
+      </div>
+    </form>
+  <% end %>
+</div>

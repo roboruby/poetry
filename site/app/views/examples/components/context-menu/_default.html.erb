@@ -1,0 +1,22 @@
+<%= poetry_context_menu do |menu| %>
+  <% menu.with_trigger(tag: :div, class: "flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm select-none") { "Right-click here" } %>
+  <% menu.with_item(inset: true, shortcut: "⌘[") { "Back" } %>
+  <% menu.with_item(inset: true, disabled: true, shortcut: "⌘]") { "Forward" } %>
+  <% menu.with_item(inset: true, shortcut: "⌘R") { "Reload" } %>
+  <% menu.with_sub do |sub| %>
+    <% sub.with_trigger(inset: true) { "More Tools" } %>
+    <% sub.with_item(shortcut: "⇧⌘S") { "Save Page As..." } %>
+    <% sub.with_item { "Create Shortcut..." } %>
+    <% sub.with_item { "Name Window..." } %>
+    <% sub.with_separator %>
+    <% sub.with_item { "Developer Tools" } %>
+  <% end %>
+  <% menu.with_separator %>
+  <% menu.with_checkbox_item(checked: true, close_on_select: false, shortcut: "⌘⇧B") { "Show Bookmarks Bar" } %>
+  <% menu.with_checkbox_item(checked: false, close_on_select: false) { "Show Full URLs" } %>
+  <% menu.with_separator %>
+  <% menu.with_radio_group(value: "pedro") do |group| %>
+    <% group.with_radio_item(value: "pedro") { "Pedro Duarte" } %>
+    <% group.with_radio_item(value: "colm") { "Colm Tuite" } %>
+  <% end %>
+<% end %>

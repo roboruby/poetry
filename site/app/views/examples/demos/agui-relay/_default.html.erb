@@ -1,0 +1,35 @@
+<%# The AG-UI relay live: a scripted agent's events (text, reasoning, a
+    backend tool, shared state, a frontend tool call, an interrupt)
+    arriving as versioned Turbo Streams into MessageScroller, the tabs
+    component on the page executing the agent's tool call through the
+    registrar, and the interrupt answered as a URL decision. %>
+<div class="flex w-full max-w-2xl flex-col gap-4">
+  <%= poetry_tabs(label: "Plans", variant: :line, webmcp: "sections") do |tabs| %>
+    <% tabs.with_tab("Overview", value: "overview") do %>
+      <p class="py-3 text-sm text-muted-foreground">Three plans. The agent's tool call moves this strip to Pricing.</p>
+    <% end %>
+    <% tabs.with_tab("Pricing", value: "pricing") do %>
+      <p class="py-3 text-sm text-muted-foreground">Team: $12 a seat (5+). Business: $24 a seat (25+). Both start with a 30-day trial.</p>
+    <% end %>
+    <% tabs.with_tab("FAQ", value: "faq") do %>
+      <p class="py-3 text-sm text-muted-foreground">Seats can change any time; billing follows the count at the end of the month.</p>
+    <% end %>
+  <% end %>
+
+  <%= poetry_message_scroller(id: "agui-relay-scroller", class: "h-96 rounded-lg border pt-4") do %>
+    <%= poetry_message_scroller_item(id: "row-u1", anchor: true, class: "px-4") do %>
+      <%= poetry_message(align: :end) do |message| %>
+        <%= poetry_bubble { AguiReplay::USER_TEXT } %>
+      <% end %>
+    <% end %>
+    <% @agui_transcript.messages.each do |message| %>
+      <% next if message.role == "user" %>
+      <%= poetry_message_scroller_item(id: "item-#{message.id}", class: "px-4") do %>
+        <%= render "agui_relay/row", message: message, version: message.version %>
+      <% end %>
+    <% end %>
+    <% src = agui_relay_stream_path(s: @agui_cursor, d: params[:d].presence, instant: params[:instant].presence, page: request.path) %>
+    <turbo-stream-source id="agui-relay-source" src="<%= src %>"></turbo-stream-source>
+    <div id="agui-relay-next" class="px-4 pb-4 text-xs text-muted-foreground">streaming…</div>
+  <% end %>
+</div>

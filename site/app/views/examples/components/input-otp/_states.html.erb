@@ -1,0 +1,12 @@
+<div class="flex flex-col gap-6">
+  <%# Server-rendered partial value (dummy only - never render a real
+      code: the value is a live credential). %>
+  <%= poetry_input_otp(name: "code_partial", length: 6, groups: [3, 3],
+                       value: "12", "aria-label": "Verification code") %>
+  <%= poetry_input_otp(name: "code_disabled", length: 6, groups: [3, 3],
+                       disabled: true, "aria-label": "Verification code") %>
+  <%# The failed-verify re-render: aria-invalid on the input, destructive
+      cells, and the value blanked - a rejected code is dead. %>
+  <%= poetry_input_otp(name: "code_invalid", length: 6, groups: [3, 3],
+                       invalid: true, "aria-label": "Verification code") %>
+</div>

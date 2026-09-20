@@ -1,0 +1,24 @@
+<%# Sections without leaving the builder: f.fieldset(legend:) frames a
+    group and yields the builder; orientation:/hint_position: pass
+    through to the Field (the setting-row and hint-above surfaces). %>
+<% account_class = Class.new do
+     include ActiveModel::Model
+     include ActiveModel::Attributes
+
+     attribute :display_name, :string
+     attribute :bio, :string
+
+     def self.name = "Account"
+     def self.type_for_attribute(name)
+       name == "bio" ? Struct.new(:type).new(:text) : super
+     end
+   end %>
+<%= form_with(model: account_class.new(display_name: "Ada"), url: "/forms", method: :get,
+              builder: Poetry::Ui::FormBuilder,
+              class: "flex w-full max-w-md flex-col gap-6") do |f| %>
+  <%= f.fieldset(legend: "Identity") do |section| %>
+    <%= section.input(:display_name) %>
+    <%= section.input(:bio, hint: "Markdown is fine.", hint_position: :above) %>
+  <% end %>
+  <div><%= f.submit("Save changes") %></div>
+<% end %>

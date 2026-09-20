@@ -1,0 +1,18 @@
+<%# Upstream menubar-checkbox: checked state rides the item -
+    close_on_select: false keeps the menu open while toggling. %>
+<%= poetry_menubar(label: "View menu", class: "w-72") do |bar| %>
+  <% bar.with_menu do |menu| %>
+    <% menu.with_trigger { "View" } %>
+    <% menu.with_checkbox_item(close_on_select: false) { "Always Show Bookmarks Bar" } %>
+    <% menu.with_checkbox_item(checked: true, close_on_select: false) { "Always Show Full URLs" } %>
+    <% menu.with_separator %>
+    <% menu.with_item(inset: true, shortcut: "⌘R") { "Reload" } %>
+    <% menu.with_item(inset: true, disabled: true, shortcut: "⇧⌘R") { "Force Reload" } %>
+  <% end %>
+  <% bar.with_menu do |menu| %>
+    <% menu.with_trigger { "Format" } %>
+    <% menu.with_checkbox_item(checked: true, close_on_select: false) { "Strikethrough" } %>
+    <% menu.with_checkbox_item(close_on_select: false) { "Code" } %>
+    <% menu.with_checkbox_item(close_on_select: false) { "Superscript" } %>
+  <% end %>
+<% end %>

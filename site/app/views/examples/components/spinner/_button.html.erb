@@ -1,0 +1,13 @@
+<%# Loading buttons: the spinner leads the label; disabled holds the
+    pressed flow while work runs. %>
+<div class="flex flex-col items-center gap-4">
+  <%= poetry_button(size: :sm, disabled: true) do %>
+    <%= poetry_spinner %> Loading...
+  <% end %>
+  <%= poetry_button(variant: :outline, size: :sm, disabled: true) do %>
+    <%= poetry_spinner %> Please wait
+  <% end %>
+  <%= poetry_button(variant: :secondary, size: :sm, disabled: true) do %>
+    <%= poetry_spinner %> Processing
+  <% end %>
+</div>

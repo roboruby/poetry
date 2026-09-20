@@ -1,0 +1,13 @@
+<%# Field-bound: control_attributes lands the id (the label-for target)
+    and aria-describedby on the INPUT - the one real control. Put the
+    code length in the hint, not the label. %>
+<% field = Poetry::Ui::Field::Component.new(
+     id: "otp-code", label_text: "Verification code",
+     hint: "Enter the 6-digit code we sent to your phone."
+   ) %>
+<div class="w-80">
+  <%= render field do %>
+    <%= poetry_input_otp(name: "code", length: 6, groups: [3, 3],
+                         **field.control_attributes.transform_keys(&:to_sym)) %>
+  <% end %>
+</div>

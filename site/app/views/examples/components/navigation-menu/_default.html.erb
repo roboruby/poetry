@@ -1,0 +1,13 @@
+<div class="flex min-h-64 justify-center p-4">
+  <%= poetry_navigation_menu(label: "Main") do |nav| %>
+    <% nav.with_item("Products", value: "products") do %>
+      <div class="grid w-64 gap-1">
+        <%= poetry_navigation_menu_link(href: "#", active: true) { "Analytics" } %>
+        <%= poetry_navigation_menu_link(href: "#") { "Automation" } %>
+        <%= poetry_navigation_menu_link(href: "#") { "Reports" } %>
+      </div>
+    <% end %>
+    <% nav.with_link("Pricing", href: "#") %>
+    <% nav.with_link("Docs", href: "#") %>
+  <% end %>
+</div>

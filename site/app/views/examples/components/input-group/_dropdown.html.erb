@@ -1,0 +1,37 @@
+<%# Menus in the addon row (upstream Dropdown): the dropdown trigger
+    rides Button through with_trigger, so it sits in the addon like any
+    tiny in-group action - an icon trigger first, a labeled one second. %>
+<div class="grid w-full max-w-sm gap-4">
+  <%= poetry_input_group do %>
+    <%= poetry_input_group_input(name: "file_name", placeholder: "Enter file name",
+                                 "aria-label": "File name") %>
+    <%= poetry_input_group_addon(align: :"inline-end") do %>
+      <%= poetry_dropdown_menu(align: :end, side_offset: 8, align_offset: -4) do |menu| %>
+        <% menu.with_trigger(variant: :ghost, size: :"icon-xs", label: "More") do %>
+          <%= poetry_icon(name: :ellipsis) %>
+        <% end %>
+        <% menu.with_group do |group| %>
+          <% group.with_item { "Settings" } %>
+          <% group.with_item { "Copy path" } %>
+          <% group.with_item { "Open location" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <%= poetry_input_group do %>
+    <%= poetry_input_group_input(name: "query", placeholder: "Enter search query",
+                                 "aria-label": "Search query") %>
+    <%= poetry_input_group_addon(align: :"inline-end") do %>
+      <%= poetry_dropdown_menu(align: :end, side_offset: 8, align_offset: -4) do |menu| %>
+        <% menu.with_trigger(variant: :ghost, size: :xs, class: "text-xs") do %>
+          Search In... <%= poetry_icon(name: :"chevron-down", class: "size-3") %>
+        <% end %>
+        <% menu.with_group do |group| %>
+          <% group.with_item { "Documentation" } %>
+          <% group.with_item { "Blog Posts" } %>
+          <% group.with_item { "Changelog" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

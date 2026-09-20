@@ -1,0 +1,23 @@
+<%# ONE provider scope wrapping a control row: the first tooltip opens
+    delayed, sweeping along the row opens instantly (the warm grace), and
+    the scope cools 300ms after leaving - the toolbar recipe. %>
+<%= poetry_tooltip_provider(delay_duration: 700, class: "flex items-center gap-2") do %>
+  <%= poetry_tooltip do |tooltip| %>
+    <% tooltip.with_trigger(variant: :outline, size: :icon, label: "Add") do %>
+      <%= poetry_icon(name: :plus) %>
+    <% end %>
+    Add
+  <% end %>
+  <%= poetry_tooltip do |tooltip| %>
+    <% tooltip.with_trigger(variant: :outline, size: :icon, label: "Confirm") do %>
+      <%= poetry_icon(name: :check) %>
+    <% end %>
+    Confirm
+  <% end %>
+  <%= poetry_tooltip do |tooltip| %>
+    <% tooltip.with_trigger(variant: :outline, size: :icon, label: "Dismiss") do %>
+      <%= poetry_icon(name: :x) %>
+    <% end %>
+    Dismiss
+  <% end %>
+<% end %>

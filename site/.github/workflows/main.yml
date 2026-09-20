@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+# Cancel superseded CI runs: a newer push to the same branch/PR kills the
+# in-flight run for that ref so we don't burn minutes on commits already dead.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+# The site's bundle resolves the poetry family from RubyGems at the version
+# pinned in .poetry-version (no sibling checkouts here), so this run is also
+# the standing proof that the released gems install and render.
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    name: bin/ci
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: Run the CI pipeline (setup, rubocop, audits, tests)
+        run: bin/ci

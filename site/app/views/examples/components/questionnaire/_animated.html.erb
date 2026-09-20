@@ -1,0 +1,28 @@
+<%# Entrance animation per question: with_item(class:) merges onto the
+    item fieldset, and data-active:animate-in runs each time an item
+    becomes the visible one (hidden -> shown restarts the animation).
+    motion-reduce:animate-none respects the OS setting. %>
+<% item_class = "data-active:animate-in data-active:fade-in-0 " \
+                "data-active:slide-in-from-bottom-2 data-active:duration-300 " \
+                "motion-reduce:animate-none" %>
+<%= poetry_questionnaire(url: "#", http_method: :get, class: "w-full max-w-md") do |q| %>
+  <% q.with_progress %>
+  <% q.with_item(name: "task", title: "What should the agent do?",
+                 description: "Choose the task for this run.",
+                 required: true, class: item_class) do |item| %>
+    <% item.with_choice(value: "implement", label: "Implement the requested change") %>
+    <% item.with_choice(value: "debug", label: "Debug the current behavior") %>
+    <% item.with_choice(value: "review", label: "Review the implementation") %>
+  <% end %>
+  <% q.with_item(name: "review", title: "How should the work be reviewed?",
+                 description: "Select the verification depth.",
+                 required: true, class: item_class) do |item| %>
+    <% item.with_choice(value: "targeted", label: "Targeted checks on changed code") %>
+    <% item.with_choice(value: "full", label: "The full test suite") %>
+  <% end %>
+  <% q.with_item(name: "delivery", title: "How should the result land?",
+                 required: true, class: item_class) do |item| %>
+    <% item.with_choice(value: "pr", label: "Open a pull request") %>
+    <% item.with_choice(value: "branch", label: "Push a branch for review") %>
+  <% end %>
+<% end %>

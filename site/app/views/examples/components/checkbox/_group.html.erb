@@ -1,0 +1,23 @@
+<%# The select-all family: the parent checkbox fans out to every member
+    and member toggles re-derive it - all checked, none, or the mixed
+    indeterminate state in between. %>
+<%= poetry_checkbox_group(class: "flex flex-col gap-3") do %>
+  <div class="flex items-center gap-3">
+    <%= poetry_checkbox_group_all(name: "notifications_all", id: "cbg-all") %>
+    <%= poetry_label(for_id: "cbg-all") { "All notifications" } %>
+  </div>
+  <div class="ml-6 flex flex-col gap-3">
+    <div class="flex items-center gap-3">
+      <%= poetry_checkbox_group_item(name: "notify_mentions", id: "cbg-mentions", checked: true) %>
+      <%= poetry_label(for_id: "cbg-mentions") { "Mentions" } %>
+    </div>
+    <div class="flex items-center gap-3">
+      <%= poetry_checkbox_group_item(name: "notify_replies", id: "cbg-replies") %>
+      <%= poetry_label(for_id: "cbg-replies") { "Replies" } %>
+    </div>
+    <div class="flex items-center gap-3">
+      <%= poetry_checkbox_group_item(name: "notify_digests", id: "cbg-digests") %>
+      <%= poetry_label(for_id: "cbg-digests") { "Weekly digest" } %>
+    </div>
+  </div>
+<% end %>

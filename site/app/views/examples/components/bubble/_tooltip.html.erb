@@ -1,0 +1,17 @@
+<%# A reaction can carry a tooltip - the read receipt: an icon-xs ghost
+    trigger in the reactions pill, the timestamp in the tip. label: names
+    the icon-only button; the tooltip adds detail on hover/focus. %>
+<div class="flex w-full max-w-sm flex-col gap-4">
+  <%= poetry_bubble(variant: :secondary) { "Did you remove the stale route?" } %>
+  <%= poetry_bubble(align: :end) do |bubble| %>
+    <% bubble.with_reactions(label: "Read receipt") do %>
+      <%= poetry_tooltip do |tooltip| %>
+        <% tooltip.with_trigger(variant: :ghost, size: :"icon-xs", label: "Read status") do %>
+          <%= poetry_icon(name: :check) %>
+        <% end %>
+        Read on Jan 5, 2026 at 4:32 PM
+      <% end %>
+    <% end %>
+    Yes, removed it from the registry.
+  <% end %>
+</div>

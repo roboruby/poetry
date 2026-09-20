@@ -1,0 +1,16 @@
+<%# The favorite toggle. The optimistic_template predicts the TOGGLED
+    state as a turbo-stream; the button shows the current one. Submit and
+    the label flips instantly - the server answers 204 and is never
+    waited on. State rides the session, so a reload shows server truth. %>
+<% favorite = session[:docs_favorite] %>
+<%= poetry_optimistic_form(url: optimistic_favorite_path, method: :post, attribute_name: :favorite, value: !favorite) do |form| %>
+  <%= form.optimistic_template "docs-favorite",
+        safe_join([poetry_icon(name: favorite ? :"star-off" : :star, class: "size-4"),
+                   favorite ? "Favorite" : "Unfavorite"], " ") %>
+  <%= poetry_button(variant: :outline, type: :submit) do %>
+    <span id="docs-favorite" class="inline-flex items-center gap-2">
+      <%= poetry_icon(name: favorite ? :star : :"star-off", class: "size-4") %>
+      <%= favorite ? "Unfavorite" : "Favorite" %>
+    </span>
+  <% end %>
+<% end %>

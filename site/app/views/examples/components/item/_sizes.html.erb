@@ -1,0 +1,19 @@
+<%# The three densities side by side - default, sm, and xs (the
+    tightest, good for dense activity logs). %>
+<div class="flex w-full max-w-md flex-col gap-6">
+  <%= poetry_item(variant: :outline, media_variant: :icon) do |item| %>
+    <% item.with_media { poetry_icon(name: :inbox) } %>
+    <% item.with_title { "Default Size" } %>
+    <% item.with_description { "The standard size for most use cases." } %>
+  <% end %>
+  <%= poetry_item(variant: :outline, size: :sm, media_variant: :icon) do |item| %>
+    <% item.with_media { poetry_icon(name: :inbox) } %>
+    <% item.with_title { "Small Size" } %>
+    <% item.with_description { "A compact size for dense layouts." } %>
+  <% end %>
+  <%= poetry_item(variant: :outline, size: :xs, media_variant: :icon) do |item| %>
+    <% item.with_media { poetry_icon(name: :inbox) } %>
+    <% item.with_title { "Extra Small Size" } %>
+    <% item.with_description { "The most compact size available." } %>
+  <% end %>
+</div>

@@ -1,0 +1,6 @@
+<%= poetry_combobox(name: "timezone", width: "w-80", placeholder: "Select a timezone...",
+                    search_placeholder: "Search timezones...", "aria-label": "Timezone") do |combobox| %>
+  <% combobox.with_item(value: "est") { "Eastern Standard Time (EST)" } %>
+  <% combobox.with_item(value: "cet") { "Central European Time (CET)" } %>
+  <% combobox.with_item(value: "jst") { "Japan Standard Time (JST)" } %>
+<% end %>

@@ -1,0 +1,12 @@
+<%# size: :sm for dense settings lists - the thumb derives its size from
+    the control's data-size (no per-element size classes). %>
+<div class="flex flex-col gap-3">
+  <div class="flex items-center gap-3">
+    <%= poetry_switch(name: "notifications", checked: true, id: "switch-size-default") %>
+    <%= poetry_label(for_id: "switch-size-default") { "Default" } %>
+  </div>
+  <div class="flex items-center gap-3">
+    <%= poetry_switch(name: "compact", size: :sm, checked: true, id: "switch-size-sm") %>
+    <%= poetry_label(for_id: "switch-size-sm") { "Compact density" } %>
+  </div>
+</div>

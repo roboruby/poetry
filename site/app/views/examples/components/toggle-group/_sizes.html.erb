@@ -1,0 +1,12 @@
+<%# Upstream's toggle-group-sizes: the same outline quartet at sm and
+    default. %>
+<div class="flex flex-col items-start gap-4">
+  <% [{ size: :sm, label: "Sides (small)" }, { size: :default, label: "Sides" }].each do |row| %>
+    <%= poetry_toggle_group(type: :multiple, size: row[:size], variant: :outline,
+                            values: %w[top], label: row[:label]) do |group| %>
+      <% %w[Top Bottom Left Right].each do |side| %>
+        <% group.with_item(value: side.downcase, label: "Toggle #{side.downcase}") { side } %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,8 @@
+<%# The field-level error treatment: invalid: sets aria-invalid on every
+    item (the destructive ring) - wired by Field/FormBuilder from model
+    errors. Nothing is checked, so nothing submits and presence
+    validation stays honest. %>
+<%= poetry_radio_group(name: "plan", invalid: true, required: true, label: "Plan") do |group| %>
+  <% group.with_item(value: "monthly", label: "Monthly") %>
+  <% group.with_item(value: "yearly", label: "Yearly") %>
+<% end %>

@@ -1,0 +1,14 @@
+<%# The X is off by default - the palette is keyboard-first (Esc, the backdrop,
+    or picking an item closes it) - and appears on its own with dismissible: false.
+    show_close_button: true forces it; it seats in the input row. %>
+<%= poetry_command_dialog(placeholder: "Type a command or search...", show_close_button: true) do |palette| %>
+  <% palette.with_trigger(variant: :outline) { "Open with a close button" } %>
+  <% palette.with_group(heading: "Suggestions") do |group| %>
+    <% group.with_item(value: "calendar") { "Calendar" } %>
+    <% group.with_item(value: "emoji") { "Search Emoji" } %>
+  <% end %>
+  <% palette.with_group(heading: "Settings") do |group| %>
+    <% group.with_item(value: "profile", shortcut: "⌘P") { "Profile" } %>
+    <% group.with_item(value: "settings", shortcut: "⌘S") { "Settings" } %>
+  <% end %>
+<% end %>

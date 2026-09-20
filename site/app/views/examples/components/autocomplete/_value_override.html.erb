@@ -1,0 +1,8 @@
+<%# value: commits canonical text that differs from the shown label -
+    the label is what filtering matches. %>
+<%= poetry_autocomplete(name: "city", label: "City", placeholder: "Where to?",
+                        empty_text: "No matching city.", class: "w-64") do |auto| %>
+  <% auto.with_item(label: "São Paulo (GRU)", value: "GRU") %>
+  <% auto.with_item(label: "New York (JFK)", value: "JFK") %>
+  <% auto.with_item(label: "Tokyo (HND)", value: "HND") %>
+<% end %>

@@ -1,0 +1,31 @@
+<%# Collapsible as progressive disclosure for configuration: the primary
+    control stays visible while the rarely touched options sit behind an
+    "Advanced" disclosure, keeping the panel calm by default. %>
+<div class="w-full max-w-md rounded-lg border bg-card p-4">
+  <div class="space-y-1">
+    <p class="text-sm font-medium leading-none">Export project</p>
+    <p class="text-sm text-muted-foreground">Download everything as a portable archive.</p>
+  </div>
+  <div class="mt-4">
+    <%= poetry_collapsible do |collapsible| %>
+      <% collapsible.with_trigger(class: "flex w-full items-center justify-between text-sm font-medium [&[aria-expanded=true]>svg]:rotate-180") do %>
+        Advanced options
+        <%= poetry_icon(name: :"chevron-down", class: "size-4 text-muted-foreground transition-transform") %>
+      <% end %>
+      <div class="space-y-3 pt-3 text-sm">
+        <div class="flex items-center justify-between">
+          <span>Include attachments</span>
+          <span class="text-muted-foreground">2.4 GB</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span>Compression</span>
+          <span class="text-muted-foreground">Balanced</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span>Split into parts</span>
+          <span class="text-muted-foreground">Off</span>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

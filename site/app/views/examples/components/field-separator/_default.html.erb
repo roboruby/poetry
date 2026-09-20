@@ -1,0 +1,15 @@
+<%# The divider between stacked fields inside a FieldGroup - a decorative
+    rule drawn across the row. %>
+<div class="w-full max-w-xs">
+  <%= poetry_field_group do %>
+    <%= poetry_field(id: "separator-email", label_text: "Email") do |field| %>
+      <%= poetry_input(type: "email", name: "email",
+                       **field.control_attributes.transform_keys(&:to_sym)) %>
+    <% end %>
+    <%= poetry_field_separator %>
+    <%= poetry_field(id: "separator-username", label_text: "Username") do |field| %>
+      <%= poetry_input(name: "username",
+                       **field.control_attributes.transform_keys(&:to_sym)) %>
+    <% end %>
+  <% end %>
+</div>

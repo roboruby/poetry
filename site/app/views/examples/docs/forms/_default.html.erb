@@ -1,0 +1,28 @@
+<%# The whole story in one form: form_with(builder:) + one f.input per
+    attribute. Label from i18n, value from the object, aria-required from
+    the presence validation, maxlength from the length validation, the
+    boolean as a setting-row switch, the collection as a Select, and
+    f.submit's label from Rails' own i18n - nothing hand-wired. %>
+<% profile_class = Class.new do
+     include ActiveModel::Model
+     include ActiveModel::Attributes
+
+     attribute :name, :string
+     attribute :email, :string
+     attribute :email_alerts, :boolean
+     attribute :role, :string
+
+     validates :name, presence: true, length: { maximum: 50 }
+
+     def self.name = "Profile"
+   end
+   profile = profile_class.new(name: "Ada Lovelace", role: "editor", email_alerts: true) %>
+<%= form_with(model: profile, url: "/forms", method: :get,
+              builder: Poetry::Ui::FormBuilder,
+              class: "flex w-full max-w-md flex-col gap-6") do |f| %>
+  <%= f.input(:name, hint: "Shown on your public profile.") %>
+  <%= f.input(:email) %>
+  <%= f.input(:email_alerts, switch: true, hint: "Applied the moment it flips.") %>
+  <%= f.input(:role, collection: [["Admin", "admin"], ["Editor", "editor"], ["Viewer", "viewer"]]) %>
+  <div><%= f.submit %></div>
+<% end %>

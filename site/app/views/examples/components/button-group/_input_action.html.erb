@@ -1,0 +1,6 @@
+<%= poetry_button_group("aria-label": "Search library") do %>
+  <%= poetry_input(name: "query", type: "search", placeholder: "Search records") %>
+  <%= poetry_button(variant: :outline, size: :icon, label: "Search") do %>
+    <%= poetry_icon(name: :search) %>
+  <% end %>
+<% end %>

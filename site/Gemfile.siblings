@@ -1,0 +1,17 @@
+# frozen_string_literal: true
+
+# Local development: the poetry family from the checkouts beside this repo,
+# unpinned, so the docs describe the code as it is right now. config/boot.rb
+# selects this file whenever ../poetry-core exists (an explicit BUNDLE_GEMFILE
+# still wins); its lockfile is not committed. CI and clones use Gemfile,
+# which pins the released version.
+
+source "https://rubygems.org"
+
+eval_gemfile File.expand_path("Gemfile.shared", __dir__)
+
+gem "poetry-core", path: "../poetry-core"
+gem "poetry-lucide", path: "../poetry-lucide" # icons; poetry-ui requires it at runtime
+gem "poetry-ui", path: "../poetry-ui"
+gem "poetry-charts", path: "../poetry-charts"
+gem "poetry-agent", path: "../poetry-agent" # the MCP server exe + the WebMCP runtime

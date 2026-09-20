@@ -1,0 +1,12 @@
+<%# Upstream progress-controlled, the Rails way: the Slider drives the
+    bar live - in an app this is your state (a Turbo Stream morph, a
+    form value); here the demo-progress controller forwards the
+    slider's input event. Demo plumbing, not poetry API. %>
+<div data-controller="demo-progress" class="flex w-full max-w-sm flex-col gap-4">
+  <%= poetry_progress(value: 50, label: "Progress", class: "w-full",
+                      "data-demo-progress-target": "progress") %>
+  <div data-action="poetry:slider:change->demo-progress#update">
+    <%= poetry_slider(name: "progress_value", value: 50, min: 0, max: 100, step: 1,
+                      label: "Set progress") %>
+  </div>
+</div>

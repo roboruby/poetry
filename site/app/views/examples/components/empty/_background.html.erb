@@ -1,0 +1,9 @@
+<%# A tinted surface behind the empty state — a soft muted panel that lifts
+    it off the page. The background lives on the root class:; the header
+    slots and action stay the same. %>
+<%= poetry_empty(media_variant: :icon, class: "rounded-lg bg-muted/50 p-8") do |empty| %>
+  <% empty.with_media { poetry_icon(name: :inbox) } %>
+  <% empty.with_title { "You're all caught up" } %>
+  <% empty.with_description { "New messages will land here as your team replies." } %>
+  <%= poetry_button(size: :sm) { "Compose message" } %>
+<% end %>

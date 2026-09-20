@@ -1,0 +1,18 @@
+<%= poetry_combobox(name: "assignee", width: "w-72", placeholder: "Assign a teammate...",
+                    search_placeholder: "Search teammates...", "aria-label": "Assignee") do |combobox| %>
+  <% [["amara", "Amara Okafor", "AO", "amara@example.com"],
+      ["devin", "Devin Park", "DP", "devin@example.com"],
+      ["priya", "Priya Nair", "PN", "priya@example.com"]].each do |value, name, initials, email| %>
+    <% combobox.with_item(value: value) do %>
+      <span class="flex items-center gap-2">
+        <span class="flex size-6 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
+          <%= initials %>
+        </span>
+        <span class="flex flex-col leading-tight">
+          <span class="text-sm"><%= name %></span>
+          <span class="text-xs text-muted-foreground"><%= email %></span>
+        </span>
+      </span>
+    <% end %>
+  <% end %>
+<% end %>

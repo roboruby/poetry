@@ -1,0 +1,11 @@
+<%# Upstream's textarea-field demo: label, description, then the control -
+    hint_position: :above keeps the guidance visible before a tall
+    textarea; aria-describedby is wired through control_attributes
+    either way. %>
+<div class="w-full max-w-sm">
+  <%= poetry_field(id: "textarea-field-message", label_text: "Message",
+                   hint: "Enter your message below.", hint_position: :above) do |field| %>
+    <%= poetry_textarea(name: "message", placeholder: "Type your message here.",
+                        **field.control_attributes.transform_keys(&:to_sym)) %>
+  <% end %>
+</div>

@@ -1,0 +1,21 @@
+<%# The pill composer: [--radius:9999rem] re-derives the whole radius
+    scale, so the nested composition rounds as one capsule family. The
+    mic is a real control (poetry_input_group_button) - wire it with
+    your own data-action. %>
+<%= poetry_button_group("aria-label": "Voice composer", class: "[--radius:9999rem]") do %>
+  <%= poetry_button_group do %>
+    <%= poetry_button(variant: :outline, size: :icon, label: "Add attachment") do %>
+      <%= poetry_icon(name: :plus) %>
+    <% end %>
+  <% end %>
+  <%= poetry_button_group(class: "w-64") do %>
+    <%= poetry_input_group do %>
+      <%= poetry_input_group_input(name: "voice_message", placeholder: "Send a message…") %>
+      <%= poetry_input_group_addon(align: :"inline-end") do %>
+        <%= poetry_input_group_button(size: :"icon-xs", label: "Voice mode") do %>
+          <%= poetry_icon(name: :"audio-lines") %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

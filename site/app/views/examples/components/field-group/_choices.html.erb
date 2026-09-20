@@ -1,0 +1,21 @@
+<%# variant: :choices packs a run of horizontal checkbox/switch fields
+    tighter - the settings-list rhythm. %>
+<div class="w-full max-w-xs">
+  <%= poetry_field_group(variant: :choices) do %>
+    <%= poetry_field(id: "choices-comments", label_text: "Comments",
+                     orientation: :horizontal) do |field| %>
+      <%= poetry_checkbox(name: "comments", checked: true,
+                          **field.control_attributes.transform_keys(&:to_sym)) %>
+    <% end %>
+    <%= poetry_field(id: "choices-mentions", label_text: "Mentions",
+                     orientation: :horizontal) do |field| %>
+      <%= poetry_checkbox(name: "mentions", checked: true,
+                          **field.control_attributes.transform_keys(&:to_sym)) %>
+    <% end %>
+    <%= poetry_field(id: "choices-follows", label_text: "New followers",
+                     orientation: :horizontal) do |field| %>
+      <%= poetry_checkbox(name: "follows",
+                          **field.control_attributes.transform_keys(&:to_sym)) %>
+    <% end %>
+  <% end %>
+</div>

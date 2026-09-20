@@ -1,0 +1,16 @@
+<div class="flex flex-wrap items-end gap-3">
+  <%= poetry_attachment(size: :default) do |attachment| %>
+    <% attachment.with_media { poetry_icon(name: :"file-text") } %>
+    <% attachment.with_title { "meeting-notes.md" } %>
+    <% attachment.with_description { "8 KB" } %>
+  <% end %>
+  <%= poetry_attachment(size: :sm) do |attachment| %>
+    <% attachment.with_media { poetry_icon(name: :"file-text") } %>
+    <% attachment.with_title { "meeting-notes.md" } %>
+    <% attachment.with_description { "8 KB" } %>
+  <% end %>
+  <%= poetry_attachment(size: :xs) do |attachment| %>
+    <% attachment.with_media { poetry_icon(name: :"file-text") } %>
+    <% attachment.with_title { "meeting-notes.md" } %>
+  <% end %>
+</div>

@@ -1,0 +1,7 @@
+<%= poetry_context_menu(label: "File actions") do |menu| %>
+  <% menu.with_trigger(tag: :div, class: "flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm select-none") { "quarterly-report.pdf" } %>
+  <% menu.with_item { "Open" } %>
+  <% menu.with_item { "Rename" } %>
+  <% menu.with_separator %>
+  <% menu.with_item(variant: :destructive, shortcut: "⌘⌫") { "Delete" } %>
+<% end %>

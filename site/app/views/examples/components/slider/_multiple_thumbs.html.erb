@@ -1,0 +1,5 @@
+<%# values: takes any ascending list - one accessible name per thumb;
+    each thumb clamps against its neighbors while dragging. %>
+<%= poetry_slider(name: "stops", values: [10, 20, 70], min: 0, max: 100, step: 10,
+                  label: ["First stop", "Second stop", "Third stop"],
+                  class: "mx-auto w-full max-w-xs") %>

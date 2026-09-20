@@ -1,0 +1,47 @@
+<%# The four addon axes (upstream Align): inline addons ride the row,
+    block addons take a full-width row - the group's has-[] chain reflows
+    it to a column, no h-auto needed. Each field wires its label to the
+    borderless control inside the group. Textarea + block addons live in
+    the Textarea block/header examples. %>
+<div class="flex w-full max-w-sm flex-col gap-6">
+  <%= poetry_field(id: "align-inline-start", label_text: "Inline start",
+                   hint: "Icon positioned at the start.") do |field| %>
+    <%= poetry_input_group do %>
+      <%= poetry_input_group_input(name: "q", placeholder: "Search...",
+                                   **field.control_attributes.transform_keys(&:to_sym)) %>
+      <%= poetry_input_group_addon do %>
+        <%= poetry_icon(name: :search, class: "text-muted-foreground") %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <%= poetry_field(id: "align-inline-end", label_text: "Inline end",
+                   hint: "Icon positioned at the end.") do |field| %>
+    <%= poetry_input_group do %>
+      <%= poetry_input_group_input(type: "password", name: "password", placeholder: "Enter password",
+                                   **field.control_attributes.transform_keys(&:to_sym)) %>
+      <%= poetry_input_group_addon(align: :"inline-end") do %>
+        <%= poetry_icon(name: :"eye-off") %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <%= poetry_field(id: "align-block-start", label_text: "Block start",
+                   hint: "Header positioned above the input.") do |field| %>
+    <%= poetry_input_group do %>
+      <%= poetry_input_group_input(name: "full_name", placeholder: "Enter your name",
+                                   **field.control_attributes.transform_keys(&:to_sym)) %>
+      <%= poetry_input_group_addon(align: :"block-start") do %>
+        <%= poetry_input_group_text { "Full Name" } %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <%= poetry_field(id: "align-block-end", label_text: "Block end",
+                   hint: "Footer positioned below the input.") do |field| %>
+    <%= poetry_input_group do %>
+      <%= poetry_input_group_input(name: "amount", placeholder: "Enter amount",
+                                   **field.control_attributes.transform_keys(&:to_sym)) %>
+      <%= poetry_input_group_addon(align: :"block-end") do %>
+        <%= poetry_input_group_text { "USD" } %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

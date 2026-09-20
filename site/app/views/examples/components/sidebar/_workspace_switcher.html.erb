@@ -1,0 +1,59 @@
+<div class="h-96 w-full overflow-hidden rounded-lg border contain-content [&_[data-slot=sidebar-container]]:h-full [&_[data-slot=sidebar-container]]:absolute">
+  <%= poetry_sidebar(collapsible: :icon) do |shell| %>
+    <% shell.with_nav do %>
+      <%# The switcher row IS the dropdown trigger: compose: true yields
+          the menu's wiring and the sidebar button wears it. %>
+      <%= poetry_sidebar_header do %>
+        <%= poetry_sidebar_menu do %>
+          <%= poetry_sidebar_menu_item do %>
+            <%= poetry_dropdown_menu do |menu| %>
+              <% menu.with_trigger(compose: true) do |wiring| %>
+                <%= poetry_sidebar_menu_button(size: :lg, **wiring) do %>
+                  <div class="flex aspect-square size-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
+                    <%= poetry_icon(name: :"gallery-vertical-end") %>
+                  </div>
+                  <div class="grid flex-1 text-left text-sm leading-tight">
+                    <span class="truncate font-semibold">Northwind Studio</span>
+                    <span class="truncate text-xs text-muted-foreground">Enterprise</span>
+                  </div>
+                  <%= poetry_icon(name: :"chevrons-up-down", class: "ml-auto") %>
+                <% end %>
+              <% end %>
+              <% menu.with_label { "Workspaces" } %>
+              <% menu.with_item(shortcut: "⌘1") { "Northwind Studio" } %>
+              <% menu.with_item(shortcut: "⌘2") { "Northwind Labs" } %>
+              <% menu.with_separator %>
+              <% menu.with_item { "Add workspace" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <%= poetry_sidebar_content do %>
+        <%= poetry_sidebar_group do %>
+          <%= poetry_sidebar_group_label { "Platform" } %>
+          <%= poetry_sidebar_menu do %>
+            <%= poetry_sidebar_menu_item do %>
+              <%= poetry_sidebar_menu_button(href: "#", active: true) do %>
+                <%= poetry_icon(name: :"layout-dashboard") %><span>Overview</span>
+              <% end %>
+            <% end %>
+            <%= poetry_sidebar_menu_item do %>
+              <%= poetry_sidebar_menu_button(href: "#") do %>
+                <%= poetry_icon(name: :users) %><span>Members</span>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <% shell.with_inset do %>
+      <div class="flex items-center gap-2 border-b p-3">
+        <%= poetry_sidebar_trigger %>
+        <span class="text-sm font-medium">Overview</span>
+      </div>
+      <div class="p-4 text-sm text-muted-foreground">
+        The header hosts a large switcher row for the active workspace.
+      </div>
+    <% end %>
+  <% end %>
+</div>

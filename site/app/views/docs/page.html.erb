@@ -1,0 +1,78 @@
+<% content_for :title, @entry.title %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item(@entry.section.capitalize) unless @entry.section == "docs" %>
+    <% crumb.with_item(@entry.title) %>
+  <% end %>
+<% end %>
+
+<div class="flex flex-col gap-10">
+  <header class="flex flex-col gap-2">
+    <h1 class="text-3xl font-semibold tracking-tight"><%= @entry.title %></h1>
+    <% if @entry.description %>
+      <p class="max-w-2xl text-muted-foreground"><%= @entry.description %></p>
+    <% end %>
+  </header>
+
+  <%# Per-page install (the shadcn docs pattern, reframed for Poetry): a
+      component ships in poetry-ui and is available the moment Poetry is
+      installed - poetry:add is the OWNERSHIP tier, not a requirement. Charts
+      ship in the separate, optional poetry-charts gem. Blocks are
+      generate-to-own on their own page template (block_page). %>
+  <% if @entry.section == "components" %>
+    <section class="flex flex-col gap-3">
+      <h2 class="text-lg font-medium" id="installation">Installation</h2>
+      <p class="max-w-2xl text-muted-foreground">
+        Included in <code class="text-foreground">poetry-ui</code> — available as
+        <code class="text-foreground">poetry_<%= @entry.slug.tr("-", "_") %></code>
+        the moment you've <%= poetry_link(href: "/installation") { "installed Poetry" } %>,
+        with no per-component step. To own the source and edit it, copy it into your app:
+      </p>
+      <%= poetry_code_block(code: "bin/rails g poetry:add #{@entry.slug}", language: "plaintext", label: "Copy-in") %>
+    </section>
+  <% elsif @entry.section == "charts" %>
+    <section class="flex flex-col gap-3">
+      <h2 class="text-lg font-medium" id="installation">Installation</h2>
+      <p class="max-w-2xl text-muted-foreground">
+        Charts ship in the separate, optional <code class="text-foreground">poetry-charts</code>
+        gem — not bundled with <code class="text-foreground">poetry-ui</code>. If you
+        don't have it yet, add it and wire it into your app:
+      </p>
+      <%= poetry_code_block(code: "bundle add poetry-charts\nbin/rails g poetry:install --charts", language: "shell", label: "Add charts") %>
+    </section>
+  <% end %>
+
+  <%# Page-specific sections (the rare page with prose beyond the generic
+      install/examples/styling flow) live in docs/extras/<section>/_<slug>.html.erb
+      and render between installation and the examples. Keyed by section
+      because slugs repeat across sections (/components/pagination vs the
+      /pagination guide). %>
+  <% if lookup_context.exists?("docs/extras/#{@entry.section}/#{@entry.slug}", [], true) %>
+    <%= render "docs/extras/#{@entry.section}/#{@entry.slug}" %>
+  <% end %>
+
+  <% if @examples.any? %>
+    <% @examples.each do |name| %>
+      <%= docs_example(@entry.section, @entry.slug, name) %>
+    <% end %>
+  <% else %>
+    <%= poetry_empty(media_variant: :icon, class: "border border-dashed py-16") do |empty| %>
+      <% empty.with_media { poetry_icon(name: :"book-open") } %>
+      <% empty.with_title { "Docs pending" } %>
+      <% empty.with_description do %>
+        <%= @entry.title %> ships in the gems — its gallery page hasn't been written yet.
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% if (api_object = api_component_object(@entry.section, @entry.slug)) %>
+    <%= render "docs/api", object: api_object %>
+  <% end %>
+
+  <% if (parts = DocsCatalog.parts_for(@entry.section, @entry.slug)).present? %>
+    <%= render "docs/styling", parts: parts,
+                               wiring: DocsCatalog.wiring_for(@entry.section, @entry.slug),
+                               tools: DocsCatalog.tools_for(@entry.section, @entry.slug) %>
+  <% end %>
+</div>

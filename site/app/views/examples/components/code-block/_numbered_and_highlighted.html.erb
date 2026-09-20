@@ -1,0 +1,12 @@
+<%# line_numbers: renders CSS counters (never in copied text);
+    highlight_lines: tints the named 1-based lines. %>
+<% code = <<~RUBY
+  def total
+    line_items.sum(&:amount)
+  end
+RUBY
+%>
+<div class="w-full max-w-xl">
+  <%= poetry_code_block(code: code, language: "ruby", label: "Total method",
+                        line_numbers: true, highlight_lines: [2]) %>
+</div>

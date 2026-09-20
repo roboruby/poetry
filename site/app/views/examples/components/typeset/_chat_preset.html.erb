@@ -1,0 +1,14 @@
+<%# The container-relative pitch: the same markdown follows the tighter
+    type around it. A preset is a tiny class — here inline vars stand in
+    for a .typeset-chat preset in your CSS. %>
+<div class="max-w-sm rounded-lg border bg-muted/30 p-4 text-sm">
+  <%= poetry_typeset(class: "[--typeset-flow:0.75em] [--typeset-leading:1.6]") do %>
+    <p>Here's the migration plan:</p>
+    <ol>
+      <li>Add the <code>status</code> column.</li>
+      <li>Backfill in batches.</li>
+    </ol>
+    <pre><code>bin/rails db:migrate</code></pre>
+    <p>Earlier blocks keep their styling as new ones stream in.</p>
+  <% end %>
+</div>

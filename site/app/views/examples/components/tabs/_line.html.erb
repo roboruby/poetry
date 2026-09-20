@@ -1,0 +1,7 @@
+<%# Upstream's tabs-line: the list alone carries the demo - three line
+    triggers, no panels (panel: false is the declared list-only shape). %>
+<%= poetry_tabs(variant: :line, label: "Docs sections") do |tabs| %>
+  <% tabs.with_tab("Overview", value: "overview", panel: false) %>
+  <% tabs.with_tab("Analytics", value: "analytics", panel: false) %>
+  <% tabs.with_tab("Reports", value: "reports", panel: false) %>
+<% end %>

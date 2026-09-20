@@ -1,0 +1,7 @@
+<%= poetry_command_dialog(placeholder: "Search pages…") do |palette| %>
+  <% palette.with_trigger(variant: :outline) { "Search pages" } %>
+  <% palette.with_empty { "No pages found — try fewer letters." } %>
+  <% palette.with_item(value: "dashboard") { "Dashboard" } %>
+  <% palette.with_item(value: "reports") { "Reports" } %>
+  <% palette.with_item(value: "settings") { "Settings" } %>
+<% end %>

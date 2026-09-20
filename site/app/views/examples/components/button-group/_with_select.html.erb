@@ -1,0 +1,9 @@
+<%= poetry_button_group("aria-label": "Currency amount") do %>
+  <%= poetry_select(placeholder: "USD", "aria-label": "Currency") do |select| %>
+    <% select.with_item(value: "usd") { "USD" } %>
+    <% select.with_item(value: "eur") { "EUR" } %>
+    <% select.with_item(value: "gbp") { "GBP" } %>
+  <% end %>
+  <%= poetry_input(name: "amount", placeholder: "0.00") %>
+  <%= poetry_button(variant: :outline) { "Convert" } %>
+<% end %>

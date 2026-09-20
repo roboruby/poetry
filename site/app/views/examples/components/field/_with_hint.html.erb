@@ -1,0 +1,9 @@
+<%# hint: renders below the control and lands in the control's
+    aria-describedby via control_attributes. %>
+<div class="w-80">
+  <%= poetry_field(id: "field-handle", label_text: "Handle",
+                   hint: "Public, letters and dashes only.") do |field| %>
+    <%= poetry_input(name: "handle",
+                     **field.control_attributes.transform_keys(&:to_sym)) %>
+  <% end %>
+</div>

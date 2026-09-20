@@ -1,0 +1,47 @@
+<%# Buttons OUTSIDE the scroller drive it through the controller's
+    programmatic command surface - scrollToStart / scrollToEnd /
+    scrollToMessage(id), the same methods outlet callers use. The
+    demo-scroller-commands controller is docs plumbing that only
+    forwards the clicks. %>
+<div data-controller="demo-scroller-commands" class="mx-auto flex w-full max-w-md flex-col gap-3">
+  <div class="flex flex-wrap items-center gap-2">
+    <%= poetry_button(variant: :outline, size: :sm, "data-action": "demo-scroller-commands#toStart") { "Top" } %>
+    <%= poetry_button(variant: :outline, size: :sm, "data-action": "demo-scroller-commands#toEnd") { "Latest" } %>
+    <%= poetry_dropdown_menu(align: :start) do |menu| %>
+      <% menu.with_trigger(variant: :outline, size: :sm) do %>
+        Jump to question <%= poetry_icon(name: :"chevron-down") %>
+      <% end %>
+      <% menu.with_group do |group| %>
+        <% group.with_item("data-demo-jump-id": "command-q1") { "The activation dip" } %>
+        <% group.with_item("data-demo-jump-id": "command-q2") { "What to compare" } %>
+        <% group.with_item("data-demo-jump-id": "command-q3") { "The experiment" } %>
+        <% group.with_item("data-demo-jump-id": "command-q4") { "The risk" } %>
+      <% end %>
+    <% end %>
+  </div>
+  <%= poetry_message_scroller(id: "scroller-commands", default_scroll_position: :start,
+                              class: "h-96 rounded-lg border",
+                              "data-demo-scroller-commands-target": "scroller") do %>
+    <% [
+      ["command-q1", "We're seeing activation dip after workspace creation. Can you help me find the likely step?",
+       "The sharpest drop is between creating the workspace and inviting the first teammate. Workspace creation is healthy, but the invite step is where users pause - the product asks for collaboration before the user has enough confidence in the workspace."],
+      ["command-q2", "What should I compare before we change the onboarding flow?",
+       "Compare three cohorts: users who choose a template before inviting teammates, users who start from a blank workspace, and users who skip invites but return within 24 hours. If template users invite faster, the fix is better first-run guidance rather than a louder invite prompt."],
+      ["command-q3", "Can you turn that into an experiment?",
+       "Yes. Show a short checklist after workspace creation: pick a template, add one project detail, invite a teammate once the workspace has context. Measure first-invite completion, 24-hour return rate, and second-project creation."],
+      ["command-q4", "What's the risk if we delay the invite prompt?",
+       "Reducing team creation for accounts that already know who they want to invite. Keep the invite action visible in the header and only change the primary empty-state guidance - confident teams keep a direct route."]
+    ].each_with_index do |(id, question, answer), i| %>
+      <%= poetry_message_scroller_item(id: id, anchor: true, class: "px-4 #{"pt-4" if i.zero?}") do %>
+        <%= poetry_message(align: :end) do |message| %>
+          <%= poetry_bubble { question } %>
+        <% end %>
+      <% end %>
+      <%= poetry_message_scroller_item(id: "#{id}-answer", class: "px-4 #{"pb-4" if i == 3}") do %>
+        <%= poetry_message do |message| %>
+          <%= poetry_bubble(variant: :muted) { answer } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,16 @@
+<%# The gauge look: disc tracks from with_polar_grid(radii:, fills:) plus
+    a center label - the shadcn "shape" radial block. %>
+<% config = {
+     visitors: { label: "Visitors" },
+     safari: { label: "Safari", color: "var(--chart-2)" }
+   }
+   data = [{ browser: "safari", visitors: 1260, fill: "var(--color-safari)" }] %>
+<div class="w-full max-w-xl">
+  <%= poetry_chart(:radial, data: data, config: config, id: "radial-shape",
+                   name_key: :browser, end_angle: 100,
+                   inner_radius: 65, outer_radius: 95) do |chart| %>
+    <% chart.with_polar_grid(radii: [86, 74], fills: %i[muted background]) %>
+    <% chart.with_radial_bar(data_key: :visitors, background: true) %>
+    <% chart.with_center_label(title: "1,260", subtitle: "Visitors") %>
+  <% end %>
+</div>

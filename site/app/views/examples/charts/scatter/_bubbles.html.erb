@@ -1,0 +1,23 @@
+<%# with_z_axis sizes each point by a third dimension - the range is
+    marker AREA in px2 (recharts ZAxis semantics; r = sqrt(area/pi)). %>
+<% data = [
+     { height: 161, weight: 51, bmi: 19.7 },
+     { height: 167, weight: 59, bmi: 21.2 },
+     { height: 170, weight: 68, bmi: 23.5 },
+     { height: 174, weight: 66, bmi: 21.8 },
+     { height: 178, weight: 79, bmi: 24.9 },
+     { height: 183, weight: 84, bmi: 25.1 },
+     { height: 189, weight: 95, bmi: 26.6 }
+   ]
+   config = { sample: { label: "Sample", color: "var(--chart-1)" } } %>
+<div class="w-full max-w-xl">
+  <%= poetry_chart(:scatter, data: data, config: config, id: "scatter-bubbles",
+                   margin: { left: 12, right: 12 }) do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis(data_key: :height, name: "Height") %>
+    <% chart.with_y_axis(data_key: :weight, name: "Weight") %>
+    <% chart.with_z_axis(data_key: :bmi, range: [64, 400]) %>
+    <% chart.with_scatter(key: :sample) %>
+    <% chart.with_tooltip %>
+  <% end %>
+</div>

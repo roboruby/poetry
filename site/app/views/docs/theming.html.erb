@@ -1,0 +1,387 @@
+<% content_for :title, "Theming" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Theming") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag, never inside an output tag.
+  install_theme_source = <<~CODE
+    bin/rails g poetry:install --charts --theme vega
+    # app/assets/tailwind/poetry/style-default.css  <- vega's bytes land here
+    # app/assets/tailwind/poetry/style-charts.css   <- and the chart-side match
+  CODE
+  registry_source = <<~CODE
+    /* style-registry.css */
+    @import "./styles/style-vega.css" layer(base);   /* .style-vega { .cn-* rules } */
+    @custom-variant style-vega (&:where(.style-vega *));
+  CODE
+  fonts_source = <<~CODE
+    .style-lyra { font-family: ui-monospace, SFMono-Regular, Menlo, ...; }
+    .style-sera { font-family: ui-serif, Georgia, Cambria, ...; }
+  CODE
+  design_source = <<~CODE
+    # write this app's design as the shared artifact
+    bin/rails poetry:design:export        # -> DESIGN.md (tokens + treatment + both modes)
+
+    # read a brand's DESIGN.md into token overrides
+    bin/rails 'poetry:design:import[path/to/DESIGN.md]'
+  CODE
+  own_theme_source = <<~CODE
+    /* 1. copy app/assets/tailwind/poetry/style-default.css to style-acme.css
+       2. point the entry import at your copy (keep layer(base)) */
+    @import "./poetry/style-acme.css" layer(base);
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Theming</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      Poetry ships nine complete themes: the upstream shadcn styles at the
+      <code class="font-mono text-base">shadcn@4.21.0</code> release, translated onto the
+      <code class="font-mono text-base">cn-*</code> layer. An app installs
+      one; this site renders all nine. Use the style picker in the header to
+      view any page in any theme.
+    </p>
+  </header>
+
+  <%# The docs prose rides poetry/typeset: bare elements, rhythm
+      from the preset; Poetry components sit between prose runs as chrome. %>
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="the-nine-themes">The nine themes</h2>
+      <p>
+        Themes change shape and texture only: radii, spacing, borders, type
+        scale, scrims. Color tokens live one layer down
+        (<code>tokens.css</code>) and are shared, so light/dark mode is
+        orthogonal to the theme choice.
+      </p>
+      <table>
+        <thead>
+          <tr><th>Theme</th><th>Character</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>default</code></td><td>Poetry's original look: the new-york-v4 lineage the library was built against</td></tr>
+          <tr><td><code>vega</code></td><td>closest to default: ring-based surfaces, subtle blur scrims, xl radii</td></tr>
+          <tr><td><code>nova</code></td><td>compact: tighter paddings and smaller surfaces</td></tr>
+          <tr><td><code>mira</code></td><td>compact and quiet: relaxed xs body text, heavily dimmed drawer scrims</td></tr>
+          <tr><td><code>rhea</code></td><td>soft and elevated: capped 4xl radii, shadow-xl, blurred scrims</td></tr>
+          <tr><td><code>maia</code></td><td>fully rounded: 4xl surfaces, deeply dimmed scrims</td></tr>
+          <tr><td><code>luma</code></td><td>soft-round: blurred scrims and a floating drawer frame</td></tr>
+          <tr><td><code>lyra</code></td><td>boxy and sharp: radius zero, type one step down, made for mono fonts</td></tr>
+          <tr><td><code>sera</code></td><td>editorial: uppercase tracked type, underline-only fields, serif pairing</td></tr>
+        </tbody>
+      </table>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="installing-a-theme">Installing a theme</h2>
+      <p>
+        An app carries <strong>one</strong> theme. The installer copies the
+        chosen fragment into a fixed slot; re-run with a different
+        <code>--theme</code> to switch; the slot filename never changes, so
+        nothing else in your app moves. That is why the file is called
+        <code>style-default.css</code> whichever theme you picked: the name is
+        the slot, and the file&#39;s first line names the theme inside it (the
+        install prints the same line, and a re-run reads it back).
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: install_theme_source, language: "shell", label: "Theme install") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Fragments import into <code>layer(base)</code>, so utility classes
+        you write in templates always win over the theme.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="your-tokens-win">Your tokens win</h2>
+      <p>
+        Poetry's token names are the widely shared ones
+        (<code>--primary</code>, <code>--accent</code>, <code>--muted</code>,
+        <code>--radius</code>), and an existing app may already own some of
+        them with its own meaning. Poetry's values are defaults: the tokens
+        import into <code>layer(theme)</code> and the Tailwind mapping is
+        <code>@theme inline default</code>, so anything you declare wins, whether
+        it sits before or after the Poetry imports, and your value reaches
+        Poetry's components too. Installing Poetry never changes a color or
+        a radius your app already set.
+      </p>
+      <p>
+        The install tells you which of your declarations now reach Poetry:
+        each shared name is listed with its file and line and what Poetry
+        paints with that role, and <code>bin/rails poetry:check</code>
+        repeats the list as <code>token-collision</code> warnings. If a name
+        means something else in your app (an <code>--accent</code> that is a
+        brand color, where Poetry's is the quiet hover surface in menus),
+        rename yours, or set Poetry's meaning explicitly in
+        <code>design-overrides.css</code>, which loads after everything and
+        wins. A value declared on <code>:root</code> alone also applies in
+        dark mode; declare a <code>.dark</code> value beside it when the two
+        should differ.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="owning-the-design">Owning the design outright</h2>
+      <p>
+        The vendored slot is refreshed on every install re-run, which keeps
+        upstream visual updates flowing but means edits to it are overwritten.
+        To own the design instead, copy the fragment out of the slot and point
+        the entry import at your copy:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: own_theme_source, language: "css", label: "Own the fragment") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Then restyle freely. The markup never changes, because components emit
+        stable <code>cn-*</code> names plus structural classes only: every
+        component's visual treatment is a named rule
+        (<code>.cn-button</code>, <code>.cn-card-header</code>), and each
+        variant and size has its own class
+        (<code>.cn-button-variant-destructive</code>,
+        <code>.cn-button-size-lg</code>). Two orders matter when editing a
+        copy. Inside the theme, order is meaning: per component, base rules
+        come before element, variant, and compound rules so the later ones
+        win, and rules that restyle <em>another</em> component's surface sit
+        in a closing section after everything they override. And in the
+        cascade, any unlayered rule you write beats <code>layer(base)</code>;
+        against the shipped theme that power is the declared-override channel
+        described under "Overriding the theme" below. The same rule cuts the
+        other way for an app with existing stylesheets; the
+        <a href="<%= installation_path %>#existing-css">Installation guide</a>
+        says what to do about it.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="how-this-site-renders-all-nine">How this site renders all nine</h2>
+      <p>
+        When two or more themes must coexist, each fragment is wrapped in a
+        <code>.style-&lt;name&gt;</code> block and every wrapped fragment is
+        imported together, the same mechanism the upstream shadcn app uses.
+        Exactly one <code>style-&lt;name&gt;</code> class sits on
+        <code>&lt;html&gt;</code> at all times (Poetry fragments are
+        complete visual layers, so a lone unscoped theme would leak tokens
+        into whichever theme is stamped).
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: registry_source, language: "css", label: "style-registry.css") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        The <code>@custom-variant</code> half also enables per-style opt-ins
+        in markup. This card rounds off under vega only:
+      </p>
+    <% end %>
+    <div class="style-vega:rounded-none max-w-2xl rounded-lg border p-4 text-sm">
+      <code class="font-mono">class="style-vega:rounded-none rounded-lg border p-4"</code>
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="the-font-pairing">The font pairing</h2>
+      <p>
+        No Poetry theme moves a font token; upstream's fragments don't
+        either. The pairings are metadata from upstream's create flow:
+        <strong>lyra</strong> is biased hard to mono (JetBrains Mono, radius
+        forced to zero) and <strong>sera</strong> keeps serif company (Noto
+        Serif, Instrument Serif). lyra and sera move their typography
+        through size, weight, tracking and uppercase utilities, which port
+        verbatim; the family is your call.
+      </p>
+      <p>
+        This site honors the pairing with system stacks keyed off the same
+        switcher class: pick lyra or sera in the header and watch the page
+        follow:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: fonts_source, language: "css", label: "Font stacks") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        In your own app, set the family alongside the install; e.g. load
+        JetBrains Mono and point <code>--font-sans</code> at it when
+        installing lyra. The same vars feed
+        <%= link_to "typeset", typography_path %> presets.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="overrides">Overriding the theme</h2>
+      <p>
+        Utility classes in your templates always win over the theme
+        (fragments import into <code>layer(base)</code>), and token-level
+        restyling has its own channel:
+        <code>poetry:design:import</code> writes
+        <code>design-overrides.css</code> from a DESIGN.md. Writing your own
+        CSS against theme-owned <code>cn-*</code> classes is the third,
+        sharpest tool: allowed, but it must be <strong>declared</strong>, a
+        dated, reasoned, file-scoped entry under <code>overrides:</code> in
+        <code>config/poetry_components.yml</code>.
+      </p>
+      <p>
+        An override is a rule against a class the theme owns: a name a
+        Poetry dictionary emits, or one the installed fragment defines on
+        purpose. Classes of your own in the <code>cn-*</code> namespace, a
+        kit's dictionary or a page helper, are yours and never findings;
+        a class you reuse from the theme, such as a subclass keeping
+        <code>cn-badge</code> as its base, is still the theme's, because a
+        rule against it restyles every Badge on the page.
+        <code>bin/rails poetry:design:overrides</code> reports both
+        directions: undeclared <code>cn-*</code> rules (drift; the report
+        prints a paste-ready declaration) and stale declarations that no
+        longer match any CSS. Declared overrides travel into the exported
+        DESIGN.md as an "Intentional deviations" section, so design intent
+        is versioned with the design. This site dogfoods the contract: the
+        style switcher's nine scoped theme copies are one declared override.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="design-md-interop">DESIGN.md interop</h2>
+      <p>
+        DESIGN.md is the design-skill ecosystem's shared artifact — design
+        skills across the ecosystem study a brand and emit one, and Poetry
+        both writes and reads the format. The loop
+        end-to-end: study a brand with any design skill, hand the resulting
+        file to Poetry, and the app themes itself, with the same contrast
+        gate Poetry's own tokens live under.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: design_source, language: "shell", label: "DESIGN.md loop") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Import maps role names conservatively (Poetry roles, a short alias
+        set like <code>brand → primary</code>, and Material-style
+        <code>on-*</code> pairs); everything else is listed in the report
+        and dropped, never guessed. Every token-pair the import touches is
+        measured against the WCAG AA floor on the merged set; a failing pair
+        is dropped with a deterministic nearest-passing suggestion (an OKLCH
+        lightness walk, chroma held), and only
+        <code>POETRY_DESIGN_FORCE=1</code> ships one. Fonts never enter CSS
+        (the pairing above stays metadata); a light-only palette gets its
+        dark values pinned to the Poetry defaults so the overrides can't
+        leak across modes. The result lands in
+        <code>app/assets/tailwind/poetry/design-overrides.css</code>, wired
+        after the theme imports; <code>POETRY_DESIGN_JSON=1</code> emits the
+        report as JSON for tooling.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="what-stays-out-of-the-theme">What stays out of the theme</h2>
+      <p>
+        Behavioral and structural classes stay in markup
+        (<code>inline-flex</code>, <code>open:grid</code>,
+        <code>disabled:pointer-events-none</code>, positioning vars, the
+        slider's geometry chain): a theme can restyle every surface but can
+        never break behavior. A few components are machinery with no
+        <code>cn-*</code> surface at all: AspectRatio, Separator, Spinner,
+        ScrollArea, and the chart Container, with Carousel and Resizable close
+        behind (only their navigation buttons and handle icon carry theme
+        rules). Restyle those via <code>data-slot</code> selectors or
+        <code>class:</code>. The chart palette also stays out: series colors
+        ride tokens (<code>--chart-1</code> through <code>--chart-5</code>),
+        marks take <code>var(--color-&lt;key&gt;)</code>, and chart chrome
+        (grid, ticks, cursor, tooltip, legend) ships as its own fragment,
+        <code>style-charts.css</code>, shared across chart families.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="consumer-utilities">Consumer utilities</h2>
+      <p>
+        Two standalone classes the theme defines for direct use in your own
+        markup. <code>.cn-font-heading</code> is the heading-font hook: a
+        no-op until you define <code>--font-heading</code> (it falls back to
+        <code>--font-sans</code>); Empty's title wears it, and you can put it
+        on any element that should follow the heading face.
+        <code>.cn-rtl-flip</code> mirrors an icon under RTL; Pagination and
+        Breadcrumb chevrons wear it.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="color-scheme">Color scheme (dark mode)</h2>
+      <p>
+        Every theme ships both modes: the tokens define <code>:root</code>
+        (light) and <code>.dark</code> overrides, and both blocks carry
+        <code>color-scheme</code>, so scrollbars, form-control chrome, and
+        canvas defaults follow the app's mode rather than the OS preference.
+        What the gem does not decide is <em>when</em> <code>.dark</code>
+        applies; that part is one line in the host layout, rendered inside
+        <code>&lt;head&gt;</code> before the stylesheets:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: theming_guide_snippets[:color_scheme_head], language: "erb", label: "Layout head") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Before first paint it reads the stored preference, falls back to the
+        OS setting, and toggles <code>.dark</code> on <code>&lt;html&gt;</code>,
+        so a refresh never flashes light mode, and an unset preference follows
+        the OS live, including mid-session switches. Because the class lives
+        on <code>&lt;html&gt;</code>, Turbo visits and back-button restores
+        keep the mode with no re-application. The script also installs a
+        switch API; wire any control to it:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: theming_guide_snippets[:color_scheme_toggle], language: "erb", label: "A toggle control") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        <code>Poetry.colorScheme.current()</code> reads the active mode,
+        <code>set("dark")</code> / <code>set("light")</code> pins one,
+        <code>toggle()</code> flips, and <code>clear()</code> returns to
+        following the OS. Every change dispatches a
+        <code>poetry:color-scheme</code> event (bubbling, with the mode in
+        <code>detail</code>) for anything that must redraw with the mode:
+        chart recoloring, embedded editors, maps.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="portals-and-scoped-themes">Portals and scoped themes</h2>
+      <p>
+        Floating overlays (tooltip, hover card, popover, select, combobox,
+        the menus) move to <code>&lt;body&gt;</code> while open and return
+        home on close, so no clipping or transformed ancestor can trap them.
+        With a normal install this is invisible to theming: one theme loads
+        globally, so a body-level popup matches the same rules it matched in
+        place. The one setup that needs a knob is a theme scoped to a
+        <em>subtree</em> (a themed section inside a differently themed page).
+        A popup moved to <code>&lt;body&gt;</code> would leave that scope, so
+        point it at a container inside the scope instead:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: theming_guide_snippets[:portal_container], language: "erb", label: "Scoped overlay container") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        <code>data-poetry-portal-container</code> names the target by id and
+        rides the component root. Pick a container that no
+        <code>overflow: hidden</code> ancestor clips and no transformed
+        ancestor captures; those two escapes are most of what the move buys.
+      </p>
+    <% end %>
+  </section>
+</div>

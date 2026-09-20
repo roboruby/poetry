@@ -1,0 +1,24 @@
+<%# Panel links pair a poetry_icon with the label - the link is already
+    flex items-center, so a class: "gap-2" override spaces the two. %>
+<div class="flex min-h-64 justify-center p-4">
+  <%= poetry_navigation_menu(label: "Account") do |nav| %>
+    <% nav.with_item("Account", value: "account") do %>
+      <div class="grid w-56 gap-1">
+        <%= poetry_navigation_menu_link(href: "#", active: true, class: "gap-2") do %>
+          <%= poetry_icon(name: :user) %><span>Profile</span>
+        <% end %>
+        <%= poetry_navigation_menu_link(href: "#", class: "gap-2") do %>
+          <%= poetry_icon(name: :settings) %><span>Preferences</span>
+        <% end %>
+        <%= poetry_navigation_menu_link(href: "#", class: "gap-2") do %>
+          <%= poetry_icon(name: :"credit-card") %><span>Billing</span>
+        <% end %>
+        <%= poetry_navigation_menu_link(href: "#", class: "gap-2") do %>
+          <%= poetry_icon(name: :inbox) %><span>Notifications</span>
+        <% end %>
+      </div>
+    <% end %>
+    <% nav.with_link("Pricing", href: "#") %>
+    <% nav.with_link("Support", href: "#") %>
+  <% end %>
+</div>

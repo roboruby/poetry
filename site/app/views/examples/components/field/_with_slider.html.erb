@@ -1,0 +1,11 @@
+<%# A Slider is role-bearing too (group: true). The single thumb takes its
+    accessible name from the field label via labelled_by:, and the hint
+    reaches the thumb through described_by: - the Field-wired slider recipe. %>
+<div class="w-80">
+  <%= poetry_field(id: "field-budget", label_text: "Monthly budget",
+                   hint: "Drag to set your spending cap.", group: true) do |field| %>
+    <%= poetry_slider(name: "budget", value: 40,
+                      labelled_by: field.label_id, described_by: field.hint_id,
+                      class: "w-full") %>
+  <% end %>
+</div>

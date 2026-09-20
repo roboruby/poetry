@@ -1,0 +1,20 @@
+<% data = [
+     { height: 161, weight: 51 },
+     { height: 167, weight: 59 },
+     { height: 170, weight: 68 },
+     { height: 174, weight: 66 },
+     { height: 178, weight: 79 },
+     { height: 183, weight: 84 },
+     { height: 189, weight: 95 }
+   ]
+   config = { sample: { label: "Sample", color: "var(--chart-1)" } } %>
+<div class="w-full max-w-xl">
+  <%= poetry_chart(:scatter, data: data, config: config, id: "scatter-default",
+                   margin: { left: 12, right: 12 }) do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis(data_key: :height, name: "Height") %>
+    <% chart.with_y_axis(data_key: :weight, name: "Weight") %>
+    <% chart.with_scatter(key: :sample) %>
+    <% chart.with_tooltip %>
+  <% end %>
+</div>

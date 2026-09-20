@@ -1,0 +1,48 @@
+# poetry layout components
+
+Contracts generated from the registry. `RULE` lines are constraints,
+not suggestions. Options are keywords; content is the block.
+
+## aspect_ratio (`poetry_aspect_ratio`)
+
+Locks its content to a fixed width-to-height ratio.
+
+Class: Poetry::Ui::AspectRatio::Component - BEM block `poetry-ui-aspect_ratio`.
+- `ratio:` (string) - required - A CSS <ratio>: "16/9", "1", "1.5" - kept a string so the fraction survives verbatim into the --ratio custom property.
+- PART `aspect-ratio` - The ratio-locked box - the content block fills it | vars: --ratio (always - the ratio: fraction verbatim ('16/9'), consumed by the theme's aspect-ratio rule)
+- RULE: Pass ratio: as a string fraction ('16/9', '1/1') - Ruby's 16/9 is integer division (1).
+- RULE: The child fills the box itself (size-full object-cover on an image).
+
+## resizable (`poetry_resizable`)
+
+Panels with draggable handles for resizing adjacent regions.
+
+Class: Poetry::Ui::Resizable::Component - BEM block `poetry-ui-resizable`.
+Slot REQUIRED: with_panel (at least two panels) - a call without it raises.
+- `direction:` (symbol) - one of horizontal|vertical, default "horizontal" - The group axis: :horizontal lays panels side by side, :vertical stacks them.
+- `grip:` (boolean) - default false - Renders the grip dots on each handle.
+Slots: panels (One panel per call: default_size/min_size/max_size are percentages of the group; the content block is required.; many; with_panel yields NOTHING to the block - no |param|, write content directly; with_panel keywords: default_size:, min_size:, max_size:, classes: ONLY; with_panel REQUIRES a content block (the panel content)).
+- PART `resizable-panel-group` - The flex group root - the splitter controller rides here | states: data-orientation=horizontal|vertical (the group axis)
+- PART `resizable-panel` - One flex child whose flex-grow IS its percentage - the controller rewrites the inline flex on every resize | states: data-min-size (the panel's minimum percentage, rendered when with_panel passes min_size: (the controller's clamp floor)); data-max-size (the panel's maximum percentage, rendered when with_panel passes max_size: (the controller's clamp ceiling))
+- PART `resizable-handle` - The role=separator splitter between panels - drag and keyboard resizing live here; its aria-valuenow tracks the preceding panel
+- WIRING root: `poetry--core--resizable` registers; values orientation
+- WIRING handle: `poetry--core--resizable` actions dragStart on pointerdown, dragMove on pointermove, dragEnd on pointerup, keydown on keydown
+- RULE: Declare panels with with_panel(default_size:, min_size:, max_size:) - sizes are PERCENTAGES and the component interleaves the separator handles.
+- RULE: direction: :horizontal is side-by-side (the default); :vertical stacks.
+- RULE: Handles are keyboard splitters (arrows step, Home/End jump) - never replace them with styled divs.
+- RULE: Nest a group inside a panel for two-axis layouts - groups self-scope.
+
+## scroll_area (`poetry_scroll_area`)
+
+A bounded, keyboard-reachable scroll region with styled scrollbars.
+
+Class: Poetry::Ui::ScrollArea::Component - BEM block `poetry-ui-scroll_area`.
+Content block REQUIRED (what scrolls) - a blockless call raises.
+- `label:` (string) - required - The region's accessible name (role=region + aria-label) - required, because a focusable region must be named.
+- PART `scroll-area` - The bounding wrapper - size it with classes; content decides the overflow
+- PART `scroll-area-viewport` - The focusable native scroll region (role=region + tabindex=0) with themed platform scrollbars - zero JS
+- RULE: Size the scroll area with classes (h-72 w-48, max-h-96) - content decides the overflow.
+- RULE: label: is REQUIRED - the viewport is focusable, and a focusable region needs a name (role=region + aria-label).
+- RULE: This is a NATIVE scroll surface - never bolt scroll JS onto it; use MessageScroller for chat transcripts.
+
+

@@ -1,0 +1,17 @@
+<%# The action that fixes the emptiness is a search — an input group drops
+    into the content block so the reader can look for what isn't listed yet.
+    The label stays present (sr-only) for the borderless group control. %>
+<%= poetry_empty(media_variant: :icon) do |empty| %>
+  <% empty.with_media { poetry_icon(name: :search) } %>
+  <% empty.with_title { "No results found" } %>
+  <% empty.with_description { "Try another term, or search the full catalog." } %>
+  <div class="w-full max-w-xs">
+    <%= poetry_label(for_id: "empty-search", class: "sr-only") { "Search catalog" } %>
+    <%= poetry_input_group do %>
+      <%= poetry_input_group_addon do %>
+        <%= poetry_icon(name: :search) %>
+      <% end %>
+      <%= poetry_input_group_input(id: "empty-search", name: "q", placeholder: "Search the catalog…") %>
+    <% end %>
+  </div>
+<% end %>

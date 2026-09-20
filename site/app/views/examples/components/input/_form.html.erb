@@ -1,0 +1,40 @@
+<%# Upstream input-form: a whole form through FieldGroup - stacked
+    fields, a two-column row pairing phone and country, a plain actions
+    row (field horizontal is the boolean-control layout, not a generic
+    row). Name is required: aria-required rides the field, no native
+    attribute, no asterisk - upstream's own treatment here. %>
+<form class="w-full max-w-sm">
+  <%= poetry_field_group do %>
+    <%= poetry_field(id: "form-name", label_text: "Name", required: true) do |field| %>
+      <%= poetry_input(name: "name", placeholder: "Evil Rabbit",
+                       **field.control_attributes.transform_keys(&:to_sym)) %>
+    <% end %>
+    <%= poetry_field(id: "form-email", label_text: "Email",
+                     hint: "We'll never share your email with anyone.") do |field| %>
+      <%= poetry_input(type: "email", name: "email", placeholder: "john@example.com",
+                       **field.control_attributes.transform_keys(&:to_sym)) %>
+    <% end %>
+    <div class="grid grid-cols-2 gap-4">
+      <%= poetry_field(id: "form-phone", label_text: "Phone") do |field| %>
+        <%= poetry_input(type: "tel", name: "phone", placeholder: "+1 (555) 123-4567",
+                         **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+      <%= poetry_field(id: "form-country", label_text: "Country") do |field| %>
+        <%= poetry_select(name: "country", value: "us",
+                          **field.control_attributes.transform_keys(&:to_sym)) do |select| %>
+          <% select.with_item(value: "us") { "United States" } %>
+          <% select.with_item(value: "uk") { "United Kingdom" } %>
+          <% select.with_item(value: "ca") { "Canada" } %>
+        <% end %>
+      <% end %>
+    </div>
+    <%= poetry_field(id: "form-address", label_text: "Address") do |field| %>
+      <%= poetry_input(name: "address", placeholder: "123 Main St",
+                       **field.control_attributes.transform_keys(&:to_sym)) %>
+    <% end %>
+    <div class="flex items-center gap-2">
+      <%= poetry_button(variant: :outline, type: :button) { "Cancel" } %>
+      <%= poetry_button(type: :submit) { "Submit" } %>
+    </div>
+  <% end %>
+</form>

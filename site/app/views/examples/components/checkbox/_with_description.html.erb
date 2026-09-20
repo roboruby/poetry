@@ -1,0 +1,12 @@
+<%# A checkbox with a primary label and a secondary line of description
+    text. Top-aligned (items-start) so the box lines up with the first line
+    of copy rather than centering against the whole block. %>
+<div class="flex items-start gap-3">
+  <%= poetry_checkbox(name: "usage_data", checked: true, id: "checkbox-usage") %>
+  <div class="grid gap-1.5 leading-none">
+    <%= poetry_label(for_id: "checkbox-usage") { "Share anonymous usage data" } %>
+    <p class="text-sm text-muted-foreground">
+      Diagnostics help us find and fix crashes faster. No personal information is ever collected.
+    </p>
+  </div>
+</div>

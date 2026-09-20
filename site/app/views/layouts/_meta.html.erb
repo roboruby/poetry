@@ -1,0 +1,17 @@
+<%# Shared by both layouts: description, canonical, Open Graph, Twitter. %>
+<% meta = page_meta %>
+<meta name="description" content="<%= meta[:description] %>">
+<link rel="canonical" href="<%= meta[:canonical] %>">
+<meta property="og:site_name" content="<%= PageMetaHelper::SITE_NAME %>">
+<meta property="og:type" content="<%= meta[:type] %>">
+<meta property="og:title" content="<%= meta[:og_title] %>">
+<meta property="og:description" content="<%= meta[:description] %>">
+<meta property="og:url" content="<%= meta[:canonical] %>">
+<meta property="og:image" content="<%= meta[:image] %>">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="poetry, the AI-native UI component library for Ruby on Rails">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<%= meta[:og_title] %>">
+<meta name="twitter:description" content="<%= meta[:description] %>">
+<meta name="twitter:image" content="<%= meta[:image] %>">

@@ -1,0 +1,24 @@
+<%# legend_variant: :label renders the legend at label size - the
+    checkbox/switch-run form, where the group reads as one setting. %>
+<div class="w-full max-w-xs">
+  <%= poetry_fieldset(legend: "Email me about", legend_variant: :label,
+                      hint: "Unsubscribe anytime.") do %>
+    <%= poetry_field_group(variant: :choices) do %>
+      <%= poetry_field(id: "fieldset-product-news", label_text: "Product news",
+                       orientation: :horizontal) do |field| %>
+        <%= poetry_checkbox(name: "product_news", checked: true,
+                            **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+      <%= poetry_field(id: "fieldset-security", label_text: "Security alerts",
+                       orientation: :horizontal) do |field| %>
+        <%= poetry_checkbox(name: "security_alerts", checked: true,
+                            **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+      <%= poetry_field(id: "fieldset-digest", label_text: "Weekly digest",
+                       orientation: :horizontal) do |field| %>
+        <%= poetry_checkbox(name: "digest",
+                            **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

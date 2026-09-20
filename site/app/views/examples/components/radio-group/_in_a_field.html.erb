@@ -1,0 +1,17 @@
+<%# Field-bound (the FormBuilder shape): group: true drops the label's
+    for= (the root is a role-bearing div) and control_attributes names
+    the group via aria-labelledby plus the id + aria-describedby hint
+    wiring. %>
+<% field = Poetry::Ui::Field::Component.new(
+     id: "radio-subscription", label_text: "Subscription",
+     hint: "You can change this anytime.", required: true, group: true
+   ) %>
+<div class="w-80">
+  <%= render field do %>
+    <%= poetry_radio_group(name: "subscription", value: "monthly", required: true,
+                           **field.control_attributes.transform_keys(&:to_sym)) do |group| %>
+      <% group.with_item(value: "monthly", label: "Monthly") %>
+      <% group.with_item(value: "yearly", label: "Yearly") %>
+    <% end %>
+  <% end %>
+</div>

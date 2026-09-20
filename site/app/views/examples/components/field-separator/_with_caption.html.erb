@@ -1,0 +1,12 @@
+<%# Pass a block for the inline caption form - the caption sits on the
+    line, backed by the page background. %>
+<div class="w-full max-w-xs">
+  <%= poetry_field_group do %>
+    <%= poetry_field(id: "caption-email", label_text: "Email") do |field| %>
+      <%= poetry_input(type: "email", name: "email",
+                       **field.control_attributes.transform_keys(&:to_sym)) %>
+    <% end %>
+    <%= poetry_field_separator do %>Or continue with<% end %>
+    <%= poetry_button(variant: :outline, class: "w-full") { "Login with Google" } %>
+  <% end %>
+</div>

@@ -1,0 +1,13 @@
+<%# A hidden panel is not visible - so a deferred panel loads on FIRST
+    ACTIVATION with zero extra wiring (with_tab defer:). Switch to
+    Activity and watch the fragment arrive. %>
+<div class="w-full max-w-md">
+  <%= poetry_tabs(label: "Deferred panel demo") do |tabs| %>
+    <% tabs.with_tab("Overview", value: "overview") do %>
+      <p class="text-sm text-muted-foreground">
+        The Activity panel below is a lazy frame - it has not been fetched yet.
+      </p>
+    <% end %>
+    <% tabs.with_tab("Activity", value: "activity", defer: deferred_fragment_path) %>
+  <% end %>
+</div>

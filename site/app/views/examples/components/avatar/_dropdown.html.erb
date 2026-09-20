@@ -1,0 +1,17 @@
+<%# The avatar as the user-menu button (upstream avatar#dropdown): it
+    composes INTO with_trigger's icon Button, which owns the menu aria
+    wiring no matter what renders inside; label: names the otherwise
+    image-only control. (Same inline SVG stand-in photo as With image.) %>
+<% image = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNjM2NmYxIi8+PHN0b3Agb2Zmc2V0PSIuNTUiIHN0b3AtY29sb3I9IiM4YjVjZjYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNlYzQ4OTkiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIGZpbGw9InVybCgjZykiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjI1IiByPSIxMCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjkiLz48cGF0aCBkPSJNMTIgNjRjMi0xMyAxMC0xOSAyMC0xOXMxOCA2IDIwIDE5eiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjkiLz48L3N2Zz4=" %>
+<%= poetry_dropdown_menu(align: :start) do |menu| %>
+  <% menu.with_trigger(variant: :ghost, size: :icon, label: "Open user menu", class: "rounded-full") do %>
+    <%= poetry_avatar(src: image, label: "Grace Hopper") { "GH" } %>
+  <% end %>
+  <% menu.with_group do |group| %>
+    <% group.with_item { "Profile" } %>
+    <% group.with_item { "Billing" } %>
+    <% group.with_item { "Settings" } %>
+  <% end %>
+  <% menu.with_separator %>
+  <% menu.with_item(variant: :destructive) { "Log out" } %>
+<% end %>

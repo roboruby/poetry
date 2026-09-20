@@ -1,0 +1,16 @@
+<%# with_group(label:) names a run of options (the label is presentation
+    plus aria wiring, never selectable) and with_separator rules between
+    groups - items, groups, and separators interleave in render order. %>
+<%= poetry_select(placeholder: "Select produce", "aria-label": "Produce", class: "w-48") do |select| %>
+  <% select.with_group(label: "Fruits") do |group| %>
+    <% group.with_item(value: "apple") { "Apple" } %>
+    <% group.with_item(value: "banana") { "Banana" } %>
+    <% group.with_item(value: "blueberry") { "Blueberry" } %>
+  <% end %>
+  <% select.with_separator %>
+  <% select.with_group(label: "Vegetables") do |group| %>
+    <% group.with_item(value: "carrot") { "Carrot" } %>
+    <% group.with_item(value: "broccoli") { "Broccoli" } %>
+    <% group.with_item(value: "spinach") { "Spinach" } %>
+  <% end %>
+<% end %>

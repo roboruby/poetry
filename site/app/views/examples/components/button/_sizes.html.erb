@@ -1,0 +1,8 @@
+<div class="flex flex-wrap items-center gap-2">
+  <%= poetry_button(size: :sm) { "Small" } %>
+  <%= poetry_button { "Default" } %>
+  <%= poetry_button(size: :lg) { "Large" } %>
+  <%= poetry_button(size: :icon, label: "Settings") do %>
+    <%= poetry_icon(name: :settings) %>
+  <% end %>
+</div>

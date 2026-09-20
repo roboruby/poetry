@@ -1,0 +1,8 @@
+<%= poetry_alert_dialog do |dialog| %>
+  <% dialog.with_trigger(variant: :outline) { "Revoke API key" } %>
+  <% dialog.with_media { poetry_icon(name: :"triangle-alert") } %>
+  <% dialog.with_title { "Revoke this API key?" } %>
+  <% dialog.with_description { "Any service still authenticating with this key will stop working immediately. You can issue a replacement at any time." } %>
+  <% dialog.with_cancel { "Keep key" } %>
+  <% dialog.with_action(variant: :destructive) { "Revoke key" } %>
+<% end %>

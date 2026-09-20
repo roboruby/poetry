@@ -1,0 +1,41 @@
+<%# live: true - the server renders the first window complete; the ticker
+    below streams a sliding window by rewriting the payload script's JSON
+    in place (exactly the shape a turbo_stream.update delivers) and the
+    client renderer redraws. Zero server round trips after first paint. %>
+<% data = Array.new(8) do |i|
+     { t: "T#{i + 1}",
+       desktop: (180 + (Math.sin(i / 1.5) * 90)).round,
+       mobile: (110 + (Math.cos(i / 2.0) * 60)).round }
+   end %>
+<div class="w-full max-w-xl" data-slot="demo-live">
+  <%= poetry_chart :area, data: data, id: "live-demo", live: true,
+                   animation_duration: 300,
+                   config: { desktop: { label: "Desktop", color: "var(--chart-1)" },
+                             mobile: { label: "Mobile", color: "var(--chart-2)" } },
+                   margin: { left: 12, right: 12 } do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis data_key: :t %>
+    <% chart.with_area data_key: :mobile, stack: :a %>
+    <% chart.with_area data_key: :desktop, stack: :a %>
+    <% chart.with_tooltip indicator: :dot %>
+  <% end %>
+</div>
+
+<script type="module">
+  // Every 800ms push one point and shift one out. Category strings arrive
+  // pre-formatted, per the live doctrine - the client never formats.
+  const script = document.querySelector('[data-slot="demo-live"] [data-slot="chart-live-payload"]')
+  const payload = JSON.parse(script.textContent)
+  let tick = payload.spec.data.length
+
+  const timer = setInterval(() => {
+    if (!script.isConnected) return clearInterval(timer) // page was Turbo-swapped away
+    tick += 1
+    payload.spec.data = [...payload.spec.data.slice(1), {
+      t: `T${tick}`,
+      desktop: Math.round(180 + Math.sin(tick / 1.5) * 90 + (tick % 3) * 14),
+      mobile: Math.round(110 + Math.cos(tick / 2.0) * 60 + (tick % 5) * 9),
+    }]
+    script.textContent = JSON.stringify(payload)
+  }, 800)
+</script>

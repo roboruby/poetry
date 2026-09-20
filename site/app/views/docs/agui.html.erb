@@ -1,0 +1,331 @@
+<% content_for :title, "AG-UI Relay" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("AG-UI Relay") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
+  # this scriptlet early, so ERB samples interpolate it as #{e}; a literal opener would nest an ERB tag under Herb, so they interpolate it as #{o}.
+  e = "%" + ">"
+  o = "<" + "%"
+  gemfile_source = <<~CODE
+    gem "poetry-agent"
+  CODE
+  js_source = <<~CODE
+    // app/javascript/controllers/index.js
+    import { registerPoetryControllers } from "@poetry/controllers"
+    import { registerPoetryAgent } from "@poetry/agent"
+    registerPoetryControllers(application)
+    registerPoetryAgent(application) // the client-tool bridge, the versioned replace, the morph guard
+  CODE
+  stream_source = <<~CODE
+    # app/controllers/assistant_controller.rb
+    class AssistantController < ApplicationController
+      include ActionController::Live
+
+      SCROLLER = "assistant-scroller-messages" # MessageScroller renders "<id>-messages"
+
+      def stream
+        response.headers["Content-Type"] = "text/event-stream"
+        response.headers["X-Accel-Buffering"] = "no"
+
+        transcript = Poetry::Agent::AGUI::Transcript.new(client_tools: frontend_tools.map { |tool| tool["name"] })
+        relay = Poetry::Agent::AGUI::Relay.new(
+          transcript: transcript, container: SCROLLER, morph: true,
+          render: ->(message, version) { render_to_string(partial: "assistant/row", locals: { message:, version: }) },
+          append_render: ->(message, version) { render_to_string(partial: "assistant/item", locals: { message:, version: }) }
+        )
+        input = Poetry::Agent::AGUI::RunInput.build(
+          thread_id: params[:thread], tools: frontend_tools,
+          messages: [Poetry::Agent::AGUI::RunInput.user_message(params[:q])]
+        )
+        client = Poetry::Agent::AGUI::Client.new(url: ENV.fetch("AGENT_URL"),
+                                                 headers: { "Authorization" => "Bearer \#{ENV.fetch("AGENT_TOKEN")}" })
+        client.run(input) do |event|
+          relay.apply(event).each { |html| write(html) }
+        end
+        relay.client_tool_streams(continue_url: assistant_continue_path(thread: params[:thread])).each { |html| write(html) }
+      ensure
+        response.stream.close
+      end
+
+      private
+
+      # The page's Tabs (rendered with webmcp: "sections") as the agent's tools.
+      def frontend_tools
+        Poetry::Ui::Tabs::Component.tool_definitions.map do |definition|
+          Poetry::Agent::AGUI.tool_descriptor("sections", definition)
+        end
+      end
+
+      def write(html)
+        response.stream.write(Poetry::Agent::AGUI::TurboStream.sse(html))
+      end
+    end
+  CODE
+  view_source = <<~CODE
+    #{o}= poetry_tabs(label: "Plans", webmcp: "sections") do |tabs| #{e}
+      #{o} tabs.with_tab("Overview", value: "overview") { "..." } #{e}
+      #{o} tabs.with_tab("Pricing", value: "pricing") { "..." } #{e}
+    #{o} end #{e}
+
+    #{o}= poetry_message_scroller(id: "assistant-scroller", class: "h-96 rounded-lg border") do #{e}
+      #{o} @transcript.messages.each do |message| #{e}
+        #{o}= render "assistant/item", message: message, version: message.version #{e}
+      #{o} end #{e}
+    #{o} end #{e}
+    <turbo-stream-source src="#{o}= assistant_stream_path(thread: @thread, q: @question) #{e}"></turbo-stream-source>
+  CODE
+  item_source = <<~CODE
+    #{o}# app/views/assistant/_item.html.erb - the first appearance: a scroller item around the row #{e}
+    #{o}= poetry_message_scroller_item(id: "item-\#{message.id}") do #{e}
+      #{o}= render "assistant/row", message: message, version: version #{e}
+    #{o} end #{e}
+
+    #{o}# app/views/assistant/_row.html.erb - every later change replaces this element #{e}
+    <div id="row-#{o}= message.id #{e}" data-version="#{o}= version #{e}">
+      #{o}= poetry_message(align: message.role == "user" ? :end : :start) do #{e}
+        #{o} message.parts.each do |part| #{e}
+          #{o} case part[:kind] #{e}
+          #{o} when :text #{e}
+            #{o}= poetry_bubble { part[:text] } #{e}
+          #{o} when :reasoning #{e}
+            <p class="text-xs italic text-muted-foreground">#{o}= part[:text] #{e}</p>
+          #{o} when :tool #{e}
+            <code>#{o}= part[:name] #{e}</code>
+            #{o}= poetry_badge { part[:state] } #{e}   #{o}# :loading, :awaiting_client, :done, :error #{e}
+          #{o} when :activity #{e}
+            #{o}= render "assistant/activity", part: part #{e}
+          #{o} end #{e}
+        #{o} end #{e}
+      #{o} end #{e}
+    </div>
+  CODE
+  continue_source = <<~CODE
+    # POST /assistant/continue - the bridge's { toolCallId, name, content, error } JSON
+    def continue
+      body = JSON.parse(request.body.read)
+      transcript = load_transcript(params[:thread])           # your own persistence of the events so far
+      transcript.resolve_client_tool(body["toolCallId"], body["content"], error: body["error"])
+
+      input = Poetry::Agent::AGUI::RunInput.build(
+        thread_id: params[:thread], tools: frontend_tools,
+        messages: transcript.messages_for_input              # the assistant's tool calls + your tool results
+      )
+      start_run(input)                                        # e.g. enqueue, then hand the page a new stream source
+      render body: Poetry::Agent::AGUI::TurboStream.replace("assistant-next", next_source_tag),
+             content_type: "text/vnd.turbo-stream.html"
+    end
+  CODE
+  interrupt_source = <<~CODE
+    # The run ended on an interrupt: RUN_FINISHED with outcome.type == "interrupt"
+    if transcript.interrupted?
+      interrupt = transcript.interrupts.first   # { "id", "reason", "message", "toolCallId", ... }
+      # render a decision form; on submit, resume:
+      input = Poetry::Agent::AGUI::RunInput.build(
+        thread_id: thread, messages: transcript.messages_for_input,
+        resume: [Poetry::Agent::AGUI::RunInput.resume_entry(interrupt["id"], status: params[:approved] ? "approved" : "rejected")]
+      )
+    end
+  CODE
+  surface_source = <<~CODE
+    #{o}# app/views/assistant/_activity.html.erb #{e}
+    #{o} if part[:activity_type] == "a2ui-surface" #{e}
+      #{o} session = Poetry::Agent::A2UI::Session.new #{e}
+      #{o} session.apply_activity(part[:content]) #{e}
+      #{o} session.surfaces.each_value do |surface| #{e}
+        #{o}= Poetry::Agent::A2UI::Renderer.new(surface, view: self, action_url: assistant_surface_path).call #{e}
+      #{o} end #{e}
+    #{o} else #{e}
+      <code>#{o}= part[:activity_type] #{e}: #{o}= part[:content].to_json #{e}</code>
+    #{o} end #{e}
+  CODE
+  forwarded_source = <<~CODE
+    # POST /assistant/surface - the surface form; its action feeds the next run
+    action = session.action(surface_id: params[:a2ui][:surface], source: params[:a2ui][:action],
+                            values: params[:a2ui][:values].to_h)
+    if action&.valid?
+      input = Poetry::Agent::AGUI::RunInput.build(
+        thread_id: thread, messages: transcript.messages_for_input,
+        forwarded_props: action.forwarded_props   # { "a2uiAction" => { "userAction" => ..., "dataModel" => ... } }
+      )
+    end
+  CODE
+%>
+<div class="flex flex-col gap-10">
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h1>AG-UI Relay</h1>
+      <p class="lead">
+        AG-UI is the event protocol between an agent backend and the application a
+        person is using. Poetry is the Rails client of it: your controller runs the
+        agent, folds its events into a transcript, and relays every change into the
+        page as Turbo Streams, while the page's own components answer the agent's
+        tool calls. The <%= link_to "AG-UI Relay demo", "/demos/agui-relay" %> runs
+        the whole loop against a scripted agent; this guide is the recipe behind it.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="what-it-is">What it is</h2>
+      <p>
+        An AG-UI run is a stream of events: <code>RUN_STARTED</code>, text and
+        reasoning deltas, tool calls with their arguments and results, shared
+        state as snapshots and JSON Patch deltas, activities, and
+        <code>RUN_FINISHED</code>, which may end on an interrupt the user answers
+        before the next run. Rails already had the server side twice and no client.
+        <code>Poetry::Agent::AGUI</code> is that client, in three pieces:
+      </p>
+      <ul>
+        <li><code>Client</code> runs an agent endpoint over Net::HTTP and yields each event as it arrives.</li>
+        <li><code>Transcript</code> folds events into chat-shaped messages. Each message's <code>parts</code> are text, reasoning, tool calls carrying their state, or activities; the transcript also holds the shared <code>state</code>, the <code>interrupts</code>, the tool calls waiting on the browser, and <code>messages_for_input</code> for the next run.</li>
+        <li><code>Relay</code> turns each change into a Turbo Stream through your own partials: an append into the scroller when a message first appears, a versioned replace after. Every frame carries <code>data-version</code> and the runtime applies only strictly newer frames, so an out-of-order delivery never paints an older state over a newer one.</li>
+      </ul>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="run">Run an agent</h2>
+      <p>
+        One <code>ActionController::Live</code> action does the work. It opens an
+        event stream, builds the run input from the user's message and the tools
+        the page offers, runs the client, and writes each stream the relay
+        returns. When the run ends with a tool call the browser must execute, the
+        relay's closing streams hand it over.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: stream_source, language: "ruby", label: "The stream action") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        <code>morph: true</code> makes the replaces morph, so anything with local
+        state inside a row (a surface the agent painted, a tab the reader picked)
+        survives the row re-rendering around it. The relay needs to know which rows
+        the page already holds: after rendering history server-side, call
+        <code>relay.mark_seen(transcript.messages.map(&:id))</code> so those rows
+        replace instead of appending twice.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="render">Render the transcript</h2>
+      <p>
+        The page holds a MessageScroller and a stream source pointing at the action
+        above. Two partials do the rendering: the item wraps a row in a scroller
+        item on its first appearance, and the row is what every later change
+        replaces. A row reads <code>message.parts</code> and renders each kind with
+        the chat components.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: view_source, language: "erb", label: "The page") %>
+    <%= poetry_code_block(code: item_source, language: "erb", label: "The partials") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        Tool parts carry a state: <code>:loading</code> while arguments stream,
+        <code>:awaiting_client</code> when the browser must execute the call,
+        <code>:done</code> with the <code>output</code>, <code>:error</code>
+        when the agent reported one. Chunked argument deltas parse into
+        <code>input</code> once complete. Shared state folds into
+        <code>transcript.state</code> through <code>STATE_SNAPSHOT</code> and
+        <code>STATE_DELTA</code> patches, so a sidebar can render from it beside
+        the messages.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="frontend-tools">Frontend tools</h2>
+      <p>
+        A component's declared tools (the same ones <%= link_to "WebMCP", webmcp_path %>
+        registers with the browser) become the agent's tools without a WebMCP
+        browser. <code>Poetry::Agent::AGUI.tool_descriptor("sections", definition)</code>
+        turns a rendered instance's declaration into the descriptor
+        <code>RunInput</code> advertises, named <code>poetry.sections.set_value</code>
+        the way the registrar names it. When the agent calls it, the transcript
+        marks the call as waiting on the browser, and the relay's closing streams
+        append a bridge element carrying the call and your continue URL. The
+        <code>poetry--agent--agui-client-tool</code> controller executes the call
+        through the registrar on the rendered component, then POSTs the result
+        back as JSON. Your continue endpoint resolves the call and starts the next
+        run from the transcript.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: continue_source, language: "ruby", label: "The continue endpoint") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        <code>messages_for_input</code> carries the assistant's tool calls and
+        your tool results in the wire shape the next run expects, so the agent
+        sees what happened in the browser as an ordinary tool message.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="interrupts">Interrupts</h2>
+      <p>
+        A run can end on an interrupt: an approval the agent needs before it
+        continues. The transcript exposes it, you render the decision as a form
+        or a pair of links, and the next run carries a resume entry answering it.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: interrupt_source, language: "ruby", label: "Pause and resume") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="surfaces">A2UI surfaces in the stream</h2>
+      <p>
+        An agent that paints UI sends it inside the stream as an activity: an
+        <code>ACTIVITY_SNAPSHOT</code> with <code>activityType</code>
+        <code>a2ui-surface</code>, whose content carries the A2UI messages. The
+        activity part reaches your row partial like any other; fold its content
+        into a session and render each surface as a form whose action posts back
+        into the run. The action arrives at the agent as
+        <code>forwardedProps.a2uiAction</code>, the placement the AG-UI middleware
+        expects. The <%= link_to "A2UI Surfaces guide", a2ui_path %> covers the
+        renderer itself.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: surface_source, language: "erb", label: "The activity partial") %>
+    <%= poetry_code_block(code: forwarded_source, language: "ruby", label: "The surface endpoint") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="development">Deterministic development</h2>
+      <p>
+        Script the agent while you build. The demo's replay is a plain Ruby module
+        returning event arrays per run, so every stream replays byte-identical and
+        the integration tests assert on real Turbo Streams with no model and no key.
+        <code>Transcript#apply_all</code> folds a recorded run in tests, and a
+        recorded run is also the fastest way to shape the row partial before an
+        agent exists. Events may arrive camel-cased or snake-cased; the transcript
+        reads both.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="setup">Setup</h2>
+    <% end %>
+    <%= poetry_code_block(code: gemfile_source, language: "ruby", label: "Gemfile") %>
+    <%= poetry_code_block(code: js_source, language: "javascript", label: "Register the runtime") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        That is the whole integration. The runtime registers the client-tool
+        bridge, installs the versioned replace stream action the relay emits, and
+        installs the guard that keeps a surface's local state through morphs.
+        The gem is a client only: the agent runs wherever AG-UI agents run.
+      </p>
+    <% end %>
+  </section>
+</div>

@@ -1,0 +1,8 @@
+<%# An action-bearing toast defaults to persistent (a missable undo is a
+    bug) - no duration needed. Clicking the action dismisses the toast. %>
+<ul class="w-full max-w-sm">
+  <%= poetry_toast do |toast| %>
+    <% toast.with_title { "Message deleted" } %>
+    <% toast.with_action { "Undo" } %>
+  <% end %>
+</ul>

@@ -1,0 +1,31 @@
+@import "tailwindcss";
+@import "./poetry/tokens.css" layer(theme);
+@import "./poetry/theme.css";
+@import "./poetry/animate.css";
+@import "./poetry/utilities.css";
+@import "./poetry/aliases.css";
+@import "./poetry/agent.css" layer(base);
+@import "./poetry/base.css";
+@source "./poetry/safelist.txt";
+@import "./poetry/charts.css";
+/* Docs switcher: the two installed slot imports are replaced by
+   the scoped nine-theme registry (see style-registry.css). The slot files
+   stay on disk, synced to the gem's default theme by
+   script/build_style_registry.rb, so the installer diff stays quiet - but
+   if a `poetry:install` re-run re-injects the two lines below, REMOVE
+   them again: an unscoped visual layer leaks default-only tokens into
+   whichever theme is stamped on <html>.
+   @import "./poetry/style-default.css" layer(base);
+   @import "./poetry/style-charts.css" layer(base); */
+@import "./style-registry.css";
+@import "./poetry/typeset.css";
+@import "./landing-brand.css";
+
+/* poetry/typeset presets: the docs prose rhythm. Matches the
+   previous hand-utility scale (text-sm body) so the flip reads as a
+   refinement, not a redesign. */
+.typeset-docs {
+  --typeset-size: 0.875rem;
+  --typeset-leading: 1.75;
+  --typeset-flow: 1.25em;
+}

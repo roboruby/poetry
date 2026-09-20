@@ -1,0 +1,6 @@
+<%# Rich visual content with label: - the announced body is the
+    plain-text label; the visual children stay. %>
+<%= poetry_tooltip(label: "Command S saves the document") do |tooltip| %>
+  <% tooltip.with_trigger(variant: :outline, label: "Save shortcut") { "Save" } %>
+  Saves the document <kbd>⌘S</kbd>
+<% end %>

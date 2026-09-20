@@ -1,0 +1,24 @@
+<%# A clarification flow inside a Dialog: the trigger opens it, the
+    questionnaire runs within the content area, and submitting sends the
+    answers as a real form (in an app, respond with a Turbo Stream that
+    closes the dialog and continues the run). %>
+<%= poetry_dialog do |dialog| %>
+  <% dialog.with_trigger(variant: :outline) { "Open clarification" } %>
+  <% dialog.with_title { "Clarify the task" } %>
+  <% dialog.with_description { "Two questions before the agent starts." } %>
+  <%= poetry_questionnaire(url: "#", http_method: :get, submit_label: "Send answers",
+                           class: "pt-2") do |q| %>
+    <% q.with_progress %>
+    <% q.with_item(name: "scope", title: "Which files are in scope?",
+                   required: true) do |item| %>
+      <% item.with_choice(value: "component", label: "Component only") %>
+      <% item.with_choice(value: "feature", label: "Complete feature directory") %>
+      <% item.with_choice(value: "workspace", label: "Any related workspace file") %>
+    <% end %>
+    <% q.with_item(name: "tests", title: "How should the change be verified?",
+                   required: true) do |item| %>
+      <% item.with_choice(value: "suite", label: "Run the affected test suite") %>
+      <% item.with_choice(value: "spot", label: "Spot-check the behavior") %>
+    <% end %>
+  <% end %>
+<% end %>

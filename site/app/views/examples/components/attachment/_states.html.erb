@@ -1,0 +1,12 @@
+<div class="flex flex-wrap items-center gap-3">
+  <%= poetry_attachment(state: :uploading) do |attachment| %>
+    <% attachment.with_media { poetry_icon(name: :file) } %>
+    <% attachment.with_title { "photo.png" } %>
+    <% attachment.with_description { "uploading…" } %>
+  <% end %>
+  <%= poetry_attachment(state: :error) do |attachment| %>
+    <% attachment.with_media { poetry_icon(name: :"circle-alert") } %>
+    <% attachment.with_title { "notes.txt" } %>
+    <% attachment.with_description { "Too large (max 10 MB)" } %>
+  <% end %>
+</div>

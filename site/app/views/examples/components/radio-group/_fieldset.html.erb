@@ -1,0 +1,15 @@
+<%# The group inside a real <fieldset>: legend_variant: :label renders
+    the legend at label size and hint: describes the whole group. The
+    legend names the fieldset, not the inner radiogroup - label: gives
+    the group its own accessible name (same text). %>
+<div class="w-full max-w-xs">
+  <%= poetry_fieldset(legend: "Subscription plan", legend_variant: :label,
+                      hint: "Yearly and lifetime plans offer significant savings.") do %>
+    <%= poetry_radio_group(name: "plan", value: "monthly",
+                           label: "Subscription plan") do |group| %>
+      <% group.with_item(value: "monthly", label: "Monthly ($9.99/month)") %>
+      <% group.with_item(value: "yearly", label: "Yearly ($99.99/year)") %>
+      <% group.with_item(value: "lifetime", label: "Lifetime ($299.99)") %>
+    <% end %>
+  <% end %>
+</div>

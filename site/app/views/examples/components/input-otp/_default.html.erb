@@ -1,0 +1,4 @@
+<%# One native input over aria-hidden cells - paste, SMS autofill, and
+    IME all work natively. 6 digits as two groups with a separator. %>
+<%= poetry_input_otp(name: "code", length: 6, groups: [3, 3],
+                     "aria-label": "Verification code") %>

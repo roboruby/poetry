@@ -1,0 +1,15 @@
+<%# A Kbd inside an input-group addon hints the key that opens the field -
+    the group wears the border and focus ring, the control stays borderless
+    (a plain poetry_input would double-chrome the surface). %>
+<div class="w-80">
+  <%= poetry_label(for_id: "kbd-command-search", class: "sr-only") { "Search commands" } %>
+  <%= poetry_input_group do %>
+    <%= poetry_input_group_addon do %>
+      <%= poetry_icon(name: :search) %>
+    <% end %>
+    <%= poetry_input_group_input(id: "kbd-command-search", name: "command", placeholder: "Search commands…") %>
+    <%= poetry_input_group_addon(align: :"inline-end") do %>
+      <%= poetry_kbd { "⌘K" } %>
+    <% end %>
+  <% end %>
+</div>

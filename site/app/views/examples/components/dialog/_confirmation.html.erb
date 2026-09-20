@@ -1,0 +1,8 @@
+<%= poetry_dialog(dismissible: false) do |dialog| %>
+  <% dialog.with_trigger(variant: :destructive) { "Delete account" } %>
+  <% dialog.with_title { "Are you absolutely sure?" } %>
+  <% dialog.with_description { "This permanently deletes your account and all data." } %>
+  <% dialog.with_footer do %>
+    <%= poetry_button(variant: :destructive) { "Delete" } %>
+  <% end %>
+<% end %>

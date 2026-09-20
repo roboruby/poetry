@@ -1,0 +1,10 @@
+<%# An icon is plain svg - Tailwind's animation utilities apply directly.
+    The spinning loader here is the raw ingredient only: for real loading
+    UI reach for poetry_spinner (it announces itself, role=status) or
+    Button's loading: swap. %>
+<div class="flex flex-wrap items-center gap-6">
+  <%= poetry_icon(name: :"loader-circle", class: "animate-spin") %>
+  <%= poetry_icon(name: :"refresh-cw", class: "animate-spin") %>
+  <%= poetry_icon(name: :heart, class: "animate-pulse") %>
+  <%= poetry_icon(name: :bell, class: "animate-bounce") %>
+</div>

@@ -1,0 +1,9 @@
+<%= poetry_scroll_area(label: "Artwork strip", class: "w-96 rounded-md border") do %>
+  <div class="flex w-max gap-4 p-4">
+    <% (1..8).each do |n| %>
+      <div class="flex h-32 w-40 shrink-0 items-center justify-center rounded-md bg-muted text-sm">
+        Artwork <%= n %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

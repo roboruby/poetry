@@ -1,0 +1,59 @@
+<% content_for :title, "Introduction" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Introduction") %>
+  <% end %>
+<% end %>
+
+<div class="flex flex-col gap-6">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">poetry</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      A Rails-first, shadcn-parity design system — ViewComponent + Hotwire +
+      Tailwind, server-rendered down to the charts, designed so coding agents
+      compose UI inside a constrained system.
+    </p>
+    <div class="flex gap-2">
+      <%= poetry_button(href: "/components/accordion") { "Browse components" } %>
+      <%= poetry_button(variant: :outline, href: "/charts/area") { "Browse charts" } %>
+    </div>
+  </header>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Server-rendered" } %>
+      <% card.with_description { "Valid without JavaScript" } %>
+      <p class="text-sm text-muted-foreground">
+        Every component — charts included — ships finished in the initial
+        HTML. Stimulus adds behavior by reading server-embedded state, never
+        by rendering.
+      </p>
+    <% end %>
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Agent-native" } %>
+      <% card.with_description { "llms.txt built in" } %>
+      <p class="text-sm text-muted-foreground">
+        The component registry, agent rules,
+        <%= link_to "llms.txt", "/poetry/llms.txt", class: "underline underline-offset-4" %>,
+        an MCP server, the
+        <%= link_to "WebMCP runtime", webmcp_path, class: "underline underline-offset-4" %>
+        (rendered components register their tools with the user's browser agent), a generated
+        <%= link_to "API reference", "/api", class: "underline underline-offset-4" %>,
+        and three installable Claude Code skills (component
+        usage, the poetry-design taste layer, and the poetry-component
+        authoring layer, via
+        <code class="font-mono">bin/rails g poetry:skill</code>) are part of
+        the library, not an afterthought. This site's nav is generated from
+        the same registry the gems' CI verifies, and every page serves a
+        markdown mirror (append <code class="font-mono">.md</code> to any URL).
+      </p>
+    <% end %>
+  </div>
+
+  <p class="text-sm text-muted-foreground">
+    This site is built from Poetry's own components — the sidebar, the ⌘K
+    palette, the top navigation's morphing viewport, the tabs on every
+    example.
+  </p>
+</div>

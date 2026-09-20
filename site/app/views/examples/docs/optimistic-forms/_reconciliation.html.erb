@@ -1,0 +1,10 @@
+<%# The failure path, on purpose. The prediction paints "Subscribed ✓"
+    instantly; the endpoint always answers 422, so the controller appends
+    a refresh stream and the morph puts authoritative truth back - watch
+    the button snap home. The flash the server set survives the refresh. %>
+<%= poetry_optimistic_form(url: optimistic_rejected_path, method: :post) do |form| %>
+  <%= form.optimistic_template "docs-subscribe", "Subscribed ✓" %>
+  <%= poetry_button(variant: :secondary, type: :submit) do %>
+    <span id="docs-subscribe">Subscribe (server will reject)</span>
+  <% end %>
+<% end %>

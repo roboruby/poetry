@@ -1,0 +1,81 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# poetry's editor hook, written by `bin/rails g poetry:editor`: runs
+# `poetry check` on the app template an agent just edited and hands the
+# findings straight back to the agent, so the check runs after EVERY edit
+# instead of when the agent remembers to. Stdlib only; the check itself runs
+# through bin/rails, so it sees the same registry, icon set, and charts the
+# rake task sees.
+#
+# Two hook dialects, told apart by the payload:
+#   Claude Code (PostToolUse): errors -> exit 2 with the report on stderr (fed
+#     back to the agent); warnings -> exit 0 with additionalContext.
+#   Cursor (postToolUse): any findings -> exit 0 with additional_context.
+# Anything that is not an app template exits 0 without booting Rails; a check
+# that cannot run at all exits 1, so the loop fails open, never closed.
+
+require "json"
+require "open3"
+
+payload = begin
+  JSON.parse($stdin.read)
+rescue JSON::ParserError
+  {}
+end
+payload = {} unless payload.is_a?(Hash)
+tool_input = payload["tool_input"].is_a?(Hash) ? payload["tool_input"] : {}
+edited = tool_input["file_path"] || tool_input["path"] || payload["file_path"]
+exit 0 unless edited.is_a?(String) && !edited.empty?
+
+project = ENV["CLAUDE_PROJECT_DIR"] || Array(payload["workspace_roots"]).first || payload["cwd"] || Dir.pwd
+root = File.expand_path(project)
+full = File.expand_path(edited, root)
+exit 0 unless full.start_with?("#{root}/app/") && full.end_with?(".html.erb") && File.file?(full)
+template = full.delete_prefix("#{root}/")
+
+cursor = payload.key?("conversation_id") || payload["hook_event_name"] == "postToolUse"
+
+begin
+  stdout, stderr, status = Open3.capture3({ "POETRY_CHECK_JSON" => "1" }, "bin/rails", "poetry:check[#{template}]",
+                                          chdir: root)
+rescue SystemCallError => e
+  warn "poetry check hook: could not run bin/rails (#{e.message})"
+  exit 1
+end
+findings = begin
+  JSON.parse(stdout)
+rescue JSON::ParserError
+  nil
+end
+unless findings.is_a?(Array)
+  warn "poetry check hook: poetry:check did not run (exit #{status.exitstatus})\n#{stderr.lines.last(10).join}"
+  exit 1
+end
+if findings.empty?
+  puts "{}" if cursor
+  exit 0
+end
+
+errors = findings.count { |finding| finding["severity"] == "error" }
+warnings = findings.size - errors
+lines = findings.map do |finding|
+  hint = finding["suggestion"] ? " (did you mean #{finding["suggestion"]}?)" : ""
+  "- [#{finding["severity"]}] line #{finding["line"]}: #{finding["message"]}#{hint}"
+end
+headline = if errors.positive?
+             "poetry check: #{errors} error(s), #{warnings} warning(s) in #{template} - " \
+               "an error raises or misrenders at render time; fix it, then re-run poetry check"
+           else
+             "poetry check: #{warnings} warning(s) in #{template} - advisory; fix unless the deviation is deliberate"
+           end
+report = [headline, *lines].join("\n")
+
+if cursor
+  puts JSON.generate("additional_context" => report)
+elsif errors.positive?
+  warn report
+  exit 2
+else
+  puts JSON.generate("hookSpecificOutput" => { "hookEventName" => "PostToolUse", "additionalContext" => report })
+end

@@ -1,0 +1,25 @@
+<%# Mix marks freely: with_area / with_bar / with_line -
+    declaration order is paint order. %>
+<% data = [
+     { month: "January", visitors: 320, revenue: 214, trend: 240 },
+     { month: "February", visitors: 410, revenue: 305, trend: 290 },
+     { month: "March", visitors: 380, revenue: 237, trend: 320 },
+     { month: "April", visitors: 250, revenue: 173, trend: 300 },
+     { month: "May", visitors: 445, revenue: 209, trend: 340 },
+     { month: "June", visitors: 480, revenue: 264, trend: 390 }
+   ]
+   config = { visitors: { label: "Visitors", color: "var(--chart-1)" },
+              revenue: { label: "Revenue", color: "var(--chart-2)" },
+              trend: { label: "Trend", color: "var(--chart-3)" } } %>
+<div class="w-full max-w-xl">
+  <%= poetry_chart(:composed, data: data, config: config, id: "composed-mix",
+                   margin: { left: 12, right: 12 }) do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] }) %>
+    <% chart.with_area(data_key: :revenue, fill_opacity: 0.25) %>
+    <% chart.with_bar(data_key: :visitors, radius: [4, 4, 0, 0]) %>
+    <% chart.with_line(data_key: :trend, curve: :monotone_x, stroke_width: 2) %>
+    <% chart.with_legend %>
+    <% chart.with_tooltip %>
+  <% end %>
+</div>

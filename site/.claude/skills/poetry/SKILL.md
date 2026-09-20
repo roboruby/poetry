@@ -1,0 +1,89 @@
+---
+name: poetry
+description: >-
+  Build Rails views with the poetry component library: helper
+  contracts, options, slots, blocks, and the check workflow. Use
+  whenever writing or editing ERB/UI in an app that has poetry
+  installed.
+---
+
+# poetry - component usage
+
+Generated from the poetry registry (88 components + 13 chart components + 8 blocks). After updating
+poetry gems, regenerate with `bin/rails g poetry:skill`.
+
+## Guardrails
+
+- FIRST MOVE, for every brief: call the poetry MCP `compose` tool
+  with the task text, before writing any ERB. It routes you to the
+  matching vetted block (source included, adapt in place - the
+  known winning path for screens) or to the right components for
+  single-component work. No MCP? Open `references/blocks.md` and
+  `bin/rails g poetry:block --list`. Composing a screen from
+  scratch when a block matched is the known losing path.
+- Compose with the `poetry_<name>` helpers; never hand-write `cn-*`
+  classes, raw hex/oklch colors, or off-scale arbitrary values -
+  tokens and variants carry the design.
+- Options are keywords; content is the block. Helpers take at most
+  the positional arguments their contract lists - most take none.
+- A typed slot renders another component: the call takes THAT
+  component's props, never a render block.
+- Icon names are kebab-case symbols: `:"circle-check"`, never
+  `:circle_check`.
+- Status reads as a set: one badge treatment family per surface -
+  never mix solid (default/destructive) and soft
+  (success/warning/info) pills in one table.
+- Page framing: a section that IS the page's subject keeps its
+  container and breathing room (`mx-auto max-w-* p-6`); a bare
+  component at the viewport origin reads cramped. Drop the wrapper
+  when composing into an already-padded frame.
+- One visual theme per app (chosen at install); components read
+  tokens, never restate them.
+- Browser agents (WebMCP): opt a rendered component into the user's
+  own agent with `webmcp: "name"` on the call - only components that
+  declare tools (Combobox, Dialog, Sheet, Drawer, Tabs; `describe_component`
+  at `full` lists them); a form becomes a tool with
+  `poetry_webmcp_form(tool: { name:, description: })` (autosubmit is
+  GET-only). Needs the poetry-agent gem; check gates the opt-ins.
+- Check comes LAST: run `bin/rails poetry:check` (or the poetry MCP
+  `check` tool - instant, no app boot) as the FINAL action, after
+  your last edit. An edit made after your last check is unverified
+  markup - re-run check before finishing, every time.
+
+## Find your component
+
+Not sure WHICH component the job calls for? Open
+`references/deciding.md` first - the decision tree matches the
+INTERACTION MODEL (what the user does), never the visual look.
+
+Load the reference for the family you are composing in - each file
+carries the full contracts (options, variants, slots, wiring, RULE
+lines) for its components:
+
+- **forms** (`references/forms.md`): autocomplete, button, button_group, calendar, checkbox, combobox, date_field, date_picker, date_time_field, field, field_group, field_separator, fieldset, file_input, input, input_group, input_otp, label, native_select, number_field, questionnaire, radio_group, search_field, select, sensitive_input, slider, switch, textarea, time_field, toggle, toggle_group
+- **overlays** (`references/overlays.md`): alert_dialog, command, command_dialog, context_menu, dialog, drawer, dropdown_menu, hover_card, menubar, popover, sheet, tooltip
+- **data** (`references/data.md`): accordion, avatar, badge, card, carousel, clipboard_text, code_block, collapsible, data_table, empty, item, metadata_list, meter, stat, table, tag_group, timeline, toolbar, tree, typeset
+- **feedback** (`references/feedback.md`): alert, deferred, progress, skeleton, spinner, toast, toast_trigger, toaster
+- **navigation** (`references/navigation.md`): breadcrumb, navigation_menu, pagination, sidebar, tabs
+- **foundations** (`references/foundations.md`): icon, kbd, link, marker, separator
+- **chat** (`references/chat.md`): attachment, bubble, message, message_scroller
+- **layout** (`references/layout.md`): aspect_ratio, resizable, scroll_area
+- **blocks** (`references/blocks.md`): action-bar, app-shell, data-index, destructive-panel, page-header, section-card, stepper, top-nav
+- **charts** (`references/charts.md`): adapter_chart, area_chart, bar_chart, composed_chart, container, legend_content, line_chart, pie_chart, radar_chart, radial_bar_chart, scatter_chart, tooltip_content, tooltip_layer
+
+## Composing a page? Load poetry-design
+
+Building or restyling a full page, screen, or dashboard - not a
+lone component? Load the `poetry-design` skill BEFORE composing:
+theme fit, page macrostructure, hierarchy, status color, and the
+finishing audit live there. Component contracts alone do not make
+a composed page - and neither does guidance: start the page from
+`compose`'s block match and adapt, don't rebuild its advice from
+a blank file.
+
+## Authoring a component? Load poetry-component
+
+Building a component of your own - one this catalog doesn't
+cover? Load the `poetry-component` skill BEFORE writing the
+class: the canonical anatomy (section order), the documentation
+standard, and the audit checklist live there.

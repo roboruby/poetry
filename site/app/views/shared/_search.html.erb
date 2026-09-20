@@ -1,0 +1,60 @@
+<%# The ⌘K palette: every catalog entry, value = the page path. The Command
+    engine dispatches poetry:command:select and does nothing further - the
+    docs-search controller navigates. %>
+<div data-controller="docs-search" data-action="poetry:command:select->docs-search#go">
+  <%= poetry_command_dialog(hotkey: "meta+k", placeholder: "Search documentation…",
+                            label: "Search documentation") do |palette| %>
+    <% palette.with_trigger(variant: :outline, size: :sm,
+                            class: "gap-3 text-muted-foreground font-normal") do %>
+      <%= poetry_icon(name: :search, class: "size-3.5") %>
+      <span class="hidden sm:inline">Search docs…</span>
+      <%= poetry_kbd { "⌘K" } %>
+    <% end %>
+    <% palette.with_group(heading: "Docs") do |group| %>
+      <% DocsCatalog.docs.each do |entry| %>
+        <% group.with_item(value: entry.path) { entry.title } %>
+      <% end %>
+    <% end %>
+    <% palette.with_separator %>
+    <% palette.with_group(heading: "Libraries") do |group| %>
+      <% DocsCatalog.libraries.each do |entry| %>
+        <% group.with_item(value: entry.path) { entry.title } %>
+      <% end %>
+    <% end %>
+    <% palette.with_separator %>
+    <% palette.with_group(heading: "Icons") do |group| %>
+      <% DocsCatalog.icons.each do |entry| %>
+        <% group.with_item(value: entry.path) { entry.title } %>
+      <% end %>
+    <% end %>
+    <% palette.with_separator %>
+    <% palette.with_group(heading: "Components") do |group| %>
+      <% DocsCatalog.components.each do |entry| %>
+        <% group.with_item(value: entry.path) { entry.title } %>
+      <% end %>
+    <% end %>
+    <% palette.with_separator %>
+    <% palette.with_group(heading: "Charts") do |group| %>
+      <% DocsCatalog.charts.each do |entry| %>
+        <% group.with_item(value: entry.path) { entry.title } %>
+      <% end %>
+    <% end %>
+    <% palette.with_separator %>
+    <% palette.with_group(heading: "Demos") do |group| %>
+      <% DocsCatalog.demos.each do |entry| %>
+        <% group.with_item(value: entry.path) { entry.title } %>
+      <% end %>
+    <% end %>
+    <%# Full-text tier: heading-level deep links from the committed
+        search index - server-rendered, the Command engine filters them like
+        any other item. %>
+    <% if SearchIndex.headings.any? %>
+      <% palette.with_separator %>
+      <% palette.with_group(heading: "Reference") do |group| %>
+        <% SearchIndex.headings.each do |hit| %>
+          <% group.with_item(value: hit["path"]) { "#{hit["page"]} — #{hit["title"]}" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

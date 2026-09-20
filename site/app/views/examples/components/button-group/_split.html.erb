@@ -1,0 +1,9 @@
+<%# The split pair on a borderless variant: the separator IS the divide
+    (secondary buttons carry no borders of their own). %>
+<%= poetry_button_group("aria-label": "Add item") do %>
+  <%= poetry_button(variant: :secondary) { "Button" } %>
+  <%= poetry_button_group_separator %>
+  <%= poetry_button(variant: :secondary, size: :icon, label: "Add") do %>
+    <%= poetry_icon(name: :plus) %>
+  <% end %>
+<% end %>

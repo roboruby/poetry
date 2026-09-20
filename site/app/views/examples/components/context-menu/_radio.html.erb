@@ -1,0 +1,17 @@
+<%# Each with_radio_group scopes ONE single-select value; a with_label
+    heads each run. close_on_select: false shows the dot move in place. %>
+<%= poetry_context_menu do |menu| %>
+  <% menu.with_trigger(tag: :div, class: "flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm select-none") { "Right-click here" } %>
+  <% menu.with_label { "People" } %>
+  <% menu.with_radio_group(value: "pedro") do |group| %>
+    <% group.with_radio_item(value: "pedro", close_on_select: false) { "Pedro Duarte" } %>
+    <% group.with_radio_item(value: "colm", close_on_select: false) { "Colm Tuite" } %>
+  <% end %>
+  <% menu.with_separator %>
+  <% menu.with_label { "Theme" } %>
+  <% menu.with_radio_group(value: "light") do |group| %>
+    <% group.with_radio_item(value: "light", close_on_select: false) { "Light" } %>
+    <% group.with_radio_item(value: "dark", close_on_select: false) { "Dark" } %>
+    <% group.with_radio_item(value: "system", close_on_select: false) { "System" } %>
+  <% end %>
+<% end %>

@@ -1,0 +1,184 @@
+<% content_for :title, "Agent" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Libraries") %>
+    <% crumb.with_item("Agent") %>
+  <% end %>
+<% end %>
+<%
+  gemfile_source = <<~CODE
+    gem "poetry-agent"
+  CODE
+  mcp_source = <<~CODE
+    bundle exec poetry-agent   # the stdio MCP server; run it from your app directory
+  CODE
+  js_source = <<~CODE
+    import { registerPoetryAgent } from "@poetry/agent"
+    registerPoetryAgent(application)
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">poetry-agent</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      The agent-interop gem: every surface through which an agent reaches
+      the component contract, projected from the one registry the other
+      gems build.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="what-it-is">What it is</h2>
+      <p>
+        Two surfaces ship today. The <strong>MCP server</strong> is for
+        coding agents in your editor: boot-free, read-only, ten tools that
+        query and verify against what your app actually ships. The
+        <strong>WebMCP runtime</strong> is for the person's own browser
+        agent: rendered components' declared tools, registered with
+        <code>document.modelContext</code> when an instance opts in. Both
+        read the committed registries; neither is a second source.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="install">Install</h2>
+    <% end %>
+    <%= poetry_code_block(code: gemfile_source, language: "ruby", label: "Gemfile") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Loading the gem is the integration: the engine registers its
+        controllers manifest with poetry-core (so <code>webmcp:</code>
+        roots validate at render), pins <code>@poetry/agent</code> in the
+        importmap, and mounts the origin-trial middleware.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="mcp">The MCP server</h2>
+      <p>
+        <code>poetry-agent</code> speaks newline-delimited JSON-RPC over
+        stdio with no SDK dependency. Wire it into Claude Code, Cursor, VS
+        Code, Zed, or RubyMine with <code>bin/rails g poetry:editor</code>;
+        the <%= link_to "MCP guide", mcp_path %> covers the ten tools and
+        the verify loop they close.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: mcp_source, language: "shell", label: "Run") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="webmcp">The WebMCP runtime</h2>
+      <p>
+        Register the runtime beside Poetry's controllers and any component
+        that declares tools can opt in per instance. The
+        <%= link_to "WebMCP guide", webmcp_path %> shows the two paths -
+        components and declarative forms - live.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: js_source, language: "javascript", label: "Register") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="agui">The AG-UI relay</h2>
+      <p>
+        AG-UI is the event protocol agent frameworks speak to user-facing
+        applications: a run streams text deltas, tool calls, shared state,
+        activities, and interrupts. <code>Poetry::Agent::AGUI</code> is the
+        Rails side of that connection - a client, not a server. Its
+        <code>Transcript</code> folds the stream into chat-shaped messages,
+        its <code>Relay</code> renders every change as a versioned Turbo
+        Stream through your own row partial, and a rendered component's
+        declared tools are advertised as the agent's frontend tools and
+        executed in the browser by the same registrar WebMCP uses. The
+        <%= link_to "AG-UI Relay demo", "/demos/agui-relay" %> runs a scripted
+        agent through the whole loop: streamed rows, a tool call the tabs
+        component executes, the result reported back, an interrupt answered.
+        The <%= link_to "AG-UI Relay guide", agui_path %> is the host recipe.
+      </p>
+      <h2 id="a2ui">The A2UI catalog and renderer</h2>
+      <p>
+        A2UI is the declarative generative-UI format: an agent emits a flat
+        component list against a catalog the client owns. Poetry's registry is
+        that catalog once projected -
+        <code>Poetry::Agent::A2UI::Catalog.from_registry</code> writes the v1.0
+        JSON Schema document (style axes as enums, options as typed
+        properties, slots as child references, the content block as
+        <code>text</code> or <code>children</code>), and this site serves it at
+        <%= link_to "/a2ui/catalog.json", "/a2ui/catalog.json" %> for any agent
+        or middleware that reads catalogs by URL.
+      </p>
+      <p>
+        The renderer is the other half. <code>Poetry::Agent::A2UI::Session</code>
+        folds the envelope (<code>createSurface</code>, <code>updateComponents</code>,
+        <code>updateDataModel</code>, <code>deleteSurface</code>) into surfaces and
+        answers what it cannot honor with the spec's renderer-to-agent errors;
+        <code>Renderer</code> renders a surface through your view context - the
+        spec's basic catalog mapped onto Poetry's components, or Poetry's own
+        catalog rendered straight from the registry - and <code>Streams</code>
+        delivers every change as a versioned Turbo Stream. A surface is a form:
+        bound inputs are named by their data-model pointer, every agent action is
+        a submit button, and <code>Session#action</code> turns the submitted form
+        into the spec's <code>action</code> message, so two-way binding syncs on
+        the action exactly as the spec asks. The
+        <%= link_to "A2UI Surface demo", "/demos/a2ui-surface" %> renders both
+        catalogs, streams a third surface progressively, and shows the message
+        each submission produces. The
+        <%= link_to "A2UI Surfaces guide", a2ui_path %> is the host recipe.
+      </p>
+      <p>
+        The catalog's functions run on the server: <code>formatString</code>
+        interpolation, the formatters, the validators behind <code>checks</code>,
+        the combinators, <code>openUrl</code>. A failing check rejects the action
+        with its failures rendered under their controls, and the same rules run
+        in the browser as the user types (<code>poetry--agent--a2ui-surface</code>):
+        a button whose checks fail is disabled, an input's error slot fills. Every
+        rendered component carries a render-stable key, and a surface's updates
+        arrive as morphing replaces, so typed text, a selected tab, and an open
+        dialog survive the agent's next message. A function a catalog marks
+        <code>rendererOrAgent</code> answers an agent's
+        <code>callRendererFunction</code> with a response. In the
+        <%= link_to "AG-UI Relay demo", "/demos/agui-relay" %> the agent paints a
+        surface mid-stream as an <code>a2ui-surface</code> activity and its form
+        posts back into the next run as <code>forwardedProps.a2uiAction</code>.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="whats-in-the-gem">What's in the gem</h2>
+    <% end %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <table>
+        <thead><tr><th>Piece</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>Poetry::Agent::MCP::Server</code></td><td>the MCP server; <code>#handle</code> is a pure request-to-response function, <code>#serve</code> the stdio loop</td></tr>
+          <tr><td><code>exe/poetry-agent</code></td><td>the one executable (<code>bundle exec poetry-agent</code>); skills, helpers, and recipes ride along when poetry-ui is bundled</td></tr>
+          <tr><td><code>poetry--agent--webmcp</code></td><td>the registrar controller: registers an opted-in instance's tools on connect, aborts them on disconnect, dispatches calls to the component's own action</td></tr>
+          <tr><td><code>poetry--agent--webmcp-form</code></td><td>the declarative-form controller: an agent-invoked submit answers through <code>SubmitEvent.respondWith</code> instead of navigating</td></tr>
+          <tr><td><code>@poetry/agent</code> adapter</td><td>the one file that knows the <code>document.modelContext</code> surface, so spec churn stays a one-file fix</td></tr>
+          <tr><td><code>Poetry::Agent::WebMCP::OriginTrial</code></td><td>Rack middleware serving origin-trial tokens on HTML responses; a pass-through with none configured</td></tr>
+          <tr><td><code>Poetry::Agent.configure</code></td><td><code>origin_trial_tokens</code> and the per-document <code>registration_budget</code></td></tr>
+          <tr><td><code>Poetry::Agent::AGUI</code></td><td><code>Client</code>, <code>SSE</code>, <code>RunInput</code>, <code>JsonPatch</code>, <code>Transcript</code>, <code>Relay</code>, <code>TurboStream</code> - the AG-UI client and its Turbo Stream relay</td></tr>
+          <tr><td><code>poetry--agent--agui-client-tool</code></td><td>the bridge controller: executes an agent's frontend tool call through the registrar and POSTs the result to the continue URL</td></tr>
+          <tr><td><code>Poetry::Agent::A2UI::Catalog</code></td><td>the registry projected as an A2UI v1.0 catalog document (<code>to_h</code>, <code>inline</code>, <code>to_json</code>)</td></tr>
+          <tr><td><code>Poetry::Agent::A2UI::Session</code></td><td>the envelope consumer: surfaces, data models, renderer-to-agent errors, and <code>#action</code> (a submitted surface form as the spec's action message)</td></tr>
+          <tr><td><code>Poetry::Agent::A2UI::Renderer</code></td><td>renders a surface through a view context as a form of pointer-named inputs and action buttons; never raises for an agent's mistake (<code>warnings</code>)</td></tr>
+          <tr><td><code>Poetry::Agent::A2UI::Catalogs</code></td><td><code>Basic</code> (the spec's catalog mapped onto Poetry's components) and <code>Native</code> (Poetry's catalog rendered from the registry, no hand mapping)</td></tr>
+          <tr><td><code>Poetry::Agent::A2UI::Streams</code></td><td>every surface change as a versioned Turbo Stream (append on first appearance, a morphing <code>vreplace</code> after, remove on delete)</td></tr>
+          <tr><td><code>Poetry::Agent::A2UI::Functions</code></td><td>the function registry and the basic catalog's set (<code>Functions.basic</code>); <code>Expression</code> parses <code>formatString</code>, <code>Evaluator</code> resolves values in scope, <code>Checks</code> runs a component's rules</td></tr>
+          <tr><td><code>poetry--agent--a2ui-surface</code></td><td>the client side of a surface's checks: evaluates the rendered program as the user types, disables failing buttons, fills error slots</td></tr>
+        </tbody>
+      </table>
+    <% end %>
+  </section>
+</div>

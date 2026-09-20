@@ -1,0 +1,14 @@
+<div class="flex flex-wrap items-center gap-2">
+  <%= poetry_badge(variant: :success) do %>
+    <%= poetry_icon(name: :"circle-check") %>
+    Verified
+  <% end %>
+  <%= poetry_badge(variant: :secondary) do %>
+    <%= poetry_icon(name: :star) %>
+    Featured
+  <% end %>
+  <%= poetry_badge(variant: :destructive) do %>
+    <%= poetry_icon(name: :"circle-alert") %>
+    Action needed
+  <% end %>
+</div>

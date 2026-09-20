@@ -1,0 +1,13 @@
+<%# direction: picks the edge AND the dismiss gesture - a left drawer
+    slides in from the left and swipes left to close. :down (the default)
+    and :up are the sheet shapes; :left and :right make edge panels. %>
+<%= poetry_drawer(direction: :left) do |drawer| %>
+  <% drawer.with_trigger(variant: :outline) { "Open left drawer" } %>
+  <% drawer.with_title { "Saved filters" } %>
+  <% drawer.with_description { "Swipe left to dismiss." } %>
+  <div class="grid gap-2 text-sm text-muted-foreground">
+    <span>Assigned to me</span>
+    <span>Due this week</span>
+    <span>High priority</span>
+  </div>
+<% end %>

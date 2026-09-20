@@ -1,0 +1,20 @@
+<%# The tooltip treatment for copy confirmation: the copy button lives
+    beside the field as a tooltip trigger, and a docs-only harness
+    copies the secret and flips the open tooltip's text to "Copied!".
+    The built-in copy: affordance (previous example) confirms with a
+    glyph swap + live-region announcement instead - pick one, not both. %>
+<div class="flex w-96 items-end gap-2" data-controller="demo-copy-tooltip">
+  <div class="flex-1">
+    <%= poetry_sensitive_input(name: "api_token", label: "API token",
+                               value: "sk_demo_4eC39HqLyjWDarjtT1zdp7dc") %>
+  </div>
+  <span data-action="click->demo-copy-tooltip#copy">
+    <%= poetry_tooltip do |tooltip| %>
+      <% tooltip.with_trigger(variant: :outline, size: :icon, label: "Copy API token",
+                              "data-demo-copy-tooltip-target": "trigger") do %>
+        <%= poetry_icon(name: :copy) %>
+      <% end %>
+      <span data-demo-copy-label>Copy to clipboard</span>
+    <% end %>
+  </span>
+</div>

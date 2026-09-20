@@ -1,0 +1,18 @@
+<%# Groups nest: an outer group spaces INNER groups apart (gap, not
+    joining), and each inner group keeps its own segmented corners.
+    The input-group is a full member - the chains square it directly. %>
+<%= poetry_button_group("aria-label": "Composer") do %>
+  <%= poetry_button_group do %>
+    <%= poetry_button(variant: :outline, size: :icon, label: "Add attachment") do %>
+      <%= poetry_icon(name: :plus) %>
+    <% end %>
+  <% end %>
+  <%= poetry_button_group(class: "w-64") do %>
+    <%= poetry_input_group do %>
+      <%= poetry_input_group_input(name: "message", placeholder: "Send a message…") %>
+      <%= poetry_input_group_addon(align: :"inline-end") do %>
+        <%= poetry_icon(name: :"audio-lines") %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

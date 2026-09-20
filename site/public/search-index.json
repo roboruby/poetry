@@ -1,0 +1,6692 @@
+[
+  {
+    "title": "Installation",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation"
+  },
+  {
+    "title": "Install",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#install"
+  },
+  {
+    "title": "Installing into an app that already has CSS",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#existing-css"
+  },
+  {
+    "title": "Your unlayered CSS beats the theme",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#unlayered-css"
+  },
+  {
+    "title": "Tokens you already own keep winning",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#existing-tokens"
+  },
+  {
+    "title": "Preflight, and the app that has its own reset",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#preflight"
+  },
+  {
+    "title": "Upgrade an existing app",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#upgrade"
+  },
+  {
+    "title": "The three ownership tiers",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#ownership"
+  },
+  {
+    "title": "Copy-ins: poetry:diff",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#copy-ins"
+  },
+  {
+    "title": "Two notes from a fresh Rails 8.1 host",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#fresh-host-notes"
+  },
+  {
+    "title": "Scaffold templates",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#scaffold-templates"
+  },
+  {
+    "title": "Theming",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming"
+  },
+  {
+    "title": "The nine themes",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#the-nine-themes"
+  },
+  {
+    "title": "Installing a theme",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#installing-a-theme"
+  },
+  {
+    "title": "Your tokens win",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#your-tokens-win"
+  },
+  {
+    "title": "Owning the design outright",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#owning-the-design"
+  },
+  {
+    "title": "How this site renders all nine",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#how-this-site-renders-all-nine"
+  },
+  {
+    "title": "The font pairing",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#the-font-pairing"
+  },
+  {
+    "title": "Overriding the theme",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#overrides"
+  },
+  {
+    "title": "DESIGN.md interop",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#design-md-interop"
+  },
+  {
+    "title": "What stays out of the theme",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#what-stays-out-of-the-theme"
+  },
+  {
+    "title": "Consumer utilities",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#consumer-utilities"
+  },
+  {
+    "title": "Color scheme (dark mode)",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#color-scheme"
+  },
+  {
+    "title": "Portals and scoped themes",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#portals-and-scoped-themes"
+  },
+  {
+    "title": "Typography",
+    "page": "Typography",
+    "section": "docs",
+    "path": "/typography"
+  },
+  {
+    "title": "Default",
+    "page": "Typography",
+    "section": "docs",
+    "path": "/typography#default"
+  },
+  {
+    "title": "Headings",
+    "page": "Typography",
+    "section": "docs",
+    "path": "/typography#headings"
+  },
+  {
+    "title": "Inline code",
+    "page": "Typography",
+    "section": "docs",
+    "path": "/typography#inline-code"
+  },
+  {
+    "title": "Large",
+    "page": "Typography",
+    "section": "docs",
+    "path": "/typography#large"
+  },
+  {
+    "title": "Lead",
+    "page": "Typography",
+    "section": "docs",
+    "path": "/typography#lead"
+  },
+  {
+    "title": "Muted",
+    "page": "Typography",
+    "section": "docs",
+    "path": "/typography#muted"
+  },
+  {
+    "title": "Small",
+    "page": "Typography",
+    "section": "docs",
+    "path": "/typography#small"
+  },
+  {
+    "title": "Testing",
+    "page": "Testing",
+    "section": "docs",
+    "path": "/testing"
+  },
+  {
+    "title": "The doctrine",
+    "page": "Testing",
+    "section": "docs",
+    "path": "/testing#doctrine"
+  },
+  {
+    "title": "Lint first: Poetry check",
+    "page": "Testing",
+    "section": "docs",
+    "path": "/testing#check"
+  },
+  {
+    "title": "Tier 1: wiring tests",
+    "page": "Testing",
+    "section": "docs",
+    "path": "/testing#wiring"
+  },
+  {
+    "title": "Tier 2: behavior",
+    "page": "Testing",
+    "section": "docs",
+    "path": "/testing#behavior"
+  },
+  {
+    "title": "Tier 3: the browser pass",
+    "page": "Testing",
+    "section": "docs",
+    "path": "/testing#browser"
+  },
+  {
+    "title": "The system-test helpers",
+    "page": "Testing",
+    "section": "docs",
+    "path": "/testing#testers"
+  },
+  {
+    "title": "What to assert, in one line",
+    "page": "Testing",
+    "section": "docs",
+    "path": "/testing#what-to-assert"
+  },
+  {
+    "title": "I18n",
+    "page": "I18n",
+    "section": "docs",
+    "path": "/i18n"
+  },
+  {
+    "title": "The shipped catalogue",
+    "page": "I18n",
+    "section": "docs",
+    "path": "/i18n#catalogue"
+  },
+  {
+    "title": "Overriding keys and adding locales",
+    "page": "I18n",
+    "section": "docs",
+    "path": "/i18n#locales"
+  },
+  {
+    "title": "Visible copy is yours",
+    "page": "I18n",
+    "section": "docs",
+    "path": "/i18n#copy"
+  },
+  {
+    "title": "Forms localize through the model",
+    "page": "I18n",
+    "section": "docs",
+    "path": "/i18n#forms"
+  },
+  {
+    "title": "Dates",
+    "page": "I18n",
+    "section": "docs",
+    "path": "/i18n#dates"
+  },
+  {
+    "title": "Stimulus",
+    "page": "Stimulus",
+    "section": "docs",
+    "path": "/stimulus"
+  },
+  {
+    "title": "The model",
+    "page": "Stimulus",
+    "section": "docs",
+    "path": "/stimulus#model"
+  },
+  {
+    "title": "1. Attach your controller to a component",
+    "page": "Stimulus",
+    "section": "docs",
+    "path": "/stimulus#compose"
+  },
+  {
+    "title": "2. React to what a component does",
+    "page": "Stimulus",
+    "section": "docs",
+    "path": "/stimulus#listen"
+  },
+  {
+    "title": "3. Drive a component from your markup",
+    "page": "Stimulus",
+    "section": "docs",
+    "path": "/stimulus#drive"
+  },
+  {
+    "title": "4. Declare it in Ruby",
+    "page": "Stimulus",
+    "section": "docs",
+    "path": "/stimulus#declare"
+  },
+  {
+    "title": "5. Change what a Poetry controller does",
+    "page": "Stimulus",
+    "section": "docs",
+    "path": "/stimulus#extend"
+  },
+  {
+    "title": "Checked at every rung",
+    "page": "Stimulus",
+    "section": "docs",
+    "path": "/stimulus#tooling"
+  },
+  {
+    "title": "Form Builder",
+    "page": "Form Builder",
+    "section": "docs",
+    "path": "/forms"
+  },
+  {
+    "title": "Coming from Simple Form?",
+    "page": "Form Builder",
+    "section": "docs",
+    "path": "/forms#simple-form"
+  },
+  {
+    "title": "Default",
+    "page": "Form Builder",
+    "section": "docs",
+    "path": "/forms#default"
+  },
+  {
+    "title": "Errors",
+    "page": "Form Builder",
+    "section": "docs",
+    "path": "/forms#errors"
+  },
+  {
+    "title": "Inference",
+    "page": "Form Builder",
+    "section": "docs",
+    "path": "/forms#inference"
+  },
+  {
+    "title": "Layout",
+    "page": "Form Builder",
+    "section": "docs",
+    "path": "/forms#layout"
+  },
+  {
+    "title": "Pagination",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination"
+  },
+  {
+    "title": "Installation",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination#installation"
+  },
+  {
+    "title": "Wire your controller",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination#setup"
+  },
+  {
+    "title": "kaminari",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination#setup-kaminari"
+  },
+  {
+    "title": "pagy",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination#setup-pagy"
+  },
+  {
+    "title": "will_paginate",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination#setup-will-paginate"
+  },
+  {
+    "title": "The window, labels, and one page",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination#doctrine"
+  },
+  {
+    "title": "Kaminari",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination#kaminari"
+  },
+  {
+    "title": "Pagy",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination#pagy"
+  },
+  {
+    "title": "Will paginate",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination#will-paginate"
+  },
+  {
+    "title": "Deferred Regions",
+    "page": "Deferred Regions",
+    "section": "docs",
+    "path": "/deferred"
+  },
+  {
+    "title": "Error retry",
+    "page": "Deferred Regions",
+    "section": "docs",
+    "path": "/deferred#error-retry"
+  },
+  {
+    "title": "In tabs",
+    "page": "Deferred Regions",
+    "section": "docs",
+    "path": "/deferred#in-tabs"
+  },
+  {
+    "title": "Lazy",
+    "page": "Deferred Regions",
+    "section": "docs",
+    "path": "/deferred#lazy"
+  },
+  {
+    "title": "Optimistic Forms",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms"
+  },
+  {
+    "title": "How it works",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#mechanics"
+  },
+  {
+    "title": "Setup",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#setup"
+  },
+  {
+    "title": "Usage",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#usage"
+  },
+  {
+    "title": "The server contract",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#server-contract"
+  },
+  {
+    "title": "The submitted value",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#submitted-value"
+  },
+  {
+    "title": "When the prediction can be wrong",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#correction"
+  },
+  {
+    "title": "Authoring streams directly",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#streams"
+  },
+  {
+    "title": "When to reach for it",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#when"
+  },
+  {
+    "title": "Default",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#default"
+  },
+  {
+    "title": "Reconciliation",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#reconciliation"
+  },
+  {
+    "title": "Recipes",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes"
+  },
+  {
+    "title": "How it works",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes#how-it-works"
+  },
+  {
+    "title": "In-page agent embed",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes#agent-embed"
+  },
+  {
+    "title": "poetry scaffold templates",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes#scaffold-templates"
+  },
+  {
+    "title": "Data index screen",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes#screen-data-index"
+  },
+  {
+    "title": "Settings screen",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes#screen-settings"
+  },
+  {
+    "title": "poetry skill bundle",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes#skill-poetry"
+  },
+  {
+    "title": "poetry-component skill bundle",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes#skill-poetry-component"
+  },
+  {
+    "title": "poetry-design skill bundle",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes#skill-poetry-design"
+  },
+  {
+    "title": "Page Agent",
+    "page": "Page Agent",
+    "section": "docs",
+    "path": "/page-agent"
+  },
+  {
+    "title": "What this is",
+    "page": "Page Agent",
+    "section": "docs",
+    "path": "/page-agent#what"
+  },
+  {
+    "title": "Or hand the agent tools",
+    "page": "Page Agent",
+    "section": "docs",
+    "path": "/page-agent#or-tools"
+  },
+  {
+    "title": "Activate",
+    "page": "Page Agent",
+    "section": "docs",
+    "path": "/page-agent#activate"
+  },
+  {
+    "title": "Task list",
+    "page": "Page Agent",
+    "section": "docs",
+    "path": "/page-agent#tasks"
+  },
+  {
+    "title": "Sample implementation",
+    "page": "Page Agent",
+    "section": "docs",
+    "path": "/page-agent#sample"
+  },
+  {
+    "title": "Provenance & limits",
+    "page": "Page Agent",
+    "section": "docs",
+    "path": "/page-agent#provenance"
+  },
+  {
+    "title": "Agent Skills",
+    "page": "Agent Skills",
+    "section": "docs",
+    "path": "/agent-skills"
+  },
+  {
+    "title": "How it works",
+    "page": "Agent Skills",
+    "section": "docs",
+    "path": "/agent-skills#how-it-works"
+  },
+  {
+    "title": "poetry",
+    "page": "Agent Skills",
+    "section": "docs",
+    "path": "/agent-skills#poetry"
+  },
+  {
+    "title": "In a Rails app with Poetry",
+    "page": "Agent Skills",
+    "section": "docs",
+    "path": "/agent-skills#in-app"
+  },
+  {
+    "title": "Editors",
+    "page": "Editors",
+    "section": "docs",
+    "path": "/editors"
+  },
+  {
+    "title": "One generator",
+    "page": "Editors",
+    "section": "docs",
+    "path": "/editors#generate"
+  },
+  {
+    "title": "The MCP server",
+    "page": "Editors",
+    "section": "docs",
+    "path": "/editors#mcp"
+  },
+  {
+    "title": "The check hook",
+    "page": "Editors",
+    "section": "docs",
+    "path": "/editors#hook"
+  },
+  {
+    "title": "Snippets",
+    "page": "Editors",
+    "section": "docs",
+    "path": "/editors#snippets"
+  },
+  {
+    "title": "HTML+ERB tooling",
+    "page": "Editors",
+    "section": "docs",
+    "path": "/editors#herb"
+  },
+  {
+    "title": "Design tools",
+    "page": "Editors",
+    "section": "docs",
+    "path": "/editors#design-tools"
+  },
+  {
+    "title": "API Reference",
+    "page": "API Reference",
+    "section": "docs",
+    "path": "/api"
+  },
+  {
+    "title": "Data Table",
+    "page": "Data Table",
+    "section": "docs",
+    "path": "/data-table"
+  },
+  {
+    "title": "The controller",
+    "page": "Data Table",
+    "section": "docs",
+    "path": "/data-table#controller"
+  },
+  {
+    "title": "The view",
+    "page": "Data Table",
+    "section": "docs",
+    "path": "/data-table#view"
+  },
+  {
+    "title": "Sticky headers",
+    "page": "Data Table",
+    "section": "docs",
+    "path": "/data-table#sticky"
+  },
+  {
+    "title": "Row selection",
+    "page": "Data Table",
+    "section": "docs",
+    "path": "/data-table#selection"
+  },
+  {
+    "title": "Scoped updates (optional)",
+    "page": "Data Table",
+    "section": "docs",
+    "path": "/data-table#frame"
+  },
+  {
+    "title": "Filter as you type (optional)",
+    "page": "Data Table",
+    "section": "docs",
+    "path": "/data-table#live-filter"
+  },
+  {
+    "title": "Accessibility",
+    "page": "Data Table",
+    "section": "docs",
+    "path": "/data-table#accessibility"
+  },
+  {
+    "title": "Row mutations belong to another tier",
+    "page": "Data Table",
+    "section": "docs",
+    "path": "/data-table#mutations"
+  },
+  {
+    "title": "Caching",
+    "page": "Caching",
+    "section": "docs",
+    "path": "/caching"
+  },
+  {
+    "title": "The digest blind spot",
+    "page": "Caching",
+    "section": "docs",
+    "path": "/caching#digest-blind-spot"
+  },
+  {
+    "title": "The recipe: version-keyed cache keys",
+    "page": "Caching",
+    "section": "docs",
+    "path": "/caching#version-keys"
+  },
+  {
+    "title": "Rules for markup that can be cached at all",
+    "page": "Caching",
+    "section": "docs",
+    "path": "/caching#cacheable-markup"
+  },
+  {
+    "title": "Components you copied in",
+    "page": "Caching",
+    "section": "docs",
+    "path": "/caching#copy-ins"
+  },
+  {
+    "title": "Ids inside cached fragments",
+    "page": "Caching",
+    "section": "docs",
+    "path": "/caching#ids"
+  },
+  {
+    "title": "HTTP caching, ETags, and CSRF",
+    "page": "Caching",
+    "section": "docs",
+    "path": "/caching#http-caching"
+  },
+  {
+    "title": "Stable IDs",
+    "page": "Stable IDs",
+    "section": "docs",
+    "path": "/stable-ids"
+  },
+  {
+    "title": "The identity ladder",
+    "page": "Stable IDs",
+    "section": "docs",
+    "path": "/stable-ids#ladder"
+  },
+  {
+    "title": "When you must pass identity",
+    "page": "Stable IDs",
+    "section": "docs",
+    "path": "/stable-ids#must-pass"
+  },
+  {
+    "title": "Keeping primary keys out of the DOM",
+    "page": "Stable IDs",
+    "section": "docs",
+    "path": "/stable-ids#obfuscating"
+  },
+  {
+    "title": "What morph identity does and does not preserve",
+    "page": "Stable IDs",
+    "section": "docs",
+    "path": "/stable-ids#morph"
+  },
+  {
+    "title": "The sequence mode (opt-in, experimental)",
+    "page": "Stable IDs",
+    "section": "docs",
+    "path": "/stable-ids#sequence"
+  },
+  {
+    "title": "ETags and CSRF: what ids do and don't buy",
+    "page": "Stable IDs",
+    "section": "docs",
+    "path": "/stable-ids#etags"
+  },
+  {
+    "title": "Rails Engines",
+    "page": "Rails Engines",
+    "section": "docs",
+    "path": "/engines"
+  },
+  {
+    "title": "Why this works",
+    "page": "Rails Engines",
+    "section": "docs",
+    "path": "/engines#why-it-works"
+  },
+  {
+    "title": "The engine recipe",
+    "page": "Rails Engines",
+    "section": "docs",
+    "path": "/engines#the-engine-recipe"
+  },
+  {
+    "title": "Page-level utilities: the one wiring step",
+    "page": "Rails Engines",
+    "section": "docs",
+    "path": "/engines#page-level-utilities"
+  },
+  {
+    "title": "Retheming the whole application",
+    "page": "Rails Engines",
+    "section": "docs",
+    "path": "/engines#retheming"
+  },
+  {
+    "title": "Customizing a component from an engine",
+    "page": "Rails Engines",
+    "section": "docs",
+    "path": "/engines#customizing-components"
+  },
+  {
+    "title": "Your own components",
+    "page": "Rails Engines",
+    "section": "docs",
+    "path": "/engines#your-own-components"
+  },
+  {
+    "title": "Keep one theme contract",
+    "page": "Rails Engines",
+    "section": "docs",
+    "path": "/engines#one-theme-contract"
+  },
+  {
+    "title": "Accessibility",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility"
+  },
+  {
+    "title": "What Poetry guarantees",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#guarantees"
+  },
+  {
+    "title": "What automation cannot see",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#limits"
+  },
+  {
+    "title": "Set up a pass",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#setup"
+  },
+  {
+    "title": "The universal checklist",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#universal"
+  },
+  {
+    "title": "Pattern checklists",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#patterns"
+  },
+  {
+    "title": "Form controls",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#forms"
+  },
+  {
+    "title": "Overlays",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#overlays"
+  },
+  {
+    "title": "Menus and command palettes",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#menus"
+  },
+  {
+    "title": "Disclosure and navigation",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#navigation"
+  },
+  {
+    "title": "Data, feedback, and streaming",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#composite"
+  },
+  {
+    "title": "Automated checks in your app",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#automated"
+  },
+  {
+    "title": "Recording findings",
+    "page": "Accessibility",
+    "section": "docs",
+    "path": "/accessibility#recording"
+  },
+  {
+    "title": "MCP Server",
+    "page": "MCP Server",
+    "section": "docs",
+    "path": "/mcp-server"
+  },
+  {
+    "title": "The server",
+    "page": "MCP Server",
+    "section": "docs",
+    "path": "/mcp-server#server"
+  },
+  {
+    "title": "The loop it closes",
+    "page": "MCP Server",
+    "section": "docs",
+    "path": "/mcp-server#loop"
+  },
+  {
+    "title": "The ten tools",
+    "page": "MCP Server",
+    "section": "docs",
+    "path": "/mcp-server#tools"
+  },
+  {
+    "title": "Over HTTP",
+    "page": "MCP Server",
+    "section": "docs",
+    "path": "/mcp-server#http"
+  },
+  {
+    "title": "Routing a brief",
+    "page": "MCP Server",
+    "section": "docs",
+    "path": "/mcp-server#routing"
+  },
+  {
+    "title": "The check verdict",
+    "page": "MCP Server",
+    "section": "docs",
+    "path": "/mcp-server#check"
+  },
+  {
+    "title": "Skills and guidance at runtime",
+    "page": "MCP Server",
+    "section": "docs",
+    "path": "/mcp-server#skills"
+  },
+  {
+    "title": "One source, every surface",
+    "page": "MCP Server",
+    "section": "docs",
+    "path": "/mcp-server#one-source"
+  },
+  {
+    "title": "WebMCP",
+    "page": "WebMCP",
+    "section": "docs",
+    "path": "/webmcp"
+  },
+  {
+    "title": "What it is",
+    "page": "WebMCP",
+    "section": "docs",
+    "path": "/webmcp#what-it-is"
+  },
+  {
+    "title": "Live: the tools on this page",
+    "page": "WebMCP",
+    "section": "docs",
+    "path": "/webmcp#live"
+  },
+  {
+    "title": "Search the docs: a declarative tool",
+    "page": "WebMCP",
+    "section": "docs",
+    "path": "/webmcp#declarative"
+  },
+  {
+    "title": "Two paths",
+    "page": "WebMCP",
+    "section": "docs",
+    "path": "/webmcp#two-paths"
+  },
+  {
+    "title": "Designing tools for your app",
+    "page": "WebMCP",
+    "section": "docs",
+    "path": "/webmcp#designing"
+  },
+  {
+    "title": "Declaring tools in your own components",
+    "page": "WebMCP",
+    "section": "docs",
+    "path": "/webmcp#declaring"
+  },
+  {
+    "title": "Setup",
+    "page": "WebMCP",
+    "section": "docs",
+    "path": "/webmcp#setup"
+  },
+  {
+    "title": "Safety by construction",
+    "page": "WebMCP",
+    "section": "docs",
+    "path": "/webmcp#safety"
+  },
+  {
+    "title": "AG-UI Relay",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui"
+  },
+  {
+    "title": "What it is",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#what-it-is"
+  },
+  {
+    "title": "Run an agent",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#run"
+  },
+  {
+    "title": "Render the transcript",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#render"
+  },
+  {
+    "title": "Frontend tools",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#frontend-tools"
+  },
+  {
+    "title": "Interrupts",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#interrupts"
+  },
+  {
+    "title": "A2UI surfaces in the stream",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#surfaces"
+  },
+  {
+    "title": "Deterministic development",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#development"
+  },
+  {
+    "title": "Setup",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#setup"
+  },
+  {
+    "title": "A2UI Surfaces",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui"
+  },
+  {
+    "title": "Two catalogs",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#catalogs"
+  },
+  {
+    "title": "Fold the envelope",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#fold"
+  },
+  {
+    "title": "Render a surface",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#render"
+  },
+  {
+    "title": "Stream updates",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#stream"
+  },
+  {
+    "title": "Actions",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#actions"
+  },
+  {
+    "title": "Checks",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#checks"
+  },
+  {
+    "title": "Functions",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#functions"
+  },
+  {
+    "title": "State across updates",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#state"
+  },
+  {
+    "title": "Transports",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#transports"
+  },
+  {
+    "title": "Setup",
+    "page": "A2UI Surfaces",
+    "section": "docs",
+    "path": "/a2ui#setup"
+  },
+  {
+    "title": "Accordion",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion"
+  },
+  {
+    "title": "Installation",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion#default"
+  },
+  {
+    "title": "Borders",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion#borders"
+  },
+  {
+    "title": "Card",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion#card"
+  },
+  {
+    "title": "Disabled",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion#disabled"
+  },
+  {
+    "title": "Multiple",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion#multiple"
+  },
+  {
+    "title": "Non collapsible",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion#non-collapsible"
+  },
+  {
+    "title": "Wiring",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion#wiring"
+  },
+  {
+    "title": "Alert",
+    "page": "Alert",
+    "section": "components",
+    "path": "/components/alert"
+  },
+  {
+    "title": "Installation",
+    "page": "Alert",
+    "section": "components",
+    "path": "/components/alert#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Alert",
+    "section": "components",
+    "path": "/components/alert#default"
+  },
+  {
+    "title": "Action",
+    "page": "Alert",
+    "section": "components",
+    "path": "/components/alert#action"
+  },
+  {
+    "title": "Custom colors",
+    "page": "Alert",
+    "section": "components",
+    "path": "/components/alert#custom-colors"
+  },
+  {
+    "title": "Destructive",
+    "page": "Alert",
+    "section": "components",
+    "path": "/components/alert#destructive"
+  },
+  {
+    "title": "Dismissible",
+    "page": "Alert",
+    "section": "components",
+    "path": "/components/alert#dismissible"
+  },
+  {
+    "title": "With action",
+    "page": "Alert",
+    "section": "components",
+    "path": "/components/alert#with-action"
+  },
+  {
+    "title": "With icon",
+    "page": "Alert",
+    "section": "components",
+    "path": "/components/alert#with-icon"
+  },
+  {
+    "title": "Alert Dialog",
+    "page": "Alert Dialog",
+    "section": "components",
+    "path": "/components/alert-dialog"
+  },
+  {
+    "title": "Installation",
+    "page": "Alert Dialog",
+    "section": "components",
+    "path": "/components/alert-dialog#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Alert Dialog",
+    "section": "components",
+    "path": "/components/alert-dialog#default"
+  },
+  {
+    "title": "Small",
+    "page": "Alert Dialog",
+    "section": "components",
+    "path": "/components/alert-dialog#small"
+  },
+  {
+    "title": "Small with media",
+    "page": "Alert Dialog",
+    "section": "components",
+    "path": "/components/alert-dialog#small-with-media"
+  },
+  {
+    "title": "With media",
+    "page": "Alert Dialog",
+    "section": "components",
+    "path": "/components/alert-dialog#with-media"
+  },
+  {
+    "title": "Wiring",
+    "page": "Alert Dialog",
+    "section": "components",
+    "path": "/components/alert-dialog#wiring"
+  },
+  {
+    "title": "Aspect Ratio",
+    "page": "Aspect Ratio",
+    "section": "components",
+    "path": "/components/aspect-ratio"
+  },
+  {
+    "title": "Installation",
+    "page": "Aspect Ratio",
+    "section": "components",
+    "path": "/components/aspect-ratio#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Aspect Ratio",
+    "section": "components",
+    "path": "/components/aspect-ratio#default"
+  },
+  {
+    "title": "Portrait",
+    "page": "Aspect Ratio",
+    "section": "components",
+    "path": "/components/aspect-ratio#portrait"
+  },
+  {
+    "title": "Square",
+    "page": "Aspect Ratio",
+    "section": "components",
+    "path": "/components/aspect-ratio#square"
+  },
+  {
+    "title": "With image",
+    "page": "Aspect Ratio",
+    "section": "components",
+    "path": "/components/aspect-ratio#with-image"
+  },
+  {
+    "title": "Attachment",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment"
+  },
+  {
+    "title": "Installation",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment#default"
+  },
+  {
+    "title": "Group",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment#group"
+  },
+  {
+    "title": "Idle dropzone",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment#idle-dropzone"
+  },
+  {
+    "title": "Sizes",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment#sizes"
+  },
+  {
+    "title": "States",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment#states"
+  },
+  {
+    "title": "Vertical with actions",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment#vertical-with-actions"
+  },
+  {
+    "title": "With trigger",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment#with-trigger"
+  },
+  {
+    "title": "Autocomplete",
+    "page": "Autocomplete",
+    "section": "components",
+    "path": "/components/autocomplete"
+  },
+  {
+    "title": "Installation",
+    "page": "Autocomplete",
+    "section": "components",
+    "path": "/components/autocomplete#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Autocomplete",
+    "section": "components",
+    "path": "/components/autocomplete#default"
+  },
+  {
+    "title": "Value override",
+    "page": "Autocomplete",
+    "section": "components",
+    "path": "/components/autocomplete#value-override"
+  },
+  {
+    "title": "Wiring",
+    "page": "Autocomplete",
+    "section": "components",
+    "path": "/components/autocomplete#wiring"
+  },
+  {
+    "title": "Avatar",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar"
+  },
+  {
+    "title": "Installation",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar#default"
+  },
+  {
+    "title": "Badge",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar#badge"
+  },
+  {
+    "title": "Badge with icon",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar#badge-with-icon"
+  },
+  {
+    "title": "Dropdown",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar#dropdown"
+  },
+  {
+    "title": "Group",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar#group"
+  },
+  {
+    "title": "Group with icon",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar#group-with-icon"
+  },
+  {
+    "title": "Sizes",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar#sizes"
+  },
+  {
+    "title": "With image",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar#with-image"
+  },
+  {
+    "title": "Badge",
+    "page": "Badge",
+    "section": "components",
+    "path": "/components/badge"
+  },
+  {
+    "title": "Installation",
+    "page": "Badge",
+    "section": "components",
+    "path": "/components/badge#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Badge",
+    "section": "components",
+    "path": "/components/badge#default"
+  },
+  {
+    "title": "Custom colors",
+    "page": "Badge",
+    "section": "components",
+    "path": "/components/badge#custom-colors"
+  },
+  {
+    "title": "Link",
+    "page": "Badge",
+    "section": "components",
+    "path": "/components/badge#link"
+  },
+  {
+    "title": "Status",
+    "page": "Badge",
+    "section": "components",
+    "path": "/components/badge#status"
+  },
+  {
+    "title": "Variants",
+    "page": "Badge",
+    "section": "components",
+    "path": "/components/badge#variants"
+  },
+  {
+    "title": "With icon",
+    "page": "Badge",
+    "section": "components",
+    "path": "/components/badge#with-icon"
+  },
+  {
+    "title": "With spinner",
+    "page": "Badge",
+    "section": "components",
+    "path": "/components/badge#with-spinner"
+  },
+  {
+    "title": "Breadcrumb",
+    "page": "Breadcrumb",
+    "section": "components",
+    "path": "/components/breadcrumb"
+  },
+  {
+    "title": "Installation",
+    "page": "Breadcrumb",
+    "section": "components",
+    "path": "/components/breadcrumb#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Breadcrumb",
+    "section": "components",
+    "path": "/components/breadcrumb#default"
+  },
+  {
+    "title": "Collapsed",
+    "page": "Breadcrumb",
+    "section": "components",
+    "path": "/components/breadcrumb#collapsed"
+  },
+  {
+    "title": "Custom separator",
+    "page": "Breadcrumb",
+    "section": "components",
+    "path": "/components/breadcrumb#custom-separator"
+  },
+  {
+    "title": "Dropdown",
+    "page": "Breadcrumb",
+    "section": "components",
+    "path": "/components/breadcrumb#dropdown"
+  },
+  {
+    "title": "Link component",
+    "page": "Breadcrumb",
+    "section": "components",
+    "path": "/components/breadcrumb#link-component"
+  },
+  {
+    "title": "Bubble",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble"
+  },
+  {
+    "title": "Installation",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#default"
+  },
+  {
+    "title": "Collapsible",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#collapsible"
+  },
+  {
+    "title": "Group",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#group"
+  },
+  {
+    "title": "Links and buttons",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#links-and-buttons"
+  },
+  {
+    "title": "Popover",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#popover"
+  },
+  {
+    "title": "Quick replies",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#quick-replies"
+  },
+  {
+    "title": "Reactions",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#reactions"
+  },
+  {
+    "title": "Tooltip",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#tooltip"
+  },
+  {
+    "title": "Variants",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#variants"
+  },
+  {
+    "title": "Button",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button"
+  },
+  {
+    "title": "Installation",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#default"
+  },
+  {
+    "title": "As link",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#as-link"
+  },
+  {
+    "title": "Button group",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#button-group"
+  },
+  {
+    "title": "Icon buttons",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#icon-buttons"
+  },
+  {
+    "title": "Link",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#link"
+  },
+  {
+    "title": "Loading",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#loading"
+  },
+  {
+    "title": "Rounded",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#rounded"
+  },
+  {
+    "title": "Sizes",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#sizes"
+  },
+  {
+    "title": "With icon",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#with-icon"
+  },
+  {
+    "title": "Button Group",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group"
+  },
+  {
+    "title": "Installation",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#default"
+  },
+  {
+    "title": "Input action",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#input-action"
+  },
+  {
+    "title": "Input group",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#input-group"
+  },
+  {
+    "title": "Nested",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#nested"
+  },
+  {
+    "title": "Popover",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#popover"
+  },
+  {
+    "title": "Separator",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#separator"
+  },
+  {
+    "title": "Sizes",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#sizes"
+  },
+  {
+    "title": "Split",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#split"
+  },
+  {
+    "title": "Text prefix",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#text-prefix"
+  },
+  {
+    "title": "Vertical",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#vertical"
+  },
+  {
+    "title": "With dropdown",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#with-dropdown"
+  },
+  {
+    "title": "With select",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#with-select"
+  },
+  {
+    "title": "Calendar",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar"
+  },
+  {
+    "title": "Installation",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar#default"
+  },
+  {
+    "title": "Bounded",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar#bounded"
+  },
+  {
+    "title": "Custom cell size",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar#custom-cell-size"
+  },
+  {
+    "title": "Date and time",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar#date-and-time"
+  },
+  {
+    "title": "Month and year selector",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar#month-and-year-selector"
+  },
+  {
+    "title": "Range",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar#range"
+  },
+  {
+    "title": "Week numbers",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar#week-numbers"
+  },
+  {
+    "title": "Wiring",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar#wiring"
+  },
+  {
+    "title": "Card",
+    "page": "Card",
+    "section": "components",
+    "path": "/components/card"
+  },
+  {
+    "title": "Installation",
+    "page": "Card",
+    "section": "components",
+    "path": "/components/card#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Card",
+    "section": "components",
+    "path": "/components/card#default"
+  },
+  {
+    "title": "Login form",
+    "page": "Card",
+    "section": "components",
+    "path": "/components/card#login-form"
+  },
+  {
+    "title": "Terms of service",
+    "page": "Card",
+    "section": "components",
+    "path": "/components/card#terms-of-service"
+  },
+  {
+    "title": "With action and footer",
+    "page": "Card",
+    "section": "components",
+    "path": "/components/card#with-action-and-footer"
+  },
+  {
+    "title": "With media",
+    "page": "Card",
+    "section": "components",
+    "path": "/components/card#with-media"
+  },
+  {
+    "title": "Carousel",
+    "page": "Carousel",
+    "section": "components",
+    "path": "/components/carousel"
+  },
+  {
+    "title": "Installation",
+    "page": "Carousel",
+    "section": "components",
+    "path": "/components/carousel#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Carousel",
+    "section": "components",
+    "path": "/components/carousel#default"
+  },
+  {
+    "title": "Sizes",
+    "page": "Carousel",
+    "section": "components",
+    "path": "/components/carousel#sizes"
+  },
+  {
+    "title": "Spacing",
+    "page": "Carousel",
+    "section": "components",
+    "path": "/components/carousel#spacing"
+  },
+  {
+    "title": "Vertical",
+    "page": "Carousel",
+    "section": "components",
+    "path": "/components/carousel#vertical"
+  },
+  {
+    "title": "Wiring",
+    "page": "Carousel",
+    "section": "components",
+    "path": "/components/carousel#wiring"
+  },
+  {
+    "title": "Checkbox",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox"
+  },
+  {
+    "title": "Installation",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#default"
+  },
+  {
+    "title": "Card",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#card"
+  },
+  {
+    "title": "Disabled",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#disabled"
+  },
+  {
+    "title": "Group",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#group"
+  },
+  {
+    "title": "In a field",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#in-a-field"
+  },
+  {
+    "title": "In a table",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#in-a-table"
+  },
+  {
+    "title": "States",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#states"
+  },
+  {
+    "title": "With description",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#with-description"
+  },
+  {
+    "title": "Wiring",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#wiring"
+  },
+  {
+    "title": "Clipboard Text",
+    "page": "Clipboard Text",
+    "section": "components",
+    "path": "/components/clipboard-text"
+  },
+  {
+    "title": "Installation",
+    "page": "Clipboard Text",
+    "section": "components",
+    "path": "/components/clipboard-text#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Clipboard Text",
+    "section": "components",
+    "path": "/components/clipboard-text#default"
+  },
+  {
+    "title": "Truncated copy",
+    "page": "Clipboard Text",
+    "section": "components",
+    "path": "/components/clipboard-text#truncated-copy"
+  },
+  {
+    "title": "Wiring",
+    "page": "Clipboard Text",
+    "section": "components",
+    "path": "/components/clipboard-text#wiring"
+  },
+  {
+    "title": "Code Block",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block"
+  },
+  {
+    "title": "Installation",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#default"
+  },
+  {
+    "title": "Numbered and highlighted",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#numbered-and-highlighted"
+  },
+  {
+    "title": "Wiring",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#wiring"
+  },
+  {
+    "title": "Collapsible",
+    "page": "Collapsible",
+    "section": "components",
+    "path": "/components/collapsible"
+  },
+  {
+    "title": "Installation",
+    "page": "Collapsible",
+    "section": "components",
+    "path": "/components/collapsible#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Collapsible",
+    "section": "components",
+    "path": "/components/collapsible#default"
+  },
+  {
+    "title": "File tree",
+    "page": "Collapsible",
+    "section": "components",
+    "path": "/components/collapsible#file-tree"
+  },
+  {
+    "title": "Initially open",
+    "page": "Collapsible",
+    "section": "components",
+    "path": "/components/collapsible#initially-open"
+  },
+  {
+    "title": "Settings panel",
+    "page": "Collapsible",
+    "section": "components",
+    "path": "/components/collapsible#settings-panel"
+  },
+  {
+    "title": "With icon",
+    "page": "Collapsible",
+    "section": "components",
+    "path": "/components/collapsible#with-icon"
+  },
+  {
+    "title": "Wiring",
+    "page": "Collapsible",
+    "section": "components",
+    "path": "/components/collapsible#wiring"
+  },
+  {
+    "title": "Combobox",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox"
+  },
+  {
+    "title": "Installation",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#default"
+  },
+  {
+    "title": "Auto highlight",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#auto-highlight"
+  },
+  {
+    "title": "Clear button",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#clear-button"
+  },
+  {
+    "title": "Custom items",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#custom-items"
+  },
+  {
+    "title": "Disabled",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#disabled"
+  },
+  {
+    "title": "Disabled options",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#disabled-options"
+  },
+  {
+    "title": "Grouped",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#grouped"
+  },
+  {
+    "title": "Invalid",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#invalid"
+  },
+  {
+    "title": "Multiple",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#multiple"
+  },
+  {
+    "title": "Valued",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#valued"
+  },
+  {
+    "title": "Wide",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#wide"
+  },
+  {
+    "title": "With icon",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#with-icon"
+  },
+  {
+    "title": "Agent tools",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#agent-tools"
+  },
+  {
+    "title": "Wiring",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#wiring"
+  },
+  {
+    "title": "Command",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command"
+  },
+  {
+    "title": "Installation",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command#default"
+  },
+  {
+    "title": "Close button",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command#close-button"
+  },
+  {
+    "title": "Dialog",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command#dialog"
+  },
+  {
+    "title": "Initial value",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command#initial-value"
+  },
+  {
+    "title": "Scrollable",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command#scrollable"
+  },
+  {
+    "title": "With icons",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command#with-icons"
+  },
+  {
+    "title": "Zero match",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command#zero-match"
+  },
+  {
+    "title": "Wiring",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command#wiring"
+  },
+  {
+    "title": "Command Dialog",
+    "page": "Command Dialog",
+    "section": "components",
+    "path": "/components/command-dialog"
+  },
+  {
+    "title": "Installation",
+    "page": "Command Dialog",
+    "section": "components",
+    "path": "/components/command-dialog#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Command Dialog",
+    "section": "components",
+    "path": "/components/command-dialog#default"
+  },
+  {
+    "title": "Empty state",
+    "page": "Command Dialog",
+    "section": "components",
+    "path": "/components/command-dialog#empty-state"
+  },
+  {
+    "title": "Hotkey",
+    "page": "Command Dialog",
+    "section": "components",
+    "path": "/components/command-dialog#hotkey"
+  },
+  {
+    "title": "Scrollable",
+    "page": "Command Dialog",
+    "section": "components",
+    "path": "/components/command-dialog#scrollable"
+  },
+  {
+    "title": "With icons",
+    "page": "Command Dialog",
+    "section": "components",
+    "path": "/components/command-dialog#with-icons"
+  },
+  {
+    "title": "Wiring",
+    "page": "Command Dialog",
+    "section": "components",
+    "path": "/components/command-dialog#wiring"
+  },
+  {
+    "title": "Context Menu",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu"
+  },
+  {
+    "title": "Installation",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#default"
+  },
+  {
+    "title": "Checkboxes",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#checkboxes"
+  },
+  {
+    "title": "Destructive",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#destructive"
+  },
+  {
+    "title": "Disabled surface",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#disabled-surface"
+  },
+  {
+    "title": "Focusable surface",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#focusable-surface"
+  },
+  {
+    "title": "Groups",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#groups"
+  },
+  {
+    "title": "Radio",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#radio"
+  },
+  {
+    "title": "Sides",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#sides"
+  },
+  {
+    "title": "Submenu",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#submenu"
+  },
+  {
+    "title": "With icon",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#with-icon"
+  },
+  {
+    "title": "Wiring",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#wiring"
+  },
+  {
+    "title": "Data Table",
+    "page": "Data Table",
+    "section": "components",
+    "path": "/components/data-table"
+  },
+  {
+    "title": "Installation",
+    "page": "Data Table",
+    "section": "components",
+    "path": "/components/data-table#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Data Table",
+    "section": "components",
+    "path": "/components/data-table#default"
+  },
+  {
+    "title": "Cell formatting",
+    "page": "Data Table",
+    "section": "components",
+    "path": "/components/data-table#cell-formatting"
+  },
+  {
+    "title": "Empty",
+    "page": "Data Table",
+    "section": "components",
+    "path": "/components/data-table#empty"
+  },
+  {
+    "title": "Filtered and paginated",
+    "page": "Data Table",
+    "section": "components",
+    "path": "/components/data-table#filtered-and-paginated"
+  },
+  {
+    "title": "Row actions",
+    "page": "Data Table",
+    "section": "components",
+    "path": "/components/data-table#row-actions"
+  },
+  {
+    "title": "Selectable",
+    "page": "Data Table",
+    "section": "components",
+    "path": "/components/data-table#selectable"
+  },
+  {
+    "title": "Wiring",
+    "page": "Data Table",
+    "section": "components",
+    "path": "/components/data-table#wiring"
+  },
+  {
+    "title": "Date Field",
+    "page": "Date Field",
+    "section": "components",
+    "path": "/components/date-field"
+  },
+  {
+    "title": "Installation",
+    "page": "Date Field",
+    "section": "components",
+    "path": "/components/date-field#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Date Field",
+    "section": "components",
+    "path": "/components/date-field#default"
+  },
+  {
+    "title": "With range",
+    "page": "Date Field",
+    "section": "components",
+    "path": "/components/date-field#with-range"
+  },
+  {
+    "title": "Year first",
+    "page": "Date Field",
+    "section": "components",
+    "path": "/components/date-field#year-first"
+  },
+  {
+    "title": "Wiring",
+    "page": "Date Field",
+    "section": "components",
+    "path": "/components/date-field#wiring"
+  },
+  {
+    "title": "Date Picker",
+    "page": "Date Picker",
+    "section": "components",
+    "path": "/components/date-picker"
+  },
+  {
+    "title": "Installation",
+    "page": "Date Picker",
+    "section": "components",
+    "path": "/components/date-picker#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Date Picker",
+    "section": "components",
+    "path": "/components/date-picker#default"
+  },
+  {
+    "title": "Date of birth",
+    "page": "Date Picker",
+    "section": "components",
+    "path": "/components/date-picker#date-of-birth"
+  },
+  {
+    "title": "Input",
+    "page": "Date Picker",
+    "section": "components",
+    "path": "/components/date-picker#input"
+  },
+  {
+    "title": "Preselected",
+    "page": "Date Picker",
+    "section": "components",
+    "path": "/components/date-picker#preselected"
+  },
+  {
+    "title": "Range",
+    "page": "Date Picker",
+    "section": "components",
+    "path": "/components/date-picker#range"
+  },
+  {
+    "title": "With time",
+    "page": "Date Picker",
+    "section": "components",
+    "path": "/components/date-picker#with-time"
+  },
+  {
+    "title": "Wiring",
+    "page": "Date Picker",
+    "section": "components",
+    "path": "/components/date-picker#wiring"
+  },
+  {
+    "title": "Date Time Field",
+    "page": "Date Time Field",
+    "section": "components",
+    "path": "/components/date-time-field"
+  },
+  {
+    "title": "Installation",
+    "page": "Date Time Field",
+    "section": "components",
+    "path": "/components/date-time-field#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Date Time Field",
+    "section": "components",
+    "path": "/components/date-time-field#default"
+  },
+  {
+    "title": "With seconds",
+    "page": "Date Time Field",
+    "section": "components",
+    "path": "/components/date-time-field#with-seconds"
+  },
+  {
+    "title": "Wiring",
+    "page": "Date Time Field",
+    "section": "components",
+    "path": "/components/date-time-field#wiring"
+  },
+  {
+    "title": "Deferred",
+    "page": "Deferred",
+    "section": "components",
+    "path": "/components/deferred"
+  },
+  {
+    "title": "Installation",
+    "page": "Deferred",
+    "section": "components",
+    "path": "/components/deferred#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Deferred",
+    "section": "components",
+    "path": "/components/deferred#default"
+  },
+  {
+    "title": "Wiring",
+    "page": "Deferred",
+    "section": "components",
+    "path": "/components/deferred#wiring"
+  },
+  {
+    "title": "Dialog",
+    "page": "Dialog",
+    "section": "components",
+    "path": "/components/dialog"
+  },
+  {
+    "title": "Installation",
+    "page": "Dialog",
+    "section": "components",
+    "path": "/components/dialog#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Dialog",
+    "section": "components",
+    "path": "/components/dialog#default"
+  },
+  {
+    "title": "Confirmation",
+    "page": "Dialog",
+    "section": "components",
+    "path": "/components/dialog#confirmation"
+  },
+  {
+    "title": "No close button",
+    "page": "Dialog",
+    "section": "components",
+    "path": "/components/dialog#no-close-button"
+  },
+  {
+    "title": "Scrollable content",
+    "page": "Dialog",
+    "section": "components",
+    "path": "/components/dialog#scrollable-content"
+  },
+  {
+    "title": "Sticky footer",
+    "page": "Dialog",
+    "section": "components",
+    "path": "/components/dialog#sticky-footer"
+  },
+  {
+    "title": "Agent tools",
+    "page": "Dialog",
+    "section": "components",
+    "path": "/components/dialog#agent-tools"
+  },
+  {
+    "title": "Wiring",
+    "page": "Dialog",
+    "section": "components",
+    "path": "/components/dialog#wiring"
+  },
+  {
+    "title": "Drawer",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer"
+  },
+  {
+    "title": "Installation",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#default"
+  },
+  {
+    "title": "Edit form",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#edit-form"
+  },
+  {
+    "title": "Nested",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#nested"
+  },
+  {
+    "title": "Non modal",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#non-modal"
+  },
+  {
+    "title": "Position",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#position"
+  },
+  {
+    "title": "Responsive",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#responsive"
+  },
+  {
+    "title": "Snap points",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#snap-points"
+  },
+  {
+    "title": "Swipe handle",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#swipe-handle"
+  },
+  {
+    "title": "Agent tools",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#agent-tools"
+  },
+  {
+    "title": "Wiring",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#wiring"
+  },
+  {
+    "title": "Dropdown Menu",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu"
+  },
+  {
+    "title": "Installation",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#default"
+  },
+  {
+    "title": "Avatar",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#avatar"
+  },
+  {
+    "title": "Checkbox with icons",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#checkbox-with-icons"
+  },
+  {
+    "title": "Checkboxes",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#checkboxes"
+  },
+  {
+    "title": "Complex",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#complex"
+  },
+  {
+    "title": "Inset and disabled",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#inset-and-disabled"
+  },
+  {
+    "title": "Radio group",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#radio-group"
+  },
+  {
+    "title": "Radio with icons",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#radio-with-icons"
+  },
+  {
+    "title": "With icons",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#with-icons"
+  },
+  {
+    "title": "Wiring",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#wiring"
+  },
+  {
+    "title": "Empty",
+    "page": "Empty",
+    "section": "components",
+    "path": "/components/empty"
+  },
+  {
+    "title": "Installation",
+    "page": "Empty",
+    "section": "components",
+    "path": "/components/empty#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Empty",
+    "section": "components",
+    "path": "/components/empty#default"
+  },
+  {
+    "title": "Background",
+    "page": "Empty",
+    "section": "components",
+    "path": "/components/empty#background"
+  },
+  {
+    "title": "Outline",
+    "page": "Empty",
+    "section": "components",
+    "path": "/components/empty#outline"
+  },
+  {
+    "title": "With avatar",
+    "page": "Empty",
+    "section": "components",
+    "path": "/components/empty#with-avatar"
+  },
+  {
+    "title": "With avatar group",
+    "page": "Empty",
+    "section": "components",
+    "path": "/components/empty#with-avatar-group"
+  },
+  {
+    "title": "With icon and actions",
+    "page": "Empty",
+    "section": "components",
+    "path": "/components/empty#with-icon-and-actions"
+  },
+  {
+    "title": "With input",
+    "page": "Empty",
+    "section": "components",
+    "path": "/components/empty#with-input"
+  },
+  {
+    "title": "Field",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field"
+  },
+  {
+    "title": "Installation",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#default"
+  },
+  {
+    "title": "Checkbox",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#checkbox"
+  },
+  {
+    "title": "Choice card",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#choice-card"
+  },
+  {
+    "title": "Fieldset",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#fieldset"
+  },
+  {
+    "title": "Group",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#group"
+  },
+  {
+    "title": "Horizontal switch",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#horizontal-switch"
+  },
+  {
+    "title": "Responsive",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#responsive"
+  },
+  {
+    "title": "With error",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#with-error"
+  },
+  {
+    "title": "With hint",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#with-hint"
+  },
+  {
+    "title": "With radio group",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#with-radio-group"
+  },
+  {
+    "title": "With select",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#with-select"
+  },
+  {
+    "title": "With slider",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#with-slider"
+  },
+  {
+    "title": "With textarea",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#with-textarea"
+  },
+  {
+    "title": "Field Group",
+    "page": "Field Group",
+    "section": "components",
+    "path": "/components/field-group"
+  },
+  {
+    "title": "Installation",
+    "page": "Field Group",
+    "section": "components",
+    "path": "/components/field-group#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Field Group",
+    "section": "components",
+    "path": "/components/field-group#default"
+  },
+  {
+    "title": "Choices",
+    "page": "Field Group",
+    "section": "components",
+    "path": "/components/field-group#choices"
+  },
+  {
+    "title": "Field Separator",
+    "page": "Field Separator",
+    "section": "components",
+    "path": "/components/field-separator"
+  },
+  {
+    "title": "Installation",
+    "page": "Field Separator",
+    "section": "components",
+    "path": "/components/field-separator#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Field Separator",
+    "section": "components",
+    "path": "/components/field-separator#default"
+  },
+  {
+    "title": "With caption",
+    "page": "Field Separator",
+    "section": "components",
+    "path": "/components/field-separator#with-caption"
+  },
+  {
+    "title": "Fieldset",
+    "page": "Fieldset",
+    "section": "components",
+    "path": "/components/fieldset"
+  },
+  {
+    "title": "Installation",
+    "page": "Fieldset",
+    "section": "components",
+    "path": "/components/fieldset#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Fieldset",
+    "section": "components",
+    "path": "/components/fieldset#default"
+  },
+  {
+    "title": "Label legend",
+    "page": "Fieldset",
+    "section": "components",
+    "path": "/components/fieldset#label-legend"
+  },
+  {
+    "title": "File Input",
+    "page": "File Input",
+    "section": "components",
+    "path": "/components/file-input"
+  },
+  {
+    "title": "Installation",
+    "page": "File Input",
+    "section": "components",
+    "path": "/components/file-input#installation"
+  },
+  {
+    "title": "Default",
+    "page": "File Input",
+    "section": "components",
+    "path": "/components/file-input#default"
+  },
+  {
+    "title": "Dropzone",
+    "page": "File Input",
+    "section": "components",
+    "path": "/components/file-input#dropzone"
+  },
+  {
+    "title": "Wiring",
+    "page": "File Input",
+    "section": "components",
+    "path": "/components/file-input#wiring"
+  },
+  {
+    "title": "Hover Card",
+    "page": "Hover Card",
+    "section": "components",
+    "path": "/components/hover-card"
+  },
+  {
+    "title": "Installation",
+    "page": "Hover Card",
+    "section": "components",
+    "path": "/components/hover-card#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Hover Card",
+    "section": "components",
+    "path": "/components/hover-card#default"
+  },
+  {
+    "title": "Custom delays",
+    "page": "Hover Card",
+    "section": "components",
+    "path": "/components/hover-card#custom-delays"
+  },
+  {
+    "title": "Sides",
+    "page": "Hover Card",
+    "section": "components",
+    "path": "/components/hover-card#sides"
+  },
+  {
+    "title": "Wiring",
+    "page": "Hover Card",
+    "section": "components",
+    "path": "/components/hover-card#wiring"
+  },
+  {
+    "title": "Icon",
+    "page": "Icon",
+    "section": "components",
+    "path": "/components/icon"
+  },
+  {
+    "title": "Installation",
+    "page": "Icon",
+    "section": "components",
+    "path": "/components/icon#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Icon",
+    "section": "components",
+    "path": "/components/icon#default"
+  },
+  {
+    "title": "Animated",
+    "page": "Icon",
+    "section": "components",
+    "path": "/components/icon#animated"
+  },
+  {
+    "title": "Colors",
+    "page": "Icon",
+    "section": "components",
+    "path": "/components/icon#colors"
+  },
+  {
+    "title": "Labeled",
+    "page": "Icon",
+    "section": "components",
+    "path": "/components/icon#labeled"
+  },
+  {
+    "title": "Sizes",
+    "page": "Icon",
+    "section": "components",
+    "path": "/components/icon#sizes"
+  },
+  {
+    "title": "Stroke width",
+    "page": "Icon",
+    "section": "components",
+    "path": "/components/icon#stroke-width"
+  },
+  {
+    "title": "With tooltip",
+    "page": "Icon",
+    "section": "components",
+    "path": "/components/icon#with-tooltip"
+  },
+  {
+    "title": "Input",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input"
+  },
+  {
+    "title": "Installation",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#default"
+  },
+  {
+    "title": "Button group",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#button-group"
+  },
+  {
+    "title": "Disabled",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#disabled"
+  },
+  {
+    "title": "Field",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#field"
+  },
+  {
+    "title": "File",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#file"
+  },
+  {
+    "title": "Form",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#form"
+  },
+  {
+    "title": "Grid",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#grid"
+  },
+  {
+    "title": "Inline",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#inline"
+  },
+  {
+    "title": "Invalid",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#invalid"
+  },
+  {
+    "title": "Required",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#required"
+  },
+  {
+    "title": "With badge",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#with-badge"
+  },
+  {
+    "title": "With value",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#with-value"
+  },
+  {
+    "title": "Input Group",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group"
+  },
+  {
+    "title": "Installation",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#default"
+  },
+  {
+    "title": "Align",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#align"
+  },
+  {
+    "title": "Button",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#button"
+  },
+  {
+    "title": "Custom",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#custom"
+  },
+  {
+    "title": "Dropdown",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#dropdown"
+  },
+  {
+    "title": "Icon",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#icon"
+  },
+  {
+    "title": "Kbd",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#kbd"
+  },
+  {
+    "title": "Spinner",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#spinner"
+  },
+  {
+    "title": "Text",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#text"
+  },
+  {
+    "title": "Textarea block",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#textarea-block"
+  },
+  {
+    "title": "Textarea header",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#textarea-header"
+  },
+  {
+    "title": "Input Otp",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp"
+  },
+  {
+    "title": "Installation",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp#default"
+  },
+  {
+    "title": "Alphanumeric",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp#alphanumeric"
+  },
+  {
+    "title": "Form",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp#form"
+  },
+  {
+    "title": "Four digits",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp#four-digits"
+  },
+  {
+    "title": "Groupings",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp#groupings"
+  },
+  {
+    "title": "In a field",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp#in-a-field"
+  },
+  {
+    "title": "States",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp#states"
+  },
+  {
+    "title": "Wiring",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp#wiring"
+  },
+  {
+    "title": "Item",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item"
+  },
+  {
+    "title": "Installation",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#default"
+  },
+  {
+    "title": "Avatar",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#avatar"
+  },
+  {
+    "title": "Dropdown",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#dropdown"
+  },
+  {
+    "title": "Group",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#group"
+  },
+  {
+    "title": "Image",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#image"
+  },
+  {
+    "title": "Link",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#link"
+  },
+  {
+    "title": "Outline with icon and actions",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#outline-with-icon-and-actions"
+  },
+  {
+    "title": "Sizes",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#sizes"
+  },
+  {
+    "title": "Variants",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#variants"
+  },
+  {
+    "title": "With header and footer",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#with-header-and-footer"
+  },
+  {
+    "title": "Kbd",
+    "page": "Kbd",
+    "section": "components",
+    "path": "/components/kbd"
+  },
+  {
+    "title": "Installation",
+    "page": "Kbd",
+    "section": "components",
+    "path": "/components/kbd#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Kbd",
+    "section": "components",
+    "path": "/components/kbd#default"
+  },
+  {
+    "title": "Chord",
+    "page": "Kbd",
+    "section": "components",
+    "path": "/components/kbd#chord"
+  },
+  {
+    "title": "Command",
+    "page": "Kbd",
+    "section": "components",
+    "path": "/components/kbd#command"
+  },
+  {
+    "title": "Group",
+    "page": "Kbd",
+    "section": "components",
+    "path": "/components/kbd#group"
+  },
+  {
+    "title": "In button",
+    "page": "Kbd",
+    "section": "components",
+    "path": "/components/kbd#in-button"
+  },
+  {
+    "title": "In tooltip",
+    "page": "Kbd",
+    "section": "components",
+    "path": "/components/kbd#in-tooltip"
+  },
+  {
+    "title": "Search hint",
+    "page": "Kbd",
+    "section": "components",
+    "path": "/components/kbd#search-hint"
+  },
+  {
+    "title": "Label",
+    "page": "Label",
+    "section": "components",
+    "path": "/components/label"
+  },
+  {
+    "title": "Installation",
+    "page": "Label",
+    "section": "components",
+    "path": "/components/label#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Label",
+    "section": "components",
+    "path": "/components/label#default"
+  },
+  {
+    "title": "Disabled",
+    "page": "Label",
+    "section": "components",
+    "path": "/components/label#disabled"
+  },
+  {
+    "title": "Form",
+    "page": "Label",
+    "section": "components",
+    "path": "/components/label#form"
+  },
+  {
+    "title": "With checkbox",
+    "page": "Label",
+    "section": "components",
+    "path": "/components/label#with-checkbox"
+  },
+  {
+    "title": "With description",
+    "page": "Label",
+    "section": "components",
+    "path": "/components/label#with-description"
+  },
+  {
+    "title": "Link",
+    "page": "Link",
+    "section": "components",
+    "path": "/components/link"
+  },
+  {
+    "title": "Installation",
+    "page": "Link",
+    "section": "components",
+    "path": "/components/link#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Link",
+    "section": "components",
+    "path": "/components/link#default"
+  },
+  {
+    "title": "Current",
+    "page": "Link",
+    "section": "components",
+    "path": "/components/link#current"
+  },
+  {
+    "title": "External",
+    "page": "Link",
+    "section": "components",
+    "path": "/components/link#external"
+  },
+  {
+    "title": "Underline",
+    "page": "Link",
+    "section": "components",
+    "path": "/components/link#underline"
+  },
+  {
+    "title": "Marker",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker"
+  },
+  {
+    "title": "Installation",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker#default"
+  },
+  {
+    "title": "Border",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker#border"
+  },
+  {
+    "title": "Links and buttons",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker#links-and-buttons"
+  },
+  {
+    "title": "Separator",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker#separator"
+  },
+  {
+    "title": "Shimmer",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker#shimmer"
+  },
+  {
+    "title": "Status",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker#status"
+  },
+  {
+    "title": "Variants",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker#variants"
+  },
+  {
+    "title": "With icon",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker#with-icon"
+  },
+  {
+    "title": "Menubar",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar"
+  },
+  {
+    "title": "Installation",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar#default"
+  },
+  {
+    "title": "Checkbox",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar#checkbox"
+  },
+  {
+    "title": "Disabled menu",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar#disabled-menu"
+  },
+  {
+    "title": "Icons",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar#icons"
+  },
+  {
+    "title": "Radio",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar#radio"
+  },
+  {
+    "title": "Submenu",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar#submenu"
+  },
+  {
+    "title": "Wiring",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar#wiring"
+  },
+  {
+    "title": "Message",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message"
+  },
+  {
+    "title": "Installation",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message#default"
+  },
+  {
+    "title": "Actions",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message#actions"
+  },
+  {
+    "title": "Align end",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message#align-end"
+  },
+  {
+    "title": "Attachment",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message#attachment"
+  },
+  {
+    "title": "Conversation",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message#conversation"
+  },
+  {
+    "title": "Grouped",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message#grouped"
+  },
+  {
+    "title": "Header and footer",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message#header-and-footer"
+  },
+  {
+    "title": "Markdown",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message#markdown"
+  },
+  {
+    "title": "Message Scroller",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller"
+  },
+  {
+    "title": "Installation",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#installation"
+  },
+  {
+    "title": "Opening position",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#opening-position"
+  },
+  {
+    "title": "Default",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#default"
+  },
+  {
+    "title": "Anchored turns",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#anchored-turns"
+  },
+  {
+    "title": "Commands",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#commands"
+  },
+  {
+    "title": "Group chat",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#group-chat"
+  },
+  {
+    "title": "Open at start",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#open-at-start"
+  },
+  {
+    "title": "Scroll state",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#scroll-state"
+  },
+  {
+    "title": "Streaming",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#streaming"
+  },
+  {
+    "title": "Without jump button",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#without-jump-button"
+  },
+  {
+    "title": "Wiring",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#wiring"
+  },
+  {
+    "title": "Metadata List",
+    "page": "Metadata List",
+    "section": "components",
+    "path": "/components/metadata-list"
+  },
+  {
+    "title": "Installation",
+    "page": "Metadata List",
+    "section": "components",
+    "path": "/components/metadata-list#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Metadata List",
+    "section": "components",
+    "path": "/components/metadata-list#default"
+  },
+  {
+    "title": "Two columns",
+    "page": "Metadata List",
+    "section": "components",
+    "path": "/components/metadata-list#two-columns"
+  },
+  {
+    "title": "Meter",
+    "page": "Meter",
+    "section": "components",
+    "path": "/components/meter"
+  },
+  {
+    "title": "Installation",
+    "page": "Meter",
+    "section": "components",
+    "path": "/components/meter#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Meter",
+    "section": "components",
+    "path": "/components/meter#default"
+  },
+  {
+    "title": "With value text",
+    "page": "Meter",
+    "section": "components",
+    "path": "/components/meter#with-value-text"
+  },
+  {
+    "title": "Native Select",
+    "page": "Native Select",
+    "section": "components",
+    "path": "/components/native-select"
+  },
+  {
+    "title": "Installation",
+    "page": "Native Select",
+    "section": "components",
+    "path": "/components/native-select#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Native Select",
+    "section": "components",
+    "path": "/components/native-select#default"
+  },
+  {
+    "title": "Grouped",
+    "page": "Native Select",
+    "section": "components",
+    "path": "/components/native-select#grouped"
+  },
+  {
+    "title": "Invalid",
+    "page": "Native Select",
+    "section": "components",
+    "path": "/components/native-select#invalid"
+  },
+  {
+    "title": "Small disabled",
+    "page": "Native Select",
+    "section": "components",
+    "path": "/components/native-select#small-disabled"
+  },
+  {
+    "title": "Navigation Menu",
+    "page": "Navigation Menu",
+    "section": "components",
+    "path": "/components/navigation-menu"
+  },
+  {
+    "title": "Installation",
+    "page": "Navigation Menu",
+    "section": "components",
+    "path": "/components/navigation-menu#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Navigation Menu",
+    "section": "components",
+    "path": "/components/navigation-menu#default"
+  },
+  {
+    "title": "Viewport",
+    "page": "Navigation Menu",
+    "section": "components",
+    "path": "/components/navigation-menu#viewport"
+  },
+  {
+    "title": "With descriptions",
+    "page": "Navigation Menu",
+    "section": "components",
+    "path": "/components/navigation-menu#with-descriptions"
+  },
+  {
+    "title": "With icon",
+    "page": "Navigation Menu",
+    "section": "components",
+    "path": "/components/navigation-menu#with-icon"
+  },
+  {
+    "title": "Wiring",
+    "page": "Navigation Menu",
+    "section": "components",
+    "path": "/components/navigation-menu#wiring"
+  },
+  {
+    "title": "Number Field",
+    "page": "Number Field",
+    "section": "components",
+    "path": "/components/number-field"
+  },
+  {
+    "title": "Installation",
+    "page": "Number Field",
+    "section": "components",
+    "path": "/components/number-field#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Number Field",
+    "section": "components",
+    "path": "/components/number-field#default"
+  },
+  {
+    "title": "Currency",
+    "page": "Number Field",
+    "section": "components",
+    "path": "/components/number-field#currency"
+  },
+  {
+    "title": "Decimal steps",
+    "page": "Number Field",
+    "section": "components",
+    "path": "/components/number-field#decimal-steps"
+  },
+  {
+    "title": "Wiring",
+    "page": "Number Field",
+    "section": "components",
+    "path": "/components/number-field#wiring"
+  },
+  {
+    "title": "Pagination",
+    "page": "Pagination",
+    "section": "components",
+    "path": "/components/pagination"
+  },
+  {
+    "title": "Installation",
+    "page": "Pagination",
+    "section": "components",
+    "path": "/components/pagination#installation"
+  },
+  {
+    "title": "Adapters",
+    "page": "Pagination",
+    "section": "components",
+    "path": "/components/pagination#adapters"
+  },
+  {
+    "title": "Default",
+    "page": "Pagination",
+    "section": "components",
+    "path": "/components/pagination#default"
+  },
+  {
+    "title": "First page",
+    "page": "Pagination",
+    "section": "components",
+    "path": "/components/pagination#first-page"
+  },
+  {
+    "title": "Icons only",
+    "page": "Pagination",
+    "section": "components",
+    "path": "/components/pagination#icons-only"
+  },
+  {
+    "title": "Long range",
+    "page": "Pagination",
+    "section": "components",
+    "path": "/components/pagination#long-range"
+  },
+  {
+    "title": "Short range",
+    "page": "Pagination",
+    "section": "components",
+    "path": "/components/pagination#short-range"
+  },
+  {
+    "title": "Simple",
+    "page": "Pagination",
+    "section": "components",
+    "path": "/components/pagination#simple"
+  },
+  {
+    "title": "Popover",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover"
+  },
+  {
+    "title": "Installation",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#default"
+  },
+  {
+    "title": "Align",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#align"
+  },
+  {
+    "title": "Basic",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#basic"
+  },
+  {
+    "title": "Modal",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#modal"
+  },
+  {
+    "title": "Open",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#open"
+  },
+  {
+    "title": "Side top",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#side-top"
+  },
+  {
+    "title": "With anchor",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#with-anchor"
+  },
+  {
+    "title": "With form",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#with-form"
+  },
+  {
+    "title": "Wiring",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#wiring"
+  },
+  {
+    "title": "Progress",
+    "page": "Progress",
+    "section": "components",
+    "path": "/components/progress"
+  },
+  {
+    "title": "Installation",
+    "page": "Progress",
+    "section": "components",
+    "path": "/components/progress#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Progress",
+    "section": "components",
+    "path": "/components/progress#default"
+  },
+  {
+    "title": "Complete",
+    "page": "Progress",
+    "section": "components",
+    "path": "/components/progress#complete"
+  },
+  {
+    "title": "Controlled",
+    "page": "Progress",
+    "section": "components",
+    "path": "/components/progress#controlled"
+  },
+  {
+    "title": "Custom max without value",
+    "page": "Progress",
+    "section": "components",
+    "path": "/components/progress#custom-max-without-value"
+  },
+  {
+    "title": "Label",
+    "page": "Progress",
+    "section": "components",
+    "path": "/components/progress#label"
+  },
+  {
+    "title": "Questionnaire",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire"
+  },
+  {
+    "title": "Installation",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#default"
+  },
+  {
+    "title": "Animated",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#animated"
+  },
+  {
+    "title": "Card",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#card"
+  },
+  {
+    "title": "Custom progress",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#custom-progress"
+  },
+  {
+    "title": "Dialog",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#dialog"
+  },
+  {
+    "title": "Shortcuts",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#shortcuts"
+  },
+  {
+    "title": "Skip",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#skip"
+  },
+  {
+    "title": "Validation",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#validation"
+  },
+  {
+    "title": "Wiring",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#wiring"
+  },
+  {
+    "title": "Radio Group",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group"
+  },
+  {
+    "title": "Installation",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#default"
+  },
+  {
+    "title": "Cards",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#cards"
+  },
+  {
+    "title": "Disabled",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#disabled"
+  },
+  {
+    "title": "Fieldset",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#fieldset"
+  },
+  {
+    "title": "Horizontal layout",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#horizontal-layout"
+  },
+  {
+    "title": "In a field",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#in-a-field"
+  },
+  {
+    "title": "Invalid",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#invalid"
+  },
+  {
+    "title": "With description",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#with-description"
+  },
+  {
+    "title": "Wiring",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#wiring"
+  },
+  {
+    "title": "Resizable",
+    "page": "Resizable",
+    "section": "components",
+    "path": "/components/resizable"
+  },
+  {
+    "title": "Installation",
+    "page": "Resizable",
+    "section": "components",
+    "path": "/components/resizable#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Resizable",
+    "section": "components",
+    "path": "/components/resizable#default"
+  },
+  {
+    "title": "Handle",
+    "page": "Resizable",
+    "section": "components",
+    "path": "/components/resizable#handle"
+  },
+  {
+    "title": "Nested",
+    "page": "Resizable",
+    "section": "components",
+    "path": "/components/resizable#nested"
+  },
+  {
+    "title": "Three panels",
+    "page": "Resizable",
+    "section": "components",
+    "path": "/components/resizable#three-panels"
+  },
+  {
+    "title": "Vertical",
+    "page": "Resizable",
+    "section": "components",
+    "path": "/components/resizable#vertical"
+  },
+  {
+    "title": "Wiring",
+    "page": "Resizable",
+    "section": "components",
+    "path": "/components/resizable#wiring"
+  },
+  {
+    "title": "Scroll Area",
+    "page": "Scroll Area",
+    "section": "components",
+    "path": "/components/scroll-area"
+  },
+  {
+    "title": "Installation",
+    "page": "Scroll Area",
+    "section": "components",
+    "path": "/components/scroll-area#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Scroll Area",
+    "section": "components",
+    "path": "/components/scroll-area#default"
+  },
+  {
+    "title": "Horizontal",
+    "page": "Scroll Area",
+    "section": "components",
+    "path": "/components/scroll-area#horizontal"
+  },
+  {
+    "title": "Search Field",
+    "page": "Search Field",
+    "section": "components",
+    "path": "/components/search-field"
+  },
+  {
+    "title": "Installation",
+    "page": "Search Field",
+    "section": "components",
+    "path": "/components/search-field#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Search Field",
+    "section": "components",
+    "path": "/components/search-field#default"
+  },
+  {
+    "title": "With value",
+    "page": "Search Field",
+    "section": "components",
+    "path": "/components/search-field#with-value"
+  },
+  {
+    "title": "Wiring",
+    "page": "Search Field",
+    "section": "components",
+    "path": "/components/search-field#wiring"
+  },
+  {
+    "title": "Select",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select"
+  },
+  {
+    "title": "Installation",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#default"
+  },
+  {
+    "title": "Align item with trigger",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#align-item-with-trigger"
+  },
+  {
+    "title": "Disabled",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#disabled"
+  },
+  {
+    "title": "Groups",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#groups"
+  },
+  {
+    "title": "Invalid",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#invalid"
+  },
+  {
+    "title": "Scrollable",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#scrollable"
+  },
+  {
+    "title": "Small",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#small"
+  },
+  {
+    "title": "Valued",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#valued"
+  },
+  {
+    "title": "Wiring",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#wiring"
+  },
+  {
+    "title": "Sensitive Input",
+    "page": "Sensitive Input",
+    "section": "components",
+    "path": "/components/sensitive-input"
+  },
+  {
+    "title": "Installation",
+    "page": "Sensitive Input",
+    "section": "components",
+    "path": "/components/sensitive-input#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Sensitive Input",
+    "section": "components",
+    "path": "/components/sensitive-input#default"
+  },
+  {
+    "title": "With copy",
+    "page": "Sensitive Input",
+    "section": "components",
+    "path": "/components/sensitive-input#with-copy"
+  },
+  {
+    "title": "With copy and tooltip",
+    "page": "Sensitive Input",
+    "section": "components",
+    "path": "/components/sensitive-input#with-copy-and-tooltip"
+  },
+  {
+    "title": "Wiring",
+    "page": "Sensitive Input",
+    "section": "components",
+    "path": "/components/sensitive-input#wiring"
+  },
+  {
+    "title": "Separator",
+    "page": "Separator",
+    "section": "components",
+    "path": "/components/separator"
+  },
+  {
+    "title": "Installation",
+    "page": "Separator",
+    "section": "components",
+    "path": "/components/separator#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Separator",
+    "section": "components",
+    "path": "/components/separator#default"
+  },
+  {
+    "title": "List",
+    "page": "Separator",
+    "section": "components",
+    "path": "/components/separator#list"
+  },
+  {
+    "title": "Menu",
+    "page": "Separator",
+    "section": "components",
+    "path": "/components/separator#menu"
+  },
+  {
+    "title": "Vertical semantic",
+    "page": "Separator",
+    "section": "components",
+    "path": "/components/separator#vertical-semantic"
+  },
+  {
+    "title": "Sheet",
+    "page": "Sheet",
+    "section": "components",
+    "path": "/components/sheet"
+  },
+  {
+    "title": "Installation",
+    "page": "Sheet",
+    "section": "components",
+    "path": "/components/sheet#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Sheet",
+    "section": "components",
+    "path": "/components/sheet#default"
+  },
+  {
+    "title": "Form",
+    "page": "Sheet",
+    "section": "components",
+    "path": "/components/sheet#form"
+  },
+  {
+    "title": "No close button",
+    "page": "Sheet",
+    "section": "components",
+    "path": "/components/sheet#no-close-button"
+  },
+  {
+    "title": "Sides",
+    "page": "Sheet",
+    "section": "components",
+    "path": "/components/sheet#sides"
+  },
+  {
+    "title": "Agent tools",
+    "page": "Sheet",
+    "section": "components",
+    "path": "/components/sheet#agent-tools"
+  },
+  {
+    "title": "Wiring",
+    "page": "Sheet",
+    "section": "components",
+    "path": "/components/sheet#wiring"
+  },
+  {
+    "title": "Sidebar",
+    "page": "Sidebar",
+    "section": "components",
+    "path": "/components/sidebar"
+  },
+  {
+    "title": "Installation",
+    "page": "Sidebar",
+    "section": "components",
+    "path": "/components/sidebar#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Sidebar",
+    "section": "components",
+    "path": "/components/sidebar#default"
+  },
+  {
+    "title": "Loading",
+    "page": "Sidebar",
+    "section": "components",
+    "path": "/components/sidebar#loading"
+  },
+  {
+    "title": "Offcanvas collapsed",
+    "page": "Sidebar",
+    "section": "components",
+    "path": "/components/sidebar#offcanvas-collapsed"
+  },
+  {
+    "title": "Submenu",
+    "page": "Sidebar",
+    "section": "components",
+    "path": "/components/sidebar#submenu"
+  },
+  {
+    "title": "User menu",
+    "page": "Sidebar",
+    "section": "components",
+    "path": "/components/sidebar#user-menu"
+  },
+  {
+    "title": "Workspace switcher",
+    "page": "Sidebar",
+    "section": "components",
+    "path": "/components/sidebar#workspace-switcher"
+  },
+  {
+    "title": "Wiring",
+    "page": "Sidebar",
+    "section": "components",
+    "path": "/components/sidebar#wiring"
+  },
+  {
+    "title": "Skeleton",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton"
+  },
+  {
+    "title": "Installation",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton#default"
+  },
+  {
+    "title": "Avatar",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton#avatar"
+  },
+  {
+    "title": "Block",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton#block"
+  },
+  {
+    "title": "Card",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton#card"
+  },
+  {
+    "title": "Composed",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton#composed"
+  },
+  {
+    "title": "Form",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton#form"
+  },
+  {
+    "title": "Table",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton#table"
+  },
+  {
+    "title": "Text",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton#text"
+  },
+  {
+    "title": "Slider",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider"
+  },
+  {
+    "title": "Installation",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider#default"
+  },
+  {
+    "title": "Controlled",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider#controlled"
+  },
+  {
+    "title": "Disabled",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider#disabled"
+  },
+  {
+    "title": "Multiple thumbs",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider#multiple-thumbs"
+  },
+  {
+    "title": "Range",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider#range"
+  },
+  {
+    "title": "Range with gap",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider#range-with-gap"
+  },
+  {
+    "title": "Vertical",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider#vertical"
+  },
+  {
+    "title": "Wiring",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider#wiring"
+  },
+  {
+    "title": "Spinner",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner"
+  },
+  {
+    "title": "Installation",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner#default"
+  },
+  {
+    "title": "Button",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner#button"
+  },
+  {
+    "title": "Custom",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner#custom"
+  },
+  {
+    "title": "Empty state",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner#empty-state"
+  },
+  {
+    "title": "In badge",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner#in-badge"
+  },
+  {
+    "title": "In input group",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner#in-input-group"
+  },
+  {
+    "title": "Size",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner#size"
+  },
+  {
+    "title": "With context label",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner#with-context-label"
+  },
+  {
+    "title": "Stat",
+    "page": "Stat",
+    "section": "components",
+    "path": "/components/stat"
+  },
+  {
+    "title": "Installation",
+    "page": "Stat",
+    "section": "components",
+    "path": "/components/stat#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Stat",
+    "section": "components",
+    "path": "/components/stat#default"
+  },
+  {
+    "title": "With description",
+    "page": "Stat",
+    "section": "components",
+    "path": "/components/stat#with-description"
+  },
+  {
+    "title": "Switch",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch"
+  },
+  {
+    "title": "Installation",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#default"
+  },
+  {
+    "title": "Card",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#card"
+  },
+  {
+    "title": "Description",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#description"
+  },
+  {
+    "title": "In a field",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#in-a-field"
+  },
+  {
+    "title": "Invalid",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#invalid"
+  },
+  {
+    "title": "Sizes",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#sizes"
+  },
+  {
+    "title": "States",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#states"
+  },
+  {
+    "title": "Wiring",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#wiring"
+  },
+  {
+    "title": "Table",
+    "page": "Table",
+    "section": "components",
+    "path": "/components/table"
+  },
+  {
+    "title": "Installation",
+    "page": "Table",
+    "section": "components",
+    "path": "/components/table#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Table",
+    "section": "components",
+    "path": "/components/table#default"
+  },
+  {
+    "title": "Actions",
+    "page": "Table",
+    "section": "components",
+    "path": "/components/table#actions"
+  },
+  {
+    "title": "Footer",
+    "page": "Table",
+    "section": "components",
+    "path": "/components/table#footer"
+  },
+  {
+    "title": "Minimal",
+    "page": "Table",
+    "section": "components",
+    "path": "/components/table#minimal"
+  },
+  {
+    "title": "Sticky",
+    "page": "Table",
+    "section": "components",
+    "path": "/components/table#sticky"
+  },
+  {
+    "title": "Tabs",
+    "page": "Tabs",
+    "section": "components",
+    "path": "/components/tabs"
+  },
+  {
+    "title": "Installation",
+    "page": "Tabs",
+    "section": "components",
+    "path": "/components/tabs#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Tabs",
+    "section": "components",
+    "path": "/components/tabs#default"
+  },
+  {
+    "title": "Disabled",
+    "page": "Tabs",
+    "section": "components",
+    "path": "/components/tabs#disabled"
+  },
+  {
+    "title": "Line",
+    "page": "Tabs",
+    "section": "components",
+    "path": "/components/tabs#line"
+  },
+  {
+    "title": "Vertical",
+    "page": "Tabs",
+    "section": "components",
+    "path": "/components/tabs#vertical"
+  },
+  {
+    "title": "With icon",
+    "page": "Tabs",
+    "section": "components",
+    "path": "/components/tabs#with-icon"
+  },
+  {
+    "title": "Agent tools",
+    "page": "Tabs",
+    "section": "components",
+    "path": "/components/tabs#agent-tools"
+  },
+  {
+    "title": "Wiring",
+    "page": "Tabs",
+    "section": "components",
+    "path": "/components/tabs#wiring"
+  },
+  {
+    "title": "Tag Group",
+    "page": "Tag Group",
+    "section": "components",
+    "path": "/components/tag-group"
+  },
+  {
+    "title": "Installation",
+    "page": "Tag Group",
+    "section": "components",
+    "path": "/components/tag-group#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Tag Group",
+    "section": "components",
+    "path": "/components/tag-group#default"
+  },
+  {
+    "title": "As form value",
+    "page": "Tag Group",
+    "section": "components",
+    "path": "/components/tag-group#as-form-value"
+  },
+  {
+    "title": "Wiring",
+    "page": "Tag Group",
+    "section": "components",
+    "path": "/components/tag-group#wiring"
+  },
+  {
+    "title": "Textarea",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea"
+  },
+  {
+    "title": "Installation",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea#default"
+  },
+  {
+    "title": "Auto grown",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea#auto-grown"
+  },
+  {
+    "title": "Button",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea#button"
+  },
+  {
+    "title": "Disabled",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea#disabled"
+  },
+  {
+    "title": "Field",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea#field"
+  },
+  {
+    "title": "Invalid",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea#invalid"
+  },
+  {
+    "title": "With hint",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea#with-hint"
+  },
+  {
+    "title": "With label",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea#with-label"
+  },
+  {
+    "title": "Time Field",
+    "page": "Time Field",
+    "section": "components",
+    "path": "/components/time-field"
+  },
+  {
+    "title": "Installation",
+    "page": "Time Field",
+    "section": "components",
+    "path": "/components/time-field#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Time Field",
+    "section": "components",
+    "path": "/components/time-field#default"
+  },
+  {
+    "title": "Twenty four hour",
+    "page": "Time Field",
+    "section": "components",
+    "path": "/components/time-field#twenty-four-hour"
+  },
+  {
+    "title": "Wiring",
+    "page": "Time Field",
+    "section": "components",
+    "path": "/components/time-field#wiring"
+  },
+  {
+    "title": "Timeline",
+    "page": "Timeline",
+    "section": "components",
+    "path": "/components/timeline"
+  },
+  {
+    "title": "Installation",
+    "page": "Timeline",
+    "section": "components",
+    "path": "/components/timeline#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Timeline",
+    "section": "components",
+    "path": "/components/timeline#default"
+  },
+  {
+    "title": "Horizontal",
+    "page": "Timeline",
+    "section": "components",
+    "path": "/components/timeline#horizontal"
+  },
+  {
+    "title": "With icons",
+    "page": "Timeline",
+    "section": "components",
+    "path": "/components/timeline#with-icons"
+  },
+  {
+    "title": "Toast",
+    "page": "Toast",
+    "section": "components",
+    "path": "/components/toast"
+  },
+  {
+    "title": "Installation",
+    "page": "Toast",
+    "section": "components",
+    "path": "/components/toast#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Toast",
+    "section": "components",
+    "path": "/components/toast#default"
+  },
+  {
+    "title": "Promise",
+    "page": "Toast",
+    "section": "components",
+    "path": "/components/toast#promise"
+  },
+  {
+    "title": "Variants",
+    "page": "Toast",
+    "section": "components",
+    "path": "/components/toast#variants"
+  },
+  {
+    "title": "With action",
+    "page": "Toast",
+    "section": "components",
+    "path": "/components/toast#with-action"
+  },
+  {
+    "title": "Wiring",
+    "page": "Toast",
+    "section": "components",
+    "path": "/components/toast#wiring"
+  },
+  {
+    "title": "Toast Trigger",
+    "page": "Toast Trigger",
+    "section": "components",
+    "path": "/components/toast-trigger"
+  },
+  {
+    "title": "Installation",
+    "page": "Toast Trigger",
+    "section": "components",
+    "path": "/components/toast-trigger#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Toast Trigger",
+    "section": "components",
+    "path": "/components/toast-trigger#default"
+  },
+  {
+    "title": "Wiring",
+    "page": "Toast Trigger",
+    "section": "components",
+    "path": "/components/toast-trigger#wiring"
+  },
+  {
+    "title": "Toaster",
+    "page": "Toaster",
+    "section": "components",
+    "path": "/components/toaster"
+  },
+  {
+    "title": "Installation",
+    "page": "Toaster",
+    "section": "components",
+    "path": "/components/toaster#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Toaster",
+    "section": "components",
+    "path": "/components/toaster#default"
+  },
+  {
+    "title": "Positions",
+    "page": "Toaster",
+    "section": "components",
+    "path": "/components/toaster#positions"
+  },
+  {
+    "title": "Wiring",
+    "page": "Toaster",
+    "section": "components",
+    "path": "/components/toaster#wiring"
+  },
+  {
+    "title": "Toggle",
+    "page": "Toggle",
+    "section": "components",
+    "path": "/components/toggle"
+  },
+  {
+    "title": "Installation",
+    "page": "Toggle",
+    "section": "components",
+    "path": "/components/toggle#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Toggle",
+    "section": "components",
+    "path": "/components/toggle#default"
+  },
+  {
+    "title": "Outline",
+    "page": "Toggle",
+    "section": "components",
+    "path": "/components/toggle#outline"
+  },
+  {
+    "title": "Sizes",
+    "page": "Toggle",
+    "section": "components",
+    "path": "/components/toggle#sizes"
+  },
+  {
+    "title": "States",
+    "page": "Toggle",
+    "section": "components",
+    "path": "/components/toggle#states"
+  },
+  {
+    "title": "With text",
+    "page": "Toggle",
+    "section": "components",
+    "path": "/components/toggle#with-text"
+  },
+  {
+    "title": "Wiring",
+    "page": "Toggle",
+    "section": "components",
+    "path": "/components/toggle#wiring"
+  },
+  {
+    "title": "Toggle Group",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group"
+  },
+  {
+    "title": "Installation",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#default"
+  },
+  {
+    "title": "Custom",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#custom"
+  },
+  {
+    "title": "Disabled",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#disabled"
+  },
+  {
+    "title": "Outline",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#outline"
+  },
+  {
+    "title": "Single",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#single"
+  },
+  {
+    "title": "Sizes",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#sizes"
+  },
+  {
+    "title": "Spaced",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#spaced"
+  },
+  {
+    "title": "Vertical",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#vertical"
+  },
+  {
+    "title": "Wiring",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#wiring"
+  },
+  {
+    "title": "Toolbar",
+    "page": "Toolbar",
+    "section": "components",
+    "path": "/components/toolbar"
+  },
+  {
+    "title": "Installation",
+    "page": "Toolbar",
+    "section": "components",
+    "path": "/components/toolbar#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Toolbar",
+    "section": "components",
+    "path": "/components/toolbar#default"
+  },
+  {
+    "title": "Tooltip",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip"
+  },
+  {
+    "title": "Installation",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#default"
+  },
+  {
+    "title": "Disabled trigger",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#disabled-trigger"
+  },
+  {
+    "title": "Keyboard",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#keyboard"
+  },
+  {
+    "title": "Open",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#open"
+  },
+  {
+    "title": "Provider row",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#provider-row"
+  },
+  {
+    "title": "Side bottom",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#side-bottom"
+  },
+  {
+    "title": "Sides",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#sides"
+  },
+  {
+    "title": "With label",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#with-label"
+  },
+  {
+    "title": "Wiring",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#wiring"
+  },
+  {
+    "title": "Tree",
+    "page": "Tree",
+    "section": "components",
+    "path": "/components/tree"
+  },
+  {
+    "title": "Installation",
+    "page": "Tree",
+    "section": "components",
+    "path": "/components/tree#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Tree",
+    "section": "components",
+    "path": "/components/tree#default"
+  },
+  {
+    "title": "With links",
+    "page": "Tree",
+    "section": "components",
+    "path": "/components/tree#with-links"
+  },
+  {
+    "title": "Wiring",
+    "page": "Tree",
+    "section": "components",
+    "path": "/components/tree#wiring"
+  },
+  {
+    "title": "Typeset",
+    "page": "Typeset",
+    "section": "components",
+    "path": "/components/typeset"
+  },
+  {
+    "title": "Installation",
+    "page": "Typeset",
+    "section": "components",
+    "path": "/components/typeset#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Typeset",
+    "section": "components",
+    "path": "/components/typeset#default"
+  },
+  {
+    "title": "Chat preset",
+    "page": "Typeset",
+    "section": "components",
+    "path": "/components/typeset#chat-preset"
+  },
+  {
+    "title": "Docs preset",
+    "page": "Typeset",
+    "section": "components",
+    "path": "/components/typeset#docs-preset"
+  },
+  {
+    "title": "Not typeset",
+    "page": "Typeset",
+    "section": "components",
+    "path": "/components/typeset#not-typeset"
+  },
+  {
+    "title": "Overrides",
+    "page": "Typeset",
+    "section": "components",
+    "path": "/components/typeset#overrides"
+  },
+  {
+    "title": "Responsive table",
+    "page": "Typeset",
+    "section": "components",
+    "path": "/components/typeset#responsive-table"
+  },
+  {
+    "title": "Adapter Chart",
+    "page": "Adapter Chart",
+    "section": "charts",
+    "path": "/charts/adapter"
+  },
+  {
+    "title": "Installation",
+    "page": "Adapter Chart",
+    "section": "charts",
+    "path": "/charts/adapter#installation"
+  },
+  {
+    "title": "Bring your own engine",
+    "page": "Adapter Chart",
+    "section": "charts",
+    "path": "/charts/adapter#byo-engine"
+  },
+  {
+    "title": "Default",
+    "page": "Adapter Chart",
+    "section": "charts",
+    "path": "/charts/adapter#default"
+  },
+  {
+    "title": "Wiring",
+    "page": "Adapter Chart",
+    "section": "charts",
+    "path": "/charts/adapter#wiring"
+  },
+  {
+    "title": "Area Chart",
+    "page": "Area Chart",
+    "section": "charts",
+    "path": "/charts/area"
+  },
+  {
+    "title": "Installation",
+    "page": "Area Chart",
+    "section": "charts",
+    "path": "/charts/area#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Area Chart",
+    "section": "charts",
+    "path": "/charts/area#default"
+  },
+  {
+    "title": "Legend toggle",
+    "page": "Area Chart",
+    "section": "charts",
+    "path": "/charts/area#legend-toggle"
+  },
+  {
+    "title": "Wiring",
+    "page": "Area Chart",
+    "section": "charts",
+    "path": "/charts/area#wiring"
+  },
+  {
+    "title": "Bar Chart",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar"
+  },
+  {
+    "title": "Installation",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#default"
+  },
+  {
+    "title": "Active",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#active"
+  },
+  {
+    "title": "Horizontal",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#horizontal"
+  },
+  {
+    "title": "Label",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#label"
+  },
+  {
+    "title": "Mixed",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#mixed"
+  },
+  {
+    "title": "Multiple",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#multiple"
+  },
+  {
+    "title": "Negative",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#negative"
+  },
+  {
+    "title": "Stacked",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#stacked"
+  },
+  {
+    "title": "Wiring",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#wiring"
+  },
+  {
+    "title": "Composed Chart",
+    "page": "Composed Chart",
+    "section": "charts",
+    "path": "/charts/composed"
+  },
+  {
+    "title": "Installation",
+    "page": "Composed Chart",
+    "section": "charts",
+    "path": "/charts/composed#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Composed Chart",
+    "section": "charts",
+    "path": "/charts/composed#default"
+  },
+  {
+    "title": "Full mix",
+    "page": "Composed Chart",
+    "section": "charts",
+    "path": "/charts/composed#full-mix"
+  },
+  {
+    "title": "Wiring",
+    "page": "Composed Chart",
+    "section": "charts",
+    "path": "/charts/composed#wiring"
+  },
+  {
+    "title": "Line Chart",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line"
+  },
+  {
+    "title": "Installation",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#default"
+  },
+  {
+    "title": "Dots",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#dots"
+  },
+  {
+    "title": "Dots colors",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#dots-colors"
+  },
+  {
+    "title": "Label",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#label"
+  },
+  {
+    "title": "Linear",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#linear"
+  },
+  {
+    "title": "Multiple",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#multiple"
+  },
+  {
+    "title": "References and errors",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#references-and-errors"
+  },
+  {
+    "title": "Step",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#step"
+  },
+  {
+    "title": "Wiring",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#wiring"
+  },
+  {
+    "title": "Pie Chart",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie"
+  },
+  {
+    "title": "Installation",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie#default"
+  },
+  {
+    "title": "Donut",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie#donut"
+  },
+  {
+    "title": "Donut active",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie#donut-active"
+  },
+  {
+    "title": "Donut text",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie#donut-text"
+  },
+  {
+    "title": "Label list",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie#label-list"
+  },
+  {
+    "title": "Legend",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie#legend"
+  },
+  {
+    "title": "Stacked",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie#stacked"
+  },
+  {
+    "title": "Wiring",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie#wiring"
+  },
+  {
+    "title": "Radar Chart",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar"
+  },
+  {
+    "title": "Installation",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#default"
+  },
+  {
+    "title": "Dots",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#dots"
+  },
+  {
+    "title": "Grid circle",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#grid-circle"
+  },
+  {
+    "title": "Grid fill",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#grid-fill"
+  },
+  {
+    "title": "Grid none",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#grid-none"
+  },
+  {
+    "title": "Legend",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#legend"
+  },
+  {
+    "title": "Lines only",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#lines-only"
+  },
+  {
+    "title": "Multiple",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#multiple"
+  },
+  {
+    "title": "Wiring",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#wiring"
+  },
+  {
+    "title": "Radial Bar Chart",
+    "page": "Radial Bar Chart",
+    "section": "charts",
+    "path": "/charts/radial-bar"
+  },
+  {
+    "title": "Installation",
+    "page": "Radial Bar Chart",
+    "section": "charts",
+    "path": "/charts/radial-bar#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Radial Bar Chart",
+    "section": "charts",
+    "path": "/charts/radial-bar#default"
+  },
+  {
+    "title": "Grid",
+    "page": "Radial Bar Chart",
+    "section": "charts",
+    "path": "/charts/radial-bar#grid"
+  },
+  {
+    "title": "Label",
+    "page": "Radial Bar Chart",
+    "section": "charts",
+    "path": "/charts/radial-bar#label"
+  },
+  {
+    "title": "Shape",
+    "page": "Radial Bar Chart",
+    "section": "charts",
+    "path": "/charts/radial-bar#shape"
+  },
+  {
+    "title": "Stacked",
+    "page": "Radial Bar Chart",
+    "section": "charts",
+    "path": "/charts/radial-bar#stacked"
+  },
+  {
+    "title": "Text",
+    "page": "Radial Bar Chart",
+    "section": "charts",
+    "path": "/charts/radial-bar#text"
+  },
+  {
+    "title": "Wiring",
+    "page": "Radial Bar Chart",
+    "section": "charts",
+    "path": "/charts/radial-bar#wiring"
+  },
+  {
+    "title": "Scatter Chart",
+    "page": "Scatter Chart",
+    "section": "charts",
+    "path": "/charts/scatter"
+  },
+  {
+    "title": "Installation",
+    "page": "Scatter Chart",
+    "section": "charts",
+    "path": "/charts/scatter#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Scatter Chart",
+    "section": "charts",
+    "path": "/charts/scatter#default"
+  },
+  {
+    "title": "Bubbles",
+    "page": "Scatter Chart",
+    "section": "charts",
+    "path": "/charts/scatter#bubbles"
+  },
+  {
+    "title": "Multiple",
+    "page": "Scatter Chart",
+    "section": "charts",
+    "path": "/charts/scatter#multiple"
+  },
+  {
+    "title": "Reference zones",
+    "page": "Scatter Chart",
+    "section": "charts",
+    "path": "/charts/scatter#reference-zones"
+  },
+  {
+    "title": "Wiring",
+    "page": "Scatter Chart",
+    "section": "charts",
+    "path": "/charts/scatter#wiring"
+  },
+  {
+    "title": "Action bar",
+    "page": "Action bar",
+    "section": "blocks",
+    "path": "/blocks/action-bar"
+  },
+  {
+    "title": "Installation",
+    "page": "Action bar",
+    "section": "blocks",
+    "path": "/blocks/action-bar#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Action bar",
+    "section": "blocks",
+    "path": "/blocks/action-bar#default"
+  },
+  {
+    "title": "Styling",
+    "page": "Action bar",
+    "section": "blocks",
+    "path": "/blocks/action-bar#styling"
+  },
+  {
+    "title": "App shell",
+    "page": "App shell",
+    "section": "blocks",
+    "path": "/blocks/app-shell"
+  },
+  {
+    "title": "Installation",
+    "page": "App shell",
+    "section": "blocks",
+    "path": "/blocks/app-shell#installation"
+  },
+  {
+    "title": "Default",
+    "page": "App shell",
+    "section": "blocks",
+    "path": "/blocks/app-shell#default"
+  },
+  {
+    "title": "Styling",
+    "page": "App shell",
+    "section": "blocks",
+    "path": "/blocks/app-shell#styling"
+  },
+  {
+    "title": "Data index",
+    "page": "Data index",
+    "section": "blocks",
+    "path": "/blocks/data-index"
+  },
+  {
+    "title": "Installation",
+    "page": "Data index",
+    "section": "blocks",
+    "path": "/blocks/data-index#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Data index",
+    "section": "blocks",
+    "path": "/blocks/data-index#default"
+  },
+  {
+    "title": "Styling",
+    "page": "Data index",
+    "section": "blocks",
+    "path": "/blocks/data-index#styling"
+  },
+  {
+    "title": "Destructive panel",
+    "page": "Destructive panel",
+    "section": "blocks",
+    "path": "/blocks/destructive-panel"
+  },
+  {
+    "title": "Installation",
+    "page": "Destructive panel",
+    "section": "blocks",
+    "path": "/blocks/destructive-panel#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Destructive panel",
+    "section": "blocks",
+    "path": "/blocks/destructive-panel#default"
+  },
+  {
+    "title": "Revoke deploy token",
+    "page": "Destructive panel",
+    "section": "blocks",
+    "path": "/blocks/destructive-panel#destructive-panel-title"
+  },
+  {
+    "title": "Styling",
+    "page": "Destructive panel",
+    "section": "blocks",
+    "path": "/blocks/destructive-panel#styling"
+  },
+  {
+    "title": "Page header",
+    "page": "Page header",
+    "section": "blocks",
+    "path": "/blocks/page-header"
+  },
+  {
+    "title": "Installation",
+    "page": "Page header",
+    "section": "blocks",
+    "path": "/blocks/page-header#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Page header",
+    "section": "blocks",
+    "path": "/blocks/page-header#default"
+  },
+  {
+    "title": "Styling",
+    "page": "Page header",
+    "section": "blocks",
+    "path": "/blocks/page-header#styling"
+  },
+  {
+    "title": "Section card",
+    "page": "Section card",
+    "section": "blocks",
+    "path": "/blocks/section-card"
+  },
+  {
+    "title": "Installation",
+    "page": "Section card",
+    "section": "blocks",
+    "path": "/blocks/section-card#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Section card",
+    "section": "blocks",
+    "path": "/blocks/section-card#default"
+  },
+  {
+    "title": "Styling",
+    "page": "Section card",
+    "section": "blocks",
+    "path": "/blocks/section-card#styling"
+  },
+  {
+    "title": "Stepper",
+    "page": "Stepper",
+    "section": "blocks",
+    "path": "/blocks/stepper"
+  },
+  {
+    "title": "Installation",
+    "page": "Stepper",
+    "section": "blocks",
+    "path": "/blocks/stepper#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Stepper",
+    "section": "blocks",
+    "path": "/blocks/stepper#default"
+  },
+  {
+    "title": "Styling",
+    "page": "Stepper",
+    "section": "blocks",
+    "path": "/blocks/stepper#styling"
+  },
+  {
+    "title": "Top nav",
+    "page": "Top nav",
+    "section": "blocks",
+    "path": "/blocks/top-nav"
+  },
+  {
+    "title": "Installation",
+    "page": "Top nav",
+    "section": "blocks",
+    "path": "/blocks/top-nav#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Top nav",
+    "section": "blocks",
+    "path": "/blocks/top-nav#default"
+  },
+  {
+    "title": "Styling",
+    "page": "Top nav",
+    "section": "blocks",
+    "path": "/blocks/top-nav#styling"
+  },
+  {
+    "title": "Chat Replay",
+    "page": "Chat Replay",
+    "section": "demos",
+    "path": "/demos/chat-replay"
+  },
+  {
+    "title": "Default",
+    "page": "Chat Replay",
+    "section": "demos",
+    "path": "/demos/chat-replay#default"
+  },
+  {
+    "title": "AG-UI Relay",
+    "page": "AG-UI Relay",
+    "section": "demos",
+    "path": "/demos/agui-relay"
+  },
+  {
+    "title": "Default",
+    "page": "AG-UI Relay",
+    "section": "demos",
+    "path": "/demos/agui-relay#default"
+  },
+  {
+    "title": "A2UI Surface",
+    "page": "A2UI Surface",
+    "section": "demos",
+    "path": "/demos/a2ui-surface"
+  },
+  {
+    "title": "Default",
+    "page": "A2UI Surface",
+    "section": "demos",
+    "path": "/demos/a2ui-surface#default"
+  },
+  {
+    "title": "Interactive Filter",
+    "page": "Interactive Filter",
+    "section": "demos",
+    "path": "/demos/interactive"
+  },
+  {
+    "title": "Default",
+    "page": "Interactive Filter",
+    "section": "demos",
+    "path": "/demos/interactive#default"
+  },
+  {
+    "title": "Live Streaming",
+    "page": "Live Streaming",
+    "section": "demos",
+    "path": "/demos/live"
+  },
+  {
+    "title": "Default",
+    "page": "Live Streaming",
+    "section": "demos",
+    "path": "/demos/live#default"
+  },
+  {
+    "title": "Synced Tooltips",
+    "page": "Synced Tooltips",
+    "section": "demos",
+    "path": "/demos/sync"
+  },
+  {
+    "title": "Default",
+    "page": "Synced Tooltips",
+    "section": "demos",
+    "path": "/demos/sync#default"
+  },
+  {
+    "title": "Brush & Zoom",
+    "page": "Brush & Zoom",
+    "section": "demos",
+    "path": "/demos/window"
+  },
+  {
+    "title": "Default",
+    "page": "Brush & Zoom",
+    "section": "demos",
+    "path": "/demos/window#default"
+  },
+  {
+    "title": "poetry-core",
+    "page": "poetry-core",
+    "section": "api",
+    "path": "/api/poetry-core"
+  },
+  {
+    "title": "ActiveModel",
+    "page": "poetry-core",
+    "section": "api",
+    "path": "/api/poetry-core#activemodel"
+  },
+  {
+    "title": "ActiveModel::Type",
+    "page": "poetry-core",
+    "section": "api",
+    "path": "/api/poetry-core#activemodel-type"
+  },
+  {
+    "title": "ActiveModel::Type::List",
+    "page": "poetry-core",
+    "section": "api",
+    "path": "/api/poetry-core#activemodel-type-list"
+  },
+  {
+    "title": "ActiveModel::Type::Symbol",
+    "page": "poetry-core",
+    "section": "api",
+    "path": "/api/poetry-core#activemodel-type-symbol"
+  },
+  {
+    "title": "Poetry",
+    "page": "poetry-core",
+    "section": "api",
+    "path": "/api/poetry-core#poetry"
+  },
+  {
+    "title": "@poetry/controllers",
+    "page": "@poetry/controllers",
+    "section": "api",
+    "path": "/api/poetry-controllers"
+  },
+  {
+    "title": "IncompleteDate",
+    "page": "@poetry/controllers",
+    "section": "api",
+    "path": "/api/poetry-controllers#incompletedate"
+  },
+  {
+    "title": "@poetry/agent",
+    "page": "@poetry/agent",
+    "section": "api",
+    "path": "/api/poetry-agent-controllers"
+  },
+  {
+    "title": "poetry-ui",
+    "page": "poetry-ui",
+    "section": "api",
+    "path": "/api/poetry-ui"
+  },
+  {
+    "title": "Poetry",
+    "page": "poetry-ui",
+    "section": "api",
+    "path": "/api/poetry-ui#poetry"
+  },
+  {
+    "title": "poetry-charts",
+    "page": "poetry-charts",
+    "section": "api",
+    "path": "/api/poetry-charts"
+  },
+  {
+    "title": "Poetry",
+    "page": "poetry-charts",
+    "section": "api",
+    "path": "/api/poetry-charts#poetry"
+  },
+  {
+    "title": "@poetry/charts",
+    "page": "@poetry/charts",
+    "section": "api",
+    "path": "/api/poetry-charts-controllers"
+  },
+  {
+    "title": "poetry-agent",
+    "page": "poetry-agent",
+    "section": "api",
+    "path": "/api/poetry-agent"
+  },
+  {
+    "title": "Poetry",
+    "page": "poetry-agent",
+    "section": "api",
+    "path": "/api/poetry-agent#poetry"
+  },
+  {
+    "title": "poetry-simple_form",
+    "page": "poetry-simple_form",
+    "section": "api",
+    "path": "/api/poetry-simple_form"
+  },
+  {
+    "title": "Poetry",
+    "page": "poetry-simple_form",
+    "section": "api",
+    "path": "/api/poetry-simple_form#poetry"
+  },
+  {
+    "title": "poetry-extract",
+    "page": "poetry-extract",
+    "section": "api",
+    "path": "/api/poetry-extract"
+  },
+  {
+    "title": "Poetry",
+    "page": "poetry-extract",
+    "section": "api",
+    "path": "/api/poetry-extract#poetry"
+  },
+  {
+    "title": "Poetry",
+    "page": "Poetry",
+    "section": "libraries",
+    "path": "/libraries/poetry"
+  },
+  {
+    "title": "What the umbrella installs",
+    "page": "Poetry",
+    "section": "libraries",
+    "path": "/libraries/poetry#what-it-installs"
+  },
+  {
+    "title": "Install",
+    "page": "Poetry",
+    "section": "libraries",
+    "path": "/libraries/poetry#install"
+  },
+  {
+    "title": "The ecosystem gems",
+    "page": "Poetry",
+    "section": "libraries",
+    "path": "/libraries/poetry#ecosystem"
+  },
+  {
+    "title": "Where it lives",
+    "page": "Poetry",
+    "section": "libraries",
+    "path": "/libraries/poetry#where"
+  },
+  {
+    "title": "Core",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core"
+  },
+  {
+    "title": "What it is",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#what-it-is"
+  },
+  {
+    "title": "Install",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#install"
+  },
+  {
+    "title": "Build your own component library",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#build-your-own"
+  },
+  {
+    "title": "The component class",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#the-component-class"
+  },
+  {
+    "title": "The style dictionary",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#the-style-dictionary"
+  },
+  {
+    "title": "Behavior from the primitives",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#behavior"
+  },
+  {
+    "title": "The registry",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#the-registry"
+  },
+  {
+    "title": "Two styling paths: Tailwind or BEM",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#styling-paths"
+  },
+  {
+    "title": "Design tokens",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#tokens"
+  },
+  {
+    "title": "The check",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#the-check"
+  },
+  {
+    "title": "Box and Wrapper",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#box-and-wrapper"
+  },
+  {
+    "title": "Box, the polymorphic element",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#box"
+  },
+  {
+    "title": "Wrapper, conditional outer HTML",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#wrapper"
+  },
+  {
+    "title": "UI",
+    "page": "UI",
+    "section": "libraries",
+    "path": "/libraries/ui"
+  },
+  {
+    "title": "What it is",
+    "page": "UI",
+    "section": "libraries",
+    "path": "/libraries/ui#what-it-is"
+  },
+  {
+    "title": "Install and first components",
+    "page": "UI",
+    "section": "libraries",
+    "path": "/libraries/ui#install"
+  },
+  {
+    "title": "The form builder handoff",
+    "page": "UI",
+    "section": "libraries",
+    "path": "/libraries/ui#forms"
+  },
+  {
+    "title": "Nine themes ship in the gem",
+    "page": "UI",
+    "section": "libraries",
+    "path": "/libraries/ui#themes"
+  },
+  {
+    "title": "Own the code when you want to",
+    "page": "UI",
+    "section": "libraries",
+    "path": "/libraries/ui#own-the-code"
+  },
+  {
+    "title": "Blocks and recipes",
+    "page": "UI",
+    "section": "libraries",
+    "path": "/libraries/ui#blocks"
+  },
+  {
+    "title": "The agent surface",
+    "page": "UI",
+    "section": "libraries",
+    "path": "/libraries/ui#agent-surface"
+  },
+  {
+    "title": "Testing helpers",
+    "page": "UI",
+    "section": "libraries",
+    "path": "/libraries/ui#testing"
+  },
+  {
+    "title": "Charts",
+    "page": "Charts",
+    "section": "libraries",
+    "path": "/libraries/charts"
+  },
+  {
+    "title": "What it is",
+    "page": "Charts",
+    "section": "libraries",
+    "path": "/libraries/charts#what-it-is"
+  },
+  {
+    "title": "Install",
+    "page": "Charts",
+    "section": "libraries",
+    "path": "/libraries/charts#install"
+  },
+  {
+    "title": "Basic usage",
+    "page": "Charts",
+    "section": "libraries",
+    "path": "/libraries/charts#usage"
+  },
+  {
+    "title": "Works wherever HTML renders",
+    "page": "Charts",
+    "section": "libraries",
+    "path": "/libraries/charts#everywhere"
+  },
+  {
+    "title": "Live updates",
+    "page": "Charts",
+    "section": "libraries",
+    "path": "/libraries/charts#live"
+  },
+  {
+    "title": "Bring your own engine",
+    "page": "Charts",
+    "section": "libraries",
+    "path": "/libraries/charts#byo-engine"
+  },
+  {
+    "title": "The theme palette",
+    "page": "Charts",
+    "section": "libraries",
+    "path": "/libraries/charts#palette"
+  },
+  {
+    "title": "Agent",
+    "page": "Agent",
+    "section": "libraries",
+    "path": "/libraries/agent"
+  },
+  {
+    "title": "What it is",
+    "page": "Agent",
+    "section": "libraries",
+    "path": "/libraries/agent#what-it-is"
+  },
+  {
+    "title": "Install",
+    "page": "Agent",
+    "section": "libraries",
+    "path": "/libraries/agent#install"
+  },
+  {
+    "title": "The MCP server",
+    "page": "Agent",
+    "section": "libraries",
+    "path": "/libraries/agent#mcp"
+  },
+  {
+    "title": "The WebMCP runtime",
+    "page": "Agent",
+    "section": "libraries",
+    "path": "/libraries/agent#webmcp"
+  },
+  {
+    "title": "The AG-UI relay",
+    "page": "Agent",
+    "section": "libraries",
+    "path": "/libraries/agent#agui"
+  },
+  {
+    "title": "The A2UI catalog and renderer",
+    "page": "Agent",
+    "section": "libraries",
+    "path": "/libraries/agent#a2ui"
+  },
+  {
+    "title": "What's in the gem",
+    "page": "Agent",
+    "section": "libraries",
+    "path": "/libraries/agent#whats-in-the-gem"
+  },
+  {
+    "title": "Simple Form",
+    "page": "Simple Form",
+    "section": "libraries",
+    "path": "/libraries/simple-form"
+  },
+  {
+    "title": "How it works",
+    "page": "Simple Form",
+    "section": "libraries",
+    "path": "/libraries/simple-form#how-it-works"
+  },
+  {
+    "title": "Install",
+    "page": "Simple Form",
+    "section": "libraries",
+    "path": "/libraries/simple-form#install"
+  },
+  {
+    "title": "What restyles",
+    "page": "Simple Form",
+    "section": "libraries",
+    "path": "/libraries/simple-form#what-restyles"
+  },
+  {
+    "title": "The end state",
+    "page": "Simple Form",
+    "section": "libraries",
+    "path": "/libraries/simple-form#end-state"
+  },
+  {
+    "title": "Extract",
+    "page": "Extract",
+    "section": "libraries",
+    "path": "/libraries/extract"
+  },
+  {
+    "title": "Install and run",
+    "page": "Extract",
+    "section": "libraries",
+    "path": "/libraries/extract#run"
+  },
+  {
+    "title": "The pipeline",
+    "page": "Extract",
+    "section": "libraries",
+    "path": "/libraries/extract#pipeline"
+  },
+  {
+    "title": "What it emits",
+    "page": "Extract",
+    "section": "libraries",
+    "path": "/libraries/extract#output"
+  },
+  {
+    "title": "From extract to theme",
+    "page": "Extract",
+    "section": "libraries",
+    "path": "/libraries/extract#import"
+  },
+  {
+    "title": "Lucide",
+    "page": "Lucide",
+    "section": "icons",
+    "path": "/icons/lucide"
+  },
+  {
+    "title": "Install",
+    "page": "Lucide",
+    "section": "icons",
+    "path": "/icons/lucide#install"
+  },
+  {
+    "title": "Names, misses, and the fallback",
+    "page": "Lucide",
+    "section": "icons",
+    "path": "/icons/lucide#names"
+  },
+  {
+    "title": "The pin",
+    "page": "Lucide",
+    "section": "icons",
+    "path": "/icons/lucide#pin"
+  }
+]

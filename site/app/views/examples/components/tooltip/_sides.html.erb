@@ -1,0 +1,20 @@
+<%# The side: option decides where the content and its arrow settle around
+    the trigger. One provider scope, all four placements in a row. %>
+<%= poetry_tooltip_provider(class: "flex flex-wrap items-center gap-2") do %>
+  <%= poetry_tooltip(side: :top) do |tooltip| %>
+    <% tooltip.with_trigger(variant: :outline) { "Top" } %>
+    Rests above the trigger
+  <% end %>
+  <%= poetry_tooltip(side: :right) do |tooltip| %>
+    <% tooltip.with_trigger(variant: :outline) { "Right" } %>
+    Rests to the right
+  <% end %>
+  <%= poetry_tooltip(side: :bottom) do |tooltip| %>
+    <% tooltip.with_trigger(variant: :outline) { "Bottom" } %>
+    Rests below the trigger
+  <% end %>
+  <%= poetry_tooltip(side: :left) do |tooltip| %>
+    <% tooltip.with_trigger(variant: :outline) { "Left" } %>
+    Rests to the left
+  <% end %>
+<% end %>

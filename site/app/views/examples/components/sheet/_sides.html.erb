@@ -1,0 +1,30 @@
+<%# One sheet per edge. Top and bottom panels hug their content, capped
+    at half the viewport via content_class (the panel is a flex column,
+    so the overflow-y-auto body shrinks and scrolls inside the cap). %>
+<div class="flex flex-wrap items-center gap-2">
+  <% %i[top right bottom left].each do |side| %>
+    <%= poetry_sheet(side: side,
+                     content_class: "data-[side=top]:max-h-[50vh] data-[side=bottom]:max-h-[50vh]") do |sheet| %>
+      <% sheet.with_trigger(variant: :outline) { side.to_s.capitalize } %>
+      <% sheet.with_title { "Edit profile" } %>
+      <% sheet.with_description { "Make changes to your profile here. Click save when you're done." } %>
+      <% sheet.with_footer do %>
+        <%= poetry_button(type: :submit) { "Save changes" } %>
+        <%= poetry_button(variant: :outline,
+                          data: { action: "click->poetry--core--sheet#close" }) { "Close" } %>
+      <% end %>
+      <div class="overflow-y-auto px-4">
+        <% 6.times do %>
+          <p class="mb-2 leading-relaxed">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+            aliquip ex ea commodo consequat. Duis aute irure dolor in
+            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+            pariatur.
+          </p>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<%# The landing page renders outside the docs chrome: fixed brand
+    (html.brand-aurum, dark native), its own font, no style switcher.
+    Crossings into and out of the docs shell are full page loads (the
+    visit-control meta + data-turbo off below) so neither side's html
+    classes or tokens leak across the boundary under Turbo Drive. %>
+<html class="style-default dark brand-aurum">
+  <head>
+    <title><%= page_meta[:title] %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="turbo-visit-control" content="reload">
+    <%= render "layouts/meta" %>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+
+    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="alternate" type="text/markdown" href="/llms.txt">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="min-h-screen bg-background text-foreground antialiased" data-turbo="false">
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-card focus:px-3 focus:py-2 focus:text-sm">Skip to content</a>
+    <%= yield %>
+  </body>
+</html>

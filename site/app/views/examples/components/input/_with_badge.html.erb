@@ -1,0 +1,15 @@
+<%# Upstream input-badge: the label row carries a Badge at the trailing
+    edge - the label stretches across the field's grid, so ml-auto lands
+    the pill at the far side. The badge text joins the accessible name
+    ("Webhook URL Beta"), same as upstream. %>
+<div class="w-80">
+  <%= poetry_field(id: "input-badge") do |field| %>
+    <%= poetry_label(for_id: "input-badge") do %>
+      Webhook URL
+      <%= poetry_badge(variant: :secondary, class: "ml-auto") { "Beta" } %>
+    <% end %>
+    <%= poetry_input(type: "url", name: "webhook_url",
+                     placeholder: "https://api.example.com/webhook",
+                     **field.control_attributes.transform_keys(&:to_sym)) %>
+  <% end %>
+</div>

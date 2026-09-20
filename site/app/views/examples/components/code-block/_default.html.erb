@@ -1,0 +1,11 @@
+<% code = <<~RUBY
+  class Invoice < ApplicationRecord
+    belongs_to :customer
+
+    scope :settled, -> { where(status: "settled") }
+  end
+RUBY
+%>
+<div class="w-full max-w-xl">
+  <%= poetry_code_block(code: code, language: "ruby", label: "Invoice model") %>
+</div>

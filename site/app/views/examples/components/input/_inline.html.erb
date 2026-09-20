@@ -1,0 +1,9 @@
+<%# Upstream input-inline: the input and its action on one row. poetry's
+    field orientation: :horizontal is the boolean-control layout (control
+    left, label stack right), so an inline pair is a plain flex row - the
+    input flexes, the button holds the trailing edge. %>
+<div class="flex w-96 items-center gap-2">
+  <%= poetry_input(type: "search", name: "q", placeholder: "Search...",
+                   "aria-label": "Search", class: "flex-1") %>
+  <%= poetry_button { "Search" } %>
+</div>

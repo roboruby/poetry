@@ -1,0 +1,11 @@
+<%# orientation: :horizontal is the boolean-control layout - the switch
+    sits left, label + hint stack to its right, box centered on the label
+    line. control_attributes still carries the id and aria-describedby. %>
+<div class="w-80">
+  <%= poetry_field(id: "field-2fa", label_text: "Two-factor authentication",
+                   hint: "Require a one-time code at every sign-in.",
+                   orientation: :horizontal) do |field| %>
+    <%= poetry_switch(name: "two_factor", checked: true,
+                      **field.control_attributes.transform_keys(&:to_sym)) %>
+  <% end %>
+</div>

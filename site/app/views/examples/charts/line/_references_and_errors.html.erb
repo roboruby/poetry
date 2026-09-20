@@ -1,0 +1,22 @@
+<%# Error bars ride each row as err: [below, above]; reference line and
+    reference area mark thresholds against the y scale. %>
+<% data = [
+     { month: "January", desktop: 186, err: [12, 20] },
+     { month: "February", desktop: 305, err: [15, 19] },
+     { month: "March", desktop: 237, err: [18, 18] },
+     { month: "April", desktop: 73, err: [21, 17] },
+     { month: "May", desktop: 209, err: [24, 16] },
+     { month: "June", desktop: 214, err: [27, 15] }
+   ]
+   config = { desktop: { label: "Desktop", color: "var(--chart-1)" } } %>
+<div class="w-full max-w-xl">
+  <%= poetry_line_chart(data: data, config: config, id: "line-refs",
+                        margin: { left: 12, right: 12 }) do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] }) %>
+    <% chart.with_line(data_key: :desktop, error_key: :err) %>
+    <% chart.with_reference_line(y: 204, label: "avg") %>
+    <% chart.with_reference_area(y1: 280, y2: 320, label: "goal") %>
+    <% chart.with_tooltip %>
+  <% end %>
+</div>

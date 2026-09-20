@@ -1,0 +1,14 @@
+<%# group: true is the role-bearing-control layout: the RadioGroup is a
+    role=radiogroup <div>, so the label drops for= and names the group via
+    aria-labelledby - control_attributes wires all of it. %>
+<div class="w-80">
+  <%= poetry_field(id: "field-delivery", label_text: "Delivery speed",
+                   hint: "Applied at checkout.", group: true) do |field| %>
+    <%= poetry_radio_group(name: "delivery", value: "standard",
+                           **field.control_attributes.transform_keys(&:to_sym)) do |group| %>
+      <% group.with_item(value: "standard", label: "Standard (3-5 days)") %>
+      <% group.with_item(value: "express", label: "Express (next day)") %>
+      <% group.with_item(value: "pickup", label: "Store pickup") %>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,10 @@
+<%# A pill button is a class: override on the root - the radius token is the
+    only thing that changes, so variant and size still drive everything else.
+    User classes are appended to the component's own, never replacing them. %>
+<div class="flex flex-wrap items-center gap-2">
+  <%= poetry_button(class: "rounded-full") { "Get started" } %>
+  <%= poetry_button(variant: :outline, class: "rounded-full") { "Learn more" } %>
+  <%= poetry_button(size: :icon, class: "rounded-full", label: "Add item") do %>
+    <%= poetry_icon(name: :plus) %>
+  <% end %>
+</div>

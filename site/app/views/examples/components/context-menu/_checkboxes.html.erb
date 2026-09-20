@@ -1,0 +1,8 @@
+<%# checked: renders the check indicator; close_on_select: false keeps the
+    menu open so several preferences can be toggled in one visit. %>
+<%= poetry_context_menu do |menu| %>
+  <% menu.with_trigger(tag: :div, class: "flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm select-none") { "Right-click here" } %>
+  <% menu.with_checkbox_item(checked: true, close_on_select: false) { "Show Bookmarks Bar" } %>
+  <% menu.with_checkbox_item(close_on_select: false) { "Show Full URLs" } %>
+  <% menu.with_checkbox_item(checked: true, close_on_select: false) { "Show Developer Tools" } %>
+<% end %>

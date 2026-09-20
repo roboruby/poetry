@@ -1,0 +1,21 @@
+<%# Stacked bars share a stack: id; the radius arrays round only the
+    outer edge - [0,0,4,4] for the bottom bar, [4,4,0,0] for the top. %>
+<% data = [
+     { month: "January", desktop: 186, mobile: 80 },
+     { month: "February", desktop: 305, mobile: 200 },
+     { month: "March", desktop: 237, mobile: 120 },
+     { month: "April", desktop: 73, mobile: 190 },
+     { month: "May", desktop: 209, mobile: 130 },
+     { month: "June", desktop: 214, mobile: 140 }
+   ]
+   config = { desktop: { label: "Desktop", color: "var(--chart-1)" },
+              mobile: { label: "Mobile", color: "var(--chart-2)" } } %>
+<div class="w-full max-w-xl">
+  <%= poetry_bar_chart(data: data, config: config, id: "bar-stacked") do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] }) %>
+    <% chart.with_bar(data_key: :desktop, stack: :a, radius: [0, 0, 4, 4]) %>
+    <% chart.with_bar(data_key: :mobile, stack: :a, radius: [4, 4, 0, 0]) %>
+    <% chart.with_legend %>
+  <% end %>
+</div>

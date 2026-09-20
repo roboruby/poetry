@@ -1,0 +1,22 @@
+<%# Item content is a plain block, so a leading poetry_icon sits inline with
+    the label - the item's flex row aligns and gaps them, and sizes the glyph. %>
+<%= poetry_context_menu(label: "Message actions") do |menu| %>
+  <% menu.with_trigger(tag: :div, class: "flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm select-none") { "Right-click the message" } %>
+  <% menu.with_item(shortcut: "⌘R") do %>
+    <%= poetry_icon(name: :reply) %>
+    Reply
+  <% end %>
+  <% menu.with_item(shortcut: "⌘S") do %>
+    <%= poetry_icon(name: :star) %>
+    Add star
+  <% end %>
+  <% menu.with_item(shortcut: "⌘E") do %>
+    <%= poetry_icon(name: :archive) %>
+    Archive
+  <% end %>
+  <% menu.with_separator %>
+  <% menu.with_item(variant: :destructive, shortcut: "⌘⌫") do %>
+    <%= poetry_icon(name: :"trash-2") %>
+    Delete
+  <% end %>
+<% end %>

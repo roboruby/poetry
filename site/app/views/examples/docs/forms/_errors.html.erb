@@ -1,0 +1,24 @@
+<%# The error quartet from model truth: errors.add flows into the Field -
+    red label, message with an id, aria-describedby error-before-hint,
+    aria-invalid on the control, data-invalid on the root. The dual-key
+    lookup also surfaces association errors (:company) on the _id field. %>
+<% signup_class = Class.new do
+     include ActiveModel::Model
+     include ActiveModel::Attributes
+
+     attribute :email, :string
+     attribute :password, :string
+
+     validates :email, presence: true
+
+     def self.name = "Signup"
+   end
+   signup = signup_class.new
+   signup.errors.add(:email, "can't be blank")
+   signup.errors.add(:password, "is too short (minimum is 12 characters)") %>
+<%= form_with(model: signup, url: "/forms", method: :get,
+              builder: Poetry::Ui::FormBuilder,
+              class: "flex w-full max-w-md flex-col gap-6") do |f| %>
+  <%= f.input(:email, hint: "We never share it.") %>
+  <%= f.input(:password) %>
+<% end %>

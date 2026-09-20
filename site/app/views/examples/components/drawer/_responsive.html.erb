@@ -1,0 +1,42 @@
+<%# The responsive recipe: a Dialog on desktop, a Drawer on mobile -
+    upstream swaps components with a useMediaQuery hook; server-rendered
+    poetry renders BOTH and lets the breakpoint pick the visible one
+    (caller classes land on each component's root wrapper). Resize the
+    window across md (768px) to see the swap. %>
+<%= poetry_dialog(class: "hidden md:block") do |dialog| %>
+  <% dialog.with_trigger(variant: :outline) { "Edit profile" } %>
+  <% dialog.with_title { "Edit profile" } %>
+  <% dialog.with_description { "Make changes to your profile here. Click save when you're done." } %>
+  <% dialog.with_footer do %>
+    <%= poetry_button { "Save changes" } %>
+  <% end %>
+  <div class="grid gap-4">
+    <div class="grid gap-2">
+      <%= poetry_label(for_id: "responsive-dialog-email") { "Email" } %>
+      <%= poetry_input(name: "email", type: "email", value: "jordan@example.com", id: "responsive-dialog-email") %>
+    </div>
+    <div class="grid gap-2">
+      <%= poetry_label(for_id: "responsive-dialog-username") { "Username" } %>
+      <%= poetry_input(name: "username", value: "@jordan", id: "responsive-dialog-username") %>
+    </div>
+  </div>
+<% end %>
+<%= poetry_drawer(class: "md:hidden") do |drawer| %>
+  <% drawer.with_trigger(variant: :outline) { "Edit profile" } %>
+  <% drawer.with_title { "Edit profile" } %>
+  <% drawer.with_description { "Make changes to your profile here. Click save when you're done." } %>
+  <% drawer.with_footer do %>
+    <%= poetry_button { "Save changes" } %>
+    <%= poetry_button(variant: :outline, data: { action: "click->poetry--core--drawer#close" }) { "Cancel" } %>
+  <% end %>
+  <div class="grid gap-4">
+    <div class="grid gap-2">
+      <%= poetry_label(for_id: "responsive-drawer-email") { "Email" } %>
+      <%= poetry_input(name: "email", type: "email", value: "jordan@example.com", id: "responsive-drawer-email") %>
+    </div>
+    <div class="grid gap-2">
+      <%= poetry_label(for_id: "responsive-drawer-username") { "Username" } %>
+      <%= poetry_input(name: "username", value: "@jordan", id: "responsive-drawer-username") %>
+    </div>
+  </div>
+<% end %>

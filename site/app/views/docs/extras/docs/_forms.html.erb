@@ -1,0 +1,14 @@
+<%# The /forms guide: one pointer for apps arriving from Simple Form, so
+    nobody rewrites working views to get Poetry fields. %>
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="simple-form">Coming from Simple Form?</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    Keep your views. The <%= link_to "poetry-simple_form", library_path("simple-form") %>
+    bridge maps every Simple Form input type onto this builder with one
+    initializer, so existing <code class="text-foreground">f.input</code> calls
+    render the same fields documented here, and the poetry-only controls are one
+    <code class="text-foreground">as:</code> away. Migrate to
+    <code class="text-foreground">form_with(model:, builder: Poetry::Ui::FormBuilder)</code>
+    form by form, at your own pace.
+  </p>
+</section>

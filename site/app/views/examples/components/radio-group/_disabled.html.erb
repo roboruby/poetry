@@ -1,0 +1,15 @@
+<div class="flex flex-col gap-6">
+  <%# A disabled option mid-list: skipped by Tab AND filtered from the
+      arrow-key collection. %>
+  <%= poetry_radio_group(name: "tier", value: "free", label: "Tier") do |group| %>
+    <% group.with_item(value: "free", label: "Free") %>
+    <% group.with_item(value: "pro", label: "Pro (unavailable)", disabled: true) %>
+    <% group.with_item(value: "enterprise", label: "Enterprise") %>
+  <% end %>
+  <%# Root-level disabled: the locked-in choice still renders its dot,
+      but disabled hidden radios submit nothing. %>
+  <%= poetry_radio_group(name: "billing", value: "yearly", disabled: true, label: "Billing") do |group| %>
+    <% group.with_item(value: "monthly", label: "Monthly") %>
+    <% group.with_item(value: "yearly", label: "Yearly") %>
+  <% end %>
+</div>

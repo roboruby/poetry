@@ -1,0 +1,16 @@
+<%# Upstream marker-border: an activity run of bordered rows, each with
+    a decorative icon. %>
+<div class="flex w-full max-w-sm flex-col gap-3">
+  <%= poetry_marker(variant: :border) do |marker| %>
+    <% marker.with_icon(name: :"git-branch") %>
+    Switched to release-candidate
+  <% end %>
+  <%= poetry_marker(variant: :border) do |marker| %>
+    <% marker.with_icon(name: :search) %>
+    Reviewed 8 related files
+  <% end %>
+  <%= poetry_marker(variant: :border) do |marker| %>
+    <% marker.with_icon(name: :"file-text") %>
+    Opened implementation notes
+  <% end %>
+</div>

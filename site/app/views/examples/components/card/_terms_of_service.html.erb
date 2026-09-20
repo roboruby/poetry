@@ -1,0 +1,24 @@
+<%# A scrollable body keeps long content boxed inside the card; the
+    footer carries the two decisions. %>
+<%= poetry_card(class: "w-full max-w-md") do |card| %>
+  <% card.with_title { "Terms of service" } %>
+  <% card.with_description { "Review the agreement before you continue." } %>
+
+  <div class="h-48 space-y-3 overflow-y-auto pr-2 text-sm text-muted-foreground">
+    <p>By creating an account you agree to keep your login details private and
+      to use the service only for lawful purposes.</p>
+    <p>Content you upload stays yours. You grant us permission to store and
+      process it solely to operate the features you have turned on.</p>
+    <p>We may update these terms as the product changes. Continued use after an
+      update means you accept the revised version.</p>
+    <p>You can close your account at any time. Exports remain available for
+      thirty days after closure, after which stored data is removed.</p>
+  </div>
+
+  <% card.with_footer do %>
+    <div class="flex w-full justify-end gap-2">
+      <%= poetry_button(variant: :outline) { "Decline" } %>
+      <%= poetry_button { "Accept" } %>
+    </div>
+  <% end %>
+<% end %>

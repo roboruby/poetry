@@ -1,0 +1,6 @@
+<%# The badge is a decorative presence dot — the status meaning lives in
+    label:, the avatar's accessible name. %>
+<%= poetry_avatar(size: :sm, label: "Ada Lovelace (online)") do |avatar| %>
+  <% avatar.with_badge { "" } %>
+  AL
+<% end %>

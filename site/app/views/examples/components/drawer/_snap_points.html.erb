@@ -1,0 +1,14 @@
+<%# snap_points: preset resting heights for a bottom sheet, ascending -
+    fractions of the full height or px/rem lengths. It opens at the
+    first point (the compact peek); drag up to snap fuller, drag below
+    the first point to dismiss. A flick steps one point in its
+    direction. %>
+<%= poetry_drawer(show_swipe_handle: true, snap_points: ["31rem", 1]) do |drawer| %>
+  <% drawer.with_trigger(variant: :outline) { "Open snap drawer" } %>
+  <% drawer.with_title { "Snap points" } %>
+  <% drawer.with_description { "Drag the drawer to snap between a compact peek and a near full-height view." } %>
+  <% drawer.with_footer do %>
+    <%= poetry_button(data: { action: "click->poetry--core--drawer#close" }) { "Close" } %>
+  <% end %>
+  <div class="h-80 w-full rounded-2xl bg-muted"></div>
+<% end %>

@@ -1,0 +1,83 @@
+---
+name: poetry-component
+description: >-
+  Author and audit poetry components: the canonical class anatomy
+  (section order every component follows), the documentation standard
+  (YARD + projected strings), and the audit checklist. Load this
+  WHENEVER creating a new component that inherits from
+  Poetry::Core::Component, extending an existing component family, or
+  reviewing a component file for structure and documentation - the
+  anatomy is the contract that keeps every component readable the same
+  way.
+---
+
+# poetry-component - the authoring layer
+
+poetry's catalog guarantees valid, accessible components; this skill
+covers building one of your own. A component that follows the canonical
+anatomy is legible to every reader - human, agent, and the machine
+surfaces (registry, contract checks, docs) that project from its
+declarations. Load this before writing the class, not after it fails
+review.
+
+## Verbs
+
+- **create** (`references/anatomy.md`) - author a new component: the
+  section order, what each DSL declares, and a complete skeleton to
+  start from.
+- **document** (`references/documentation.md`) - the documentation
+  standard: the class docblock, YARD on public methods, and how to write
+  the projected strings (part descriptions, agent rules) that machines
+  consume verbatim.
+- **audit** (`references/checklist.md`) - review an existing component
+  against the anatomy and the documentation standard; the checklist is
+  ordered so violations surface in file order.
+
+## The one rule that spans all three
+
+Declaration order inside a section is meaningful: options, parts, and
+slots project into the registry and the agent surface in declaration
+order. Move whole sections to match the anatomy; never reorder
+declarations within a section unless you intend to change the projected
+surface.
+
+## Boundaries
+
+- A new component inherits from `Poetry::Core::Component` (or a
+  published family's base) and lives in its own `app/components`
+  namespace. Never copy a poetry component's source into the app to
+  modify it - subclass it, or compose it in a template.
+- An app or engine component names its view helper with `helper :name`
+  (a distinctive name; keywords + content block, like every poetry
+  helper). That one declaration makes it first-class: the helper is
+  defined at boot and on reload, `poetry:check` lints it under that name
+  with its own contract, llms.txt and the generated skill list it. Run
+  `bin/rails poetry:registry` and commit the file so the MCP server (which
+  never boots the app) describes and checks it too; `poetry:verify` fails
+  when that file is stale.
+- A controller of the app's own that a component wires joins the
+  controllers manifest with `bin/rails poetry:stimulus:manifest` (commit
+  the file). Then `use_stimulus` validates it by Symbol at class load,
+  `poetry:check` validates its wiring in templates, and the registry
+  carries its API. Write the controller with literal statics (`static
+  targets = [...]`, `static values = {...}`, `static events = [...]` for
+  the events it dispatches); a parent that is another app controller or a
+  poetry controller is merged, a library parent (or a computed static) is
+  skipped and named - add that entry by hand in the same file; regeneration
+  keeps it. Generate the manifest before declaring the controller by
+  Symbol; a controller that dispatches events without `static events`
+  leaves its events unvalidated, never wrong.
+- A dictionary of your own uses names of your own: prefix its `cn-*`
+  classes with the kit (`cn-acme-pill`), never a name a Poetry dictionary
+  emits, so the override audit reads your rules as yours and a future
+  theme name cannot collide with them. Reusing a theme class as a base is
+  fine; writing CSS against it is an override and must be declared.
+- Inner classes that exist only to serve a family (item builders,
+  internal wrappers) declare `internal_component!` so the registry and
+  every surface derived from it skip them.
+- Behavior belongs to Stimulus controllers declared through
+  `use_stimulus`; a component never ships inline `<script>`.
+- Agent tools: declare what an in-page agent may do to a rendered instance
+  with `tool :name, description:, params:, executes:, mutating:` beside
+  `use_stimulus` (`executes:` names a declared Stimulus action - validated at
+  class load); a call opts in with `webmcp: "name"`. See `references/anatomy.md`.

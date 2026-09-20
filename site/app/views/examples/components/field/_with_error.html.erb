@@ -1,0 +1,11 @@
+<%# error: flips the field invalid - control_attributes carries
+    aria-invalid plus aria-describedby pointing at error then hint, and
+    required: arrives as aria-required (never the native attribute). %>
+<div class="w-80">
+  <%= poetry_field(id: "field-work-email", label_text: "Work email",
+                   hint: "We never share it.", error: "can't be blank",
+                   required: true) do |field| %>
+    <%= poetry_input(type: "email", name: "work_email",
+                     **field.control_attributes.transform_keys(&:to_sym)) %>
+  <% end %>
+</div>

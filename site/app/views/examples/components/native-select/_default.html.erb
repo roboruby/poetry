@@ -1,0 +1,8 @@
+<%# The labelled pair - a bare select has no accessible name. The fast
+    path is options: [[label, value], ...] pairs plus selected:. %>
+<div class="grid w-80 gap-2">
+  <%= poetry_label(for_id: "native-select-sort") { "Sort by" } %>
+  <%= poetry_native_select(name: "sort", id: "native-select-sort",
+                           options: [["Newest first", "newest"], ["Oldest first", "oldest"], ["Title", "title"]],
+                           selected: "newest") %>
+</div>

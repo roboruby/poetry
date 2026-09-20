@@ -1,0 +1,13 @@
+<%# Choice card: a bordered container turns the field into a self-contained
+    settings row. The horizontal Field keeps the switch left with its label
+    and hint stacked right, and the whole card shares one border - clicking
+    the label still flips the switch via for=. %>
+<div class="w-full max-w-md rounded-lg border bg-card p-4 shadow-sm">
+  <%= poetry_field(id: "switch-card-digest",
+                   label_text: "Weekly digest",
+                   hint: "A Monday summary of everything that changed across your workspace.",
+                   orientation: :horizontal) do |field| %>
+    <%= poetry_switch(name: "weekly_digest", checked: true,
+                      **field.control_attributes.transform_keys(&:to_sym)) %>
+  <% end %>
+</div>

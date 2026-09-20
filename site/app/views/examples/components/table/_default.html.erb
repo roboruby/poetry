@@ -1,0 +1,33 @@
+<% invoices = [
+     { number: "INV001", status: "Paid", amount: "$250.00", selected: true },
+     { number: "INV002", status: "Pending", amount: "$150.00" },
+     { number: "INV003", status: "Unpaid", amount: "$350.00" },
+     { number: "INV004", status: "Paid", amount: "$500.00" }
+   ] %>
+<div class="w-full max-w-2xl">
+  <%= poetry_table do %>
+    <%= poetry_table_caption { "A list of your recent invoices." } %>
+    <%= poetry_table_header do %>
+      <%= poetry_table_row do %>
+        <%= poetry_table_head { "Invoice" } %>
+        <%= poetry_table_head { "Status" } %>
+        <%= poetry_table_head(class: "text-right") { "Amount" } %>
+      <% end %>
+    <% end %>
+    <%= poetry_table_body do %>
+      <% invoices.each do |invoice| %>
+        <%= poetry_table_row(data: invoice[:selected] ? { selected: "" } : {}) do %>
+          <%= poetry_table_cell(class: "font-medium") { invoice[:number] } %>
+          <%= poetry_table_cell { invoice[:status] } %>
+          <%= poetry_table_cell(class: "text-right") { invoice[:amount] } %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <%= poetry_table_footer do %>
+      <%= poetry_table_row do %>
+        <%= poetry_table_cell(colspan: 2) { "Total" } %>
+        <%= poetry_table_cell(class: "text-right") { "$1,250.00" } %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

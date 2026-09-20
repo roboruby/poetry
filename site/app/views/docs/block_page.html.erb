@@ -1,0 +1,96 @@
+<% content_for :title, @entry.title %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Blocks") %>
+    <% crumb.with_item(@entry.title) %>
+  <% end %>
+<% end %>
+
+<div class="flex flex-col gap-10">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-3xl font-semibold tracking-tight"><%= @entry.title %></h1>
+    <p class="max-w-2xl text-muted-foreground"><%= @entry.description %></p>
+  </header>
+
+  <section class="flex flex-col gap-3">
+    <h2 class="text-lg font-medium" id="installation">Installation</h2>
+    <p class="max-w-2xl text-muted-foreground">
+      Blocks are copied source, not library calls — the generator writes this
+      exact template into <code class="text-foreground">app/views/blocks/</code>
+      and from there it's yours to edit. The preview below renders the same
+      source the copy-in produces.
+    </p>
+    <%= poetry_code_block(code: "bin/rails g poetry:block #{@entry.slug}", language: "plaintext", label: "Copy-in") %>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2 class="text-lg font-medium" id="default">Default</h2>
+    <div class="relative">
+    <%= link_to standalone_block_path(slug: @entry.slug),
+                target: "_blank", rel: "noopener",
+                class: "absolute top-1.5 right-0 z-10 inline-flex items-center text-muted-foreground transition-colors hover:text-foreground",
+                title: "Open standalone" do %>
+      <%= poetry_icon(name: :"external-link", class: "size-4") %>
+      <span class="sr-only">Open <%= @entry.title %> standalone</span>
+    <% end %>
+    <%= poetry_tabs(label: "#{@entry.title} block", variant: :line) do |tabs| %>
+      <% tabs.with_tab("Preview", value: "preview") do %>
+        <%# app-shell composes the sidebar, whose container is fixed h-svh -
+            contain-content re-roots it and the overrides keep it inside
+            the preview box (the sidebar examples' containment recipe). %>
+        <% preview_classes = case @entry.slug
+           when "app-shell"
+             "h-[36rem] overflow-hidden rounded-lg border contain-content " \
+             "[&_[data-slot=sidebar-container]]:h-full [&_[data-slot=sidebar-container]]:absolute"
+           when "top-nav"
+             # Room for the nav dropdowns: the popper caps popup height at
+             # the clipping box (--available-height), so a bar-hugging
+             # preview truncates them after one row.
+             "min-h-[26rem] max-h-[36rem] overflow-auto rounded-lg border p-8"
+           else
+             "max-h-[36rem] overflow-auto rounded-lg border p-8"
+           end %>
+        <%# The stepper is server-driven (?step=N links): a Turbo Frame
+            scopes those navigations to the preview, so clicking Continue
+            re-renders the block in place instead of reloading the page
+            to the top - the same embedding a host app would use. %>
+        <% if @entry.slug == "stepper" %>
+          <%= turbo_frame_tag "stepper-preview" do %>
+            <div class="<%= preview_classes %>">
+              <%= render inline: @source %>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="<%= preview_classes %>">
+            <%= render inline: @source %>
+          </div>
+        <% end %>
+      <% end %>
+      <% tabs.with_tab("Code", value: "code") do %>
+        <%= highlight_erb(@source) %>
+      <% end %>
+    <% end %>
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2 class="text-lg font-medium" id="styling">Styling</h2>
+    <p class="max-w-2xl text-muted-foreground">
+      A block has no styling surface of its own — every element in the copied
+      template is a Poetry component carrying its usual
+      <code class="text-foreground">data-slot</code> parts, and because you own
+      the source, utility classes can be edited directly in place. Per-part
+      contracts live on the composed components' pages:
+    </p>
+    <ul class="flex flex-wrap gap-2 text-sm">
+      <% @components.each do |name| %>
+        <li>
+          <%= poetry_link(href: "/components/#{name.tr("_", "-")}") do %>
+            <code>poetry_<%= name %></code>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+</div>

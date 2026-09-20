@@ -1,0 +1,11 @@
+<div class="flex flex-wrap items-center gap-2">
+  <%= poetry_toggle(size: :sm, variant: :outline, label: "Italic") do %>
+    <%= poetry_icon(name: :italic) %>
+  <% end %>
+  <%= poetry_toggle(variant: :outline, label: "Italic") do %>
+    <%= poetry_icon(name: :italic) %>
+  <% end %>
+  <%= poetry_toggle(size: :lg, variant: :outline, label: "Italic") do %>
+    <%= poetry_icon(name: :italic) %>
+  <% end %>
+</div>

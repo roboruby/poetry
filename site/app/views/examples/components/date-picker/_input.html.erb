@@ -1,0 +1,9 @@
+<%# variant: :input - a text field with a calendar button. Typing a
+    parseable date ("June 20, 2026") re-selects the calendar; picking
+    writes the formatted date back. ArrowDown opens the calendar. The
+    submitted value stays ISO on the hidden field either way. %>
+<div class="w-64">
+  <%= poetry_date_picker(name: "subscription[on]", variant: :input,
+                         label: "Subscription date", placeholder: "June 1, 2026",
+                         value: "2026-06-01") %>
+</div>

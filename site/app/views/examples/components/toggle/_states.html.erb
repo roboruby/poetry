@@ -1,0 +1,13 @@
+<%# aria-pressed carries the state - the label stays "Bold" whether
+    pressed or not. %>
+<div class="flex flex-wrap items-center gap-2">
+  <%= poetry_toggle(pressed: true, label: "Bold") do %>
+    <%= poetry_icon(name: :bold) %>
+  <% end %>
+  <%= poetry_toggle(disabled: true, variant: :outline, label: "Underline") do %>
+    <%= poetry_icon(name: :underline) %>
+  <% end %>
+  <%= poetry_toggle(disabled: true, pressed: true, label: "Bold") do %>
+    <%= poetry_icon(name: :bold) %>
+  <% end %>
+</div>

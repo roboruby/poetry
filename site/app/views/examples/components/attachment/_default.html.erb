@@ -1,0 +1,5 @@
+<%= poetry_attachment do |attachment| %>
+  <% attachment.with_media { poetry_icon(name: :file) } %>
+  <% attachment.with_title { "quarterly-report.pdf" } %>
+  <% attachment.with_description { "1.2 MB" } %>
+<% end %>

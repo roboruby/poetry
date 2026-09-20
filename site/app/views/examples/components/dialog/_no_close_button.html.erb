@@ -1,0 +1,13 @@
+<%# show_close_button: false drops the corner X - the forced-choice
+    recipe. The footer actions do the closing; Esc and (while
+    dismissible) a backdrop click still work. %>
+<%= poetry_dialog(show_close_button: false) do |dialog| %>
+  <% dialog.with_trigger(variant: :outline) { "Finish setup" } %>
+  <% dialog.with_title { "One last step" } %>
+  <% dialog.with_description { "Pick a workspace name to finish. No corner X on this one - choose below, or press Esc." } %>
+  <% dialog.with_footer do %>
+    <%= poetry_button(variant: :outline) { "Skip for now" } %>
+    <%= poetry_button { "Save and continue" } %>
+  <% end %>
+  <%= poetry_input(name: "workspace", placeholder: "acme-inc", "aria-label": "Workspace name") %>
+<% end %>

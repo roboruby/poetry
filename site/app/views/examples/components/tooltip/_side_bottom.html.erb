@@ -1,0 +1,5 @@
+<%# Radix Tooltip defaults side: :top; the arrow follows the resolved side. %>
+<%= poetry_tooltip(side: :bottom, align: :start) do |tooltip| %>
+  <% tooltip.with_trigger(variant: :outline) { "Below" } %>
+  side: :bottom, align: :start
+<% end %>

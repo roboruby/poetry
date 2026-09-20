@@ -1,0 +1,17 @@
+<% data = [
+     { month: "January", desktop: 186 },
+     { month: "February", desktop: 305 },
+     { month: "March", desktop: 237 },
+     { month: "April", desktop: 73 },
+     { month: "May", desktop: 209 },
+     { month: "June", desktop: 214 }
+   ]
+   config = { desktop: { label: "Desktop", color: "var(--chart-1)" } } %>
+<div class="w-full max-w-xl">
+  <%= poetry_line_chart(data: data, config: config, id: "line-label",
+                        margin: { top: 20, left: 12, right: 12 }) do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] }) %>
+    <% chart.with_line(data_key: :desktop, dots: true, labels: true) %>
+  <% end %>
+</div>

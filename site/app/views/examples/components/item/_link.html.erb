@@ -1,0 +1,8 @@
+<%# tag: :a with href makes the whole row a link - never wrap an Item in a bare <a>. %>
+<%= poetry_item(tag: :a, href: "/settings/billing", variant: :outline, class: "w-full max-w-md") do |item| %>
+  <% item.with_title { "Billing settings" } %>
+  <% item.with_description { "Update your card and review past invoices." } %>
+  <% item.with_actions do %>
+    <%= poetry_icon(name: :"chevron-right") %>
+  <% end %>
+<% end %>

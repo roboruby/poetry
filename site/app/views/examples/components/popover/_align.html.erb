@@ -1,0 +1,13 @@
+<%# pb reserves the opened panels' area inside the preview card - the
+    fixed-position layer adds no layout height. %>
+<div class="pb-36">
+  <div class="flex flex-wrap gap-2">
+    <% %i[start center end].each do |alignment| %>
+      <%= poetry_popover(align: alignment, content_class: "w-64") do |popover| %>
+        <% popover.with_trigger(variant: :outline) { "align: #{alignment}" } %>
+        <% popover.with_title { "Alignment" } %>
+        <% popover.with_description { "The panel aligns to the #{alignment} edge of its trigger." } %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

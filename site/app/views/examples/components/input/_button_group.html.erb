@@ -1,0 +1,13 @@
+<%# Upstream input-button-group: the input and its action FUSED into one
+    control - ButtonGroup collapses the borders between neighbors - the
+    attached counterpart to the Inline example's separate row. The Field
+    wires the label to the input inside the group. %>
+<div class="w-80">
+  <%= poetry_field(id: "input-button-group", label_text: "Search") do |field| %>
+    <%= poetry_button_group do %>
+      <%= poetry_input(name: "query", placeholder: "Type to search...",
+                       **field.control_attributes.transform_keys(&:to_sym)) %>
+      <%= poetry_button(variant: :outline) { "Search" } %>
+    <% end %>
+  <% end %>
+</div>

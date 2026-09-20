@@ -1,0 +1,23 @@
+<%# A long grouped list: the listbox caps its height and shows
+    per-direction scroll buttons at the extremes. %>
+<%= poetry_select(placeholder: "Select a timezone", "aria-label": "Timezone") do |select| %>
+  <% select.with_group(label: "North America") do |group| %>
+    <% group.with_item(value: "est") { "Eastern Standard Time (EST)" } %>
+    <% group.with_item(value: "cst") { "Central Standard Time (CST)" } %>
+    <% group.with_item(value: "mst") { "Mountain Standard Time (MST)" } %>
+    <% group.with_item(value: "pst") { "Pacific Standard Time (PST)" } %>
+  <% end %>
+  <% select.with_separator %>
+  <% select.with_group(label: "Europe & Africa") do |group| %>
+    <% group.with_item(value: "gmt") { "Greenwich Mean Time (GMT)" } %>
+    <% group.with_item(value: "cet") { "Central European Time (CET)" } %>
+    <% group.with_item(value: "eet") { "Eastern European Time (EET)" } %>
+    <% group.with_item(value: "west") { "Western European Summer Time (WEST)" } %>
+  <% end %>
+  <% select.with_separator %>
+  <% select.with_group(label: "Asia") do |group| %>
+    <% group.with_item(value: "ist") { "India Standard Time (IST)" } %>
+    <% group.with_item(value: "cst_china") { "China Standard Time (CST)" } %>
+    <% group.with_item(value: "jst") { "Japan Standard Time (JST)" } %>
+  <% end %>
+<% end %>

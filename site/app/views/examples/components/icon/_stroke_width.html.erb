@@ -1,0 +1,9 @@
+<%# Lucide glyphs are drawn at stroke-width="2"; a stroke-* utility beats
+    the presentation attribute and re-weights the line. The weight holds
+    its ratio at any size (the viewBox scales stroke with the glyph). %>
+<div class="flex flex-wrap items-center gap-4">
+  <%= poetry_icon(name: :feather, class: "size-8 stroke-1") %>
+  <%= poetry_icon(name: :feather, class: "size-8 stroke-[1.5px]") %>
+  <%= poetry_icon(name: :feather, class: "size-8 stroke-2") %>
+  <%= poetry_icon(name: :feather, class: "size-8 stroke-3") %>
+</div>

@@ -1,0 +1,17 @@
+<%= poetry_drawer(show_swipe_handle: true) do |drawer| %>
+  <% drawer.with_trigger(variant: :outline) { "Manage subscription" } %>
+  <% drawer.with_title { "Manage subscription" } %>
+  <% drawer.with_description { "Review your plan, or open billing for the details." } %>
+  <% drawer.with_footer do %>
+    <%= poetry_button { "Save changes" } %>
+  <% end %>
+  <%= poetry_drawer(show_swipe_handle: true) do |billing| %>
+    <% billing.with_trigger(variant: :ghost) { "View billing history" } %>
+    <% billing.with_title { "Billing history" } %>
+    <% billing.with_description { "Your most recent invoices." } %>
+    <% billing.with_footer do %>
+      <%= poetry_button(variant: :outline) { "Back" } %>
+    <% end %>
+    Every invoice is available to download for your records.
+  <% end %>
+<% end %>

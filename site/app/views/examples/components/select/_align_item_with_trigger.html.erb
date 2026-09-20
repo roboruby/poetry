@@ -1,0 +1,25 @@
+<%# align_item_with_trigger: the popup opens OVER the trigger with the
+    selected item's text sitting on the trigger's text (native-select
+    feel) and the list scrolled to match; it falls back to plain popper
+    positioning on touch, near viewport edges, or when squeezed. The
+    switch drives the option live through a small docs-only harness -
+    in an app you render align_item_with_trigger: true and are done. %>
+<div class="flex w-full max-w-xs flex-col gap-6" data-controller="demo-select-align"
+     data-action="change->demo-select-align#toggle">
+  <div class="flex items-center gap-3">
+    <div class="flex flex-1 flex-col gap-0.5">
+      <%= poetry_label(for_id: "align-item") { "Align item" } %>
+      <p class="text-muted-foreground text-sm">Toggle to align the item with the trigger.</p>
+    </div>
+    <%= poetry_switch(id: "align-item", name: "align_item", checked: true) %>
+  </div>
+  <%= poetry_select(value: "banana", "aria-label": "Fruit", align_item_with_trigger: true,
+                    trigger_class: "w-full",
+                    "data-demo-select-align-target": "select") do |select| %>
+    <% select.with_item(value: "apple") { "Apple" } %>
+    <% select.with_item(value: "banana") { "Banana" } %>
+    <% select.with_item(value: "blueberry") { "Blueberry" } %>
+    <% select.with_item(value: "grapes") { "Grapes" } %>
+    <% select.with_item(value: "pineapple") { "Pineapple" } %>
+  <% end %>
+</div>

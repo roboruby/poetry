@@ -1,0 +1,9 @@
+<%# A single avatar as the media — the default (transparent) media variant
+    lets the avatar stand on its own instead of the rounded icon tile. Use
+    it to put a person at the center of the empty state. %>
+<%= poetry_empty do |empty| %>
+  <% empty.with_media { poetry_avatar(label: "Grace Hopper", size: :lg) { "GH" } } %>
+  <% empty.with_title { "No messages with Grace yet" } %>
+  <% empty.with_description { "Say hello to start the conversation." } %>
+  <%= poetry_button(size: :sm) { "Send a message" } %>
+<% end %>

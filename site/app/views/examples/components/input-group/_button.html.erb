@@ -1,0 +1,43 @@
+<%# Tiny in-group actions (upstream Button): a copy affordance, a pill
+    group whose leading addon opens a Popover, and a labeled search
+    action. The group's --radius var drives the pill; the popover trigger
+    rides Button through the with_trigger slot. %>
+<div class="grid w-full max-w-sm gap-6">
+  <%= poetry_input_group do %>
+    <%= poetry_input_group_input(name: "share_url", value: "https://poetry.example/share",
+                                 readonly: true, "aria-label": "Share URL") %>
+    <%= poetry_input_group_addon(align: :"inline-end") do %>
+      <%= poetry_input_group_button(size: :"icon-xs", label: "Copy") do %>
+        <%= poetry_icon(name: :copy) %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <%= poetry_input_group(class: "[--radius:9999px]") do %>
+    <%= poetry_input_group_addon do %>
+      <%= poetry_popover(align: :start) do |popover| %>
+        <% popover.with_trigger(variant: :secondary, size: :"icon-xs", label: "Connection info",
+                                class: "rounded-full") do %>
+          <%= poetry_icon(name: :info) %>
+        <% end %>
+        <div class="flex flex-col gap-1 text-sm">
+          <p class="font-medium">Your connection is not secure.</p>
+          <p>You should not enter any sensitive information on this site.</p>
+        </div>
+      <% end %>
+      <%= poetry_input_group_text { "https://" } %>
+    <% end %>
+    <%= poetry_input_group_input(name: "secure_url", "aria-label": "URL") %>
+    <%= poetry_input_group_addon(align: :"inline-end") do %>
+      <%= poetry_input_group_button(size: :"icon-xs", label: "Favorite") do %>
+        <%= poetry_icon(name: :star) %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <%= poetry_input_group do %>
+    <%= poetry_input_group_input(name: "search", placeholder: "Type to search...",
+                                 "aria-label": "Search") %>
+    <%= poetry_input_group_addon(align: :"inline-end") do %>
+      <%= poetry_input_group_button(variant: :secondary) { "Search" } %>
+    <% end %>
+  <% end %>
+</div>

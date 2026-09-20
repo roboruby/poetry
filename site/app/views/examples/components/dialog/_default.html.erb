@@ -1,0 +1,9 @@
+<%= poetry_dialog do |dialog| %>
+  <% dialog.with_trigger(variant: :outline) { "Edit profile" } %>
+  <% dialog.with_title { "Edit profile" } %>
+  <% dialog.with_description { "Make changes and save when done." } %>
+  <% dialog.with_footer do %>
+    <%= poetry_button { "Save changes" } %>
+  <% end %>
+  Profile form goes here.
+<% end %>

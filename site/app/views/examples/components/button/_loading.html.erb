@@ -1,0 +1,8 @@
+<%# loading: swaps the leading icon for the spinner and sets aria-busy +
+    disabled with zero JS - never a hand-rolled spinner or a manual
+    disabled. The content block stays the resting label. %>
+<div class="flex flex-wrap items-center gap-2">
+  <%= poetry_button(loading: true) { "Saving changes" } %>
+  <%= poetry_button(variant: :secondary, loading: true) { "Uploading" } %>
+  <%= poetry_button(variant: :outline, loading: true) { "Please wait" } %>
+</div>

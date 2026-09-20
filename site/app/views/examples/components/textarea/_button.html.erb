@@ -1,0 +1,7 @@
+<%# Upstream's textarea-button: a bare textarea and its action in one
+    grid - the button stretches to the full field width (grid children
+    fill the column; no justify-end wrapper). %>
+<div class="grid w-full max-w-sm gap-2">
+  <%= poetry_textarea(name: "message", placeholder: "Type your message here.") %>
+  <%= poetry_button { "Send message" } %>
+</div>

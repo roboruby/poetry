@@ -1,0 +1,11 @@
+<%= poetry_card do |card| %>
+  <% card.with_title { "Renewal forecast" } %>
+  <% card.with_description { "Quarter to date, updated hourly." } %>
+  <% card.with_action do %>
+    <%= poetry_badge(variant: :secondary) { "Live" } %>
+  <% end %>
+  <%= poetry_stat(label: "Accounts renewing", delta: "+4", trend: :up) { "92" } %>
+  <% card.with_footer do %>
+    <%= poetry_button(size: :sm) { "Open the report" } %>
+  <% end %>
+<% end %>

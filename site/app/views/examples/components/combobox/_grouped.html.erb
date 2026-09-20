@@ -1,0 +1,12 @@
+<%= poetry_combobox(name: "stack", placeholder: "Select a tool...",
+                    search_placeholder: "Search tools...", "aria-label": "Tool") do |combobox| %>
+  <% combobox.with_group(heading: "Frameworks") do |group| %>
+    <% group.with_item(value: "rails") { "Ruby on Rails" } %>
+    <% group.with_item(value: "hanami") { "Hanami" } %>
+  <% end %>
+  <% combobox.with_separator %>
+  <% combobox.with_group(heading: "Test runners") do |group| %>
+    <% group.with_item(value: "minitest") { "Minitest" } %>
+    <% group.with_item(value: "rspec") { "RSpec" } %>
+  <% end %>
+<% end %>

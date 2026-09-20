@@ -1,0 +1,9 @@
+<%# The label/control quartet: the field owns the ids and yields
+    control_attributes - wire the control with them, never hand-write
+    aria wiring. %>
+<div class="w-80">
+  <%= poetry_field(id: "field-email", label_text: "Email") do |field| %>
+    <%= poetry_input(type: "email", name: "email",
+                     **field.control_attributes.transform_keys(&:to_sym)) %>
+  <% end %>
+</div>

@@ -1,0 +1,16 @@
+<%# Bring your own control (upstream Custom Input): any element stamped
+    data-slot=input-group-control joins the group - the focus ring and
+    invalid chrome key on the slot, not the tag. Upstream reaches for a
+    React autosize textarea; CSS field-sizing grows this one natively,
+    zero JS. %>
+<div class="w-full max-w-sm">
+  <%= poetry_input_group do %>
+    <%= tag.textarea nil, name: "message", placeholder: "Autoresize textarea...",
+                     "aria-label": "Message", data: { slot: "input-group-control" },
+                     class: "flex field-sizing-content min-h-16 w-full resize-none rounded-md " \
+                            "bg-transparent px-3 py-2.5 text-base outline-none md:text-sm" %>
+    <%= poetry_input_group_addon(align: :"block-end") do %>
+      <%= poetry_input_group_button(size: :sm, variant: :default, class: "ml-auto") { "Submit" } %>
+    <% end %>
+  <% end %>
+</div>

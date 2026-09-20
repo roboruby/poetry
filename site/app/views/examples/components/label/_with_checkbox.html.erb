@@ -1,0 +1,5 @@
+<%# Inline pair: clicking the label toggles the checkbox via for_id. %>
+<div class="flex items-center gap-3">
+  <%= poetry_checkbox(name: "terms", id: "label-terms") %>
+  <%= poetry_label(for_id: "label-terms") { "Accept terms and conditions" } %>
+</div>

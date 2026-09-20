@@ -1,0 +1,20 @@
+<% data = [
+     { month: "January", desktop: 186, mobile: 80 },
+     { month: "February", desktop: 305, mobile: 200 },
+     { month: "March", desktop: 237, mobile: 120 },
+     { month: "April", desktop: 73, mobile: 190 },
+     { month: "May", desktop: 209, mobile: 130 },
+     { month: "June", desktop: 214, mobile: 140 }
+   ]
+   config = { desktop: { label: "Desktop", color: "var(--chart-1)" },
+              mobile: { label: "Mobile", color: "var(--chart-2)" } } %>
+<div class="w-full max-w-xl">
+  <%= poetry_area_chart(data: data, config: config, id: "area-default",
+                        margin: { left: 12, right: 12 }) do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] }) %>
+    <% chart.with_area(data_key: :mobile, stack: :a) %>
+    <% chart.with_area(data_key: :desktop, stack: :a) %>
+    <% chart.with_tooltip(indicator: :dot) %>
+  <% end %>
+</div>

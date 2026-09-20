@@ -1,0 +1,6 @@
+<%# Server-pinned open: the content renders visible with data-open and the
+    trigger carries aria-describedby from the first paint. %>
+<%= poetry_tooltip(open: true) do |tooltip| %>
+  <% tooltip.with_trigger(variant: :outline) { "Pinned" } %>
+  Server-rendered open
+<% end %>

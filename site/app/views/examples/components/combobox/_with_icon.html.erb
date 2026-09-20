@@ -1,0 +1,8 @@
+<%= poetry_combobox(name: "project", width: "w-64", placeholder: "Select a project...",
+                    search_placeholder: "Search projects...", "aria-label": "Project") do |combobox| %>
+  <% combobox.with_trigger { poetry_icon(name: :folder, class: "size-4 text-muted-foreground") } %>
+  <% combobox.with_item(value: "atlas") { "Atlas" } %>
+  <% combobox.with_item(value: "beacon") { "Beacon" } %>
+  <% combobox.with_item(value: "cascade") { "Cascade" } %>
+  <% combobox.with_item(value: "delta") { "Delta" } %>
+<% end %>

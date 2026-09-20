@@ -1,0 +1,44 @@
+<%# A choice-card recipe: caller classes turn each item row (a direct-child
+    div of the radiogroup) into a bordered, selectable card, and
+    has-[[aria-checked=true]] lights up the chosen card by reading the
+    button's own state. Same real API as the horizontal layout - only the
+    class: passthrough changes; the keyboard and hidden-radio form wiring
+    are untouched. %>
+<%= poetry_radio_group(
+      name: "workspace_plan", value: "team", label: "Workspace plan",
+      class: "max-w-md [&>div]:items-start [&>div]:rounded-lg [&>div]:border [&>div]:p-4 " \
+             "[&>div]:cursor-pointer [&>div]:transition-colors " \
+             "[&>div]:has-[[aria-checked=true]]:border-primary " \
+             "[&>div]:has-[[aria-checked=true]]:bg-primary/5"
+    ) do |group| %>
+  <% group.with_item(
+       value: "solo", class: "mt-0.5",
+       label: tag.span(class: "grid gap-1 leading-snug") {
+         safe_join([
+           tag.span("Solo", class: "text-sm font-medium"),
+           tag.span("$0 / month. One editor and unlimited public projects.",
+                    class: "text-sm text-muted-foreground")
+         ])
+       }
+     ) %>
+  <% group.with_item(
+       value: "team", class: "mt-0.5",
+       label: tag.span(class: "grid gap-1 leading-snug") {
+         safe_join([
+           tag.span("Team", class: "text-sm font-medium"),
+           tag.span("$12 / editor / month. Shared workspaces and private projects.",
+                    class: "text-sm text-muted-foreground")
+         ])
+       }
+     ) %>
+  <% group.with_item(
+       value: "enterprise", class: "mt-0.5",
+       label: tag.span(class: "grid gap-1 leading-snug") {
+         safe_join([
+           tag.span("Enterprise", class: "text-sm font-medium"),
+           tag.span("Custom pricing with SSO, audit logs, and a dedicated contact.",
+                    class: "text-sm text-muted-foreground")
+         ])
+       }
+     ) %>
+<% end %>

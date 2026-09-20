@@ -1,0 +1,10 @@
+<%# A field grouping: the label names the control via for_id, and a muted
+    line of help text sits beneath it. The description is caption text, not
+    a second label - only the Label carries for_id. %>
+<div class="grid w-80 gap-2">
+  <%= poetry_label(for_id: "label-workspace-url") { "Workspace URL" } %>
+  <%= poetry_input(name: "workspace_url", id: "label-workspace-url", placeholder: "acme") %>
+  <p class="text-sm text-muted-foreground">
+    This is the public address teammates use to reach your workspace.
+  </p>
+</div>

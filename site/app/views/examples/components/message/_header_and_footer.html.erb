@@ -1,0 +1,14 @@
+<%# Upstream message-header-footer: the header names the sender above
+    the bubble; the footer carries delivery state below it. %>
+<div class="flex w-full max-w-md flex-col gap-8">
+  <%= poetry_message do |message| %>
+    <% message.with_header { "Olivia" } %>
+    <%= poetry_bubble(variant: :muted) { "I already checked the logs." } %>
+  <% end %>
+  <%= poetry_message(align: :end) do |message| %>
+    <% message.with_footer do %>
+      <div>Read <span class="font-normal">Yesterday</span></div>
+    <% end %>
+    <%= poetry_bubble { "Send the report to the team. Ping @shadcn if you need help." } %>
+  <% end %>
+</div>

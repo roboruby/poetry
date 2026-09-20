@@ -1,0 +1,7 @@
+<%= poetry_alert_dialog do |dialog| %>
+  <% dialog.with_trigger(variant: :destructive) { "Delete account" } %>
+  <% dialog.with_title { "Are you absolutely sure?" } %>
+  <% dialog.with_description { "This permanently deletes your account and all of its data." } %>
+  <% dialog.with_cancel { "Cancel" } %>
+  <% dialog.with_action(variant: :destructive) { "Delete account" } %>
+<% end %>

@@ -1,0 +1,29 @@
+<%# Two charts, one sync group: hovering or keyboard-walking either shows
+    BOTH tooltips at the same index - recharts' syncId semantics over
+    loop-guarded window events. Works fully static (no live: needed). %>
+<% data = [
+     { month: "January", desktop: 186, mobile: 80 },
+     { month: "February", desktop: 305, mobile: 200 },
+     { month: "March", desktop: 237, mobile: 120 },
+     { month: "April", desktop: 73, mobile: 190 },
+     { month: "May", desktop: 209, mobile: 130 },
+     { month: "June", desktop: 214, mobile: 140 }
+   ]
+   config = { desktop: { label: "Desktop", color: "var(--chart-1)" },
+              mobile: { label: "Mobile", color: "var(--chart-2)" } } %>
+<div class="flex w-full max-w-xl flex-col gap-8">
+  <%= poetry_chart :area, data: data, id: "sync-a", sync: "demo", config: config,
+                   margin: { left: 12, right: 12 } do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis data_key: :month %>
+    <% chart.with_area data_key: :desktop %>
+    <% chart.with_tooltip %>
+  <% end %>
+
+  <%= poetry_chart :bar, data: data, id: "sync-b", sync: "demo", config: config do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis data_key: :month %>
+    <% chart.with_bar data_key: :mobile, radius: 4 %>
+    <% chart.with_tooltip %>
+  <% end %>
+</div>

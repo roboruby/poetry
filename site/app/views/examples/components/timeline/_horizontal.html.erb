@@ -1,0 +1,6 @@
+<%= poetry_timeline(orientation: :horizontal) do |timeline| %>
+  <% timeline.with_item(title: "Ordered", time: "Mar 15", completed: true) %>
+  <% timeline.with_item(title: "Packed", time: "Mar 15", completed: true) %>
+  <% timeline.with_item(title: "Shipped", time: "Mar 16") %>
+  <% timeline.with_item(title: "Delivered") %>
+<% end %>

@@ -1,0 +1,5 @@
+page-agent 1.12.2 (dist/iife/page-agent.demo.js from the npm tarball,
+registry.npmjs.org/page-agent/-/page-agent-1.12.2.tgz). Loaded ONLY by the
+/agent demo with ?autoInit=false (no auto demo agent, no demo LLM); we
+construct window.PageAgent with our own config. Update deliberately: fetch
+the new tarball, replace the file, bump this note and every reference.

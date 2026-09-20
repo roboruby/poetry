@@ -1,0 +1,10 @@
+<%# Upstream input-field: the Field quartet around an input - label,
+    control, and hint wired by control_attributes. The full family
+    (fieldsets, groups, choice cards) lives on the Field page. %>
+<div class="w-80">
+  <%= poetry_field(id: "input-field-username", label_text: "Username",
+                   hint: "Choose a unique username for your account.") do |field| %>
+    <%= poetry_input(name: "username", placeholder: "Enter your username",
+                     **field.control_attributes.transform_keys(&:to_sym)) %>
+  <% end %>
+</div>

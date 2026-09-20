@@ -1,0 +1,6 @@
+<%# A short 4-digit PIN. length can be any fixed size - here four cells
+    instead of six. No groups: means one contiguous cluster, so no
+    separator dash is rendered. Digits is the default pattern (numeric
+    keypad on mobile). %>
+<%= poetry_input_otp(name: "pin", length: 4,
+                     "aria-label": "PIN") %>

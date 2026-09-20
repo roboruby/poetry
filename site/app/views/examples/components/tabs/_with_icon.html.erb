@@ -1,0 +1,13 @@
+<%# The tab title accepts markup - wrap a poetry_icon and the label in an
+    inline-flex span so the trigger shows an icon before its text. %>
+<%= poetry_tabs(label: "Account settings", class: "w-full max-w-md") do |tabs| %>
+  <% tabs.with_tab(tag.span(class: "inline-flex items-center gap-1.5") { safe_join([poetry_icon(name: :user), "Profile"]) }, value: "profile") do %>
+    Update your name, avatar, and contact details.
+  <% end %>
+  <% tabs.with_tab(tag.span(class: "inline-flex items-center gap-1.5") { safe_join([poetry_icon(name: :"credit-card"), "Billing"]) }, value: "billing") do %>
+    Review your plan, invoices, and payment method.
+  <% end %>
+  <% tabs.with_tab(tag.span(class: "inline-flex items-center gap-1.5") { safe_join([poetry_icon(name: :inbox), "Notifications"]) }, value: "notifications") do %>
+    Choose which alerts land in your inbox.
+  <% end %>
+<% end %>

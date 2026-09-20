@@ -1,0 +1,27 @@
+<%= poetry_command_dialog(placeholder: "Search a timezone…") do |palette| %>
+  <% palette.with_trigger(variant: :outline) { "Pick a timezone" } %>
+  <% palette.with_empty { "No timezone matches that search." } %>
+  <% palette.with_group(heading: "Americas") do |group| %>
+    <% group.with_item(value: "los-angeles") { "Los Angeles (GMT-8)" } %>
+    <% group.with_item(value: "denver") { "Denver (GMT-7)" } %>
+    <% group.with_item(value: "chicago") { "Chicago (GMT-6)" } %>
+    <% group.with_item(value: "new-york") { "New York (GMT-5)" } %>
+    <% group.with_item(value: "sao-paulo") { "São Paulo (GMT-3)" } %>
+  <% end %>
+  <% palette.with_group(heading: "Europe & Africa") do |group| %>
+    <% group.with_item(value: "london") { "London (GMT+0)" } %>
+    <% group.with_item(value: "paris") { "Paris (GMT+1)" } %>
+    <% group.with_item(value: "cairo") { "Cairo (GMT+2)" } %>
+    <% group.with_item(value: "moscow") { "Moscow (GMT+3)" } %>
+    <% group.with_item(value: "nairobi") { "Nairobi (GMT+3)" } %>
+  <% end %>
+  <% palette.with_group(heading: "Asia & Pacific") do |group| %>
+    <% group.with_item(value: "dubai") { "Dubai (GMT+4)" } %>
+    <% group.with_item(value: "mumbai") { "Mumbai (GMT+5:30)" } %>
+    <% group.with_item(value: "bangkok") { "Bangkok (GMT+7)" } %>
+    <% group.with_item(value: "singapore") { "Singapore (GMT+8)" } %>
+    <% group.with_item(value: "tokyo") { "Tokyo (GMT+9)" } %>
+    <% group.with_item(value: "sydney") { "Sydney (GMT+11)" } %>
+    <% group.with_item(value: "auckland") { "Auckland (GMT+13)" } %>
+  <% end %>
+<% end %>

@@ -1,0 +1,217 @@
+<% content_for :title, "Editors" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Editors") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag; keep ERB delimiters out of them.
+  generate_source = <<~CODE
+    bin/rails g poetry:editor
+  CODE
+  mcp_source = <<~CODE
+    // .mcp.json (Claude Code) / .cursor/mcp.json (Cursor)
+    { "mcpServers": { "poetry": { "command": "bundle", "args": ["exec", "poetry-agent"] } } }
+
+    // .vscode/mcp.json (VS Code)
+    { "servers": { "poetry": { "type": "stdio", "command": "bundle", "args": ["exec", "poetry-agent"] } } }
+  CODE
+  zed_source = <<~CODE
+    // Zed settings.json
+    "context_servers": { "poetry": { "command": { "path": "bundle", "args": ["exec", "poetry-agent"] } } }
+  CODE
+  hook_source = <<~CODE
+    // .claude/settings.json (Claude Code) - written by poetry:editor
+    { "hooks": { "PostToolUse": [ { "matcher": "Edit|Write|MultiEdit",
+        "hooks": [ { "type": "command", "command": "bin/poetry-check-hook", "timeout": 120 } ] } ] } }
+
+    // .cursor/hooks.json (Cursor)
+    { "version": 1, "hooks": { "postToolUse": [ { "command": "bin/poetry-check-hook", "matcher": "Write" } ] } }
+  CODE
+herb_source = <<~CODE
+  # .herb.yml - written by poetry:editor (kept if you already have one)
+  version: 0.10.3
+  framework: actionview
+  linter:
+    enabled: true
+    rules:
+      erb-no-unused-expressions:    { enabled: false }   # marcoroth/herb#2426
+      actionview-no-silent-helper:  { enabled: false }   # marcoroth/herb#2340
+CODE
+herb_ci_source = <<~CODE
+  npx --yes @herb-tools/linter app          # lint (Node); bundle exec herb lint delegates to it
+  bundle exec herb actionview check .       # every render resolves, every partial is reachable
+CODE
+  import_source = <<~CODE
+    bin/rails poetry:figma:import[variables.json]   # a Figma variables export
+    bin/rails poetry:paper:import[paper-theme.css]  # a Paper "Copy theme"
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Editors</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      Poetry ships no bespoke extension. It plugs into any MCP-capable editor
+      through a one-line config, and one generator writes those configs plus
+      component snippets for you.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="generate">One generator</h2>
+      <p>
+        <code>poetry:editor</code> writes an MCP config for each editor, a
+        snippet file generated from the component registry, and a check hook
+        that lints every template an agent edits. The config writes are
+        upserts: a file keeps its other servers and hooks, one that already has
+        Poetry is left alone, and a JSONC file Poetry cannot parse is reported,
+        never clobbered.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: generate_source, language: "shell", label: "Generate") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <table>
+        <thead>
+          <tr><th>Editor</th><th>What it writes</th><th>Gets</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Claude Code</td><td><code>.mcp.json</code> + <code>.claude/settings.json</code> + <code>bin/poetry-check-hook</code></td><td>MCP + check hook</td></tr>
+          <tr><td>Cursor</td><td><code>.cursor/mcp.json</code> + <code>.cursor/hooks.json</code></td><td>MCP + snippets + check hook</td></tr>
+          <tr><td>VS Code</td><td><code>.vscode/mcp.json</code> + <code>.vscode/poetry.code-snippets</code></td><td>MCP + snippets</td></tr>
+          <tr><td>Windsurf</td><td>reads the <code>.vscode</code> snippets</td><td>MCP (paste) + snippets</td></tr>
+          <tr><td>Zed / RubyMine / Neovim</td><td>a printed paste-block</td><td>MCP</td></tr>
+          <tr><td>Any Herb-aware editor</td><td><code>.herb.yml</code></td><td>linter + language server config</td></tr>
+        </tbody>
+      </table>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="mcp">The MCP server</h2>
+      <p>
+        Poetry's agent surface is a standard stdio MCP server
+        (<code>bundle exec poetry-agent</code>, from the poetry-agent gem): boot-free, read-only, no SDK.
+        Its ten tools teach an agent the catalog and gate its work. Call
+        <code>compose</code> first, build from primitives, run
+        <code>check</code> last, and take a PASS verdict rather than an eyeball.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: mcp_source, language: "json", label: "MCP config") %>
+    <%= poetry_code_block(code: zed_source, language: "json", label: "Zed") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        RubyMine 2025.2+ is already an MCP client: Settings, then Tools, AI
+        Assistant, Model Context Protocol; add a stdio server running
+        <code>bundle exec poetry-agent</code> or import the
+        <code>.mcp.json</code>.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="hook">The check hook</h2>
+      <p>
+        A rule in a skill file competes with everything else the agent is
+        holding; a hook does not. <code>poetry:editor</code> writes
+        <code>bin/poetry-check-hook</code> and registers it so that every
+        template an agent edits under <code>app/</code> is linted the moment
+        the edit lands: Claude Code's <code>PostToolUse</code> hook on Edit and
+        Write, Cursor's <code>postToolUse</code> on Write. Errors go straight
+        back to the agent as feedback it has to act on, warnings arrive as
+        context, and a clean template costs one Rails boot and says nothing.
+        The script is plain Ruby with no dependencies and runs
+        <code>bin/rails poetry:check</code> on the one file, so it sees exactly
+        what the rake task sees. Anything that is not an app template is
+        ignored without booting Rails, and a check that cannot run at all fails
+        open.
+      </p>
+      <p>
+        Claude Code reads hooks at session start: after generating, start a new
+        session (or check <code>/hooks</code>) before expecting feedback. The
+        Cursor entry is best-effort; its edit payload is read leniently and the
+        hook stays silent when it finds no path.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: hook_source, language: "json", label: "Hook config") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="snippets">Snippets</h2>
+      <p>
+        <code>.vscode/poetry.code-snippets</code> holds one snippet per
+        <code>poetry_*</code> helper, generated from the committed registry so
+        it never drifts from the shipped catalog. Type a helper name and the
+        snippet expands with the real <code>variant</code> and
+        <code>size</code> values as a choice list, a block form for components
+        that compose through slots, and inline for atoms. One file works in VS
+        Code, Cursor, and Windsurf.
+      </p>
+    <% end %>
+  </section>
+
+<section class="flex flex-col gap-4">
+  <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+    <h2 id="herb">HTML+ERB tooling</h2>
+    <p>
+      Rails 8.2 made <a href="https://herb-tools.dev/">Herb</a> its ERB
+      engine, and Poetry's templates are gated to parse and compile under
+      it, so the whole Herb toolchain works on a Poetry app: the language
+      server (VS Code's <em>Herb LSP</em> extension, built into Zed's Ruby
+      extension, <code>@herb-tools/language-server</code> for Neovim), the
+      linter, and the render-graph check. Stimulus LSP runs on the same
+      language service and reads <code>data-controller</code> in ERB and
+      <code>tag.div data: { controller: }</code> alike. It resolves
+      controllers from your app, not from a gem, so <code>poetry:editor</code>
+      lists Poetry's identifiers in <code>.stimulus-lsp/config.json</code>
+      and a hand-written <code>poetry--core--sheet#close</code> is never an
+      "invalid controller"; <code>bin/rails poetry:check</code> is what
+      validates those, <code>data:</code> keywords on Poetry helpers included
+      (the <%= link_to "Stimulus guide", stimulus_path %> covers composing
+      your controllers with Poetry's).
+    </p>
+    <p>
+      <code>poetry:editor</code> writes the one config all of it reads,
+      and keeps yours if you have one. Two rules start off: the linter
+      still misreads slot setters on a builder a Poetry helper yields
+      (<code>card.with_title</code> inside <code>poetry_card do |card|</code>)
+      and brace-form setters; both are tracked upstream and the pinned
+      <code>version</code> means an upgrade never switches rules on behind you.
+    </p>
+  <% end %>
+  <%= poetry_code_block(code: herb_source, language: "yaml", label: ".herb.yml") %>
+  <%= poetry_code_block(code: herb_ci_source, language: "shell", label: "CI") %>
+  <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+    <p>
+      The formatter is still an upstream preview; Poetry's own templates are
+      not run through it, because it rewraps the inline one-liners the
+      components depend on. Run it on your views if you like the output.
+    </p>
+  <% end %>
+</section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="design-tools">Design tools</h2>
+      <p>
+        With the Poetry MCP wired alongside a Figma or Paper MCP, an agent can
+        translate a design into Poetry components; the <code>poetry-design</code>
+        skill's <code>figma</code> and <code>paper</code> references are the
+        rulebook. Design tokens come in through the same AA-gated importer a
+        DESIGN.md uses:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: import_source, language: "shell", label: "Import tokens") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        A swatch that fails WCAG AA is dropped and reported with the nearest
+        passing value, never shipped.
+      </p>
+    <% end %>
+  </section>
+</div>

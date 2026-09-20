@@ -1,0 +1,453 @@
+{
+  "poetry_version": "0.1.5",
+  "gem": "@poetry/agent",
+  "objects": [
+    {
+      "path": "@poetry/agent",
+      "type": "module",
+      "superclass": null,
+      "docstring": "@poetry/agent - the WebMCP runtime. Register beside poetry's own\ncontrollers:\n\n  import { Application } from \"@hotwired/stimulus\"\n  import { registerPoetryControllers } from \"@poetry/controllers\"\n  import { registerPoetryAgent } from \"@poetry/agent\"\n  const application = Application.start()\n  registerPoetryControllers(application)\n  registerPoetryAgent(application)",
+      "examples": [],
+      "file": "app/javascript/poetry/agent/index.js",
+      "methods": [],
+      "constants": [
+        {
+          "name": "controllers",
+          "value": "{",
+          "docstring": "identifier -> controller class (the manifest introspects this)."
+        },
+        {
+          "name": "registerPoetryAgent",
+          "value": "(application) => {",
+          "docstring": "Registers the runtime's controllers, installs the versioned replace\nstream action the AG-UI relay and the A2UI streams emit (when Turbo is\npresent), and the morph guard that keeps an A2UI surface's local state."
+        }
+      ]
+    },
+    {
+      "path": "@poetry/agent/adapter",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The document.modelContext adapter - the ONE file that knows the WebMCP\nsurface's shape, so API churn (the spec has changed twice this summer,\nand the shipping browser trails it) stays a one-file fix. Everything\nelse in the runtime talks to this.\n\nSpec surface (rev 41d12f0): document.modelContext with\nregisterTool(tool, {signal, exposedTo}), getTools({fromOrigins}) resolving\nRegisteredTool dictionaries whose inputSchema is an object,\nexecuteTool(tool, inputObject, {signal}) resolving the stringified\nresult, and the toolchange event.\n\nShipping-browser deltas this file absorbs (Chrome 151, measured\n2026-09-01; spec issue #278 tracks them): getTools() reports inputSchema\nas a serialized JSON string, and executeTool() parses ONLY a JSON-string\nargument - an object rejects with UnknownError(\"Failed to parse input\narguments\"), not a TypeError.",
+      "examples": [],
+      "file": "app/javascript/poetry/agent/adapter.js",
+      "methods": [],
+      "constants": [
+        {
+          "name": "modelContext",
+          "value": "() =>",
+          "docstring": "The live ModelContext, or null where the browser exposes none - callers\ntreat null as \"do nothing\", exactly like an edge bridge would."
+        },
+        {
+          "name": "supported",
+          "value": "() => modelContext() !== null",
+          "docstring": "Whether this browser exposes a ModelContext."
+        },
+        {
+          "name": "registerTool",
+          "value": "(definition, { signal } = {}) =>",
+          "docstring": "Registers one tool; resolves when the browser accepted it, rejects on a\nduplicate name, an empty name/description, or an invalid schema."
+        },
+        {
+          "name": "getTools",
+          "value": "async (options = {}) => {",
+          "docstring": "The registered tools with inputSchema normalized to an object: parsed\nwhen the browser serialized it, null when the text is not JSON."
+        },
+        {
+          "name": "executeTool",
+          "value": "async (tool, args = {}, options = {}) => {",
+          "docstring": "Executes a tool with the spec's object arguments, falling back to the\nJSON-string form the current Chrome build parses; when both shapes\nreject, the first rejection surfaces."
+        },
+        {
+          "name": "TOOL_NAME",
+          "value": "/^[A-Za-z0-9_.-]{1,128}$/",
+          "docstring": "WebMCP tool-name grammar: 1-128 chars of ASCII alphanumerics, \"_\", \"-\", \".\"."
+        },
+        {
+          "name": "validToolName",
+          "value": "(name) => TOOL_NAME.test(name)",
+          "docstring": "Whether a name fits the WebMCP tool-name grammar."
+        },
+        {
+          "name": "_resetArgumentShape",
+          "value": "() => {",
+          "docstring": "Test seam: forget the argument shape the last browser taught us."
+        }
+      ]
+    },
+    {
+      "path": "@poetry/agent/stream_actions",
+      "type": "module",
+      "superclass": null,
+      "docstring": "Local state a morph must not reset inside an A2UI surface: the\nselection a tab strip holds, a dialog's open state, a popup's expanded\nstate, and a control the user has edited (its value or checked state\ndiffers from what the server last rendered). The server does not know\nthis state, so its frame would carry the defaults; canceling Turbo's\nbefore-morph-attribute event keeps the page's own.",
+      "examples": [],
+      "file": "app/javascript/poetry/agent/stream_actions.js",
+      "methods": [],
+      "constants": [
+        {
+          "name": "installVersionedReplace",
+          "value": "(turbo = globalThis.Turbo) => {",
+          "docstring": "The versioned replace Turbo Stream action the AG-UI relay and the A2UI\nsurface streams emit: a streamed frame re-renders the SAME element from\na server stream, which inherits an out-of-order delivery race, so every\npayload carries data-version and this action applies only strictly-newer\nframes - older or duplicate frames are dropped silently. With\nmethod=\"morph\" the newer frame morphs the element through Turbo's own\nreplace action (idiomorph), so local state survives an update. Installed\non Turbo by registerPoetryAgent when the host has Turbo and no vreplace\nof its own."
+        },
+        {
+          "name": "preservesLocalState",
+          "value": "(element, attributeName) => {",
+          "docstring": "Whether a morph must leave an attribute alone to keep an A2UI surface's\nlocal state: an edited input's value or checked state, an open disclosure,\nor a slot-specific attribute the runtime owns."
+        },
+        {
+          "name": "installMorphStateGuard",
+          "value": "(doc = globalThis.document) => {",
+          "docstring": "Installs the before-morph-attribute guard once per document, so a streamed\nre-render morphs without clobbering local state."
+        }
+      ]
+    },
+    {
+      "path": "poetry--agent--a2ui-surface",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "The client side of an A2UI surface's checks: the server renders the\nprogram (every checked component's rules with absolute bindings, the\nbound inputs by path with their kinds, and the data model) and this\ncontroller evaluates it as the user types - a button whose own checks\nfail is disabled, a failing input is marked invalid and its error slot\ncarries the message. The five validators and the three combinators are\nthe checks vocabulary; anything else passes here and is judged by the\nserver, which re-runs every rule on the action.\n\n**Values**:\n- `program` (Object): The check program the server compiled: the checks, the bound inputs by path, and the data model.",
+      "examples": [],
+      "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Evaluates every check once at mount.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
+          "line": 24
+        },
+        {
+          "name": "evaluate",
+          "scope": "instance",
+          "group": null,
+          "signature": "evaluate()",
+          "docstring": "Runs every check in the program and applies its failures.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
+          "line": 31
+        },
+        {
+          "name": "failure",
+          "scope": "instance",
+          "group": null,
+          "signature": "failure(rule)",
+          "docstring": "A rule's failure message, or null when it passes or cannot be decided\nhere.",
+          "params": [
+            {
+              "name": "rule",
+              "types": [
+                "Object"
+              ],
+              "text": "the check rule with its condition and message"
+            }
+          ],
+          "return": {
+            "types": [
+              "string|null"
+            ],
+            "text": "the failure message, or null"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
+          "line": 46
+        },
+        {
+          "name": "apply",
+          "scope": "instance",
+          "group": null,
+          "signature": "apply(key, kind, failures)",
+          "docstring": "Reflects a check's failures on the elements bound to a key: a button\ndisables, an input turns invalid.",
+          "params": [
+            {
+              "name": "key",
+              "types": [
+                "string"
+              ],
+              "text": "the bound key the elements carry"
+            },
+            {
+              "name": "kind",
+              "types": [
+                "string"
+              ],
+              "text": "the control kind: button or input"
+            },
+            {
+              "name": "failures",
+              "types": [
+                "string[]"
+              ],
+              "text": "the failure messages, empty when the check passes"
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
+          "line": 62
+        },
+        {
+          "name": "resolve",
+          "scope": "instance",
+          "group": null,
+          "signature": "resolve(value)",
+          "docstring": "A value with its bindings read and its calls run, recursively.",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "*"
+              ],
+              "text": "a literal, a binding, a call, or an array of them"
+            }
+          ],
+          "return": {
+            "types": [
+              "*"
+            ],
+            "text": "the resolved value"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
+          "line": 83
+        },
+        {
+          "name": "call",
+          "scope": "instance",
+          "group": null,
+          "signature": "call(name, rawArgs)",
+          "docstring": "Runs a catalog function by name with its arguments resolved; an unknown\nname resolves to null.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "string"
+              ],
+              "text": "the catalog function"
+            },
+            {
+              "name": "rawArgs",
+              "types": [
+                "Object"
+              ],
+              "text": "the arguments, bindings and calls unresolved"
+            }
+          ],
+          "return": {
+            "types": [
+              "*"
+            ],
+            "text": "the function's result, or null for an unknown name"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
+          "line": 99
+        },
+        {
+          "name": "read",
+          "scope": "instance",
+          "group": null,
+          "signature": "read(path)",
+          "docstring": "The current value of a bound path from the form's inputs, falling back to\nthe data model.",
+          "params": [
+            {
+              "name": "path",
+              "types": [
+                "string"
+              ],
+              "text": "the bound pointer"
+            }
+          ],
+          "return": {
+            "types": [
+              "*"
+            ],
+            "text": "the input's current value, or the model's"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/agent/a2ui_surface_controller.js",
+          "line": 114
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--agent--agui-client-tool",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "The AG-UI client-tool bridge: the relay appends one of these (hidden)\nper tool call the agent made to a FRONTEND tool - a component tool the\npage declared - and this controller executes it through the registrar\n(the same dispatch a WebMCP call takes, so it works in every browser,\nmodelContext or not), then POSTs the result to the continue URL. The\nserver folds the tool message into the transcript and answers with the\nnext run's streams, which Turbo renders. One element, one execution:\nthe done flag makes a Turbo re-render inert.\n\n**Values**:\n- `call` (Object): The pending tool call: its id, name and arguments.\n- `url` (String): Where the tool result is posted.\n- `done` (Boolean): Whether the call has already been answered (a restored snapshot must not answer twice).\n\n**Events**: `poetry:agui:client-tool-executed`",
+      "examples": [],
+      "file": "app/javascript/poetry/agent/agui_client_tool_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Runs the pending client tool once, posts its result, and marks the call\ndone.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/agui_client_tool_controller.js",
+          "line": 31
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--agent--webmcp",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "The registrar: one controller on an opted-in component root\n(`webmcp: \"country\"` on the helper call renders it beside the\ncomponent's own controllers) registers that instance's declared tools\nwith document.modelContext on connect and aborts them on disconnect.\nComponents gain zero runtime code - each tool dispatches to the\ncomponent's OWN controller action (the `executes` descriptor the Ruby\ncontract validated at class load), passing the tool's parameters\npositionally in declared order.\n\nCorrectness rules the spec makes load-bearing:\n- Re-registration is skipped while the payload is unchanged (the spec\n  documents an unregister/quick-re-register race where in-flight args\n  for the old tool can hit the new tool's schema).\n- Never register under Turbo's cache preview.\n- Duplicate names are rejected by the browser; we warn and skip.\n- A per-document budget caps registrations (each tool costs the agent\n  context; overlap confuses tool choice).\n- Errors come back as descriptive result strings (granular exceptions\n  are still open spec issues; a string lets the agent self-correct):\n  a missing or unknown parameter, a value of the wrong type or outside\n  the enum, a missing action, a throwing action.\n- A result is the action's return value when it is JSON-serializable\n  (the contract's actions return their resulting state, so an answer\n  says what happened rather than \"done\"); the done marker covers\n  actions that return nothing.\n- Parameters map positionally onto the action in declared order; the\n  execute callback's {signal} is not forwarded (the actions are\n  synchronous UI operations).\n\n**Values**:\n- `name` (String): The instance name the tools register under (poetry.<name>.<tool>).\n- `tools` (Array): The tool definitions this instance registers, as the component declared them.\n- `budget` (Number, default: 20): The most tools one page registers; past it, further registrations are dropped with a console warning.\n\n**Events**: `poetry:webmcp:executed`, `poetry:webmcp:registered`, `poetry:webmcp:unregistered`",
+      "examples": [],
+      "file": "app/javascript/poetry/agent/webmcp_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Registers this instance's tools and records it for the executor.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/webmcp_controller.js",
+          "line": 66
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Forgets the instance and aborts its registrations.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/webmcp_controller.js",
+          "line": 74
+        },
+        {
+          "name": "nameValueChanged",
+          "scope": "instance",
+          "group": null,
+          "signature": "nameValueChanged()",
+          "docstring": "Re-registers under the new name once connected.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/webmcp_controller.js",
+          "line": 82
+        },
+        {
+          "name": "toolsValueChanged",
+          "scope": "instance",
+          "group": null,
+          "signature": "toolsValueChanged()",
+          "docstring": "Re-registers the new tool list once connected.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/webmcp_controller.js",
+          "line": 89
+        },
+        {
+          "name": "register",
+          "scope": "instance",
+          "group": null,
+          "signature": "register()",
+          "docstring": "Registers every declared tool with the browser under the instance name,\nwithin the page budget; skipped when unsupported or in a preview.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/webmcp_controller.js",
+          "line": 97
+        },
+        {
+          "name": "execute",
+          "scope": "instance",
+          "group": null,
+          "signature": "execute(name, args = {})",
+          "docstring": "Runs one of this instance's tools by its registered or short name; an\nunknown name resolves to an error message.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "string"
+              ],
+              "text": "the registered or short tool name"
+            },
+            {
+              "name": "args",
+              "types": [
+                "Object"
+              ],
+              "text": "the tool's arguments"
+            }
+          ],
+          "return": {
+            "types": [
+              "Promise<*>"
+            ],
+            "text": "the tool's result, or an error message for an unknown name"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/agent/webmcp_controller.js",
+          "line": 160
+        },
+        {
+          "name": "unregister",
+          "scope": "instance",
+          "group": null,
+          "signature": "unregister()",
+          "docstring": "Aborts every registration of this instance and announces it.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/webmcp_controller.js",
+          "line": 170
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--agent--webmcp-form",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "The declarative-form companion: a form declared with poetry_webmcp_form\n(toolname/tooldescription on the <form>) is registered by the BROWSER;\nthis controller only answers an agent-invoked submit with the outcome.\nChrome's SubmitEvent carries agentInvoked + respondWith(promise): we\nsubmit the form ourselves (fetch, same method/action, Turbo-Stream\naccepting) and respond with a short descriptive result instead of\nnavigating, so the agent learns whether the submission succeeded and\nwhat the server said (validation errors included - it can self-correct).\n\nThe person's page then catches up with the answer (a beat after the\nresult is handed to the browser, so a navigation can never swallow\nit): a GET answer is the page at that URL - a Turbo visit, or a plain\nnavigation without Turbo; a Turbo-Stream answer renders; a redirected\nPOST (redirect-after-create) visits where the redirect went. An HTML\nre-render of a failed POST stays put - the agent already holds the\nerrors, and the person keeps their filled form.\n\nSubmits without agentInvoked (a person pressed Submit) pass through\nuntouched: the human path stays the human path.\n\n**Events**: `poetry:webmcp:form-submitted`",
+      "examples": [],
+      "file": "app/javascript/poetry/agent/webmcp_form_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Listens for the form's submit.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/webmcp_form_controller.js",
+          "line": 30
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Stops listening for the form's submit.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/webmcp_form_controller.js",
+          "line": 37
+        }
+      ],
+      "constants": []
+    }
+  ]
+}

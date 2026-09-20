@@ -1,0 +1,30 @@
+<%# What f.input resolves without as:: text columns -> Textarea, booleans
+    -> the horizontal Field checkbox, integers with numericality -> a
+    NumberField carrying min/max/step, date columns -> DateField, and
+    name heuristics type the string inputs (email/url/tel/password -
+    password never round-trips). as: overrides any of it. %>
+<% article_class = Class.new do
+     include ActiveModel::Model
+     include ActiveModel::Attributes
+
+     attribute :summary, :string
+     attribute :website_url, :string
+     attribute :quantity, :integer
+     attribute :published_on, :date
+
+     validates :quantity, numericality: { greater_than_or_equal_to: 1,
+                                          less_than_or_equal_to: 99, only_integer: true }
+
+     def self.name = "Listing"
+     def self.type_for_attribute(name)
+       name == "summary" ? Struct.new(:type).new(:text) : super
+     end
+   end %>
+<%= form_with(model: article_class.new, url: "/forms", method: :get,
+              builder: Poetry::Ui::FormBuilder,
+              class: "flex w-full max-w-md flex-col gap-6") do |f| %>
+  <%= f.input(:summary, hint: "A text column renders the Textarea.") %>
+  <%= f.input(:website_url, hint: "The _url name renders type=url.") %>
+  <%= f.input(:quantity, hint: "numericality becomes min=1 max=99 step=1.") %>
+  <%= f.input(:published_on, hint: "A date column renders the DateField.") %>
+<% end %>

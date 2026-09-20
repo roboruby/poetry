@@ -1,0 +1,68 @@
+<div class="h-96 w-full overflow-hidden rounded-lg border contain-content [&_[data-slot=sidebar-container]]:h-full [&_[data-slot=sidebar-container]]:absolute">
+  <%= poetry_sidebar(collapsible: :icon) do |shell| %>
+    <% shell.with_nav do %>
+      <%# A menu-button header row - collapse-aware: icon mode clamps to
+          the tile and hides the text (a bare div would overflow the
+          collapsed column). %>
+      <%= poetry_sidebar_header do %>
+        <%= poetry_sidebar_menu do %>
+          <%= poetry_sidebar_menu_item do %>
+            <%= poetry_sidebar_menu_button(size: :lg) do %>
+              <div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <%= poetry_icon(name: :"folder-git-2", class: "size-4") %>
+              </div>
+              <div class="grid flex-1 text-left text-sm leading-tight">
+                <span class="truncate font-semibold">Northwind</span>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <%= poetry_sidebar_content do %>
+        <%= poetry_sidebar_group do %>
+          <%= poetry_sidebar_group_label { "Workspace" } %>
+          <%= poetry_sidebar_menu do %>
+            <%= poetry_sidebar_menu_item do %>
+              <%= poetry_sidebar_menu_button(href: "#") do %>
+                <%= poetry_icon(name: :"folder-git-2") %><span>Repositories</span>
+              <% end %>
+              <%= poetry_sidebar_menu_sub do %>
+                <%= poetry_sidebar_menu_sub_item do %>
+                  <%= poetry_sidebar_menu_sub_button(href: "#", active: true) do %><span>web-client</span><% end %>
+                <% end %>
+                <%= poetry_sidebar_menu_sub_item do %>
+                  <%= poetry_sidebar_menu_sub_button(href: "#") do %><span>api-service</span><% end %>
+                <% end %>
+                <%= poetry_sidebar_menu_sub_item do %>
+                  <%= poetry_sidebar_menu_sub_button(href: "#") do %><span>design-system</span><% end %>
+                <% end %>
+              <% end %>
+            <% end %>
+            <%= poetry_sidebar_menu_item do %>
+              <%= poetry_sidebar_menu_button(href: "#") do %>
+                <%= poetry_icon(name: :"book-open") %><span>Documentation</span>
+              <% end %>
+              <%= poetry_sidebar_menu_sub do %>
+                <%= poetry_sidebar_menu_sub_item do %>
+                  <%= poetry_sidebar_menu_sub_button(href: "#") do %><span>Getting Started</span><% end %>
+                <% end %>
+                <%= poetry_sidebar_menu_sub_item do %>
+                  <%= poetry_sidebar_menu_sub_button(href: "#") do %><span>API Reference</span><% end %>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <% shell.with_inset do %>
+      <div class="flex items-center gap-2 border-b p-3">
+        <%= poetry_sidebar_trigger %>
+        <span class="text-sm font-medium">Repositories</span>
+      </div>
+      <div class="p-4 text-sm text-muted-foreground">
+        Nested submenus group related routes under a parent entry.
+      </div>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,5 @@
+<%# disabled: true disables the trigger and the native <select> together. %>
+<%= poetry_select(disabled: true, placeholder: "Select a fruit", "aria-label": "Fruit") do |select| %>
+  <% select.with_item(value: "apple") { "Apple" } %>
+  <% select.with_item(value: "banana") { "Banana" } %>
+<% end %>

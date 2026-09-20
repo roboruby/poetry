@@ -1,0 +1,22 @@
+<%# Six live toaster regions pinned to the REAL viewport - each
+    poetry_toast_trigger stamps its <template>'s toast into the region
+    addressed by toaster: (the first-party no-round-trip delivery path);
+    duration: 4000 auto-dismisses. Real layouts run ONE toaster per page. %>
+<div>
+  <div class="grid w-fit grid-cols-3 gap-2">
+    <% %i[top-left top-center top-right bottom-left bottom-center bottom-right].each do |position| %>
+      <%= poetry_toast_trigger(template: "toast-demo-#{position}",
+                               toaster: "toaster-demo-#{position}") do %>
+        <%= position.to_s.tr("-", " ").capitalize %>
+      <% end %>
+    <% end %>
+  </div>
+  <% %i[top-left top-center top-right bottom-left bottom-center bottom-right].each do |position| %>
+    <%= poetry_toaster(position: position, id: "toaster-demo-#{position}") %>
+    <template id="toast-demo-<%= position %>">
+      <%= poetry_toast(duration: 4000) do |toast| %>
+        <% toast.with_title { "#{position.to_s.tr("-", " ").capitalize} toast" } %>
+      <% end %>
+    </template>
+  <% end %>
+</div>

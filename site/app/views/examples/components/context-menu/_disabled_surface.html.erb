@@ -1,0 +1,5 @@
+<%# disabled: true stands the handlers down — right-clicking shows the browser-native context menu. %>
+<%= poetry_context_menu(disabled: true) do |menu| %>
+  <% menu.with_trigger(tag: :div, class: "flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm select-none") { "Native menu here (disabled)" } %>
+  <% menu.with_item { "Unreachable" } %>
+<% end %>

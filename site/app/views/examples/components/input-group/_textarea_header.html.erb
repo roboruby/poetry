@@ -1,0 +1,17 @@
+<%# Block-aligned addons each take a full-width row. A header caption sits
+    above the control (align: :"block-start") and a footer pairs a hint with
+    a tiny action (align: :"block-end"). The textarea stays borderless so the
+    group owns the single surface. %>
+<div class="w-80">
+  <%= poetry_label(for_id: "input-group-review", class: "sr-only") { "Review" } %>
+  <%= poetry_input_group do %>
+    <%= poetry_input_group_addon(align: :"block-start") do %>
+      <%= poetry_input_group_text { "Write a review" } %>
+    <% end %>
+    <%= poetry_input_group_textarea(id: "input-group-review", name: "review", placeholder: "Share what stood out…") %>
+    <%= poetry_input_group_addon(align: :"block-end") do %>
+      <%= poetry_input_group_text { "Up to 500 characters" } %>
+      <%= poetry_input_group_button(size: :xs, class: "ml-auto") { "Post" } %>
+    <% end %>
+  <% end %>
+</div>

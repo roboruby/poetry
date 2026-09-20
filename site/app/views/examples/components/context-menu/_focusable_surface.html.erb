@@ -1,0 +1,13 @@
+<%# focusable_surface: true puts the surface in the tab order — Shift+F10 or
+    the Menu key opens it (Windows/Linux). macOS has no context-menu key:
+    there, the path is VoiceOver's VO+Shift+M (Ctrl+Option+Shift+M) on the
+    focused surface. The browser synthesizes the contextmenu event either
+    way — poetry binds no key itself. %>
+<%= poetry_context_menu(focusable_surface: true, label: "Row actions") do |menu| %>
+  <% menu.with_trigger(tag: :div, class: "flex h-[150px] w-[300px] flex-col items-center justify-center gap-1 rounded-md border border-dashed text-sm select-none") do %>
+    <span>Focusable row</span>
+    <span class="text-xs text-muted-foreground">Shift+F10 &middot; VoiceOver VO+Shift+M</span>
+  <% end %>
+  <% menu.with_item { "Rename" } %>
+  <% menu.with_item { "Duplicate" } %>
+<% end %>

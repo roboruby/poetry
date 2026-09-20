@@ -1,0 +1,35 @@
+<%# Pending states (upstream Spinner): poetry_spinner announces itself
+    (role=status) wherever it rides; the last row shows the raw
+    animate-spin icon route for comparison - reach for the Spinner when
+    the wait should be announced. %>
+<div class="grid w-full max-w-sm gap-4">
+  <%= poetry_input_group do %>
+    <%= poetry_input_group_input(name: "search", placeholder: "Searching...", "aria-label": "Search") %>
+    <%= poetry_input_group_addon(align: :"inline-end") do %>
+      <%= poetry_spinner %>
+    <% end %>
+  <% end %>
+  <%= poetry_input_group do %>
+    <%= poetry_input_group_input(name: "job", placeholder: "Processing...", "aria-label": "Job name") %>
+    <%= poetry_input_group_addon do %>
+      <%= poetry_spinner %>
+    <% end %>
+  <% end %>
+  <%= poetry_input_group do %>
+    <%= poetry_input_group_input(name: "draft", placeholder: "Saving changes...", "aria-label": "Draft") %>
+    <%= poetry_input_group_addon(align: :"inline-end") do %>
+      <%= poetry_input_group_text { "Saving..." } %>
+      <%= poetry_spinner(label: "Saving") %>
+    <% end %>
+  <% end %>
+  <%= poetry_input_group do %>
+    <%= poetry_input_group_input(name: "refresh", placeholder: "Refreshing data...",
+                                 "aria-label": "Data set") %>
+    <%= poetry_input_group_addon do %>
+      <%= poetry_icon(name: :loader, class: "animate-spin") %>
+    <% end %>
+    <%= poetry_input_group_addon(align: :"inline-end") do %>
+      <%= poetry_input_group_text(class: "text-muted-foreground") { "Please wait..." } %>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,19 @@
+<%# orientation: :horizontal grows bars rightward - the category axis
+    moves to the Y side (with_y_axis data_key:) and the numeric axis
+    hides. Negative left margin tucks the ticks against the bars. %>
+<% data = [
+     { month: "January", desktop: 186 },
+     { month: "February", desktop: 305 },
+     { month: "March", desktop: 237 },
+     { month: "April", desktop: 73 },
+     { month: "May", desktop: 209 },
+     { month: "June", desktop: 214 }
+   ]
+   config = { desktop: { label: "Desktop", color: "var(--chart-1)" } } %>
+<div class="w-full max-w-xl">
+  <%= poetry_bar_chart(data: data, config: config, id: "bar-horizontal",
+                       orientation: :horizontal, margin: { left: -20 }) do |chart| %>
+    <% chart.with_y_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] }, tick_margin: 10) %>
+    <% chart.with_bar(data_key: :desktop, radius: 5) %>
+  <% end %>
+</div>

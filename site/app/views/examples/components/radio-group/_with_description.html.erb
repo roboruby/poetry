@@ -1,0 +1,39 @@
+<%# Each option pairs a title with a secondary line of description. The
+    item's label: accepts rich content, so the whole title+description stack
+    renders inside the <label> and a click anywhere on the copy checks the
+    option. self-start keeps the dot aligned to the first line rather than
+    centering it against the two-line block. %>
+<div class="max-w-md">
+  <%= poetry_radio_group(name: "delivery", value: "standard", label: "Delivery speed") do |group| %>
+    <% group.with_item(
+         value: "standard", class: "mt-0.5 self-start",
+         label: tag.span(class: "grid gap-1 leading-snug") {
+           safe_join([
+             tag.span("Standard", class: "text-sm font-medium"),
+             tag.span("Arrives in 5-7 business days at no extra cost.",
+                      class: "text-sm text-muted-foreground")
+           ])
+         }
+       ) %>
+    <% group.with_item(
+         value: "express", class: "mt-0.5 self-start",
+         label: tag.span(class: "grid gap-1 leading-snug") {
+           safe_join([
+             tag.span("Express", class: "text-sm font-medium"),
+             tag.span("Arrives in 2 business days for a flat $8 fee.",
+                      class: "text-sm text-muted-foreground")
+           ])
+         }
+       ) %>
+    <% group.with_item(
+         value: "overnight", class: "mt-0.5 self-start",
+         label: tag.span(class: "grid gap-1 leading-snug") {
+           safe_join([
+             tag.span("Overnight", class: "text-sm font-medium"),
+             tag.span("Order by 6 PM and it lands on your doorstep tomorrow.",
+                      class: "text-sm text-muted-foreground")
+           ])
+         }
+       ) %>
+  <% end %>
+</div>
