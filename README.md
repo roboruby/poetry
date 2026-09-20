@@ -1,6 +1,6 @@
 # poetry
 
-An AI-native, Rails-first component library — a shadcn/ui-parity design system built on ViewComponent, Hotwire, and Tailwind, designed so coding agents compose UI inside a constrained design system.
+The AI-native frontend framework for Rails — a shadcn/ui-parity design system and component library built on ViewComponent, Hotwire, and Tailwind, designed so coding agents compose UI inside a constrained design system.
 
 Documentation, live component previews, and guides are at [poetryui.com](https://poetryui.com).
 
