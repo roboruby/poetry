@@ -95,7 +95,8 @@ def poetry_ui_visit_preview(session, url)
   # The opening-position hold (a message scroller renders data-pending-scroll
   # until its controller applies the end position): let it release, so the
   # shot shows the settled thread, not the top of it caught mid-walk.
-  session.has_no_css?("[data-pending-scroll]", wait: 5)
+  # A scroller that never settles is a failure to report, not a shot from the top.
+  raise "a scroller never settled at #{url}" unless session.has_no_css?("[data-pending-scroll]", wait: 10)
   raise "Stimulus never booted at #{url}" unless session.has_css?("html[data-poetry-ready]", wait: 10)
 end
 
