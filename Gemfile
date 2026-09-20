@@ -5,17 +5,12 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in poetry.gemspec
 gemspec
 
-# The sibling gems ride local paths while the family is checked out side by
-# side (development); anywhere else (CI, a release job, a lone clone) they
-# resolve from RubyGems through the gemspec's exact pins.
-sibling = lambda do |name|
-  path = File.expand_path("../#{name}", __dir__)
-  File.directory?(path) ? { path: path } : {}
-end
-
-gem "poetry-core", **sibling.call("poetry-core")
-gem "poetry-lucide", **sibling.call("poetry-lucide")
-gem "poetry-ui", **sibling.call("poetry-ui")
+# The sibling gems live in this repository under gems/, so the bundle always
+# resolves them from the tree beside this file; consumers get the gemspec's
+# exact pins from RubyGems.
+gem "poetry-core", path: "gems/poetry-core"
+gem "poetry-lucide", path: "gems/poetry-lucide"
+gem "poetry-ui", path: "gems/poetry-ui"
 
 gem "bundler-audit", require: false
 gem "irb"

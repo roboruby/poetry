@@ -23,22 +23,18 @@ Gem::Specification.new do |spec|
   spec.metadata["bug_tracker_uri"] = "https://github.com/roboruby/poetry/issues"
   spec.metadata["rubygems_mfa_required"] = "true"
 
-  # Specify which files should be added to the gem when it is released.
-  # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
-  gemspec = File.basename(__FILE__)
-  # Dev-only surfaces never ship: the test/dummy host, scripts, rake tasks,
-  # internal docs and design exports, the fidelity ledgers' snapshots, and
-  # editor/tooling files.
-  dev_only_dirs = %w[bin/ test/ docs/ script/ rakelib/ eval/ yard/ tmp/ .github/ .ruby-lsp/ .yardoc/
-                     config/theme_fidelity/ config/dictionary_fidelity/ config/upstream_
-                     config/hook_coverage config/theme_states]
-  dev_only_files = %w[Gemfile Gemfile.lock Rakefile AGENTS.md .gitignore .rubocop.yml .yardopts .yard_coverage
-                      .herb.yml package.json package-lock.json vitest.config.js]
-  spec.files = IO.popen(%w[git ls-files -z], chdir: __dir__, err: IO::NULL) do |ls|
-    ls.readlines("\x0", chomp: true).reject do |f|
-      (f == gemspec) || f.start_with?(*dev_only_dirs) || dev_only_files.include?(File.basename(f))
-    end
+  # A positive list: the umbrella ships its lib/ and the three root documents
+  # and nothing else, however the repository root grows (gems/, site/, tools/
+  # and whatever comes later can never ride along).
+  shipped = %w[lib README.md CHANGELOG.md LICENSE.txt]
+  tracked = begin
+    IO.popen(%w[git ls-files -z --] + shipped, chdir: __dir__, err: IO::NULL) { |ls| ls.readlines("\x0", chomp: true) }
+  rescue SystemCallError
+    [] # no git on this machine (a slim runtime image)
   end
+  # Outside a git checkout git lists nothing, so walk the same paths instead.
+  tracked = Dir.chdir(__dir__) { Dir.glob(["lib/**/*", *shipped[1..]]).select { |f| File.file?(f) } } if tracked.empty?
+  spec.files = tracked
   spec.bindir = "exe"
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
