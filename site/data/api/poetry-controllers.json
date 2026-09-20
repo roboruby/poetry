@@ -1,5 +1,5 @@
 {
-  "poetry_version": "0.1.6",
+  "poetry_version": "0.1.7",
   "gem": "@poetry/controllers",
   "objects": [
     {
