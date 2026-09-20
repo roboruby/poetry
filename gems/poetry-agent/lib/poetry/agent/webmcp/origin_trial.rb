@@ -1,0 +1,54 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Agent
+    module WebMCP
+      # Rack middleware serving the `Origin-Trial` response header on HTML
+      # responses, one token per browser trial (Chrome and Edge run
+      # separate trials and issue separate tokens). Tokens come from
+      # {Poetry::Agent::Config#origin_trial_tokens}; with none configured
+      # the middleware is a pass-through, so it is always safe to mount.
+      #
+      # Local development needs no token: enable the API through the
+      # browser flag instead.
+      #
+      # @example config/application.rb
+      #   config.middleware.use Poetry::Agent::WebMCP::OriginTrial
+      class OriginTrial
+        # The response header the browsers read (Rack 3 lowercases names).
+        HEADER = "origin-trial"
+
+        # The middleware.
+        #
+        # @param app [#call] the next Rack app
+        # @param tokens [Array<String>, String, nil] the origin-trial tokens to send; nil reads the configuration
+        def initialize(app, tokens: nil)
+          @app = app
+          @tokens = tokens
+        end
+
+        # The Rack entry point: appends the tokens to HTML responses.
+        #
+        # @param env [Hash] the Rack environment
+        # @return [Array(Integer, Hash, Object)] the downstream response
+        def call(env)
+          status, headers, body = @app.call(env)
+          tokens = (@tokens || Poetry::Agent.config.origin_trial_tokens).compact.reject(&:empty?)
+          if tokens.any? && html?(headers)
+            existing = headers[HEADER] || headers["Origin-Trial"]
+            headers[HEADER] = [existing, *tokens].compact.join(", ")
+          end
+          [status, headers, body]
+        end
+
+        private
+
+        # Whether a response's content type is HTML.
+        def html?(headers)
+          type = headers["content-type"] || headers["Content-Type"]
+          type.to_s.include?("text/html")
+        end
+      end
+    end
+  end
+end

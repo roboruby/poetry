@@ -1,0 +1,116 @@
+{
+  "poetry--agent--webmcp": {
+    "doc": "The registrar: one controller on an opted-in component root (`webmcp: \"country\"` on the helper call renders it beside the component's own controllers) registers that instance's declared tools with document.modelContext on connect and aborts them on disconnect. Components gain zero runtime code - each tool dispatches to the component's OWN controller action (the `executes` descriptor the Ruby contract validated at class load), passing the tool's parameters positionally in declared order.\n\nCorrectness rules the spec makes load-bearing: - Re-registration is skipped while the payload is unchanged (the spec documents an unregister/quick-re-register race where in-flight args for the old tool can hit the new tool's schema). - Never register under Turbo's cache preview. - Duplicate names are rejected by the browser; we warn and skip. - A per-document budget caps registrations (each tool costs the agent context; overlap confuses tool choice). - Errors come back as descriptive result strings (granular exceptions are still open spec issues; a string lets the agent self-correct): a missing or unknown parameter, a value of the wrong type or outside the enum, a missing action, a throwing action. - A result is the action's return value when it is JSON-serializable (the contract's actions return their resulting state, so an answer says what happened rather than \"done\"); the done marker covers actions that return nothing. - Parameters map positionally onto the action in declared order; the execute callback's {signal} is not forwarded (the actions are synchronous UI operations).",
+    "targets": [],
+    "values": {
+      "name": {
+        "type": "String",
+        "doc": "The instance name the tools register under (poetry.<name>.<tool>)."
+      },
+      "tools": {
+        "type": "Array",
+        "doc": "The tool definitions this instance registers, as the component declared them."
+      },
+      "budget": {
+        "type": "Number",
+        "default": 20,
+        "doc": "The most tools one page registers; past it, further registrations are dropped with a console warning."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "execute",
+      "register",
+      "unregister"
+    ],
+    "events": [
+      "poetry:webmcp:executed",
+      "poetry:webmcp:registered",
+      "poetry:webmcp:unregistered"
+    ],
+    "method_docs": {
+      "connect": "Registers this instance's tools and records it for the executor.",
+      "disconnect": "Forgets the instance and aborts its registrations.",
+      "execute": "Runs one of this instance's tools by its registered or short name; an unknown name resolves to an error message.",
+      "register": "Registers every declared tool with the browser under the instance name, within the page budget; skipped when unsupported or in a preview.",
+      "unregister": "Aborts every registration of this instance and announces it."
+    }
+  },
+  "poetry--agent--webmcp-form": {
+    "doc": "The declarative-form companion: a form declared with poetry_webmcp_form (toolname/tooldescription on the <form>) is registered by the BROWSER; this controller only answers an agent-invoked submit with the outcome. Chrome's SubmitEvent carries agentInvoked + respondWith(promise): we submit the form ourselves (fetch, same method/action, Turbo-Stream accepting) and respond with a short descriptive result instead of navigating, so the agent learns whether the submission succeeded and what the server said (validation errors included - it can self-correct).\n\nThe person's page then catches up with the answer (a beat after the result is handed to the browser, so a navigation can never swallow it): a GET answer is the page at that URL - a Turbo visit, or a plain navigation without Turbo; a Turbo-Stream answer renders; a redirected POST (redirect-after-create) visits where the redirect went. An HTML re-render of a failed POST stays put - the agent already holds the errors, and the person keeps their filled form.\n\nSubmits without agentInvoked (a person pressed Submit) pass through untouched: the human path stays the human path.",
+    "targets": [],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [
+      "poetry:webmcp:form-submitted"
+    ],
+    "method_docs": {
+      "connect": "Listens for the form's submit.",
+      "disconnect": "Stops listening for the form's submit."
+    }
+  },
+  "poetry--agent--agui-client-tool": {
+    "doc": "The AG-UI client-tool bridge: the relay appends one of these (hidden) per tool call the agent made to a FRONTEND tool - a component tool the page declared - and this controller executes it through the registrar (the same dispatch a WebMCP call takes, so it works in every browser, modelContext or not), then POSTs the result to the continue URL. The server folds the tool message into the transcript and answers with the next run's streams, which Turbo renders. One element, one execution: the done flag makes a Turbo re-render inert.",
+    "targets": [],
+    "values": {
+      "call": {
+        "type": "Object",
+        "doc": "The pending tool call: its id, name and arguments."
+      },
+      "url": {
+        "type": "String",
+        "doc": "Where the tool result is posted."
+      },
+      "done": {
+        "type": "Boolean",
+        "doc": "Whether the call has already been answered (a restored snapshot must not answer twice)."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect"
+    ],
+    "events": [
+      "poetry:agui:client-tool-executed"
+    ],
+    "method_docs": {
+      "connect": "Runs the pending client tool once, posts its result, and marks the call done."
+    }
+  },
+  "poetry--agent--a2ui-surface": {
+    "doc": "The client side of an A2UI surface's checks: the server renders the program (every checked component's rules with absolute bindings, the bound inputs by path with their kinds, and the data model) and this controller evaluates it as the user types - a button whose own checks fail is disabled, a failing input is marked invalid and its error slot carries the message. The five validators and the three combinators are the checks vocabulary; anything else passes here and is judged by the server, which re-runs every rule on the action.",
+    "targets": [],
+    "values": {
+      "program": {
+        "type": "Object",
+        "doc": "The check program the server compiled: the checks, the bound inputs by path, and the data model."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "apply",
+      "call",
+      "connect",
+      "evaluate",
+      "failure",
+      "read",
+      "resolve"
+    ],
+    "events": [],
+    "method_docs": {
+      "apply": "Reflects a check's failures on the elements bound to a key: a button disables, an input turns invalid.",
+      "call": "Runs a catalog function by name with its arguments resolved; an unknown name resolves to null.",
+      "connect": "Evaluates every check once at mount.",
+      "evaluate": "Runs every check in the program and applies its failures.",
+      "failure": "A rule's failure message, or null when it passes or cannot be decided here.",
+      "read": "The current value of a bound path from the form's inputs, falling back to the data model.",
+      "resolve": "A value with its bindings read and its calls run, recursively."
+    }
+  }
+}

@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# poetry-agent: the poetry MCP server - newline-delimited JSON-RPC 2.0
+# over stdio, serving list_components / describe_component / check /
+# compose / build_page / get_skill from the committed registry. Boot-free:
+# the gems load once per agent session (~0.4s); the Rails app never boots,
+# so every call after that is milliseconds.
+#
+# Usage: poetry-agent [registry-root]
+#   registry-root defaults to the bundled poetry-ui gem. In .mcp.json:
+#     {"mcpServers": {"poetry": {"command": "bundle", "args": ["exec", "poetry-agent"]}}}
+#
+# One gem ships this exe (poetry-agent), so the surface is the same
+# wherever the binstub resolves - the old core/ui exe-parity doctrine is
+# retired by construction.
+
+require "poetry/agent"
+
+# One assembly for the exe and the HTTP mount (Poetry::Agent::MCP::Bundled):
+# the registry root defaults to the bundled poetry-ui gem; skills, live
+# helper names, recipes, and icon names ride along when their gems are
+# bundled; app_root (Dir.pwd) is the app the agent runs in.
+begin
+  Poetry::Agent::MCP::Bundled.server(root: ARGV[0], app_root: Dir.pwd).serve
+rescue ArgumentError => e
+  abort "poetry-agent: #{e.message}"
+end
