@@ -1,0 +1,2 @@
+# The root ignores *.gem; the verification fixture is the one published gem that must stay.
+!test/fixtures/*.gem
