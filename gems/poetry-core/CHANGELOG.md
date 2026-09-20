@@ -2,6 +2,11 @@
 
 ## [0.1.6]
 
+### Changed
+
+- The gem is developed in the Poetry monorepo, roboruby/poetry, under `gems/poetry-core`; the gemspec's source, changelog and issue links point there, and its file list no longer needs git on the machine (a path gem inside a slim image lists the same files).
+- The gem describes Poetry as the AI-native frontend framework for Rails.
+
 ### Fixed
 
 - The API reference reads a declaration's `doc:` string as Ruby does: an escaped quote in the source (`\"16/9\"`) is a quote on the page, not a backslash and a quote. The doc-build handler kit decodes each string piece by its quote character; a test covers the kit for the first time.

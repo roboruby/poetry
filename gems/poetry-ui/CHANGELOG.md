@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.6]
+
+### Changed
+
+- The gem is developed in the Poetry monorepo, roboruby/poetry, under `gems/poetry-ui`; the gemspec's source, changelog and issue links point there, and its file list no longer needs git on the machine (a path gem inside a slim image lists the same files).
+- The gem describes Poetry as the AI-native frontend framework for Rails.
+
 ## [0.1.5] - 2026-09-18
 
 ### Changed
