@@ -21,6 +21,8 @@ GEM
     protobug_well_known_protos (0.1.0)
       protobug (= 0.1.0)
     rake (13.4.2)
+    rubygems-await (0.5.4)
+      bundler (>= 2.2)
     sigstore (0.2.3)
       logger
       net-http
@@ -42,6 +44,7 @@ DEPENDENCIES
   json (< 3)
   minitest (~> 6.0)
   rake (~> 13.0)
+  rubygems-await
   sigstore-cli (= 0.2.3)
 
 CHECKSUMS
@@ -57,6 +60,7 @@ CHECKSUMS
   protobug_sigstore_protos (0.1.0) sha256=4ad1eebaf6454131b6f432dda50ad0e513773613474b92470847614a5acacce1
   protobug_well_known_protos (0.1.0) sha256=356757f562453bb34a28f12e8e9fa357346cca35a6807a549837c3fe256bb5b3
   rake (13.4.2) sha256=cb825b2bd5f1f8e91ca37bddb4b9aaf345551b4731da62949be002fa89283701
+  rubygems-await (0.5.4) sha256=b9f37de928c19226e2143ac539e41a33aa1d0b9b6d1628ad986e1c328a036b7f
   sigstore (0.2.3) sha256=fe60a7b15254eaec765388fc7ad54ee6298f48a36bcea06173e91ecd7ce52c7f
   sigstore-cli (0.2.3) sha256=0d0449461797460a4c31de6f57e9f0bf2df6b0e9faec2e88e52268ec7a1a39c9
   thor (1.5.0) sha256=e3a9e55fe857e44859ce104a84675ab6e8cd59c650a49106a05f55f136425e73

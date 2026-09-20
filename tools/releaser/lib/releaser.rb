@@ -286,7 +286,7 @@ module Releaser
     end
 
     def self.await(out_dir)
-      ok = system("gem", "exec", "rubygems-await", *Dir[File.join(out_dir, "*.gem")].sort)
+      ok = system("rubygems-await", *Dir[File.join(out_dir, "*.gem")].sort)
       raise Error, "rubygems-await failed" unless ok
 
       true

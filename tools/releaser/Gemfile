@@ -10,3 +10,7 @@ gem "rake", "~> 13.0"
 # json 3.0 dropped, so json stays below 3 until sigstore-ruby moves.
 gem "json", "< 3"
 gem "sigstore-cli", "= 0.2.3"
+
+# Waits until a pushed version is installable; in the bundle, because a
+# gem exec under bundle exec is refused by Bundler's activation guard.
+gem "rubygems-await"
