@@ -1,0 +1,81 @@
+{
+  "empty": { "domain": "example.com", "brand": null, "styleguide": null },
+  "brand_only": {
+    "domain": "brandful.io",
+    "brand": { "colors": [
+      { "hex": "#635bff", "name": "Blurple" },
+      { "hex": "#0a2540", "name": "Navy accent" },
+      { "hex": "#00d4ff", "name": "Cyan" }
+    ] },
+    "styleguide": null
+  },
+  "full_light": {
+    "domain": "lightsite.dev",
+    "brand": { "colors": [{ "hex": "#e11d48", "name": "Rose" }] },
+    "styleguide": {
+      "mode": "light",
+      "colors": { "accent": "#0ea5e9", "background": "#fafaf9", "text": "#1c1917" },
+      "components": {
+        "button": {
+          "primary": { "backgroundColor": "#e11d48", "color": "#fff8f8", "borderRadius": "8px",
+                       "boxShadow": "0 1px 2px 0 rgba(28, 25, 23, 0.35)", "padding": "12px 20px",
+                       "fontFamily": "Inter", "fontWeight": 600 },
+          "secondary": { "backgroundColor": "#f5f5f4", "color": "#1c1917", "borderColor": "#d6d3d1",
+                         "padding": "0.75rem 1.25rem" },
+          "link": { "color": "#0ea5e9" }
+        },
+        "card": { "backgroundColor": "#ffffff", "textColor": "#292524", "borderColor": "#e7e5e4",
+                  "borderRadius": "12px", "boxShadow": "0px 4px 6px -1px hsl(20 6% 10% / 0.1)",
+                  "padding": "24px" }
+      },
+      "typography": {
+        "headings": {
+          "h1": { "fontFamily": "Fraunces", "fontFallbacks": ["Georgia"], "letterSpacing": "-0.5px" },
+          "h2": { "fontFamily": "Fraunces" }
+        },
+        "p": { "fontFamily": "Inter", "fontFallbacks": ["Helvetica Neue", "Arial"],
+               "letterSpacing": "normal", "lineHeight": "1.6" }
+      },
+      "elementSpacing": { "xs": "4px", "sm": "8px", "md": "16px", "lg": "24px", "xl": "40px" },
+      "shadows": { "sm": "0 1px 2px rgba(0,0,0,0.05)", "md": "0 4px 6px -1px rgba(0, 0, 0, 0.1)" },
+      "fontLinks": {
+        "Inter": { "type": "google", "category": "sans-serif", "displayName": "Inter" },
+        "Fraunces": { "type": "google", "category": "serif", "displayName": "Fraunces" },
+        "JetBrains Mono": { "type": "google", "category": "monospace", "displayName": "JetBrains Mono" }
+      }
+    }
+  },
+  "dark_site": {
+    "domain": "darksite.app",
+    "brand": { "colors": [{ "hex": "#22d3ee", "name": "Cyan" }, { "hex": "#a78bfa", "name": "Violet highlight" }] },
+    "styleguide": {
+      "mode": "dark",
+      "colors": { "accent": "#22d3ee", "background": "#09090b", "text": "#fafafa" },
+      "components": {
+        "button": { "primary": { "backgroundColor": "#fafafa", "color": "#09090b", "borderRadius": "9999px" } },
+        "card": { "backgroundColor": "#18181b", "borderRadius": "1rem", "padding": "1.5rem 2rem" }
+      },
+      "typography": { "p": { "fontFamily": "\"Geist\", sans-serif", "letterSpacing": "0.01em" } },
+      "shadows": { "md": "none" },
+      "fontLinks": { "Geist": { "type": "custom", "category": "Sans Serif" } }
+    }
+  },
+  "quirky_units": {
+    "domain": "quirky.example",
+    "brand": { "colors": [] },
+    "styleguide": {
+      "colors": { "background": "hsl(210, 40%, 98%)", "text": "#0f172a" },
+      "components": {
+        "button": { "primary": { "backgroundColor": "#2563eb", "borderRadius": "0.375rem",
+                                 "boxShadow": "inset 0 2px 4px 0 rgb(37 99 235 / 25%), 0 1px 1px #00000022",
+                                 "padding": "8px" } },
+        "card": { "boxShadow": "0 25px 50px -12px rgba(15, 23, 42, 0.25)", "padding": "2em" }
+      },
+      "typography": {
+        "headings": { "h1": { "fontFamily": "'Playfair Display', serif", "letterSpacing": "-0.025em" } },
+        "p": { "letterSpacing": "0.4px" }
+      },
+      "elementSpacing": { "sm": "0.5rem", "xl": "48px" }
+    }
+  }
+}
