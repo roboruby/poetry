@@ -4,6 +4,7 @@ require "digest"
 require "fileutils"
 require "json"
 require "net/http"
+require "open3"
 require "uri"
 
 # The release mechanics for the Poetry family, driven by rake from
@@ -223,8 +224,11 @@ module Releaser
       remote_sha == local_sha ? :skip : :abort
     end
 
+    # The CDN in front of the API caches a not-found for a minute, so the
+    # lookup carries a fresh query string every time.
     def self.remote_sha(name, version)
-      response = Net::HTTP.get_response(URI("https://rubygems.org/api/v2/rubygems/#{name}/versions/#{version}.json"))
+      uri = URI("https://rubygems.org/api/v2/rubygems/#{name}/versions/#{version}.json?fresh=#{Time.now.to_f}")
+      response = Net::HTTP.get_response(uri)
       case response
       when Net::HTTPNotFound then nil
       when Net::HTTPSuccess then JSON.parse(response.body)["sha"]
@@ -232,20 +236,46 @@ module Releaser
       end
     end
 
-    def self.push(gem_path, attestation:)
-      ok = system("gem", "push", gem_path, "--attestation", attestation)
-      raise Error, "push failed for #{File.basename(gem_path)}" unless ok
+    REPUSH_REFUSED = /Repushing of gem versions is not allowed/
 
-      true
+    # Pushes, and returns :pushed; when RubyGems refuses a repush the version
+    # is already there, so the checksum is fetched again (the API may lag)
+    # and a match is :skip while a mismatch stops the release.
+    def self.push(gem_path, attestation:, name: nil, version: nil, local_sha: nil, fetch: nil)
+      output, status = Open3.capture2e("gem", "push", gem_path, "--attestation", attestation)
+      $stdout.print output
+      return :pushed if status.success?
+      raise Error, "push failed for #{File.basename(gem_path)}" unless output.match?(REPUSH_REFUSED) && fetch
+
+      settle(name, version, local_sha, fetch: fetch)
+    end
+
+    # After a refused repush: the checksum RubyGems holds, asked for again a
+    # few times because the API can lag the push by a minute.
+    def self.settle(name, version, local_sha, fetch:, attempts: 6, pause: 10)
+      remote = nil
+      attempts.times do
+        remote = fetch.call
+        break if remote
+
+        sleep pause
+      end
+      raise Error, "#{name} #{version} refused as a repush but never appears in the API" if remote.nil?
+      raise Error, "#{name} #{version} is on RubyGems with a different checksum; stop and look" unless remote == local_sha
+
+      :skip
     end
 
     def self.all(root, version, out_dir, log: $stdout)
       GEMS.each do |name|
         gem_path = File.join(out_dir, Releaser.gem_file(name, version))
-        case decision(remote_sha(name, version), Digest::SHA256.file(gem_path).hexdigest)
+        local_sha = Digest::SHA256.file(gem_path).hexdigest
+        case decision(remote_sha(name, version), local_sha)
         when :push
           log.puts "push #{name} #{version}"
-          push(gem_path, attestation: Sign.bundle_for(gem_path))
+          outcome = push(gem_path, attestation: Sign.bundle_for(gem_path), name: name, version: version,
+                         local_sha: local_sha, fetch: -> { remote_sha(name, version) })
+          log.puts "skip #{name} #{version}: RubyGems already held it with this checksum" if outcome == :skip
         when :skip
           log.puts "skip #{name} #{version}: already on RubyGems with this checksum"
         when :abort

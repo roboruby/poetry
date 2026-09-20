@@ -85,6 +85,21 @@ class PushTest < Minitest::Test
     assert_equal :skip, Releaser::Push.decision("abc", "abc")
     assert_equal :abort, Releaser::Push.decision("abc", "def")
   end
+
+  def test_a_refused_repush_settles_once_the_api_shows_the_same_checksum
+    answers = [nil, nil, "abc"]
+    assert_equal :skip, Releaser::Push.settle("poetry-core", "0.1.6", "abc", fetch: -> { answers.shift }, pause: 0)
+  end
+
+  def test_a_refused_repush_with_a_different_checksum_stops_the_release
+    error = assert_raises(Releaser::Error) { Releaser::Push.settle("poetry-core", "0.1.6", "abc", fetch: -> { "def" }, pause: 0) }
+    assert_includes error.message, "different checksum"
+  end
+
+  def test_a_refused_repush_that_never_appears_stops_the_release
+    error = assert_raises(Releaser::Error) { Releaser::Push.settle("poetry-core", "0.1.6", "abc", fetch: -> {}, attempts: 2, pause: 0) }
+    assert_includes error.message, "never appears"
+  end
 end
 
 class SignTest < Minitest::Test
