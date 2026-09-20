@@ -21,7 +21,7 @@ namespace :docs do
     FileUtils.mkdir_p(out_dir)
 
     gems.each do |gem|
-      gem_root = root.join("..", gem).expand_path
+      gem_root = root.join("..", "gems", gem).expand_path
       next warn("skip #{gem}: not found") unless gem_root.exist?
 
       out = out_dir.join("#{gem}.json")
@@ -44,7 +44,7 @@ namespace :docs do
     { "poetry-core" => "poetry-controllers",
       "poetry-charts" => "poetry-charts-controllers",
       "poetry-agent" => "poetry-agent-controllers" }.each do |js_gem, slug|
-      js_root = root.join("..", js_gem).expand_path
+      js_root = root.join("..", "gems", js_gem).expand_path
       next warn("skip #{slug}: #{js_gem} not found") unless js_root.exist?
 
       ok = system(

@@ -27,8 +27,8 @@
 # Idempotent. Run after bumping the gems. Do not hand-edit outputs.
 
 ROOT = File.expand_path("..", __dir__)
-UI_THEMES = File.expand_path("../poetry-ui/themes", ROOT)
-CHARTS_THEMES = File.expand_path("../poetry-charts/themes", ROOT)
+UI_THEMES = File.expand_path("../gems/poetry-ui/themes", ROOT)
+CHARTS_THEMES = File.expand_path("../gems/poetry-charts/themes", ROOT)
 OUT_DIR = File.join(ROOT, "app/assets/tailwind/styles")
 SLOT_UI = File.join(ROOT, "app/assets/tailwind/poetry/style-default.css")
 SLOT_CHARTS = File.join(ROOT, "app/assets/tailwind/poetry/style-charts.css")
