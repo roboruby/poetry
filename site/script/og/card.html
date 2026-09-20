@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #0b0a08; }
+  .card {
+    position: relative; width: 1200px; height: 630px;
+    background: url("../../app/assets/images/landing-hero.jpg") center / cover no-repeat;
+    font-family: Poppins, "Helvetica Neue", Arial, sans-serif; color: #F1EBDE;
+  }
+  .shade {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(12,10,7,.94) 0%, rgba(12,10,7,.90) 36%, rgba(12,10,7,.55) 58%, rgba(12,10,7,.12) 82%, rgba(12,10,7,0) 100%);
+  }
+  .brand { position: absolute; left: 76px; top: 130px; font-weight: 700; font-size: 34px; letter-spacing: -.3px; color: #DDB650; }
+  h1 { position: absolute; left: 76px; top: 196px; margin: 0; font-weight: 700; font-size: 66px; line-height: 1.06; letter-spacing: -.8px; }
+  h1 em { font-style: normal; color: #DDB650; }
+  p { position: absolute; left: 76px; top: 428px; margin: 0; font-weight: 500; font-size: 24px; line-height: 1.5; color: #E9E2D4; }
+  .site { position: absolute; left: 76px; top: 558px; font-weight: 500; font-size: 24px; color: #CFC7B5; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="shade"></div>
+    <div class="brand">poetry</div>
+    <h1>The <em>AI-Native</em><br>Frontend Framework<br>for Ruby on Rails</h1>
+    <p>Accessible, themeable components and charts,<br>server-rendered in Ruby and ERB. No React, no build step.</p>
+    <div class="site">poetryui.com</div>
+  </div>
+</body>
+</html>
