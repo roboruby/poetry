@@ -2,7 +2,7 @@
 
 The docs site and standing fresh-app install proof: a Rails app (importmap +
 tailwindcss-rails + propshaft, sqlite-backed demo data, no Node) consuming the
-poetry gems as sibling checkouts locally (Gemfile.siblings) and the pinned release in CI (Gemfile + .poetry-version). Gallery + Demos + the blocks catalog +
+poetry gems from `../gems` in this repository (one Gemfile, lock committed; a deploy builds from the release tag). Gallery + Demos + the blocks catalog +
 `/theming` with the nine-theme switcher + guide pages (installation, forms,
 pagination, typography, optimistic-forms, editors).
 

@@ -1,7 +1,8 @@
-# poetry-docs
+# poetryui.com
 
-The documentation site for the **poetry** family — a Rails app that consumes
-the gems exactly the way a real host does, and holds the component and chart
+The documentation site for the **poetry** family, under `site/` in the
+family's repository — a Rails app that consumes the gems from `../gems`
+exactly the way a real host does, and holds the component and chart
 galleries, the guides, and the live demos.
 
 ## Two jobs
@@ -14,7 +15,7 @@ galleries, the guides, and the live demos.
    about itself come from the registry, never from prose.
 2. **The standing fresh-app install proof.** This app was wired by running
    the real installer — `bin/rails g poetry:install --charts` — against the
-   sibling working trees. The seams the gem suites can only stub (importmap
+   gems in this repository. The seams the gem suites can only stub (importmap
    pin merging, safelist generation with the charts engine loaded, controller
    registration, the Tailwind entry) run for real here; `bin/rails test`
    asserts a component page and a chart page still render through that
@@ -35,34 +36,23 @@ site's read-only MCP server at `/mcp`, and `/openapi.json` with its
 bin/setup            # installs, prepares the databases, starts bin/dev
 ```
 
-Two bundles, one family:
-
-- **Locally, the site runs the working trees.** When the poetry gems are
-  checked out beside this repo (`../poetry-core`, `../poetry-ui`, ...),
-  `config/boot.rb` selects `Gemfile.siblings`, and the docs describe the code
-  as it is right now - nothing is pinned. `bin/setup` installs that bundle;
-  `Gemfile.siblings.lock` stays out of git. Set `BUNDLE_GEMFILE=Gemfile` to
-  run the pinned release on the same machine.
-- **Everywhere else, the site runs the release.** `Gemfile` pins the family
-  to the version in `.poetry-version` and its `Gemfile.lock` is committed, so
-  CI, fresh clones and deploys resolve the published gems. CI runs `bin/ci`
-  (setup, RuboCop, the gem and importmap audits, the tests) on that bundle,
-  so it is the standing proof that the released gems install and render.
-
-`test/poetry_version_test.rb` keeps the two honest: the loaded family must be
-one version, a RubyGems bundle must match `.poetry-version`, and every
-`data/api/*.json` must carry the version it was generated from.
+One bundle, one family: the Gemfile takes the poetry gems from `../gems`
+by path, so the docs always describe the code beside them and nothing is
+pinned. The lockfile is committed, which is what lets a deploy build the
+image with `BUNDLE_DEPLOYMENT` on. CI runs `bin/ci` (setup, RuboCop, the
+gem and importmap audits, the tests) on that bundle, so every push proves
+the tree installs and renders, and the reference-data job checks that
+`data/api/*.json`, the skills and the search index match the gems they
+were generated from.
 
 ## After a family release
 
-```sh
-echo 0.1.0 > .poetry-version
-bundle lock                          # refresh the committed lockfile
-bin/rails docs:refresh               # skills, API reference, search index
-BUNDLE_GEMFILE=Gemfile bin/rails test   # the release, as CI runs it
-```
-
-This app carries no deploy configuration.
+Nothing, here. The release train's bump stamps the version into the
+family, re-locks this app on the new versions and runs
+`bin/rails docs:refresh` (skills, API reference, search index) in the same
+commit. Production is built from the release tag by the deploy
+repository, which holds every hosting detail; this app carries no deploy
+configuration.
 
 ## Re-running the installer
 
