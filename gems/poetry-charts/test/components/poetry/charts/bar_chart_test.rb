@@ -1,0 +1,275 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+module Poetry
+  module Charts
+    # The bar family render contracts - the recharts band math
+    # (10% category trim, 4px gaps, stacked share a slot), per-corner
+    # radius paths, negatives below the zero line, guarded per-cell fills,
+    # and the active highlight.
+    class BarChartTest < ViewComponent::TestCase
+      DATA = [
+        { month: "January", desktop: 186, mobile: 80 },
+        { month: "February", desktop: 305, mobile: 200 },
+        { month: "March", desktop: 237, mobile: 120 },
+        { month: "April", desktop: 73, mobile: 190 },
+        { month: "May", desktop: 209, mobile: 130 },
+        { month: "June", desktop: 214, mobile: 140 }
+      ].freeze
+
+      CONFIG = {
+        desktop: { label: "Desktop", color: "var(--chart-1)" },
+        mobile: { label: "Mobile", color: "var(--chart-2)" }
+      }.freeze
+
+      def render_chart(id: "test", data: DATA, **)
+        render_inline(BarChart::Component.new(data: data, config: CONFIG, id: id, **)) do |chart|
+          chart.with_grid
+          chart.with_x_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] })
+          yield chart
+        end
+      end
+
+      def test_bars_follow_the_recharts_band_math
+        html = render_chart { |chart| chart.with_bar(data_key: :desktop) }
+
+        bars = html.css('[data-slot="chart-bar"]')
+
+        assert_equal DATA.length, bars.length
+        # plot width 630 (margins 5), 6 categories -> band 105; 10% trim
+        # each side -> size 105 - 21 = 84 (rounded).
+        first_x = Float(bars.first["d"][/M([\d.]+),/, 1])
+
+        assert_in_delta 5 + 10.5, first_x, 0.02, "first bar starts at band + 10% trim"
+      end
+
+      def test_side_by_side_groups_split_the_band_with_the_4px_gap
+        html = render_chart do |chart|
+          chart.with_bar(data_key: :desktop, radius: 4)
+          chart.with_bar(data_key: :mobile, radius: 4)
+        end
+
+        desktop_x = Float(html.css('[data-slot="chart-bar"][data-key="desktop"]').first["d"][/M([\d.]+),/, 1])
+        mobile_x = Float(html.css('[data-slot="chart-bar"][data-key="mobile"]').first["d"][/M([\d.]+),/, 1])
+
+        # size = round((105 - 21 - 4) / 2) = 40; mobile offset = size + gap = 44.
+        assert_in_delta 44.0, mobile_x - desktop_x, 0.02
+      end
+
+      def test_stacked_bars_share_a_slot_and_accumulate
+        html = render_chart do |chart|
+          chart.with_bar(data_key: :desktop, stack: :a, radius: [0, 0, 4, 4])
+          chart.with_bar(data_key: :mobile, stack: :a, radius: [4, 4, 0, 0])
+        end
+
+        desktop = html.css('[data-slot="chart-bar"][data-key="desktop"]').first
+        mobile = html.css('[data-slot="chart-bar"][data-key="mobile"]').first
+        desktop_x = Float(desktop["d"][/M([\d.]+),/, 1])
+        mobile_x = Float(mobile["d"][/M([\d.]+),/, 1])
+
+        assert_in_delta 0.0, (mobile_x - desktop_x).abs, 4.1, "stacked bars share the slot"
+        # The bottom bar starts with no top arc; the top bar has one.
+        refute_includes desktop["d"][0, 30], "A", "bottom bar's top corners are square"
+        assert_includes mobile["d"][0, 40], "A", "top bar's top corners are rounded"
+      end
+
+      def test_radius_rounds_all_corners_when_numeric
+        html = render_chart { |chart| chart.with_bar(data_key: :desktop, radius: 8) }
+
+        d = html.css('[data-slot="chart-bar"]').first["d"]
+
+        assert_equal 4, d.scan("A").length, "radius: 8 arcs all four corners"
+        assert_includes d, "A8,8,0,0,1"
+      end
+
+      def test_negative_values_drop_below_the_zero_line
+        data = [{ month: "March", visitors: -207 }, { month: "June", visitors: 214 }]
+        html = render_chart(data: data) do |chart|
+          chart.with_bar(data_key: :visitors,
+                         cell_fill: ->(_row, value) { value.positive? ? "var(--chart-1)" : "var(--chart-2)" })
+        end
+
+        bars = html.css('[data-slot="chart-bar"]')
+
+        assert_equal "var(--chart-2)", bars.first["fill"], "negative cells take the sign color"
+        assert_equal "var(--chart-1)", bars.last["fill"]
+
+        negative_top = Float(bars.first["d"][/M[\d.]+,([\d.]+)/, 1])
+        positive_top = Float(bars.last["d"][/M[\d.]+,([\d.]+)/, 1])
+
+        assert_operator negative_top, :>, positive_top,
+                        "the negative bar's rect starts AT the zero line (below the positive's top)"
+      end
+
+      def test_unsafe_cell_fills_raise
+        assert_raises(ArgumentError) do
+          render_chart do |chart|
+            chart.with_bar(data_key: :desktop, cell_fill: ->(_r, _v) { "red;}body{}" })
+          end
+        end
+      end
+
+      def test_the_active_index_wears_the_highlight
+        data = [{ browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
+                { browser: "safari", visitors: 200, fill: "var(--color-safari)" }]
+        html = render_inline(BarChart::Component.new(data: data, config: CONFIG, id: "active")) do |chart|
+          chart.with_x_axis(data_key: :browser)
+          chart.with_bar(data_key: :visitors, color_key: :fill, active_index: 1)
+        end
+
+        active = html.css('[data-slot="chart-bar"][data-active]')
+
+        assert_equal 1, active.length
+        assert_equal "1", active.first["data-index"]
+        assert_equal "0.8", active.first["fill-opacity"]
+        assert_equal "4", active.first["stroke-dasharray"]
+        assert_equal "var(--color-safari)", active.first["stroke"], "the dashed stroke takes the cell fill"
+      end
+
+      def test_labels_stamp_above_bars_with_label_key_support
+        html = render_chart { |chart| chart.with_bar(data_key: :desktop, labels: true, label_key: :month) }
+
+        labels = html.css('[data-slot="chart-labels"] text')
+
+        assert_equal DATA.map { |d| d[:month] }, labels.map(&:text)
+      end
+
+      def test_the_dispatcher_routes_bar
+        html = vc_test_controller.view_context.poetry_chart(:bar, data: DATA, config: CONFIG, id: "via") do |chart|
+          chart.with_bar(data_key: :desktop)
+        end
+
+        assert_includes html, "chart-bar"
+      end
+
+      # -- the horizontal orientation --------------------------------------------
+
+      def render_horizontal(data: DATA, **)
+        render_inline(BarChart::Component.new(data: data, config: CONFIG, id: "h",
+                                              orientation: :horizontal, **)) do |chart|
+          chart.with_y_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] }, tick_margin: 10)
+          yield chart
+        end
+      end
+
+      def test_horizontal_bars_grow_rightward_from_the_left_baseline
+        html = render_horizontal { |chart| chart.with_bar(data_key: :desktop, radius: 5) }
+
+        bars = html.css('[data-slot="chart-bar"]')
+
+        assert_equal DATA.length, bars.length
+        # Category strip on the left: plot_left = margin 5 + YAxis width 60.
+        first_x = Float(bars.first["d"][/M([\d.-]+),/, 1])
+
+        assert_in_delta 65.0, first_x, 0.02, "bars start AT the zero baseline on the left"
+        # Bigger value = wider bar: February (305) wider than April (73).
+        widths = bars.map { |bar| bar["d"].scan(/L([\d.]+),/).flatten.map(&:to_f).max }
+
+        assert_operator widths[1], :>, widths[3]
+      end
+
+      def test_horizontal_category_labels_sit_in_the_left_strip
+        html = render_horizontal { |chart| chart.with_bar(data_key: :desktop) }
+
+        texts = html.css('[data-slot="chart-y-axis"] text')
+
+        assert_equal %w[Jan Feb Mar Apr May Jun], texts.map(&:text)
+        assert_equal "end", texts.first["text-anchor"]
+        assert_in_delta 55.0, Float(texts.first["x"]), 0.02, "labels end tick_margin left of the plot"
+      end
+
+      LONG_NAMES = [
+        { name: "Collins, Norris and Nelson", volume: 1_285_077 },
+        { name: "Smith Inc", volume: 1_275_019 },
+        { name: "Mckinney, English and Moon", volume: 1_230_000 }
+      ].freeze
+
+      def render_named(data, **)
+        render_inline(BarChart::Component.new(data: data, config: { volume: { label: "Volume" } }, id: "n",
+                                              orientation: :horizontal, **)) do |chart|
+          chart.with_y_axis(data_key: :name)
+          chart.with_bar(data_key: :volume)
+        end
+      end
+
+      def test_the_horizontal_category_strip_widens_to_fit_long_labels
+        html = render_named(LONG_NAMES)
+
+        # 26 characters at 6.4px + the 8px tick margin = 174.4 -> a 175px strip
+        # in place of the reserved 60: plot_left = 5 + 175.
+        first_x = Float(html.css('[data-slot="chart-bar"]').first["d"][/M([\d.-]+),/, 1])
+
+        assert_in_delta 180.0, first_x, 0.02
+        texts = html.css('[data-slot="chart-y-axis"] text')
+
+        assert_equal ["Collins, Norris and Nelson", "Smith Inc", "Mckinney, English and Moon"], texts.map(&:text),
+                     "labels that fit are printed whole"
+        assert_in_delta 172.0, Float(texts.first["x"]), 0.02, "labels end tick_margin left of the plot"
+      end
+
+      def test_the_category_strip_caps_at_forty_percent_and_cuts_the_rest_with_an_ellipsis
+        data = [{ name: "A" * 80, volume: 10 }, { name: "Short", volume: 5 }]
+        html = render_named(data)
+
+        first_x = Float(html.css('[data-slot="chart-bar"]').first["d"][/M([\d.-]+),/, 1])
+
+        assert_in_delta 261.0, first_x, 0.02, "5 + the 256px cap (40% of 640)"
+        labels = html.css('[data-slot="chart-y-axis"] text').map(&:text)
+
+        assert_equal "Short", labels.last
+        assert labels.first.end_with?("…"), "the label past the cap ends in an ellipsis"
+        assert_equal 38, labels.first.length, "(256 - 8) / 6.4 = 38 characters, ellipsis included"
+      end
+
+      def test_short_labels_and_an_explicit_left_margin_keep_the_reserved_strip
+        short = LONG_NAMES.map { |row| row.merge(name: row[:name][0, 3]) }
+        first_x = Float(render_named(short).css('[data-slot="chart-bar"]').first["d"][/M([\d.-]+),/, 1])
+
+        assert_in_delta 65.0, first_x, 0.02, "three-character labels fit the reserved 60"
+        explicit = render_named(LONG_NAMES, margin: { left: 0 })
+        first_x = Float(explicit.css('[data-slot="chart-bar"]').first["d"][/M([\d.-]+),/, 1])
+
+        assert_in_delta 60.0, first_x, 0.02, "margin left: is the caller's layout, no estimate"
+        assert_equal "Collins, Norris and Nelson", explicit.css('[data-slot="chart-y-axis"] text').first.text,
+                     "no ellipsis either"
+      end
+
+      def test_the_tick_formatter_is_what_the_strip_measures
+        html = render_inline(BarChart::Component.new(data: LONG_NAMES, config: { volume: { label: "Volume" } }, id: "f",
+                                                     orientation: :horizontal)) do |chart|
+          chart.with_y_axis(data_key: :name, tick_formatter: ->(v) { v[0, 3] })
+          chart.with_bar(data_key: :volume)
+        end
+        first_x = Float(html.css('[data-slot="chart-bar"]').first["d"][/M([\d.-]+),/, 1])
+
+        # Three characters each after the formatter: 3 * 6.4 + 8 = 27.2 < 60, the reserved strip stands.
+        assert_in_delta 65.0, first_x, 0.02
+      end
+
+      def test_horizontal_coordinates_embed_the_y_layout_for_the_tooltip
+        html = render_horizontal { |chart| chart.with_bar(data_key: :desktop) }
+
+        coordinates = JSON.parse(html.css('[data-slot="chart-coordinates"]').first.text)
+
+        assert_equal "horizontal", coordinates["layout"]
+        assert coordinates["y"], "horizontal charts bisect along y"
+        assert_operator coordinates["series"]["desktop"][1], :>, coordinates["series"]["desktop"][3],
+                        "series values embed as x-extents (Feb reaches further right than Apr)"
+      end
+
+      def test_the_mixed_shape_takes_per_row_fills_horizontally
+        data = [{ browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
+                { browser: "safari", visitors: 200, fill: "var(--color-safari)" }]
+        html = render_inline(BarChart::Component.new(data: data, config: CONFIG, id: "mixed",
+                                                     orientation: :horizontal, margin: { left: 0 })) do |chart|
+          chart.with_y_axis(data_key: :browser)
+          chart.with_bar(data_key: :visitors, radius: 5, color_key: :fill)
+        end
+
+        assert_equal(%w[var(--color-chrome) var(--color-safari)],
+                     html.css('[data-slot="chart-bar"]').map { |bar| bar["fill"] })
+      end
+    end
+  end
+end

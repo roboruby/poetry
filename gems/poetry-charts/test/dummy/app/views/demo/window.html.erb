@@ -1,0 +1,16 @@
+<%# The window demo. Drag the brush handles (or the
+    window body) to slice the year; drag a range on the plot to zoom in;
+    double-click the plot to reset. Everything recomputes client-side
+    through frame.window. %>
+<div style="width: 640px; margin: 2rem auto;" data-slot="demo-window">
+  <%= poetry_chart :line, data: @data, id: "window-demo", live: true, zoom: true,
+                   config: { desktop: { label: "Desktop", color: "var(--chart-1)" } },
+                   margin: { left: 12, right: 12 } do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis data_key: :month %>
+    <% chart.with_y_axis tick_count: 3 %>
+    <% chart.with_line data_key: :desktop, curve: :monotone_x %>
+    <% chart.with_brush %>
+    <% chart.with_tooltip %>
+  <% end %>
+</div>

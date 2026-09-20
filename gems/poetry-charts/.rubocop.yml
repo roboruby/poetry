@@ -1,0 +1,94 @@
+plugins:
+  - rubocop-performance
+  - rubocop-minitest
+  - rubocop-rake
+  - rubocop-yard
+
+AllCops:
+  TargetRubyVersion: 3.4
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - "test/dommy_tier/support/browser_harness.rb" # vendored from dommy-js-quickjs, kept byte-identical
+    - "vendor/**/*"
+    - "node_modules/**/*"
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+Layout/LineLength:
+  Max: 120
+
+Metrics/BlockLength:
+  # use_stimulus declaration blocks are the component's wiring contract -
+  # element-major and legitimately long on multi-element components
+  # (same posture as poetry-ui).
+  AllowedMethods:
+    - use_stimulus
+  Exclude:
+    - "test/**/*"
+    - "*.gemspec"
+    # Rake task bodies are linear scripts (same posture as poetry-ui).
+    - "rakelib/**/*.rake"
+
+# Same posture as poetry-ui: density is reviewed, not counted.
+Metrics/AbcSize:
+  Enabled: false
+Metrics/CyclomaticComplexity:
+  Enabled: false
+Metrics/PerceivedComplexity:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Metrics/ClassLength:
+  Enabled: false
+Metrics/ModuleLength:
+  Enabled: false
+
+# Comprehensive, multi-assertion unit tests are intentional.
+Minitest/MultipleAssertions:
+  Enabled: false
+
+# The geometry layer transcribes d3/recharts source line-for-line (the
+# oracle contract); fidelity to the original names, signatures, and
+# signed-zero ternaries beats Ruby style there.
+Naming/MethodParameterName:
+  Exclude:
+    - "lib/poetry/charts/geometry/**/*"
+    # cx/cy are THE polar names (recharts/SVG vocabulary).
+    - "lib/poetry/charts/polar.rb"
+    - "app/components/poetry/charts/motion.rb"
+Metrics/ParameterLists:
+  Exclude:
+    - "lib/poetry/charts/geometry/**/*"
+    # The cartesian/polar signatures ARE the layout config.
+    - "lib/poetry/charts/cartesian.rb"
+    - "lib/poetry/charts/polar.rb"
+    # motion_sector_value mirrors sector_path's six-value signature.
+    - "app/components/poetry/charts/motion.rb"
+Style/IdenticalConditionalBranches:
+  Exclude:
+    # slope3's `h1.negative? ? -0.0 : 0.0` is NOT an identical branch -
+    # signed zero decides the sign of the infinite one-sided slope.
+    - "lib/poetry/charts/geometry/curve.rb"
+Lint/DuplicateBranch:
+  Exclude:
+    - "lib/poetry/charts/geometry/curve.rb"
+
+Style/Documentation:
+  Enabled: false
+
+Naming/FileName:
+  # lib/poetry-charts.rb is the hyphenated Bundler auto-require entrypoint for
+  # the Poetry::Charts namespace; its name must match the gem, not snake_case.
+  Exclude:
+    - "lib/poetry-charts.rb"
+    - Archspec.rb # ArchSpec reads the spec by that name
+
+# YARD tags are the contract the docs, the skill and the agents read;
+# the long collection form (Array<String>) is the house style.
+YARD/CollectionStyle:
+  EnforcedStyle: long

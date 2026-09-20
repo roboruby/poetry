@@ -1,0 +1,121 @@
+# frozen_string_literal: true
+
+require "poetry/core"
+require "yaml"
+
+# Tailwind-native like poetry-ui: the charts render in :tailwind whatever a
+# host sets the global css_mode to (that global is for kits the host writes).
+Poetry::Core::CSS::Modes.pin("Poetry::Charts", :tailwind)
+require_relative "charts/version"
+require_relative "charts/config"
+require_relative "charts/theme_style"
+require_relative "charts/spec"
+require_relative "charts/geometry"
+require_relative "charts/cartesian"
+require_relative "charts/polar"
+
+# The poetry component family's shared root namespace.
+module Poetry
+  # poetry's chart tier: charts as server-rendered SVG. Ruby runs the
+  # whole geometry pipeline - data -> domains -> scales -> ticks ->
+  # points -> paths, with decimal-exact nice ticks - and the finished
+  # chart ships in the initial HTML: no-JS/print/email valid, themed by
+  # CSS variables (--chart-1..5 + per-chart --color-<key>), dark mode
+  # with zero re-render. Stimulus chrome adds tooltip/legend/active
+  # interactivity by reading SERVER-EMBEDDED coordinates - no chart math
+  # in the browser.
+  #
+  # Engines stay swappable (three doors): the container contract is
+  # engine-agnostic; every chart also compiles to a closed, VERSIONED
+  # chart-spec consumed by duck-typed adapters (render/update/destroy -
+  # a canvas adapter ships as the reference); client-rendered chart
+  # libraries remain reachable through a Stimulus-mounted island.
+  #
+  # @example Render a chart through the dispatcher helper
+  #   poetry_chart :bar, data: rows, series: [{ data_key: :revenue }]
+  module Charts
+    # The curve interpolation whitelist every series slot validates
+    # against.
+    CURVES = %i[natural linear step step_before step_after monotone_x].freeze
+    # The axis capture shape the cartesian family slots accumulate into
+    # (scatter carries its own - both axes numeric, different fields).
+    AxisConfig = Data.define(:data_key, :tick_formatter, :tick_margin, :tick_count)
+    # The grid capture shape - which rule directions render (radar
+    # carries its own, with polygon/circle rings).
+    GridConfig = Data.define(:vertical, :horizontal)
+
+    class << self
+      # Gem root (the directory containing lib/, app/, config/).
+      def root
+        @root ||= Pathname.new(File.expand_path("../..", __dir__))
+      end
+
+      # The registry builder this gem commits from (the poetry-ui shared-
+      # builder rule: rake registry:generate/verify and the sync test share
+      # ONE construction). helper_args carries each poetry_* helper's max
+      # positional arity from its real signature - poetry_chart(type, ...)
+      # legitimately takes one, which is exactly why arity is an emitted
+      # per-helper fact and never a convention.
+      def registry
+        # The helpers section carries the dispatcher's yields declaration:
+        # poetry_chart(type) routes to a component that yields its slot
+        # builder, so its block param is legitimate - the one exception to
+        # the no-wrapper-yields invariant.
+        Poetry::Core::Registry.new(
+          source_root: root, helper_args: registry_helper_args,
+          helpers: { "poetry_chart" => { "yields" => "the dispatched chart component" } },
+          descriptions: registry_descriptions
+        )
+      end
+
+      # The editorial per-chart descriptions merged into the registry
+      # (component_path => one-liner, from config/component_descriptions.yml).
+      # Absent file -> nil, so the registry stays lint-identical without it.
+      def registry_descriptions
+        path = root.join("config/component_descriptions.yml")
+        path.exist? ? YAML.safe_load_file(path) : nil
+      end
+
+      # The installable-item projection, boot-free from the COMMITTED
+      # registry - the docs site aggregates this with poetry-ui's for
+      # /r/*.json.
+      def registry_items
+        Poetry::Core::RegistryItems.new(
+          registry: YAML.safe_load_file(root.join(Poetry::Core::Registry::RELATIVE_PATH)),
+          root: root, gem_name: "poetry-charts", gem_version: VERSION
+        )
+      end
+
+      # Parameter kinds that count toward a helper's positional arity.
+      POSITIONAL_PARAM_KINDS = %i[req opt].freeze
+
+      # Each poetry_* helper's max positional arity, read from its real
+      # signature.
+      def registry_helper_args
+        require root.join("app/helpers/poetry/charts/components_helper.rb")
+        ComponentsHelper.public_instance_methods(false).grep(/\Apoetry_/).sort.filter_map do |name|
+          params = ComponentsHelper.instance_method(name).parameters
+          next if params.any? { |kind, _param| kind == :rest }
+
+          [name.to_s, params.count { |kind, _param| POSITIONAL_PARAM_KINDS.include?(kind) }]
+        end.to_h
+      end
+
+      # The tooltip display string shared by every chart family (matches
+      # TooltipContent's Row: delimited numerics from RAW values so
+      # integers stay integers, verbatim strings, nil for missing).
+      #
+      # @param value [Object] the raw datum value
+      def display_value(value)
+        return nil if value.nil?
+        return ActiveSupport::NumberHelper.number_to_delimited(value) if value.is_a?(Numeric)
+
+        value.to_s
+      end
+    end
+
+    private_class_method :registry_helper_args
+  end
+end
+
+require_relative "charts/engine"

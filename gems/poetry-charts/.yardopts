@@ -1,0 +1,12 @@
+--markup markdown
+--load yard/core_plugin.rb
+--no-private
+--hide-api private
+--readme README.md
+--exclude (^|/)preview\.rb$
+lib/**/*.rb
+app/**/*.rb
+-
+CHANGELOG.md
+THIRD_PARTY_NOTICES.md
+LICENSE.txt

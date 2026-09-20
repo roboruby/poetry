@@ -1,0 +1,42 @@
+<%# The live-mode demo: the server renders the first window
+    complete; the ticker below streams a sliding window through the
+    payload-script channel (textContent replacement - exactly the shape a
+    turbo_stream.update delivers) and the client renderer redraws with
+    ZERO server round trips. The tooltip keeps serving fresh values
+    mid-stream (hover or arrow keys while it runs). %>
+<div style="width: 640px; margin: 2rem auto;" data-slot="demo-live">
+  <%= poetry_chart :area, data: @data, id: "live-demo", live: true,
+                   animation_duration: 300,
+                   config: { desktop: { label: "Desktop", color: "var(--chart-1)" },
+                             mobile: { label: "Mobile", color: "var(--chart-2)" } },
+                   margin: { left: 12, right: 12 } do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis data_key: :t %>
+    <% chart.with_area data_key: :mobile, stack: :a %>
+    <% chart.with_area data_key: :desktop, stack: :a %>
+    <% chart.with_tooltip indicator: :dot %>
+  <% end %>
+</div>
+
+<script type="module">
+  // A sliding-window ticker: every 800ms push one point and shift one out,
+  // writing the payload script's JSON in place - the live controller's
+  // MutationObserver does the rest. Pre-formatted category strings, per
+  // the live doctrine (the client never formats).
+  const script = document.querySelector('[data-slot="chart-live-payload"]')
+  const payload = JSON.parse(script.textContent)
+  let tick = payload.spec.data.length
+
+  window.__liveTicks = 0
+  setInterval(() => {
+    tick += 1
+    const point = {
+      t: `T${tick}`,
+      desktop: Math.round(180 + Math.sin(tick / 1.5) * 90 + (tick % 3) * 14),
+      mobile: Math.round(110 + Math.cos(tick / 2.0) * 60 + (tick % 5) * 9),
+    }
+    payload.spec.data = [...payload.spec.data.slice(1), point]
+    script.textContent = JSON.stringify(payload)
+    window.__liveTicks += 1
+  }, 800)
+</script>

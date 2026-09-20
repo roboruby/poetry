@@ -1,0 +1,227 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+module Poetry
+  module Charts
+    # The live-mode option surface. live: true embeds the
+    # {spec, frame} payload (spec = the FROZEN v1 the adapter door speaks,
+    # frame = the private geometry envelope); lambdas and labels raise
+    # teaching errors; live: false leaves the markup untouched.
+    class LiveTest < ViewComponent::TestCase
+      DATA = [
+        { month: "January", desktop: 186, mobile: 80 },
+        { month: "February", desktop: 305, mobile: 200 },
+        { month: "March", desktop: 237, mobile: 120 }
+      ].freeze
+
+      CONFIG = {
+        desktop: { label: "Desktop", color: "var(--chart-1)" },
+        mobile: { label: "Mobile", color: "var(--chart-2)" }
+      }.freeze
+
+      def payload(html)
+        script = html.css('script[data-slot="chart-live-payload"]').first
+
+        assert script, "the live payload script is embedded"
+        JSON.parse(script.text)
+      end
+
+      def test_live_embeds_the_frozen_spec_plus_the_frame_envelope
+        html = render_inline(AreaChart::Component.new(data: DATA, config: CONFIG, id: "lv",
+                                                      live: true, margin: { left: 12, right: 12 })) do |chart|
+          chart.with_grid
+          chart.with_x_axis(data_key: :month)
+          chart.with_area(data_key: :mobile, stack: :a)
+          chart.with_area(data_key: :desktop, stack: :a)
+        end
+
+        parsed = payload(html)
+
+        assert_equal 1, parsed["version"]
+        spec = parsed["spec"]
+
+        assert_equal 1, spec["version"]
+        assert_equal "area", spec["type"]
+        assert_equal(%w[mobile desktop], spec["series"].map { |s| s["key"] })
+        assert_equal(%w[a a], spec["series"].map { |s| s["stack"] })
+        assert_equal "month", spec.dig("axes", "x", "dataKey")
+        assert_equal 3, spec["data"].length
+
+        frame = parsed["frame"]
+
+        assert_equal 640, frame["width"]
+        assert_equal({ "top" => 5, "right" => 12, "bottom" => 5, "left" => 12 }, frame["margin"])
+        assert_equal "vertical", frame["layout"]
+        assert_equal "point", frame["xScaleType"]
+        assert frame["categoryAxis"]
+        assert_equal 5, frame["yTickCount"]
+      end
+
+      def test_bar_frame_carries_the_slot_and_radius_knobs
+        html = render_inline(BarChart::Component.new(data: DATA, config: CONFIG, id: "lv",
+                                                     live: true)) do |chart|
+          chart.with_x_axis(data_key: :month)
+          chart.with_bar(data_key: :desktop, radius: [4, 4, 0, 0])
+        end
+
+        frame = payload(html)["frame"]
+
+        assert_equal "band", frame["xScaleType"]
+        assert_equal 4, frame["barGap"]
+        assert_equal "10%", frame["barCategoryGap"]
+        assert_equal [4, 4, 0, 0], frame.dig("series", "desktop", "radius")
+      end
+
+      def test_horizontal_bar_speaks_through_the_y_axis
+        html = render_inline(BarChart::Component.new(data: DATA, config: CONFIG, id: "lv",
+                                                     live: true, orientation: :horizontal)) do |chart|
+          chart.with_y_axis(data_key: :month)
+          chart.with_bar(data_key: :desktop)
+        end
+
+        parsed = payload(html)
+
+        assert_equal "month", parsed.dig("spec", "axes", "y", "dataKey")
+        assert_equal "horizontal", parsed.dig("frame", "layout")
+      end
+
+      def test_a_horizontal_chart_s_grown_strip_and_label_cut_ride_the_frame
+        long = [{ name: "A" * 80, v: 1 }, { name: "Collins, Norris and Nelson", v: 2 }]
+        html = render_inline(BarChart::Component.new(data: long, config: { v: { label: "V" } }, id: "lv",
+                                                     live: true, orientation: :horizontal)) do |chart|
+          chart.with_y_axis(data_key: :name)
+          chart.with_bar(data_key: :v)
+        end
+
+        frame = payload(html)["frame"]
+
+        assert_equal 201, frame.dig("margin", "left"), "5 + (256 cap - 60 reserved): the client recompute agrees"
+        assert_equal 38, frame["categoryLabelMaxChars"]
+      end
+
+      def test_without_live_nothing_is_embedded
+        html = render_inline(LineChart::Component.new(data: DATA, config: CONFIG, id: "lv")) do |chart|
+          chart.with_line(data_key: :desktop)
+        end
+
+        assert_empty html.css('script[data-slot="chart-live-payload"]')
+      end
+
+      def test_sync_rides_the_frame_as_a_tooltip_value
+        html = render_inline(AreaChart::Component.new(data: DATA, config: CONFIG, id: "lv",
+                                                      sync: "dash")) do |chart|
+          chart.with_area(data_key: :desktop)
+          chart.with_tooltip
+        end
+
+        frame = html.css('[data-slot="chart-svg"]').first.parent
+
+        assert_equal "dash", frame["data-poetry--charts--tooltip-sync-value"]
+
+        no_tooltip = render_inline(AreaChart::Component.new(data: DATA, config: CONFIG, id: "lv",
+                                                            sync: "dash")) do |chart|
+          chart.with_area(data_key: :desktop)
+        end
+
+        assert_nil no_tooltip.css('[data-slot="chart-svg"]').first.parent["data-poetry--charts--tooltip-sync-value"],
+                   "sync is a tooltip feature - nothing emits without the slot"
+      end
+
+      def test_legend_toggle_renders_buttons_and_needs_live
+        html = render_inline(AreaChart::Component.new(data: DATA, config: CONFIG, id: "lv",
+                                                      live: true)) do |chart|
+          chart.with_area(data_key: :desktop)
+          chart.with_area(data_key: :mobile)
+          chart.with_legend(toggle: true)
+        end
+
+        buttons = html.css('button[data-slot="chart-legend-item"]')
+
+        assert_equal(%w[desktop mobile], buttons.map { |b| b["data-key"] })
+        assert_equal "click->poetry--charts--live#toggleSeries", buttons.first["data-action"]
+        assert_equal "desktop", buttons.first["data-poetry--charts--live-key-param"]
+
+        error = assert_raises(ArgumentError) do
+          render_inline(AreaChart::Component.new(data: DATA, config: CONFIG, id: "lv")) do |chart|
+            chart.with_area(data_key: :desktop)
+            chart.with_legend(toggle: true)
+          end
+        end
+
+        assert_match(/needs live: true/, error.message)
+      end
+
+      def test_brush_renders_the_strip_and_wires_the_window_controller
+        html = render_inline(LineChart::Component.new(data: DATA, config: CONFIG, id: "lv",
+                                                      live: true, zoom: true)) do |chart|
+          chart.with_x_axis(data_key: :month)
+          chart.with_line(data_key: :desktop)
+          chart.with_brush
+        end
+
+        brush = html.css('g[data-slot="chart-brush"]').first
+
+        assert brush, "the strip renders"
+        assert_equal "pointerdown->poetry--charts--window#startBrush", brush["data-action"]
+        assert_predicate html.css('[data-slot="chart-brush-track"]'), :any?
+        assert_predicate html.css('[data-slot="chart-brush-window"]'), :any?
+        assert_equal(%w[start end], html.css('[data-slot="chart-brush-handle"]').map { |h| h["data-edge"] })
+
+        frame = html.css('[data-slot="chart-svg"]').first.parent
+
+        assert_includes frame["data-controller"], "poetry--charts--window"
+        assert frame["data-poetry--charts--window-plot-value"]
+        assert frame["data-poetry--charts--window-brush-value"]
+
+        svg = html.css('[data-slot="chart-svg"]').first
+
+        assert_includes svg["data-action"], "pointerdown->poetry--charts--window#startZoom"
+        assert_includes svg["data-action"], "dblclick->poetry--charts--window#reset"
+        assert_predicate html.css('[data-slot="chart-zoom-selection"][display="none"]'), :any?
+      end
+
+      def test_window_features_need_live
+        error = assert_raises(ArgumentError) do
+          render_inline(LineChart::Component.new(data: DATA, config: CONFIG, id: "lv")) do |chart|
+            chart.with_line(data_key: :desktop)
+            chart.with_brush
+          end
+        end
+
+        assert_match(/with_brush needs live: true/, error.message)
+
+        error = assert_raises(ArgumentError) do
+          render_inline(LineChart::Component.new(data: DATA, config: CONFIG, id: "lv",
+                                                 zoom: true)) do |chart|
+            chart.with_line(data_key: :desktop)
+          end
+        end
+
+        assert_match(/zoom: true needs live: true/, error.message)
+      end
+
+      def test_lambdas_and_labels_raise_teaching_errors
+        error = assert_raises(ArgumentError) do
+          render_inline(LineChart::Component.new(data: DATA, config: CONFIG, id: "lv",
+                                                 live: true)) do |chart|
+            chart.with_x_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] })
+            chart.with_line(data_key: :desktop)
+          end
+        end
+
+        assert_match(/pre-format the category strings/, error.message)
+
+        error = assert_raises(ArgumentError) do
+          render_inline(BarChart::Component.new(data: DATA, config: CONFIG, id: "lv",
+                                                live: true)) do |chart|
+            chart.with_x_axis(data_key: :month)
+            chart.with_bar(data_key: :desktop, labels: true)
+          end
+        end
+
+        assert_match(/do not support labels/, error.message)
+      end
+    end
+  end
+end

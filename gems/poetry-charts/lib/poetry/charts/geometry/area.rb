@@ -1,0 +1,81 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Charts
+    module Geometry
+      # The area generator: the filled band between a top line (x/x1, y1)
+      # and a baseline (x0, y0), walked forward along the top and
+      # BACKWARD along the buffered baseline per defined-segment (the
+      # x0z/y0z buffers). Stacked areas feed y0/y1 from Stack series;
+      # simple areas use a constant y0 (the axis line).
+      #
+      # @example A simple area over a constant baseline
+      #   Poetry::Charts::Geometry::Area.new(y0: 250.0).path(points)
+      class Area
+        # An area generator over a point list.
+        #
+        # @param x [Proc, Symbol, String, Numeric, nil] the accessor:
+        #   a (d, i) lambda, a hash key, or a constant; defaults to d[0]
+        # @param x1 [Proc, Symbol, String, Numeric, nil] the accessor:
+        #   a (d, i) lambda, a hash key, or a constant; defaults to x
+        # @param y0 [Proc, Symbol, String, Numeric, nil] the accessor:
+        #   a (d, i) lambda, a hash key, or a constant for the baseline
+        # @param y1 [Proc, Symbol, String, Numeric, nil] the accessor:
+        #   a (d, i) lambda, a hash key, or a constant for the topline
+        # @param curve [Symbol] the curve name
+        # @param defined [Proc, nil] the defined predicate (d, i) -> Boolean; nil for every point
+        # @param digits [Integer] path coordinate precision
+        def initialize(x: nil, x1: nil, y0: nil, y1: nil, curve: :linear, defined: nil, digits: 3)
+          @x0 = Line::Accessor.wrap(x) { |d, _i| d[0] }
+          @x1 = x1.nil? ? nil : Line::Accessor.wrap(x1) { |d, _i| d[0] }
+          @y0 = Line::Accessor.wrap(y0) { |_d, _i| 0.0 }
+          @y1 = y1.nil? ? nil : Line::Accessor.wrap(y1) { |d, _i| d[1] }
+          @curve = curve
+          @digits = digits
+          @defined = Line::Accessor.wrap(defined) { |_d, _i| true }
+        end
+
+        # The SVG path for the data (nil when nothing was defined).
+        #
+        # @param data [Enumerable]
+        # @return [String, nil]
+        def path(data)
+          data = data.to_a
+          n = data.length
+          buffer = Path.new(digits: @digits)
+          output = Curve.build(@curve, buffer)
+          defined0 = false
+          x0z = Array.new(n)
+          y0z = Array.new(n)
+          j = 0
+
+          (0..n).each do |i|
+            d = i < n ? data[i] : nil
+            if (!(i < n && @defined.call(d, i))) == defined0
+              defined0 = !defined0
+              if defined0
+                j = i
+                output.area_start
+                output.line_start
+              else
+                output.line_end
+                output.line_start
+                (i - 1).downto(j) { |k| output.point(x0z[k], y0z[k]) }
+                output.line_end
+                output.area_end
+              end
+            end
+            next unless defined0
+
+            x0z[i] = @x0.call(d, i).to_f
+            y0z[i] = @y0.call(d, i).to_f
+            output.point(@x1 ? @x1.call(d, i).to_f : x0z[i],
+                         @y1 ? @y1.call(d, i).to_f : y0z[i])
+          end
+
+          buffer.empty? ? nil : buffer.to_s
+        end
+      end
+    end
+  end
+end

@@ -1,0 +1,46 @@
+{
+  "name": "@poetry/charts",
+  "version": "0.1.5",
+  "private": true,
+  "description": "poetry-charts' Stimulus chrome controllers. Importmap-first (the engine pins this tree); the same tree is the npm channel for bundler hosts.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./app/javascript/poetry/charts/index.js",
+    "./*": "./app/javascript/poetry/charts/*.js"
+  },
+  "files": [
+    "app/javascript"
+  ],
+  "peerDependencies": {
+    "@hotwired/stimulus": ">= 3.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@hotwired/stimulus": "^3.2.2",
+    "@hotwired/turbo": "^8.0.23",
+    "d3-array": "^3.2.4",
+    "d3-format": "^3.1.2",
+    "d3-interpolate": "^3.0.1",
+    "d3-scale": "^4.0.2",
+    "d3-shape": "^3.2.0",
+    "d3-time": "^3.1.0",
+    "d3-time-format": "^4.1.0",
+    "decimal.js-light": "^2.5.1",
+    "esbuild": "^0.28.1",
+    "eslint": "^9.39.5",
+    "eslint-plugin-jsdoc": "^63.0.0",
+    "espree": "^10.4.0",
+    "globals": "^16.0.0",
+    "jsdom": "^30.0.1",
+    "vitest": "^4.1.11"
+  },
+  "scripts": {
+    "test": "npm run vendor:d3:verify && eslint app/javascript && vitest run",
+    "manifest": "MANIFEST_WRITE=1 vitest run test/javascript/controllers_manifest.test.js",
+    "vendor:d3": "node vendor/d3-kernel/build.mjs",
+    "vendor:d3:verify": "node vendor/d3-kernel/build.mjs --verify",
+    "lint": "eslint app/javascript",
+    "jsdoc:floor": "JSDOC_FLOOR_WRITE=1 vitest run test/javascript/jsdoc_floor.test.js"
+  }
+}

@@ -1,0 +1,72 @@
+<%= render Poetry::Charts::Container::Component.new(config: chart_config, id: chart_id.delete_prefix("chart-")) do %>
+  <%= content_tag(:div, frame_attributes.merge("class" => css(:frame))) do %>
+  <svg viewBox="0 0 <%= width %> <%= height %>" class="<%= css(:svg) %>" data-slot="chart-svg" aria-label="<%= svg_label %>" preserveAspectRatio="xMidYMid meet" <%= tag.attributes(svg_interaction_attributes) %>>
+    <%= grid_svg %>
+    <%= cursor_svg(:line) %>
+    <g data-slot="chart-lines">
+      <% series_entries.each do |entry| %>
+        <% if (d = series_path(entry)) %>
+          <%# pathLength="1" normalizes the path to unit length - the motion stylesheet's dash draw-in needs no measurement. %>
+          <path data-slot="chart-line" data-key="<%= entry.key %>" d="<%= d %>" fill="none" stroke="var(--color-<%= entry.key %>)" stroke-width="<%= entry.stroke_width %>"<% if animate? %> pathLength="1"<% end %> />
+        <% end %>
+        <% if entry.dots %>
+          <g data-slot="chart-dots" data-key="<%= entry.key %>">
+            <% markers(entry).each do |marker| %>
+              <circle data-slot="chart-dot" cx="<%= fnum(marker[:x]) %>" cy="<%= fnum(marker[:y]) %>" r="<%= entry.dot_radius %>" fill="<%= dot_fill(entry, marker) %>" />
+            <% end %>
+          </g>
+        <% end %>
+        <% if entry.error_key %>
+          <g data-slot="chart-error-bars" data-key="<%= entry.key %>" aria-hidden="true">
+            <% markers(entry).each do |marker| %>
+              <% range = error_range(marker[:row], entry.error_key, marker[:value]) %>
+              <% if range %>
+                <path class="<%= css(:error_bar) %>" d="<%= error_bar_path(marker[:x], cartesian.y_scale.call(range[0]), cartesian.y_scale.call(range[1]), entry.error_width) %>" fill="none" />
+              <% end %>
+            <% end %>
+          </g>
+        <% end %>
+        <% if entry.labels %>
+          <g data-slot="chart-labels" data-key="<%= entry.key %>">
+            <% markers(entry).each do |marker| %>
+              <text class="<%= css(:label) %>" x="<%= fnum(marker[:x]) %>" y="<%= fnum(marker[:y] - 12) %>" text-anchor="middle"><%= marker_label(marker) %></text>
+            <% end %>
+          </g>
+        <% end %>
+      <% end %>
+    </g>
+    <%= reference_marks_svg %>
+<% if tooltip? %>
+  <g data-slot="chart-active-dots" aria-hidden="true">
+    <% series_entries.each do |entry| %>
+      <% active_dot_markers(entry).each do |marker| %>
+        <circle data-slot="chart-active-dot" data-key="<%= entry.key %>" data-index="<%= marker[:index] %>" cx="<%= fnum(marker[:x]) %>" cy="<%= fnum(marker[:y]) %>" r="4" fill="var(--color-<%= entry.key %>)" display="none" />
+      <% end %>
+    <% end %>
+  </g>
+<% end %>
+    <% if x_axis? %>
+      <g data-slot="chart-x-axis">
+        <% cartesian.categories.each_with_index do |category, i| %>
+          <text class="<%= css(:tick) %>" x="<%= fnum(cartesian.x_centers[i]) %>" y="<%= fnum(cartesian.plot_bottom + x_axis_config.tick_margin) %>" dy="0.71em" text-anchor="middle"><%= x_tick_label(category) %></text>
+        <% end %>
+      </g>
+    <% end %>
+    <% if y_axis? %>
+      <g data-slot="chart-y-axis">
+        <% cartesian.y_ticks.each do |tick| %>
+          <text class="<%= css(:tick) %>" x="<%= fnum(cartesian.plot_left - y_axis_config.tick_margin) %>" y="<%= fnum(cartesian.y_scale.call(tick)) %>" dy="0.355em" text-anchor="end"><%= y_tick_label(tick) %></text>
+        <% end %>
+      </g>
+    <% end %>
+    <%= brush_svg %>
+    <%= zoom_selection_svg %>
+  </svg>
+  <% if legend? %>
+    <%= render legend_component %>
+  <% end %>
+  <% if tooltip? %><%= render tooltip_layer_component %><% end %>
+  <script type="application/json" data-slot="chart-coordinates" <%= tag.attributes(stimulus_attributes_for(:coordinates)) %>><%= script_json(coordinates_json) %></script>
+  <% if live? %><script type="application/json" data-slot="chart-live-payload" <%= tag.attributes(stimulus_attributes_for(:live_payload)) %>><%= script_json(live_payload_json) %></script>
+<% end %>  <% end %>
+<% end %>
