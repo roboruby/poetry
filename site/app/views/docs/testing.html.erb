@@ -54,6 +54,15 @@
         actions = poetry_dropdown_menu("#row-actions")
         actions.choose("Archive", via: :keyboard)
       end
+
+      test "accepting the terms" do
+        visit signup_path
+
+        terms = poetry_checkbox("#user_terms")
+        terms.check(via: :keyboard)
+        assert terms.checked?
+        assert_equal "1", terms.value
+      end
     end
   CODE
   refresh_source = <<~CODE
@@ -248,8 +257,27 @@
             <td>Dialog</td>
             <td><code>open(via:)</code>, <code>close</code>, <code>open?</code>, <code>title</code></td>
           </tr>
+          <tr>
+            <td><code>poetry_checkbox(root)</code></td>
+            <td>Checkbox, Switch</td>
+            <td><code>check(via:)</code>, <code>uncheck(via:)</code>, <code>toggle(via:)</code>, <code>checked?</code>, <code>mixed?</code>, <code>value</code> (what the form submits)</td>
+          </tr>
         </tbody>
       </table>
+      <p>
+        Two controls need a word of their own. A Poetry checkbox is a
+        <code>button[role=checkbox]</code> mirroring a native input that
+        carries the form value with <code>tabindex="-1"</code>, so
+        Capybara's <code>check "Terms"</code> does not find it by label
+        the way it finds a native box: drive the button through the
+        tester above, click the <code>label[for]</code>, or reach the
+        input with <code>find(:checkbox, "Terms", visible: :all)</code>
+        and read its <code>checked?</code>. The segmented date and time
+        fields hide their native input once the controller enhances them;
+        <code>fill_in</code> still sets it through the browser, and a
+        keyboard test types into the segments (<code>find("[data-slot='date-field-segment']", match: :first)</code>)
+        the way a person does.
+      </p>
       <p>
         <code>assert_poetry_controllers_registered</code> is the page-wide
         guard: every Poetry controller on the page must be registered on

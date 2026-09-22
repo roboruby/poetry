@@ -35,16 +35,16 @@ A user's image with an initials fallback.
 
 Class: Poetry::Ui::Avatar::Component - BEM block `poetry-ui-avatar`.
 Content block REQUIRED (the initials fallback) - a blockless call raises.
-- `label:` (string) - required - The person's name - the avatar's accessible name (blank raises). The required flag also carries the fact to the registry so static checks see it.
+- `label:` (string) - The person's name - the avatar's accessible name (role=img). Without one the avatar is decorative (aria-hidden, no role): use that beside the visible name, never for an avatar that stands alone.
 - `size:` (symbol) - one of default|sm|lg, default "default" - The diameter axis.
 - `src:` (string) - The image URL; without it only the initials fallback shows.
 Slots: badge (Decorative presence dot, bottom-right; keep the status meaning in label:.).
-- PART `avatar` - Root span (role=img carrying the accessible name) - fallback, image, and badge layer inside it | states: data-size=default|sm|lg (always - the resolved size)
+- PART `avatar` - Root span (role=img carrying the accessible name, or aria-hidden without label:) - fallback, image, and badge layer inside it | states: data-size=default|sm|lg (always - the resolved size)
 - PART `avatar-fallback` - The initials layer (the content block) - always in the DOM, showing until the image covers it
 - PART `avatar-image` - The <img> layered absolutely over the fallback - only when src: is given; a failed load paints nothing
 - PART `avatar-badge` - The decorative presence dot (the badge slot), bottom-right
 In blocks: `app-shell` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
-- RULE: label: (the person's name) is REQUIRED - it is the avatar's accessible name (role=img).
+- RULE: label: (the person's name) is the avatar's accessible name (role=img); without one the avatar renders decorative (aria-hidden) - right beside the visible name, wrong on its own.
 - RULE: The content block is the fallback (initials) and is also required - it is what shows while the image loads or when it fails.
 - RULE: The badge slot is decorative (a presence dot); put the status meaning in label:, not in the badge.
 - RULE: Stack avatars with poetry_avatar_group; the overflow count is poetry_avatar_group_count.
@@ -78,7 +78,7 @@ Slots: title (The heading line, rendered as a real heading element (title_tag:).
 - PART `card-title` - The heading (title_tag, h3 by default)
 - PART `card-description` - Muted one-liner under the title
 - PART `card-action` - The header's trailing corner control
-- PART `card-content` - The body - the content block renders here
+- PART `card-content` - The body - renders when the content block gives content (a header-and-footer card has no empty body cell)
 - PART `card-footer` - The bottom row (actions/meta)
 In blocks: `app-shell`, `section-card`, `stepper` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Compose with the slots (title/description/action/footer) - never rebuild the header grid by hand.
@@ -160,15 +160,15 @@ Class: Poetry::Ui::Collapsible::Component - BEM block `poetry-ui-collapsible`.
 Content block REQUIRED (the disclosed panel body) - a blockless call raises.
 Slot REQUIRED: with_trigger (the disclosure control) - a call without it raises.
 - `open:` (boolean) - default false - The server-rendered initial state; the trigger toggles it client-side.
-Slots: trigger (The disclosure control - a real button, wired for you (aria-expanded, aria-controls); options merge onto it.; with_trigger yields NOTHING to the block - no |param|, write content directly).
+Slots: trigger (The disclosure control - a composed Button (keywords are Button props), wired for you (aria-expanded, aria-controls).; takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly).
 - PART `collapsible` - The disclosure root - the state controller flips the pair here | states: data-open (expanded (server-rendered from open:; the controller flips the pair at runtime)); data-closed (collapsed (the server-rendered default))
-- PART `collapsible-trigger` - The disclosure button - mirrors aria-expanded | states: data-panel-open (its content is open (controller-written; absent while closed))
+- PART `collapsible-trigger` - The disclosure button - a composed Button - mirrors aria-expanded | states: data-panel-open (its content is open (controller-written; absent while closed)); data-variant (always - the composed Button's variant axis); data-size (always - the composed Button's size axis)
 - PART `collapsible-content` - The disclosure panel - stays in the DOM when closed (hidden) and rides the presence helper on exit | states: data-open (content is open or entering); data-closed (content is closed or animating out (hidden lands after the exit finishes))
 - WIRING root: `poetry--core--state` registers
 - WIRING trigger: `poetry--core--state` actions toggle on click; targets trigger
 - WIRING content: `poetry--core--state` targets content
 - RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the trigger wiring (the Stimulus behavior the overlay needs; poppers add id/aria and their trigger slot, modals hand only the open action) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
-- RULE: The trigger is with_trigger { "label" } - a real button, wired for you (aria-expanded/controls).
+- RULE: The trigger is with_trigger { "label" } - a poetry Button (keywords are Button props: variant:, size:), wired for you (aria-expanded/controls).
 - RULE: Server-render the initial state via open: - never toggle data-open/data-closed by hand.
 - RULE: Content stays in the DOM when closed (hidden) - do not conditionally render it.
 - RULE: For URL-controlled disclosure without JS, render open: from params - the same markup serves both.

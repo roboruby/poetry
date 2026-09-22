@@ -54,6 +54,23 @@ module DocsHelper
     ERB
   end
 
+  # The AlertDialog page's submit: snippet (same reason as above: ERB tags
+  # can't live in Ruby strings inside a template).
+  def alert_dialog_submit_usage
+    <<~ERB.strip
+      <%= button_to "Revoke", token_path(token), method: :delete, form: { id: "revoke-token" },
+                    class: "hidden" %>
+
+      <%= poetry_alert_dialog do |dialog| %>
+        <% dialog.with_trigger(variant: :destructive) { "Revoke token" } %>
+        <% dialog.with_title { "Revoke this token?" } %>
+        <% dialog.with_description { "Services signed with it fail on their next deploy." } %>
+        <% dialog.with_cancel { "Keep token" } %>
+        <% dialog.with_action(variant: :destructive, submit: "revoke-token") { "Revoke token" } %>
+      <% end %>
+    ERB
+  end
+
   # The /pagination guide's per-gem setup snippets (same reason as above:
   # ERB tags can't live in Ruby strings inside a template).
   def pagination_guide_snippets

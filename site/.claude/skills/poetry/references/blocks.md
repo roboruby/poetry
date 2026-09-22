@@ -299,13 +299,17 @@ Source (adapt freely - the sample content is meant to be replaced):
 ## Block: Destructive panel (`destructive-panel`)
 
 A guarded destructive action: heading and consequences in plain language, a severity-tinted alert with the blast radius, and a cancel/confirm action pair.
-Composes: alert, button, icon. Generate: `bin/rails g poetry:block destructive-panel`.
+Composes: alert, alert_dialog, button, icon. Generate: `bin/rails g poetry:block destructive-panel`.
 Source (adapt freely - the sample content is meant to be replaced):
 
 <%# Page framing: the panel keeps its container + breathing room when it
     is the page's subject (a judged-run lesson); drop the outer wrapper
     when composing into an already-padded frame. %>
 <div class="mx-auto max-w-xl p-6">
+  <%# The action is a real form (method: :delete here); the confirmation's
+      action button submits it through the form attribute - no form nests
+      inside the AlertDialog, and the activation stays the user's. %>
+  <%= form_with(url: "#", method: :delete, id: "destructive-panel-form", class: "hidden") { } %>
   <section class="space-y-4 rounded-lg border border-destructive/50 p-6" aria-labelledby="destructive-panel-title">
     <div class="space-y-1">
       <h2 id="destructive-panel-title" class="text-base font-semibold">Revoke deploy token</h2>
@@ -320,9 +324,15 @@ Source (adapt freely - the sample content is meant to be replaced):
     <% end %>
     <div class="flex items-center justify-end gap-2">
       <%= poetry_button(variant: :outline) { "Cancel" } %>
-      <%= poetry_button(variant: :destructive) do |button| %>
-        <% button.with_leading { poetry_icon(name: :trash) } %>
-        Revoke token
+      <%= poetry_alert_dialog do |dialog| %>
+        <% dialog.with_trigger(variant: :destructive) do %>
+          <%= poetry_icon(name: :trash) %>
+          Revoke token
+        <% end %>
+        <% dialog.with_title { "Revoke this deploy token?" } %>
+        <% dialog.with_description { "The three services signed with it fail on their next deploy until a replacement is configured." } %>
+        <% dialog.with_cancel { "Keep token" } %>
+        <% dialog.with_action(variant: :destructive, submit: "destructive-panel-form") { "Revoke token" } %>
       <% end %>
     </div>
   </section>
@@ -533,7 +543,8 @@ Source (adapt freely - the sample content is meant to be replaced):
         </div>
       <% end %>
       <% nav.with_link("Pricing", href: "/pricing") %>
-      <% nav.with_link("Docs", href: "/docs") %>
+      <%# active: marks the current page's link - derive it from the request in an app. %>
+      <% nav.with_link("Docs", href: "/docs", active: true) %>
     <% end %>
     <div class="flex items-center gap-2">
       <%= poetry_button(variant: :ghost, size: :sm, tag: :a, href: "/login") { "Log in" } %>

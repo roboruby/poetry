@@ -1,0 +1,21 @@
+<%# The typed confirmation: a destructive action that must be spelled out
+    before it can run. A Dialog (not an AlertDialog - this one carries a
+    field) holds a form whose input demands the exact phrase; the browser
+    refuses the submit until it matches (pattern + required, no
+    JavaScript), and the footer button submits the form through the form
+    attribute so nothing else has to live inside the dialog. %>
+<%= poetry_dialog do |dialog| %>
+  <% dialog.with_trigger(variant: :destructive) { "Delete workspace" } %>
+  <% dialog.with_title { "Delete this workspace?" } %>
+  <% dialog.with_description { "Every project, member and file in it goes with it. Type the workspace name to confirm." } %>
+  <%= form_with(url: "#", method: :delete, id: "typed-confirmation-form") do %>
+    <%= poetry_field(id: "typed-confirmation-phrase", label_text: "Type acme to confirm",
+                     hint: "The workspace's name, exactly.") do |field| %>
+      <%= poetry_input(name: "confirmation", autocomplete: "off", pattern: "acme", required: true,
+                       **field.control_attributes.transform_keys(&:to_sym)) %>
+    <% end %>
+  <% end %>
+  <% dialog.with_footer do %>
+    <%= poetry_button(variant: :destructive, type: :submit, form: "typed-confirmation-form") { "Delete workspace" } %>
+  <% end %>
+<% end %>

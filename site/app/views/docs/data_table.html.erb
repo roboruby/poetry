@@ -77,6 +77,15 @@
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
       <h2 id="controller">The controller</h2>
       <p>
+        The table's state is four query params, and every URL the
+        component renders carries them: <code>sort</code> (the column
+        key), <code>dir</code> (<code>asc</code> or <code>desc</code>),
+        <code>page</code> and <code>q</code> (the filter text). A
+        controller that already paginates or sorts under other names
+        adopts these four; <code>path:</code> receives them as a hash and
+        must pass them through.
+      </p>
+      <p>
         <code>State.from_params</code> sanitizes at the door:
         <code>sort</code> survives only if it appears in the
         <code>sortable:</code> whitelist and <code>dir</code> only as

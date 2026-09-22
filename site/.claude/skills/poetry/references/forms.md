@@ -9,7 +9,7 @@ An input that suggests options as you type - the text itself is the value.
 
 Class: Poetry::Ui::Autocomplete::Component - BEM block `poetry-ui-autocomplete`.
 - `empty_text:` (string) - default "No results." - The no-matches message; hidden while anything matches.
-- `id:` (string) - Stable DOM id token for the root and list ids.
+- `id:` (string) - The input's DOM id (the Field label target); the root, list and item ids derive from it (-root, -list, -item-n).
 - `label:` (string) - The accessible name (or wire aria-labelledby via html attrs).
 - `name:` (string) - required - The form param key; the input's text submits under it as-is.
 - `open:` (boolean) - default false - Server-renders the suggestion popup open.
@@ -34,6 +34,7 @@ Class: Poetry::Ui::Autocomplete::Component - BEM block `poetry-ui-autocomplete`.
 - RULE: empty_text: renders the no-matches state (hidden while anything matches).
 - RULE: open_on_focus: false waits for typing before suggesting.
 - RULE: Server-side filtering stays yours: render fewer items on re-render - the client filter only narrows what the server sent.
+- RULE: id: is the INPUT's id (a Field's label for= target); the root, list and item ids derive from it, and every aria-* attribute lands on the input (Field control_attributes splat in).
 
 ## button (`poetry_button`)
 
@@ -47,7 +48,7 @@ REQUIRED - one of a content block / with_leading / with_trailing / loading: (not
 - `href:` (string) - The link target; implies the anchor form.
 - `label:` (string) - The accessible name for icon-only usage - not visible text.
 - `loading:` (boolean) - default false - The no-JS loading state: aria-busy, a spinner, and the control disabled.
-- `tag:` (symbol) - one of button|a, default "button" - Renders the same styling on an <a> when :a - navigation wearing button clothes.
+- `tag:` (symbol) - one of button|a, default "button" - Renders the same styling on an <a> when :a - navigation wearing button clothes; the anchor keeps its link semantics (no role).
 - `type:` (symbol) - one of button|submit|reset, default "button" - The native button type; ignored when the button renders as an anchor.
 Slots: leading (Optional leading visual, rendered inside the icon span.), trailing (Optional trailing visual, rendered inside the icon span.).
 - PART `button` - The rendered control itself (<button>, or <a> when tag: :a) - every visual state rides here | states: data-variant=default|destructive|outline|secondary|ghost|link (always - the resolved variant); data-size=default|xs|sm|lg|icon|icon-xs|icon-sm|icon-lg (always - the resolved size); data-loading (loading: is set (aria-busy rides along))
@@ -340,7 +341,7 @@ Class: Poetry::Ui::FieldGroup::Component - BEM block `poetry-ui-field_group`.
 Class: Poetry::Ui::FieldSeparator::Component - BEM block `poetry-ui-field_separator`.
 - PART `field-separator` - The divider row - a decorative Separator drawn across it | states: data-content=true|false (always - whether the inline caption renders)
 - PART `field-separator-content` - The inline caption span (block content) - sits on the line, backed by the page background
-- RULE: Divides stacked fields inside a poetry_field_group - not a general-purpose rule (that is poetry_separator).
+- RULE: The labelled rule, anywhere: between stacked fields in a poetry_field_group, under a sign-in form ("Or continue with"), at a date break; poetry_separator is the bare rule.
 - RULE: Pass a block for the inline caption form ("Or continue with") - the caption sits on the line, backed by the page background.
 
 ## fieldset (`poetry_fieldset`)
@@ -465,7 +466,7 @@ In blocks: `data-index` - for a screen, start from the block (MCP compose/descri
 A styled wrapper around the real native select control.
 
 Class: Poetry::Ui::NativeSelect::Component - BEM block `poetry-ui-native_select`.
-- `described_by:` (string) - Space-separated hint/error ids wired to the SELECT itself - a raw aria-describedby in html_attributes would land on the wrapper div, unassociated for assistive technology.
+- `described_by:` (string) - Space-separated hint/error ids wired to the SELECT itself - the older spelling of a raw aria-describedby, which lands on the select too (every aria-* attribute does).
 - `disabled:` (boolean) - default false - Disables the native select; the wrapper dims the whole pair.
 - `id:` (string) - The select's dom id - the seam a Label's for_id: points at.
 - `invalid:` (boolean) - default false - Marks the select invalid (aria-invalid on the element itself).
@@ -478,7 +479,7 @@ Class: Poetry::Ui::NativeSelect::Component - BEM block `poetry-ui-native_select`
 - PART `native-select-option` - An <option> from the options: fast path (or poetry_native_select_option) - Canvas system colors keep the native dropdown legible
 In blocks: `data-index` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: This is a REAL <select> - use it for plain picking; the JS Select is for styled options.
-- RULE: Pair it with a Label (for_id: its id) or a Field - a bare select has no accessible name.
+- RULE: Pair it with a Label (for_id: its id) or a Field - a bare select has no accessible name; id: and every aria-* attribute land on the <select> itself (a Field's control_attributes splat straight in).
 - RULE: The fast path is options: [[label, value], ...] + selected:; a content block overrides it.
 
 ## number_field (`poetry_number_field`)
@@ -879,9 +880,10 @@ Inside `form_with(model:, builder:)` forms the builder derives label, hint, erro
 - RULE: f.input(:attribute) is the default call - the type is inferred (attachment -> file, AR enum -> select, column type, name heuristics); as: overrides it.
 - RULE: f.association(:company) reflects the association - belongs_to renders a Combobox on the foreign key, has_many the select-all checkbox group on singular_ids.
 - RULE: Validations become attributes: presence -> aria-required (NEVER native required), length -> maxlength/minlength, numericality -> min/max/step; f.input(required: true/false) overrides the presence inference (aria only).
-- RULE: Hints/placeholders resolve from poetry_form.* i18n (simple_form.* keys keep working as a fallback); pass hint:/placeholder: to override.
+- RULE: Labels resolve from Rails' helpers.label.* i18n, then poetry_form.labels/simple_form.labels, then human_attribute_name (a model-less form humanizes the method); hints and placeholders from helpers.placeholder.*, then poetry_form.*/simple_form.*. Pass label:/hint:/placeholder: to override on any builder method, label: false to drop the visible label, aria_label: for an accessible name alone.
+- RULE: Model-less forms work: form_with(url:, scope:) renders every builder method with labels from the scope's i18n or the method name and empty values; false and 0 survive as values on a model (a tristate select shows No).
 - RULE: Every builder field renders a Field, so wiring tests assert on its parts: the label is data-slot=field-label, the hint data-slot=field-description, the error data-slot=field-error, with the control inside (never a bare hint or description slot).
-- RULE: f.submit renders a poetry Button with the Rails i18n label; f.fieldset(legend:)/f.group lay out sections; boolean f.input renders the horizontal Field (switch: true -> the setting row).
+- RULE: f.submit renders a poetry Button named commit with its label as the value (params[:commit], Rails' own name; f.button is named button); f.fieldset(legend:)/f.group lay out sections; boolean f.input, f.check_box and f.switch render the horizontal Field with the visible label (switch: true -> the setting row); f.file_input flips the form to multipart and seats its block beside the control (the preview).
 - RULE: Apps on simple_form: add poetry-simple_form instead of rewriting views - Poetry::SimpleForm.activate! maps every simple_form type onto this builder (poetry-only controls via as: :switch/:slider/:otp/:sensitive/:tag_group/:date_picker/:calendar/:combobox/:autocomplete/:native_select; poetry: options merge last). The bridge is the migration path, form_with(builder:) the end state.
 
 Methods:
@@ -889,14 +891,14 @@ Methods:
 - `input` - the inferred entrypoint: type from as:/attachments/enums/column/name
 - `association` - reflection-derived: belongs_to -> Combobox(fk), has_many -> checkbox group(_ids)
 - `field` - Field-wrapped Input/Textarea (as: :textarea; orientation:/hint_position: pass through)
-- `check_box / switch` - bare toggles (Rails check_box parity; switch = role=switch)
+- `check_box / switch` - toggles in the horizontal Field (Rails check_box arity; switch = role=switch)
 - `radio_group` - collection_radio_buttons-equivalent on RadioGroup
-- `checkbox_group` - collection_check_boxes-equivalent on the select-all group (ONE clearing hidden)
+- `checkbox_group` - collection_check_boxes-equivalent on the select-all group (ONE clearing hidden; value_method:/label_method:/checked:)
 - `poetry_select / poetry_combobox` - the rich pickers (Rails choice shapes; combobox multiple: chips)
 - `native_select` - the styled native <select> (zero JS)
-- `slider / otp_field / number_field / date_field / time_field / file_input` - dedicated Field-wrapped controls
+- `slider / otp_field / number_field / date_field / time_field / file_input` - dedicated Field-wrapped controls (file_input: multipart form, block = the preview seat)
 - `search_field / sensitive_input / autocomplete / tag_group / date_picker / calendar` - the poetry-only control mappings
-- `submit / button` - poetry Buttons (type submit; loading: opt-in)
+- `submit / button` - poetry Buttons (type submit; submit is named commit; loading: opt-in)
 - `fieldset / group` - layout frames yielding the builder
 
 `f.input` `as:` values: string, search, password, text, number, date, time, file, sensitive, select, combobox, radio_group, autocomplete, tag_group, date_picker, calendar, slider, otp, native_select, datetime, email, url, tel, boolean, switch, enum

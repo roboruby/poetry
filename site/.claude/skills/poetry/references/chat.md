@@ -69,8 +69,9 @@ A streaming-aware transcript that keeps the latest message in view.
 
 Class: Poetry::Ui::MessageScroller::Component - BEM block `poetry-ui-message_scroller`.
 - `auto_scroll:` (boolean) - default true - Follows the newest message while the reader sits at the bottom; scrolling up releases the follow.
+- `content_id:` (string) - default "dynamic" - The content element's dom id - the Turbo Stream append target; defaults to "<id>-messages".
 - `default_scroll_position:` (symbol) - one of start|end|last-anchor, default "end" - Where the viewport lands on connect: the newest message (:end), the oldest (:start), or the last anchor: true row (:"last-anchor").
-- `id:` (string) - required - The transcript's stable identifier - the content element renders dom id "<id>-messages" for Turbo Streams to target.
+- `id:` (string) - required - The transcript's stable identifier - the content element renders dom id "<id>-messages" for Turbo Streams to target (content_id: overrides it).
 - `jump_button:` (boolean) - default true - Renders the floating jump-to-latest button (shown once the reader leaves the bottom).
 - `preserve_scroll_on_prepend:` (boolean) - default true - Keeps the reading position stable when history prepends into the content element.
 - `track_visibility:` (boolean) - default false - Opt-in observation of which rows are on screen - emits a visibility event as the visible set changes.
@@ -85,8 +86,8 @@ Class: Poetry::Ui::MessageScroller::Component - BEM block `poetry-ui-message_scr
 - WIRING spacer: `poetry--core--message-scroller` targets spacer
 - WIRING jump_button: `poetry--core--message-scroller` actions scrollToEnd; targets button
 - RULE: Stream by UPDATING a row's text (morph/replace) - appending nodes per token re-announces the row to AT.
-- RULE: Rows are poetry_message_scroller_item(id: message.id) - the id is how anchoring and Streams find them.
-- RULE: Append new turns with a Turbo Stream targeting the content element's dom id.
+- RULE: Rows are poetry_message_scroller_item(id: message.id) - the id is how anchoring and Streams find them; dom_id: gives the row a DOM id (dom_id(message)) for replace/morph streams.
+- RULE: Append new turns with a Turbo Stream targeting the content element's dom id - content_id:, "<id>-messages" by default.
 - RULE: History loads PREPEND into the content element - the controller preserves the reading position.
 - RULE: Never nest a second scroll container inside the viewport.
 

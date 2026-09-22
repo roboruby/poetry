@@ -31,7 +31,7 @@ A site-navigation bar with links and optional dropdown panels.
 Class: Poetry::Ui::NavigationMenu::Component - BEM block `poetry-ui-navigation_menu`.
 - `label:` (string) - required - The nav landmark's accessible name - a page may hold more than one nav.
 - `viewport:` (boolean) - default false - Opts into the shared morphing viewport: panels adopt into one positioned card that morphs size and position between triggers. Off, each panel opens under its own item (also the no-JS shape).
-Slots: items (The bar entries. with_item(title, value:) { panel } declares a trigger + panel (disabled: true renders the trigger inert - native disabled plus data-disabled; hover and click never open its panel); with_item(title, href:) a top-level link (with_link is the shorthand).; many; with_item yields NOTHING to the block - no |param|, write content directly).
+Slots: items (The bar entries. with_item(title, value:) { panel } declares a trigger + panel (disabled: true renders the trigger inert - native disabled plus data-disabled; hover and click never open its panel); with_item(title, href:) a top-level link (with_link is the shorthand; active: true marks it the current page - data-active plus aria-current=page).; many; with_item yields NOTHING to the block - no |param|, write content directly).
 - PART `navigation-menu` - The <nav> landmark around the whole disclosure bar | states: data-viewport (the mode marker ("true" = shared morphing viewport, "false" = per-item panels) - the dictionary's group-data chrome keys on it)
 - PART `navigation-menu-list` - The bar row holding every item
 - PART `navigation-menu-item` - One bar entry - wraps a trigger + panel pair or a top-level link | states: data-value (the entry's value - the controller's open/close key)
@@ -47,7 +47,7 @@ In blocks: `top-nav` - for a screen, start from the block (MCP compose/describe_
 - WIRING trigger: `poetry--core--navigation-menu` actions toggle on click
 - WIRING positioner: `poetry--core--popper` targets content | `poetry--core--navigation-menu` actions cancelClose on pointerenter, scheduleClose on pointerleave
 - RULE: label: is REQUIRED (the nav landmark's accessible name).
-- RULE: with_item(title, value:) declares a trigger + panel; with_link(title, href:) is a top-level destination - use links for pages, panels for groups of links.
+- RULE: with_item(title, value:) declares a trigger + panel; with_link(title, href:) is a top-level destination - use links for pages, panels for groups of links; active: true marks the current page's link (data-active + aria-current=page).
 - RULE: Panel content is poetry_navigation_menu_link entries (active: marks the current page) - never buttons; navigation navigates.
 - RULE: This is a DISCLOSURE bar: Tab moves through it normally and nothing traps - do not wire menu/menuitem roles. Keys: ArrowLeft/ArrowRight step between triggers and links, ArrowDown opens the focused trigger's panel (focus stays on the trigger; Tab enters it), Escape closes and returns focus to the trigger.
 - RULE: Rich panels (title + description grids) want viewport: true - the shared morphing card contains and sizes them; the default per-item mode suits simple link lists (the top-nav block shows the viewport pattern).

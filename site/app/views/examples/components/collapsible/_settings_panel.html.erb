@@ -8,7 +8,7 @@
   </div>
   <div class="mt-4">
     <%= poetry_collapsible do |collapsible| %>
-      <% collapsible.with_trigger(class: "flex w-full items-center justify-between text-sm font-medium [&[aria-expanded=true]>svg]:rotate-180") do %>
+      <% collapsible.with_trigger(variant: :ghost, class: "w-full justify-between px-0 hover:bg-transparent [&[aria-expanded=true]>svg]:rotate-180") do %>
         Advanced options
         <%= poetry_icon(name: :"chevron-down", class: "size-4 text-muted-foreground transition-transform") %>
       <% end %>

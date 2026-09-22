@@ -80,7 +80,11 @@
           <code>dom_id</code>, so identity follows the record, and a sorted
           or filtered collection morphs with state staying on the right row.
           Literals parameterize (<code>key: "faq"</code> becomes
-          <code>poetry-accordion-faq</code>).
+          <code>poetry-accordion-faq</code>). The table part helpers mint
+          no ids of their own: <code>poetry_table_row(key: record)</code>
+          derives <code>table-row-&lt;dom_id&gt;</code> for a morph to
+          follow, and <code>key:</code> on a cell or head is consumed
+          without rendering.
         </li>
         <li>
           <strong>Form components</strong> ride the form builder's
