@@ -1050,7 +1050,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 84
+          "line": 87
         },
         {
           "name": "content_class",
@@ -1067,7 +1067,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 127
+          "line": 130
         },
         {
           "name": "description",
@@ -1118,7 +1118,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 124
+          "line": 127
         },
         {
           "name": "title",
@@ -1186,7 +1186,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 84
+          "line": 87
         },
         {
           "name": "with_description",
