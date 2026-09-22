@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.8]
+
+### Changed
+
+- No file in this gem moved, but the builder it renders through did (poetry-ui 0.1.8): `label:` on an input is now the visible Field label for every input type, where a select, combobox, number or date input used to take it as an invisible accessible name; `label: false` drops the label. `false` and `0` reach the controls as values (a boolean select shows No), a virtual attribute with no reader renders empty, and `simple_form.labels`/`hints`/`placeholders` keys resolve after Rails' own `helpers.label` and `helpers.placeholder` keys.
+
 ## [0.1.7] - 2026-09-20
 
 ### Changed
