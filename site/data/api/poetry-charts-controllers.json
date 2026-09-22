@@ -1,5 +1,5 @@
 {
-  "poetry_version": "0.1.7",
+  "poetry_version": "0.1.8",
   "gem": "@poetry/charts",
   "objects": [
     {

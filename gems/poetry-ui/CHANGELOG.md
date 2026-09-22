@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.1.8]
+## [0.1.8] - 2026-09-22
 
 The robosite proof: a full Jumpstart Pro application re-skinned on Poetry surfaced 28 findings; the 20 that were Poetry's to fix land here, with the form builder taking most of them.
 
