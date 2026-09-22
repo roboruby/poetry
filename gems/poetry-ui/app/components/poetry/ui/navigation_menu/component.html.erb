@@ -10,7 +10,7 @@
           <% end %>
           <%= content_tag(:div, capture(&entry.panel), panel_attributes(entry)) %>
         <% else %>
-          <a href="<%= entry.href %>" data-slot="navigation-menu-link" class="<%= css(:trigger) %>"><%= entry.title %></a>
+          <a href="<%= entry.href %>" data-slot="navigation-menu-link" class="<%= css(:trigger) %> data-active:bg-muted/50 data-active:hover:bg-muted data-active:focus:bg-muted" <%= tag.attributes(active_attributes(entry)) %>><%= entry.title %></a>
         <% end %>
       <% end %>
     <% end %>

@@ -36,6 +36,8 @@ module Poetry
           "never a bare Dialog, never data-turbo-confirm.",
           "with_title AND with_description are REQUIRED (both raise).",
           "The action must be an explicit user activation - agents NEVER auto-submit the action.",
+          "with_action(submit: \"form-id\") makes the action that form's submit button (type=submit plus the " \
+          "form attribute - no form nests inside the dialog); the activation stays the user's.",
           "No extra form fields inside an AlertDialog - if input is needed, use a Dialog.",
           "Cancel keeps variant: :outline; do not make cancel visually primary."
         ].freeze
@@ -66,10 +68,20 @@ module Poetry
         renders_one :media, doc: "Optional icon/illustration well above the title."
         renders_one :action,
                     doc: "The confirming choice (required) - a Button; pass variant: :destructive for deletes. " \
-                         "Activating it also closes the dialog (a caller-supplied data-action opts out).",
-                    renders: lambda { |**options, &block|
+                         "Activating it also closes the dialog (a caller-supplied data-action opts out). " \
+                         "submit: names the form it submits (type=submit plus the form attribute).",
+                    renders: lambda { |submit: nil, **options, &block|
+                      if submit && options[:href]
+                        raise ArgumentError,
+                              "AlertDialog with_action(submit:) is a form's submit button - it takes no href:"
+                      end
+
                       options[:data] =
                         { slot: "alert-dialog-action", action: stimulus_action(:close) }.merge(options[:data] || {})
+                      if submit
+                        options[:type] = :submit
+                        options[:form] = submit
+                      end
                       Button::Component.new(**options, &block)
                     }
         renders_one :cancel,

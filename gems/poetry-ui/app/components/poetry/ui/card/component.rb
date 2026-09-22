@@ -56,7 +56,8 @@ module Poetry
         part "card-title", "The heading (title_tag, h3 by default)"
         part "card-description", "Muted one-liner under the title"
         part "card-action", "The header's trailing corner control"
-        part "card-content", "The body - the content block renders here"
+        part "card-content", "The body - renders when the content block gives content (a header-and-footer " \
+                             "card has no empty body cell)"
         part "card-footer", "The bottom row (actions/meta)"
 
         # The caller's footer block, captured by with_footer.

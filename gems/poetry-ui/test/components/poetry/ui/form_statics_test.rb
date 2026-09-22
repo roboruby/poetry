@@ -70,6 +70,19 @@ module Poetry
         assert_equal "true", select["aria-invalid"]
       end
 
+      def test_native_select_aria_lands_on_the_select_and_layout_stays_on_the_wrapper
+        html = render_inline(NativeSelect::Component.new(options: %w[A], class: "w-40", "aria-required": true,
+                                                         aria: { describedby: "country-hint" }))
+        select = html.css("select").first
+        wrapper = html.css('[data-slot="native-select-wrapper"]').first
+
+        assert_equal "true", select["aria-required"], "a Field's control_attributes reach the real control"
+        assert_equal "country-hint", select["aria-describedby"], "nested aria: {} too"
+        assert_includes wrapper["class"], "w-40", "layout attributes stay on the wrapper"
+        assert_nil wrapper["aria-required"]
+        assert_nil wrapper["aria-describedby"]
+      end
+
       # -- InputGroup -----------------------------------------------------------
 
       def test_input_group_is_a_group_surface

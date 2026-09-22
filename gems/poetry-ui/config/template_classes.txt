@@ -14,6 +14,9 @@ border-primary
 bottom-2
 contents
 data-[side]:visible
+data-active:bg-muted/50
+data-active:focus:bg-muted
+data-active:hover:bg-muted
 data-open:opacity-100
 data-open:translate-y-0
 flex

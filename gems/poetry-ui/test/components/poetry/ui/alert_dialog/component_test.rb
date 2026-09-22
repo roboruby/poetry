@@ -126,6 +126,18 @@ module Poetry
           refute plain.key?("autofocus"), "only cancel autofocuses"
         end
 
+        def test_action_submit_names_the_form_it_submits
+          action = doc(render_alert { |d| d.with_action(variant: :destructive, submit: "delete-account") { "Delete" } })
+                   .css('[data-slot="alert-dialog-action"]').first
+
+          assert_equal "submit", action["type"]
+          assert_equal "delete-account", action["form"], "the form attribute - no form nests inside the dialog"
+          assert_includes action["data-action"], "dialog#close", "activation still closes the dialog"
+          assert_raises(ArgumentError) do
+            render_alert { |d| d.with_action(submit: "delete-account", href: "/x") { "Delete" } }
+          end
+        end
+
         def test_no_x_close_button_renders
           html = render_alert
           fragment = doc(html)

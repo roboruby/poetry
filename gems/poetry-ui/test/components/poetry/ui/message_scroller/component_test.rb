@@ -67,6 +67,22 @@ module Poetry
           assert_includes render_scroller { "x" }, 'id="chat-messages"'
         end
 
+        def test_content_id_names_the_stream_target_directly
+          html = render_scroller(content_id: "messages") { "x" }
+
+          assert_match(/<div[^>]*id="messages"[^>]*role="log"/, html)
+          refute_includes html, "chat-messages"
+        end
+
+        def test_a_row_takes_a_dom_id_beside_its_message_id
+          html = ApplicationController.renderer.render(
+            inline: %(<%= poetry_message_scroller_item(id: 7, dom_id: "message_7") { "hi" } %>), layout: false
+          )
+
+          assert_match(/<div[^>]*id="message_7"/, html)
+          assert_includes html, 'data-message-id="7"'
+        end
+
         def test_jump_button_is_a_poetry_button_wired_to_scroll_to_end
           html = render_scroller { "x" }
 

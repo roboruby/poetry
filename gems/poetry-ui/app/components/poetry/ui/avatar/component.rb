@@ -20,7 +20,8 @@ module Poetry
 
         # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
-          "label: (the person's name) is REQUIRED - it is the avatar's accessible name (role=img).",
+          "label: (the person's name) is the avatar's accessible name (role=img); without one the avatar " \
+          "renders decorative (aria-hidden) - right beside the visible name, wrong on its own.",
           "The content block is the fallback (initials) and is also required - it is what shows " \
           "while the image loads or when it fails.",
           "The badge slot is decorative (a presence dot); put the status meaning in label:, " \
@@ -31,15 +32,15 @@ module Poetry
         renders_one :badge, doc: "Decorative presence dot, bottom-right; keep the status meaning in label:."
 
         option :src, :string, doc: "The image URL; without it only the initials fallback shows."
-        option :label, :string, required: true,
-                                doc: "The person's name - the avatar's accessible name (blank raises). The required " \
-                                     "flag also carries the fact to the registry so static checks see it."
+        option :label, :string, doc: "The person's name - the avatar's accessible name (role=img). Without one " \
+                                     "the avatar is decorative (aria-hidden, no role): use that beside the " \
+                                     "visible name, never for an avatar that stands alone."
         option :size, :symbol, default: :default, doc: "The diameter axis."
 
         validates :size, inclusion: { in: SIZES }
 
-        part "avatar", "Root span (role=img carrying the accessible name) - fallback, image, " \
-                       "and badge layer inside it",
+        part "avatar", "Root span (role=img carrying the accessible name, or aria-hidden without label:) - " \
+                       "fallback, image, and badge layer inside it",
              states: {
                "data-size" => { condition: "always - the resolved size", values: SIZES.map(&:to_s) }
              }
@@ -49,11 +50,9 @@ module Poetry
                              "is given; a failed load paints nothing"
         part "avatar-badge", "The decorative presence dot (the badge slot), bottom-right"
 
-        # Enforces label: and the initials content block.
+        # Enforces the initials content block.
         # @api private
         def before_render
-          raise ArgumentError, "Avatar requires label: (the person's name - its accessible name)" if label.blank?
-
           ensure_content!
         end
 
@@ -65,14 +64,11 @@ module Poetry
           end
         end
 
-        # The root's attributes: this component's markup over the core default.
+        # The root's attributes: this component's markup over the core
+        # default - named (role=img) with a label, decorative without.
         def root_attributes
-          super(
-            {
-              "data-size" => size,
-              "role" => "img", "aria-label" => label
-            }
-          )
+          naming = label.present? ? { "role" => "img", "aria-label" => label } : { "aria-hidden" => "true" }
+          super({ "data-size" => size }.merge(naming))
         end
 
         private

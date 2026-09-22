@@ -20,10 +20,11 @@ module Poetry
       # (a scripting: none media rule), so the region stays readable.
       #
       # The content element is the Turbo Stream append target (stable
-      # dom id "<id>-messages"); rows are poetry_message_scroller_item
-      # wrappers keyed by message id. History prepends keep the reading
-      # position; a row rendered with anchor: true becomes the held
-      # reading line.
+      # dom id "<id>-messages", or content_id:); rows are
+      # poetry_message_scroller_item wrappers keyed by message id (dom_id:
+      # gives a row its own DOM id for Streams). History prepends keep
+      # the reading position; a row rendered with anchor: true becomes the
+      # held reading line.
       #
       # @example A chat transcript
       #   render Poetry::Ui::MessageScroller::Component.new(id: "chat") do
@@ -36,8 +37,10 @@ module Poetry
         # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Stream by UPDATING a row's text (morph/replace) - appending nodes per token re-announces the row to AT.",
-          "Rows are poetry_message_scroller_item(id: message.id) - the id is how anchoring and Streams find them.",
-          "Append new turns with a Turbo Stream targeting the content element's dom id.",
+          "Rows are poetry_message_scroller_item(id: message.id) - the id is how anchoring and Streams find " \
+          "them; dom_id: gives the row a DOM id (dom_id(message)) for replace/morph streams.",
+          "Append new turns with a Turbo Stream targeting the content element's dom id - content_id:, " \
+          "\"<id>-messages\" by default.",
           "History loads PREPEND into the content element - the controller preserves the reading position.",
           "Never nest a second scroll container inside the viewport."
         ].freeze
@@ -73,7 +76,10 @@ module Poetry
 
         option :id, :string, required: true,
                              doc: "The transcript's stable identifier - the content element renders dom id " \
-                                  "\"<id>-messages\" for Turbo Streams to target."
+                                  "\"<id>-messages\" for Turbo Streams to target (content_id: overrides it)."
+        option :content_id, :string, default: -> { "#{id}-messages" },
+                                     doc: "The content element's dom id - the Turbo Stream append target; " \
+                                          "defaults to \"<id>-messages\"."
         option :auto_scroll, :boolean, default: true,
                                        doc: "Follows the newest message while the reader sits at the bottom; " \
                                             "scrolling up releases the follow."
@@ -155,7 +161,7 @@ module Poetry
         # @api private
         def content_attributes
           {
-            "id" => "#{id}-messages", "class" => css(:content),
+            "id" => content_id, "class" => css(:content),
             "data-slot" => "message-scroller-content",
             "role" => "log", "aria-relevant" => "additions"
           }.merge(stimulus_attributes_for(:content))

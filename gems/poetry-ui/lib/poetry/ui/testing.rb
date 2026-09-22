@@ -5,6 +5,7 @@ require_relative "testing/select"
 require_relative "testing/combobox"
 require_relative "testing/menu"
 require_relative "testing/dialog"
+require_relative "testing/checkbox"
 require_relative "testing/registration"
 
 module Poetry
@@ -80,6 +81,17 @@ module Poetry
       # @return [Dialog]
       def poetry_dialog(root, session: nil)
         Dialog.new(root, session: session || testing_session)
+      end
+
+      # A Checkbox (or Switch) tester rooted at the control, or at any
+      # element holding one (a Field, a table row).
+      #
+      # @param root [String, Capybara::Node::Element] the control or its holder
+      # @param session [Capybara::Session, nil] defaults to the test's
+      #   `page` (or Capybara.current_session)
+      # @return [Checkbox]
+      def poetry_checkbox(root, session: nil)
+        Checkbox.new(root, session: session || testing_session)
       end
 
       # Every poetry controller identifier on the current page that the

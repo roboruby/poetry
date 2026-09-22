@@ -23,7 +23,8 @@ module Poetry
         # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "This is a REAL <select> - use it for plain picking; the JS Select is for styled options.",
-          "Pair it with a Label (for_id: its id) or a Field - a bare select has no accessible name.",
+          "Pair it with a Label (for_id: its id) or a Field - a bare select has no accessible name; id: and " \
+          "every aria-* attribute land on the <select> itself (a Field's control_attributes splat straight in).",
           "The fast path is options: [[label, value], ...] + selected:; a content block overrides it."
         ].freeze
 
@@ -36,8 +37,8 @@ module Poetry
         option :disabled, :boolean, default: false, doc: "Disables the native select; the wrapper dims the whole pair."
         option :invalid, :boolean, default: false, doc: "Marks the select invalid (aria-invalid on the element itself)."
         option :described_by, :string,
-               doc: "Space-separated hint/error ids wired to the SELECT itself - a raw aria-describedby in " \
-                    "html_attributes would land on the wrapper div, unassociated for assistive technology."
+               doc: "Space-separated hint/error ids wired to the SELECT itself - the older spelling of a raw " \
+                    "aria-describedby, which lands on the select too (every aria-* attribute does)."
 
         validates :size, inclusion: { in: SIZES }
 
@@ -77,10 +78,12 @@ module Poetry
           )
         end
 
-        # The select's attributes: name, id, label, described-by, disabled and invalid state.
+        # The select's attributes: name, id, label, described-by, disabled
+        # and invalid state, over the caller's aria-* (pulled off the root
+        # in #initialize).
         # @api private
         def select_attributes
-          attrs = { "data-slot" => "native-select", "data-size" => size, "class" => css(:select) }
+          attrs = { "data-slot" => "native-select", "data-size" => size, "class" => css(:select) }.merge(@select_aria)
           attrs["name"] = name if name.present?
           attrs["id"] = id if id.present?
           attrs["aria-label"] = label if label.present?
@@ -92,11 +95,17 @@ module Poetry
 
         private
 
-        # options: pairs are structural data, not a typed option.
+        # options: pairs are structural data, not a typed option. The
+        # aria-* attributes (flat, or nested aria: {}) come off the root for
+        # the select - the Select trigger pattern, so a Field's
+        # control_attributes name the real control.
         def initialize(options: nil, selected: nil, **)
           super(**)
           @options = options
           @selected = selected
+          @select_aria = @html_attributes.keys.grep(/\Aaria-/).to_h { |key| [key, @html_attributes.delete(key)] }
+          nested = @html_attributes.delete("aria")
+          nested.each { |key, value| @select_aria["aria-#{key}"] = value } if nested.is_a?(Hash)
         end
 
         # The select element with its content.

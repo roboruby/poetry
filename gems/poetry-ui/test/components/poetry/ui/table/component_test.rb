@@ -12,8 +12,8 @@ module Poetry
       # are asserted on the raw string (HTML5 fragment parsing drops a <td>
       # outside a <table>).
       class ComponentTest < ViewComponent::TestCase
-        def erb(source)
-          ApplicationController.renderer.render(inline: source, layout: false)
+        def erb(source, **locals)
+          ApplicationController.renderer.render(inline: source, locals: locals, layout: false)
         end
 
         def test_the_component_wraps_a_real_table_in_an_overflow_container
@@ -61,6 +61,22 @@ module Poetry
 
           assert_includes html, "<td" # no block = an empty cell, not a crash
           assert_includes html, 'data-slot="table-cell"'
+        end
+
+        def test_key_is_identity_on_a_row_and_consumed_everywhere_else
+          record = Struct.new(:id) do
+            def to_model = self
+            def model_name = ActiveModel::Name.new(self.class, nil, "Invoice")
+            def to_key = [id]
+            def persisted? = true
+          end.new(7)
+          html = erb(%(<%= poetry_table_row(key: record) { "r" } %><%= poetry_table_cell(key: "x") { "c" } %>) +
+                     %(<%= poetry_table_row(key: "draft", id: "mine") { "r" } %>), record: record)
+
+          assert_match(/<tr[^>]*id="table-row-invoice_7"/, html, "a keyed row derives its id from the record")
+          assert_match(/<tr[^>]*id="mine"/, html, "an explicit id wins")
+          refute_match(/\skey=/, html, "key: never renders as an attribute")
+          refute_match(/<td[^>]*id=/, html, "a keyed cell mints nothing")
         end
 
         def test_sticky_header_adds_the_scroll_mechanism_and_merges_the_container_cap

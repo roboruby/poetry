@@ -260,7 +260,7 @@ components:
       many: false
       description: 'The confirming choice (required) - a Button; pass variant: :destructive
         for deletes. Activating it also closes the dialog (a caller-supplied data-action
-        opts out).'
+        opts out). submit: names the form it submits (type=submit plus the form attribute).'
       component: poetry/ui/button
       setter_args:
         action: 0
@@ -317,6 +317,9 @@ components:
     - with_title AND with_description are REQUIRED (both raise).
     - The action must be an explicit user activation - agents NEVER auto-submit the
       action.
+    - 'with_action(submit: "form-id") makes the action that form''s submit button
+      (type=submit plus the form attribute - no form nests inside the dialog); the
+      activation stays the user''s.'
     - No extra form fields inside an AlertDialog - if input is needed, use a Dialog.
     - 'Cancel keeps variant: :outline; do not make cancel visually primary.'
     required_slots:
@@ -559,7 +562,8 @@ components:
       description: The no-matches message; hidden while anything matches.
     - name: id
       type: string
-      description: Stable DOM id token for the root and list ids.
+      description: The input's DOM id (the Field label target); the root, list and
+        item ids derive from it (-root, -list, -item-n).
     - name: label
       type: string
       description: The accessible name (or wire aria-labelledby via html attrs).
@@ -646,6 +650,9 @@ components:
     - 'open_on_focus: false waits for typing before suggesting.'
     - 'Server-side filtering stays yours: render fewer items on re-render - the client
       filter only narrows what the server sent.'
+    - 'id: is the INPUT''s id (a Field''s label for= target); the root, list and item
+      ids derive from it, and every aria-* attribute lands on the input (Field control_attributes
+      splat in).'
     parts:
     - name: autocomplete
       description: Root wrapper carrying the controller + popper pair
@@ -740,10 +747,9 @@ components:
     options:
     - name: label
       type: string
-      required: true
-      description: The person's name - the avatar's accessible name (blank raises).
-        The required flag also carries the fact to the registry so static checks see
-        it.
+      description: 'The person''s name - the avatar''s accessible name (role=img).
+        Without one the avatar is decorative (aria-hidden, no role): use that beside
+        the visible name, never for an avatar that stands alone.'
     - name: size
       type: symbol
       variants:
@@ -770,8 +776,9 @@ components:
     - group_count
     capsule: 51971e7f585d
     agent_rules:
-    - 'label: (the person''s name) is REQUIRED - it is the avatar''s accessible name
-      (role=img).'
+    - 'label: (the person''s name) is the avatar''s accessible name (role=img); without
+      one the avatar renders decorative (aria-hidden) - right beside the visible name,
+      wrong on its own.'
     - The content block is the fallback (initials) and is also required - it is what
       shows while the image loads or when it fails.
     - The badge slot is decorative (a presence dot); put the status meaning in label:,
@@ -781,8 +788,8 @@ components:
     identity: false
     parts:
     - name: avatar
-      description: Root span (role=img carrying the accessible name) - fallback, image,
-        and badge layer inside it
+      description: Root span (role=img carrying the accessible name, or aria-hidden
+        without label:) - fallback, image, and badge layer inside it
       states:
       - attr: data-size
         condition: always - the resolved size
@@ -1087,7 +1094,7 @@ components:
       - a
       default: button
       description: Renders the same styling on an <a> when :a - navigation wearing
-        button clothes.
+        button clothes; the anchor keeps its link semantics (no role).
     - name: type
       type: symbol
       variants:
@@ -1508,7 +1515,8 @@ components:
     - name: card-action
       description: The header's trailing corner control
     - name: card-content
-      description: The body - the content block renders here
+      description: The body - renders when the content block gives content (a header-and-footer
+        card has no empty body cell)
     - name: card-footer
       description: The bottom row (actions/meta)
   poetry/ui/carousel:
@@ -1978,8 +1986,9 @@ components:
     slots:
     - name: trigger
       many: false
-      description: The disclosure control - a real button, wired for you (aria-expanded,
-        aria-controls); options merge onto it.
+      description: The disclosure control - a composed Button (keywords are Button
+        props), wired for you (aria-expanded, aria-controls).
+      component: poetry/ui/button
       setter_args:
         trigger: 0
       yieldless:
@@ -2004,7 +2013,8 @@ components:
       poppers add id/aria and their trigger slot, modals hand only the open action)
       - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag);
       without compose: the classic composed Button renders.'
-    - The trigger is with_trigger { "label" } - a real button, wired for you (aria-expanded/controls).
+    - 'The trigger is with_trigger { "label" } - a poetry Button (keywords are Button
+      props: variant:, size:), wired for you (aria-expanded/controls).'
     - 'Server-render the initial state via open: - never toggle data-open/data-closed
       by hand.'
     - Content stays in the DOM when closed (hidden) - do not conditionally render
@@ -2024,10 +2034,14 @@ components:
       - attr: data-closed
         condition: collapsed (the server-rendered default)
     - name: collapsible-trigger
-      description: The disclosure button - mirrors aria-expanded
+      description: The disclosure button - a composed Button - mirrors aria-expanded
       states:
       - attr: data-panel-open
         condition: its content is open (controller-written; absent while closed)
+      - attr: data-variant
+        condition: always - the composed Button's variant axis
+      - attr: data-size
+        condition: always - the composed Button's size axis
     - name: collapsible-content
       description: The disclosure panel - stays in the DOM when closed (hidden) and
         rides the presence helper on exit
@@ -5396,8 +5410,9 @@ components:
     - line
     capsule: 3cacac000edf
     agent_rules:
-    - Divides stacked fields inside a poetry_field_group - not a general-purpose rule
-      (that is poetry_separator).
+    - 'The labelled rule, anywhere: between stacked fields in a poetry_field_group,
+      under a sign-in form ("Or continue with"), at a date break; poetry_separator
+      is the bare rule.'
     - Pass a block for the inline caption form ("Or continue with") - the caption
       sits on the line, backed by the page background.
     identity: false
@@ -7113,6 +7128,11 @@ components:
       default: true
       description: Follows the newest message while the reader sits at the bottom;
         scrolling up releases the follow.
+    - name: content_id
+      type: string
+      default: dynamic
+      description: The content element's dom id - the Turbo Stream append target;
+        defaults to "<id>-messages".
     - name: default_scroll_position
       type: symbol
       variants:
@@ -7125,8 +7145,9 @@ components:
     - name: id
       type: string
       required: true
-      description: The transcript's stable identifier - the content element renders
-        dom id "<id>-messages" for Turbo Streams to target.
+      description: 'The transcript''s stable identifier - the content element renders
+        dom id "<id>-messages" for Turbo Streams to target (content_id: overrides
+        it).'
     - name: jump_button
       type: boolean
       default: true
@@ -7186,8 +7207,10 @@ components:
     - Stream by UPDATING a row's text (morph/replace) - appending nodes per token
       re-announces the row to AT.
     - 'Rows are poetry_message_scroller_item(id: message.id) - the id is how anchoring
-      and Streams find them.'
-    - Append new turns with a Turbo Stream targeting the content element's dom id.
+      and Streams find them; dom_id: gives the row a DOM id (dom_id(message)) for
+      replace/morph streams.'
+    - Append new turns with a Turbo Stream targeting the content element's dom id
+      - content_id:, "<id>-messages" by default.
     - History loads PREPEND into the content element - the controller preserves the
       reading position.
     - Never nest a second scroll container inside the viewport.
@@ -7408,9 +7431,9 @@ components:
     options:
     - name: described_by
       type: string
-      description: Space-separated hint/error ids wired to the SELECT itself - a raw
-        aria-describedby in html_attributes would land on the wrapper div, unassociated
-        for assistive technology.
+      description: Space-separated hint/error ids wired to the SELECT itself - the
+        older spelling of a raw aria-describedby, which lands on the select too (every
+        aria-* attribute does).
     - name: disabled
       type: boolean
       default: false
@@ -7449,7 +7472,8 @@ components:
     - This is a REAL <select> - use it for plain picking; the JS Select is for styled
       options.
     - 'Pair it with a Label (for_id: its id) or a Field - a bare select has no accessible
-      name.'
+      name; id: and every aria-* attribute land on the <select> itself (a Field''s
+      control_attributes splat straight in).'
     - 'The fast path is options: [[label, value], ...] + selected:; a content block
       overrides it.'
     identity: false
@@ -7500,7 +7524,8 @@ components:
       description: 'The bar entries. with_item(title, value:) { panel } declares a
         trigger + panel (disabled: true renders the trigger inert - native disabled
         plus data-disabled; hover and click never open its panel); with_item(title,
-        href:) a top-level link (with_link is the shorthand).'
+        href:) a top-level link (with_link is the shorthand; active: true marks it
+        the current page - data-active plus aria-current=page).'
       setter_args:
         item: 1
       yieldless:
@@ -7559,8 +7584,9 @@ components:
       events: []
     agent_rules:
     - 'label: is REQUIRED (the nav landmark''s accessible name).'
-    - with_item(title, value:) declares a trigger + panel; with_link(title, href:)
-      is a top-level destination - use links for pages, panels for groups of links.
+    - 'with_item(title, value:) declares a trigger + panel; with_link(title, href:)
+      is a top-level destination - use links for pages, panels for groups of links;
+      active: true marks the current page''s link (data-active + aria-current=page).'
     - 'Panel content is poetry_navigation_menu_link entries (active: marks the current
       page) - never buttons; navigation navigates.'
     - 'This is a DISCLOSURE bar: Tab moves through it normally and nothing traps -
@@ -12154,13 +12180,20 @@ helpers:
   poetry_sidebar_rail: {}
   poetry_sidebar_separator: {}
   poetry_sidebar_trigger: {}
-  poetry_table_body: {}
-  poetry_table_caption: {}
-  poetry_table_cell: {}
-  poetry_table_footer: {}
-  poetry_table_head: {}
-  poetry_table_header: {}
-  poetry_table_row: {}
+  poetry_table_body:
+    identity: false
+  poetry_table_caption:
+    identity: false
+  poetry_table_cell:
+    identity: false
+  poetry_table_footer:
+    identity: false
+  poetry_table_head:
+    identity: false
+  poetry_table_header:
+    identity: false
+  poetry_table_row:
+    identity: false
   poetry_tooltip_provider: {}
   poetry_webmcp_form:
     yields: 'the form builder (Poetry::Ui::FormBuilder unless builder: says otherwise)
@@ -12248,6 +12281,7 @@ blocks:
       action pair.'
     components:
     - alert
+    - alert_dialog
     - button
     - icon
     template: lib/generators/poetry/block/templates/destructive_panel.html.erb
@@ -12479,15 +12513,23 @@ form_builder:
   - 'Validations become attributes: presence -> aria-required (NEVER native required),
     length -> maxlength/minlength, numericality -> min/max/step; f.input(required:
     true/false) overrides the presence inference (aria only).'
-  - 'Hints/placeholders resolve from poetry_form.* i18n (simple_form.* keys keep working
-    as a fallback); pass hint:/placeholder: to override.'
+  - 'Labels resolve from Rails'' helpers.label.* i18n, then poetry_form.labels/simple_form.labels,
+    then human_attribute_name (a model-less form humanizes the method); hints and
+    placeholders from helpers.placeholder.*, then poetry_form.*/simple_form.*. Pass
+    label:/hint:/placeholder: to override on any builder method, label: false to drop
+    the visible label, aria_label: for an accessible name alone.'
+  - 'Model-less forms work: form_with(url:, scope:) renders every builder method with
+    labels from the scope''s i18n or the method name and empty values; false and 0
+    survive as values on a model (a tristate select shows No).'
   - 'Every builder field renders a Field, so wiring tests assert on its parts: the
     label is data-slot=field-label, the hint data-slot=field-description, the error
     data-slot=field-error, with the control inside (never a bare hint or description
     slot).'
-  - 'f.submit renders a poetry Button with the Rails i18n label; f.fieldset(legend:)/f.group
-    lay out sections; boolean f.input renders the horizontal Field (switch: true ->
-    the setting row).'
+  - 'f.submit renders a poetry Button named commit with its label as the value (params[:commit],
+    Rails'' own name; f.button is named button); f.fieldset(legend:)/f.group lay out
+    sections; boolean f.input, f.check_box and f.switch render the horizontal Field
+    with the visible label (switch: true -> the setting row); f.file_input flips the
+    form to multipart and seats its block beside the control (the preview).'
   - 'Apps on simple_form: add poetry-simple_form instead of rewriting views - Poetry::SimpleForm.activate!
     maps every simple_form type onto this builder (poetry-only controls via as: :switch/:slider/:otp/:sensitive/:tag_group/:date_picker/:calendar/:combobox/:autocomplete/:native_select;
     poetry: options merge last). The bridge is the migration path, form_with(builder:)
@@ -12498,18 +12540,20 @@ form_builder:
       group(_ids)'
     field: 'Field-wrapped Input/Textarea (as: :textarea; orientation:/hint_position:
       pass through)'
-    check_box / switch: bare toggles (Rails check_box parity; switch = role=switch)
+    check_box / switch: toggles in the horizontal Field (Rails check_box arity; switch
+      = role=switch)
     radio_group: collection_radio_buttons-equivalent on RadioGroup
     checkbox_group: collection_check_boxes-equivalent on the select-all group (ONE
-      clearing hidden)
+      clearing hidden; value_method:/label_method:/checked:)
     poetry_select / poetry_combobox: 'the rich pickers (Rails choice shapes; combobox
       multiple: chips)'
     native_select: the styled native <select> (zero JS)
-    slider / otp_field / number_field / date_field / time_field / file_input: dedicated
-      Field-wrapped controls
+    slider / otp_field / number_field / date_field / time_field / file_input: 'dedicated
+      Field-wrapped controls (file_input: multipart form, block = the preview seat)'
     search_field / sensitive_input / autocomplete / tag_group / date_picker / calendar: the
       poetry-only control mappings
-    submit / button: 'poetry Buttons (type submit; loading: opt-in)'
+    submit / button: 'poetry Buttons (type submit; submit is named commit; loading:
+      opt-in)'
     fieldset / group: layout frames yielding the builder
   input_types:
   - string

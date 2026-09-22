@@ -149,9 +149,18 @@ module Poetry
           assert_equal "verify-code", input["id"], "the label-for target is the REAL control"
           assert_equal "verify-code-error verify-code-hint", input["aria-describedby"]
           assert_equal "true", input["aria-invalid"]
+          assert_nil input["aria-label"], "the Field label names the input through its id - no default aria-label"
           root = fragment.css('[data-slot="input-otp-container"]').first
 
           assert_nil root["aria-describedby"], "input-facing attributes never leak onto the container"
+        end
+
+        def test_a_bare_input_carries_the_default_name_until_the_caller_names_it
+          assert_equal "One-time code", render_otp.css("input").first["aria-label"]
+          labelled = render_otp("aria-labelledby": "code-label").css("input").first
+
+          assert_equal "code-label", labelled["aria-labelledby"]
+          assert_nil labelled["aria-label"]
         end
 
         def test_source_exact_classes_land_on_container_slot_and_caret

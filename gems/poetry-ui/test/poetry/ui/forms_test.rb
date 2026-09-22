@@ -671,6 +671,131 @@ module Poetry
       ensure
         I18n.reload!
       end
+
+      def test_labels_read_rails_helpers_keys_then_the_poetry_form_chain
+        I18n.backend.store_translations(:en,
+                                        helpers: { label: { poetry_ui_forms_test_contact: { email: "Rails email" } } },
+                                        poetry_form: { labels: { "poetry/ui/forms_test/contact": {
+                                          email: "Poetry email", nickname: "Poetry nickname"
+                                        } } })
+        html = render_form(Contact.new)
+
+        assert_includes html, ">Rails email</label>", "helpers.label.<object_name>.<method> wins, as f.label reads it"
+        assert_includes html, ">Poetry nickname</label>", "the poetry_form labels chain follows"
+      ensure
+        I18n.reload!
+      end
+
+      def test_direct_control_calls_read_the_placeholder_and_hint_chains
+        I18n.backend.store_translations(:en,
+                                        helpers: { placeholder: { poetry_ui_forms_test_contact: { nickname: "ada" } } },
+                                        poetry_form: { hints: { "poetry/ui/forms_test/contact": {
+                                          nickname: "Shown on your profile."
+                                        } } })
+        html = render_form(Contact.new)
+
+        assert_includes html[/<input[^>]*\[nickname\][^>]*>/], 'placeholder="ada"', "helpers.placeholder, on form.field"
+        assert_includes html, "Shown on your profile.", "the hint chain, on a direct form.field call"
+      ensure
+        I18n.reload!
+      end
+
+      # -- Values, labels and model-less forms (the robosite findings) --------
+
+      class Tristate
+        include ActiveModel::Model
+
+        attr_accessor :active, :count, :country, :terms, :roles
+      end
+
+      def render_tristate(erb, model: Tristate.new, locals: {})
+        ApplicationController.renderer.render(
+          inline: "<%= form_with(model: model, url: \"/t\", " \
+                  "builder: Poetry::Ui::FormBuilder) do |form| %>#{erb}<% end %>",
+          locals: { model: model, **locals }, layout: false
+        )
+      end
+
+      def test_false_and_zero_survive_into_the_controls
+        html = render_tristate("<%= form.native_select(:active, [[\"Yes\", true], [\"No\", false]]) %>" \
+                               "<%= form.poetry_select(:active, [[\"Yes\", true], [\"No\", false]]) %>" \
+                               "<%= form.field(:count) %>",
+                               model: Tristate.new(active: false, count: 0))
+        doc = Nokogiri::HTML5.fragment(html)
+
+        assert doc.at_css('[data-slot="native-select"] option[value="false"][selected]'), "false selects No"
+        assert doc.at_css('select[data-slot="select-native"] option[value="false"][selected]')
+        assert_equal "0", doc.at_css('input[name="poetry_ui_forms_test_tristate[count]"]')["value"]
+      end
+
+      def test_a_virtual_attribute_without_a_reader_renders_empty
+        html = render_tristate("<%= form.field(:nickname) %><%= form.native_select(:mood, %w[up down]) %>" \
+                               "<%= form.check_box(:opt_in) %>")
+        doc = Nokogiri::HTML5.fragment(html)
+
+        assert_nil doc.at_css('input[name="poetry_ui_forms_test_tristate[nickname]"]')["value"]
+        assert_empty doc.css('[data-slot="native-select"] option[selected]')
+        assert_equal "false", doc.at_css('[data-slot="checkbox"]')["aria-checked"]
+      end
+
+      def test_a_model_less_form_renders_every_builder_method
+        html = ApplicationController.renderer.render(inline: <<~ERB, layout: false)
+          <%= form_with(url: "/session", scope: :session, builder: Poetry::Ui::FormBuilder) do |form| %>
+            <%= form.field(:email_address) %>
+            <%= form.input(:password) %>
+            <%= form.native_select(:role, %w[member admin]) %>
+            <%= form.check_box(:remember_me) %>
+            <%= form.checkbox_group(:scopes, %w[read write], checked: %w[read]) %>
+            <%= form.submit("Sign in") %>
+          <% end %>
+        ERB
+        doc = Nokogiri::HTML5.fragment(html)
+
+        assert_equal "Email address", doc.at_css('label[for="session_email_address"]').text.strip,
+                     "the label humanizes the method without a model"
+        assert_equal "password", doc.at_css('input[name="session[password]"]')["type"],
+                     "inference degrades to the name heuristic"
+        assert doc.at_css('select[name="session[role]"]')
+        assert doc.at_css('input[name="session[remember_me]"][type="checkbox"]')
+        assert doc.at_css('input[name="session[scopes][]"][value="read"][checked]'), "checked: decides without a reader"
+        refute doc.at_css('input[name="session[scopes][]"][value="write"][checked]')
+        assert_equal "Sign in", doc.at_css('button[type="submit"]')["value"]
+      end
+
+      def test_label_keyword_routes_to_the_field_on_every_control
+        html = render_tristate(<<~ERB, model: Tristate.new(roles: []))
+          <%= form.native_select(:country, %w[pt], label: "Nation") %>
+          <%= form.check_box(:terms, label: "I agree to the terms") %>
+          <%= form.field(:count, label: false, aria_label: "Count") %>
+          <%= form.checkbox_group(:roles, %w[admin], label: "Powers") %>
+          <%= form.radio_group(:active, [[true, "On"], [false, "Off"]], label: "Power") %>
+        ERB
+        doc = Nokogiri::HTML5.fragment(html)
+
+        assert_equal "Nation", doc.at_css('label[for="poetry_ui_forms_test_tristate_country"]').text.strip
+        terms = doc.at_css('label[for="poetry_ui_forms_test_tristate_terms"]')
+
+        assert_equal "I agree to the terms", terms.text.strip, "check_box renders the visible label"
+        assert_equal "horizontal", terms.ancestors('[data-slot="field"]').first["data-orientation"]
+        assert_nil doc.at_css('label[for="poetry_ui_forms_test_tristate_count"]'), "label: false drops the label"
+        assert_equal "Count", doc.at_css('input[name="poetry_ui_forms_test_tristate[count]"]')["aria-label"]
+        assert_includes html, ">Powers</label>"
+        assert_includes html, ">Power</label>"
+        refute_match(/\slabel="/, html, "label: never lands as an attribute")
+      end
+
+      def test_checkbox_group_maps_records_through_value_and_label_methods
+        team = Struct.new(:id, :name)
+        html = render_tristate("<%= form.checkbox_group(:roles, teams, value_method: :id, " \
+                               "label_method: ->(t) { t.name.upcase }, checked: [2]) %>",
+                               locals: { teams: [team.new(1, "Design"), team.new(2, "Engineering")] })
+        doc = Nokogiri::HTML5.fragment(html)
+
+        assert doc.at_css('input[name="poetry_ui_forms_test_tristate[roles][]"][value="2"][checked]')
+        refute doc.at_css('input[name="poetry_ui_forms_test_tristate[roles][]"][value="1"][checked]')
+        assert_includes html, ">ENGINEERING</label>", "a callable label_method is called"
+        assert_includes html, ">DESIGN</label>"
+      end
       # -- Rails-parity + roster coverage -----------------------------------
 
       class RosterProfile
@@ -804,12 +929,17 @@ module Poetry
       end
 
       def test_native_select_describedby_lands_on_the_select_itself
-        html = render_snippet("<%= form.native_select(:country, [[\"USA\", \"us\"]], hint: \"Pick one.\") %>")
+        html = render_snippet("<%= form.native_select(:country, [[\"USA\", \"us\"]], hint: \"Pick one.\") %>" \
+                              "<%= form.native_select(:email, [[\"A\", \"a\"]]) %>")
 
         select_tag = html[/<select[^>]*>/]
 
         assert_match(/aria-describedby="[^"]*-hint"/, select_tag,
                      "the hint association belongs on the <select>, not the wrapper div")
+        required = html[/<select[^>]*\[email\][^>]*>/]
+
+        assert_includes required, 'aria-required="true"', "the presence validator reaches the select"
+        refute_match(/\srequired[\s>=]/, required)
       end
 
       def test_tag_group_renders_one_label_with_describedby_on_the_grid
@@ -850,6 +980,29 @@ module Poetry
 
         assert_match(/<button[^>]*type="submit"/, html)
         assert_includes html, "Create Roster profile"
+        button = html[/<button[^>]*>/]
+
+        assert_includes button, 'name="commit"', "Rails' own submit name - params[:commit] reads the label"
+        assert_includes button, 'value="Create Roster profile"'
+      end
+
+      def test_submit_and_button_names_follow_rails_and_yield_to_the_caller
+        html = render_snippet("<%= form.submit(\"Save draft\", name: \"draft\") %><%= form.button(\"Go\") %>")
+        buttons = Nokogiri::HTML5.fragment(html).css('button[type="submit"]')
+
+        assert_equal(%w[draft button], buttons.map { |button| button["name"] })
+        assert_equal(["Save draft", nil], buttons.map { |button| button["value"] })
+        assert_equal "Go", buttons.last.text.strip
+      end
+
+      def test_file_input_flips_the_form_to_multipart_and_seats_the_preview_block
+        html = render_snippet("<%= form.file_input(:avatar) do %><img alt=\"current\"><% end %>")
+        doc = Nokogiri::HTML5.fragment(html)
+
+        assert_equal "multipart/form-data", doc.at_css("form")["enctype"], "Rails' own file_field line"
+        assert doc.at_css('[data-slot="field"] img[alt="current"]'), "the block renders inside the Field"
+        assert doc.at_css('[data-slot="field"] input[type="file"]')
+        assert_equal "Avatar", doc.at_css("label").text.strip, "a virtual attribute still labels"
       end
 
       def test_fieldset_and_group_yield_the_builder

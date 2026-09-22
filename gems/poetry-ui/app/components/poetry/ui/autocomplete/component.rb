@@ -25,8 +25,15 @@ module Poetry
           "empty_text: renders the no-matches state (hidden while anything matches).",
           "open_on_focus: false waits for typing before suggesting.",
           "Server-side filtering stays yours: render fewer items on re-render - the client " \
-          "filter only narrows what the server sent."
+          "filter only narrows what the server sent.",
+          "id: is the INPUT's id (a Field's label for= target); the root, list and item ids derive " \
+          "from it, and every aria-* attribute lands on the input (Field control_attributes splat in)."
         ].freeze
+
+        # The aria attributes a caller (or a Field's control_attributes)
+        # passes name the INPUT, not the root: pulled off the root in
+        # #initialize and merged into the input's attributes.
+        INPUT_ARIA = /\Aaria-/
 
         use_stimulus do
           on :root do
@@ -69,7 +76,8 @@ module Poetry
 
         option :name, :string, required: true, doc: "The form param key; the input's text submits under it as-is."
         option :value, :string, doc: "The initial input text."
-        option :id, :string, doc: "Stable DOM id token for the root and list ids."
+        option :id, :string, doc: "The input's DOM id (the Field label target); the root, list and item ids " \
+                                  "derive from it (-root, -list, -item-n)."
         option :placeholder, :string, doc: "Placeholder text shown while the input is empty."
         option :label, :string, doc: "The accessible name (or wire aria-labelledby via html attrs)."
         option :empty_text, :string, default: "No results.",
@@ -125,19 +133,19 @@ module Poetry
         # @api private
         def item_models = (@item_models ||= [])
 
-        # The root id: the given id as a token, else a stable instance id.
+        # The input's id: the given id, else a stable instance id.
         # @api private
-        def autocomplete_id
-          @autocomplete_id ||= if (token = dom_id_token(id))
-                                 "poetry-autocomplete-#{token}"
-                               else
-                                 poetry_instance_id("poetry-autocomplete")
-                               end
+        def input_id
+          @input_id ||= id.presence || poetry_instance_id("poetry-autocomplete")
         end
 
-        # The listbox's id.
+        # The root id, derived from the input's.
         # @api private
-        def list_id = "#{autocomplete_id}-list"
+        def autocomplete_id = "#{input_id}-root"
+
+        # The listbox's id, derived from the input's.
+        # @api private
+        def list_id = "#{input_id}-list"
 
         # The root's attributes: this component's markup over the core default.
         def root_attributes
@@ -148,11 +156,12 @@ module Poetry
         # @api private
         def input_attributes
           attrs = {
-            name: name, value: value, placeholder: placeholder, type: :text,
+            name: name, value: value, placeholder: placeholder, type: :text, id: input_id,
             autocomplete: "off", role: "combobox",
             "aria-autocomplete": "list", "aria-expanded": open.to_s, "aria-controls": list_id,
             "data-slot": "autocomplete-input"
           }
+          attrs.merge!(@input_aria)
           attrs[:"aria-label"] = label if label.present?
           attrs.merge(stimulus_attributes_for(:input).transform_keys(&:to_sym))
         end
@@ -177,7 +186,7 @@ module Poetry
         def item_attributes(item, index)
           attrs = {
             "class" => Poetry::Ui::Command::Style.css(:item), "data-slot" => "autocomplete-item",
-            "id" => "#{autocomplete_id}-item-#{index}", "role" => "option",
+            "id" => "#{input_id}-item-#{index}", "role" => "option",
             "data-label" => item.label
           }
           attrs["data-value"] = item.value if item.value.present?
@@ -191,7 +200,19 @@ module Poetry
         # @api private
         Item = Struct.new(:label, :value, :disabled, :highlighted, keyword_init: true)
 
-        private :item_models, :autocomplete_id, :list_id, :input_attributes, :content_attributes
+        private
+
+        # Pulls the aria-* attributes (flat, or nested aria: {}) off the
+        # root for the input - the Select trigger pattern, so a Field's
+        # control_attributes name the real control.
+        def initialize(**)
+          super
+          @input_aria = @html_attributes.keys.grep(INPUT_ARIA).to_h { |key| [key.to_sym, @html_attributes.delete(key)] }
+          nested = @html_attributes.delete("aria")
+          nested.each { |key, value| @input_aria[:"aria-#{key}"] = value } if nested.is_a?(Hash)
+        end
+
+        private :item_models, :input_id, :autocomplete_id, :list_id, :input_attributes, :content_attributes
         private :item_attributes
       end
     end

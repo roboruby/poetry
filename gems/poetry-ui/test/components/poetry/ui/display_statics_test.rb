@@ -31,8 +31,16 @@ module Poetry
         assert_equal "sm", html.css('[data-slot="avatar"]').first["data-size"]
       end
 
-      def test_avatar_requires_its_accessible_name_and_fallback
-        assert_raises(ArgumentError) { render_inline(Avatar::Component.new(src: "/x.jpg")) { "X" } }
+      def test_avatar_without_a_label_is_decorative
+        root = render_inline(Avatar::Component.new(src: "/x.jpg")) { "X" }.css('[data-slot="avatar"]').first
+
+        assert_equal "true", root["aria-hidden"], "no name to announce - hidden, beside the visible name"
+        assert_nil root["role"]
+        assert_nil root["aria-label"]
+        assert_equal "X", root.css('[data-slot="avatar-fallback"]').first.text, "the fallback still renders"
+      end
+
+      def test_avatar_requires_its_fallback
         assert_raises(ArgumentError) { render_inline(Avatar::Component.new(label: "X")) }
       end
 

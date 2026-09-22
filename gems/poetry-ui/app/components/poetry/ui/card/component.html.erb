@@ -6,6 +6,6 @@
       <% if action? %><div data-slot="card-action" class="<%= css(:action) %>"><%= action %></div><% end %>
     </div>
   <% end %>
-  <div data-slot="card-content" class="<%= css(:content, class: content_class) %>"><%= content %></div>
+  <% if content.present? %><div data-slot="card-content" class="<%= css(:content, class: content_class) %>"><%= content %></div><% end %>
   <% if footer? %><%= content_tag(:div, footer_attributes) do %><%= capture(&footer_block) if footer_block %><% end %><% end %>
 <% end %>

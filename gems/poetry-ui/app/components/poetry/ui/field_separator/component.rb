@@ -4,19 +4,21 @@ module Poetry
   module Ui
     # The FieldSeparator family - the divider row between stacked fields.
     module FieldSeparator
-      # The FieldSeparator - the divider between stacked fields inside a
-      # FieldGroup: a Separator drawn across the
-      # row, with an optional inline caption riding on top ("Or continue
-      # with"). The caption is visual chrome on a decorative rule - the
-      # Separator inside stays aria-hidden either way.
+      # The FieldSeparator - the labelled rule: a Separator drawn across
+      # the row with an optional inline caption riding on top ("Or
+      # continue with"). Between stacked fields in a FieldGroup, under a
+      # sign-in form before the provider buttons, at a date break in a
+      # list - anywhere a rule needs a caption. The caption is visual
+      # chrome on a decorative rule - the Separator inside stays
+      # aria-hidden either way.
       #
       # @example A captioned divider between stacked fields
       #   render Poetry::Ui::FieldSeparator::Component.new { "Or continue with" }
       class Component < Poetry::Core::Component
         # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
-          "Divides stacked fields inside a poetry_field_group - not a general-purpose rule " \
-          "(that is poetry_separator).",
+          "The labelled rule, anywhere: between stacked fields in a poetry_field_group, under a sign-in " \
+          "form (\"Or continue with\"), at a date break; poetry_separator is the bare rule.",
           "Pass a block for the inline caption form (\"Or continue with\") - the caption sits " \
           "on the line, backed by the page background."
         ].freeze

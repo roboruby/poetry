@@ -54,7 +54,8 @@ module Poetry
         option :type, :symbol, default: :button,
                                doc: "The native button type; ignored when the button renders as an anchor."
         option :tag, :symbol, default: :button,
-                              doc: "Renders the same styling on an <a> when :a - navigation wearing button clothes."
+                              doc: "Renders the same styling on an <a> when :a - navigation wearing button clothes; " \
+                                   "the anchor keeps its link semantics (no role)."
         option :disabled, :boolean, default: false,
                                     doc: "Disables the control (native disabled; aria-disabled on the anchor form)."
         option :loading, :boolean, default: false,
@@ -139,15 +140,18 @@ module Poetry
         end
 
         # Native <button> gets native semantics (type, real disabled);
-        # `tag: :a` is navigation-styled-as-button: role="button" + the
-        # faux-disabled convention (aria-disabled, href withheld).
+        # `tag: :a` is navigation-styled-as-button: a link that stays a
+        # link (no role - assistive tech announces the destination, and
+        # Enter, not Space, activates it) plus the faux-disabled
+        # convention (aria-disabled, href withheld). A caller's role:
+        # still lands through the passthrough.
         def tag_attributes
           link_tag? ? link_attributes : button_attributes
         end
 
-        # The anchor's attributes: the button role, and the href or the disabled state.
+        # The anchor's attributes: the href or the disabled state.
         def link_attributes
-          attrs = { "role" => "button" }
+          attrs = {}
           if disabled || loading
             attrs["aria-disabled"] = true
           elsif href.present?
