@@ -62,6 +62,13 @@ group :test do
                glob: "gems/dommy/*.gemspec" # monorepo: dommy + dommy-rack + dommy-rails + capybara-dommy
   gem "dommy-js-quickjs", git: "https://github.com/takahashim/dommy-js-quickjs",
                           ref: "2b98eb6c5adc491f89425c2a08cc00a7462c90cb"
+  # dommy's DOM engine, held to the line the pinned dommy SHA was built
+  # against: makiri 0.10.0 (2026-09-21) changed tree mutation with a node
+  # ARGUMENT, and under it a portal placeholder (insertBefore a comment,
+  # then append the content elsewhere) raises "Argument is not a Node" on
+  # the second open - the menubar slide test caught it. Lift the pin with
+  # the dommy SHAs, together.
+  gem "makiri", "~> 0.9.0"
 
   # The pagination-adapter integration tests (poetry:pagination) - the
   # generated adapters are host-app code, never runtime deps.
