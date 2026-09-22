@@ -1023,7 +1023,7 @@
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The confirming choice (required) - a Button; pass variant: :destructive for deletes. Activating it also closes the dialog (a caller-supplied data-action opts out).\n\nSlot: the rendered `action` content.",
+          "docstring": "The confirming choice (required) - a Button; pass variant: :destructive for deletes. Activating it also closes the dialog (a caller-supplied data-action opts out). submit: names the form it submits (type=submit plus the form attribute).\n\nSlot: the rendered `action` content.",
           "params": [],
           "return": {
             "types": [
@@ -1033,7 +1033,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 67
+          "line": 69
         },
         {
           "name": "cancel",
@@ -1050,7 +1050,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 75
+          "line": 84
         },
         {
           "name": "content_class",
@@ -1067,7 +1067,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 118
+          "line": 127
         },
         {
           "name": "description",
@@ -1084,7 +1084,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 65
+          "line": 67
         },
         {
           "name": "media",
@@ -1101,7 +1101,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 66
+          "line": 68
         },
         {
           "name": "size",
@@ -1118,7 +1118,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 115
+          "line": 124
         },
         {
           "name": "title",
@@ -1135,7 +1135,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 64
+          "line": 66
         },
         {
           "name": "trigger",
@@ -1152,14 +1152,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 52
+          "line": 54
         },
         {
           "name": "with_action",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The confirming choice (required) - a Button; pass variant: :destructive for deletes. Activating it also closes the dialog (a caller-supplied data-action opts out).\n\nSlot writer for the `action` slot.",
+          "docstring": "The confirming choice (required) - a Button; pass variant: :destructive for deletes. Activating it also closes the dialog (a caller-supplied data-action opts out). submit: names the form it submits (type=submit plus the form attribute).\n\nSlot writer for the `action` slot.",
           "params": [],
           "return": {
             "types": [
@@ -1169,7 +1169,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 67
+          "line": 69
         },
         {
           "name": "with_cancel",
@@ -1186,7 +1186,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 75
+          "line": 84
         },
         {
           "name": "with_description",
@@ -1203,7 +1203,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 65
+          "line": 67
         },
         {
           "name": "with_media",
@@ -1220,7 +1220,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 66
+          "line": 68
         },
         {
           "name": "with_title",
@@ -1237,7 +1237,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 64
+          "line": 66
         },
         {
           "name": "with_trigger",
@@ -1254,7 +1254,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/alert_dialog/component.rb",
-          "line": 52
+          "line": 54
         }
       ],
       "constants": [
@@ -1709,14 +1709,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/autocomplete/component.rb",
-          "line": 75
+          "line": 83
         },
         {
           "name": "id",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Stable DOM id token for the root and list ids.\n\nConstructor option `id:`.",
+          "docstring": "The input's DOM id (the Field label target); the root, list and item ids derive from it (-root, -list, -item-n).\n\nConstructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -1726,7 +1726,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/autocomplete/component.rb",
-          "line": 72
+          "line": 79
         },
         {
           "name": "label",
@@ -1743,7 +1743,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/autocomplete/component.rb",
-          "line": 74
+          "line": 82
         },
         {
           "name": "name",
@@ -1760,7 +1760,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/autocomplete/component.rb",
-          "line": 70
+          "line": 77
         },
         {
           "name": "open",
@@ -1777,7 +1777,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/autocomplete/component.rb",
-          "line": 77
+          "line": 85
         },
         {
           "name": "open_on_focus",
@@ -1794,7 +1794,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/autocomplete/component.rb",
-          "line": 78
+          "line": 86
         },
         {
           "name": "placeholder",
@@ -1811,7 +1811,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/autocomplete/component.rb",
-          "line": 73
+          "line": 81
         },
         {
           "name": "root_attributes",
@@ -1823,7 +1823,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/autocomplete/component.rb",
-          "line": 143
+          "line": 151
         },
         {
           "name": "side_offset",
@@ -1840,7 +1840,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/autocomplete/component.rb",
-          "line": 79
+          "line": 87
         },
         {
           "name": "value",
@@ -1857,7 +1857,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/autocomplete/component.rb",
-          "line": 71
+          "line": 78
         },
         {
           "name": "with_item",
@@ -1899,7 +1899,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/autocomplete/component.rb",
-          "line": 118
+          "line": 126
         }
       ],
       "constants": [
@@ -1907,6 +1907,11 @@
           "name": "AGENT_RULES",
           "value": "[\n  \"The input IS the value: name: is the param key and free text submits as-is - \" \\\n  \"suggestions are conveniences, not constraints (constrained pick = Combobox).\",\n  \"Items via with_item(label:) -",
           "docstring": "Projected into the registry, llms.txt, and the agent surface."
+        },
+        {
+          "name": "INPUT_ARIA",
+          "value": "/\\Aaria-/",
+          "docstring": "The aria attributes a caller (or a Field's control_attributes)\npasses name the INPUT, not the root: pulled off the root in\n#initialize and merged into the input's attributes."
         }
       ]
     },
@@ -1934,7 +1939,7 @@
       "path": "Poetry::Ui::Avatar::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "A person's image over an always-rendered initials fallback. The\nimage layers absolutely above the fallback with an empty alt, so a\nfailed load paints nothing and the initials show through - zero\nJS, no layout shift. The accessible name lives on the root\n(role=img + aria-label via label:), never on the layered img.\n\n**Anatomy** (`data-slot` parts):\n\n- `avatar` - Root span (role=img carrying the accessible name) - fallback, image, and badge layer inside it\n- `avatar-fallback` - The initials layer (the content block) - always in the DOM, showing until the image covers it\n- `avatar-image` - The <img> layered absolutely over the fallback - only when src: is given; a failed load paints nothing\n- `avatar-badge` - The decorative presence dot (the badge slot), bottom-right",
+      "docstring": "A person's image over an always-rendered initials fallback. The\nimage layers absolutely above the fallback with an empty alt, so a\nfailed load paints nothing and the initials show through - zero\nJS, no layout shift. The accessible name lives on the root\n(role=img + aria-label via label:), never on the layered img.\n\n**Anatomy** (`data-slot` parts):\n\n- `avatar` - Root span (role=img carrying the accessible name, or aria-hidden without label:) - fallback, image, and badge layer inside it\n- `avatar-fallback` - The initials layer (the content block) - always in the DOM, showing until the image covers it\n- `avatar-image` - The <img> layered absolutely over the fallback - only when src: is given; a failed load paints nothing\n- `avatar-badge` - The decorative presence dot (the badge slot), bottom-right",
       "examples": [
         {
           "title": "Image with initials fallback",
@@ -1958,31 +1963,31 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/avatar/component.rb",
-          "line": 31
+          "line": 32
         },
         {
           "name": "label",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The person's name - the avatar's accessible name (blank raises). The required flag also carries the fact to the registry so static checks see it.\n\nConstructor option `label:`.",
+          "docstring": "The person's name - the avatar's accessible name (role=img). Without one the avatar is decorative (aria-hidden, no role): use that beside the visible name, never for an avatar that stands alone.\n\nConstructor option `label:`.",
           "params": [],
           "return": {
             "types": [
               "String"
             ],
-            "text": "required"
+            "text": ""
           },
           "examples": [],
           "file": "app/components/poetry/ui/avatar/component.rb",
-          "line": 34
+          "line": 35
         },
         {
           "name": "root_attributes",
           "scope": "instance",
           "group": null,
           "signature": "root_attributes",
-          "docstring": "The root's attributes: this component's markup over the core default.",
+          "docstring": "The root's attributes: this component's markup over the core\ndefault - named (role=img) with a label, decorative without.",
           "params": [],
           "return": null,
           "examples": [],
@@ -2004,7 +2009,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/avatar/component.rb",
-          "line": 37
+          "line": 38
         },
         {
           "name": "src",
@@ -2021,7 +2026,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/avatar/component.rb",
-          "line": 33
+          "line": 34
         },
         {
           "name": "with_badge",
@@ -2038,13 +2043,13 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/avatar/component.rb",
-          "line": 31
+          "line": 32
         }
       ],
       "constants": [
         {
           "name": "AGENT_RULES",
-          "value": "[\n  \"label: (the person's name) is REQUIRED - it is the avatar's accessible name (role=img).\",\n  \"The content block is the fallback (initials) and is also required - it is what shows \" \\\n  \"while the ",
+          "value": "[\n  \"label: (the person's name) is the avatar's accessible name (role=img); without one the avatar \" \\\n  \"renders decorative (aria-hidden) - right beside the visible name, wrong on its own.\",\n  \"The c",
           "docstring": "Projected into the registry, llms.txt, and the agent surface."
         },
         {
@@ -2505,7 +2510,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/button/component.rb",
-          "line": 58
+          "line": 59
         },
         {
           "name": "href",
@@ -2522,7 +2527,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/button/component.rb",
-          "line": 63
+          "line": 64
         },
         {
           "name": "label",
@@ -2539,7 +2544,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/button/component.rb",
-          "line": 62
+          "line": 63
         },
         {
           "name": "leading",
@@ -2573,7 +2578,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/button/component.rb",
-          "line": 60
+          "line": 61
         },
         {
           "name": "root_attributes",
@@ -2585,7 +2590,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/button/component.rb",
-          "line": 123
+          "line": 124
         },
         {
           "name": "size",
@@ -2609,7 +2614,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Renders the same styling on an <a> when :a - navigation wearing button clothes.\n\nConstructor option `tag:`.",
+          "docstring": "Renders the same styling on an <a> when :a - navigation wearing button clothes; the anchor keeps its link semantics (no role).\n\nConstructor option `tag:`.",
           "params": [],
           "return": {
             "types": [
@@ -2984,7 +2989,7 @@
       "path": "Poetry::Ui::Card::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "A content surface composed from slots: a header (title,\ndescription, and a trailing corner action), the body content\nblock, and a footer row. The header grid gains its trailing\ncolumn automatically when an action is present, and the title\nrenders as a real heading (h3 by default - set title_tag: to fit\nthe page outline).\n\n**Anatomy** (`data-slot` parts):\n\n- `card` - Root container - the vertical flex stack\n- `card-header` - The title row grid - gains a trailing auto column when card-action is present\n- `card-title` - The heading (title_tag, h3 by default)\n- `card-description` - Muted one-liner under the title\n- `card-action` - The header's trailing corner control\n- `card-content` - The body - the content block renders here\n- `card-footer` - The bottom row (actions/meta)",
+      "docstring": "A content surface composed from slots: a header (title,\ndescription, and a trailing corner action), the body content\nblock, and a footer row. The header grid gains its trailing\ncolumn automatically when an action is present, and the title\nrenders as a real heading (h3 by default - set title_tag: to fit\nthe page outline).\n\n**Anatomy** (`data-slot` parts):\n\n- `card` - Root container - the vertical flex stack\n- `card-header` - The title row grid - gains a trailing auto column when card-action is present\n- `card-title` - The heading (title_tag, h3 by default)\n- `card-description` - Muted one-liner under the title\n- `card-action` - The header's trailing corner control\n- `card-content` - The body - renders when the content block gives content (a header-and-footer card has no empty body cell)\n- `card-footer` - The bottom row (actions/meta)",
       "examples": [
         {
           "title": "",
@@ -4765,7 +4770,7 @@
       "path": "Poetry::Ui::Collapsible::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "A disclosure: a trigger button that shows and hides one content\npanel. The server renders the initial open/closed state, the\ntrigger mirrors aria-expanded, and closed content stays in the\nDOM (hidden) so it survives re-renders and stays findable -\nexit animations are awaited before hiding.\n\n**Anatomy** (`data-slot` parts):\n\n- `collapsible` - The disclosure root - the state controller flips the pair here\n- `collapsible-trigger` - The disclosure button - mirrors aria-expanded\n- `collapsible-content` - The disclosure panel - stays in the DOM when closed (hidden) and rides the presence helper on exit",
+      "docstring": "A disclosure: a trigger button that shows and hides one content\npanel. The server renders the initial open/closed state, the\ntrigger mirrors aria-expanded, and closed content stays in the\nDOM (hidden) so it survives re-renders and stays findable -\nexit animations are awaited before hiding.\n\n**Anatomy** (`data-slot` parts):\n\n- `collapsible` - The disclosure root - the state controller flips the pair here\n- `collapsible-trigger` - The disclosure button - a composed Button - mirrors aria-expanded\n- `collapsible-content` - The disclosure panel - stays in the DOM when closed (hidden) and rides the presence helper on exit",
       "examples": [
         {
           "title": "",
@@ -4789,7 +4794,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/collapsible/component.rb",
-          "line": 61
+          "line": 66
         },
         {
           "name": "root_attributes",
@@ -4801,14 +4806,14 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/collapsible/component.rb",
-          "line": 105
+          "line": 112
         },
         {
           "name": "trigger",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The disclosure control - a real button, wired for you (aria-expanded, aria-controls); options merge onto it.\n\nSlot: the rendered `trigger` content.",
+          "docstring": "The disclosure control - a composed Button (keywords are Button props), wired for you (aria-expanded, aria-controls).\n\nSlot: the rendered `trigger` content.",
           "params": [],
           "return": {
             "types": [
@@ -4818,14 +4823,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/collapsible/component.rb",
-          "line": 34
+          "line": 39
         },
         {
           "name": "with_trigger",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The disclosure control - a real button, wired for you (aria-expanded, aria-controls); options merge onto it.\n\nSlot writer for the `trigger` slot.",
+          "docstring": "The disclosure control - a composed Button (keywords are Button props), wired for you (aria-expanded, aria-controls).\n\nSlot writer for the `trigger` slot.",
           "params": [],
           "return": {
             "types": [
@@ -4835,7 +4840,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/collapsible/component.rb",
-          "line": 34
+          "line": 39
         }
       ],
       "constants": [
@@ -4846,13 +4851,18 @@
         },
         {
           "name": "AGENT_RULES",
-          "value": "[\n  ComposableTrigger::AGENT_RULE,\n  \"The trigger is with_trigger { \\\"label\\\" } - a real button, wired for you (aria-expanded/controls).\",\n  \"Server-render the initial state via open: - never toggle d",
+          "value": "[\n  ComposableTrigger::AGENT_RULE,\n  \"The trigger is with_trigger { \\\"label\\\" } - a poetry Button (keywords are Button props: variant:, \" \\\n  \"size:), wired for you (aria-expanded/controls).\",\n  \"Serv",
           "docstring": "Projected into the registry, llms.txt, and the agent surface."
         },
         {
           "name": "REQUIRED_SLOTS",
           "value": "{ trigger: \"the disclosure control\" }.freeze",
           "docstring": "The required slots, stated statically so static checks can flag\na missing trigger without rendering."
+        },
+        {
+          "name": "SLOT_RENDERS",
+          "value": "{ trigger: Button::Component }.freeze",
+          "docstring": "The class the trigger slot renders - with_trigger composes a\nButton, so callers get Button's full option contract."
         }
       ]
     },
@@ -6055,7 +6065,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1560
+          "line": 1581
         },
         {
           "name": "poetry_alert",
@@ -6089,7 +6099,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1036
+          "line": 1054
         },
         {
           "name": "poetry_aspect_ratio",
@@ -6106,7 +6116,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 330
+          "line": 339
         },
         {
           "name": "poetry_attachment",
@@ -6123,7 +6133,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1463
+          "line": 1481
         },
         {
           "name": "poetry_attachment_group",
@@ -6140,7 +6150,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1474
+          "line": 1492
         },
         {
           "name": "poetry_autocomplete",
@@ -6157,7 +6167,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 371
+          "line": 380
         },
         {
           "name": "poetry_avatar",
@@ -6174,7 +6184,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 380
+          "line": 389
         },
         {
           "name": "poetry_badge",
@@ -6208,7 +6218,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 393
+          "line": 402
         },
         {
           "name": "poetry_bubble",
@@ -6225,7 +6235,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1379
+          "line": 1397
         },
         {
           "name": "poetry_bubble_group",
@@ -6242,7 +6252,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1392
+          "line": 1410
         },
         {
           "name": "poetry_button",
@@ -6276,7 +6286,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 802
+          "line": 811
         },
         {
           "name": "poetry_button_group_separator",
@@ -6293,7 +6303,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 822
+          "line": 831
         },
         {
           "name": "poetry_button_group_text",
@@ -6310,7 +6320,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 811
+          "line": 820
         },
         {
           "name": "poetry_calendar",
@@ -6327,7 +6337,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 449
+          "line": 458
         },
         {
           "name": "poetry_card",
@@ -6361,7 +6371,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 736
+          "line": 745
         },
         {
           "name": "poetry_checkbox",
@@ -6378,7 +6388,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1234
+          "line": 1252
         },
         {
           "name": "poetry_checkbox_group",
@@ -6395,7 +6405,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1250
+          "line": 1268
         },
         {
           "name": "poetry_checkbox_group_all",
@@ -6412,7 +6422,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1265
+          "line": 1283
         },
         {
           "name": "poetry_checkbox_group_item",
@@ -6429,7 +6439,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1275
+          "line": 1293
         },
         {
           "name": "poetry_clipboard_text",
@@ -6446,7 +6456,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1289
+          "line": 1307
         },
         {
           "name": "poetry_code_block",
@@ -6463,7 +6473,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1303
+          "line": 1321
         },
         {
           "name": "poetry_collapsible",
@@ -6480,7 +6490,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1547
+          "line": 1568
         },
         {
           "name": "poetry_color_scheme_script",
@@ -6497,7 +6507,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1756
+          "line": 1777
         },
         {
           "name": "poetry_combobox",
@@ -6514,7 +6524,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1664
+          "line": 1685
         },
         {
           "name": "poetry_command",
@@ -6531,7 +6541,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1690
+          "line": 1711
         },
         {
           "name": "poetry_command_dialog",
@@ -6548,7 +6558,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1703
+          "line": 1724
         },
         {
           "name": "poetry_context_menu",
@@ -6565,7 +6575,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1677
+          "line": 1698
         },
         {
           "name": "poetry_data_table",
@@ -6582,7 +6592,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 358
+          "line": 367
         },
         {
           "name": "poetry_date_field",
@@ -6599,7 +6609,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1101
+          "line": 1119
         },
         {
           "name": "poetry_date_picker",
@@ -6616,7 +6626,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 461
+          "line": 470
         },
         {
           "name": "poetry_date_time_field",
@@ -6633,7 +6643,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1125
+          "line": 1143
         },
         {
           "name": "poetry_deferred",
@@ -6650,7 +6660,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 228
+          "line": 237
         },
         {
           "name": "poetry_dialog",
@@ -6667,7 +6677,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1008
+          "line": 1026
         },
         {
           "name": "poetry_drawer",
@@ -6684,7 +6694,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 764
+          "line": 773
         },
         {
           "name": "poetry_dropdown_menu",
@@ -6701,7 +6711,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1634
+          "line": 1655
         },
         {
           "name": "poetry_empty",
@@ -6718,7 +6728,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 343
+          "line": 352
         },
         {
           "name": "poetry_field",
@@ -6735,7 +6745,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1186
+          "line": 1204
         },
         {
           "name": "poetry_field_group",
@@ -6752,7 +6762,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1214
+          "line": 1232
         },
         {
           "name": "poetry_field_separator",
@@ -6769,7 +6779,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1224
+          "line": 1242
         },
         {
           "name": "poetry_fieldset",
@@ -6786,7 +6796,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1198
+          "line": 1216
         },
         {
           "name": "poetry_file_input",
@@ -6820,7 +6830,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1621
+          "line": 1642
         },
         {
           "name": "poetry_icon",
@@ -6854,7 +6864,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1735
+          "line": 1756
         },
         {
           "name": "poetry_input",
@@ -6871,7 +6881,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1046
+          "line": 1064
         },
         {
           "name": "poetry_input_group",
@@ -6888,7 +6898,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 876
+          "line": 885
         },
         {
           "name": "poetry_input_group_addon",
@@ -6905,7 +6915,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 889
+          "line": 898
         },
         {
           "name": "poetry_input_group_button",
@@ -6922,7 +6932,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 943
+          "line": 952
         },
         {
           "name": "poetry_input_group_input",
@@ -6939,7 +6949,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 918
+          "line": 927
         },
         {
           "name": "poetry_input_group_text",
@@ -6956,7 +6966,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 906
+          "line": 915
         },
         {
           "name": "poetry_input_group_textarea",
@@ -6973,7 +6983,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 929
+          "line": 938
         },
         {
           "name": "poetry_input_otp",
@@ -6990,7 +7000,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1068
+          "line": 1086
         },
         {
           "name": "poetry_item",
@@ -7007,7 +7017,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 414
+          "line": 423
         },
         {
           "name": "poetry_item_separator",
@@ -7024,7 +7034,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 438
+          "line": 447
         },
         {
           "name": "poetry_kbd",
@@ -7041,7 +7051,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 306
+          "line": 315
         },
         {
           "name": "poetry_kbd_group",
@@ -7058,7 +7068,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 318
+          "line": 327
         },
         {
           "name": "poetry_label",
@@ -7075,7 +7085,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1077
+          "line": 1095
         },
         {
           "name": "poetry_link",
@@ -7109,7 +7119,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1451
+          "line": 1469
         },
         {
           "name": "poetry_menubar",
@@ -7126,7 +7136,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1719
+          "line": 1740
         },
         {
           "name": "poetry_message",
@@ -7143,7 +7153,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1430
+          "line": 1448
         },
         {
           "name": "poetry_message_group",
@@ -7160,7 +7170,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1442
+          "line": 1460
         },
         {
           "name": "poetry_message_scroller",
@@ -7177,24 +7187,24 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1485
+          "line": 1503
         },
         {
           "name": "poetry_message_scroller_item",
           "scope": "instance",
           "group": null,
-          "signature": "poetry_message_scroller_item(id:, anchor: false, **attrs, &)",
-          "docstring": "One transcript row - the id is how anchoring and Turbo Streams\nfind it (data-message-id; anchor: pins the reading position).",
+          "signature": "poetry_message_scroller_item(id:, anchor: false, dom_id: nil, **attrs, &)",
+          "docstring": "One transcript row - the id is how anchoring and Turbo Streams\nfind it (data-message-id; anchor: pins the reading position);\ndom_id: gives the row a DOM id of its own (dom_id(message)) for\nreplace and morph streams.",
           "params": [],
           "return": null,
           "examples": [
             {
               "title": "",
-              "text": "<%= poetry_message_scroller_item(id: message.id) do %>\n  <%= poetry_message(author: \"Ada\") { message.body } %>\n<% end %>"
+              "text": "<%= poetry_message_scroller_item(id: message.id, dom_id: dom_id(message)) do %>\n  <%= poetry_message(author: \"Ada\") { message.body } %>\n<% end %>"
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1497
+          "line": 1517
         },
         {
           "name": "poetry_metadata_list",
@@ -7228,7 +7238,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1135
+          "line": 1153
         },
         {
           "name": "poetry_native_select",
@@ -7245,7 +7255,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 837
+          "line": 846
         },
         {
           "name": "poetry_native_select_optgroup",
@@ -7262,7 +7272,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 859
+          "line": 868
         },
         {
           "name": "poetry_native_select_option",
@@ -7279,7 +7289,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 846
+          "line": 855
         },
         {
           "name": "poetry_navigation_menu",
@@ -7296,7 +7306,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 711
+          "line": 720
         },
         {
           "name": "poetry_navigation_menu_link",
@@ -7313,7 +7323,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 720
+          "line": 729
         },
         {
           "name": "poetry_number_field",
@@ -7330,7 +7340,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1090
+          "line": 1108
         },
         {
           "name": "poetry_optimistic_form",
@@ -7347,7 +7357,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 250
+          "line": 259
         },
         {
           "name": "poetry_pagination",
@@ -7364,7 +7374,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 189
+          "line": 198
         },
         {
           "name": "poetry_popover",
@@ -7381,7 +7391,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1573
+          "line": 1594
         },
         {
           "name": "poetry_progress",
@@ -7398,7 +7408,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 402
+          "line": 411
         },
         {
           "name": "poetry_questionnaire",
@@ -7415,7 +7425,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1342
+          "line": 1360
         },
         {
           "name": "poetry_radio_group",
@@ -7432,7 +7442,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1359
+          "line": 1377
         },
         {
           "name": "poetry_resizable",
@@ -7449,7 +7459,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 749
+          "line": 758
         },
         {
           "name": "poetry_scroll_area",
@@ -7466,7 +7476,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 775
+          "line": 784
         },
         {
           "name": "poetry_search_field",
@@ -7483,7 +7493,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1145
+          "line": 1163
         },
         {
           "name": "poetry_select",
@@ -7500,7 +7510,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1649
+          "line": 1670
         },
         {
           "name": "poetry_sensitive_input",
@@ -7517,7 +7527,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1316
+          "line": 1334
         },
         {
           "name": "poetry_separator",
@@ -7534,7 +7544,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 208
+          "line": 217
         },
         {
           "name": "poetry_sheet",
@@ -7551,7 +7561,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1021
+          "line": 1039
         },
         {
           "name": "poetry_sidebar",
@@ -7568,7 +7578,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 479
+          "line": 488
         },
         {
           "name": "poetry_sidebar_group_action",
@@ -7585,7 +7595,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 609
+          "line": 618
         },
         {
           "name": "poetry_sidebar_group_label",
@@ -7602,7 +7612,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 561
+          "line": 570
         },
         {
           "name": "poetry_sidebar_input",
@@ -7619,7 +7629,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 622
+          "line": 631
         },
         {
           "name": "poetry_sidebar_menu_action",
@@ -7636,7 +7646,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 658
+          "line": 667
         },
         {
           "name": "poetry_sidebar_menu_badge",
@@ -7653,7 +7663,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 673
+          "line": 682
         },
         {
           "name": "poetry_sidebar_menu_button",
@@ -7670,7 +7680,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 584
+          "line": 593
         },
         {
           "name": "poetry_sidebar_menu_skeleton",
@@ -7687,7 +7697,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 634
+          "line": 643
         },
         {
           "name": "poetry_sidebar_menu_sub_button",
@@ -7704,7 +7714,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 686
+          "line": 695
         },
         {
           "name": "poetry_sidebar_rail",
@@ -7721,7 +7731,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 527
+          "line": 536
         },
         {
           "name": "poetry_sidebar_separator",
@@ -7738,7 +7748,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 572
+          "line": 581
         },
         {
           "name": "poetry_sidebar_trigger",
@@ -7755,7 +7765,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 507
+          "line": 516
         },
         {
           "name": "poetry_skeleton",
@@ -7772,7 +7782,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 199
+          "line": 208
         },
         {
           "name": "poetry_slider",
@@ -7789,7 +7799,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1370
+          "line": 1388
         },
         {
           "name": "poetry_spinner",
@@ -7806,7 +7816,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 217
+          "line": 226
         },
         {
           "name": "poetry_stat",
@@ -7840,24 +7850,24 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1327
+          "line": 1345
         },
         {
           "name": "poetry_table",
           "scope": "instance",
           "group": null,
           "signature": "poetry_table(**, &)",
-          "docstring": "The Table: the component renders the overflow container + real\n`<table>`; the part helpers stamp the data-slot + source-exact classes\nonto the semantic table elements the consumer composes.",
+          "docstring": "The Table: the component renders the overflow container + real\n`<table>`; the part helpers stamp the data-slot + source-exact classes\nonto the semantic table elements the consumer composes. The parts\nmint no ids of their own: key: on a row derives one\n(id=\"table-row-<token>\", the record's dom_id) for a morph to\nfollow; on any other part key: is consumed and renders nothing.",
           "params": [],
           "return": null,
           "examples": [
             {
               "title": "",
-              "text": "poetry_table do\n  safe_join([\n    poetry_table_header { poetry_table_row { poetry_table_head { \"Invoice\" } } },\n    poetry_table_body { poetry_table_row { poetry_table_cell { \"INV001\" } } }\n  ])\nend"
+              "text": "poetry_table do\n  safe_join([\n    poetry_table_header { poetry_table_row { poetry_table_head { \"Invoice\" } } },\n    poetry_table_body { poetry_table_row(key: invoice) { poetry_table_cell { \"INV001\" } } }\n  ])\nend"
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 161
+          "line": 164
         },
         {
           "name": "poetry_tabs",
@@ -7874,7 +7884,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 788
+          "line": 797
         },
         {
           "name": "poetry_tag_group",
@@ -7891,7 +7901,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1158
+          "line": 1176
         },
         {
           "name": "poetry_textarea",
@@ -7908,7 +7918,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1058
+          "line": 1076
         },
         {
           "name": "poetry_time_field",
@@ -7925,7 +7935,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1113
+          "line": 1131
         },
         {
           "name": "poetry_timeline",
@@ -7959,7 +7969,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1518
+          "line": 1539
         },
         {
           "name": "poetry_toast_trigger",
@@ -7976,7 +7986,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 497
+          "line": 506
         },
         {
           "name": "poetry_toaster",
@@ -7993,7 +8003,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1534
+          "line": 1555
         },
         {
           "name": "poetry_toggle",
@@ -8010,7 +8020,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1404
+          "line": 1422
         },
         {
           "name": "poetry_toggle_group",
@@ -8027,7 +8037,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1417
+          "line": 1435
         },
         {
           "name": "poetry_toolbar",
@@ -8061,7 +8071,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1587
+          "line": 1608
         },
         {
           "name": "poetry_tooltip_provider",
@@ -8078,7 +8088,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1602
+          "line": 1623
         },
         {
           "name": "poetry_tree",
@@ -8095,7 +8105,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1173
+          "line": 1191
         },
         {
           "name": "poetry_typeset",
@@ -8129,7 +8139,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 290
+          "line": 299
         }
       ],
       "constants": [
@@ -8140,8 +8150,8 @@
         },
         {
           "name": "HELPER_CONTRACTS",
-          "value": "{\n  \"poetry_toast_trigger\" => {\n    \"options\" => [\n      { \"name\" => \"template\", \"type\" => \"string\",\n        \"description\" => \"id of the <template> holding the rendered poetry_toast\" },\n      { \"name\"",
-          "docstring": "The value contracts runtime-enforced inside wrapper helpers, in\nregistry shape - emitted as the registry's \"helpers\" section\n(rakelib/registry.rake) so poetry check and the MCP server validate\nthese literals statically (the crash class: a helper-only literal\nlike align: :leading that no component contract covers, failing\nonly at render). Plain wrapper helpers need no entry here;\nregistry generation lists them name-only."
+          "value": "{\n  \"poetry_table_header\" => { \"identity\" => false },\n  \"poetry_table_body\" => { \"identity\" => false },\n  \"poetry_table_footer\" => { \"identity\" => false },\n  \"poetry_table_row\" => { \"identity\" => fals",
+          "docstring": "The value contracts runtime-enforced inside wrapper helpers, in\nregistry shape - emitted as the registry's \"helpers\" section\n(rakelib/registry.rake) so poetry check and the MCP server validate\nthese literals statically (the crash class: a helper-only literal\nlike align: :leading that no component contract covers, failing\nonly at render). Plain wrapper helpers need no entry here;\nregistry generation lists them name-only. The table parts declare\nidentity false: they mint no id, so the stable-identity rules have\nnothing to ask of them (a keyed row derives its id)."
         },
         {
           "name": "INPUT_GROUP_ALIGNS",
@@ -11165,7 +11175,7 @@
       "path": "Poetry::Ui::FieldSeparator::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "The FieldSeparator - the divider between stacked fields inside a\nFieldGroup: a Separator drawn across the\nrow, with an optional inline caption riding on top (\"Or continue\nwith\"). The caption is visual chrome on a decorative rule - the\nSeparator inside stays aria-hidden either way.\n\n**Anatomy** (`data-slot` parts):\n\n- `field-separator` - The divider row - a decorative Separator drawn across it\n- `field-separator-content` - The inline caption span (block content) - sits on the line, backed by the page background",
+      "docstring": "The FieldSeparator - the labelled rule: a Separator drawn across\nthe row with an optional inline caption riding on top (\"Or\ncontinue with\"). Between stacked fields in a FieldGroup, under a\nsign-in form before the provider buttons, at a date break in a\nlist - anywhere a rule needs a caption. The caption is visual\nchrome on a decorative rule - the Separator inside stays\naria-hidden either way.\n\n**Anatomy** (`data-slot` parts):\n\n- `field-separator` - The divider row - a decorative Separator drawn across it\n- `field-separator-content` - The inline caption span (block content) - sits on the line, backed by the page background",
       "examples": [
         {
           "title": "A captioned divider between stacked fields",
@@ -11184,13 +11194,13 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/field_separator/component.rb",
-          "line": 41
+          "line": 43
         }
       ],
       "constants": [
         {
           "name": "AGENT_RULES",
-          "value": "[\n  \"Divides stacked fields inside a poetry_field_group - not a general-purpose rule \" \\\n  \"(that is poetry_separator).\",\n  \"Pass a block for the inline caption form (\\\"Or continue with\\\") - the capti",
+          "value": "[\n  \"The labelled rule, anywhere: between stacked fields in a poetry_field_group, under a sign-in \" \\\n  \"form (\\\"Or continue with\\\"), at a date break; poetry_separator is the bare rule.\",\n  \"Pass a bl",
           "docstring": "Projected into the registry, llms.txt, and the agent surface."
         }
       ]
@@ -11557,7 +11567,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 72
+          "line": 81
         },
         {
           "name": "association",
@@ -11569,7 +11579,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 412
+          "line": 436
         },
         {
           "name": "autocomplete",
@@ -11581,19 +11591,19 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 521
+          "line": 547
         },
         {
           "name": "button",
           "scope": "instance",
           "group": null,
           "signature": "button(value = nil, **options, &block)",
-          "docstring": "form.button - #submit with block/content support: the block (or\nvalue) is the Button's content, type stays submit.",
+          "docstring": "form.button - #submit with block/content support: the block (or\nvalue) is the Button's content, type stays submit, and the name is\nbutton (Rails' own for f.button; name: overrides).",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 686
+          "line": 723
         },
         {
           "name": "calendar",
@@ -11605,19 +11615,19 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 626
+          "line": 659
         },
         {
           "name": "check_box",
           "scope": "instance",
           "group": null,
           "signature": "check_box(method, options = {}, checked_value = \"1\", unchecked_value = \"0\")",
-          "docstring": "The f.check_box-equivalent (the toggle family's form story): name/id\nderived, checked: from the object's attribute truthiness, \"1\"/\"0\"\nplus the unchecked-hidden pair (ActionView::Helpers::Tags::CheckBox\nparity incl. hidden-input-first ordering - the Checkbox component\nrenders the pair). A BARE control mapping: compose with a Field\n(control_attributes) for the label/hint/error quartet.",
+          "docstring": "The f.check_box-equivalent (the toggle family's form story): name/id\nderived, checked: from the object's attribute truthiness, \"1\"/\"0\"\nplus the unchecked-hidden pair (ActionView::Helpers::Tags::CheckBox\nparity incl. hidden-input-first ordering - the Checkbox component\nrenders the pair), inside the horizontal Field so the label is\nvisible (label: overrides it, label: false drops it, hint: and the\nmodel's errors ride the Field) - the shape boolean f.input renders.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 117
+          "line": 130
         },
         {
           "name": "checkbox",
@@ -11629,19 +11639,19 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 933
+          "line": 1055
         },
         {
           "name": "checkbox_group",
           "scope": "instance",
           "group": null,
-          "signature": "checkbox_group(method, collection, hint: nil, select_all: false, **options)",
-          "docstring": "The collection_check_boxes-equivalent: a Field(group) wrapping the\nAPG select-all group (DD sweep) - items post name[] and the\nleading empty hidden clears when none are checked. select_all:\ntrue (or a label string) adds the mixed-state parent checkbox.",
+          "signature": "checkbox_group(method, collection, hint: nil, select_all: false, value_method: nil, label_method: nil, checked: nil, **options)",
+          "docstring": "The collection_check_boxes-equivalent: a Field(group) wrapping the\nAPG select-all group (DD sweep) - items post name[] and the\nleading empty hidden clears when none are checked. select_all:\ntrue (or a label string) adds the mixed-state parent checkbox.\nThe collection is [value, label] pairs or bare values; records map\nthrough value_method:/label_method: (a symbol sent to the item, or\na callable). checked: is the explicit checked list (a virtual\ncollection with no reader); otherwise the object's array decides.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 590
+          "line": 621
         },
         {
           "name": "collection_check_boxes",
@@ -11653,7 +11663,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 669
+          "line": 702
         },
         {
           "name": "collection_checkboxes",
@@ -11665,7 +11675,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 938
+          "line": 1060
         },
         {
           "name": "collection_radio_buttons",
@@ -11677,7 +11687,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 662
+          "line": 695
         },
         {
           "name": "collection_select",
@@ -11689,7 +11699,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 652
+          "line": 685
         },
         {
           "name": "date_field",
@@ -11701,7 +11711,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 217
+          "line": 236
         },
         {
           "name": "date_picker",
@@ -11713,7 +11723,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 612
+          "line": 645
         },
         {
           "name": "datetime_field",
@@ -11753,7 +11763,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 235
+          "line": 254
         },
         {
           "name": "email_field",
@@ -11770,19 +11780,19 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 455
+          "line": 479
         },
         {
           "name": "field",
           "scope": "instance",
           "group": null,
           "signature": "field(method, as: :input, hint: nil, **input_options)",
-          "docstring": "One field entrypoint for field-shaped controls: as: :input (the\ndefault, with type:) or as: :textarea (rows: passes through) -\nOwn-line controls slot in as as: values; group-shaped\ncontrols get dedicated methods (radio_group, slider, otp_field).",
+          "docstring": "One field entrypoint for field-shaped controls: as: :input (the\ndefault, with type:) or as: :textarea (rows: passes through) -\nOwn-line controls slot in as as: values; group-shaped\ncontrols get dedicated methods (radio_group, slider, otp_field).\nlabel: overrides the Field label (false drops it), aria_label:\nnames the control alone, placeholder: overrides the i18n chain.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 84
+          "line": 95
         },
         {
           "name": "fieldset",
@@ -11794,19 +11804,19 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 695
+          "line": 733
         },
         {
           "name": "file_input",
           "scope": "instance",
           "group": null,
-          "signature": "file_input(method, hint: nil, **options)",
-          "docstring": "form.file_input(:document) / form.file_input(:photos, variant: :dropzone,\nmultiple: true) - a Field wrapping a FileInput; the native\ninput is the form value, so ActiveStorage attaches as usual.",
+          "signature": "file_input(method, hint: nil, **options, &block)",
+          "docstring": "form.file_input(:document) / form.file_input(:photos, variant: :dropzone,\nmultiple: true) - a Field wrapping a FileInput; the native\ninput is the form value, so ActiveStorage attaches as usual, and\nthe form flips to multipart (Rails' own file_field line). A block\nrenders beside the control inside the Field - the seat for the\ncurrent attachment's preview.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 242
+          "line": 264
         },
         {
           "name": "group",
@@ -11818,7 +11828,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 704
+          "line": 742
         },
         {
           "name": "input",
@@ -11887,7 +11897,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 377
+          "line": 402
         },
         {
           "name": "native_select",
@@ -11899,7 +11909,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 543
+          "line": 570
         },
         {
           "name": "number_field",
@@ -11911,7 +11921,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 210
+          "line": 229
         },
         {
           "name": "otp_field",
@@ -11923,7 +11933,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 192
+          "line": 211
         },
         {
           "name": "password_field",
@@ -11935,7 +11945,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 467
+          "line": 491
         },
         {
           "name": "phone_field",
@@ -11952,7 +11962,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 462
+          "line": 486
         },
         {
           "name": "poetry_combobox",
@@ -11964,7 +11974,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 311
+          "line": 336
         },
         {
           "name": "poetry_select",
@@ -11976,7 +11986,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 269
+          "line": 294
         },
         {
           "name": "radio_group",
@@ -11988,7 +11998,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 134
+          "line": 150
         },
         {
           "name": "range_field",
@@ -12000,7 +12010,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 479
+          "line": 503
         },
         {
           "name": "search_field",
@@ -12012,7 +12022,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 485
+          "line": 509
         },
         {
           "name": "select",
@@ -12024,7 +12034,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 644
+          "line": 677
         },
         {
           "name": "sensitive_input",
@@ -12036,43 +12046,43 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 502
+          "line": 527
         },
         {
           "name": "slider",
           "scope": "instance",
           "group": null,
           "signature": "slider(method, range: false, hint: nil, **options)",
-          "docstring": "The bounded-numeric story: form.slider(:volume) single (label from\nhuman_attribute_name), form.slider(:price_range, range: true,\nlabel: [...]) reads an Array[2] and submits name[] (params:\n[\"200\", \"800\"] - Rails' own array convention). Field wraps for\nhint/error; the describedby lands on each THUMB.",
+          "docstring": "The bounded-numeric story: form.slider(:volume) single (the Field\nlabel names the thumb), form.slider(:price_range, range: true,\nlabel: [...]) reads an Array[2] and submits name[] (params:\n[\"200\", \"800\"] - Rails' own array convention); a String label:\nis the Field label, an Array names the two thumbs. Field wraps for\nhint/error; the describedby lands on each THUMB.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 161
+          "line": 178
         },
         {
           "name": "submit",
           "scope": "instance",
           "group": null,
           "signature": "submit(value = nil, **options)",
-          "docstring": "form.submit -> a poetry Button (type submit); label from Rails'\nown i18n default (\"Create Model\" / \"Update Model\"). loading: true\nopts into the Button loading treatment.",
+          "docstring": "form.submit -> a poetry Button (type submit); label from Rails'\nown i18n default (\"Create Model\" / \"Update Model\"), named commit\nwith the label as its value so params[:commit] reads as it does\nunder Rails' own submit (name:/value: override). loading: true\nopts into the Button loading treatment.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 679
+          "line": 714
         },
         {
           "name": "switch",
           "scope": "instance",
           "group": null,
           "signature": "switch(method, options = {}, checked_value = \"1\", unchecked_value = \"0\")",
-          "docstring": "The same mapping wearing switch semantics (Rails has NO native\nswitch builder): role=switch announces on/off; use it for\ninstant-effect settings, check_box for values staged for submit.",
+          "docstring": "The same mapping wearing switch semantics (Rails has NO native\nswitch builder): role=switch announces on/off in the setting row;\nuse it for instant-effect settings, check_box for values staged\nfor submit.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 124
+          "line": 139
         },
         {
           "name": "tag_group",
@@ -12084,7 +12094,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 564
+          "line": 591
         },
         {
           "name": "telephone_field",
@@ -12101,7 +12111,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 455
+          "line": 479
         },
         {
           "name": "text_area",
@@ -12113,7 +12123,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 473
+          "line": 497
         },
         {
           "name": "text_field",
@@ -12130,7 +12140,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 455
+          "line": 479
         },
         {
           "name": "textarea",
@@ -12142,7 +12152,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 930
+          "line": 1052
         },
         {
           "name": "time_field",
@@ -12154,7 +12164,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 223
+          "line": 242
         },
         {
           "name": "url_field",
@@ -12171,7 +12181,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 455
+          "line": 479
         }
       ],
       "constants": [
@@ -12902,7 +12912,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/input_otp/component.rb",
-          "line": 157
+          "line": 164
         },
         {
           "name": "separator",
@@ -12947,7 +12957,7 @@
         },
         {
           "name": "INPUT_FACING",
-          "value": "%w[id aria-label aria-describedby aria-invalid aria-required].freeze",
+          "value": "%w[id aria-label aria-labelledby aria-describedby aria-invalid aria-required].freeze",
           "docstring": "Field control_attributes land on the INPUT (the real control);\neverything else the caller passes styles the container."
         },
         {
@@ -14263,7 +14273,7 @@
       "path": "Poetry::Ui::MessageScroller::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "A scrollable chat transcript that follows the newest message\nwhile streaming, releases when the reader scrolls up, and offers\na jump-to-latest button. Without JavaScript it is a plain\nscrollable region, fully readable.\n\nOpening position: a scroll container always opens at the top, so a\ntranscript opening at the newest message would paint the oldest\nrows first and jump once the controller runs. For :end and\n:\"last-anchor\" the root and the viewport render\ndata-pending-scroll; the viewport's dictionary hides it while the\nattribute is present (visibility, so layout exists for the scroll)\nand the controller clears it once the position lands, or at once\nfor an empty transcript. Without JavaScript the hold is lifted\n(a scripting: none media rule), so the region stays readable.\n\nThe content element is the Turbo Stream append target (stable\ndom id \"<id>-messages\"); rows are poetry_message_scroller_item\nwrappers keyed by message id. History prepends keep the reading\nposition; a row rendered with anchor: true becomes the held\nreading line.\n\n**Anatomy** (`data-slot` parts):\n\n- `message-scroller` - The transcript root the controller drives - runtime scroll state is mirrored here\n- `message-scroller-viewport` - The native scroll region (role=region, focusable) - the controller mirrors the same runtime attributes here\n- `message-scroller-content` - The row container and Turbo Stream append target (stable dom id <id>-messages); role=log announces additions\n- `message-scroller-item` - One transcript row (poetry_message_scroller_item) - the id is how anchoring and Streams find it\n- `message-scroller-spacer` - Tail spacer faking scroll room below a short anchored turn - hidden at height 0",
+      "docstring": "A scrollable chat transcript that follows the newest message\nwhile streaming, releases when the reader scrolls up, and offers\na jump-to-latest button. Without JavaScript it is a plain\nscrollable region, fully readable.\n\nOpening position: a scroll container always opens at the top, so a\ntranscript opening at the newest message would paint the oldest\nrows first and jump once the controller runs. For :end and\n:\"last-anchor\" the root and the viewport render\ndata-pending-scroll; the viewport's dictionary hides it while the\nattribute is present (visibility, so layout exists for the scroll)\nand the controller clears it once the position lands, or at once\nfor an empty transcript. Without JavaScript the hold is lifted\n(a scripting: none media rule), so the region stays readable.\n\nThe content element is the Turbo Stream append target (stable\ndom id \"<id>-messages\", or content_id:); rows are\npoetry_message_scroller_item wrappers keyed by message id (dom_id:\ngives a row its own DOM id for Streams). History prepends keep\nthe reading position; a row rendered with anchor: true becomes the\nheld reading line.\n\n**Anatomy** (`data-slot` parts):\n\n- `message-scroller` - The transcript root the controller drives - runtime scroll state is mirrored here\n- `message-scroller-viewport` - The native scroll region (role=region, focusable) - the controller mirrors the same runtime attributes here\n- `message-scroller-content` - The row container and Turbo Stream append target (stable dom id <id>-messages); role=log announces additions\n- `message-scroller-item` - One transcript row (poetry_message_scroller_item) - the id is how anchoring and Streams find it\n- `message-scroller-spacer` - Tail spacer faking scroll room below a short anchored turn - hidden at height 0",
       "examples": [
         {
           "title": "A chat transcript",
@@ -14287,7 +14297,24 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/message_scroller/component.rb",
-          "line": 77
+          "line": 83
+        },
+        {
+          "name": "content_id",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The content element's dom id - the Turbo Stream append target; defaults to \"<id>-messages\".\n\nConstructor option `content_id:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "defaults to `-> { \"#{id}-messages\" }`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/message_scroller/component.rb",
+          "line": 80
         },
         {
           "name": "default_scroll_position",
@@ -14304,14 +14331,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/message_scroller/component.rb",
-          "line": 80
+          "line": 86
         },
         {
           "name": "id",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The transcript's stable identifier - the content element renders dom id \"<id>-messages\" for Turbo Streams to target.\n\nConstructor option `id:`.",
+          "docstring": "The transcript's stable identifier - the content element renders dom id \"<id>-messages\" for Turbo Streams to target (content_id: overrides it).\n\nConstructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -14321,7 +14348,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/message_scroller/component.rb",
-          "line": 74
+          "line": 77
         },
         {
           "name": "jump_button",
@@ -14338,7 +14365,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/message_scroller/component.rb",
-          "line": 90
+          "line": 96
         },
         {
           "name": "preserve_scroll_on_prepend",
@@ -14355,7 +14382,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/message_scroller/component.rb",
-          "line": 84
+          "line": 90
         },
         {
           "name": "root_attributes",
@@ -14367,7 +14394,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/message_scroller/component.rb",
-          "line": 134
+          "line": 140
         },
         {
           "name": "track_visibility",
@@ -14384,7 +14411,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/message_scroller/component.rb",
-          "line": 87
+          "line": 93
         }
       ],
       "constants": [
@@ -14721,7 +14748,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Space-separated hint/error ids wired to the SELECT itself - a raw aria-describedby in html_attributes would land on the wrapper div, unassociated for assistive technology.\n\nConstructor option `described_by:`.",
+          "docstring": "Space-separated hint/error ids wired to the SELECT itself - the older spelling of a raw aria-describedby, which lands on the select too (every aria-* attribute does).\n\nConstructor option `described_by:`.",
           "params": [],
           "return": {
             "types": [
@@ -14731,7 +14758,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/native_select/component.rb",
-          "line": 38
+          "line": 39
         },
         {
           "name": "disabled",
@@ -14748,7 +14775,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/native_select/component.rb",
-          "line": 36
+          "line": 37
         },
         {
           "name": "id",
@@ -14765,7 +14792,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/native_select/component.rb",
-          "line": 31
+          "line": 32
         },
         {
           "name": "invalid",
@@ -14782,7 +14809,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/native_select/component.rb",
-          "line": 37
+          "line": 38
         },
         {
           "name": "label",
@@ -14799,7 +14826,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/native_select/component.rb",
-          "line": 32
+          "line": 33
         },
         {
           "name": "name",
@@ -14816,7 +14843,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/native_select/component.rb",
-          "line": 30
+          "line": 31
         },
         {
           "name": "size",
@@ -14833,13 +14860,13 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/native_select/component.rb",
-          "line": 35
+          "line": 36
         }
       ],
       "constants": [
         {
           "name": "AGENT_RULES",
-          "value": "[\n  \"This is a REAL <select> - use it for plain picking; the JS Select is for styled options.\",\n  \"Pair it with a Label (for_id: its id) or a Field - a bare select has no accessible name.\",\n  \"The fas",
+          "value": "[\n  \"This is a REAL <select> - use it for plain picking; the JS Select is for styled options.\",\n  \"Pair it with a Label (for_id: its id) or a Field - a bare select has no accessible name; id: and \" \\\n",
           "docstring": "Projected into the registry, llms.txt, and the agent surface."
         },
         {
@@ -14887,7 +14914,7 @@
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The bar entries. with_item(title, value:) { panel } declares a trigger + panel (disabled: true renders the trigger inert - native disabled plus data-disabled; hover and click never open its panel); with_item(title, href:) a top-level link (with_link is the shorthand).\n\nSlot collection: the rendered `items` set.",
+          "docstring": "The bar entries. with_item(title, value:) { panel } declares a trigger + panel (disabled: true renders the trigger inert - native disabled plus data-disabled; hover and click never open its panel); with_item(title, href:) a top-level link (with_link is the shorthand; active: true marks it the current page - data-active plus aria-current=page).\n\nSlot collection: the rendered `items` set.",
           "params": [],
           "return": {
             "types": [
@@ -14897,7 +14924,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/navigation_menu/component.rb",
-          "line": 46
+          "line": 48
         },
         {
           "name": "label",
@@ -14914,7 +14941,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/navigation_menu/component.rb",
-          "line": 106
+          "line": 113
         },
         {
           "name": "root_attributes",
@@ -14926,7 +14953,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/navigation_menu/component.rb",
-          "line": 194
+          "line": 202
         },
         {
           "name": "viewport",
@@ -14943,14 +14970,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/navigation_menu/component.rb",
-          "line": 108
+          "line": 115
         },
         {
           "name": "with_item",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The bar entries. with_item(title, value:) { panel } declares a trigger + panel (disabled: true renders the trigger inert - native disabled plus data-disabled; hover and click never open its panel); with_item(title, href:) a top-level link (with_link is the shorthand).\n\nSlot writer for the `items` slot (repeatable).",
+          "docstring": "The bar entries. with_item(title, value:) { panel } declares a trigger + panel (disabled: true renders the trigger inert - native disabled plus data-disabled; hover and click never open its panel); with_item(title, href:) a top-level link (with_link is the shorthand; active: true marks it the current page - data-active plus aria-current=page).\n\nSlot writer for the `items` slot (repeatable).",
           "params": [],
           "return": {
             "types": [
@@ -14960,14 +14987,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/navigation_menu/component.rb",
-          "line": 46
+          "line": 48
         },
         {
           "name": "with_link",
           "scope": "instance",
           "group": null,
-          "signature": "with_link(title, href:)",
-          "docstring": "Declares a top-level destination link - shorthand for\nwith_item(title, href:).",
+          "signature": "with_link(title, href:, active: false)",
+          "docstring": "Declares a top-level destination link - shorthand for\nwith_item(title, href:, active:).",
           "params": [
             {
               "name": "title",
@@ -14982,12 +15009,19 @@
                 "String"
               ],
               "text": "the destination URL"
+            },
+            {
+              "name": "active",
+              "types": [
+                "Boolean"
+              ],
+              "text": "true marks the current page's link (data-active plus aria-current=page)"
             }
           ],
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/navigation_menu/component.rb",
-          "line": 183
+          "line": 191
         }
       ],
       "constants": [
@@ -19697,7 +19731,41 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing.rb",
-          "line": 115
+          "line": 127
+        },
+        {
+          "name": "poetry_checkbox",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_checkbox(root, session: nil)",
+          "docstring": "A Checkbox (or Switch) tester rooted at the control, or at any\nelement holding one (a Field, a table row).",
+          "params": [
+            {
+              "name": "root",
+              "types": [
+                "String",
+                "Capybara::Node::Element"
+              ],
+              "text": "the control or its holder"
+            },
+            {
+              "name": "session",
+              "types": [
+                "Capybara::Session",
+                "nil"
+              ],
+              "text": "defaults to the test's\n`page` (or Capybara.current_session)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Checkbox"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/testing.rb",
+          "line": 93
         },
         {
           "name": "poetry_combobox",
@@ -19731,7 +19799,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing.rb",
-          "line": 60
+          "line": 61
         },
         {
           "name": "poetry_dialog",
@@ -19765,7 +19833,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing.rb",
-          "line": 81
+          "line": 82
         },
         {
           "name": "poetry_dropdown_menu",
@@ -19799,7 +19867,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing.rb",
-          "line": 70
+          "line": 71
         },
         {
           "name": "poetry_select",
@@ -19833,7 +19901,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing.rb",
-          "line": 50
+          "line": 51
         },
         {
           "name": "poetry_unregistered_controllers",
@@ -19866,7 +19934,167 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/testing.rb",
-          "line": 99
+          "line": 111
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Ui::Testing::Checkbox",
+      "type": "class",
+      "superclass": "Poetry::Ui::Testing::Tester",
+      "docstring": "The Checkbox (and Switch) interaction contract: the visible control\nis a button (role=checkbox, or role=switch) mirroring a native\ninput that carries the form value; a press toggles it from the\npointer, Space from the keyboard, and aria-checked is the state\n(\"true\", \"false\", or \"mixed\" for an indeterminate parent). The\nroot you hand this tester is the control itself, or any element\nholding one (a Field, a row).",
+      "examples": [
+        {
+          "title": "Accepting the terms from the keyboard",
+          "text": "terms = poetry_checkbox(\"#user_terms\")\nterms.check(via: :keyboard)\nassert terms.checked?\nassert_equal \"1\", terms.value"
+        }
+      ],
+      "file": "lib/poetry/ui/testing/checkbox.rb",
+      "methods": [
+        {
+          "name": "check",
+          "scope": "instance",
+          "group": null,
+          "signature": "check(via: :mouse)",
+          "docstring": "Checks the control (no-op when already checked).",
+          "params": [
+            {
+              "name": "via",
+              "types": [
+                "Symbol"
+              ],
+              "text": ":mouse or :keyboard"
+            }
+          ],
+          "return": {
+            "types": [
+              "Checkbox"
+            ],
+            "text": "self"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/testing/checkbox.rb",
+          "line": 61
+        },
+        {
+          "name": "checked?",
+          "scope": "instance",
+          "group": null,
+          "signature": "checked?",
+          "docstring": "Whether the control is checked.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/testing/checkbox.rb",
+          "line": 30
+        },
+        {
+          "name": "mixed?",
+          "scope": "instance",
+          "group": null,
+          "signature": "mixed?",
+          "docstring": "Whether the control is indeterminate (a select-all parent over a\npartial selection).",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/testing/checkbox.rb",
+          "line": 36
+        },
+        {
+          "name": "state",
+          "scope": "instance",
+          "group": null,
+          "signature": "state",
+          "docstring": "The control's aria-checked state.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "\"true\", \"false\" or \"mixed\""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/testing/checkbox.rb",
+          "line": 23
+        },
+        {
+          "name": "toggle",
+          "scope": "instance",
+          "group": null,
+          "signature": "toggle(via: :mouse)",
+          "docstring": "Toggles the control once. via: :keyboard focuses it and presses\nSpace; :mouse presses it.",
+          "params": [
+            {
+              "name": "via",
+              "types": [
+                "Symbol"
+              ],
+              "text": ":mouse presses the control, :keyboard focuses it and presses Space"
+            }
+          ],
+          "return": {
+            "types": [
+              "Checkbox"
+            ],
+            "text": "self"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/testing/checkbox.rb",
+          "line": 43
+        },
+        {
+          "name": "uncheck",
+          "scope": "instance",
+          "group": null,
+          "signature": "uncheck(via: :mouse)",
+          "docstring": "Unchecks the control (no-op when already unchecked).",
+          "params": [
+            {
+              "name": "via",
+              "types": [
+                "Symbol"
+              ],
+              "text": ":mouse or :keyboard"
+            }
+          ],
+          "return": {
+            "types": [
+              "Checkbox"
+            ],
+            "text": "self"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/testing/checkbox.rb",
+          "line": 70
+        },
+        {
+          "name": "value",
+          "scope": "instance",
+          "group": null,
+          "signature": "value",
+          "docstring": "What the form submits for this control right now: the native\ninput's value when checked, the paired hidden input's value\nwhen unchecked, nil for a visual-only control.",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/testing/checkbox.rb",
+          "line": 80
         }
       ],
       "constants": []

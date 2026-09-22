@@ -23,6 +23,16 @@
       "constants": []
     },
     {
+      "path": "ActiveModel::Type::HtmlSafeString",
+      "type": "class",
+      "superclass": "ActiveModel::Type::String",
+      "docstring": "The string type behind every `option :name, :string` declaration:\nActiveModel's String type copies each value into a fresh String,\nwhich drops the html_safe mark a SafeBuffer carries, so a caller's\n`hint: link_to(...)` or `t(\".hint_html\")` arrived escaped. This\ntype keeps an html-safe value as it is and casts everything else\nexactly as the String type does; a plain String still escapes at\nrender, because nothing here marks anything safe.\n\nSubstituted inside the option DSL only - never registered, so\n`attribute :x, :string` in a host model keeps Rails' own type - and\nit reports :string, so the registry and every introspection surface\nread the declaration unchanged.",
+      "examples": [],
+      "file": "lib/active_model/type/html_safe_string.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
       "path": "ActiveModel::Type::List",
       "type": "class",
       "superclass": "ActiveModel::Type::Value",
@@ -163,7 +173,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core.rb",
-          "line": 32
+          "line": 33
         },
         {
           "name": "root",
@@ -180,7 +190,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core.rb",
-          "line": 25
+          "line": 26
         }
       ],
       "constants": [
@@ -653,7 +663,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 589
+          "line": 645
         },
         {
           "name": "classname_merger",
@@ -670,7 +680,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 665
+          "line": 721
         },
         {
           "name": "classnames",
@@ -700,7 +710,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 657
+          "line": 713
         },
         {
           "name": "component_data_attributes",
@@ -718,6 +728,24 @@
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
           "line": 270
+        },
+        {
+          "name": "content",
+          "scope": "instance",
+          "group": null,
+          "signature": "content",
+          "docstring": "The captured content block, guarded once per render: a block that\nreturned a scalar (a number, a symbol, a boolean) while writing\nnothing to the buffer captures as nothing at all - `poetry_badge {\ncount }` renders an empty badge - so a requires_content component\nraises in development and test naming the value and the fix, and\nlogs everywhere else; a component without the declaration logs. A\nblock that wrote to the buffer, returned a String, returned nil,\nreturned a collection (an empty loop's each) or composed slots\n(its last call a with_* setter, which returns the slot or the\ncomponent) is fine.",
+          "params": [],
+          "return": {
+            "types": [
+              "ActiveSupport::SafeBuffer",
+              "nil"
+            ],
+            "text": "the captured content"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/component.rb",
+          "line": 412
         },
         {
           "name": "dom_id_token",
@@ -743,7 +771,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 699
+          "line": 755
         },
         {
           "name": "element_attributes",
@@ -831,7 +859,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 615
+          "line": 671
         },
         {
           "name": "initialize",
@@ -869,14 +897,14 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 417
+          "line": 473
         },
         {
           "name": "persisted?",
           "scope": "instance",
           "group": null,
           "signature": "persisted?",
-          "docstring": "Indicates whether this component instance is persisted.\nAlways returns false as components are not persisted entities.",
+          "docstring": "Always returns false as components are not persisted entities.",
           "params": [],
           "return": {
             "types": [
@@ -886,7 +914,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 389
+          "line": 445
         },
         {
           "name": "poetry_instance_id",
@@ -911,7 +939,32 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 634
+          "line": 690
+        },
+        {
+          "name": "render_in",
+          "scope": "instance",
+          "group": null,
+          "signature": "render_in(view_context, **)",
+          "docstring": "ViewComponent's render_in, with the content block wrapped once so\n#content can read what the block RETURNED - capture keeps only what\nthe block wrote to the buffer, and a scalar return vanishes there.",
+          "params": [
+            {
+              "name": "view_context",
+              "types": [
+                "ActionView::Base"
+              ],
+              "text": "the rendering view"
+            }
+          ],
+          "return": {
+            "types": [
+              "ActiveSupport::SafeBuffer"
+            ],
+            "text": "the rendered component"
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/component.rb",
+          "line": 391
         },
         {
           "name": "root_attributes",
@@ -988,7 +1041,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 685
+          "line": 741
         },
         {
           "name": "slot_data_attributes",
@@ -1054,7 +1107,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 712
+          "line": 768
         }
       ],
       "constants": [
@@ -2138,7 +2191,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 140
+          "line": 141
         },
         {
           "name": "option",
@@ -2216,7 +2269,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 124
+          "line": 125
         },
         {
           "name": "option_attributes_with_defaults",
@@ -2233,7 +2286,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 102
+          "line": 103
         },
         {
           "name": "option_attributes_with_proc_defaults",
@@ -2250,7 +2303,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 117
+          "line": 118
         },
         {
           "name": "option_attributes_with_static_defaults",
@@ -2267,7 +2320,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 109
+          "line": 110
         },
         {
           "name": "option_docs",
@@ -2284,7 +2337,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 132
+          "line": 133
         },
         {
           "name": "option_format",
@@ -2311,7 +2364,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 159
+          "line": 160
         },
         {
           "name": "option_type",
@@ -2338,7 +2391,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 148
+          "line": 149
         },
         {
           "name": "initialized_option_attributes",
@@ -2355,7 +2408,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 231
+          "line": 244
         },
         {
           "name": "option_attribute?",
@@ -2381,7 +2434,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 217
+          "line": 230
         },
         {
           "name": "option_attribute_initialized?",
@@ -2407,7 +2460,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 239
+          "line": 252
         },
         {
           "name": "option_attributes",
@@ -2424,7 +2477,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 224
+          "line": 237
         },
         {
           "name": "option_attributes_status",
@@ -2441,7 +2494,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 246
+          "line": 259
         },
         {
           "name": "options",
@@ -2458,7 +2511,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 255
+          "line": 268
         }
       ],
       "constants": [

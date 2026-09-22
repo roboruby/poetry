@@ -1,0 +1,28 @@
+<%# The two confirmation shapes: the AlertDialog for a plain yes-or-no, the
+    typed confirmation (a Dialog with a form) when the action must be
+    spelled out first. %>
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="submitting">Submitting a form from the action</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    A confirmation usually guards a form already on the page: the delete button on a
+    record, the revoke link on a token. Pass that form's id as
+    <code class="text-foreground">submit:</code> and the action renders as its submit
+    button (<code class="text-foreground">type="submit"</code> plus the
+    <code class="text-foreground">form</code> attribute), so nothing nests inside the
+    dialog and the activation stays the user's. The destructive-panel block
+    (<code class="text-foreground">bin/rails g poetry:block destructive_panel</code>) shows the
+    shape.
+  </p>
+  <%= poetry_code_block(code: alert_dialog_submit_usage, language: "erb", label: "The action submits a form") %>
+  <h2 class="text-lg font-medium" id="typed-confirmation">Typed confirmation</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    When the action is grave enough that a click is not enough, ask for the phrase. That
+    is a <%= link_to "Dialog", component_path("dialog", anchor: "typed-confirmation"), class: "text-foreground underline underline-offset-4" %>,
+    not an AlertDialog: the alert dialog carries no fields by contract, and a form belongs in
+    a dialog that can hold one. The recipe is a form whose input demands the exact phrase
+    (<code class="text-foreground">pattern:</code> plus
+    <code class="text-foreground">required:</code>, so the browser refuses the submit until it
+    matches, with no JavaScript) and a destructive footer button that submits it through the
+    <code class="text-foreground">form</code> attribute.
+  </p>
+</section>

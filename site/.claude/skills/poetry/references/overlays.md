@@ -14,7 +14,7 @@ Slot REQUIRED: with_action (the confirming choice) - a call without it raises.
 Slot REQUIRED: with_cancel (the safe way out) - a call without it raises.
 - `size:` (symbol) - one of default|sm, default "default", required - The panel size; :sm compacts the layout and switches the footer to a two-column grid.
 - `content_class:` (string) - Extra classes merged onto the panel element.
-Slots: trigger (The button that opens the dialog; keywords are forwarded as Button props.; takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly), title (The heading - the dialog's accessible name (required).), description (The explanation read alongside the title by assistive tech (required).), media (Optional icon/illustration well above the title.), action (The confirming choice (required) - a Button; pass variant: :destructive for deletes. Activating it also closes the dialog (a caller-supplied data-action opts out).; takes poetry_button props, not a block; with_action yields NOTHING to the block - no |param|, write content directly), cancel (The safe way out (required) - an outline Button that takes initial focus and closes the dialog on activation.; takes poetry_button props, not a block; with_cancel yields NOTHING to the block - no |param|, write content directly).
+Slots: trigger (The button that opens the dialog; keywords are forwarded as Button props.; takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly), title (The heading - the dialog's accessible name (required).), description (The explanation read alongside the title by assistive tech (required).), media (Optional icon/illustration well above the title.), action (The confirming choice (required) - a Button; pass variant: :destructive for deletes. Activating it also closes the dialog (a caller-supplied data-action opts out). submit: names the form it submits (type=submit plus the form attribute).; takes poetry_button props, not a block; with_action yields NOTHING to the block - no |param|, write content directly), cancel (The safe way out (required) - an outline Button that takes initial focus and closes the dialog on activation.; takes poetry_button props, not a block; with_cancel yields NOTHING to the block - no |param|, write content directly).
 - PART `alert-dialog` - Root wrapper around the trigger and the <dialog> element
 - PART `alert-dialog-content` - The role=alertdialog <dialog> panel - sizing, animation, and the open state ride here | states: data-open (panel is open (the shared dialog controller flips the pair at runtime)); data-closed (panel is closed (the server-rendered state)); data-size=default|sm (always - the resolved size)
 - PART `alert-dialog-header` - Title block - holds the optional media well, the title, and the description
@@ -22,6 +22,7 @@ Slots: trigger (The button that opens the dialog; keywords are forwarded as Butt
 - PART `alert-dialog-title` - The heading - the alertdialog's accessible name (required slot)
 - PART `alert-dialog-description` - The explanation, wired to aria-describedby (required slot)
 - PART `alert-dialog-footer` - The choice row - cancel then action
+In blocks: `destructive-panel` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - WIRING root: `poetry--core--dialog` registers; values dismissible
 - WIRING content: `poetry--core--dialog` actions close on cancel, backdropClose on click; targets dialog
 - WIRING trigger: `poetry--core--dialog` actions open
@@ -30,6 +31,7 @@ Slots: trigger (The button that opens the dialog; keywords are forwarded as Butt
 - RULE: Destructive confirmations use AlertDialog with with_action(variant: :destructive) - never a bare Dialog, never data-turbo-confirm.
 - RULE: with_title AND with_description are REQUIRED (both raise).
 - RULE: The action must be an explicit user activation - agents NEVER auto-submit the action.
+- RULE: with_action(submit: "form-id") makes the action that form's submit button (type=submit plus the form attribute - no form nests inside the dialog); the activation stays the user's.
 - RULE: No extra form fields inside an AlertDialog - if input is needed, use a Dialog.
 - RULE: Cancel keeps variant: :outline; do not make cancel visually primary.
 

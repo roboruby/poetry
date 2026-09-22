@@ -1290,6 +1290,18 @@
     "path": "/components/alert-dialog#installation"
   },
   {
+    "title": "Submitting a form from the action",
+    "page": "Alert Dialog",
+    "section": "components",
+    "path": "/components/alert-dialog#submitting"
+  },
+  {
+    "title": "Typed confirmation",
+    "page": "Alert Dialog",
+    "section": "components",
+    "path": "/components/alert-dialog#typed-confirmation"
+  },
+  {
     "title": "Default",
     "page": "Alert Dialog",
     "section": "components",
@@ -2650,6 +2662,12 @@
     "page": "Dialog",
     "section": "components",
     "path": "/components/dialog#sticky-footer"
+  },
+  {
+    "title": "Typed confirmation",
+    "page": "Dialog",
+    "section": "components",
+    "path": "/components/dialog#typed-confirmation"
   },
   {
     "title": "Agent tools",
@@ -6238,6 +6256,12 @@
     "page": "poetry-core",
     "section": "api",
     "path": "/api/poetry-core#activemodel-type"
+  },
+  {
+    "title": "ActiveModel::Type::HtmlSafeString",
+    "page": "poetry-core",
+    "section": "api",
+    "path": "/api/poetry-core#activemodel-type-htmlsafestring"
   },
   {
     "title": "ActiveModel::Type::List",
