@@ -313,6 +313,22 @@ module Poetry
           assert_equal({ color: :secondary }, component.styles)
           assert_equal({ title: "Custom" }, component.options)
         end
+
+        # A :string option keeps an html-safe value html-safe (a hint built
+        # with link_to, a translated _html key) and leaves a plain String
+        # plain - the type reports :string either way, so the registry and
+        # the introspection surface read the declaration unchanged.
+        def test_string_options_keep_an_html_safe_value_html_safe
+          safe = BasicComponent.new(title: "<b>Untitled</b>".html_safe)
+          plain = BasicComponent.new(title: "<b>Untitled</b>")
+
+          assert_predicate safe.title, :html_safe?
+          assert_equal "<b>Untitled</b>", safe.title
+          refute_predicate plain.title, :html_safe?
+          assert_equal :string, BasicComponent.title_type
+          assert_equal :string, BasicComponent.attribute_types["title"].type
+          assert_equal "42", BasicComponent.new(title: 42).title
+        end
       end
     end
   end

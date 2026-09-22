@@ -109,7 +109,9 @@ module Poetry
                             "variants" => %w[inline-start inline-end block-start block-end] }]
           },
           "poetry_sidebar_group" => {},
+          "poetry_table_cell" => { "identity" => false },
           "poetry_webmcp_form" => { "yields" => "the form builder" },
+
           "poetry_chart" => { "yields" => "the dispatched chart component" }
         },
         icon_names: %w[circle-alert folder-plus triangle-alert],
@@ -1486,9 +1488,37 @@ module Poetry
 
       def test_identity_free_reads_the_registry_declaration
         assert CATALOG.identity_free?("poetry_badge")
+        assert CATALOG.identity_free?("poetry_table_cell"), "a helpers-section entry declares identity false"
         refute CATALOG.identity_free?("poetry_button"), "no identity key = minting (legacy registries keep warning)"
-        refute CATALOG.identity_free?("poetry_sidebar_group"), "pathless helpers read as minting"
+        refute CATALOG.identity_free?("poetry_sidebar_group"), "a pathless helper without the key reads as minting"
         refute CATALOG.identity_free?("poetry_nonexistent")
+      end
+
+      def test_identity_free_part_helper_in_a_loop_is_clean
+        findings = stable_identity_findings(<<~ERB)
+          <% @rows.each do |row| %>
+            <%= poetry_table_cell { row.name } %>
+            <%= poetry_sidebar_group { row.name } %>
+          <% end %>
+        ERB
+
+        assert_equal ["stable-identity/collection"], findings.map(&:rule)
+        assert_includes findings.first.message, "poetry_sidebar_group",
+                        "only the pathless helper without the declaration warns"
+      end
+
+      def test_an_id_bearing_splat_counts_as_identity
+        findings = stable_identity_findings(<<~ERB)
+          <% @fields.each do |field| %>
+            <%= poetry_select(**field.control_attributes, name: "p") %>
+            <%= poetry_select(**attrs, name: "q") %>
+            <%= poetry_select(**@attributes, name: "r") %>
+            <%= poetry_select(name: "bare") %>
+          <% end %>
+        ERB
+
+        assert_equal 1, findings.size, "the splats carry the Field id; only the bare call warns"
+        assert_includes findings.first.message, "poetry_select"
       end
 
       def test_key_is_passthrough_not_an_unknown_option

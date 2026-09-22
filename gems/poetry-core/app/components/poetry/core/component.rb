@@ -382,7 +382,63 @@ module Poetry
                              "(#{self.class.required_content})"
       end
 
+      # ViewComponent's render_in, with the content block wrapped once so
+      # #content can read what the block RETURNED - capture keeps only what
+      # the block wrote to the buffer, and a scalar return vanishes there.
+      #
+      # @param view_context [ActionView::Base] the rendering view
+      # @return [ActiveSupport::SafeBuffer] the rendered component
+      def render_in(view_context, **)
+        @content_guarded = false
+        remove_instance_variable(:@content_return) if defined?(@content_return)
+        return super unless block_given?
+
+        recorded = proc { |*args| @content_return = yield(*args) }
+        super(view_context, **, &recorded)
+      end
+
+      # The captured content block, guarded once per render: a block that
+      # returned a scalar (a number, a symbol, a boolean) while writing
+      # nothing to the buffer captures as nothing at all - `poetry_badge {
+      # count }` renders an empty badge - so a requires_content component
+      # raises in development and test naming the value and the fix, and
+      # logs everywhere else; a component without the declaration logs. A
+      # block that wrote to the buffer, returned a String, returned nil,
+      # returned a collection (an empty loop's each) or composed slots
+      # (its last call a with_* setter, which returns the slot or the
+      # component) is fine.
+      #
+      # @return [ActiveSupport::SafeBuffer, nil] the captured content
+      def content
+        captured = super
+        guard_content_return(captured) unless @content_guarded
+        captured
+      end
+
+      # The content-return guard behind #content.
+      #
+      # @param captured [ActiveSupport::SafeBuffer, nil] what capture kept
+      # @return [void]
+      # @raise [ArgumentError] a scalar return on a requires_content
+      #   component, in development and test
+      def guard_content_return(captured)
+        @content_guarded = true
+        return unless defined?(@content_return)
+
+        value = @content_return
+        return if value.nil? || value.is_a?(::String) || value.respond_to?(:each) || captured.present?
+        return if value.is_a?(ViewComponent::Base) || value.is_a?(ViewComponent::Slot)
+
+        message = "#{passthrough_owner} content block returned #{value.inspect.truncate(60)} (#{value.class}), " \
+                  "which captures as nothing - return a String (call to_s on it) or write it with <%= %>"
+        raise ArgumentError, message if strict_passthrough? && self.class.required_content
+
+        Rails.logger&.warn("poetry: #{message}") if defined?(Rails) && Rails.respond_to?(:logger)
+      end
+      private :guard_content_return
+
       # Indicates whether this component instance is persisted.
+
       # Always returns false as components are not persisted entities.
       #
       # @return [Boolean] always returns false

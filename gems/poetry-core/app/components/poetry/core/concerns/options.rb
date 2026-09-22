@@ -90,8 +90,9 @@ module Poetry
             required, default_value = extract_declared_defaults(options)
             register_option_format(name, options.delete(:format))
 
-            attribute(name, type, **options)
+            attribute(name, option_cast_type(type), **options)
             add_option_validations(name, type, required)
+
             setup_declared_tracking(:option, name, default_value)
             define_type_getter(name, type)
           end
@@ -198,6 +199,18 @@ module Poetry
             record_declared_value(name, variants: nil, required: required)
             # Type validation is automatic via ActiveModel::Type
             validates name, presence: true if required
+          end
+
+          # The ActiveModel type an option declaration casts with. A :string
+          # option casts with ActiveModel::Type::HtmlSafeString, which keeps
+          # an html-safe value (a link, a translated `_html` key) html-safe
+          # where the String type copied it into a plain String; every other
+          # type is looked up by name as ActiveModel does.
+          #
+          # @param type [Symbol] the declared type
+          # @return [Symbol, ActiveModel::Type::Value] what `attribute` receives
+          def option_cast_type(type)
+            type == :string ? ActiveModel::Type::HtmlSafeString.new : type
           end
 
           # Defines a singleton method to access the type for this attribute.

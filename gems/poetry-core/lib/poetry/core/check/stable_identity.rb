@@ -24,8 +24,12 @@ module Poetry
       #
       # A component whose registry entry declares "identity" => false
       # renders no poetry-minted id - key:/id: would have nothing to
-      # stabilize - so both rules skip it. The registry derivation owns
-      # that fact per gem; legacy entries without the key keep warning.
+      # stabilize - so both rules skip it (a pathless helper declares the
+      # same in the registry helpers section). The registry derivation
+      # owns that fact per gem; legacy entries without the key keep
+      # warning. A double-splat of an id-bearing hash (`**field.control_attributes`,
+      # `**attrs`) counts as identity too: the id arrives through the splat,
+      # and the scan reads the name, not the hash.
       #
       # @api private
       class StableIdentity
@@ -36,7 +40,8 @@ module Poetry
         CACHE_OPENER = /\A\s*cache[\s(]/
         LOOP_OPENER =
           /\.(?:each|each_with_index|each_with_object|each_slice|map|collect|flat_map)\b.*\bdo\b|\Afor\s.+\sin\s/
-        IDENTITY_ARG = /(?:\bkey:|\bid:|["']key["']\s*=>|["']id["']\s*=>)/
+        IDENTITY_ARG =
+          /(?:\bkey:|\bid:|["']key["']\s*=>|["']id["']\s*=>|\*\*[\w.@]*(?:control_attributes|attributes|attrs)\b)/
 
         # A stable-identity linter over the catalog.
         def initialize(catalog)
