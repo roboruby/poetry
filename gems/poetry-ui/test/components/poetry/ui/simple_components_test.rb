@@ -129,6 +129,17 @@ module Poetry
         assert_includes html, 'data-slot="card-content"'
       end
 
+      def test_card_without_content_renders_no_body_cell
+        html = render_inline(Card::Component.new) do |card|
+          card.with_title { "Revenue" }
+          card.with_footer { "Updated hourly" }
+        end.to_html
+
+        assert_includes html, 'data-slot="card-header"'
+        assert_includes html, 'data-slot="card-footer"'
+        refute_includes html, 'data-slot="card-content"', "no empty body cell between header and footer"
+      end
+
       # -- Cross-cutting -------------------------------------------------------
 
       def test_all_four_are_in_the_registry_with_agent_rules

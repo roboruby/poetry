@@ -127,13 +127,15 @@ module Poetry
 
         # -- Polymorphic root (tag: :a) ----------------------------------------
 
-        def test_link_tag_renders_an_anchor_with_button_role
+        def test_link_tag_renders_an_anchor_without_a_role
           html = render_button(tag: :a, href: "/pricing", variant: :link)
 
           assert_includes html, "<a "
-          assert_includes html, 'role="button"'
+          refute_includes html, "role=", "a link stays a link - the destination is what assistive tech announces"
           assert_includes html, 'href="/pricing"'
           refute_includes html, "type="
+          assert_includes render_button(tag: :a, href: "/x", role: "button"), 'role="button"',
+                          "a caller's role: still lands"
         end
 
         def test_disabled_link_is_faux_disabled_without_href

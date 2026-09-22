@@ -148,13 +148,16 @@ module Poetry
 
       # The Table: the component renders the overflow container + real
       # `<table>`; the part helpers stamp the data-slot + source-exact classes
-      # onto the semantic table elements the consumer composes.
+      # onto the semantic table elements the consumer composes. The parts
+      # mint no ids of their own: key: on a row derives one
+      # (id="table-row-<token>", the record's dom_id) for a morph to
+      # follow; on any other part key: is consumed and renders nothing.
       #
       # @example
       #     poetry_table do
       #       safe_join([
       #         poetry_table_header { poetry_table_row { poetry_table_head { "Invoice" } } },
-      #         poetry_table_body { poetry_table_row { poetry_table_cell { "INV001" } } }
+      #         poetry_table_body { poetry_table_row(key: invoice) { poetry_table_cell { "INV001" } } }
       #       ])
       #     end
       # @see Poetry::Ui::Table::Component
@@ -172,6 +175,12 @@ module Poetry
         table_caption: [:caption, "table-caption", :caption]
       }.each do |name, (tag_name, slot, element)|
         define_method("poetry_#{name}") do |**attrs, &block|
+          # key: is identity, never an attribute - a row derives its id from
+          # it (poetry's key: contract); the other parts consume it.
+          key = attrs.delete(:key)
+          if name == :table_row && key && !attrs.key?(:id) && (token = Poetry::Core::StableId.key_token(key))
+            attrs[:id] = "table-row-#{token}"
+          end
           classes = [Poetry::Ui::Table::Style.css(element), attrs.delete(:class)].compact.join(" ")
           data = { slot: slot }.merge(attrs.delete(:data) || {})
           content_tag(tag_name, (capture(&block) if block), **attrs, class: classes, data: data)
@@ -963,8 +972,17 @@ module Poetry
       # these literals statically (the crash class: a helper-only literal
       # like align: :leading that no component contract covers, failing
       # only at render). Plain wrapper helpers need no entry here;
-      # registry generation lists them name-only.
+      # registry generation lists them name-only. The table parts declare
+      # identity false: they mint no id, so the stable-identity rules have
+      # nothing to ask of them (a keyed row derives its id).
       HELPER_CONTRACTS = {
+        "poetry_table_header" => { "identity" => false },
+        "poetry_table_body" => { "identity" => false },
+        "poetry_table_footer" => { "identity" => false },
+        "poetry_table_row" => { "identity" => false },
+        "poetry_table_head" => { "identity" => false },
+        "poetry_table_cell" => { "identity" => false },
+        "poetry_table_caption" => { "identity" => false },
         "poetry_toast_trigger" => {
           "options" => [
             { "name" => "template", "type" => "string",
@@ -1487,14 +1505,17 @@ module Poetry
       end
 
       # One transcript row - the id is how anchoring and Turbo Streams
-      # find it (data-message-id; anchor: pins the reading position).
+      # find it (data-message-id; anchor: pins the reading position);
+      # dom_id: gives the row a DOM id of its own (dom_id(message)) for
+      # replace and morph streams.
       #
       # @example
-      #   <%= poetry_message_scroller_item(id: message.id) do %>
+      #   <%= poetry_message_scroller_item(id: message.id, dom_id: dom_id(message)) do %>
       #     <%= poetry_message(author: "Ada") { message.body } %>
       #   <% end %>
       # @see Poetry::Ui::MessageScroller::Component
-      def poetry_message_scroller_item(id:, anchor: false, **attrs, &)
+      def poetry_message_scroller_item(id:, anchor: false, dom_id: nil, **attrs, &)
+        attrs[:id] = dom_id if dom_id
         classes = [Poetry::Ui::MessageScroller::Style.css(:item), attrs.delete(:class)].compact.join(" ")
         # data-message-id is the anchoring/Turbo-Stream identity - RESERVED:
         # the id: argument wins over any caller spelling. Other caller data

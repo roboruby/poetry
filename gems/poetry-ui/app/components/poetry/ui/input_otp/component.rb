@@ -33,7 +33,7 @@ module Poetry
         }.freeze
         # Field control_attributes land on the INPUT (the real control);
         # everything else the caller passes styles the container.
-        INPUT_FACING = %w[id aria-label aria-describedby aria-invalid aria-required].freeze
+        INPUT_FACING = %w[id aria-label aria-labelledby aria-describedby aria-invalid aria-required].freeze
 
         # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
@@ -147,6 +147,13 @@ module Poetry
           @input_id ||= poetry_instance_id("poetry-input-otp")
         end
 
+        # Whether the caller named the input already - an aria-label, an
+        # aria-labelledby, or an id a Field label points at.
+        # @api private
+        def named_by_caller?
+          html_attributes.slice("id", "aria-label", "aria-labelledby").values.any?(&:present?)
+        end
+
         # Whether the rendered value already fills every cell.
         # @api private
         def complete?
@@ -177,9 +184,10 @@ module Poetry
             "data-slot" => "input-otp", "class" => css(:input)
           }
           # The invisible input is the ONLY AT surface - it must always
-          # carry a name (the axe label rule); callers override via
-          # aria-label / Field labelling.
-          attrs["aria-label"] = t("poetry.input_otp.label")
+          # carry a name (the axe label rule): the caller's aria-label or
+          # aria-labelledby, a Field's label through the id (label for=),
+          # else the translated default.
+          attrs["aria-label"] = t("poetry.input_otp.label") unless named_by_caller?
           attrs["value"] = display_value if display_value.present?
           attrs["disabled"] = true if disabled
           attrs["aria-required"] = true if required

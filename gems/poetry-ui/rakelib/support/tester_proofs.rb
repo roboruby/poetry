@@ -14,6 +14,7 @@ class PoetryTesterProofs
     menu_sequence: "menu opens, activates, and closes",
     dialog_keyboard_and_escape: "dialog opens by keyboard, Escape returns focus to the trigger",
     combobox_filter_and_commit: "combobox filters and commits",
+    checkbox_toggles_by_keyboard_and_pointer: "checkbox checks by keyboard, unchecks by pointer, reports its value",
     registration_guard_passes: "registration guard finds every poetry controller registered",
     registration_guard_names_the_stray: "registration guard names an unregistered poetry controller"
   }.freeze
@@ -85,6 +86,23 @@ class PoetryTesterProofs
       "document.activeElement && document.activeElement.getAttribute('data-action')"
     )
     raise "focus not returned to the trigger" unless focused_action.to_s.include?("#open")
+  end
+
+  # The checkbox checks from the keyboard (Space), unchecks from the
+  # pointer, and reports what the form would submit either way.
+  def checkbox_toggles_by_keyboard_and_pointer
+    visit("/previews/poetry/ui/checkbox/default")
+    checkbox = Poetry::Ui::Testing::Checkbox.new(root_for("checkbox"), session: @session)
+
+    raise "checked at birth" if checkbox.checked?
+
+    checkbox.check(via: :keyboard)
+    raise "not checked after Space" unless checkbox.checked?
+    raise "checked value #{checkbox.value.inspect}" unless checkbox.value == "1"
+
+    checkbox.uncheck
+    raise "still checked after the press" if checkbox.checked?
+    raise "unchecked value #{checkbox.value.inspect}" unless checkbox.value == "0"
   end
 
   # The combobox filters on typed text and commits the pick to the native value.

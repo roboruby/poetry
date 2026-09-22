@@ -30,14 +30,22 @@ module Poetry
         "Validations become attributes: presence -> aria-required (NEVER native required), " \
         "length -> maxlength/minlength, numericality -> min/max/step; f.input(required: true/false) " \
         "overrides the presence inference (aria only).",
-        "Hints/placeholders resolve from poetry_form.* i18n (simple_form.* keys keep working " \
-        "as a fallback); pass hint:/placeholder: to override.",
+        "Labels resolve from Rails' helpers.label.* i18n, then poetry_form.labels/simple_form.labels, " \
+        "then human_attribute_name (a model-less form humanizes the method); hints and placeholders " \
+        "from helpers.placeholder.*, then poetry_form.*/simple_form.*. Pass label:/hint:/placeholder: " \
+        "to override on any builder method, label: false to drop the visible label, aria_label: " \
+        "for an accessible name alone.",
+        "Model-less forms work: form_with(url:, scope:) renders every builder method with labels " \
+        "from the scope's i18n or the method name and empty values; false and 0 survive as values " \
+        "on a model (a tristate select shows No).",
         "Every builder field renders a Field, so wiring tests assert on its parts: the label is " \
         "data-slot=field-label, the hint data-slot=field-description, the error data-slot=field-error, " \
         "with the control inside (never a bare hint or description slot).",
-        "f.submit renders a poetry Button with the Rails i18n label; f.fieldset(legend:)/" \
-        "f.group lay out sections; boolean f.input renders the horizontal Field " \
-        "(switch: true -> the setting row).",
+        "f.submit renders a poetry Button named commit with its label as the value (params[:commit], " \
+        "Rails' own name; f.button is named button); f.fieldset(legend:)/f.group lay out sections; " \
+        "boolean f.input, f.check_box and f.switch render the horizontal Field with the visible " \
+        "label (switch: true -> the setting row); f.file_input flips the form to multipart and " \
+        "seats its block beside the control (the preview).",
         "Apps on simple_form: add poetry-simple_form instead of rewriting views - " \
         "Poetry::SimpleForm.activate! maps every simple_form type onto this builder (poetry-only " \
         "controls via as: :switch/:slider/:otp/:sensitive/:tag_group/:date_picker/:calendar/" \
@@ -53,16 +61,17 @@ module Poetry
         "input" => "the inferred entrypoint: type from as:/attachments/enums/column/name",
         "association" => "reflection-derived: belongs_to -> Combobox(fk), has_many -> checkbox group(_ids)",
         "field" => "Field-wrapped Input/Textarea (as: :textarea; orientation:/hint_position: pass through)",
-        "check_box / switch" => "bare toggles (Rails check_box parity; switch = role=switch)",
+        "check_box / switch" => "toggles in the horizontal Field (Rails check_box arity; switch = role=switch)",
         "radio_group" => "collection_radio_buttons-equivalent on RadioGroup",
-        "checkbox_group" => "collection_check_boxes-equivalent on the select-all group (ONE clearing hidden)",
+        "checkbox_group" => "collection_check_boxes-equivalent on the select-all group (ONE clearing hidden; " \
+                            "value_method:/label_method:/checked:)",
         "poetry_select / poetry_combobox" => "the rich pickers (Rails choice shapes; combobox multiple: chips)",
         "native_select" => "the styled native <select> (zero JS)",
         "slider / otp_field / number_field / date_field / time_field / file_input" =>
-          "dedicated Field-wrapped controls",
+          "dedicated Field-wrapped controls (file_input: multipart form, block = the preview seat)",
         "search_field / sensitive_input / autocomplete / tag_group / date_picker / calendar" =>
           "the poetry-only control mappings",
-        "submit / button" => "poetry Buttons (type submit; loading: opt-in)",
+        "submit / button" => "poetry Buttons (type submit; submit is named commit; loading: opt-in)",
         "fieldset / group" => "layout frames yielding the builder"
       }.freeze
 
@@ -81,6 +90,8 @@ module Poetry
       # default, with type:) or as: :textarea (rows: passes through) -
       # Own-line controls slot in as as: values; group-shaped
       # controls get dedicated methods (radio_group, slider, otp_field).
+      # label: overrides the Field label (false drops it), aria_label:
+      # names the control alone, placeholder: overrides the i18n chain.
       def field(method, as: :input, hint: nil, **input_options)
         # tool_description: - the declarative WebMCP parameter override
         # (the label describes the parameter otherwise).
@@ -88,12 +99,13 @@ module Poetry
           input_options.merge!(Webmcp.param_attributes(input_options.delete(:tool_description)))
         end
         field_component = field_for(method, hint: hint,
-                                            label: input_options.delete(:label),
+                                            label: take_label!(input_options),
                                             orientation: input_options.delete(:orientation),
                                             hint_position: input_options.delete(:hint_position))
+        resolve_placeholder!(method, input_options)
         control_options = {
           name: field_name(method),
-          value: object.public_send(method).presence&.to_s,
+          value: value_string(method),
           **input_options,
           **field_component.control_attributes.transform_keys(&:to_sym)
         }
@@ -112,17 +124,21 @@ module Poetry
       # derived, checked: from the object's attribute truthiness, "1"/"0"
       # plus the unchecked-hidden pair (ActionView::Helpers::Tags::CheckBox
       # parity incl. hidden-input-first ordering - the Checkbox component
-      # renders the pair). A BARE control mapping: compose with a Field
-      # (control_attributes) for the label/hint/error quartet.
+      # renders the pair), inside the horizontal Field so the label is
+      # visible (label: overrides it, label: false drops it, hint: and the
+      # model's errors ride the Field) - the shape boolean f.input renders.
       def check_box(method, options = {}, checked_value = "1", unchecked_value = "0")
-        @template.render Checkbox::Component.new(**toggle_options(method, options, checked_value, unchecked_value))
+        boolean_input(method, checked_value: checked_value, unchecked_value: unchecked_value,
+                              **options.transform_keys(&:to_sym))
       end
 
       # The same mapping wearing switch semantics (Rails has NO native
-      # switch builder): role=switch announces on/off; use it for
-      # instant-effect settings, check_box for values staged for submit.
+      # switch builder): role=switch announces on/off in the setting row;
+      # use it for instant-effect settings, check_box for values staged
+      # for submit.
       def switch(method, options = {}, checked_value = "1", unchecked_value = "0")
-        @template.render Switch::Component.new(**toggle_options(method, options, checked_value, unchecked_value))
+        boolean_input(method, switch: true, checked_value: checked_value, unchecked_value: unchecked_value,
+                              **options.transform_keys(&:to_sym))
       end
 
       # The collection_radio_buttons-equivalent (the exclusive-choice
@@ -132,11 +148,11 @@ module Poetry
       # to collection_radio_buttons (one hidden native radio per item,
       # shared name; nothing submits when none is checked).
       def radio_group(method, collection, hint: nil, **options)
-        field_component = field_for(method, hint: hint, group: true)
+        field_component = field_for(method, hint: hint, group: true, label: take_label!(options))
         @template.render(field_component) do
           @template.render RadioGroup::Component.new(
             name: field_name(method),
-            value: object.public_send(method).presence&.to_s,
+            value: value_string(method),
             required: required?(method),
             invalid: field_component.invalid?,
             # The group is named by the VISIBLE Field label via
@@ -153,17 +169,20 @@ module Poetry
         end
       end
 
-      # The bounded-numeric story: form.slider(:volume) single (label from
-      # human_attribute_name), form.slider(:price_range, range: true,
+      # The bounded-numeric story: form.slider(:volume) single (the Field
+      # label names the thumb), form.slider(:price_range, range: true,
       # label: [...]) reads an Array[2] and submits name[] (params:
-      # ["200", "800"] - Rails' own array convention). Field wraps for
+      # ["200", "800"] - Rails' own array convention); a String label:
+      # is the Field label, an Array names the two thumbs. Field wraps for
       # hint/error; the describedby lands on each THUMB.
       def slider(method, range: false, hint: nil, **options)
-        field_component = field_for(method, hint: hint, group: true)
-        value = object.public_send(method)
+        label = options.delete(:label)
+        thumb_labels = label.is_a?(Array) ? label : nil
+        field_component = field_for(method, hint: hint, group: true, label: thumb_labels ? nil : label)
+        value = object_value(method)
         slider_options = {
           name: field_name(method),
-          label: options.delete(:label) || (range ? nil : field_component.label_text),
+          label: thumb_labels || options.delete(:aria_label) || (range ? nil : field_component.label_text),
           **group_control_attributes(field_component),
           **options.transform_keys(&:to_sym)
         }
@@ -190,7 +209,7 @@ module Poetry
       # dead; re-rendering it invites resubmit-the-same-wrong-code loops)
       # - pass value: explicitly to override.
       def otp_field(method, length: 6, hint: nil, **options)
-        field_component = field_for(method, hint: hint)
+        field_component = field_for(method, hint: hint, label: take_label!(options))
         @template.render(field_component) do
           @template.render InputOtp::Component.new(
             name: field_name(method),
@@ -238,18 +257,24 @@ module Poetry
 
       # form.file_input(:document) / form.file_input(:photos, variant: :dropzone,
       # multiple: true) - a Field wrapping a FileInput; the native
-      # input is the form value, so ActiveStorage attaches as usual.
-      def file_input(method, hint: nil, **options)
-        field_component = field_for(method, hint: hint)
+      # input is the form value, so ActiveStorage attaches as usual, and
+      # the form flips to multipart (Rails' own file_field line). A block
+      # renders beside the control inside the Field - the seat for the
+      # current attachment's preview.
+      def file_input(method, hint: nil, **options, &block)
+        self.multipart = true
+        field_component = field_for(method, hint: hint, label: take_label!(options))
         describedby = field_component.control_attributes["aria-describedby"]
         @template.render(field_component) do
-          @template.render FileInput::Component.new(
+          control = @template.render FileInput::Component.new(
             name: field_name(method, multiple: options[:multiple] || false),
             invalid: field_component.invalid?,
             id: field_component.control_attributes["id"],
             **(describedby ? { described_by: describedby } : {}),
             **options.transform_keys(&:to_sym)
           )
+          preview = block && @template.capture(&block)
+          preview ? control + preview : control
         end
       end
 
@@ -271,11 +296,11 @@ module Poetry
           raise ArgumentError, "poetry_select does not support multiple: - multi-select is Combobox territory"
         end
 
-        field_component = field_for(method, hint: hint)
-        placeholder = include_blank.is_a?(String) ? include_blank : options.delete(:placeholder)
+        field_component = field_for(method, hint: hint, label: take_label!(options))
+        placeholder = include_blank.is_a?(String) ? include_blank : resolve_placeholder!(method, options)
         select_options = {
           name: field_name(method),
-          value: object.public_send(method).presence&.to_s,
+          value: value_string(method),
           placeholder: placeholder,
           required: required?(method),
           **options.transform_keys(&:to_sym),
@@ -310,11 +335,11 @@ module Poetry
       # chips field has no trigger); include_blank has no meaning there.
       def poetry_combobox(method, choices = nil, include_blank: nil, hint: nil, **options, &block)
         multiple = options[:multiple]
-        field_component = field_for(method, hint: hint)
-        placeholder = include_blank.is_a?(String) ? include_blank : options.delete(:placeholder)
+        field_component = field_for(method, hint: hint, label: take_label!(options))
+        placeholder = include_blank.is_a?(String) ? include_blank : resolve_placeholder!(method, options)
         combobox_options = {
           name: field_name(method, multiple: multiple),
-          value: multiple ? Array(object.public_send(method)).map(&:to_s) : object.public_send(method).presence&.to_s,
+          value: multiple ? Array(object_value(method)).map(&:to_s) : value_string(method),
           placeholder: placeholder,
           required: required?(method),
           **options.transform_keys(&:to_sym),
@@ -382,8 +407,7 @@ module Poetry
         end
 
         type = as || infer_input_type(method, collection: collection)
-        hint ||= form_i18n(:hints, method)
-        options[:placeholder] = form_i18n(:placeholders, method) if options[:placeholder].nil?
+        options[:placeholder] = placeholder_for(method) if options[:placeholder].nil?
         options.compact!
 
         return boolean_input(method, hint: hint, **options) if type == :boolean
@@ -483,12 +507,13 @@ module Poetry
       # form.search_field(:query) - a Field wrapping the SearchField
       # (native type=search + the clear affordance).
       def search_field(method, hint: nil, **options)
-        field_component = field_for(method, hint: hint)
+        field_component = field_for(method, hint: hint, label: take_label!(options))
+        resolve_placeholder!(method, options)
         describedby = field_component.control_attributes["aria-describedby"]
         @template.render(field_component) do
           @template.render SearchField::Component.new(
             name: field_name(method),
-            value: object.public_send(method).presence&.to_s,
+            value: value_string(method),
             invalid: field_component.invalid?,
             id: field_component.control_attributes["id"],
             **(describedby ? { described_by: describedby } : {}),
@@ -500,12 +525,13 @@ module Poetry
       # form.sensitive_input(:api_key) - the revealable-secret story
       # : masked at rest, reveal + optional copy:.
       def sensitive_input(method, hint: nil, **options)
-        field_component = field_for(method, hint: hint)
+        field_component = field_for(method, hint: hint, label: take_label!(options))
+        resolve_placeholder!(method, options)
         describedby = field_component.control_attributes["aria-describedby"]
         @template.render(field_component) do
           @template.render SensitiveInput::Component.new(
             name: field_name(method),
-            value: object.public_send(method).presence&.to_s,
+            value: value_string(method),
             invalid: field_component.invalid?,
             id: field_component.control_attributes["id"],
             **(describedby ? { described_by: describedby } : {}),
@@ -519,10 +545,11 @@ module Poetry
       # suggestions array ([label, value] pairs or bare strings) or a
       # block of auto.with_item calls.
       def autocomplete(method, suggestions = nil, hint: nil, **options, &block)
-        field_component = field_for(method, hint: hint)
+        field_component = field_for(method, hint: hint, label: take_label!(options))
+        resolve_placeholder!(method, options)
         control = {
           name: field_name(method),
-          value: object.public_send(method).presence&.to_s,
+          value: value_string(method),
           **options.transform_keys(&:to_sym),
           **field_component.control_attributes.transform_keys(&:to_sym)
         }
@@ -541,18 +568,18 @@ module Poetry
       # NATIVE <select> (zero JS); poetry_select/poetry_combobox stay the
       # rich paths. include_blank: posts "" (Rails semantics).
       def native_select(method, choices = nil, include_blank: nil, hint: nil, **options)
-        field_component = field_for(method, hint: hint)
+        field_component = field_for(method, hint: hint, label: take_label!(options))
         pairs = Array(choices).map { |c| c.is_a?(Array) ? c : [c.to_s, c] }
         pairs.unshift([include_blank.is_a?(String) ? include_blank : "", ""]) if include_blank
-        describedby = field_component.control_attributes["aria-describedby"]
         @template.render(field_component) do
+          # The quartet lands on the <select> itself (id, aria-describedby,
+          # aria-invalid, aria-required) - NativeSelect routes aria-* there.
           @template.render NativeSelect::Component.new(
             name: field_name(method),
             options: pairs,
-            selected: object.public_send(method).presence&.to_s,
+            selected: value_string(method),
             invalid: field_component.invalid?,
-            id: field_component.control_attributes["id"],
-            **(describedby ? { described_by: describedby } : {}),
+            **field_component.control_attributes.transform_keys(&:to_sym),
             **options.transform_keys(&:to_sym)
           )
         end
@@ -565,10 +592,10 @@ module Poetry
         # The Field renders NO label here: TagGroup's own caption span is the
         # grid's accessible name - a Field label too would render the text
         # twice under one duplicated DOM id.
-        caption = options.delete(:label) || object.class.human_attribute_name(method)
+        caption = label_for(method, options.delete(:label)) || human_name(method)
         field_component = field_for(method, hint: hint, group: true, label: false)
         describedby = field_component.control_attributes["aria-describedby"]
-        values = Array(object.public_send(method)).map(&:to_s)
+        values = Array(object_value(method)).map(&:to_s)
         @template.hidden_field_tag(field_name(method, multiple: true), "", id: nil) +
           @template.render(field_component) do
             @template.render(TagGroup::Component.new(
@@ -587,9 +614,14 @@ module Poetry
       # APG select-all group (DD sweep) - items post name[] and the
       # leading empty hidden clears when none are checked. select_all:
       # true (or a label string) adds the mixed-state parent checkbox.
-      def checkbox_group(method, collection, hint: nil, select_all: false, **options)
-        field_component = field_for(method, hint: hint, group: true)
-        chosen = Array(object.public_send(method)).map(&:to_s)
+      # The collection is [value, label] pairs or bare values; records map
+      # through value_method:/label_method: (a symbol sent to the item, or
+      # a callable). checked: is the explicit checked list (a virtual
+      # collection with no reader); otherwise the object's array decides.
+      def checkbox_group(method, collection, hint: nil, select_all: false,
+                         value_method: nil, label_method: nil, checked: nil, **options)
+        field_component = field_for(method, hint: hint, group: true, label: take_label!(options))
+        chosen = Array(checked.nil? ? object_value(method) : checked).map(&:to_s)
         base_id = field_id(method)
         @template.hidden_field_tag(field_name(method, multiple: true), "", id: nil) +
           @template.render(field_component) do
@@ -600,7 +632,8 @@ module Poetry
             ) do
               rows = []
               rows << checkbox_group_all_row(base_id, select_all) if select_all
-              rows.concat(checkbox_group_item_rows(method, collection, chosen, base_id))
+              pairs = collection.map { |item| choice_pair(item, value_method, label_method) }
+              rows.concat(checkbox_group_item_rows(method, pairs, chosen, base_id))
               @template.safe_join(rows)
             end
           end
@@ -610,11 +643,11 @@ module Poetry
       # ISO like date_field. (Quartet ids land on the composed control's
       # root for now - the input-level aria refinement comes later.)
       def date_picker(method, hint: nil, **options)
-        field_component = field_for(method, hint: hint, group: true)
+        field_component = field_for(method, hint: hint, group: true, label: take_label!(options))
         @template.render(field_component) do
           @template.render DatePicker::Component.new(
             name: field_name(method),
-            value: object.public_send(method).presence&.to_s,
+            value: value_string(method),
             **group_control_attributes(field_component).slice(:id, :"aria-describedby"),
             **options.transform_keys(&:to_sym)
           )
@@ -624,14 +657,14 @@ module Poetry
       # form.calendar(:starts_on) - the always-visible month grid as a
       # form participant (mode: :range posts name[]).
       def calendar(method, hint: nil, **options)
-        field_component = field_for(method, hint: hint, group: true)
-        value = object.public_send(method)
+        field_component = field_for(method, hint: hint, group: true, label: take_label!(options))
+        value = object_value(method)
         @template.render(field_component) do
           @template.render Calendar::Component.new(
             name: field_name(method),
             # Calendar's keyword is selected:, not value: - value: would fall
             # into html_attributes and the model's date silently never lands.
-            selected: value.is_a?(Array) ? value.map(&:to_s) : value.presence&.to_s,
+            selected: value.is_a?(Array) ? value.map(&:to_s) : value_string(method),
             **group_control_attributes(field_component).slice(:id, :"aria-describedby"),
             **options.transform_keys(&:to_sym)
           )
@@ -674,18 +707,23 @@ module Poetry
       # -- Actions -------------------------------------------------------
 
       # form.submit -> a poetry Button (type submit); label from Rails'
-      # own i18n default ("Create Model" / "Update Model"). loading: true
+      # own i18n default ("Create Model" / "Update Model"), named commit
+      # with the label as its value so params[:commit] reads as it does
+      # under Rails' own submit (name:/value: override). loading: true
       # opts into the Button loading treatment.
       def submit(value = nil, **options)
         value ||= submit_default_value
-        @template.render(Button::Component.new(type: :submit, **options.transform_keys(&:to_sym))) { value }
+        @template.render(Button::Component.new(type: :submit, name: "commit", value: value,
+                                               **options.transform_keys(&:to_sym))) { value }
       end
 
       # form.button - #submit with block/content support: the block (or
-      # value) is the Button's content, type stays submit.
+      # value) is the Button's content, type stays submit, and the name is
+      # button (Rails' own for f.button; name: overrides).
       def button(value = nil, **options, &block)
         content = block ? @template.capture(&block) : value || submit_default_value
-        @template.render(Button::Component.new(type: :submit, **options.transform_keys(&:to_sym))) { content }
+        @template.render(Button::Component.new(type: :submit, name: "button",
+                                               **options.transform_keys(&:to_sym))) { content }
       end
 
       # -- Layout --------------------------------------------------------
@@ -759,12 +797,12 @@ module Poetry
       # control id, invalid state and aria-describedby handed to the control,
       # the caller's options last.
       def control_field(method, component, hint:, **options)
-        field_component = field_for(method, hint: hint)
+        field_component = field_for(method, hint: hint, label: take_label!(options))
         describedby = field_component.control_attributes["aria-describedby"]
         @template.render(field_component) do
           @template.render component.new(
             name: field_name(method),
-            value: object.public_send(method),
+            value: object_value(method),
             required: required?(method),
             invalid: field_component.invalid?,
             id: field_component.control_attributes["id"],
@@ -776,18 +814,98 @@ module Poetry
 
       # -- one keyword per Field surface
       # label: false suppresses the Field label entirely - for controls that
-      # render their own accessible name (TagGroup's caption span).
+      # render their own accessible name (TagGroup's caption span); nil
+      # resolves it (#label_for), as a nil hint resolves the i18n chain.
       def field_for(method, hint: nil, group: false, orientation: nil, hint_position: nil, label: nil)
         extras = { orientation: orientation, hint_position: hint_position }.compact
         Field::Component.new(
           id: field_id(method),
-          label_text: label == false ? nil : (label || object.class.human_attribute_name(method)),
-          hint: hint,
+          label_text: label_for(method, label),
+          hint: hint || form_i18n(:hints, method),
           error: error_for(method),
           required: required?(method),
           group: group,
           **extras
         )
+      end
+
+      # The object's value for a method, or nil without an object or a
+      # reader (a model-less form_with(url:, scope:), a virtual attribute):
+      # false and 0 survive, so a tristate select shows No and a zero
+      # count shows 0.
+      def object_value(method)
+        return nil unless object.respond_to?(method)
+
+        object.public_send(method)
+      end
+
+      # The object's value as the string a control compares option values
+      # against: nil for nil or blank, "false" for false, "0" for 0.
+      def value_string(method)
+        value = object_value(method)
+        return nil if value.nil? || (value.respond_to?(:empty?) && value.empty?)
+
+        value.to_s
+      end
+
+      # Pulls the Field keywords out of a control call's options: label:
+      # comes out for the Field (false drops the visible label; nil
+      # resolves it), aria_label: becomes the control's own aria-label.
+      def take_label!(options)
+        options[:"aria-label"] = options.delete(:aria_label) if options.key?(:aria_label)
+        options.delete(:label)
+      end
+
+      # The Field label: the given label (false is none), else Rails'
+      # helpers.label.<object_name>.<method> key, the poetry_form /
+      # simple_form labels chain, then the object's human_attribute_name
+      # or the humanized method (a model-less form).
+      def label_for(method, label)
+        return nil if label == false
+        return label if label
+
+        rails_i18n("helpers.label", method) || form_i18n(:labels, method) || human_name(method)
+      end
+
+      # The attribute's human name from the model, or the humanized method
+      # without one.
+      def human_name(method)
+        if object.class.respond_to?(:human_attribute_name)
+          object.class.human_attribute_name(method)
+        else
+          method.to_s.humanize
+        end
+      end
+
+      # The placeholder from i18n: Rails' helpers.placeholder key first,
+      # then the poetry_form / simple_form placeholders chain.
+      def placeholder_for(method)
+        rails_i18n("helpers.placeholder", method) || form_i18n(:placeholders, method)
+      end
+
+      # Resolves a control call's placeholder from i18n when the call
+      # carries none (an explicit nil or false silences it); returns the
+      # placeholder and leaves it in the options.
+      def resolve_placeholder!(method, options)
+        options[:placeholder] = placeholder_for(method) unless options.key?(:placeholder)
+        options.delete(:placeholder) if options[:placeholder].nil?
+        options[:placeholder]
+      end
+
+      # One checkbox-group choice as [value, label]: a [value, label] pair
+      # or bare value as given, or a record read through value_method: /
+      # label_method: (a symbol sent to it, or a callable).
+      def choice_pair(item, value_method, label_method)
+        return item.is_a?(Array) ? item : [item, item.to_s.humanize] unless value_method || label_method
+
+        value = value_method ? read_choice(item, value_method) : item
+        label = label_method ? read_choice(item, label_method) : value.to_s.humanize
+        [value, label]
+      end
+
+      # A record's value or label through a symbol (sent) or a callable (called).
+      def read_choice(item, reader)
+        reader.respond_to?(:call) ? reader.call(item) : item.public_send(reader)
       end
 
       # Shared derivation for the toggle-family builder methods: everything
@@ -797,7 +915,7 @@ module Poetry
         {
           name: field_name(method),
           id: field_id(method),
-          checked: ActiveModel::Type::Boolean.new.cast(object.public_send(method)) || false,
+          checked: ActiveModel::Type::Boolean.new.cast(object_value(method)) || false,
           value: checked_value,
           unchecked_value: unchecked_value,
           required: required?(method),
@@ -805,13 +923,14 @@ module Poetry
         }
       end
 
-      # f.input's boolean story: the horizontal boolean-control layout
-      # (checkbox on the label line); switch: true renders the setting row
-      # (label + hint left, switch right).
-      def boolean_input(method, hint: nil, switch: false, **options)
+      # f.input's boolean story, and check_box's and switch's: the
+      # horizontal boolean-control layout (checkbox on the label line);
+      # switch: true renders the setting row (label + hint left, switch
+      # right).
+      def boolean_input(method, hint: nil, switch: false, checked_value: "1", unchecked_value: "0", **options)
         orientation = switch ? :setting : :horizontal
-        field_component = field_for(method, hint: hint, orientation: orientation)
-        control = toggle_options(method, options, "1", "0")
+        field_component = field_for(method, hint: hint, orientation: orientation, label: take_label!(options))
+        control = toggle_options(method, options, checked_value, unchecked_value)
                   .merge(field_component.control_attributes.transform_keys(&:to_sym))
         @template.render(field_component) do
           @template.render((switch ? Switch::Component : Checkbox::Component).new(**control))
@@ -821,6 +940,10 @@ module Poetry
       # AR enums: humanized keys as a select (as: :radio_group lays a
       # small set flat).
       def enum_input(method, hint: nil, **)
+        unless enum_attribute?(method)
+          raise ArgumentError, "as: :enum needs a model with an enum named #{method.inspect}"
+        end
+
         pairs = object.class.defined_enums.fetch(method.to_s).keys.map { |key| [key.humanize, key] }
         poetry_select(method, pairs, hint: hint, **)
       end
@@ -864,10 +987,9 @@ module Poetry
         end
       end
 
-      # One checkbox row per collection item, checked when chosen.
-      def checkbox_group_item_rows(method, collection, chosen, base_id)
-        collection.map do |item|
-          value, label = item.is_a?(Array) ? item : [item, item.to_s.humanize]
+      # One checkbox row per [value, label] pair, checked when chosen.
+      def checkbox_group_item_rows(method, pairs, chosen, base_id)
+        pairs.map do |value, label|
           item_id = "#{base_id}_#{value.to_s.parameterize(separator: "_")}"
           @template.content_tag(:div, class: "flex items-center gap-2") do
             @template.poetry_checkbox_group_item(

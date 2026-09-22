@@ -53,6 +53,24 @@ module Poetry
           docs_item = html.css('[data-slot="navigation-menu-item"]').last
 
           assert_nil docs_item["data-action"], "link items schedule nothing"
+          assert_nil link["data-active"], "a link is not the current page unless it says so"
+          assert_nil link["aria-current"]
+        end
+
+        def test_an_active_top_level_link_marks_the_current_page
+          html = render_inline(Component.new(label: "Main")) do |nav|
+            nav.with_link("Docs", href: "/docs", active: true)
+            nav.with_link("Pricing", href: "/pricing")
+          end
+          docs, pricing = html.css('a[data-slot="navigation-menu-link"]').to_a
+
+          assert_equal "true", docs["data-active"]
+          assert_equal "page", docs["aria-current"]
+          assert_includes docs["class"], "data-active:bg-muted/50", "the current-page treatment rides data-active"
+          assert_nil pricing["data-active"]
+          assert_raises(ArgumentError) do
+            render_inline(Component.new(label: "Main")) { |nav| nav.with_item("Products", active: true) { "p" } }
+          end
         end
 
         # -- the morphing shared viewport ------------------------------------

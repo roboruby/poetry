@@ -101,7 +101,23 @@ module Poetry
           attrs.compact
         end
 
-        # -- i18n (the poetry_form chain, reading simple_form keys too) ----
+        # -- i18n (Rails' helpers keys, then the poetry_form chain, reading simple_form keys too) ----
+
+        # Rails' own helpers.label / helpers.placeholder lookup, the keys
+        # f.label and placeholder: true read: scope.<object_name>.<method>
+        # (nested-attributes indices fold as Rails folds them), then
+        # scope.<model i18n key>.<method>. Nil without a translation.
+        def rails_i18n(scope, method)
+          return nil if object_name.blank?
+
+          keys = [:"#{object_name.to_s.gsub(/\[(.*)_attributes\]\[\d+\]/, '.\1')}.#{method}"]
+          keys << :"#{object.class.model_name.i18n_key}.#{method}" if object.class.respond_to?(:model_name)
+          keys.each do |key|
+            value = I18n.t(key, scope: scope, default: nil)
+            return value if value.present?
+          end
+          nil
+        end
 
         # poetry_form.{kind}.{model}.{attribute} -> simple_form.* fallback
         # (free migration win: existing simple_form locales keep working).

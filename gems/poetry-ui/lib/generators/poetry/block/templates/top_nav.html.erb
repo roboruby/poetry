@@ -34,7 +34,8 @@
         </div>
       <% end %>
       <% nav.with_link("Pricing", href: "/pricing") %>
-      <% nav.with_link("Docs", href: "/docs") %>
+      <%# active: marks the current page's link - derive it from the request in an app. %>
+      <% nav.with_link("Docs", href: "/docs", active: true) %>
     <% end %>
     <div class="flex items-center gap-2">
       <%= poetry_button(variant: :ghost, size: :sm, tag: :a, href: "/login") { "Log in" } %>

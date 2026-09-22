@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.1.8]
+
+The robosite proof: a full Jumpstart Pro application re-skinned on Poetry surfaced 28 findings; the 20 that were Poetry's to fix land here, with the form builder taking most of them.
+
+### Added
+
+- `form.checkbox_group` maps records through `value_method:` and `label_method:` (a symbol sent to the item, or a callable), and `checked:` names the checked values explicitly for a collection the object has no reader for.
+- `form.file_input` flips the form to multipart (Rails' own `file_field` line), and a block given to it renders beside the control inside the Field: the seat for the current attachment's preview.
+- Every builder method takes `label:` for the visible Field label (`label: false` drops it) and `aria_label:` for an accessible name alone; `label:` on a control used to become that control's `aria-label`, invisible.
+- Model-less forms: `form_with(url:, scope:)` renders every builder method, with labels from the scope's i18n or the humanized method and empty values, where the object-less call raised before.
+- NavigationMenu `with_link(title, href:, active: true)` marks the current page's top-level link (`data-active` plus `aria-current="page"`, the trigger's open treatment); the top-nav block marks its Docs link.
+- AlertDialog `with_action(submit: "form-id")` makes the action that form's submit button (`type="submit"` plus the `form` attribute), so a confirmation submits a form on the page without nesting one inside the dialog; the destructive-panel block adopts it.
+- MessageScroller `content_id:` names the content element's dom id directly (the default stays `"<id>-messages"`), and `poetry_message_scroller_item` takes `dom_id:` for a row's own DOM id beside its message id.
+- NativeSelect routes `id:` and every `aria-*` attribute (flat, or nested `aria:`) onto the `<select>` itself, so a Field's `control_attributes` splat straight in; `described_by:` stays as the older spelling. The builder's `native_select` now hands the select `aria-required` too.
+- Autocomplete lands the given `id:` on its `<input>` (the Field label's `for=` target) and derives the root, list and item ids from it; `aria-*` attributes move to the input the same way.
+- The table part helpers consume `key:` (it never renders as an attribute): `poetry_table_row(key: record)` derives `id="table-row-<dom_id>"` for a morph to follow; the other parts drop it. The registry declares the seven parts `identity: false`, so `poetry check` stops asking them for a key.
+
+### Changed
+
+- `form.submit` renders the Button named `commit` with the label as its value, so `params[:commit]` reads as it does under Rails' own submit; `form.button` is named `button`, Rails' own name for it. Pass `name:` or `value:` to override either.
+- `form.check_box` and `form.switch` render inside the horizontal Field with the visible label, the shape boolean `f.input` already had; the Rails arity (`checked_value`, `unchecked_value`) is unchanged.
+- The builder reads `false` and `0` as values: a tristate select shows No and a zero count shows 0, where `.presence` had blanked both. A virtual attribute with no reader renders empty instead of raising.
+- Labels resolve from Rails' `helpers.label.<object_name>.<method>` first, the key `f.label` reads, then `poetry_form.labels` / `simple_form.labels`, then `human_attribute_name`; placeholders read `helpers.placeholder.*` first. Hints and placeholders now resolve on direct control calls (`form.field`, `form.native_select`), not only through `f.input`.
+- Collapsible's `with_trigger` composes a poetry Button, the way Popover's does: keywords are Button props (`variant:`, `size:`), and the trigger wears Button's treatment. The previews use `variant: :ghost, size: :sm`.
+- Button's anchor form (`tag: :a`, or `href:`) renders no `role="button"`: a link stays a link, announced by its destination and activated by Enter. A caller's `role:` still lands.
+- Avatar's `label:` is no longer required: without one the avatar renders decorative (`aria-hidden`, no `role="img"`) with its initials fallback, the right shape beside a visible name; the content block is still required.
+- InputOTP stamps its default `aria-label` only when nothing names the input already: an `aria-label`, an `aria-labelledby`, or an `id` a Field label points at.
+- Card renders its `card-content` cell only when the content block gives content; a header-and-footer card no longer carries an empty body cell.
+- FieldSeparator is the labelled rule anywhere ("Or continue with" under a sign-in form, a date break), not only between fields in a FieldGroup.
+
 ## [0.1.7] - 2026-09-20
 
 ### Changed

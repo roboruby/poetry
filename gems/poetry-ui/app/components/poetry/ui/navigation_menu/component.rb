@@ -26,7 +26,8 @@ module Poetry
         AGENT_RULES = [
           "label: is REQUIRED (the nav landmark's accessible name).",
           "with_item(title, value:) declares a trigger + panel; with_link(title, href:) is a " \
-          "top-level destination - use links for pages, panels for groups of links.",
+          "top-level destination - use links for pages, panels for groups of links; active: true " \
+          "marks the current page's link (data-active + aria-current=page).",
           "Panel content is poetry_navigation_menu_link entries (active: marks the current page) - " \
           "never buttons; navigation navigates.",
           "This is a DISCLOSURE bar: Tab moves through it normally and nothing traps - do not " \
@@ -38,17 +39,19 @@ module Poetry
           "(the top-nav block shows the viewport pattern)."
         ].freeze
 
-        # One declared bar entry - a link (href:) or a trigger + panel pair
-        # (disabled: renders the trigger inert).
+        # One declared bar entry - a link (href:, active: for the current
+        # page) or a trigger + panel pair (disabled: renders the trigger
+        # inert).
         # @api private
-        Entry = Data.define(:title, :value, :href, :panel, :disabled)
+        Entry = Data.define(:title, :value, :href, :panel, :disabled, :active)
 
         renders_many :items,
                      doc: "The bar entries. with_item(title, value:) { panel } declares a trigger + panel " \
                           "(disabled: true renders the trigger inert - native disabled plus data-disabled; hover " \
                           "and click never open its panel); with_item(title, href:) a top-level link (with_link " \
-                          "is the shorthand).",
-                     renders: lambda { |title, value: nil, href: nil, disabled: false, &panel|
+                          "is the shorthand; active: true marks it the current page - data-active plus " \
+                          "aria-current=page).",
+                     renders: lambda { |title, value: nil, href: nil, disabled: false, active: false, &panel|
                        if href.nil? && panel.nil?
                          raise ArgumentError,
                                "NavigationMenu item #{title.inspect} needs href: (a link) or a panel block"
@@ -57,9 +60,13 @@ module Poetry
                          raise ArgumentError,
                                "NavigationMenu item #{title.inspect}: disabled: applies to a trigger, not a link"
                        end
+                       if active && href.nil?
+                         raise ArgumentError,
+                               "NavigationMenu item #{title.inspect}: active: applies to a link, not a trigger"
+                       end
 
                        entries << Entry.new(title: title, value: value&.to_s || title.to_s.parameterize, href: href,
-                                            panel: panel, disabled: disabled)
+                                            panel: panel, disabled: disabled, active: active)
                        nil
                      }
 
@@ -177,11 +184,12 @@ module Poetry
         end
 
         # Declares a top-level destination link - shorthand for
-        # with_item(title, href:).
+        # with_item(title, href:, active:).
         # @param title [String] the visible link text
         # @param href [String] the destination URL
-        def with_link(title, href:)
-          with_item(title, href: href)
+        # @param active [Boolean] true marks the current page's link (data-active plus aria-current=page)
+        def with_link(title, href:, active: false)
+          with_item(title, href: href, active: active)
         end
 
         # The declared entries, in bar order.
@@ -210,6 +218,13 @@ module Poetry
           }
           attrs.merge!(stimulus_attributes_for(:item)) if entry.panel
           attrs
+        end
+
+        # One top-level link's current-page marks (data-active,
+        # aria-current) when active, else nothing.
+        # @api private
+        def active_attributes(entry)
+          entry.active ? { "data-active" => "true", "aria-current" => "page" } : {}
         end
 
         # One trigger's attributes: its panel, disabled state and wiring.
@@ -266,7 +281,7 @@ module Poetry
           @instance_id ||= poetry_instance_id("poetry-nav")
         end
 
-        private :entries, :item_attributes, :trigger_attributes, :panel_attributes
+        private :entries, :item_attributes, :active_attributes, :trigger_attributes, :panel_attributes
         private :positioner_attributes, :panel_id
       end
     end

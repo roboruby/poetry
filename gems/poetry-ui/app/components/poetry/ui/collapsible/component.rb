@@ -21,7 +21,8 @@ module Poetry
         # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           ComposableTrigger::AGENT_RULE,
-          "The trigger is with_trigger { \"label\" } - a real button, wired for you (aria-expanded/controls).",
+          "The trigger is with_trigger { \"label\" } - a poetry Button (keywords are Button props: variant:, " \
+          "size:), wired for you (aria-expanded/controls).",
           "Server-render the initial state via open: - never toggle data-open/data-closed by hand.",
           "Content stays in the DOM when closed (hidden) - do not conditionally render it.",
           "For URL-controlled disclosure without JS, render open: from params - the same markup serves both."
@@ -31,16 +32,20 @@ module Poetry
         # a missing trigger without rendering.
         REQUIRED_SLOTS = { trigger: "the disclosure control" }.freeze
 
+        # The class the trigger slot renders - with_trigger composes a
+        # Button, so callers get Button's full option contract.
+        SLOT_RENDERS = { trigger: Button::Component }.freeze
+
         renders_one :trigger,
-                    doc: "The disclosure control - a real button, wired for you (aria-expanded, aria-controls); " \
-                         "options merge onto it.",
+                    doc: "The disclosure control - a composed Button (keywords are Button props), wired for you " \
+                         "(aria-expanded, aria-controls).",
                     renders: lambda { |**options, &block|
-                      attrs = {
-                        type: "button", "data-slot" => "collapsible-trigger",
+                      wiring = {
+                        "data-slot" => "collapsible-trigger",
                         "aria-expanded" => open.to_s, "aria-controls" => content_id
                       }.merge(stimulus_attributes_for(:trigger))
-                      composed_trigger(attrs, options, &block) ||
-                        content_tag(:button, Poetry::Core::HTML::Attributes.merged(attrs, options), &block)
+                      composed_trigger(wiring, options, &block) ||
+                        Button::Component.new(**wiring, **options, &block)
                     }
 
         use_stimulus do
@@ -66,10 +71,12 @@ module Poetry
                "data-open" => "expanded (server-rendered from open:; the controller flips the pair at runtime)",
                "data-closed" => "collapsed (the server-rendered default)"
              }
-        part "collapsible-trigger", "The disclosure button - mirrors aria-expanded",
+        part "collapsible-trigger", "The disclosure button - a composed Button - mirrors aria-expanded",
              states: {
                "data-panel-open" => "its content is open (controller-written; " \
-                                    "absent while closed)"
+                                    "absent while closed)",
+               "data-variant" => "always - the composed Button's variant axis",
+               "data-size" => "always - the composed Button's size axis"
              }
         part "collapsible-content", "The disclosure panel - stays in the DOM when closed (hidden) " \
                                     "and rides the presence helper on exit",

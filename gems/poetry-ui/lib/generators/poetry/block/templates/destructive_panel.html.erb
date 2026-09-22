@@ -3,6 +3,10 @@
     is the page's subject (a judged-run lesson); drop the outer wrapper
     when composing into an already-padded frame. %>
 <div class="mx-auto max-w-xl p-6">
+  <%# The action is a real form (method: :delete here); the confirmation's
+      action button submits it through the form attribute - no form nests
+      inside the AlertDialog, and the activation stays the user's. %>
+  <%= form_with(url: "#", method: :delete, id: "destructive-panel-form", class: "hidden") { } %>
   <section class="space-y-4 rounded-lg border border-destructive/50 p-6" aria-labelledby="destructive-panel-title">
     <div class="space-y-1">
       <h2 id="destructive-panel-title" class="text-base font-semibold">Revoke deploy token</h2>
@@ -17,9 +21,15 @@
     <% end %>
     <div class="flex items-center justify-end gap-2">
       <%= poetry_button(variant: :outline) { "Cancel" } %>
-      <%= poetry_button(variant: :destructive) do |button| %>
-        <% button.with_leading { poetry_icon(name: :trash) } %>
-        Revoke token
+      <%= poetry_alert_dialog do |dialog| %>
+        <% dialog.with_trigger(variant: :destructive) do %>
+          <%= poetry_icon(name: :trash) %>
+          Revoke token
+        <% end %>
+        <% dialog.with_title { "Revoke this deploy token?" } %>
+        <% dialog.with_description { "The three services signed with it fail on their next deploy until a replacement is configured." } %>
+        <% dialog.with_cancel { "Keep token" } %>
+        <% dialog.with_action(variant: :destructive, submit: "destructive-panel-form") { "Revoke token" } %>
       <% end %>
     </div>
   </section>
