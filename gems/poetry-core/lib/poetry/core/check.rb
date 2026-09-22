@@ -197,12 +197,16 @@ module Poetry
         # that yields its slot builder.
         def helper_yields?(helper) = !@helper_entries.dig(helper, "yields").nil?
 
-        # A helper whose component entry declares "identity" => false:
-        # its rendered output carries no poetry-minted id, so key:/id:
-        # have nothing to stabilize and the stable-identity rules skip
-        # it. Pathless helpers and legacy entries (no key) read as
-        # minting - their warnings stand.
-        def identity_free?(helper) = @components.dig(@path_by_helper[helper], "identity") == false
+        # A helper whose component entry declares "identity" => false, or
+        # a pathless helper whose registry helpers-section entry declares
+        # it (a table part helper stamps no poetry-minted id): its rendered
+        # output carries no random id, so key:/id: have nothing to
+        # stabilize and the stable-identity rules skip it. Legacy entries
+        # (no key) read as minting - their warnings stand.
+        def identity_free?(helper)
+          @components.dig(@path_by_helper[helper], "identity") == false ||
+            @helper_entries.dig(helper, "identity") == false
+        end
 
         # The element-level wiring projection: which elements of
         # a component carry which controllers, values, actions, and
@@ -1373,9 +1377,10 @@ module Poetry
         # A click target that is not a button: an inert element carrying
         # onclick or wearing role=button. A real <button> brings focus,
         # keyboard activation, and the role for free, which is the first
-        # rule of ARIA. Anchors stay out (a role=button link is an accepted
-        # pattern), and so does a Stimulus click on a bare div - a backdrop
-        # or a row is a legitimate click target without a role.
+        # rule of ARIA. Anchors stay out (a link is a link - the Button's
+        # anchor form renders no role, and an author who adds one has
+        # chosen it), and so does a Stimulus click on a bare div - a
+        # backdrop or a row is a legitimate click target without a role.
         def fake_button_findings(node)
           tag = open_tag_name(node)
           attributes = node.child_nodes.compact.grep(Herb::AST::HTMLAttributeNode)

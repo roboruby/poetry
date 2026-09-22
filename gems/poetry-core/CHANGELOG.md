@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.8]
+
+### Added
+
+- `ActiveModel::Type::HtmlSafeString`, the type behind every `option :name, :string` declaration: an html-safe value (a hint built with `link_to`, a translated `_html` key) stays html-safe where ActiveModel's String type copied it into a plain String, so a Field's `hint:` or `error:` renders the markup it was given; a plain String still escapes at render. The type is substituted inside the option DSL only, never registered, and reports `:string`, so the registry reads every declaration unchanged.
+
+### Changed
+
+- A content block that returns a scalar (a number, a symbol, a boolean) while writing nothing to the buffer captures as nothing, so `poetry_badge { count }` rendered an empty badge without a word. A component that declares `requires_content` now raises in development and test naming the value and the fix (call `to_s` on it, or write it with `<%= %>`) and logs in production; every other component logs. A block that wrote to the buffer, returned a String or nil, or returned a collection (an empty loop's `each`) is untouched.
+- `poetry check`'s stable-identity rules skip a pathless helper whose registry `helpers` entry declares `identity: false` (a table part helper stamps no poetry-minted id, so `key:` had nothing to stabilize and the warning was noise), and read a double-splat of an id-bearing hash (`**field.control_attributes`, `**attrs`) as identity: the id arrives through the splat.
+
 ## [0.1.7] - 2026-09-20
 
 ### Changed

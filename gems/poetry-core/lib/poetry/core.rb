@@ -5,6 +5,7 @@ require "zeitwerk"
 require "active_support/concern"
 require "active_model/type/symbol"
 require "active_model/type/list"
+require "active_model/type/html_safe_string"
 
 ActiveModel::Type.register(:symbol, ActiveModel::Type::Symbol)
 ActiveModel::Type.register(:list, ActiveModel::Type::List)
