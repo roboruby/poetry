@@ -1258,6 +1258,34 @@ module Poetry
         end
       end
 
+      # The element rule is a component template's: a view that hands a
+      # tag helper a splat is valid Rails, and is left alone.
+      def test_the_runner_holds_component_templates_to_the_element_rule
+        Dir.mktmpdir("check-elements") do |dir|
+          source = %(<%= tag.div(**attrs) do %>x<% end %>)
+          sidecar = File.join(dir, "app/components/acme/pill/component.html.erb")
+          view = File.join(dir, "app/views/pills/show.html.erb")
+          [sidecar, view].each do |path|
+            FileUtils.mkdir_p(File.dirname(path))
+            File.write(path, source)
+          end
+
+          by_file = Check::Runner.new(CATALOG).run([sidecar, view]).group_by(&:file)
+
+          assert_equal ["element-tag"], by_file.fetch(sidecar).map(&:rule)
+          assert_equal [:warning], by_file.fetch(sidecar).map(&:severity)
+          assert_nil by_file[view]
+        end
+      end
+
+      def test_component_template_convention
+        assert Check.component_template?("app/components/acme/pill/component.html.erb")
+        assert Check.component_template?("/srv/app/app/components/badge_component.html.erb")
+        refute Check.component_template?("app/views/examples/components/tooltip/_default.html.erb")
+        refute Check.component_template?("app/components/acme/pill/component.rb")
+        refute Check.component_template?("app/views/pills/show.html.erb")
+      end
+
       def test_mail_template_convention
         assert Check.mail_template?("app/views/user_mailer/welcome.html.erb")
         assert Check.mail_template?("app/views/layouts/mailer.text.erb")

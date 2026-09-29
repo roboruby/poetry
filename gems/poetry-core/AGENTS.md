@@ -40,7 +40,16 @@ files against the manifest stamped at last bless.
   output in an attribute NAME (`data-<%= state %>=""` → static names under
   control flow), no bare output in attribute position, and
   `<%= tag.attributes(...) %>` only as the last thing before `>`. Docs
-  heredoc samples escape `<%` openers as well as closers.
+  heredoc samples escape `<%` openers as well as closers. The gate hands
+  the engine every validator it ships, each one fatal; the engine
+  validates nothing it is not handed.
+- Templates build every element through `element_tag`, never through
+  `content_tag` or `tag.div`, and `tag.attributes` takes its hash as an
+  argument, never as a splat (`TemplateElementsTest`). A host that compiles
+  with Herb's slots resolves Action View's own tag helpers ahead of the
+  render and drops what a splat carries; a tag name held in a variable
+  stops the template compiling. `poetry check` holds a host's component
+  templates to the same rule (`element-tag`, a warning).
 - Every public object is documented; the YARD floors are 0 and
   `yard:verify` fails on any warning. Declarations carry their own docs
   (`doc:` on `option`/`style` and on `renders_one`/`renders_many` - the

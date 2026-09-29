@@ -1667,6 +1667,7 @@ module Poetry
           @declarations = IconDeclarations.new(catalog)
           @internals = InternalConstants.new(catalog)
           @stable_identity = StableIdentity.new(catalog)
+          @tag_helpers = TagHelpers.new
         end
 
         # Every finding across the paths, each stamped with its file.
@@ -1693,8 +1694,11 @@ module Poetry
 
           findings = @linter.lint(source, mail: Check.mail_template?(path, root: root))
           # The StableId heuristics ride every ERB pass (warnings only -
-          # they never flip the exit code).
-          findings + @stable_identity.lint(source)
+          # they never flip the exit code); the element rule rides a
+          # component's template.
+          findings += @stable_identity.lint(source)
+          findings += @tag_helpers.lint(source) if Check.component_template?(path)
+          findings
         rescue SystemCallError, IOError, ArgumentError, Encoding::CompatibilityError => e
           [Finding.new(rule: "unreadable", severity: :warning, message: "#{e.class}: #{e.message} - skipped")]
         end
@@ -1708,7 +1712,20 @@ module Poetry
       # leave these alone.
       MAIL_TEMPLATE = %r{(?:\A|/)(?:[a-z0-9_]+_mailer|layouts/mailer|devise/mailer)(?:/|\.)}
 
+      # A component's template by convention: an ERB file under
+      # `app/components/`, where a sidecar template lives.
+      COMPONENT_TEMPLATE = %r{(?:\A|/)app/components/.+\.erb\z}
+
       module_function
+
+      # Whether a template path is a component's template by convention:
+      # an ERB file under `app/components/`.
+      #
+      # @param path [String]
+      # @return [Boolean]
+      def component_template?(path)
+        COMPONENT_TEMPLATE.match?(path.to_s)
+      end
 
       # Whether a template path is a mailer template by convention: a view
       # under a `*_mailer/` directory (Devise's `devise/mailer/` included)
