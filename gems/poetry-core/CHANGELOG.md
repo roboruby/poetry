@@ -4,7 +4,8 @@
 
 ### Added
 
-- `element_tag(name, ..., **attributes)` on every component: the helper a template builds its elements through, and where it spends what `root_attributes` and `element_attributes` build. It takes what `content_tag` takes and renders the same bytes, and it renders a void element the way `tag.input` does. A host that compiles its templates with Herb's slots has Action View's own tag helpers resolved into markup ahead of the render, and a splat or a tag name held in a variable does not survive that: the element comes out without its attributes, or the template stops compiling. A helper Herb does not know stays a call. Components written on the DSL in a host should build their elements the same way.
+- `element_tag(name, ..., **attributes)`, on every component and in every view: the helper a template builds its elements through, and where a component's template spends what `root_attributes` and `element_attributes` build. It takes what `content_tag` takes and renders the same bytes, and it renders a void element the way `tag.input` does. A host that compiles its templates with Herb's slots has Action View's own tag helpers resolved into markup ahead of the render, and a splat or a tag name held in a variable does not survive that: the element comes out without its attributes, or the template stops compiling. A helper Herb does not know stays a call. Components written on the DSL in a host should build their elements the same way.
+- `Poetry::Core::SlotMarkers.strip(html)` takes off what a slot compile writes around a template's own markup: the region, slot and branch comments, the `data-herb-slot` attribute and the branches parked in a `<template>`. What is left is the markup the template wrote, which is what a test in a host that compiles with slots means to compare.
 
 ### Changed
 
