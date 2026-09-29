@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.9]
+
+### Changed
+
+- Every chart template builds its elements through `element_tag`, so a chart renders the same in a host that compiles its templates with Herb's slots as in one that does not. What a chart renders without slots is unchanged: the suite and the 69 visual baselines hold.
+
 ## [0.1.8] - 2026-09-22
 
 ### Changed

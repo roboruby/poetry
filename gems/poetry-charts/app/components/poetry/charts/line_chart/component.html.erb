@@ -1,5 +1,5 @@
 <%= render Poetry::Charts::Container::Component.new(config: chart_config, id: chart_id.delete_prefix("chart-")) do %>
-  <%= content_tag(:div, frame_attributes.merge("class" => css(:frame))) do %>
+  <%= element_tag(:div, frame_attributes.merge("class" => css(:frame))) do %>
   <svg viewBox="0 0 <%= width %> <%= height %>" class="<%= css(:svg) %>" data-slot="chart-svg" aria-label="<%= svg_label %>" preserveAspectRatio="xMidYMid meet" <%= tag.attributes(svg_interaction_attributes) %>>
     <%= grid_svg %>
     <%= cursor_svg(:line) %>
