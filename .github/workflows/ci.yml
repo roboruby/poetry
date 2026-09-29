@@ -168,6 +168,79 @@ jobs:
           POETRY_REACTIONVIEW_MODES: ${{ matrix.mode }}
         run: bundle exec rake test:reactionview
 
+  # The suites on the Rails that comes next, in a host that compiles its HTML
+  # templates through Herb the way an app on the next framework defaults
+  # does. What breaks there is known here before a release carries it to a
+  # host. Rails main can break for reasons of its own, so these jobs report
+  # and never block: a failure leaves the run green, and they are no part of
+  # the one status at the end.
+  rails-main:
+    name: Rails main (${{ matrix.gem.name }})
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        gem:
+          - { name: poetry-charts, dir: gems/poetry-charts, npm: gems/poetry-charts }
+          - { name: poetry-ui, dir: gems/poetry-ui, npm: gems/poetry-core }
+    defaults:
+      run:
+        working-directory: ${{ matrix.gem.dir }}
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/${{ matrix.gem.dir }}/gemfiles/rails_main.gemfile
+      COVERAGE: "0"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@a0102e0972be65f351c307e2d64b9314a57c8073 # v1
+        with:
+          ruby-version: "4.0"
+          bundler-cache: true
+          working-directory: ${{ matrix.gem.dir }}
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: ${{ matrix.gem.npm }}/package-lock.json
+      - name: Install the package the behaviour tier reads
+        working-directory: ${{ matrix.gem.npm }}
+        run: npm ci
+      - name: Run the suite and the behaviour tier on Rails main
+        run: bundle exec rake test test:dommy
+
+  # The site the same way, on the next release's framework defaults. Its
+  # bundle starts from the committed lock, so Rails is what moves.
+  rails-main-site:
+    name: Rails main (site)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: site
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/site/gemfiles/rails_main.gemfile
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@a0102e0972be65f351c307e2d64b9314a57c8073 # v1
+        with:
+          ruby-version: .ruby-version
+          working-directory: site
+      - name: Resolve the bundle from the committed lock
+        run: |
+          cp Gemfile.lock gemfiles/rails_main.gemfile.lock
+          bundle install --jobs 4
+      - name: Prepare the site
+        run: bin/setup --skip-server
+      - name: Run the tests on Rails main
+        run: bin/rails test
+
   audit:
     name: bundle audit (${{ matrix.gem.name }})
     runs-on: ubuntu-latest
