@@ -5,6 +5,11 @@ on:
     branches:
       - main
   pull_request:
+  # Once a week on main. The gems keep no lockfile, so a new release of any
+  # tool in a bundle can break a chain with no commit here; without this run
+  # the break waits for the next push to be seen.
+  schedule:
+    - cron: "23 6 * * 1"
 
 # A newer push to the same branch or PR cancels the in-flight run for that
 # ref, so minutes never go to commits already superseded.
