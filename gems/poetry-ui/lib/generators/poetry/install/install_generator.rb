@@ -368,9 +368,11 @@ module Poetry
 
     # poetry:check parses ERB with herb, which stays out of poetry's runtime
     # dependencies on purpose (hosts never need it to render), so the
-    # install adds it to the development group - once, and never when the
-    # Gemfile already declares it anywhere. Then `bundle install`, unless
-    # --skip-bundle (the note says what is left to do).
+    # install adds it to the development group - once, never when the
+    # Gemfile already declares it anywhere, and never when Action View
+    # depends on it (Rails 8.2 on: the bundle resolves it already). Then
+    # `bundle install`, unless --skip-bundle (the note says what is left
+    # to do).
     # @api private
     def add_herb_gem
       gemfile = File.join(destination_root, "Gemfile")
@@ -378,6 +380,10 @@ module Poetry
 
       if gemfile_sources(gemfile).any? { |source| source.match?(HERB_GEM_LINE) }
         say_status :skip, "herb is already in the Gemfile (poetry:check's parser)", :cyan
+        return
+      end
+      if action_view_ships_herb?
+        say_status :skip, "herb comes with Action View (poetry:check's parser)", :cyan
         return
       end
 
@@ -471,6 +477,16 @@ module Poetry
         say_status :theme, "keeping installed theme #{name.inspect} (pass --theme to switch)", :cyan
       end
       name
+    end
+
+    # Whether the Action View in the boot depends on herb, as it does from
+    # Rails 8.2: the app's bundle then resolves the gem without a line of
+    # its own.
+    def action_view_ships_herb?
+      spec = Gem.loaded_specs["actionview"]
+      return false unless spec
+
+      spec.runtime_dependencies.any? { |dependency| dependency.name == "herb" }
     end
 
     # Whether the charts gem is bundled.

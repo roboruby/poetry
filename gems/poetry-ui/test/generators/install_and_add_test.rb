@@ -41,8 +41,10 @@ module Poetry
 
     def test_install_adds_herb_to_the_development_group_once
       File.write(File.join(destination_root, "Gemfile"), %(source "https://rubygems.org"\ngem "rails"\n))
-      run_generator %w[--skip-bundle]
-      run_generator %w[--skip-bundle]
+      with_action_view(herb: false) do
+        run_generator %w[--skip-bundle]
+        run_generator %w[--skip-bundle]
+      end
 
       assert_file "Gemfile" do |content|
         assert_equal 1, content.scan(/^gem "herb", group: :development$/).size
@@ -73,6 +75,44 @@ module Poetry
 
       assert_file "Gemfile" do |content|
         assert_equal 0, content.scan(/gem ["']herb["']/).size, "herb is already declared in Gemfile.shared"
+      end
+    end
+
+    # From Rails 8.2 Action View depends on herb, so the bundle resolves
+    # it without a line of the app's own: the install adds none and says
+    # where the parser comes from.
+    def test_install_adds_no_herb_line_when_action_view_ships_it
+      File.write(File.join(destination_root, "Gemfile"), %(source "https://rubygems.org"\ngem "rails"\n))
+
+      output = with_action_view(herb: true) { run_generator %w[--skip-bundle] }
+
+      assert_match(/herb comes with Action View/, output)
+      assert_file "Gemfile" do |content|
+        assert_equal 0, content.scan(/gem ["']herb["']/).size
+      end
+    end
+
+    # The Rails generation before it: Action View names no herb, and the
+    # install adds the line as it always has.
+    def test_install_adds_the_herb_line_when_action_view_does_not_ship_it
+      File.write(File.join(destination_root, "Gemfile"), %(source "https://rubygems.org"\ngem "rails"\n))
+
+      output = with_action_view(herb: false) { run_generator %w[--skip-bundle] }
+
+      refute_match(/herb comes with Action View/, output)
+      assert_file "Gemfile", /^gem "herb", group: :development$/
+    end
+
+    # An app that pins herb itself keeps its line on either generation.
+    def test_install_leaves_a_declared_herb_alone_when_action_view_ships_it
+      File.write(File.join(destination_root, "Gemfile"),
+                 %(source "https://rubygems.org"\ngem "rails"\ngem "herb", "~> 0.11.0"\n))
+
+      output = with_action_view(herb: true) { run_generator %w[--skip-bundle] }
+
+      assert_match(/herb is already in the Gemfile/, output)
+      assert_file "Gemfile" do |content|
+        assert_equal 1, content.scan(/gem ["']herb["']/).size
       end
     end
 
@@ -401,6 +441,25 @@ module Poetry
     # against a STUB carrying the two things the generator touches: the
     # Engine constant (the availability probe) and root (the stylesheet
     # source). The real-gem path is the fresh-app install proof's job.
+
+    # Action View of either Rails generation: a specification stands in
+    # for the loaded one for the length of the block, with herb among its
+    # runtime dependencies (8.2 on) or without it (before). The suite runs
+    # on both, so no test here reads the Rails it happens to be loaded on.
+    def with_action_view(herb:)
+      real = Gem.loaded_specs.fetch("actionview")
+      Gem.loaded_specs["actionview"] = Gem::Specification.new do |spec|
+        spec.name = "actionview"
+        spec.version = herb ? "8.2.0" : "8.1.0"
+        real.runtime_dependencies.each do |dependency|
+          spec.add_dependency dependency.name, dependency.requirement unless dependency.name == "herb"
+        end
+        spec.add_dependency "herb", ">= 0.10" if herb
+      end
+      yield
+    ensure
+      Gem.loaded_specs["actionview"] = real
+    end
 
     CHARTS_CSS_MARKER = "@keyframes poetry-chart-line-draw"
 

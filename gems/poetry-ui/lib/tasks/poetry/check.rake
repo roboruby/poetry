@@ -9,7 +9,8 @@ namespace :poetry do
   task :check, [:glob] => :environment do |_task, args|
     # The linter parses ERB with herb, which stays out of poetry's runtime
     # dependencies on purpose (hosts never need it to RENDER) - same
-    # optional-parser posture as poetry:verify's template gate.
+    # optional-parser posture as poetry:verify's template gate. From
+    # Rails 8.2 Action View depends on herb, so the bundle has it already.
     unless Poetry::Core::CSS::TemplateClasses.available?
       abort "poetry:check: the herb gem is required to parse templates - " \
             "`bin/rails g poetry:install` adds it to your development group " \
@@ -49,7 +50,18 @@ namespace :poetry do
     host_helpers = Poetry::Core::HostComponents.helper_methods(root: Rails.root)
     catalog = Poetry::Core::Check::Catalog.from_registries(roots, icon_names: icon_names, host_registry: host,
                                                                   host_helpers: host_helpers)
-    findings = Poetry::Core::Check::Runner.new(catalog).run(paths, root: Rails.root)
+    # The compile tier: Rails checks an app's views (`bin/rails
+    # herb:check` walks the view paths), which leaves the templates that
+    # sit beside their components unchecked - the app's own and the ones
+    # the gems ship. They compile here in the same posture. A herb older
+    # than the gate is written for leaves the tier out and says so, on
+    # stderr so the JSON stays whole.
+    compile_gap = Poetry::Core::Check::Compile.unavailable
+    warn "poetry:check: #{compile_gap} - component templates were not compiled" if compile_gap
+    rendering = Poetry::Core::Check::Compile.rendering?
+    compile = Poetry::Core::Check::Compile.new(rendering: rendering) unless compile_gap
+    findings = Poetry::Core::Check::Runner.new(catalog, compile: compile).run(paths, root: Rails.root)
+    findings += compile.scan(roots.reject { |root| root.to_s == Rails.root.to_s }) if compile
 
     # The taste tier: design-slop warnings join the mechanical
     # findings on request - same vocabulary, same JSON/text output. The
