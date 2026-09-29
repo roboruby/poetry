@@ -121,10 +121,22 @@
         the family's internal namespaces (a class or module the reference
         hides with <code>@api private</code>) gets a warning naming it: the
         constant works today and may change without notice. It
-        parses templates with the <code>herb</code> gem, which
-        <code>poetry:install</code> adds to your development group; an app
-        installed before that only needs
+        parses templates with the <code>herb</code> gem. From Rails 8.2
+        Action View depends on it, so your bundle has it. On an earlier
+        Rails <code>poetry:install</code> adds it to your development group,
+        and an app installed before that only needs
         <code>bundle add herb --group development</code>.
+      </p>
+      <p>
+        The check also compiles the templates that sit beside your
+        components. Rails renders HTML templates through Herb under its 8.2
+        defaults, and <code>bin/rails herb:check</code> tells you which views
+        will not compile. That task walks the view paths, so a template under
+        <code>app/components</code> is outside its reach. Rails checks views,
+        Poetry checks components: yours and the ones the gems ship, in the
+        same posture. A template Herb refuses is a
+        <code>herb-compile</code> finding, an error when your app renders
+        through Herb and a warning until then.
       </p>
     <% end %>
     <%= poetry_code_block(code: check_source, language: "shell", label: "poetry check") %>

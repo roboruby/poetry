@@ -15313,7 +15313,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/number_field/component.rb",
-          "line": 159
+          "line": 172
         },
         {
           "name": "small_step",
