@@ -177,8 +177,8 @@
         },
         {
           "name": "HERB_CONFIG",
-          "value": "<<~YML\n  # Herb toolchain configuration (linter / formatter / language server).\n  # https://herb-tools.dev/configuration - written by `rails g poetry:editor`.\n  version: 0.10.3\n\n  framework: actionvie",
-          "docstring": "The Herb toolchain (HTML+ERB parser, linter, formatter, language server)\nreads one file. Poetry templates are gated to parse AND compile under\nHerb (Rails core's ERB engine since 8.2), so a Poetry app can run the\nwhole toolchain; two linter rules misread ViewComponent slot setters on\nhelper-yielded builders today, so they start off with the upstream\nissues to watch. The version pin keeps a linter upgrade from enabling\nrules silently."
+          "value": "<<~YML\n  # Herb toolchain configuration (linter / formatter / language server).\n  # https://herb-tools.dev/configuration - written by `rails g poetry:editor`.\n  version: 0.11.0\n\n  framework: actionvie",
+          "docstring": "The Herb toolchain (HTML+ERB parser, linter, formatter, language server)\nreads one file. Poetry templates are gated to parse AND compile under\nHerb (Rails core's ERB engine since 8.2), so a Poetry app can run the\nwhole toolchain. One linter rule starts off: it reads a form inside a\nblock helper as a form nested in a form, and a form inside a Card, a\nDialog or a Sheet is how a Poetry page is written. The version pin\nkeeps a linter upgrade from enabling rules silently."
         },
         {
           "name": "HERB_EDITORS",

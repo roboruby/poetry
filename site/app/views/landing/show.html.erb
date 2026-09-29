@@ -6,9 +6,9 @@
 
 <header class="absolute inset-x-0 top-0 z-20">
   <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-    <a href="<%= root_path %>" class="flex items-center gap-2 text-base font-semibold">
+    <%= link_to root_path, class: "flex items-center gap-2 text-base font-semibold" do %>
       <%= poetry_icon(name: :feather, class: "size-5 text-primary") %> poetry
-    </a>
+    <% end %>
     <%# Each docs link names the sidebar section it leads into (nil for a
         page outside one). The three link containers carry that map, and
         the sidebar-sections controller records the section as open

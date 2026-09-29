@@ -14,7 +14,7 @@
       "Pick up wherever feels right whenever you are ready."
     ].each_with_index do |text, i| %>
       <%= poetry_message_scroller_item(id: "s#{i}", class: "px-4 #{"pt-4" if i.zero?} #{"pb-4" if i == 7}") do %>
-        <%= poetry_message do |message| %>
+        <%= poetry_message do %>
           <%= poetry_bubble(variant: :muted) { text } %>
         <% end %>
       <% end %>

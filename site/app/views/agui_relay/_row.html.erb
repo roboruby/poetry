@@ -5,11 +5,11 @@
     the browser, done, failed), activities as their JSON. %>
 <div id="row-<%= message.id %>" data-version="<%= version %>">
   <% if message.role == "user" %>
-    <%= poetry_message(align: :end) do |m| %>
+    <%= poetry_message(align: :end) do %>
       <%= poetry_bubble { message.parts.map { |part| part[:text] }.join } %>
     <% end %>
   <% else %>
-    <%= poetry_message do |m| %>
+    <%= poetry_message do %>
       <div class="flex min-w-0 flex-col gap-2">
         <% message.parts.each do |part| %>
           <% case part[:kind] %>

@@ -7,7 +7,7 @@
     <% ChatReplay.segments.first(@replay_cursor).each do |seg| %>
       <% if seg.kind == :user %>
         <%= poetry_message_scroller_item(id: "row-#{seg.id}", anchor: true, class: "px-4") do %>
-          <%= poetry_message(align: :end) do |message| %>
+          <%= poetry_message(align: :end) do %>
             <%= poetry_bubble { seg.text } %>
           <% end %>
         <% end %>

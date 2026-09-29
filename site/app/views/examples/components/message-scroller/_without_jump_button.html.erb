@@ -3,7 +3,7 @@
 <div class="w-full max-w-md">
   <%= poetry_message_scroller(id: "scroller-plain", jump_button: false, class: "h-60 rounded-lg border") do %>
     <%= poetry_message_scroller_item(id: "only", class: "p-4") do %>
-      <%= poetry_message do |message| %>
+      <%= poetry_message do %>
         <%= poetry_bubble(variant: :muted) { "A quiet region: no jump button, just the log." } %>
       <% end %>
     <% end %>

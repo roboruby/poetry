@@ -121,7 +121,7 @@
           fresh ids and morphs cannot pair it. The invariant:
           <em>cached HTML is safe only when every id frozen into it remains
           unique under every composition and replay of that HTML.</em> The
-          <a href="<%= caching_path %>">Caching</a> guide has the full
+          <%= link_to "Caching", caching_path %> guide has the full
           fragment recipe.
         </li>
         <li>
@@ -259,7 +259,7 @@
         <li>
           <strong>Fragment caching.</strong> Keep the token-bearing
           <code>form</code> tag outside the cached fragment; the
-          <a href="<%= caching_path %>">Caching</a> guide has the full
+          <%= link_to "Caching", caching_path %> guide has the full
           recipe and the replay invariant.
         </li>
       </ul>

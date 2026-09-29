@@ -2,7 +2,7 @@
     accumulated parts. The stream vreplace-s this same row as frames
     arrive; data-version is the morph guard's monotonic clock. %>
 <div id="row-<%= seg_id %>" data-version="<%= version %>">
-  <%= poetry_message do |message| %>
+  <%= poetry_message do %>
     <div class="flex min-w-0 flex-col gap-2">
       <% parts.each do |part| %>
         <% case part[:kind] %>

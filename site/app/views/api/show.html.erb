@@ -29,7 +29,5 @@
     <% end %>
   </nav>
 
-  <% @objects.each do |object| %>
-    <%= render "api/object", object: object %>
-  <% end %>
+  <%= render partial: "api/object", collection: @objects, as: :object %>
 </div>

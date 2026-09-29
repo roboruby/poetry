@@ -31,13 +31,12 @@
   CODE
 herb_source = <<~CODE
   # .herb.yml - written by poetry:editor (kept if you already have one)
-  version: 0.10.3
+  version: 0.11.0
   framework: actionview
   linter:
     enabled: true
     rules:
-      erb-no-unused-expressions:    { enabled: false }   # marcoroth/herb#2426
-      actionview-no-silent-helper:  { enabled: false }   # marcoroth/herb#2340
+      html-no-nested-forms: { enabled: false }   # marcoroth/herb#2708
 CODE
 herb_ci_source = <<~CODE
   npx --yes @herb-tools/linter app          # lint (Node); bundle exec herb lint delegates to it
@@ -177,11 +176,13 @@ CODE
     </p>
     <p>
       <code>poetry:editor</code> writes the one config all of it reads,
-      and keeps yours if you have one. Two rules start off: the linter
-      still misreads slot setters on a builder a Poetry helper yields
-      (<code>card.with_title</code> inside <code>poetry_card do |card|</code>)
-      and brace-form setters; both are tracked upstream and the pinned
-      <code>version</code> means an upgrade never switches rules on behind you.
+      and keeps yours if you have one. One rule starts off: the linter
+      reads a form inside a block helper (<code>form_with</code> inside
+      <code>poetry_card do</code>) as a form nested in another form. It is
+      tracked upstream, and the pinned <code>version</code> means an upgrade
+      never switches rules on behind you. A config written before Herb 0.11
+      switched two more rules off for slot setters; both are fixed upstream
+      and can come back on with the pin.
     </p>
   <% end %>
   <%= poetry_code_block(code: herb_source, language: "yaml", label: ".herb.yml") %>

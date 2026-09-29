@@ -206,7 +206,7 @@
         state inside a row (a surface the agent painted, a tab the reader picked)
         survives the row re-rendering around it. The relay needs to know which rows
         the page already holds: after rendering history server-side, call
-        <code>relay.mark_seen(transcript.messages.map(&:id))</code> so those rows
+        <code>relay.mark_seen(transcript.messages.map(&amp;:id))</code> so those rows
         replace instead of appending twice.
       </p>
     <% end %>

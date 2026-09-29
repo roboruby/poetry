@@ -15,12 +15,12 @@
                               class: "h-80 rounded-lg border") do %>
     <% 6.times do |i| %>
       <%= poetry_message_scroller_item(id: "state-q#{i + 1}", anchor: true, class: "px-4 #{"pt-4" if i.zero?}") do %>
-        <%= poetry_message(align: :end) do |message| %>
+        <%= poetry_message(align: :end) do %>
           <%= poetry_bubble { "Check section #{i + 1} of the transcript." } %>
         <% end %>
       <% end %>
       <%= poetry_message_scroller_item(id: "state-a#{i + 1}", class: "px-4 #{"pb-4" if i == 5}") do %>
-        <%= poetry_message do |message| %>
+        <%= poetry_message do %>
           <%= poetry_bubble(variant: :muted) { "Section #{i + 1} is ready. The scroll state updates without touching the rows." } %>
         <% end %>
       <% end %>

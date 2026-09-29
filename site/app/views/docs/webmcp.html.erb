@@ -169,7 +169,7 @@
       <%= poetry_webmcp_form(url: webmcp_path, method: :get, id: "search-docs",
                              tool: { name: "search_docs",
                                      description: "Search the Poetry docs by title or description and list the matching pages.",
-                                     autosubmit: true }) do |form| %>
+                                     autosubmit: true }) do %>
         <div class="flex flex-wrap items-end gap-3">
           <div class="flex flex-col gap-1">
             <%= label_tag :q, "Search term", class: "text-sm font-medium" %>
