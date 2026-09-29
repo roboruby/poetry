@@ -3,7 +3,7 @@
 #
 # Rules are version-gated: a newer linter never enables new rules here
 # until `version` is bumped deliberately (bump + re-lint in one change).
-version: 0.10.3
+version: 0.11.0
 
 framework: actionview
 # Every chart template is gated to compile under Herb::Engine (rake
@@ -13,6 +13,12 @@ template_engine: herb
 linter:
   enabled: true
   rules:
+    # `render` takes a component instance in these templates
+    # (`<%= render copy_button %>`): a renderable, not a record whose
+    # partial Rails derives from `to_partial_path`. The rule cannot tell
+    # the two apart.
+    actionview-no-implicit-partial:
+      enabled: false
     # Chart data rides in `<script type="application/json">` islands the
     # Stimulus controllers read - the standard JSON-island shape. The rule
     # has no allow-list for additional types.

@@ -4,6 +4,7 @@
 
 ### Changed
 
+- `rails g poetry:editor` writes a `.herb.yml` pinned to Herb 0.11.0. The two rules it used to switch off for slot setters (`erb-no-unused-expressions`, `actionview-no-silent-helper`) are fixed in 0.11 and stay on. One rule starts off instead: `html-no-nested-forms` reports a form inside a block helper, a `form_with` inside `poetry_card do`, as a form nested in another form. An existing `.herb.yml` is kept as it is; move its `version` to 0.11.0 and drop the two entries to get the same.
 - Every component template builds its elements through `element_tag` and hands `tag.attributes` its hash as an argument, never as a splat. A component now renders the same in a host that compiles its templates with Herb's slots (ReActionView's `config.slots`) as in one that does not; before, such a host rendered most components without their root attributes and could not compile Button, Marker or Item at all. What a component renders without slots is unchanged, byte for byte: the suite, the behaviour tier and the 455 visual baselines hold.
 
 ## [0.1.8] - 2026-09-22

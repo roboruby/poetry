@@ -40,8 +40,8 @@ module Poetry
 
       assert_equal "actionview", config["framework"]
       assert_match(/\A\d+\.\d+\.\d+\z/, config["version"].to_s, "the linter version is pinned")
-      assert_equal({ "enabled" => false }, config.dig("linter", "rules", "erb-no-unused-expressions"))
-      assert_equal({ "enabled" => false }, config.dig("linter", "rules", "actionview-no-silent-helper"))
+      assert_equal({ "html-no-nested-forms" => { "enabled" => false } }, config.dig("linter", "rules"),
+                   "one rule starts off, the one that misreads a form inside a block helper")
 
       File.write(File.join(destination_root, ".herb.yml"), "version: 0.9.0\n")
       output = run_generator

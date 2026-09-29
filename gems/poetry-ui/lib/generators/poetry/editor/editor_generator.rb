@@ -46,27 +46,23 @@ module Poetry
     # The Herb toolchain (HTML+ERB parser, linter, formatter, language server)
     # reads one file. Poetry templates are gated to parse AND compile under
     # Herb (Rails core's ERB engine since 8.2), so a Poetry app can run the
-    # whole toolchain; two linter rules misread ViewComponent slot setters on
-    # helper-yielded builders today, so they start off with the upstream
-    # issues to watch. The version pin keeps a linter upgrade from enabling
-    # rules silently.
+    # whole toolchain. One linter rule starts off: it reads a form inside a
+    # block helper as a form nested in a form, and a form inside a Card, a
+    # Dialog or a Sheet is how a Poetry page is written. The version pin
+    # keeps a linter upgrade from enabling rules silently.
     HERB_CONFIG = <<~YML
       # Herb toolchain configuration (linter / formatter / language server).
       # https://herb-tools.dev/configuration - written by `rails g poetry:editor`.
-      version: 0.10.3
+      version: 0.11.0
 
       framework: actionview
 
       linter:
         enabled: true
         rules:
-          # `<%= poetry_card do |card| %><% card.with_title(...) %>` is flagged as
-          # a discarded value until marcoroth/herb#2426 lands.
-          erb-no-unused-expressions:
-            enabled: false
-          # `<% item.with_icon { ... } %>` (brace-form slot setters) is flagged and
-          # the autofix renders the wrong thing - marcoroth/herb#2340.
-          actionview-no-silent-helper:
+          # `<%= poetry_card do %><%= form_with ... %>` is flagged as a form nested
+          # in another form until marcoroth/herb#2708 lands.
+          html-no-nested-forms:
             enabled: false
 
       formatter:
