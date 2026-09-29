@@ -18,6 +18,9 @@ ENV["RAILS_ENV"] = "test"
 require_relative "dummy/config/environment"
 require "minitest/autorun"
 
+# The ReActionView legs (rake test:reactionview): see the file.
+require_relative "support/slot_markers_off" if ENV["POETRY_REACTIONVIEW"]
+
 module PoetryTestHelpers
   # Swaps Rails.logger for the block and returns the captured warn
   # messages - the lint-warning surface (Popover's nameless dialog,

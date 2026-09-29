@@ -13,6 +13,10 @@ require "poetry/core"
 require "poetry/ui"
 require "poetry/lucide"
 
+# The ReActionView legs (rake test:reactionview) boot this host with
+# ReActionView configured; every other run is a plain Rails host.
+require_relative "reactionview" if ENV["POETRY_REACTIONVIEW"]
+
 module Dummy
   # Minimal Rails host for exercising poetry-ui's components in tests.
   class Application < Rails::Application

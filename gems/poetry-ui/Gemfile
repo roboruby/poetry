@@ -70,6 +70,12 @@ group :test do
   # the dommy SHAs, together.
   gem "makiri", "~> 0.9.0"
 
+  # The ReActionView legs (rake test:reactionview): the suite and the
+  # behaviour tier run again in a host that compiles every template through
+  # ReActionView, with and without slots. Held to the minor the legs were
+  # written against, since its slots are experimental.
+  gem "reactionview", "~> 0.6.0", require: false
+
   # The pagination-adapter integration tests (poetry:pagination) - the
   # generated adapters are host-app code, never runtime deps.
   gem "kaminari"
