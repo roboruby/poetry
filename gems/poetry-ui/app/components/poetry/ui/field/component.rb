@@ -15,7 +15,7 @@ module Poetry
       #   render Poetry::Ui::Field::Component.new(
       #     id: "email", label_text: "Email", hint: "We never share it."
       #   ) do |field|
-      #     tag.input(type: "email", name: "email", **field.control_attributes)
+      #     element_tag(:input, type: "email", name: "email", **field.control_attributes)
       #   end
       class Component < Poetry::Core::Component
         # The closed vocabulary for the orientation axis.

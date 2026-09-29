@@ -15,6 +15,13 @@ visual fragments under `themes/`.
   `design:verify`, `eval:verify`, `goldens:verify_inputs`, `yard:verify`,
   `yard:coverage`. Green before every commit. The unit suite also carries
   the part, stimulus, styled-state, and dictionary-fidelity contracts.
+- `bundle exec rake test:reactionview` — the suite and the behaviour tier
+  again in a host that compiles every template through ReActionView with
+  nothing rescued: as the engine, then with slots in server and client
+  mode (`POETRY_REACTIONVIEW_MODES=server` narrows the run). The suite
+  compares with the slot markers off (`test/support/slot_markers_off.rb`);
+  the behaviour tier keeps them in the page. Run it after any template
+  change; CI runs each mode as its own job.
 - `bundle exec rake test:accessibility` — axe over every preview page.
 - `bundle exec rake test:visual` — screenshot goldens for the default
   theme; `POETRY_THEME=<t>` walks a ported theme; `test:visual:all` walks
@@ -149,6 +156,10 @@ all nine themes).
 - Templates must compile under `Herb::Engine` (`rake herb:compile`): no ERB
   output in an attribute NAME, no bare output in attribute position,
   `<%= tag.attributes(...) %>` only as the last thing before `>`.
+- Templates build every element through `element_tag`, never through
+  `content_tag` or `tag.div`, and `tag.attributes` takes its hash as an
+  argument, never as a splat (`TemplateElementsTest`): a host that compiles
+  with Herb's slots drops what a splat carries.
 - Every public object is documented (YARD floors at 0, `yard:verify` fails
   on warnings); declarations carry their docs (`doc:` on `option`/`style`
   and on `renders_one`/`renders_many`, whose `renders:` keyword takes the

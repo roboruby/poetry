@@ -31,8 +31,12 @@ the swappability door.
   fixtures whenever engine geometry changes (client must match Ruby exactly).
 - `bundle exec rake registry:verify` / `css:verify_compiled` /
   `css:verify_theme[<name>]` — registry and dictionary ↔ theme drift.
-- Templates must compile under `Herb::Engine`; every public object is
-  documented (YARD floors at 0) — same rules as poetry-core.
+- Templates must compile under `Herb::Engine` and build every element
+  through `element_tag`; every public object is documented (YARD floors at
+  0) — same rules as poetry-core.
+- `bundle exec rake test:reactionview` — the suite and the behaviour tier
+  again in a host that compiles through ReActionView, as the engine and
+  with slots in both modes (see poetry-ui).
 
 ## Conventions
 

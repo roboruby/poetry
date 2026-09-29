@@ -1198,7 +1198,7 @@ module Poetry
       #     poetry_field(
       #       id: "email", label_text: "Email", hint: "We never share it."
       #     ) do |field|
-      #       tag.input(type: "email", name: "email", **field.control_attributes)
+      #       element_tag(:input, type: "email", name: "email", **field.control_attributes)
       #     end
       # @see Poetry::Ui::Field::Component
       def poetry_field(**, &)
