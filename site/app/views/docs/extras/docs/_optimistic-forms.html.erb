@@ -117,6 +117,16 @@
     <code class="text-foreground">poetry_button(loading: true)</code> states is
     the honest UI there.
   </p>
+  <p class="max-w-2xl text-muted-foreground" id="reactive-templates">
+    An application on ReActionView has a second tool. A reactive template adds
+    a row to a list before the server answers, in markup alone, and flips a
+    toggle at once. It does not put a change back when the server refuses it.
+    This helper does: it answers a refusal with a refresh that restores what
+    the server holds. Reach for a reactive template to add a row, and for this
+    helper where the server may say no. The
+    <%= poetry_link(href: herb_guide_path(anchor: "reactive-templates")) { "Herb and ReActionView guide" } %>
+    has what each does beside Poetry's components.
+  </p>
   <p class="max-w-2xl text-muted-foreground">
     Three notes. Template content is trusted developer markup, exactly like any
     <code class="text-foreground">turbo_stream.update</code> body: never

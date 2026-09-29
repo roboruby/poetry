@@ -117,6 +117,11 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match "Rails checks views, Poetry checks components", response.body
     assert_match "poetry_optimistic_form", response.body
+
+    get optimistic_forms_path
+
+    assert_response :success
+    assert_select "p#reactive-templates a[href=?]", herb_guide_path(anchor: "reactive-templates")
   end
 
   test "the landing badge links the launch essay" do
