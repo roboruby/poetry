@@ -1,14 +1,14 @@
-<%= content_tag(:nav, **root_attributes) do %>
+<%= element_tag(:nav, **root_attributes) do %>
   <div data-slot="navigation-menu-list" class="<%= css(:list) %>">
     <% entries.each do |entry| %>
-      <%= content_tag(:div, item_attributes(entry)) do %>
+      <%= element_tag(:div, item_attributes(entry)) do %>
         <% if entry.panel %>
-          <%= content_tag(:button, trigger_attributes(entry)) do %>
+          <%= element_tag(:button, trigger_attributes(entry)) do %>
             <%= entry.title %>
             <%= render Poetry::Ui::Icon::Component.new(name: :"chevron-down",
                                                        class: css(:chevron), "aria-hidden": "true") %>
           <% end %>
-          <%= content_tag(:div, capture(&entry.panel), panel_attributes(entry)) %>
+          <%= element_tag(:div, capture(&entry.panel), panel_attributes(entry)) %>
         <% else %>
           <a href="<%= entry.href %>" data-slot="navigation-menu-link" class="<%= css(:trigger) %> data-active:bg-muted/50 data-active:hover:bg-muted data-active:focus:bg-muted" <%= tag.attributes(active_attributes(entry)) %>><%= entry.title %></a>
         <% end %>
@@ -16,7 +16,7 @@
     <% end %>
   </div>
   <% if viewport %>
-    <%= content_tag(:div, positioner_attributes) do %>
+    <%= element_tag(:div, positioner_attributes) do %>
       <div data-slot="navigation-menu-popup" data-closed class="<%= css(:popup) %>">
         <div data-slot="navigation-menu-viewport" class="<%= css(:viewport_shell) %>"></div>
       </div>

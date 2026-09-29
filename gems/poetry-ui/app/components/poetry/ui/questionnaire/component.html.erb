@@ -1,12 +1,12 @@
 <%= form_with(url: url, method: http_method, html: root_attributes) do %>
   <% if progress? %>
     <% custom_progress = progress.to_s %>
-    <%= content_tag(:div, **progress_attributes(custom: custom_progress.present?)) do %>
+    <%= element_tag(:div, **progress_attributes(custom: custom_progress.present?)) do %>
       <%= custom_progress.presence || progress_label %>
     <% end %>
   <% end %>
   <% item_models.each do |item| %>
-    <%= content_tag(:fieldset, **item_attributes(item)) do %>
+    <%= element_tag(:fieldset, **item_attributes(item)) do %>
       <legend data-slot="questionnaire-title" class="<%= css(:title) %>"><%= item.title %></legend>
       <% if item.description %>
         <p data-slot="questionnaire-description" id="<%= item_dom_id(item, "description") %>"
@@ -14,8 +14,8 @@
       <% end %>
       <div data-slot="questionnaire-choices" class="<%= css(:choices) %>">
         <% item.choices.each_with_index do |choice, index| %>
-          <%= content_tag(:label, **choice_attributes(item, choice, index)) do %>
-            <%= tag.input(**choice_input_attributes(item, choice)) %>
+          <%= element_tag(:label, **choice_attributes(item, choice, index)) do %>
+            <%= element_tag(:input, **choice_input_attributes(item, choice)) %>
             <span aria-hidden="true" data-slot="questionnaire-choice-indicator" class="<%= css(:choice_indicator) %>">
               <span data-slot="questionnaire-choice-indicator-dot" class="<%= css(:choice_indicator_dot) %>"></span>
               <%= render Poetry::Ui::Icon::Component.new(name: :check, class: css(:choice_indicator_check),
@@ -34,7 +34,7 @@
         <% end %>
         <% if item.input %>
           <div data-slot="questionnaire-input-wrapper" class="<%= css(:input_wrapper) %>">
-            <%= tag.input(**input_attributes(item)) %>
+            <%= element_tag(:input, **input_attributes(item)) %>
           </div>
         <% end %>
       </div>

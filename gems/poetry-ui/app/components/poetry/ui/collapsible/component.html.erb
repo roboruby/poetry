@@ -1,4 +1,4 @@
-<%= content_tag(:div, **root_attributes) do %>
+<%= element_tag(:div, **root_attributes) do %>
   <%= trigger %>
-  <%= content_tag(:div, content, **content_attributes) %>
+  <%= element_tag(:div, content, **content_attributes) %>
 <% end %>

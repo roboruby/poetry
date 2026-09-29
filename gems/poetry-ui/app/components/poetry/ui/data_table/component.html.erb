@@ -1,5 +1,5 @@
 <% surface = capture do %>
-  <%= content_tag(:div, **root_attributes) do %>
+  <%= element_tag(:div, **root_attributes) do %>
     <% if filter %>
       <div data-slot="data-table-toolbar" class="<%= css(:toolbar) %>">
         <form method="get" action="<%= filter_form_action %>" role="search" aria-label="<%= filter_label %>" data-slot="data-table-filter">
@@ -23,11 +23,11 @@
           <tr data-slot="table-row" class="<%= Poetry::Ui::Table::Style.css(:row) %>">
             <% if selectable? %>
               <th data-slot="table-head" class="<%= Poetry::Ui::Table::Style.css(:head) %> <%= css(:select_cell) %>">
-                <%= tag.input(**select_all_attributes) %>
+                <%= element_tag(:input, **select_all_attributes) %>
               </th>
             <% end %>
             <% column_defs.each do |column| %>
-              <%= content_tag(:th, head_attributes(column)) do %>
+              <%= element_tag(:th, head_attributes(column)) do %>
                 <% if column.sortable %>
                   <%= render Poetry::Ui::Button::Component.new(**sort_link_options(column)) do |button| %>
                     <% button.with_trailing { render Poetry::Ui::Icon::Component.new(name: sort_icon(column)) } %>
@@ -46,11 +46,11 @@
               <tr data-slot="table-row" class="<%= Poetry::Ui::Table::Style.css(:row) %>">
                 <% if selectable? %>
                   <td data-slot="table-cell" class="<%= Poetry::Ui::Table::Style.css(:cell) %> <%= css(:select_cell) %>">
-                    <%= tag.input(**select_row_attributes(row)) %>
+                    <%= element_tag(:input, **select_row_attributes(row)) %>
                   </td>
                 <% end %>
                 <% column_defs.each do |column| %>
-                  <%= content_tag(:td, column.cell.call(row), cell_attributes(column)) %>
+                  <%= element_tag(:td, column.cell.call(row), cell_attributes(column)) %>
                 <% end %>
               </tr>
             <% end %>

@@ -2,12 +2,12 @@
     absolutely positioned anchor (Radix's thumb-wrapper span, poetry
     edition) with its hidden input alongside - thumbs and inputs stay
     index-aligned with the value array. %>
-<%= content_tag(:div, **root_attributes) do %>
-  <%= content_tag(:div, content_tag(:div, nil, **range_attributes), **track_attributes) %>
+<%= element_tag(:div, **root_attributes) do %>
+  <%= element_tag(:div, element_tag(:div, nil, **range_attributes), **track_attributes) %>
   <% thumb_values.each_index do |index| %>
-    <%= content_tag(:span, **anchor_attributes(index)) do %>
-      <%= content_tag(:div, nil, **thumb_attributes(index)) %>
-      <%= tag.input(**input_attributes(index)) %>
+    <%= element_tag(:span, **anchor_attributes(index)) do %>
+      <%= element_tag(:div, nil, **thumb_attributes(index)) %>
+      <%= element_tag(:input, **input_attributes(index)) %>
     <% end %>
   <% end %>
 <% end %>

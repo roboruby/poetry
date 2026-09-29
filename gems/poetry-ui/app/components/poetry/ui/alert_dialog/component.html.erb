@@ -1,6 +1,6 @@
-<%= content_tag(:div, **root_attributes) do %>
+<%= element_tag(:div, **root_attributes) do %>
   <%= trigger %>
-  <%= content_tag(:dialog, **dialog_attributes) do %>
+  <%= element_tag(:dialog, **dialog_attributes) do %>
     <div data-slot="alert-dialog-header" class="<%= header_classes %>">
       <% if media? %>
         <div data-slot="alert-dialog-media" class="<%= media_classes %>"><%= media %></div>

@@ -1,7 +1,7 @@
-<%= content_tag(:div, **root_attributes) do %>
+<%= element_tag(:div, **root_attributes) do %>
   <%= anchor %>
   <%= trigger %>
-  <%= content_tag(:div, **content_attributes) do %>
+  <%= element_tag(:div, **content_attributes) do %>
     <% if title? || description? %>
       <div data-slot="popover-header" class="<%= css(:header) %>">
         <% if title? %>

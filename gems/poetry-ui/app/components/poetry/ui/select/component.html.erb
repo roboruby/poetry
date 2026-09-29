@@ -4,12 +4,12 @@
 <% listbox_body = capture do %>
   <% items.each do |item| %><%= item %><% end %>
 <% end %>
-<%= content_tag(:div, **root_attributes) do %>
+<%= element_tag(:div, **root_attributes) do %>
   <%= native_select %>
   <%= trigger_button %>
-  <%= content_tag(:div, **content_attributes) do %>
+  <%= element_tag(:div, **content_attributes) do %>
     <%= scroll_button(:up) %>
-    <%= content_tag(:div, listbox_body, viewport_attributes) %>
+    <%= element_tag(:div, listbox_body, viewport_attributes) %>
     <%= scroll_button(:down) %>
   <% end %>
 <% end %>

@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.9]
+
+### Changed
+
+- Every component template builds its elements through `element_tag` and hands `tag.attributes` its hash as an argument, never as a splat. A component now renders the same in a host that compiles its templates with Herb's slots (ReActionView's `config.slots`) as in one that does not; before, such a host rendered most components without their root attributes and could not compile Button, Marker or Item at all. What a component renders without slots is unchanged, byte for byte: the suite, the behaviour tier and the 455 visual baselines hold.
+
 ## [0.1.8] - 2026-09-22
 
 The robosite proof: a full Jumpstart Pro application re-skinned on Poetry surfaced 28 findings; the 20 that were Poetry's to fix land here, with the form builder taking most of them.

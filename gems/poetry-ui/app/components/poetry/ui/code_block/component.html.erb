@@ -1,7 +1,7 @@
 <%# The pre/code nesting stays on one line - literal template whitespace
     inside <pre> would render. %>
-<%= content_tag(:div, **root_attributes) do %>
-  <%= content_tag(:pre, content_tag(:code, highlighted || code, **code_attributes), **pre_attributes) %>
+<%= element_tag(:div, **root_attributes) do %>
+  <%= element_tag(:pre, element_tag(:code, highlighted || code, **code_attributes), **pre_attributes) %>
   <% if copy %>
     <%= render copy_button do %>
       <span class="<%= css(:icon_stack) %>">
