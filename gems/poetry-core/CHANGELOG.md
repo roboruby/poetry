@@ -2,6 +2,10 @@
 
 ## [0.1.9]
 
+### Added
+
+- `element_tag(name, ..., **attributes)` on every component: the helper a template builds its elements through, and where it spends what `root_attributes` and `element_attributes` build. It takes what `content_tag` takes and renders the same bytes, and it renders a void element the way `tag.input` does. A host that compiles its templates with Herb's slots has Action View's own tag helpers resolved into markup ahead of the render, and a splat or a tag name held in a variable does not survive that: the element comes out without its attributes, or the template stops compiling. A helper Herb does not know stays a call. Components written on the DSL in a host should build their elements the same way.
+
 ### Changed
 
 - The template compile gate (`rake herb:compile`, `Poetry::Core::TemplateCompile`) runs on Herb 0.11. It requires the engine itself, since `require "herb"` no longer loads it. It hands the engine every validator Herb ships, each one fatal, since from 0.11 the engine validates nothing it is not handed, and has the compiled Ruby checked for syntax. It lists parse and compile errors, which Herb now raises as syntax errors, where they used to pass the rescue and abort the run. A Herb older than 0.11.0 raises a setup error that names the version found.
