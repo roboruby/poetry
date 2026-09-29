@@ -444,7 +444,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 201
+          "line": 202
         },
         {
           "name": "component_module",
@@ -466,7 +466,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 190
+          "line": 191
         },
         {
           "name": "component_path",
@@ -488,7 +488,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 181
+          "line": 182
         },
         {
           "name": "component_title",
@@ -510,7 +510,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 211
+          "line": 212
         },
         {
           "name": "config",
@@ -527,7 +527,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 170
+          "line": 171
         },
         {
           "name": "helper",
@@ -558,7 +558,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 149
+          "line": 150
         },
         {
           "name": "helper_name",
@@ -576,7 +576,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 162
+          "line": 163
         },
         {
           "name": "internal_component!",
@@ -598,7 +598,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 79
+          "line": 80
         },
         {
           "name": "required_content",
@@ -616,7 +616,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 235
+          "line": 236
         },
         {
           "name": "requires_content",
@@ -646,7 +646,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 228
+          "line": 229
         },
         {
           "name": "attributes",
@@ -663,7 +663,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 645
+          "line": 646
         },
         {
           "name": "classname_merger",
@@ -680,7 +680,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 721
+          "line": 722
         },
         {
           "name": "classnames",
@@ -710,7 +710,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 713
+          "line": 714
         },
         {
           "name": "component_data_attributes",
@@ -727,7 +727,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 270
+          "line": 271
         },
         {
           "name": "content",
@@ -745,7 +745,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 412
+          "line": 413
         },
         {
           "name": "dom_id_token",
@@ -771,7 +771,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 755
+          "line": 756
         },
         {
           "name": "element_attributes",
@@ -811,16 +811,16 @@
             "types": [
               "Hash"
             ],
-            "text": "the element's attributes, flat, for `tag` and `content_tag`"
+            "text": "the element's attributes, flat, for {Poetry::Core::TagHelper#element_tag}"
           },
           "examples": [
             {
               "title": "A part builder, and its template",
-              "text": "def content_attributes\n  attrs = { \"id\" => content_id, \"role\" => \"menu\" }\n  attrs[\"hidden\"] = true unless open\n  element_attributes(:content, attrs)\nend\n# <%= tag.div(**content_attributes) do %>"
+              "text": "def content_attributes\n  attrs = { \"id\" => content_id, \"role\" => \"menu\" }\n  attrs[\"hidden\"] = true unless open\n  element_attributes(:content, attrs)\nend\n# <%= element_tag(:div, **content_attributes) do %>"
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 347
+          "line": 348
         },
         {
           "name": "ensure_content!",
@@ -837,7 +837,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 378
+          "line": 379
         },
         {
           "name": "html_attributes",
@@ -859,7 +859,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 671
+          "line": 672
         },
         {
           "name": "initialize",
@@ -897,7 +897,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 473
+          "line": 474
         },
         {
           "name": "persisted?",
@@ -914,7 +914,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 445
+          "line": 446
         },
         {
           "name": "poetry_instance_id",
@@ -939,7 +939,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 690
+          "line": 691
         },
         {
           "name": "render_in",
@@ -964,7 +964,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 391
+          "line": 392
         },
         {
           "name": "root_attributes",
@@ -985,7 +985,7 @@
             "types": [
               "Hash"
             ],
-            "text": "the root's attributes, flat (`data-x`, `aria-x`,\nbooleans as the attribute name), for `tag` and `content_tag`"
+            "text": "the root's attributes, flat (`data-x`, `aria-x`,\nbooleans as the attribute name), for {Poetry::Core::TagHelper#element_tag}"
           },
           "examples": [
             {
@@ -994,11 +994,11 @@
             },
             {
               "title": "The template",
-              "text": "<%= tag.div(**root_attributes) do %>"
+              "text": "<%= element_tag(:div, **root_attributes) do %>"
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 305
+          "line": 306
         },
         {
           "name": "root_slot",
@@ -1015,7 +1015,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 315
+          "line": 316
         },
         {
           "name": "script_json",
@@ -1041,7 +1041,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 741
+          "line": 742
         },
         {
           "name": "slot_data_attributes",
@@ -1067,7 +1067,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 279
+          "line": 280
         },
         {
           "name": "stable_key",
@@ -1085,7 +1085,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/component.rb",
-          "line": 68
+          "line": 69
         },
         {
           "name": "to_html",
@@ -1107,7 +1107,7 @@
             }
           ],
           "file": "app/components/poetry/core/component.rb",
-          "line": 768
+          "line": 769
         }
       ],
       "constants": [
@@ -1185,6 +1185,11 @@
           "name": "VAR_NAME",
           "value": "/\\A--[a-z][a-z0-9-]*\\*?\\z/",
           "docstring": "A trailing * declares a dynamic family (charts' per-series\n--color-*), matched by prefix at verify time."
+        },
+        {
+          "name": "VOID_ELEMENTS",
+          "value": "%w[area base br col embed hr img input link meta source track wbr].freeze",
+          "docstring": "The elements that take no content and no closing tag: {#element_tag}\nrenders these through `tag` and every other name through\n`content_tag`."
         },
         {
           "name": "WEBMCP_CONTROLLER",
@@ -5892,6 +5897,68 @@
       "constants": []
     },
     {
+      "path": "Poetry::Core::SlotMarkers",
+      "type": "module",
+      "superclass": null,
+      "docstring": "What a slot compile writes around a template's own markup, and how to\ntake it off again.\n\nA host that compiles its templates with Herb's slots gets every\ndynamic part of the page marked, so the browser can find it again:\ncomments around a rendering and around each slot, a `data-herb-slot`\nattribute on an element that carries one, and the branches that did\nnot render, parked in a `<template>` behind the rendering. None of it\nis the component's. Taken off, what is left is the markup the template\nwrote, which is what a test or a contract means to compare.",
+      "examples": [
+        {
+          "title": "",
+          "text": "html = render_inline(Poetry::Ui::Button::Component.new) { \"Save\" }.to_html\nPoetry::Core::SlotMarkers.strip(html) # => the button, as a plain host renders it"
+        }
+      ],
+      "file": "lib/poetry/core/slot_markers.rb",
+      "methods": [
+        {
+          "name": "strip",
+          "scope": "class",
+          "group": null,
+          "signature": "strip(html)",
+          "docstring": "The markup without anything a slot compile added. Markup that\ncarries none of it comes back as it went in.",
+          "params": [
+            {
+              "name": "html",
+              "types": [
+                "String"
+              ],
+              "text": "rendered markup"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the markup the templates wrote, html-safe when\nwhat it was given was"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/slot_markers.rb",
+          "line": 41
+        }
+      ],
+      "constants": [
+        {
+          "name": "ATTRIBUTE",
+          "value": "/ data-herb-slot=\"[^\"]*\"/",
+          "docstring": "The attribute on an element that carries a slot."
+        },
+        {
+          "name": "COMMENT",
+          "value": "%r{<!--/?herb-[a-z]+\\b.*?-->}m",
+          "docstring": "A marker comment: a region, a slot, a branch or the seeds, opening\nor closing."
+        },
+        {
+          "name": "PARKED",
+          "value": "/<template data-herb-(?:region|dependencies)\\b[^>]*>/",
+          "docstring": "Where a parked block opens: branches under `data-herb-region`, the\nstate map under `data-herb-dependencies`."
+        },
+        {
+          "name": "TEMPLATE_EDGE",
+          "value": "%r{<template\\b[^>]*>|</template>}",
+          "docstring": "Either end of a template element."
+        }
+      ]
+    },
+    {
       "path": "Poetry::Core::Stimulus",
       "type": "module",
       "superclass": null,
@@ -8314,11 +8381,63 @@
       "path": "Poetry::Core::TagHelper",
       "type": "module",
       "superclass": null,
-      "docstring": "The view-helper seam: included into ActionView by the engine\n(initializer \"poetry_core.tag_helper\"). Carries no helpers in core.",
+      "docstring": "The view-helper seam: included into ActionView by the engine\n(initializer \"poetry_core.tag_helper\") and into every component, so a\nview and a component's template build an element the same way.",
       "examples": [],
       "file": "lib/poetry/core/tag_helper.rb",
-      "methods": [],
-      "constants": []
+      "methods": [
+        {
+          "name": "element_tag",
+          "scope": "instance",
+          "group": null,
+          "signature": "element_tag(name, *arguments, **attributes, &)",
+          "docstring": "An element from a tag name and its attributes: where a component's\ntemplate spends what `root_attributes` and `element_attributes`\nbuild. It takes what `content_tag` takes and renders what\n`content_tag` renders; a void element renders the way `tag.input`\ndoes.\n\nA component's template builds every element through this method,\nand never through `content_tag` or `tag.div` themselves. A host may\ncompile its templates with Herb's slots, and that compile resolves\nAction View's own tag helpers into markup ahead of the render: a\nsplat or a tag name held in a variable is more than it can read,\nand the element comes out without its attributes, or the template\nstops compiling. A method it does not know stays a call, so the\nelement reaches the page as it was built. `tag.attributes` is the\none helper a template still calls itself, for attributes written\ninside a literal tag, and it takes its hash as an argument, never as\na splat. A view holds to the same rule wherever it hands a tag\nhelper a splat.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol",
+                "String"
+              ],
+              "text": "the tag name"
+            },
+            {
+              "name": "arguments",
+              "types": [
+                "Array"
+              ],
+              "text": "the content, when no block gives it, and\nthe attributes when they arrive as a Hash"
+            },
+            {
+              "name": "attributes",
+              "types": [
+                "Hash"
+              ],
+              "text": "what `root_attributes` or a part builder\nreturned, splatted, or the attributes written out as keywords"
+            }
+          ],
+          "return": {
+            "types": [
+              "ActiveSupport::SafeBuffer"
+            ],
+            "text": "the element"
+          },
+          "examples": [
+            {
+              "title": "A root, a part and a void element",
+              "text": "<%= element_tag(:button, **root_attributes) do %>\n  <%= element_tag(:span, label, **element_attributes(:label)) %>\n  <%= element_tag(:input, **input_attributes) %>\n<% end %>"
+            }
+          ],
+          "file": "lib/poetry/core/tag_helper.rb",
+          "line": 44
+        }
+      ],
+      "constants": [
+        {
+          "name": "VOID_ELEMENTS",
+          "value": "%w[area base br col embed hr img input link meta source track wbr].freeze",
+          "docstring": "The elements that take no content and no closing tag: {#element_tag}\nrenders these through `tag` and every other name through\n`content_tag`."
+        }
+      ]
     },
     {
       "path": "Poetry::Core::Tokens",

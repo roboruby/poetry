@@ -3,7 +3,7 @@
     pointer events, so a tooltip on the button itself can never open. %>
 <%= poetry_tooltip do |tooltip| %>
   <% tooltip.with_trigger(compose: true) do |wiring| %>
-    <%= tag.span(class: "inline-block w-fit", **wiring) do %>
+    <%= element_tag(:span, class: "inline-block w-fit", **wiring) do %>
       <%= poetry_button(variant: :outline, disabled: true) { "Publish" } %>
     <% end %>
   <% end %>

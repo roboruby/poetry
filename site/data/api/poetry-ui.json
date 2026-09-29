@@ -6741,7 +6741,7 @@
           "examples": [
             {
               "title": "",
-              "text": "poetry_field(\n  id: \"email\", label_text: \"Email\", hint: \"We never share it.\"\n) do |field|\n  tag.input(type: \"email\", name: \"email\", **field.control_attributes)\nend"
+              "text": "poetry_field(\n  id: \"email\", label_text: \"Email\", hint: \"We never share it.\"\n) do |field|\n  element_tag(:input, type: \"email\", name: \"email\", **field.control_attributes)\nend"
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
@@ -10869,7 +10869,7 @@
       "examples": [
         {
           "title": "",
-          "text": "render Poetry::Ui::Field::Component.new(\n  id: \"email\", label_text: \"Email\", hint: \"We never share it.\"\n) do |field|\n  tag.input(type: \"email\", name: \"email\", **field.control_attributes)\nend"
+          "text": "render Poetry::Ui::Field::Component.new(\n  id: \"email\", label_text: \"Email\", hint: \"We never share it.\"\n) do |field|\n  element_tag(:input, type: \"email\", name: \"email\", **field.control_attributes)\nend"
         }
       ],
       "file": "app/components/poetry/ui/field/component.rb",

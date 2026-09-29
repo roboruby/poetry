@@ -27,6 +27,12 @@ itself the finding.
 - [ ] Inner machinery classes declare `internal_component!`.
 - [ ] Nested classes sit last in the class body, above the `private`
       divider (constants are never private-scoped).
+- [ ] The template builds every element through `element_tag`
+      (`element_tag(:div, **root_attributes)`), never through
+      `content_tag` or `tag.div`, and `tag.attributes` takes its hash
+      as an argument, never as a splat. A host that compiles its
+      templates with Herb's slots drops what a splat carries, and a
+      tag name held in a variable stops the template compiling.
 
 ## Pass 2 - documentation
 

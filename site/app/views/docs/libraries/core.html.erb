@@ -306,7 +306,13 @@
           come from <code>element_attributes(:part, markup)</code>, which
           stamps the part's <code>data-slot</code> and dictionary classes
           and merges its wiring beneath the markup instead of clobbering
-          it. Both are ready to splat: <code>tag.div(**content_attributes)</code>.
+          it. Both are ready to splat, and a template spends them through
+          <code>element_tag</code>:
+          <code>element_tag(:div, **content_attributes)</code>. It takes
+          what <code>content_tag</code> takes and renders the same; a host
+          that compiles its templates with Herb's slots drops what a splat
+          carries on Action View's own tag helpers, and leaves this one a
+          call.
         </li>
         <li>
           Declarations double as ActiveModel validations: variant
