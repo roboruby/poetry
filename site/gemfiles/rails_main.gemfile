@@ -1,0 +1,14 @@
+# frozen_string_literal: true
+
+# The Rails main leg: the site's own bundle with Rails resolved from its
+# main branch. Booting from this file is the switch: it names the leg for
+# the Gemfile, which then takes Rails from GitHub, and for the application,
+# which then loads the next release's framework defaults, Herb for HTML
+# templates among them.
+#
+#   cp Gemfile.lock gemfiles/rails_main.gemfile.lock   # start from the pins
+#   BUNDLE_GEMFILE=gemfiles/rails_main.gemfile bundle install
+#   BUNDLE_GEMFILE=gemfiles/rails_main.gemfile bin/rails test
+ENV["POETRY_RAILS"] = "main"
+
+eval_gemfile File.expand_path("../Gemfile", __dir__)

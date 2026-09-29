@@ -21,7 +21,9 @@ Bundler.require(*Rails.groups)
 module PoetryDocs
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 8.1
+    # The Rails main leg (gemfiles/rails_main.gemfile) loads the next
+    # release's instead, which compile HTML templates through Herb.
+    config.load_defaults(ENV["POETRY_RAILS"] == "main" ? 8.2 : 8.1)
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
