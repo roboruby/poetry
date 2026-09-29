@@ -38,6 +38,38 @@ module Poetry
         refute_nil TemplateCompile.compile(%(<div <%= tag.attributes(attrs) %> data-slot="x"></div>))
       end
 
+      # The engine raises parse and compile errors as syntax errors. The
+      # gate lists them like any other finding instead of aborting the run.
+      def test_a_template_that_does_not_parse_is_listed_not_raised
+        message = TemplateCompile.compile(%(<div><%= body %>))
+
+        assert_match(/closing tag/i, message)
+      end
+
+      # Nothing validates unless the gate asks: a block element inside a
+      # paragraph parses and compiles, and only the nesting validator
+      # refuses it.
+      def test_invalid_nesting_refuses_to_compile
+        message = TemplateCompile.compile(%(<p><div>text</div></p>))
+
+        assert_match(/cannot be nested/i, message)
+      end
+
+      def test_the_gate_runs_every_validator_the_engine_ships
+        TemplateCompile.compile("<div></div>")
+
+        validators = TemplateCompile.send(:validators)
+
+        assert_equal Herb::Engine::Validators::ALL.values, validators.map(&:class)
+        assert(validators.all?(&:fatal?))
+      end
+
+      def test_an_older_herb_is_a_setup_error_not_a_finding
+        refute TemplateCompile.send(:supported?, "0.10.4")
+        assert TemplateCompile.send(:supported?, TemplateCompile::MINIMUM_HERB)
+        assert TemplateCompile.send(:supported?, "0.12.0")
+      end
+
       def test_check_counts_compiled_templates_and_names_the_failures
         Dir.mktmpdir("poetry-herb") do |root|
           FileUtils.mkdir_p(File.join(root, "app/components/one"))

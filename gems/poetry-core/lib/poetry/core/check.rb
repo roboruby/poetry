@@ -423,10 +423,11 @@ module Poetry
             node.class.name.include?("ERB") && !erb_comment?(node)
         end
 
-        # <%# ... %> parses as an ERBContentNode like any output tag - only
-        # the tag opening tells prose from code. Comment text mentioning a
-        # helper ("a plain poetry_input chromes it") must never reach Prism
-        # as Ruby (the helper-arity false-positive class).
+        # <%# ... %> carries content like any output tag, whichever node
+        # class the parser gives it - only the tag opening tells prose from
+        # code. Comment text mentioning a helper ("a plain poetry_input
+        # chromes it") must never reach Prism as Ruby (the helper-arity
+        # false-positive class).
         def erb_comment?(node)
           node.respond_to?(:tag_opening) && node.tag_opening&.value == "<%#"
         end

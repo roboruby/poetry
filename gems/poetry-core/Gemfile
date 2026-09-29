@@ -27,6 +27,6 @@ gem "flog", require: false
 gem "lookbook", "~> 2.3"
 
 gem "bundler-audit", require: false
-gem "herb", "~> 0.10", ">= 0.10.3" # parse + compile gates (css:herb, herb:compile); the Rails core floor
+gem "herb", "~> 0.11.0" # parse + compile gates (css:herb, herb:compile); pinned to the minor the gate is written for
 gem "simplecov", require: false
 gem "yard", require: false

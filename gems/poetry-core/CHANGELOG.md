@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.9]
+
+### Changed
+
+- The template compile gate (`rake herb:compile`, `Poetry::Core::TemplateCompile`) runs on Herb 0.11. It requires the engine itself, since `require "herb"` no longer loads it. It hands the engine every validator Herb ships, each one fatal, since from 0.11 the engine validates nothing it is not handed, and has the compiled Ruby checked for syntax. It lists parse and compile errors, which Herb now raises as syntax errors, where they used to pass the rescue and abort the run. A Herb older than 0.11.0 raises a setup error that names the version found.
+
 ## [0.1.8] - 2026-09-22
 
 ### Added
