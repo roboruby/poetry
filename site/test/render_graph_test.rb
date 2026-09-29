@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "json"
-require "open3"
+require "herb"
+require "herb/analysis/render_analyzer"
 
 # The render-graph dogfood (`herb actionview check`, as a test): every
 # static `render` in the docs site resolves to a partial on disk, and every
@@ -10,11 +10,10 @@ require "open3"
 # the DesignLintTest discipline - an allowlisted entry that stops appearing
 # FAILS the run, so the ledger cannot go stale.
 #
-# The analysis runs in a SUBPROCESS: Herb::ActionView::RenderAnalyzer#analyze
-# re-enters Bundler while it works (its Ruby-side reference scan), which
-# rewrites $LOAD_PATH in the calling process - in the parallel test workers
-# that made every later `require` of a Rails dependency fail. Isolating it
-# keeps the gate and leaves the workers alone.
+# The analysis runs in the test process. Up to Herb 0.10 it ran in a
+# subprocess, because the analyzer re-entered Bundler while it worked and
+# rewrote $LOAD_PATH under the parallel test workers; from 0.11 it leaves
+# the load path alone.
 class RenderGraphTest < ActiveSupport::TestCase
   # Render calls the analyzer reads out of code SAMPLES (heredoc strings in
   # a guide page), not real renders.
@@ -35,27 +34,16 @@ class RenderGraphTest < ActiveSupport::TestCase
     "landing/components_flyout" => "parked mega-flyout (32c34a0); the Components nav link points at the catalog head"
   }.freeze
 
-  ANALYSIS = <<~'RUBY'
-    require "herb"
-    require "herb/action_view/render_analyzer"
-    require "json"
-    result = Herb::ActionView::RenderAnalyzer.new(Dir.pwd).analyze
-    puts JSON.generate(
-      unresolved: result.unresolved.map { |call| [ call[:file].delete_prefix("#{Dir.pwd}/"), call[:partial] ] },
-      unused: result.unused.map(&:first)
-    )
-  RUBY
-
   test "every static render resolves and every partial is reachable" do
     report = analyze
 
-    unresolved = report.fetch("unresolved")
+    unresolved = report.fetch(:unresolved)
     unexpected = unresolved - UNRESOLVED_SAMPLES.keys
     stale = UNRESOLVED_SAMPLES.keys - unresolved
     assert_empty unexpected, "render calls that resolve to no partial on disk: #{unexpected.inspect}"
     assert_empty stale, "allowlisted unresolved samples that no longer appear (drop them from the ledger): #{stale.inspect}"
 
-    unused = report.fetch("unused")
+    unused = report.fetch(:unused)
     unexpected = unused - UNUSED_PARTIALS.keys
     stale = UNUSED_PARTIALS.keys - unused
     assert_empty unexpected, "partials nothing renders (delete, or allowlist with a reason): #{unexpected.inspect}"
@@ -65,9 +53,12 @@ class RenderGraphTest < ActiveSupport::TestCase
   private
 
   def analyze
-    out, err, status = Open3.capture3("bundle", "exec", "ruby", "-e", ANALYSIS, chdir: Rails.root.to_s)
-    assert status.success?, "render analysis failed:\n#{err}"
+    root = Rails.root.to_s
+    result = Herb::Analysis::RenderAnalyzer.new(root).analyze
 
-    JSON.parse(out.lines.last)
+    {
+      unresolved: result.unresolved.map { |call| [ call[:file].to_s.delete_prefix("#{root}/"), call[:partial] ] },
+      unused: result.unused.map(&:first)
+    }
   end
 end
