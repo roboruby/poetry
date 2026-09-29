@@ -18,3 +18,6 @@ ENV["RAILS_ENV"] = "test"
 require_relative "dummy/config/environment"
 require "rails/test_help"
 require "minitest/autorun"
+
+# The ReActionView legs (rake test:reactionview): see the file.
+require_relative "support/slot_markers_off" if ENV["POETRY_REACTIONVIEW"]

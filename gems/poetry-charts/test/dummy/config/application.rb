@@ -11,6 +11,10 @@ require "view_component"
 require "poetry/core"
 require "poetry/charts"
 
+# The ReActionView legs (rake test:reactionview) boot this host with
+# ReActionView configured; every other run is a plain Rails host.
+require_relative "reactionview" if ENV["POETRY_REACTIONVIEW"]
+
 module Dummy
   # Minimal Rails host for exercising poetry-charts in tests: no database
   # (charts are pure render), ViewComponent previews for the browser rig.

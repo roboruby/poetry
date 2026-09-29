@@ -47,6 +47,11 @@ group :test do
   gem "cuprite"
   gem "puma", require: false # Capybara's rack server for the dummy host
 
+  # The ReActionView legs (rake test:reactionview): the suite and the
+  # behaviour tier run again in a host that compiles every template through
+  # ReActionView, with and without slots (see poetry-ui).
+  gem "reactionview", "~> 0.6.0", require: false
+
   # The middle tier (rake test:dommy): the real chart controllers -
   # kernel renderer included - headlessly in Minitest, no browser. Same
   # pinned SHAs as poetry-ui (both repos hit 0.9.0 on 2026-06-22; expect
