@@ -39,7 +39,7 @@ gem "flay", require: false
 gem "flog", require: false
 
 gem "bundler-audit", require: false
-gem "herb", ">= 0.10.3" # template-class scan in poetry:install + herb:compile gate (build-time, optional in hosts)
+gem "herb", "~> 0.11.0" # template-class scan in poetry:install + herb:compile gate (build-time, optional in hosts)
 gem "lookbook", "~> 2.3" # the preview browser over the sidecar preview corpus - dev-only, never a runtime dep
 gem "nokogiri"
 gem "simplecov", require: false

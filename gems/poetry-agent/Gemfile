@@ -39,7 +39,7 @@ gem "flay", require: false
 gem "flog", require: false
 
 gem "bundler-audit", require: false
-gem "herb" # the ERB parser behind check (build-time, optional in hosts)
+gem "herb", "~> 0.11.0" # the ERB parser behind check (build-time, optional in hosts)
 gem "rack-test", require: false
 gem "simplecov", require: false
 gem "yard", require: false
