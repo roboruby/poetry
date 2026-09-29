@@ -18,6 +18,11 @@ module Poetry
     # passes all of them. The validators are named in code, never read from
     # `.herb.yml`, so no configuration can hollow the gate.
     #
+    # A second posture, `:rails`, is the one `bin/rails herb:check` holds an
+    # app's views to: the security validator alone. `poetry:check` compiles
+    # component templates in it, since that task walks the view paths and
+    # never reaches them.
+    #
     # Parsing clean (see CSS::TemplateClasses, the parse gate) and
     # compiling clean are different contracts: the validators refuse shapes
     # the parser accepts.
@@ -39,6 +44,16 @@ module Poetry
       # its validators as visitors and raises compile errors as syntax errors.
       MINIMUM_HERB = "0.11.0"
 
+      # The validators of each posture, by their names in the engine.
+      POSTURES = {
+        strict: %i[security nesting accessibility render generator_template],
+        rails: %i[security]
+      }.freeze
+
+      # A template the engine refused: its message, and the line the engine
+      # points at when it names one.
+      Failure = Struct.new(:message, :line)
+
       # A template Herb's engine could not compile, with its message.
       CompileError = Struct.new(:path, :message) do
         # The path and the message.
@@ -56,28 +71,46 @@ module Poetry
         # raises instead: that is a broken setup, not a finding about the
         # template.
         #
+        # @param source [String] the template
+        # @param filename [String] the path the engine opens its message with
+        # @param posture [Symbol] :strict or :rails
         # @return [String, nil]
-        def compile(source, filename: "template.html.erb")
+        def compile(source, filename: "template.html.erb", posture: :strict)
+          failure(source, filename: filename, posture: posture)&.message
+        end
+
+        # Compiles one ERB source string, returning what the engine refused
+        # it for, or nil when it compiles.
+        #
+        # @param source [String] the template
+        # @param filename [String] the path the engine opens its message with
+        # @param posture [Symbol] :strict or :rails
+        # @return [Failure, nil]
+        def failure(source, filename: "template.html.erb", posture: :strict)
           herb!
+          visitors = validators(posture)
 
           begin
-            Herb::Engine.new(source, filename: filename, validate_ruby: true, visitors: validators)
+            Herb::Engine.new(source, filename: filename, validate_ruby: true, visitors: visitors)
             nil
           rescue StandardError, SyntaxError => e
             # The engine raises its compile and parse errors as syntax
             # errors, which a bare rescue would let through.
-            e.message
+            Failure.new(e.message, line_of(e))
           end
         end
 
         # Compiles every template under root matching the globs.
         #
+        # @param root [String, Pathname] the directory the globs are read under
+        # @param globs [Array<String>] the templates to compile
+        # @param posture [Symbol] :strict or :rails
         # @return [Result] compiled (Integer, templates that compiled) + errors (Array<CompileError>)
-        def check(root:, globs: DEFAULT_GLOBS)
+        def check(root:, globs: DEFAULT_GLOBS, posture: :strict)
           errors = []
           paths = globs.flat_map { |glob| Dir.glob(glob, base: root.to_s) }.uniq.sort
           paths.each do |relative|
-            message = compile(File.read(File.join(root, relative)), filename: relative)
+            message = compile(File.read(File.join(root, relative)), filename: relative, posture: posture)
             errors << CompileError.new(relative, message) if message
           end
           Result.new(paths.size - errors.size, errors)
@@ -85,10 +118,26 @@ module Poetry
 
         private
 
-        # Every validator the engine ships, each one fatal. Built per
-        # compile, since a validator keeps what it found.
-        def validators
-          Herb::Engine::Validators::ALL.values.map { |validator| validator.new(fatal: true) }
+        # The validators of a posture, each one fatal. Built per compile,
+        # since a validator keeps what it found. The strict posture is every
+        # validator the engine ships, so one a later release adds joins it.
+        def validators(posture = :strict)
+          names = POSTURES.fetch(posture) do
+            raise ArgumentError, "unknown posture #{posture.inspect} - one of #{POSTURES.keys.join(", ")}"
+          end
+          shipped = Herb::Engine::Validators::ALL
+          chosen = posture == :strict ? shipped.values : shipped.values_at(*names)
+          chosen.map { |validator| validator.new(fatal: true) }
+        end
+
+        # The line an engine error points at: a validator's error carries
+        # it, a parse error carries it on its first diagnostic.
+        def line_of(error)
+          return error.line if error.respond_to?(:line) && error.line
+          return unless error.respond_to?(:diagnostics)
+
+          location = error.diagnostics.first&.location
+          location&.start&.line
         end
 
         # Requires the herb gem with its engine and validators, raising a

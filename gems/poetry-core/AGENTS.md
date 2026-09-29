@@ -50,6 +50,11 @@ files against the manifest stamped at last bless.
   render and drops what a splat carries; a tag name held in a variable
   stops the template compiling. `poetry check` holds a host's component
   templates to the same rule (`element-tag`, a warning).
+- `poetry check` compiles a host's component templates in the posture of
+  `bin/rails herb:check` (`Check::Compile`, finding `herb-compile`): that
+  task walks the view paths and never reaches `app/components`. The
+  severity follows the app, an error when it renders through Herb and a
+  warning until then. The gems' own gate stays the strict posture.
 - Every public object is documented; the YARD floors are 0 and
   `yard:verify` fails on any warning. Declarations carry their own docs
   (`doc:` on `option`/`style` and on `renders_one`/`renders_many` - the

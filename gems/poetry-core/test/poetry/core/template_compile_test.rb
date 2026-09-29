@@ -70,6 +70,37 @@ module Poetry
         assert TemplateCompile.send(:supported?, "0.12.0")
       end
 
+      # The posture Rails checks an app's views in: the security validator
+      # alone. A shape only the nesting validator refuses compiles there.
+      def test_the_rails_posture_runs_the_security_validator_alone
+        assert_nil TemplateCompile.compile(%(<p><div>text</div></p>), posture: :rails)
+        assert_match(/attribute position/i,
+                     TemplateCompile.compile(%(<div <%= attributes %>>Hello</div>), posture: :rails))
+
+        validators = TemplateCompile.send(:validators, :rails)
+
+        assert_equal [Herb::Engine::Validators::SecurityValidator], validators.map(&:class)
+        assert(validators.all?(&:fatal?))
+      end
+
+      def test_a_posture_the_gate_does_not_know_is_refused
+        error = assert_raises(ArgumentError) { TemplateCompile.compile("<div></div>", posture: :lenient) }
+
+        assert_match(/strict, rails/, error.message)
+      end
+
+      # A failure carries the line the engine points at, whichever error
+      # class it raised: a validator's or the parser's.
+      def test_a_failure_carries_the_line_the_engine_points_at
+        security = TemplateCompile.failure(%(<div>\n  <span data-<%= state %>=""></span>\n</div>\n))
+        parse = TemplateCompile.failure(%(<div>\n\n  <p>Hello\n</div>\n))
+
+        assert_equal 2, security.line
+        assert_equal 3, parse.line
+        assert_match(/closing tag/i, parse.message)
+        assert_nil TemplateCompile.failure("<div></div>")
+      end
+
       def test_check_counts_compiled_templates_and_names_the_failures
         Dir.mktmpdir("poetry-herb") do |root|
           FileUtils.mkdir_p(File.join(root, "app/components/one"))

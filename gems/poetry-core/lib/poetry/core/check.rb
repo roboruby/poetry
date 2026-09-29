@@ -1662,12 +1662,17 @@ module Poetry
       # @api private
       class Runner
         # A runner over the catalog's linters.
-        def initialize(catalog)
+        #
+        # @param catalog [Catalog] the component catalog to validate against
+        # @param compile [Compile, nil] the compile tier, which a host's
+        #   check hands over and a gem's own leaves to its compile gate
+        def initialize(catalog, compile: nil)
           @linter = Linter.new(catalog)
           @declarations = IconDeclarations.new(catalog)
           @internals = InternalConstants.new(catalog)
           @stable_identity = StableIdentity.new(catalog)
           @tag_helpers = TagHelpers.new
+          @compile = compile
         end
 
         # Every finding across the paths, each stamped with its file.
@@ -1695,9 +1700,11 @@ module Poetry
           findings = @linter.lint(source, mail: Check.mail_template?(path, root: root))
           # The StableId heuristics ride every ERB pass (warnings only -
           # they never flip the exit code); the element rule rides a
-          # component's template.
+          # component's template, and so does the compile tier when the
+          # runner was handed one.
           findings += @stable_identity.lint(source)
           findings += @tag_helpers.lint(source) if Check.component_template?(path)
+          findings += @compile.lint(source, filename: path) if @compile && Compile.html_template?(path)
           findings
         rescue SystemCallError, IOError, ArgumentError, Encoding::CompatibilityError => e
           [Finding.new(rule: "unreadable", severity: :warning, message: "#{e.class}: #{e.message} - skipped")]

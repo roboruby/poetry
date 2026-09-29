@@ -1278,6 +1278,29 @@ module Poetry
         end
       end
 
+      # The compile tier rides a component's HTML template when the runner
+      # is handed one: a view is Rails' to check, and a runner without the
+      # tier compiles nothing.
+      def test_the_runner_compiles_component_templates_when_handed_the_tier
+        Dir.mktmpdir("check-compile") do |dir|
+          source = %(<span data-<%= state %>="" aria-hidden="true"></span>\n)
+          sidecar = File.join(dir, "app/components/acme/pill/component.html.erb")
+          view = File.join(dir, "app/views/pills/show.html.erb")
+          [sidecar, view].each do |path|
+            FileUtils.mkdir_p(File.dirname(path))
+            File.write(path, source)
+          end
+
+          by_file = Check::Runner.new(CATALOG, compile: Check::Compile.new).run([sidecar, view]).group_by(&:file)
+
+          assert_equal ["herb-compile"], by_file.fetch(sidecar).map(&:rule)
+          assert_equal [1], by_file.fetch(sidecar).map(&:line)
+          refute_includes by_file.fetch(sidecar).first.message, dir
+          assert_nil by_file[view]
+          assert_empty Check::Runner.new(CATALOG).run([sidecar, view])
+        end
+      end
+
       def test_component_template_convention
         assert Check.component_template?("app/components/acme/pill/component.html.erb")
         assert Check.component_template?("/srv/app/app/components/badge_component.html.erb")
