@@ -65,6 +65,12 @@ module Poetry
         assert_equal %(<input type="text" name="q">), ours
       end
 
+      def test_a_view_has_the_helper_too
+        view = vc_test_controller.view_context
+
+        assert_equal %(<span class="c">Title</span>), view.element_tag(:span, "Title", class: "c")
+      end
+
       # What the helper is for. With Action View's helpers resolved ahead of
       # the render, a splat never reaches the element and a tag name held in
       # a variable stops the template compiling; a helper Herb does not know

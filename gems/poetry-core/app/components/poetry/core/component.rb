@@ -39,17 +39,13 @@ module Poetry
       include ActiveModel::AttributeAssignment
       include ActiveModel::Validations
       include Poetry::Core::Contrib::WrappedHelper
+      include Poetry::Core::TagHelper
       include Poetry::Core::Concerns::Styles
       include Poetry::Core::Concerns::Options
       include Poetry::Core::Concerns::Stimulus
       include Poetry::Core::Concerns::Introspection
       include Poetry::Core::Concerns::Parts
       include Poetry::Core::Concerns::AgentTools
-
-      # The elements that take no content and no closing tag: {#element_tag}
-      # renders these through `tag` and every other name through
-      # `content_tag`.
-      VOID_ELEMENTS = %w[area base br col embed hr img input link meta source track wbr].freeze
 
       # Implementation-detail component classes (a family's inner Item /
       # Group / Sub / Menu classes) inherit the full Component machinery
@@ -306,7 +302,7 @@ module Poetry
       # @param extra [Hash] the component's own root attributes; a
       #   `"data-slot"` here replaces the default
       # @return [Hash] the root's attributes, flat (`data-x`, `aria-x`,
-      #   booleans as the attribute name), for {#element_tag}
+      #   booleans as the attribute name), for {Poetry::Core::TagHelper#element_tag}
       def root_attributes(extra = {})
         own = { "data-slot" => root_slot }.merge(extra).merge(component_data_attributes)
         wired = self.class.stimulus_elements.key?(:root) ? :root : nil
@@ -348,7 +344,7 @@ module Poetry
       # @param stimulus [Symbol, String, false, nil] the `use_stimulus`
       #   element whose wiring joins the markup: nil takes the part's own when
       #   one is declared, false takes none
-      # @return [Hash] the element's attributes, flat, for {#element_tag}
+      # @return [Hash] the element's attributes, flat, for {Poetry::Core::TagHelper#element_tag}
       def element_attributes(part = nil, attrs = {}, stimulus: nil)
         if part.is_a?(Hash)
           attrs = part
@@ -372,41 +368,6 @@ module Poetry
         stimulus ? attributes.merge(stimulus_attributes_for(stimulus)) : attributes
       end
       private :element_markup
-
-      # An element from a tag name and its attributes: where a template
-      # spends what {#root_attributes} and {#element_attributes} build. It
-      # takes what `content_tag` takes and renders what `content_tag`
-      # renders; a void element renders the way `tag.input` does.
-      #
-      # Templates build every element through this method, and never
-      # through `content_tag` or `tag.div` themselves. A host may compile
-      # its templates with Herb's slots, and that compile resolves Action
-      # View's own tag helpers into markup ahead of the render: a splat or a
-      # tag name held in a variable is more than it can read, and the
-      # element comes out without its attributes, or the template stops
-      # compiling. A method it does not know stays a call, so the element
-      # reaches the page as the component built it. `tag.attributes` is the
-      # one helper a template still calls itself, for attributes written
-      # inside a literal tag, and it takes its hash as an argument, never as
-      # a splat.
-      #
-      # @example A root, a part and a void element
-      #   <%= element_tag(:button, **root_attributes) do %>
-      #     <%= element_tag(:span, label, **element_attributes(:label)) %>
-      #     <%= element_tag(:input, **input_attributes) %>
-      #   <% end %>
-      #
-      # @param name [Symbol, String] the tag name
-      # @param arguments [Array] the content, when no block gives it, and
-      #   the attributes when they arrive as a Hash
-      # @param attributes [Hash] the element's attributes
-      # @return [ActiveSupport::SafeBuffer] the element
-      def element_tag(name, *arguments, **attributes, &)
-        return content_tag(name, *arguments, **attributes, &) unless VOID_ELEMENTS.include?(name.to_s)
-
-        given = arguments.last.is_a?(Hash) ? arguments.last : {}
-        tag.public_send(name, **given, **attributes)
-      end
 
       # Enforces the class-level requires_content declaration - call from
       # before_render. The message is built from the declaration so the
