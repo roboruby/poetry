@@ -33,6 +33,7 @@ Rails.application.routes.draw do
   get "accessibility" => "docs#accessibility", as: :accessibility
   get "caching" => "docs#caching", as: :caching
   get "engines" => "docs#engines", as: :engines_guide
+  get "herb" => "docs#herb", as: :herb_guide
   get "stable-ids" => "docs#stable_ids", as: :stable_ids
   get "data-table" => "docs#data_table", as: :data_table_guide
   get "mcp-server" => "docs#mcp", as: :mcp

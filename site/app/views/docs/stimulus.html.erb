@@ -186,6 +186,26 @@
 
   <section class="flex flex-col gap-4">
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="herb">Beside Herb's reactive templates</h2>
+      <p>
+        An application on ReActionView has a second place for state: a
+        template declares it, and the browser owns it from there. It
+        shares the page with everything above. A controller of yours can
+        read and write that state with <code>useState</code> from
+        <code>reactionview</code>, and any <code>data-herb-*</code> action
+        goes through <code>data:</code> on a Poetry helper like a Stimulus
+        action does. Poetry's own controllers do not call
+        <code>useState</code>: their state stays in the attributes on the
+        element, where <code>poetry:check</code>, the server and your CSS
+        can see it. The
+        <%= link_to "Herb and ReActionView guide", herb_guide_path(anchor: "reactive-templates") %>
+        says where the two meet and where they do not yet.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <h2 id="tooling">Checked at every rung</h2>
       <p>
         <code>poetry:check</code> validates every reference to a Poetry

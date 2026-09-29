@@ -1,0 +1,415 @@
+<% content_for :title, "Herb and ReActionView" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Herb and ReActionView") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
+  # this scriptlet early, so the samples interpolate it as #{e}; a literal opener would nest an ERB tag under Herb, so they interpolate it as #{o}.
+  e = "%" + ">"
+  o = "<" + "%"
+  # Rails reads a strict locals comment out of a template's source wherever
+  # it stands, a sample included, so the sample's own is put together here.
+  strict_locals = "#{o}# " + "locals" + ": (starts:) #{e}"
+  defaults_source = <<~CODE
+    # config/application.rb
+    config.load_defaults 8.2
+
+    # What that sets for templates, and how to go back:
+    config.action_view.erb_implementation = :herb
+    # config.action_view.erb_implementation = :erubi
+  CODE
+  check_source = <<~CODE
+    bin/rails herb:check     # Rails: every view in the view paths
+    bin/rails poetry:check   # Poetry: every template under app/components, and the ones the gems ship
+  CODE
+  root_source = <<~CODE
+    #{o}# app/components/pill/component.html.erb #{e}
+    #{o}= element_tag(root_tag, **root_attributes) do #{e}
+      <span #{o}= tag.attributes(element_attributes(:label)) #{e}>#{o}= label #{e}</span>
+      #{o}= content #{e}
+    #{o} end #{e}
+  CODE
+  settings_source = <<~CODE
+    # config/initializers/reactionview.rb
+    ReActionView.configure do |config|
+      config.intercept_erb = true
+      config.slots = true
+    end
+  CODE
+  markers_source = <<~CODE
+    test "the pill renders its label" do
+      html = render_inline(Pill::Component.new(label: "New")).to_html
+
+      assert_equal %(<span data-slot="pill"><span>New</span></span>),
+                   Poetry::Core::SlotMarkers.strip(html)
+    end
+  CODE
+  composer_source = <<~CODE
+    #{o}# herb:slots client #{e}
+    #{o}# herb:state (composing: true) #{e}
+
+    <ul data-herb-name="messages">
+      #{o} @messages.each do |message| #{e}
+        #{o}# herb:key message.id #{e}
+        #{o}# herb:state (pending: false, failed: false) #{e}
+        <li>
+          <strong data-herb-name="author">#{o}= message.author #{e}</strong>
+          <span data-herb-name="body">#{o}= message.body #{e}</span>
+          #{o} if pending #{e}<em>sending</em>#{o} end #{e}
+          #{o} if failed #{e}<em>not sent</em>#{o} end #{e}
+        </li>
+      #{o} end #{e}
+    </ul>
+
+    #{o}= form_with url: messages_path, data: { herb_into: "messages" } do |form| #{e}
+      #{o}= poetry_input(name: "message[body]", autocomplete: "off") #{e}
+      #{o}= poetry_button(type: :submit) { "Send" } #{e}
+    #{o} end #{e}
+  CODE
+  toggle_source = <<~CODE
+    #{strict_locals}
+    #{o}# herb:slots client #{e}
+    #{o}# herb:state (favorite: starts) #{e}
+
+    #{o}= poetry_button(variant: :outline, data: { herb_toggle: "favorite" }) { "Toggle" } #{e}
+    <span>#{o} if favorite #{e}Favorite#{o} else #{e}Not a favorite#{o} end #{e}</span>
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Herb and ReActionView</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      Rails 8.2 compiles HTML templates through Herb. Poetry's templates are
+      written for that compiler and tested under it, under ReActionView on
+      top of it, and with slots. This page says what Poetry guarantees, how
+      your own components meet the same bar, and where reactive templates
+      and Poetry components meet today.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="rails">What Rails 8.2 changes</h2>
+      <p>
+        An application on the 8.2 framework defaults compiles every template
+        in the HTML format through Herb, and every other format through
+        Erubi as before. Herb reads HTML and ERB as one tree, so a template
+        with a structural problem, such as a tag that is never closed, stops
+        compiling and says where. A valid template renders what it rendered
+        before.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: defaults_source, language: "ruby", label: "Framework defaults") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        Action View depends on the <code>herb</code> gem from 8.2, so your
+        bundle has it without a line of its own, and
+        <code>poetry:install</code> adds none there.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="guarantees">What Poetry guarantees</h2>
+      <p>
+        Each line below is a gate in Poetry's own pipeline, so a release
+        that breaks one does not ship.
+      </p>
+      <ul>
+        <li>
+          <strong>Every template compiles.</strong> The gems hand Herb every
+          validator it ships, each one fatal, and have the compiled Ruby
+          checked. That is stricter than Rails, which compiles without
+          validators, and stricter than its check task, which adds one.
+        </li>
+        <li>
+          <strong>The suites pass on Rails main.</strong> The unit suite and
+          the behaviour tier run again on the Rails that comes next, in a
+          host that compiles through Herb.
+        </li>
+        <li>
+          <strong>The suites pass under ReActionView.</strong> They run
+          three more times in a host that compiles every template through
+          ReActionView with nothing rescued: as the engine alone, with
+          slots in server mode, and with slots in client mode.
+        </li>
+        <li>
+          <strong>The markup is the same.</strong> A component renders the
+          bytes it renders under Erubi. With slots on it renders the same
+          markup with the slot markers added.
+        </li>
+      </ul>
+      <p>
+        The versions these hold for are Herb 0.11 and ReActionView 0.6.
+        Reactive templates are experimental upstream, and their markers,
+        payload and client may change between releases.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="your-components">Your components</h2>
+      <p>
+        Rails checks views, Poetry checks components.
+        <code>bin/rails herb:check</code> walks the view paths, and a
+        template that sits beside its component lives outside them. Nothing
+        reaches it before the page that renders the component does.
+        <code>bin/rails poetry:check</code> compiles those templates the way
+        the Rails task compiles a view.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: check_source, language: "shell", label: "The two checks") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        A template Herb refuses is a <code>herb-compile</code> finding with
+        the reason and the line. It is an error when your application
+        renders through Herb and a warning until then. Three shapes that
+        Erubi renders are refused: ERB output in an attribute name, bare
+        output where an attribute goes, and
+        <code>tag.attributes</code> anywhere but last in its tag.
+      </p>
+      <h3 id="element-tag">Build elements through <code>element_tag</code></h3>
+      <p>
+        A host that compiles with slots has Action View's own tag helpers
+        turned into markup ahead of the render. Two shapes do not survive
+        that today: attributes handed over in a splat are dropped from the
+        element, and a tag name held in a variable leaves Ruby that does not
+        parse. <code>element_tag</code> is a helper Herb does not resolve,
+        so the element is built at render time from what your component
+        handed it. It takes what <code>content_tag</code> takes and renders
+        the same bytes.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: root_source, language: "erb", label: "A component's root") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        <code>tag.attributes</code> takes its hash as an argument, never as
+        a splat. <code>poetry:check</code> holds a component's template to
+        both with the <code>element-tag</code> warning, and names the call
+        to write instead.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="reactionview">ReActionView, setting by setting</h2>
+      <p>
+        Poetry's templates come from a gem, which ReActionView treats apart
+        from your own. This is what each setting means for them.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: settings_source, language: "ruby", label: "The documented setup") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <table>
+        <thead>
+          <tr><th>Setting</th><th>What it does</th><th>Poetry components</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>intercept_erb</code></td>
+            <td>Compiles HTML templates through ReActionView</td>
+            <td>Render the same</td>
+          </tr>
+          <tr>
+            <td><code>external_template_mode</code></td>
+            <td>How templates from gems compile: <code>:fallback</code>, <code>:skip</code> or <code>:compile</code></td>
+            <td>Compile in all three. Poetry tests with <code>:compile</code>, where nothing is rescued</td>
+          </tr>
+          <tr>
+            <td><code>validation_mode</code></td>
+            <td>What a validator's finding does in your templates</td>
+            <td>Nothing to report: the templates pass every validator</td>
+          </tr>
+          <tr>
+            <td><code>slots</code></td>
+            <td>Turns reactive templates on and compiles every template with markers, the ones from gems included</td>
+            <td>Render the same markup with the markers added</td>
+          </tr>
+          <tr>
+            <td><code>debug_mode</code></td>
+            <td>Wraps what your own templates output in a span, for the dev tools</td>
+            <td>Left alone. A component of your own is wrapped, see below</td>
+          </tr>
+          <tr>
+            <td><code>dev_server</code>, <code>instrumentation</code></td>
+            <td>Development tooling</td>
+            <td>No effect</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3 id="debug-mode">Debug mode and sibling selectors</h3>
+      <p>
+        The span debug mode puts around an output has
+        <code>display: contents</code>, so the layout holds, but it sits
+        between two elements that were siblings. A selector that reads a
+        sibling, such as Tailwind's <code>peer-*</code> variants, stops
+        matching across it. Poetry's own templates are not wrapped. A
+        component of yours is, so keep an element and the sibling that
+        styles itself on it in the same literal markup, or look at the page
+        with debug mode off before you take a broken state for a bug of
+        your own.
+      </p>
+      <h3 id="markers">Markers in your tests</h3>
+      <p>
+        With slots on, the markup a component renders carries comments and
+        a <code>data-herb-slot</code> attribute. A test that compares
+        markup compares what the template wrote:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: markers_source, language: "ruby", label: "A test that compares markup") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        The markers name each template by its path, a gem's install path
+        included. ReActionView 0.6 has no setting for that.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="reactive-templates">Reactive templates with Poetry components</h2>
+      <p>
+        A reactive template keeps state in the browser and lets the server
+        answer what only it can. One fact decides how Poetry fits in:
+        <strong>a Poetry component is rendered by the server.</strong> The
+        browser cannot run the helper, so it cannot build a component, and
+        it cannot change what a component's block reads. Everything below
+        follows from that. Each line was walked in a browser on the
+        versions named above.
+      </p>
+      <h3 id="add-a-row">A form that adds a row</h3>
+      <p>
+        Poetry components work in the form, in a plain
+        <code>form</code> and in <code>form_with</code>. The row appears
+        when the form is sent, takes its real key when the server answers,
+        and what the user types in the meantime stays where it is.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: composer_source, language: "erb", label: "A composer") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <ul>
+        <li>
+          <strong>Declare a state.</strong> On ReActionView 0.6 a form with
+          <code>data-herb-into</code> sends nothing from a template that
+          declares none.
+        </li>
+        <li>
+          <strong>Keep what the row shows at once in plain markup.</strong>
+          A component in the row arrives with the server's answer. A row
+          made of components alone is empty until then.
+        </li>
+        <li>
+          <strong>Keep a branch that follows a state in plain markup.</strong>
+          With a component in it the browser asks the server after every
+          send. The answer replaces the components on the page, so text
+          half typed into a <code>poetry_input</code> is lost, and it drops
+          a row that was never saved.
+        </li>
+        <li>
+          <strong>Keep a partial out of <code>form_with</code>.</strong> The
+          server's answer fails when one is rendered inside the block.
+        </li>
+      </ul>
+      <h3 id="toggle">A toggle</h3>
+      <p>
+        Any <code>data-herb-*</code> action goes through
+        <code>data:</code> on a Poetry helper. Read the state beside the
+        component: a read inside a component's block does not follow it.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: toggle_source, language: "erb", label: "A toggle, its state seeded by the server") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h3 id="refused">A change the server may refuse</h3>
+      <p>
+        A reactive template flips a toggle at once and leaves it flipped
+        when the server says no. Nothing puts it back. For a change that
+        can be refused, <%= link_to "poetry_optimistic_form", optimistic_forms_path %>
+        paints the prediction and answers a refusal with a refresh that
+        restores what the server holds.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="stimulus">Beside Stimulus and Turbo</h2>
+      <p>
+        Herb's client and Poetry's controllers share a page. The client
+        indexes what Turbo brings in, and a controller of yours can read and
+        write a template's state with <code>useState</code> from
+        <code>reactionview</code>. Poetry's own controllers do not call it:
+        their state is the attributes on the element, where the check, the
+        server and your CSS can see it.
+      </p>
+      <p>
+        Herb has deferred content of its own, which needs no endpoint.
+        <%= link_to "poetry_deferred", deferred_path %> loads a Turbo Frame
+        from a URL and shows an error state with a retry. The two do not
+        get in each other's way.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="upstream">Open upstream, on 2026-09-29</h2>
+      <p>
+        What this page works around, and where each one is tracked.
+      </p>
+      <table>
+        <thead>
+          <tr><th>Issue</th><th>What happens</th><th>What Poetry does</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><%= link_to "herb 2737", "https://github.com/marcoroth/herb/issues/2737" %></td>
+            <td>Attributes handed to a tag helper in a splat are dropped under slots</td>
+            <td>Templates use <code>element_tag</code></td>
+          </tr>
+          <tr>
+            <td><%= link_to "herb 2738", "https://github.com/marcoroth/herb/issues/2738" %></td>
+            <td>A tag name held in a variable stops the template compiling under slots</td>
+            <td>Templates use <code>element_tag</code></td>
+          </tr>
+          <tr>
+            <td><%= link_to "herb 2708", "https://github.com/marcoroth/herb/issues/2708" %></td>
+            <td>The linter reads a form inside a block helper as a form inside a form</td>
+            <td>The rule is off in the <code>.herb.yml</code> that <code>poetry:editor</code> writes</td>
+          </tr>
+          <tr>
+            <td><%= link_to "herb 1111", "https://github.com/marcoroth/herb/issues/1111" %></td>
+            <td>Debug mode's wrappers break sibling selectors</td>
+            <td>Its own templates are not wrapped</td>
+          </tr>
+          <tr>
+            <td><%= link_to "reactionview 185", "https://github.com/marcoroth/reactionview/issues/185" %></td>
+            <td>Slots compile templates from gems, and one failure passes the fallback by</td>
+            <td>Its templates compile with slots</td>
+          </tr>
+          <tr>
+            <td><%= link_to "reactionview 179", "https://github.com/marcoroth/reactionview/issues/179" %></td>
+            <td>A partial inside a block helper fails the server's answer</td>
+            <td>Nothing: keep the partial out of the block</td>
+          </tr>
+          <tr>
+            <td><%= link_to "reactionview 180", "https://github.com/marcoroth/reactionview/issues/180" %></td>
+            <td>A server answer replaces markup that changed on the page</td>
+            <td>Nothing: keep state branches in plain markup</td>
+          </tr>
+          <tr>
+            <td><%= link_to "view_component 2717", "https://github.com/ViewComponent/view_component/issues/2717" %></td>
+            <td><code>herb:check</code> does not reach templates beside components</td>
+            <td><code>poetry:check</code> compiles them</td>
+          </tr>
+        </tbody>
+      </table>
+    <% end %>
+  </section>
+</div>

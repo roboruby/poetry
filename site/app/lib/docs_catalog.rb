@@ -112,6 +112,11 @@ class DocsCatalog
                        "the subclass pair for engine-owned component styling, and your own " \
                        "components on the DSL: helper :name makes them first-class on " \
                        "poetry:check, llms.txt and the skill."),
+    Entry.new(slug: "herb", title: "Herb and ReActionView", section: "docs", icon: :sprout,
+              description: "Rails 8.2 compiles HTML templates through Herb. What Poetry guarantees " \
+                       "under it, under ReActionView and with slots, how poetry:check holds your " \
+                       "own components to the same bar, and where reactive templates and Poetry " \
+                       "components meet today."),
     Entry.new(slug: "accessibility", title: "Accessibility", section: "docs", icon: :accessibility,
               description: "What Poetry guarantees by construction - required accessible names, " \
                        "Field-chain aria wiring, native form participation, overlay focus - " \
@@ -209,7 +214,8 @@ class DocsCatalog
     # order; Agent stays last in AI Native while it is experimental.
     DOC_SECTIONS = {
       "Get Started" => %w[installation theming typography testing i18n stimulus editors api],
-      "Advanced" => %w[accessibility forms pagination data-table deferred optimistic-forms caching stable-ids engines],
+      "Advanced" => %w[accessibility forms pagination data-table deferred optimistic-forms caching stable-ids engines
+                       herb],
       "AI Native" => %w[mcp-server webmcp agent-skills recipes ag-ui a2ui page-agent]
     }.freeze
 

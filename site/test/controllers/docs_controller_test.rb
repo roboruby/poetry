@@ -98,6 +98,27 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_match "human_attribute_name", response.body
   end
 
+  test "the Herb guide says what is guaranteed and where reactive templates stop" do
+    get "/herb"
+
+    assert_response :success
+    assert_select "h1", "Herb and ReActionView"
+    %w[rails guarantees your-components reactionview reactive-templates stimulus upstream].each do |id|
+      assert_select "h2##{id}"
+    end
+    assert_select "[data-slot=code-block-code]", text: /element_tag\(root_tag, \*\*root_attributes\)/
+    assert_select "[data-slot=code-block-code]", text: /herb_into: "messages"/
+    assert_select "a[href=?]", optimistic_forms_path
+    assert_select "a[href=?]", "https://github.com/marcoroth/herb/issues/2737"
+    assert_select "a[href=?]", "https://github.com/marcoroth/reactionview/issues/179"
+
+    get "/herb.md"
+
+    assert_response :success
+    assert_match "Rails checks views, Poetry checks components", response.body
+    assert_match "poetry_optimistic_form", response.body
+  end
+
   test "the landing badge links the launch essay" do
     get root_url
 

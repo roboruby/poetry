@@ -318,6 +318,12 @@
     "path": "/stimulus#extend"
   },
   {
+    "title": "Beside Herb's reactive templates",
+    "page": "Stimulus",
+    "section": "docs",
+    "path": "/stimulus#herb"
+  },
+  {
     "title": "Checked at every rung",
     "page": "Stimulus",
     "section": "docs",
@@ -862,6 +868,90 @@
     "page": "Rails Engines",
     "section": "docs",
     "path": "/engines#one-theme-contract"
+  },
+  {
+    "title": "Herb and ReActionView",
+    "page": "Herb and ReActionView",
+    "section": "docs",
+    "path": "/herb"
+  },
+  {
+    "title": "What Rails 8.2 changes",
+    "page": "Herb and ReActionView",
+    "section": "docs",
+    "path": "/herb#rails"
+  },
+  {
+    "title": "What Poetry guarantees",
+    "page": "Herb and ReActionView",
+    "section": "docs",
+    "path": "/herb#guarantees"
+  },
+  {
+    "title": "Your components",
+    "page": "Herb and ReActionView",
+    "section": "docs",
+    "path": "/herb#your-components"
+  },
+  {
+    "title": "Build elements through element_tag",
+    "page": "Herb and ReActionView",
+    "section": "docs",
+    "path": "/herb#element-tag"
+  },
+  {
+    "title": "ReActionView, setting by setting",
+    "page": "Herb and ReActionView",
+    "section": "docs",
+    "path": "/herb#reactionview"
+  },
+  {
+    "title": "Debug mode and sibling selectors",
+    "page": "Herb and ReActionView",
+    "section": "docs",
+    "path": "/herb#debug-mode"
+  },
+  {
+    "title": "Markers in your tests",
+    "page": "Herb and ReActionView",
+    "section": "docs",
+    "path": "/herb#markers"
+  },
+  {
+    "title": "Reactive templates with Poetry components",
+    "page": "Herb and ReActionView",
+    "section": "docs",
+    "path": "/herb#reactive-templates"
+  },
+  {
+    "title": "A form that adds a row",
+    "page": "Herb and ReActionView",
+    "section": "docs",
+    "path": "/herb#add-a-row"
+  },
+  {
+    "title": "A toggle",
+    "page": "Herb and ReActionView",
+    "section": "docs",
+    "path": "/herb#toggle"
+  },
+  {
+    "title": "A change the server may refuse",
+    "page": "Herb and ReActionView",
+    "section": "docs",
+    "path": "/herb#refused"
+  },
+  {
+    "title": "Beside Stimulus and Turbo",
+    "page": "Herb and ReActionView",
+    "section": "docs",
+    "path": "/herb#stimulus"
+  },
+  {
+    "title": "Open upstream, on 2026-09-29",
+    "page": "Herb and ReActionView",
+    "section": "docs",
+    "path": "/herb#upstream"
   },
   {
     "title": "Accessibility",

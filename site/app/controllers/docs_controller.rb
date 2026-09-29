@@ -39,6 +39,9 @@ class DocsController < ApplicationController
   def engines
   end
 
+  def herb
+  end
+
   def stable_ids
   end
 
@@ -183,6 +186,7 @@ class DocsController < ApplicationController
     when "accessibility" then DocsMarkdown.accessibility(guide_entry("accessibility"))
     when "caching" then DocsMarkdown.caching(guide_entry("caching"))
     when "engines" then DocsMarkdown.engines(guide_entry("engines"))
+    when "herb" then DocsMarkdown.herb(guide_entry("herb"))
     when "stable_ids" then DocsMarkdown.stable_ids(guide_entry("stable-ids"))
     when "data_table" then DocsMarkdown.data_table(guide_entry("data-table"))
     when "mcp" then DocsMarkdown.mcp(guide_entry("mcp-server"))
