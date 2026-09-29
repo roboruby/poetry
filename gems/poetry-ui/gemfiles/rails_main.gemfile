@@ -1,0 +1,11 @@
+# frozen_string_literal: true
+
+# The Rails main leg (rake test:rails_main): the gem's own bundle with
+# Rails resolved from its main branch. Booting from this file is the
+# switch: it names the leg for the dummy host, which then compiles HTML
+# templates through Herb the way an app on the next defaults does.
+ENV["POETRY_RAILS"] = "main"
+
+eval_gemfile File.expand_path("../Gemfile", __dir__)
+
+gem "rails", github: "rails/rails", branch: "main"

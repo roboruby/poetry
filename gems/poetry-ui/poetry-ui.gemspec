@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   # Dev-only surfaces never ship: the test/dummy host, scripts, rake tasks,
   # internal docs and design exports, the fidelity ledgers' snapshots, and
   # editor/tooling files.
-  dev_only_dirs = %w[bin/ test/ docs/ script/ rakelib/ eval/ yard/ tmp/ .github/ .ruby-lsp/ .yardoc/
+  dev_only_dirs = %w[bin/ test/ docs/ script/ rakelib/ gemfiles/ eval/ yard/ tmp/ .github/ .ruby-lsp/ .yardoc/
                      config/theme_fidelity/ config/dictionary_fidelity/ config/upstream_
                      config/hook_coverage config/theme_states]
   dev_only_files = %w[Gemfile Gemfile.lock Rakefile AGENTS.md .gitignore .rubocop.yml .yardopts .yard_coverage

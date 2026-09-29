@@ -32,6 +32,10 @@ module Dummy
     config.view_component.previews.controller = "PreviewsController"
     config.view_component.previews.default_layout = "component_preview"
 
+    # The Rails main leg (rake test:rails_main) compiles HTML templates
+    # through Herb, the way an app on the next framework defaults does.
+    config.action_view.erb_implementation = :herb if ENV["POETRY_RAILS"] == "main"
+
     # Serve the static assets the browser rig generates into public/.
     config.public_file_server.enabled = true
   end

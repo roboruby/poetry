@@ -37,6 +37,8 @@ the swappability door.
 - `bundle exec rake test:reactionview` — the suite and the behaviour tier
   again in a host that compiles through ReActionView, as the engine and
   with slots in both modes (see poetry-ui).
+- `bundle exec rake test:rails_main` — the suite and the behaviour tier on
+  Rails main, templates compiled through Herb (see poetry-ui).
 
 ## Conventions
 

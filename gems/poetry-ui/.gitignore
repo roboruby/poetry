@@ -23,3 +23,6 @@ script/theme_port/parts-*.json
 /test/dummy/tmp/
 /test/dummy/config/master.key
 /test/dummy/log/*.log
+
+# The Rails main leg resolves fresh, like the bundle beside it.
+gemfiles/*.lock

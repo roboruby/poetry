@@ -21,3 +21,6 @@
 .gstack/
 /.yardoc
 Gemfile.lock
+
+# The Rails main leg resolves fresh, like the bundle beside it.
+gemfiles/*.lock

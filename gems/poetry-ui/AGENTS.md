@@ -22,6 +22,12 @@ visual fragments under `themes/`.
   compares with the slot markers off (`test/support/slot_markers_off.rb`);
   the behaviour tier keeps them in the page. Run it after any template
   change; CI runs each mode as its own job.
+- `bundle exec rake test:rails_main` — the suite and the behaviour tier on
+  Rails main (`gemfiles/rails_main.gemfile`, its own lock, never
+  committed), in a host that compiles HTML templates through Herb the way
+  an app on the next framework defaults does. It needs the network. CI
+  runs it as a job that reports and never blocks. A test here never reads
+  the Rails it happens to be loaded on: it runs on both.
 - `bundle exec rake test:accessibility` — axe over every preview page.
 - `bundle exec rake test:visual` — screenshot goldens for the default
   theme; `POETRY_THEME=<t>` walks a ported theme; `test:visual:all` walks
