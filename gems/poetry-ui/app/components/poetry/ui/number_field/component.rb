@@ -50,7 +50,7 @@ module Poetry
               value :small_step, from: :small_step_number
               value :snap, if: :snap
               value :wheel, if: :wheel
-              value :format, from: :format_json, if: -> { format.present? }
+              value :format, from: :format_json, if: -> { number_format.present? }
               value :locale, if: -> { locale.present? }
             end
           end
@@ -150,10 +150,23 @@ module Poetry
         # Enforces the format: Hash contract.
         # @api private
         def before_render
-          return unless format.present? && !format.is_a?(Hash)
+          return unless number_format.present? && !number_format.is_a?(Hash)
 
           raise ArgumentError, "format: takes an Intl.NumberFormatOptions Hash"
         end
+
+        # The format: option, Intl.NumberFormatOptions as a Hash. The component
+        # reads the option here and never through `format`, which answers Rails.
+        # @api private
+        # @return [Hash, nil]
+        def number_format = attribute("format")
+
+        # Rails reads `format` off what it renders and takes the answer for the
+        # format of the template. It asks every renderable that answers, and
+        # from Rails 8.2 it asks in a view too, so the option's Hash is never
+        # the answer: Rails is left with its default. Defined without `def`, so
+        # the reference keeps documenting `format` as the option it is.
+        define_method(:format) { nil }
 
         # The root's attributes: this component's markup over the core default.
         def root_attributes
@@ -239,7 +252,7 @@ module Poetry
         # or open/negative ranges need the full layout.
         def inputmode
           whole = step == step.to_i && (!min.present? || min == min.to_i)
-          min.present? && min >= 0 && whole && format.blank? ? "numeric" : "decimal"
+          min.present? && min >= 0 && whole && number_format.blank? ? "numeric" : "decimal"
         end
 
         # Trailing-zero-free numeric strings (5.0 -> "5"), the slider idiom.
@@ -259,7 +272,7 @@ module Poetry
         # The small step as a number.
         def small_step_number = number(small_step)
         # The format options as JSON.
-        def format_json = format.to_json
+        def format_json = number_format.to_json
 
         private :input_attributes, :hidden_attributes, :stepper, :stepper_icon
       end

@@ -9,6 +9,10 @@
 - `rails g poetry:editor` writes a `.herb.yml` pinned to Herb 0.11.0. The two rules it used to switch off for slot setters (`erb-no-unused-expressions`, `actionview-no-silent-helper`) are fixed in 0.11 and stay on. One rule starts off instead: `html-no-nested-forms` reports a form inside a block helper, a `form_with` inside `poetry_card do`, as a form nested in another form. An existing `.herb.yml` is kept as it is; move its `version` to 0.11.0 and drop the two entries to get the same.
 - Every component template builds its elements through `element_tag` and hands `tag.attributes` its hash as an argument, never as a splat. A component now renders the same in a host that compiles its templates with Herb's slots (ReActionView's `config.slots`) as in one that does not; before, such a host rendered most components without their root attributes and could not compile Button, Marker or Item at all. What a component renders without slots is unchanged, byte for byte: the suite, the behaviour tier and the 455 visual baselines hold.
 
+### Fixed
+
+- NumberField with `format:` renders on Rails 8.2, and through the renderer on any Rails. Rails reads `format` off what it renders and takes the answer for the format of the template. The option's reader answered with its Hash, so the render raised `Invalid formats`. A render from a controller asked already; from Rails 8.2 a render in a view asks too, which is every `poetry_number_field(format: ...)`. The option keeps its name and the component leaves Rails with its default.
+
 ## [0.1.8] - 2026-09-22
 
 The robosite proof: a full Jumpstart Pro application re-skinned on Poetry surfaced 28 findings; the 20 that were Poetry's to fix land here, with the form builder taking most of them.
