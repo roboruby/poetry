@@ -108,6 +108,7 @@ jobs:
           - { name: poetry-core, dir: gems/poetry-core, paths: app }
           - { name: poetry-charts, dir: gems/poetry-charts, paths: app }
           - { name: poetry-ui, dir: gems/poetry-ui, paths: app lib/generators }
+          - { name: site, dir: site, paths: app }
     defaults:
       run:
         working-directory: ${{ matrix.gem.dir }}
@@ -119,7 +120,9 @@ jobs:
         with:
           node-version: "24"
       - name: Lint HTML+ERB templates (.herb.yml pins the linter version and rules)
-        run: npx --yes @herb-tools/linter@0.10.3 ${{ matrix.gem.paths }}
+        run: |
+          version="$(sed -n 's/^version: //p' .herb.yml)"
+          npx --yes "@herb-tools/linter@${version}" ${{ matrix.gem.paths }}
 
   # The suite and the behaviour tier again, in a host that compiles every
   # template through ReActionView: as the engine alone, then with slots in
