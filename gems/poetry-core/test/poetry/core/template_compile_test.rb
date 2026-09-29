@@ -2,6 +2,10 @@
 
 require "test_helper"
 require "tmpdir"
+# The tests name the engine themselves, in whatever order they run.
+require "herb"
+require "herb/engine"
+require "herb/engine/validators"
 
 module Poetry
   module Core

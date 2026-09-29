@@ -2,6 +2,10 @@
 
 require "test_helper"
 require "tmpdir"
+# The tests name the engine themselves, in whatever order they run, so it
+# is loaded here and not by the first compile.
+require "herb"
+require "herb/engine"
 
 module Poetry
   module Core
