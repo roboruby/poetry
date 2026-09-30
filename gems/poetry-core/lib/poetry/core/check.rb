@@ -1666,13 +1666,17 @@ module Poetry
         # @param catalog [Catalog] the component catalog to validate against
         # @param compile [Compile, nil] the compile tier, which a host's
         #   check hands over and a gem's own leaves to its compile gate
-        def initialize(catalog, compile: nil)
+        # @param renderable [RenderableReaders] the renderable rule for
+        #   component classes, an error where the host's Rails renders every
+        #   view through the renderer
+        def initialize(catalog, compile: nil, renderable: RenderableReaders.new)
           @linter = Linter.new(catalog)
           @declarations = IconDeclarations.new(catalog)
           @internals = InternalConstants.new(catalog)
           @stable_identity = StableIdentity.new(catalog)
           @tag_helpers = TagHelpers.new
           @compile = compile
+          @renderable = renderable
         end
 
         # Every finding across the paths, each stamped with its file.
@@ -1695,7 +1699,9 @@ module Poetry
             return [Finding.new(rule: "unreadable", severity: :warning,
                                 message: "not valid UTF-8 - skipped (re-encode the file to lint it)")]
           end
-          return @declarations.lint(source) + @internals.lint(source) if path.end_with?(".rb")
+          if path.end_with?(".rb")
+            return @declarations.lint(source) + @internals.lint(source) + @renderable.lint(source)
+          end
 
           findings = @linter.lint(source, mail: Check.mail_template?(path, root: root))
           # The StableId heuristics ride every ERB pass (warnings only -

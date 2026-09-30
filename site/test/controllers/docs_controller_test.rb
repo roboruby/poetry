@@ -106,6 +106,7 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     %w[rails guarantees your-components reactionview reactive-templates stimulus upstream].each do |id|
       assert_select "h2##{id}"
     end
+    assert_select "h3#renderable-reader"
     assert_select "[data-slot=code-block-code]", text: /element_tag\(root_tag, \*\*root_attributes\)/
     assert_select "[data-slot=code-block-code]", text: /herb_into: "messages"/
     assert_select "a[href=?]", optimistic_forms_path

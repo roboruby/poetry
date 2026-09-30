@@ -60,7 +60,14 @@ namespace :poetry do
     warn "poetry:check: #{compile_gap} - component templates were not compiled" if compile_gap
     rendering = Poetry::Core::Check::Compile.rendering?
     compile = Poetry::Core::Check::Compile.new(rendering: rendering) unless compile_gap
-    findings = Poetry::Core::Check::Runner.new(catalog, compile: compile).run(paths, root: Rails.root)
+    # The renderable rule: a component class that declares an option, a
+    # style or a slot named `format` defines the reader Rails asks a
+    # component for. From Rails 8.2 every render in a view asks, so the
+    # finding is an error there and a warning before.
+    asks_in_views = ActionView.gem_version >= Gem::Version.new("8.2.0.alpha")
+    renderable = Poetry::Core::Check::RenderableReaders.new(severity: asks_in_views ? :error : :warning)
+    findings = Poetry::Core::Check::Runner.new(catalog, compile: compile, renderable: renderable)
+                                          .run(paths, root: Rails.root)
     findings += compile.scan(roots.reject { |root| root.to_s == Rails.root.to_s }) if compile
 
     # The taste tier: design-slop warnings join the mechanical

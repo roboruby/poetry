@@ -1301,6 +1301,24 @@ module Poetry
         end
       end
 
+      # The renderable rule rides every Ruby file, at the severity the runner
+      # was handed: a host on Rails 8.2 passes an error.
+      def test_the_runner_holds_ruby_files_to_the_renderable_rule
+        Dir.mktmpdir("check-renderable") do |dir|
+          path = File.join(dir, "app/components/price/component.rb")
+          FileUtils.mkdir_p(File.dirname(path))
+          File.write(path, "class Price::Component < Poetry::Core::Component\n  option :format, :string\nend\n")
+
+          findings = Check::Runner.new(CATALOG).run([path])
+          strict = Check::Runner.new(CATALOG, renderable: Check::RenderableReaders.new(severity: :error)).run([path])
+
+          assert_equal ["renderable-reader"], findings.map(&:rule)
+          assert_equal [:warning], findings.map(&:severity)
+          assert_equal [path], findings.map(&:file)
+          assert_equal [:error], strict.map(&:severity)
+        end
+      end
+
       def test_component_template_convention
         assert Check.component_template?("app/components/acme/pill/component.html.erb")
         assert Check.component_template?("/srv/app/app/components/badge_component.html.erb")

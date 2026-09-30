@@ -900,6 +900,12 @@
     "path": "/herb#element-tag"
   },
   {
+    "title": "One name to keep off a component",
+    "page": "Herb and ReActionView",
+    "section": "docs",
+    "path": "/herb#renderable-reader"
+  },
+  {
     "title": "ReActionView, setting by setting",
     "page": "Herb and ReActionView",
     "section": "docs",

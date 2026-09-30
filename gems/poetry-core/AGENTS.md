@@ -55,6 +55,12 @@ files against the manifest stamped at last bless.
   task walks the view paths and never reaches `app/components`. The
   severity follows the app, an error when it renders through Herb and a
   warning until then. The gems' own gate stays the strict posture.
+- No component declares an option, a style or a slot named `format`:
+  Rails reads that name off what it renders as the template's format,
+  and from 8.2 every render in a view asks. `poetry check` flags it
+  (`renderable-reader`, `Check::RenderableReaders`); a class that defines
+  `format` itself and reads the value under another name is the shape to
+  copy (NumberField's `number_format`).
 - Every public object is documented; the YARD floors are 0 and
   `yard:verify` fails on any warning. Declarations carry their own docs
   (`doc:` on `option`/`style` and on `renders_one`/`renders_many` - the

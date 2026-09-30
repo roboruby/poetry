@@ -194,6 +194,20 @@
         both with the <code>element-tag</code> warning, and names the call
         to write instead.
       </p>
+      <h3 id="renderable-reader">One name to keep off a component</h3>
+      <p>
+        Rails reads <code>format</code> off what it renders and takes the
+        answer for the format of the template. An option, a style or a slot
+        named <code>format</code> defines that reader, and it answers with
+        the declared value, so a render through the renderer raises. A render
+        from a controller has always gone through it. From Rails 8.2 a
+        render in a view goes through it too, which is every helper call on
+        the page. <code>poetry:check</code> reports the declaration as
+        <code>renderable-reader</code>, a warning before 8.2 and an error
+        from it. Keep the keyword for your callers, read the value under
+        another name, and answer Rails yourself with
+        <code>define_method(:format) { nil }</code> beside the declaration.
+      </p>
     <% end %>
   </section>
 
