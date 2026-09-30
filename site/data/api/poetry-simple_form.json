@@ -1,5 +1,5 @@
 {
-  "poetry_version": "0.1.8",
+  "poetry_version": "0.1.9",
   "gem": "poetry-simple_form",
   "objects": [
     {
@@ -61,7 +61,7 @@
         },
         {
           "name": "VERSION",
-          "value": "\"0.1.8\"",
+          "value": "\"0.1.9\"",
           "docstring": "The gem version."
         }
       ]
