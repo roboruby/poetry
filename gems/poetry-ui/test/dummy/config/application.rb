@@ -25,6 +25,10 @@ module Dummy
     config.logger = Logger.new(nil) # Suppress logs in tests
     config.active_support.test_order = :random
 
+    # A framework loaded before initialization completes is a boot fault in
+    # this host, not a line in a log: the Rails main leg has the setting.
+    config.action_on_early_load_hook = :raise if config.respond_to?(:action_on_early_load_hook)
+
     # The real-browser preview rig (rake test:accessibility / test:visual):
     # every preview example is a page at /previews/<preview_name>/<example>,
     # rendered by PreviewsController inside the component_preview layout

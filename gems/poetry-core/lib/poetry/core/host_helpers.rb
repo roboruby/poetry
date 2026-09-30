@@ -15,7 +15,45 @@ module Poetry
     #
     # @api private
     module HostHelpers
+      # Prepended to Action View's base class by the engine: the first view
+      # context of a host that did not eager load syncs the helpers, so the
+      # template about to render can call one. After that it is one
+      # comparison per view.
+      #
+      # @api private
+      module FirstView
+        # The view context, with the helpers defined first.
+        def initialize(...)
+          Poetry::Core::HostHelpers.sync_now! unless Poetry::Core::HostHelpers.ready?
+          super
+        end
+      end
+
+      SYNC = Mutex.new
+      private_constant :SYNC
+
       class << self
+        # Discovers the app's components and defines their helpers: the
+        # engine's sync, at the end of an eager loading boot, at the first
+        # view otherwise, and on every reload. One at a time, since two views
+        # can be the first on two threads.
+        #
+        # @return [Array<String>] the helper names now defined
+        def sync_now!
+          SYNC.synchronize do
+            names = sync!(HostComponents.discover)
+            @ready = true
+            names
+          end
+        end
+
+        # Whether the first sync has happened, so a reload may sync again.
+        #
+        # @return [Boolean]
+        def ready?
+          @ready == true
+        end
+
         # Defines the helpers of `components` and removes the helpers of
         # components that no longer declare one (a rename, a deletion).
         # Every name is checked before any is defined, so a clash leaves

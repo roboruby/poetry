@@ -25,6 +25,10 @@ module PoetryDocs
     # release's instead, which compile HTML templates through Herb.
     config.load_defaults(ENV["POETRY_RAILS"] == "main" ? 8.2 : 8.1)
 
+    # A framework loaded before initialization completes is a boot fault
+    # here, not a line in a log. The Rails main leg has the setting.
+    config.action_on_early_load_hook = :raise if config.respond_to?(:action_on_early_load_hook)
+
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.

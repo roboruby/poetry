@@ -19,5 +19,9 @@ module Dummy
     config.eager_load = false
     config.logger = Logger.new(nil) # Suppress logs in tests
     config.active_support.test_order = :random
+
+    # A framework loaded before initialization completes is a boot fault in
+    # this host, not a line in a log: the Rails main leg has the setting.
+    config.action_on_early_load_hook = :raise if config.respond_to?(:action_on_early_load_hook)
   end
 end

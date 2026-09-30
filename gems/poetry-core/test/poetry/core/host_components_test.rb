@@ -106,6 +106,44 @@ module Poetry
         assert_equal "New", block.call
       end
 
+      # The engine's own sync: discovery plus the definitions, and the mark a
+      # reload reads. The first view context of a host that did not eager
+      # load runs it through FirstView, so a template can call a helper
+      # before anything else loaded the class.
+      def test_sync_now_discovers_the_components_and_marks_the_first_sync_done
+        HostHelpers.instance_variable_set(:@ready, false)
+
+        refute_predicate HostHelpers, :ready?
+        assert_includes HostHelpers.sync_now!, "demo_badge"
+        assert_predicate HostHelpers, :ready?
+        assert_respond_to View.new, :demo_badge
+      end
+
+      def test_the_first_view_context_syncs_once
+        HostHelpers.instance_variable_set(:@ready, false)
+        view_class = Class.new do
+          prepend HostHelpers::FirstView
+          include HostHelpers
+
+          attr_reader :built
+
+          def initialize(name)
+            @built = name
+          end
+        end
+
+        view = view_class.new("first")
+
+        assert_equal "first", view.built
+        assert_predicate HostHelpers, :ready?
+        assert_respond_to view, :demo_badge
+
+        HostHelpers.sync!([])
+        view_class.new("second")
+
+        refute_respond_to view, :demo_badge, "after the first, a view context syncs nothing"
+      end
+
       def test_sync_removes_helpers_no_longer_declared
         HostHelpers.sync!([Demo::Badge::Component])
         HostHelpers.sync!([])

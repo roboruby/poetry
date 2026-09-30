@@ -17,6 +17,11 @@ class RailsMainLegTest < ActiveSupport::TestCase
       assert_equal "8.2", Rails.application.config.loaded_config_version.to_s
     end
 
+    test "the application raises on an early load and booted" do
+      assert_equal :raise, Rails.configuration.action_on_early_load_hook
+      assert_predicate Rails.application, :initialized?
+    end
+
     test "HTML templates compile through Herb" do
       assert_operator ActionView::Template::Handlers::ERB.erb_implementation, :<=, ::Herb::Engine
       assert_predicate Poetry::Core::Check::Compile, :rendering?

@@ -11,6 +11,7 @@
 
 ### Changed
 
+- The helpers of an app's own components (`helper :name`) are defined before the first view renders, not while the application is still initializing. The engine used to load every `app/components` directory from `to_prepare`, and a component is a view, so Action View loaded before initialization completed: Rails logs that in a boot that does not eager load, and raises on it when `config.action_on_early_load_hook` is `:raise`. A host that eager loads now syncs once its boot is done, with the classes already loaded; every other host syncs on its first view context, at render time; a reload syncs as before. `Poetry::Core::HostHelpers.sync_now!` is the sync, `ready?` says whether the first one has happened, and `HostHelpers::FirstView` is what Action View's base class gets for it.
 - The template compile gate (`rake herb:compile`, `Poetry::Core::TemplateCompile`) runs on Herb 0.11. It requires the engine itself, since `require "herb"` no longer loads it. It hands the engine every validator Herb ships, each one fatal, since from 0.11 the engine validates nothing it is not handed, and has the compiled Ruby checked for syntax. It lists parse and compile errors, which Herb now raises as syntax errors, where they used to pass the rescue and abort the run. A Herb older than 0.11.0 raises a setup error that names the version found.
 
 ## [0.1.8] - 2026-09-22

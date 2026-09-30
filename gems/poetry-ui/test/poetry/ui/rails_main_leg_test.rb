@@ -17,6 +17,14 @@ module Poetry
           assert_includes Gem.loaded_specs.fetch("rails").full_gem_path, "bundler/gems/rails-"
         end
 
+        # The dummy raises when a framework is loaded before initialization
+        # completes, so the boot this suite ran on is the proof that Poetry
+        # loads nothing early.
+        def test_the_host_raises_on_an_early_load_and_booted
+          assert_equal :raise, Rails.configuration.action_on_early_load_hook
+          assert_predicate Rails.application, :initialized?
+        end
+
         def test_html_templates_compile_through_herb
           assert_operator ActionView::Template::Handlers::ERB.erb_implementation, :<=, ::Herb::Engine
           assert_predicate Poetry::Core::Check::Compile, :rendering?

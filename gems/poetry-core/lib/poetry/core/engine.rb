@@ -44,14 +44,23 @@ module Poetry
       end
 
       # The app's and its engines' own components' helpers (`helper :name`):
-      # defined at boot and on every reload, after the components directories load,
-      # so a view can call one before anything else referenced the class.
+      # defined before the first view renders and again on every reload, so a
+      # view can call one before anything else referenced the class.
+      #
+      # The components are loaded to find the helpers, and a component is a
+      # view. Loading them while the framework is still initializing loads
+      # Action View early, which Rails reports and, when asked, raises on.
+      # Loading them from Action View's own load hook is no better: when a
+      # component class is what loads Action View, the classes are half
+      # defined. So a host that eager loads syncs once its boot is done, with
+      # the classes already loaded, and every other host syncs on its first
+      # view context, at render time. Each reload syncs from `to_prepare`.
       initializer "poetry_core.host_helpers" do |app|
-        app.config.to_prepare do
-          Poetry::Core::HostHelpers.sync!(Poetry::Core::HostComponents.discover)
-          ActiveSupport.on_load(:action_view) do
-            include Poetry::Core::HostHelpers unless include?(Poetry::Core::HostHelpers)
-          end
+        app.config.after_initialize { Poetry::Core::HostHelpers.sync_now! if app.config.eager_load }
+        app.config.to_prepare { Poetry::Core::HostHelpers.sync_now! if Poetry::Core::HostHelpers.ready? }
+        ActiveSupport.on_load(:action_view) do
+          include Poetry::Core::HostHelpers unless include?(Poetry::Core::HostHelpers)
+          prepend Poetry::Core::HostHelpers::FirstView unless self < Poetry::Core::HostHelpers::FirstView
         end
       end
 
