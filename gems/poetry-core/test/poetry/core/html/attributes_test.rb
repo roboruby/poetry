@@ -177,6 +177,27 @@ module Poetry
                        attrs["data"]["controller"].split.sort
         end
 
+        # A composed root lists its own wiring ahead of the caller's
+        # attributes, and Stimulus runs actions in attribute order, so
+        # unifying the two spellings keeps each one where the hash put it.
+
+        def test_unifying_keeps_a_flat_stimulus_key_first_when_it_came_first
+          attrs = Attributes.new("data-action" => "click->poetry--core--state#toggle",
+                                 data: { action: "click->host#remember", controller: "host" })
+          attrs.merge_if_not_set!("data-slot" => "button")
+
+          assert_equal "click->poetry--core--state#toggle click->host#remember", attrs["data"]["action"]
+          assert_equal "host", attrs["data"]["controller"]
+        end
+
+        def test_unifying_keeps_a_flat_stimulus_key_last_when_it_came_last
+          attrs = Attributes.new(data: { action: "click->host#remember" },
+                                 "data-action" => "click->poetry--core--state#toggle")
+          attrs.merge_if_not_set!("data-slot" => "button")
+
+          assert_equal "click->host#remember click->poetry--core--state#toggle", attrs["data"]["action"]
+        end
+
         # --- Attributes.merged: the wiring-plus-caller combining recipe ---
 
         def test_merged_concatenates_wiring_and_caller_stimulus_keys

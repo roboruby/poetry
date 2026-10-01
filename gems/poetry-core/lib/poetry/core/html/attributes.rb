@@ -420,12 +420,21 @@ module Poetry
           flat_data = {}
           flat_aria = {}
 
-          # Find all flat data-* and aria-* attributes
+          # Find all flat data-* and aria-* attributes. A stimulus key
+          # remembers whether it came before the nested data hash: its
+          # tokens keep that place in the concatenation below, because
+          # Stimulus runs actions in attribute order and a composed root
+          # lists its own wiring ahead of the caller's.
           keys_to_delete = []
+          nested_data_seen = false
+          flat_before_nested = {}
           each do |key, value|
-            if key.to_s.start_with?("data-")
+            if key.to_s == "data"
+              nested_data_seen = true
+            elsif key.to_s.start_with?("data-")
               nested_key = key.to_s.delete_prefix("data-").underscore
               flat_data[nested_key] = value
+              flat_before_nested[nested_key] = !nested_data_seen
               keys_to_delete << key
             elsif key.to_s.start_with?("aria-")
               nested_key = key.to_s.delete_prefix("aria-").underscore
@@ -438,16 +447,19 @@ module Poetry
           keys_to_delete.each { |key| delete(key) }
 
           # Merge into nested format. Flat-spelling-wins on collision,
-          # except stimulus wiring, which concatenates so a double-spelled
-          # controller/action never silently drops tokens.
+          # except stimulus wiring, which concatenates in hash order so a
+          # double-spelled controller/action never silently drops tokens
+          # and never swaps the order they were given in.
           if flat_data.any?
             self["data"] ||= {}
             flat_data.each do |key, value|
+              nested = self["data"][key]
+              ordered = flat_before_nested[key] ? [value, nested] : [nested, value]
               self["data"][key] = case key.to_s
                                   when "controller"
-                                    config.stimulus_merger.merge_controllers(self["data"][key], value)
+                                    config.stimulus_merger.merge_controllers(*ordered)
                                   when "action"
-                                    config.stimulus_merger.merge_actions(self["data"][key], value)
+                                    config.stimulus_merger.merge_actions(*ordered)
                                   else
                                     value
                                   end

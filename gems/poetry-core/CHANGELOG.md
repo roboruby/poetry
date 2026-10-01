@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.10]
+
+### Fixed
+
+- A composed trigger lists its own wiring ahead of the caller's actions again. `Attributes` unified the flat and nested spellings of `data-action` and `data-controller` by appending the flat tokens after the nested ones whichever came first, so a Button composed as a Collapsible, Popover, Tooltip or DropdownMenu trigger rendered the caller's `data: { action: }` ahead of the component's `data-action`. Stimulus runs actions in attribute order, and a caller's action written to read the state the toggle leaves behind read the state before it instead: the docs sidebar remembered each disclosure as the opposite of what was chosen. The two spellings now keep the order the hash gave them.
+
 ## [0.1.9] - 2026-09-30
 
 ### Added

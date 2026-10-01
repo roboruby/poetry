@@ -36,6 +36,15 @@ class SiteNavTest < ActionDispatch::IntegrationTest
     assert_select "[data-slot=collapsible][data-open] [data-sidebar-sections-section-param=?]", "Charts", 1
   end
 
+  test "a sidebar section trigger records its choice after the toggle" do
+    get introduction_path
+
+    # remember reads aria-expanded, so it has to run after the state
+    # controller's toggle: the toggle's action comes first on the trigger.
+    assert_select "[data-sidebar-sections-section-param='Charts'][data-action=?]",
+                  "click->poetry--core--state#toggle click->sidebar-sections#remember"
+  end
+
   test "every local Resources link answers" do
     RESOURCES.each do |path|
       get path

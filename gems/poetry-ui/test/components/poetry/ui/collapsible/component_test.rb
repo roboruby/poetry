@@ -67,6 +67,18 @@ module Poetry
           assert_includes trigger["data-action"].to_s, "state#toggle"
           assert_equal "collapsible-trigger", trigger["data-slot"]
         end
+
+        # Stimulus runs actions in attribute order: the toggle goes first,
+        # so a caller's action on the trigger reads the state it leaves.
+        def test_a_caller_action_on_the_trigger_runs_after_the_toggle
+          html = render_inline(Component.new) do |collapsible|
+            collapsible.with_trigger(data: { action: "click->host#remember" }) { "Show" }
+            collapsible.with_content("details")
+          end.to_html
+          trigger = Nokogiri::HTML5.fragment(html).at_css('button[data-slot="collapsible-trigger"]')
+
+          assert_equal "click->poetry--core--state#toggle click->host#remember", trigger["data-action"]
+        end
       end
     end
   end
