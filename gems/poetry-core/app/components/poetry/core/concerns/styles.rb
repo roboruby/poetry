@@ -161,11 +161,26 @@ module Poetry
             style_attributes.include?(name.to_sym)
           end
 
-          # Automatically determines the corresponding Style class for this component.
-          # Example: Poetry::Core::Dot::Component -> Poetry::Core::Dot::Style
+          # The dictionary this component renders through: its own sidecar
+          # Style by the naming convention (Poetry::Core::Dot::Component ->
+          # Poetry::Core::Dot::Style), else the nearest ancestor's. A bare
+          # subclass (`Acme::Badge2 < Poetry::Ui::Badge::Component` with no
+          # `Acme::Badge2::Style`) keeps rendering the classes its parent
+          # renders, the way a subclass keeps the parent's methods; a
+          # sidecar of its own takes over, extending a copy of the parent's
+          # dictionary. A component with no dictionary anywhere in its
+          # chain (Icon) has none.
           #
-          # @return [Class, nil] the style class if it exists, nil otherwise
+          # @return [Class, nil] the style class, or nil when neither this
+          #   class nor an ancestor below Poetry::Core::Component has one
           def style_class
+            own_style_class || inherited_style_class
+          end
+
+          private
+
+          # This class's own sidecar Style, by name, or nil.
+          def own_style_class
             style_class_name = component_module + STYLE_CLASS_SUFFIX
             style_class_name.constantize
           rescue NameError => e
@@ -178,7 +193,15 @@ module Poetry
             nil
           end
 
-          private
+          # The dictionary of the nearest ancestor that has one, stopping
+          # short of Poetry::Core::Component: the base class owns no
+          # component dictionary, so a component built directly on it with
+          # no sidecar stays dictionaryless.
+          def inherited_style_class
+            return nil if superclass == Poetry::Core::Component || !superclass.respond_to?(:style_class)
+
+            superclass.style_class
+          end
 
           # Extracts and processes style-specific options from the options hash.
           #

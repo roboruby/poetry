@@ -420,10 +420,12 @@
         A pin follows the dictionary: a subclass of a Poetry component
         keeps Poetry's Tailwind mode even inside a BEM-pinned namespace,
         because the dictionary it inherits was written that way, and a
-        declaration on the class beats every pin. Give such a subclass its
-        own <code>Style</code> sidecar (<code>Acme::Badge2::Style &lt;
-        Poetry::Ui::Badge::Style</code>): a bare subclass has no dictionary
-        and renders no classes at all;
+        declaration on the class beats every pin. A bare subclass
+        (<code>Acme::Badge2 &lt; Poetry::Ui::Badge::Component</code> with
+        nothing beside it) renders through its parent's dictionary, the
+        same classes as the parent; give it its own <code>Style</code>
+        sidecar (<code>Acme::Badge2::Style &lt; Poetry::Ui::Badge::Style</code>)
+        to extend or override that dictionary;
         the global <code>Poetry::Core::Config.current.css_mode</code> is the
         default for kits that declare nothing, and a <code>css_mode:</code>
         keyword on a <code>css</code> call wins over all of them. There is
