@@ -103,6 +103,14 @@
         sit in an attribute or in a helper's <code>data:</code> keywords,
         with a did-you-mean when a name is off by a letter.
       </p>
+      <p>
+        An action you add to a composed trigger (Collapsible, Popover,
+        Tooltip, DropdownMenu: <code>with_trigger(data: { action: ... })</code>)
+        runs after the component's own. Stimulus runs actions in attribute
+        order and the trigger lists its toggle first, so your handler reads
+        the state the toggle leaves behind, <code>aria-expanded</code>
+        included.
+      </p>
     <% end %>
   </section>
 
@@ -173,11 +181,15 @@
     <%= poetry_code_block(code: snippets[:extend_js], language: "javascript", label: "Extend a controller") %>
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <p>
-        Two things to know before you reach for this rung. The manifest
+        Three things to know before you reach for this rung. The manifest
         still describes the base controller, so a new action name on the
         same identifier reads as unknown to <code>poetry:check</code>; put
         new behavior in a controller of your own and compose it instead.
-        And you own the drift: an upgrade that changes the base's
+        A <code>disconnect()</code> of your own calls
+        <code>super.disconnect()</code>: every Poetry controller tears its
+        listeners, timers and portaled content down there, in one
+        per-connect scope, and a subclass that skips the call keeps them
+        alive. And you own the drift: an upgrade that changes the base's
         internals changes your subclass's ground. Rungs one to four express
         nearly everything; this one is for the rest.
       </p>

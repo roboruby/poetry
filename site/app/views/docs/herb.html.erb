@@ -109,6 +109,11 @@
         Action View depends on the <code>herb</code> gem from 8.2, so your
         bundle has it without a line of its own, and
         <code>poetry:install</code> adds none there.
+        The <code>:erubi</code> line is also the answer where Herb's
+        extension cannot load: an app packed for ruby.wasm, or a bundled
+        runtime that carries no compiled extensions. Poetry's templates
+        compile under both engines, and <code>poetry:check</code> still
+        runs its Herb tier on the machine that develops the app.
       </p>
     <% end %>
   </section>

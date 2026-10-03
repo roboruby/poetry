@@ -65,12 +65,8 @@ export function hasScope(controller) {
   return scopes.has(controller)
 }
 
-/**
- * One scope: a disposer stack and a fresh AbortController.
- *
- * @returns {Object} the scope
- */
-function createScope() {
+// One scope: a disposer stack and a fresh AbortController.
+const createScope = () => {
   const aborter = new AbortController()
   const disposers = []
 

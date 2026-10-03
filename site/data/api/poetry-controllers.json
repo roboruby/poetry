@@ -45,6 +45,422 @@
       ]
     },
     {
+      "path": "@poetry/controllers/behaviors/announce",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useAnnounce: the shared live regions held for one connect, over the\nannounce helper; the refcount is released at teardown.",
+      "examples": [],
+      "file": "app/javascript/poetry/core/behaviors/announce.js",
+      "methods": [
+        {
+          "name": "useAnnounce",
+          "scope": "class",
+          "group": null,
+          "signature": "useAnnounce(controller)",
+          "docstring": "Takes a refcount on the shared live regions until teardown(controller)\nand hands back the announcement surface.",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            }
+          ],
+          "return": {
+            "types": [
+              "(message: string, politeness?: \"polite\" | \"assertive\") => void"
+            ],
+            "text": "announce"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/behaviors/announce.js",
+          "line": 13
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/controllers/behaviors/before_cache",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useBeforeCache: Turbo's before-cache moment for one connect, over the\nturbo_cache helper; the unsubscribe is registered for you.",
+      "examples": [],
+      "file": "app/javascript/poetry/core/behaviors/before_cache.js",
+      "methods": [
+        {
+          "name": "useBeforeCache",
+          "scope": "class",
+          "group": null,
+          "signature": "useBeforeCache(controller, callback)",
+          "docstring": "Subscribes `callback` to turbo:before-cache until teardown(controller).",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            },
+            {
+              "name": "callback",
+              "types": [
+                "(event: Event) => void"
+              ],
+              "text": "must finish synchronously"
+            }
+          ],
+          "return": {
+            "types": [
+              "() => void"
+            ],
+            "text": "unsubscribes early; teardown unsubscribes otherwise"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/behaviors/before_cache.js",
+          "line": 13
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/controllers/behaviors/escape",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useEscape: capture-phase Escape handling (IME cancels filtered) for one\nconnect, over the escape helper; the unsubscribe is registered for you.",
+      "examples": [],
+      "file": "app/javascript/poetry/core/behaviors/escape.js",
+      "methods": [
+        {
+          "name": "useEscape",
+          "scope": "class",
+          "group": null,
+          "signature": "useEscape(controller, callback, options)",
+          "docstring": "Subscribes `callback` to Escape keydowns until teardown(controller).",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            },
+            {
+              "name": "callback",
+              "types": [
+                "(event: KeyboardEvent) => void"
+              ],
+              "text": "the handler"
+            },
+            {
+              "name": "[options]",
+              "types": [
+                "Object"
+              ],
+              "text": "the escape helper's options (capture, target)"
+            }
+          ],
+          "return": {
+            "types": [
+              "() => void"
+            ],
+            "text": "unsubscribes early; teardown unsubscribes otherwise"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/behaviors/escape.js",
+          "line": 14
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/controllers/behaviors/layers",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useLayers: the runtime layer activation (focus-scope, dismissable,\nroving-focus stacked onto content while it is open) for one connect.\nOne implementation of the data-controller token add and remove that\nsix overlay controllers each carried; what is still active at teardown\nis deactivated, so a torn-down overlay leaves no layer controller alive\non an orphaned node.",
+      "examples": [],
+      "file": "app/javascript/poetry/core/behaviors/layers.js",
+      "methods": [
+        {
+          "name": "useLayers",
+          "scope": "class",
+          "group": null,
+          "signature": "useLayers(controller)",
+          "docstring": "Layer activation over the controller's current scope.",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            }
+          ],
+          "return": {
+            "types": [
+              "{ activate: (element: Element, identifiers: string[]) => void, deactivate: (element: Element, identifiers: string[]) => void "
+            ],
+            "text": "}"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/behaviors/layers.js",
+          "line": 16
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/controllers/behaviors/listen",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useListen: a DOM listener that lives for one connect. Replaces the\nhand-rolled `#wired` list seven controllers copied: the listener is\nadded now and removed at teardown(controller), newest first.",
+      "examples": [],
+      "file": "app/javascript/poetry/core/behaviors/listen.js",
+      "methods": [
+        {
+          "name": "useListen",
+          "scope": "class",
+          "group": null,
+          "signature": "useListen(controller, target, type, listener, options)",
+          "docstring": "Adds `listener` to `target` for the controller's current connect.",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            },
+            {
+              "name": "target",
+              "types": [
+                "EventTarget"
+              ],
+              "text": "the element, document or window to listen on"
+            },
+            {
+              "name": "type",
+              "types": [
+                "string"
+              ],
+              "text": "the event type"
+            },
+            {
+              "name": "listener",
+              "types": [
+                "EventListener"
+              ],
+              "text": "the handler"
+            },
+            {
+              "name": "[options]",
+              "types": [
+                "AddEventListenerOptions | boolean"
+              ],
+              "text": "addEventListener's options"
+            }
+          ],
+          "return": {
+            "types": [
+              "() => void"
+            ],
+            "text": "removes the listener early; teardown removes it otherwise"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/behaviors/listen.js",
+          "line": 16
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/controllers/behaviors/mobile",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useMobile: the mobile-breakpoint watch for one connect, over the\nbreakpoint helper; the unwatch is registered for you.",
+      "examples": [],
+      "file": "app/javascript/poetry/core/behaviors/mobile.js",
+      "methods": [
+        {
+          "name": "useMobile",
+          "scope": "class",
+          "group": null,
+          "signature": "useMobile(controller, onChange)",
+          "docstring": "Watches the mobile breakpoint until teardown(controller): `onChange`\nruns now with the current state and again on every crossing.",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            },
+            {
+              "name": "onChange",
+              "types": [
+                "(isMobile: boolean) => void"
+              ],
+              "text": "the handler"
+            }
+          ],
+          "return": {
+            "types": [
+              "() => void"
+            ],
+            "text": "unwatches early; teardown unwatches otherwise"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/behaviors/mobile.js",
+          "line": 14
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/controllers/behaviors/portal",
+      "type": "module",
+      "superclass": null,
+      "docstring": "usePortal: content moved to a portal container for one connect, over\nthe portal helper. Every node this instance portals is restored at\nteardown (drop-never-strand: a node whose origin is gone is dropped by\nthe helper), so no controller writes its own restore-on-disconnect.",
+      "examples": [],
+      "file": "app/javascript/poetry/core/behaviors/portal.js",
+      "methods": [
+        {
+          "name": "usePortal",
+          "scope": "class",
+          "group": null,
+          "signature": "usePortal(controller)",
+          "docstring": "Portal moves over the controller's current scope.",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            }
+          ],
+          "return": {
+            "types": [
+              "{ portal: (content: Element, options?: Object) => boolean, restore: (content: Element) => boolean "
+            ],
+            "text": "}"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/behaviors/portal.js",
+          "line": 15
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/controllers/behaviors/presence",
+      "type": "module",
+      "superclass": null,
+      "docstring": "usePresence: enter and exit animations for one connect, over the\npresence helper, with the pending exits tracked PER NODE. An exit's\ncancel used to live in one `#cancelExit` slot per controller, which a\nsecond exiting node (NavigationMenu's lesson) silently overwrote; here\nevery node keeps its own, an enter interrupts that node's exit alone,\nand teardown abandons whatever is still exiting without running its\nremoval (an interrupted exit, never a removal from a torn-down scope).",
+      "examples": [],
+      "file": "app/javascript/poetry/core/behaviors/presence.js",
+      "methods": [
+        {
+          "name": "usePresence",
+          "scope": "class",
+          "group": null,
+          "signature": "usePresence(controller)",
+          "docstring": "Presence over the controller's current scope.",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            }
+          ],
+          "return": {
+            "types": [
+              "{ enter: (element: HTMLElement, options?: Object) => HTMLElement, exit: (element: HTMLElement, options?: Object) => () => void, cancel: (element: HTMLElement) => boolean, exiting: (element: HTMLElement) => boolean "
+            ],
+            "text": "}"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/behaviors/presence.js",
+          "line": 20
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/controllers/behaviors/scroll_lock",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useScrollLock: the body scroll lock for one connect, over the\nscroll_lock helper. Idempotent per instance (the dialog's `#locked`\nflag, generalized): lock twice holds one refcount, unlock when not\nlocked is a no-op, and teardown balances a lock still held.",
+      "examples": [],
+      "file": "app/javascript/poetry/core/behaviors/scroll_lock.js",
+      "methods": [
+        {
+          "name": "useScrollLock",
+          "scope": "class",
+          "group": null,
+          "signature": "useScrollLock(controller)",
+          "docstring": "A per-instance scroll lock, balanced at teardown(controller).",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            }
+          ],
+          "return": {
+            "types": [
+              "{ lock: () => void, unlock: () => void, locked: () => boolean "
+            ],
+            "text": "}"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/behaviors/scroll_lock.js",
+          "line": 14
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/controllers/behaviors/typeahead",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useTypeahead: one typeahead per connect, over the typeahead helper,\nwith its buffer timer reset at teardown - the leak the hand-rolled\nfield initializers (menu, select, tree) never closed.",
+      "examples": [],
+      "file": "app/javascript/poetry/core/behaviors/typeahead.js",
+      "methods": [
+        {
+          "name": "useTypeahead",
+          "scope": "class",
+          "group": null,
+          "signature": "useTypeahead(controller)",
+          "docstring": "A typeahead instance whose pending timer is cleared at\nteardown(controller).",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            }
+          ],
+          "return": {
+            "types": [
+              "{ pending: () => boolean, reset: () => void, search: (key: string, items: Element[], options?: Object) => Element | null "
+            ],
+            "text": "}"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/behaviors/typeahead.js",
+          "line": 15
+        }
+      ],
+      "constants": []
+    },
+    {
       "path": "@poetry/controllers/helpers/announce",
       "type": "module",
       "superclass": null,
@@ -1567,6 +1983,92 @@
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/registration_guard.js",
           "line": 73
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/controllers/helpers/scope",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The per-connect teardown scope: everything a controller sets up in\nconnect() that must be undone in disconnect() registers its undo here,\nand disconnect() is one line, `teardown(this)`. Explicit, never a\npatched disconnect: a controller that imports a behavior owns the\nteardown call, the source-scan gate (behaviors_teardown.test.js) keeps\nit there, and a subclass that overrides disconnect calls super.\n\nStimulus keeps one instance per element and re-runs connect() each time\nthe element re-enters the document (pinned in\nreconnect_semantics.test.js), so a scope is created on first use per\nconnect and dropped at teardown; the next connect starts clean. The\nscope's AbortSignal is renewed with it - a listener added to an\nalready-aborted signal is silently never added, so a scope is never\nreused across connects.",
+      "examples": [],
+      "file": "app/javascript/poetry/core/helpers/scope.js",
+      "methods": [
+        {
+          "name": "scopeOf",
+          "scope": "class",
+          "group": null,
+          "signature": "scopeOf(controller)",
+          "docstring": "The controller's current scope, created on first use since its last\nteardown. A behavior registers its undo here; a controller may use it\ndirectly for one-off listeners.",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "a Stimulus controller instance"
+            }
+          ],
+          "return": {
+            "types": [
+              "{ signal: AbortSignal, defer: (undo: () => void) => () => void, listen: (target: EventTarget, type: string, listener: EventListener, options?: AddEventListenerOptions | boolean) => () => void "
+            ],
+            "text": "}"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/helpers/scope.js",
+          "line": 28
+        },
+        {
+          "name": "teardown",
+          "scope": "class",
+          "group": null,
+          "signature": "teardown(controller)",
+          "docstring": "Runs every undo the controller's scope holds, newest first, aborts the\nscope's signal and drops the scope. The one line a `disconnect()` needs.\nA controller without a scope (nothing registered since connect) is a\nno-op.",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "a Stimulus controller instance"
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/helpers/scope.js",
+          "line": 48
+        },
+        {
+          "name": "hasScope",
+          "scope": "class",
+          "group": null,
+          "signature": "hasScope(controller)",
+          "docstring": "Whether the controller holds a scope right now - a test seam, so a\nsuite can assert a disconnect left nothing behind.",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "a Stimulus controller instance"
+            }
+          ],
+          "return": {
+            "types": [
+              "boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/helpers/scope.js",
+          "line": 64
         }
       ],
       "constants": []
@@ -3607,19 +4109,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 115
+          "line": 120
         },
         {
           "name": "disconnect",
           "scope": "instance",
           "group": null,
           "signature": "disconnect()",
-          "docstring": "Restores portaled content (drop-never-strand) and unwires everything.",
+          "docstring": "Tears the scope down: the content and chips listeners, a pending\nexit, the layer tokens and portaled content (restored home, or\ndropped when the home is gone - never stranded).",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 169
+          "line": 180
         },
         {
           "name": "openValueChanged",
@@ -3639,7 +4141,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 191
+          "line": 192
         },
         {
           "name": "valueValueChanged",
@@ -3659,7 +4161,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 204
+          "line": 205
         },
         {
           "name": "toggle",
@@ -3671,7 +4173,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 224
+          "line": 225
         },
         {
           "name": "triggerKeydown",
@@ -3691,7 +4193,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 239
+          "line": 240
         },
         {
           "name": "chipsPointerdown",
@@ -3711,7 +4213,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 264
+          "line": 265
         },
         {
           "name": "inputKeydown",
@@ -3731,7 +4233,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 289
+          "line": 290
         },
         {
           "name": "chipKeydown",
@@ -3751,7 +4253,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 345
+          "line": 346
         },
         {
           "name": "removeChip",
@@ -3771,7 +4273,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 398
+          "line": 399
         },
         {
           "name": "clear",
@@ -3788,7 +4290,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 427
+          "line": 428
         },
         {
           "name": "open",
@@ -3822,7 +4324,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 449
+          "line": 450
         },
         {
           "name": "close",
@@ -3842,7 +4344,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 459
+          "line": 460
         },
         {
           "name": "setValue",
@@ -3867,7 +4369,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 471
+          "line": 472
         },
         {
           "name": "nativeChanged",
@@ -3879,7 +4381,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 501
+          "line": 502
         }
       ],
       "constants": []
@@ -4150,19 +4652,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/date_field_controller.js",
-          "line": 69
+          "line": 71
         },
         {
           "name": "disconnect",
           "scope": "instance",
           "group": null,
           "signature": "disconnect()",
-          "docstring": "Restores the native input's tab order / AT visibility and unwires the\ndocument listeners.",
+          "docstring": "Restores the native input's tab order / AT visibility and tears the\nscope down: the input, document and per-segment listeners.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/date_field_controller.js",
-          "line": 91
+          "line": 93
         },
         {
           "name": "focusGap",
@@ -4182,7 +4684,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/date_field_controller.js",
-          "line": 108
+          "line": 109
         },
         {
           "name": "settle",
@@ -4202,7 +4704,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/date_field_controller.js",
-          "line": 553
+          "line": 554
         }
       ],
       "constants": []
@@ -4288,19 +4790,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/deferred_controller.js",
-          "line": 38
+          "line": 40
         },
         {
           "name": "disconnect",
           "scope": "instance",
           "group": null,
           "signature": "disconnect()",
-          "docstring": "Unwires the listeners and the before-cache subscription.",
+          "docstring": "Tears the scope down: the listeners and the before-cache subscription.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/deferred_controller.js",
-          "line": 59
+          "line": 61
         },
         {
           "name": "retry",
@@ -4312,7 +4814,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/deferred_controller.js",
-          "line": 72
+          "line": 70
         }
       ],
       "constants": []
@@ -4335,19 +4837,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 38
+          "line": 39
         },
         {
           "name": "disconnect",
           "scope": "instance",
           "group": null,
           "signature": "disconnect()",
-          "docstring": "Balances the scroll lock and unwires the hotkey and before-cache\nsubscriptions.",
+          "docstring": "Tears the scope down: the scroll lock balanced, the hotkey and\nbefore-cache subscriptions gone. Subclasses that override this call\nsuper.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 69
+          "line": 71
         },
         {
           "name": "toggle",
@@ -4359,7 +4861,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 111
+          "line": 106
         },
         {
           "name": "open",
@@ -4376,7 +4878,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 123
+          "line": 118
         },
         {
           "name": "close",
@@ -4401,7 +4903,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 143
+          "line": 138
         },
         {
           "name": "backdropClose",
@@ -4421,19 +4923,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 169
+          "line": 164
         },
         {
           "name": "lockScroll",
           "scope": "instance",
           "group": null,
           "signature": "lockScroll()",
-          "docstring": "Takes the shared refcounted body scroll lock (scrollbar-width\ncompensated) - subclasses (sheet/drawer/sidebar) inherit these entry\npoints unchanged; the instance flag keeps double-unlocks (disconnect\nafter close) balanced.",
+          "docstring": "Takes the shared refcounted body scroll lock (scrollbar-width\ncompensated) - subclasses (sheet/drawer/sidebar) inherit these entry\npoints unchanged; the per-instance behavior keeps double-unlocks\n(disconnect after close) balanced.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 191
+          "line": 186
         },
         {
           "name": "unlockScroll",
@@ -4445,7 +4947,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/dialog_controller.js",
-          "line": 199
+          "line": 191
         }
       ],
       "constants": []
@@ -4475,7 +4977,7 @@
           "scope": "instance",
           "group": null,
           "signature": "disconnect()",
-          "docstring": "Leaves the stack and unwires everything, releasing the scrim when\nheld.",
+          "docstring": "Leaves the stack, releases the scrim when held, and tears the scope\ndown (Escape, pointerdown and the before-cache subscription).",
           "params": [],
           "return": null,
           "examples": [],
@@ -4868,19 +5370,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/hover_card_controller.js",
-          "line": 75
+          "line": 82
         },
         {
           "name": "disconnect",
           "scope": "instance",
           "group": null,
           "signature": "disconnect()",
-          "docstring": "Clears every timer, restores suppressed selection and portaled\ncontent (drop-never-strand), and unwires the listeners.",
+          "docstring": "Clears every timer, restores suppressed selection, releases the\npointer latch, and tears the scope down: the listeners, a pending\nexit, the layer token and portaled content (restored home, or\ndropped when the home is gone - never stranded).",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/hover_card_controller.js",
-          "line": 96
+          "line": 109
         },
         {
           "name": "openValueChanged",
@@ -4900,7 +5402,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/hover_card_controller.js",
-          "line": 122
+          "line": 124
         },
         {
           "name": "pointerEnter",
@@ -4920,7 +5422,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/hover_card_controller.js",
-          "line": 138
+          "line": 140
         },
         {
           "name": "pointerLeave",
@@ -4940,7 +5442,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/hover_card_controller.js",
-          "line": 159
+          "line": 161
         },
         {
           "name": "focusOpen",
@@ -4952,7 +5454,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/hover_card_controller.js",
-          "line": 175
+          "line": 177
         },
         {
           "name": "blurClose",
@@ -4964,7 +5466,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/hover_card_controller.js",
-          "line": 183
+          "line": 185
         },
         {
           "name": "pointerDown",
@@ -4976,7 +5478,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/hover_card_controller.js",
-          "line": 199
+          "line": 201
         }
       ],
       "constants": []
@@ -5034,19 +5536,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 111
+          "line": 117
         },
         {
           "name": "disconnect",
           "scope": "instance",
           "group": null,
           "signature": "disconnect()",
-          "docstring": "Restores portaled subs then the content (drop-never-strand), unwires\neverything, and clears the sub hover-intent timers.",
+          "docstring": "Clears the sub hover-intent timers and tears the scope down: the\nlisteners, the pending exits, the typeahead timer, the layer tokens\nand portaled content (subs first, then the root, each restored home\nor dropped when the home is gone - never stranded).",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 147
+          "line": 160
         },
         {
           "name": "openValueChanged",
@@ -5066,7 +5568,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 184
+          "line": 183
         },
         {
           "name": "toggle",
@@ -5078,7 +5580,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 194
+          "line": 193
         },
         {
           "name": "triggerKeydown",
@@ -5098,7 +5600,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 207
+          "line": 206
         },
         {
           "name": "open",
@@ -5139,7 +5641,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 234
+          "line": 233
         },
         {
           "name": "close",
@@ -5173,7 +5675,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 248
+          "line": 247
         },
         {
           "name": "activate",
@@ -5193,7 +5695,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 262
+          "line": 261
         },
         {
           "name": "keydown",
@@ -5213,7 +5715,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 285
+          "line": 284
         },
         {
           "name": "subEnter",
@@ -5233,7 +5735,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 338
+          "line": 337
         },
         {
           "name": "subLeave",
@@ -5253,7 +5755,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 350
+          "line": 349
         },
         {
           "name": "openSub",
@@ -5273,7 +5775,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 363
+          "line": 362
         },
         {
           "name": "closeSub",
@@ -5293,7 +5795,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 376
+          "line": 375
         }
       ],
       "constants": []
@@ -5478,7 +5980,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 122
+          "line": 124
         },
         {
           "name": "disconnect",
@@ -5490,7 +5992,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 207
+          "line": 208
         },
         {
           "name": "defaultScrollPositionValueChanged",
@@ -5502,7 +6004,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 254
+          "line": 255
         },
         {
           "name": "autoScrollValueChanged",
@@ -5514,7 +6016,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 262
+          "line": 263
         },
         {
           "name": "syncAfterScroll",
@@ -5526,7 +6028,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 279
+          "line": 280
         },
         {
           "name": "userScrollIntent",
@@ -5538,7 +6040,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 290
+          "line": 291
         },
         {
           "name": "keydownIntent",
@@ -5558,7 +6060,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 307
+          "line": 308
         },
         {
           "name": "jump",
@@ -5578,7 +6080,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 319
+          "line": 320
         },
         {
           "name": "scrollToEnd",
@@ -5603,7 +6105,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 339
+          "line": 340
         },
         {
           "name": "scrollToStart",
@@ -5628,7 +6130,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 349
+          "line": 350
         },
         {
           "name": "scrollToMessage",
@@ -5660,7 +6162,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 363
+          "line": 364
         }
       ],
       "constants": []
@@ -5690,12 +6192,12 @@
           "scope": "instance",
           "group": null,
           "signature": "disconnect()",
-          "docstring": "Clears the timer and unwires the outside-press and before-cache\nlisteners.",
+          "docstring": "Clears the timer and tears the scope down (the outside-press and\nbefore-cache listeners, the items observer).",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/navigation_menu_controller.js",
-          "line": 87
+          "line": 89
         },
         {
           "name": "toggle",
@@ -5715,7 +6217,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/navigation_menu_controller.js",
-          "line": 101
+          "line": 100
         },
         {
           "name": "scheduleOpen",
@@ -5735,7 +6237,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/navigation_menu_controller.js",
-          "line": 118
+          "line": 117
         },
         {
           "name": "scheduleClose",
@@ -5755,7 +6257,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/navigation_menu_controller.js",
-          "line": 138
+          "line": 137
         },
         {
           "name": "cancelClose",
@@ -5767,7 +6269,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/navigation_menu_controller.js",
-          "line": 150
+          "line": 149
         },
         {
           "name": "keydown",
@@ -5787,7 +6289,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/navigation_menu_controller.js",
-          "line": 161
+          "line": 160
         },
         {
           "name": "focusLeft",
@@ -5807,7 +6309,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/navigation_menu_controller.js",
-          "line": 206
+          "line": 205
         }
       ],
       "constants": []
@@ -6103,19 +6605,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/popover_controller.js",
-          "line": 59
+          "line": 64
         },
         {
           "name": "disconnect",
           "scope": "instance",
           "group": null,
           "signature": "disconnect()",
-          "docstring": "Restores portaled content (drop-never-strand) and unwires the\ncontent listeners.",
+          "docstring": "Tears the scope down: the content listeners, a pending exit, the\nlayer tokens and portaled content (restored home, or dropped when\nthe home is gone - never stranded).",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/popover_controller.js",
-          "line": 83
+          "line": 93
         },
         {
           "name": "openValueChanged",
@@ -6973,19 +7475,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 93
+          "line": 99
         },
         {
           "name": "disconnect",
           "scope": "instance",
           "group": null,
           "signature": "disconnect()",
-          "docstring": "Restores portaled content (drop-never-strand), unwires the content\nlisteners, resets typeahead and the scroll hold, and abandons any\nexit.",
+          "docstring": "Stops the scroll hold and tears the scope down: the content\nlisteners, a pending exit, the typeahead timer, the layer tokens and\nportaled content (restored home, or dropped when the home is gone -\nnever stranded).",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 145
+          "line": 157
         },
         {
           "name": "openValueChanged",
@@ -7005,7 +7507,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 169
+          "line": 170
         },
         {
           "name": "valueValueChanged",
@@ -7025,7 +7527,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 182
+          "line": 183
         },
         {
           "name": "toggle",
@@ -7037,7 +7539,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 191
+          "line": 192
         },
         {
           "name": "triggerKeydown",
@@ -7057,7 +7559,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 205
+          "line": 206
         },
         {
           "name": "open",
@@ -7091,7 +7593,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 234
+          "line": 235
         },
         {
           "name": "close",
@@ -7111,7 +7613,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 245
+          "line": 246
         },
         {
           "name": "setValue",
@@ -7131,7 +7633,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 255
+          "line": 256
         },
         {
           "name": "commit",
@@ -7151,7 +7653,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 269
+          "line": 270
         },
         {
           "name": "keydown",
@@ -7171,7 +7673,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 291
+          "line": 292
         },
         {
           "name": "nativeChanged",
@@ -7183,7 +7685,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 337
+          "line": 338
         },
         {
           "name": "syncScrollButtons",
@@ -7195,7 +7697,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 351
+          "line": 352
         },
         {
           "name": "scrollHoldStart",
@@ -7215,7 +7717,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 370
+          "line": 371
         },
         {
           "name": "scrollHoldStop",
@@ -7227,7 +7729,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 389
+          "line": 390
         }
       ],
       "constants": []
@@ -7408,19 +7910,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/sidebar_controller.js",
-          "line": 64
+          "line": 63
         },
         {
           "name": "disconnect",
           "scope": "instance",
           "group": null,
           "signature": "disconnect()",
-          "docstring": "Unwires the shortcut / watcher / before-cache subscriptions and\nbalances the scroll lock.",
+          "docstring": "Tears the scope down: the shortcut, the breakpoint watcher, the\nbefore-cache subscription and the scroll lock, balanced.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/sidebar_controller.js",
-          "line": 101
+          "line": 100
         },
         {
           "name": "toggle",
@@ -7432,7 +7934,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/sidebar_controller.js",
-          "line": 116
+          "line": 109
         },
         {
           "name": "closeMobile",
@@ -7452,7 +7954,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/sidebar_controller.js",
-          "line": 135
+          "line": 128
         },
         {
           "name": "mobileBackdropClose",
@@ -7472,7 +7974,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/sidebar_controller.js",
-          "line": 155
+          "line": 148
         },
         {
           "name": "open",
@@ -7484,7 +7986,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/sidebar_controller.js",
-          "line": 198
+          "line": 191
         },
         {
           "name": "close",
@@ -7496,7 +7998,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/sidebar_controller.js",
-          "line": 203
+          "line": 196
         }
       ],
       "constants": []
@@ -7963,19 +8465,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/toast_controller.js",
-          "line": 74
+          "line": 75
         },
         {
           "name": "disconnect",
           "scope": "instance",
           "group": null,
           "signature": "disconnect()",
-          "docstring": "Stops the timer and unwires every listener.",
+          "docstring": "Stops the timer, clears the pause reasons and tears the scope down.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/toast_controller.js",
-          "line": 111
+          "line": 112
         },
         {
           "name": "pause",
@@ -7995,7 +8497,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/toast_controller.js",
-          "line": 131
+          "line": 129
         },
         {
           "name": "resume",
@@ -8015,7 +8517,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/toast_controller.js",
-          "line": 141
+          "line": 139
         },
         {
           "name": "dismiss",
@@ -8035,7 +8537,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/toast_controller.js",
-          "line": 160
+          "line": 158
         }
       ],
       "constants": []
@@ -8081,19 +8583,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/toaster_controller.js",
-          "line": 49
+          "line": 50
         },
         {
           "name": "disconnect",
           "scope": "instance",
           "group": null,
           "signature": "disconnect()",
-          "docstring": "Unwires everything and releases the announce singleton.",
+          "docstring": "Tears the scope down: the listeners, the reconciler and the announce refcount.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/toaster_controller.js",
-          "line": 63
+          "line": 66
         },
         {
           "name": "focusRegion",
@@ -8113,7 +8615,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/toaster_controller.js",
-          "line": 99
+          "line": 97
         },
         {
           "name": "reflow",
@@ -8125,7 +8627,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/toaster_controller.js",
-          "line": 125
+          "line": 123
         }
       ],
       "constants": []
@@ -8211,19 +8713,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tooltip_controller.js",
-          "line": 88
+          "line": 93
         },
         {
           "name": "disconnect",
           "scope": "instance",
           "group": null,
           "signature": "disconnect()",
-          "docstring": "Clears the timers, balances the warm-scope count for an open tooltip,\ndrops the scroll listener, restores portaled content\n(drop-never-strand), and unwires everything.",
+          "docstring": "Clears the timers, balances the warm-scope count for an open tooltip,\nand tears the scope down: the listeners, the scroll listener, a\npending exit, the layer tokens and portaled content (restored home,\nor dropped when the home is gone - never stranded).",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tooltip_controller.js",
-          "line": 112
+          "line": 122
         },
         {
           "name": "openValueChanged",
@@ -8243,7 +8745,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tooltip_controller.js",
-          "line": 147
+          "line": 144
         },
         {
           "name": "pointerMove",
@@ -8263,7 +8765,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tooltip_controller.js",
-          "line": 164
+          "line": 161
         },
         {
           "name": "pointerLeave",
@@ -8283,7 +8785,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tooltip_controller.js",
-          "line": 199
+          "line": 196
         },
         {
           "name": "pointerDown",
@@ -8295,7 +8797,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tooltip_controller.js",
-          "line": 218
+          "line": 215
         },
         {
           "name": "clickClose",
@@ -8307,7 +8809,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tooltip_controller.js",
-          "line": 227
+          "line": 224
         },
         {
           "name": "focusOpen",
@@ -8319,7 +8821,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tooltip_controller.js",
-          "line": 239
+          "line": 236
         },
         {
           "name": "blurClose",
@@ -8331,7 +8833,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tooltip_controller.js",
-          "line": 247
+          "line": 244
         }
       ],
       "constants": []
@@ -8354,7 +8856,19 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tree_controller.js",
-          "line": 32
+          "line": 34
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Tears the scope down: the typeahead buffer and its timer.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/core/tree_controller.js",
+          "line": 41
         },
         {
           "name": "keydown",
@@ -8374,7 +8888,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tree_controller.js",
-          "line": 46
+          "line": 54
         },
         {
           "name": "press",
@@ -8394,7 +8908,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tree_controller.js",
-          "line": 76
+          "line": 84
         },
         {
           "name": "toggle",
@@ -8414,7 +8928,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tree_controller.js",
-          "line": 93
+          "line": 101
         },
         {
           "name": "pressStart",
@@ -8434,7 +8948,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/tree_controller.js",
-          "line": 109
+          "line": 117
         }
       ],
       "constants": []
