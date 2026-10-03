@@ -180,7 +180,10 @@ module DommyTier
   def helper_files
     # state.js first: function declarations hoist, but presence's exported
     # consts read nothing at define time - ordering is belt and braces.
-    CONTROLLERS_DIR.glob("helpers/*.js").sort_by { |path| path.basename.to_s == "state.js" ? "" : path.to_s }
+    # The behaviors come after the helpers they wrap (each is a plain
+    # function over a helper plus the scope, so the order is cosmetic).
+    helpers = CONTROLLERS_DIR.glob("helpers/*.js").sort_by { |path| path.basename.to_s == "state.js" ? "" : path.to_s }
+    helpers + CONTROLLERS_DIR.glob("behaviors/*.js").sort
   end
 
   def controller_files
