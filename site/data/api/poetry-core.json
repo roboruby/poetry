@@ -3119,18 +3119,18 @@
           "scope": "class",
           "group": null,
           "signature": "style_class",
-          "docstring": "Automatically determines the corresponding Style class for this component.\nExample: Poetry::Core::Dot::Component -> Poetry::Core::Dot::Style",
+          "docstring": "The dictionary this component renders through: its own sidecar\nStyle by the naming convention (Poetry::Core::Dot::Component ->\nPoetry::Core::Dot::Style), else the nearest ancestor's. A bare\nsubclass (`Acme::Badge2 < Poetry::Ui::Badge::Component` with no\n`Acme::Badge2::Style`) keeps rendering the classes its parent\nrenders, the way a subclass keeps the parent's methods; a\nsidecar of its own takes over, extending a copy of the parent's\ndictionary. A component with no dictionary anywhere in its\nchain (Icon) has none.",
           "params": [],
           "return": {
             "types": [
               "Class",
               "nil"
             ],
-            "text": "the style class if it exists, nil otherwise"
+            "text": "the style class, or nil when neither this\nclass nor an ancestor below Poetry::Core::Component has one"
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 168
+          "line": 176
         },
         {
           "name": "style_docs",
@@ -3180,7 +3180,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 352
+          "line": 375
         },
         {
           "name": "bem_block",
@@ -3197,7 +3197,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 340
+          "line": 363
         },
         {
           "name": "css",
@@ -3231,7 +3231,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 309
+          "line": 332
         },
         {
           "name": "css_mode",
@@ -3248,7 +3248,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 332
+          "line": 355
         },
         {
           "name": "initialized_style_attributes",
@@ -3265,7 +3265,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 256
+          "line": 279
         },
         {
           "name": "style_attribute?",
@@ -3291,7 +3291,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 242
+          "line": 265
         },
         {
           "name": "style_attribute_initialized?",
@@ -3317,7 +3317,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 264
+          "line": 287
         },
         {
           "name": "style_attributes",
@@ -3334,7 +3334,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 249
+          "line": 272
         },
         {
           "name": "style_attributes_status",
@@ -3351,7 +3351,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 271
+          "line": 294
         },
         {
           "name": "styler",
@@ -3369,7 +3369,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 289
+          "line": 312
         },
         {
           "name": "styles",
@@ -3386,7 +3386,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 280
+          "line": 303
         }
       ],
       "constants": [
