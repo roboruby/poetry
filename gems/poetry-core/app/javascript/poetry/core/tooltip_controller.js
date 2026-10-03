@@ -1,6 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
-import { portalContent, resolvePortalContainer, restoreContent } from "@poetry/controllers/helpers/portal"
-import { exitPresence } from "@poetry/controllers/helpers/presence"
+import { useLayers } from "@poetry/controllers/behaviors/layers"
+import { useListen } from "@poetry/controllers/behaviors/listen"
+import { usePortal } from "@poetry/controllers/behaviors/portal"
+import { usePresence } from "@poetry/controllers/behaviors/presence"
+import { resolvePortalContainer } from "@poetry/controllers/helpers/portal"
+import { teardown } from "@poetry/controllers/helpers/scope"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 
 const PROVIDER_SELECTOR = '[data-slot="tooltip-provider"]'
@@ -68,14 +72,15 @@ export default class TooltipController extends Controller {
   }
 
   #connected = false
-  #wired = []
   #openTimer = null
   #closeTimer = null
-  #cancelExit = null
   #hasPointerMoveOpened = false
   #isPointerDown = false
   #emittingWillOpen = false
-  #scrollListening = false
+  #unlistenScroll = null
+  #presence = null
+  #portal = null
+  #layers = null
   #onScroll = (event) => this.#handleScroll(event)
   #onWillOpen = (event) => this.#handleWillOpen(event)
   #onPointerup = () => { this.#isPointerDown = false }
@@ -86,11 +91,15 @@ export default class TooltipController extends Controller {
    * scope count catch up; the DOM wins).
    */
   connect() {
+    this.#presence = usePresence(this)
+    this.#portal = usePortal(this)
+    this.#layers = useLayers(this)
+
     const content = this.#content()
 
     if (content) this.#wireContent(content)
 
-    this.#listen(document, WILL_OPEN_EVENT, this.#onWillOpen)
+    useListen(this, document, WILL_OPEN_EVENT, this.#onWillOpen)
 
     this.#connected = true
 
@@ -106,15 +115,14 @@ export default class TooltipController extends Controller {
 
   /**
    * Clears the timers, balances the warm-scope count for an open tooltip,
-   * drops the scroll listener, restores portaled content
-   * (drop-never-strand), and unwires everything.
+   * and tears the scope down: the listeners, the scroll listener, a
+   * pending exit, the layer tokens and portaled content (restored home,
+   * or dropped when the home is gone - never stranded).
    */
   disconnect() {
     this.#connected = false
     this.#clearOpenTimer()
     this.#clearCloseTimer()
-    this.#cancelExit?.()
-    this.#cancelExit = null
 
     // An open tooltip disconnecting must not strand the scope count.
     if (this.#isOpen()) {
@@ -124,18 +132,7 @@ export default class TooltipController extends Controller {
       scope.warmUntil = Date.now() + this.#skipDelayDuration()
     }
 
-    this.#dropScrollListener()
-
-    // Never leave content stranded at the container: if the root subtree
-    // was removed the placeholder is gone and restore DROPS the node.
-    const content = this.#content()
-
-    if (content) restoreContent(content)
-
-    for (const [target, type, listener] of this.#wired) target.removeEventListener(type, listener)
-
-    this.#wired = []
-    document.removeEventListener("pointerup", this.#onPointerup)
+    teardown(this)
   }
 
   /**
@@ -217,7 +214,7 @@ export default class TooltipController extends Controller {
    */
   pointerDown() {
     this.#isPointerDown = true
-    document.addEventListener("pointerup", this.#onPointerup, { once: true })
+    useListen(this, document, "pointerup", this.#onPointerup, { once: true })
     this.#clearOpenTimer()
 
     if (this.#isOpen()) this.#close("trigger-press")
@@ -261,8 +258,7 @@ export default class TooltipController extends Controller {
 
     if (!content || this.#isOpen()) return
 
-    this.#cancelExit?.()
-    this.#cancelExit = null
+    this.#presence.cancel(content)
     this.#clearCloseTimer()
 
     // One tooltip page-wide: every other open tooltip hears this and closes
@@ -278,7 +274,7 @@ export default class TooltipController extends Controller {
     // animation), then re-anchor absolute - static under compositor
     // scroll, transformed-ancestor immune. The strategy attribute write
     // re-arms popper's autoUpdate against the new ancestors.
-    portalContent(content, { container: resolvePortalContainer(this.element) })
+    this.#portal.portal(content, { container: resolvePortalContainer(this.element) })
     this.element.setAttribute(POPPER_STRATEGY, "absolute")
 
     const trigger = this.#trigger()
@@ -298,7 +294,7 @@ export default class TooltipController extends Controller {
     // Token-activated dismissable only - NO focus-scope, focus never enters
     // a tooltip. Esc anywhere peels the tooltip first (topmost layer).
     content.setAttribute(`data-${DISMISSABLE}-disable-outside-pointer-events-value`, "false")
-    this.#addControllers(content, [DISMISSABLE])
+    this.#layers.activate(content, [DISMISSABLE])
     this.#armScrollListener()
     this.openValue = true
 
@@ -329,16 +325,15 @@ export default class TooltipController extends Controller {
     content.removeAttribute("data-instant")
     this.openValue = false
 
-    this.#cancelExit = exitPresence(content, {
+    this.#presence.exit(content, {
       onRemove: () => {
-        this.#cancelExit = null
         content.hidden = true
         // Home AFTER the exit finished and hidden landed - never
         // mid-animation, never a visible flash.
-        restoreContent(content)
+        this.#portal.restore(content)
         this.element.setAttribute(POPPER_STRATEGY, "fixed")
         trigger?.removeAttribute("aria-describedby")
-        this.#removeControllers(content, [DISMISSABLE])
+        this.#layers.deactivate(content, [DISMISSABLE])
         this.#dropScrollListener()
         this.dispatch("closed", { prefix: EVENT_PREFIX, detail: { reason } })
       }
@@ -356,7 +351,7 @@ export default class TooltipController extends Controller {
     if (trigger && content.id) trigger.setAttribute("aria-describedby", content.id)
 
     content.setAttribute(`data-${DISMISSABLE}-disable-outside-pointer-events-value`, "false")
-    this.#addControllers(content, [DISMISSABLE])
+    this.#layers.activate(content, [DISMISSABLE])
     this.#armScrollListener()
     this.#scope().openCount += 1
     this.#portalPinned(content)
@@ -369,7 +364,7 @@ export default class TooltipController extends Controller {
     window.requestAnimationFrame(() => {
       if (!this.#connected || !this.#isOpen()) return
 
-      portalContent(content, { container: resolvePortalContainer(this.element) })
+      this.#portal.portal(content, { container: resolvePortalContainer(this.element) })
       this.element.setAttribute(POPPER_STRATEGY, "absolute")
     })
   }
@@ -401,16 +396,11 @@ export default class TooltipController extends Controller {
   // --- content wiring (programmatic: portal-safe) ---
 
   #wireContent(content) {
-    this.#listen(content, "pointerenter", () => this.#clearCloseTimer())
-    this.#listen(content, "pointerleave", () => {
+    useListen(this, content, "pointerenter", () => this.#clearCloseTimer())
+    useListen(this, content, "pointerleave", () => {
       if (this.#isOpen()) this.#scheduleClose()
     })
-    this.#listen(content, `${DISMISSABLE}:dismiss`, this.#onDismiss)
-  }
-
-  #listen(target, type, listener) {
-    target.addEventListener(type, listener)
-    this.#wired.push([target, type, listener])
+    useListen(this, content, `${DISMISSABLE}:dismiss`, this.#onDismiss)
   }
 
   #onDismiss = (event) => {
@@ -437,17 +427,14 @@ export default class TooltipController extends Controller {
   // --- close-on-scroll (capture-phase, armed only while open) ---
 
   #armScrollListener() {
-    if (this.#scrollListening) return
+    if (this.#unlistenScroll) return
 
-    window.addEventListener("scroll", this.#onScroll, { capture: true })
-    this.#scrollListening = true
+    this.#unlistenScroll = useListen(this, window, "scroll", this.#onScroll, { capture: true })
   }
 
   #dropScrollListener() {
-    if (!this.#scrollListening) return
-
-    window.removeEventListener("scroll", this.#onScroll, { capture: true })
-    this.#scrollListening = false
+    this.#unlistenScroll?.()
+    this.#unlistenScroll = null
   }
 
   #handleScroll(event) {
@@ -526,21 +513,4 @@ export default class TooltipController extends Controller {
     return Boolean(state) && state !== "closed"
   }
 
-  #addControllers(element, identifiers) {
-    const tokens = (element.getAttribute("data-controller") ?? "").split(/\s+/).filter(Boolean)
-
-    for (const identifier of identifiers) {
-      if (!tokens.includes(identifier)) tokens.push(identifier)
-    }
-
-    element.setAttribute("data-controller", tokens.join(" "))
-  }
-
-  #removeControllers(element, identifiers) {
-    const tokens = (element.getAttribute("data-controller") ?? "")
-      .split(/\s+/)
-      .filter((token) => token && !identifiers.includes(token))
-
-    element.setAttribute("data-controller", tokens.join(" "))
-  }
 }

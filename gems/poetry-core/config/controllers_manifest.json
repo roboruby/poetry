@@ -1272,7 +1272,7 @@
     "method_docs": {
       "close": "Programmatically closes.",
       "connect": "Wires the content listeners (programmatic - portal-safe) and reconciles: server-open content adopts the layer stack and re-portals one frame late (the body comments hold the rules).",
-      "disconnect": "Restores portaled content (drop-never-strand) and unwires the content listeners.",
+      "disconnect": "Tears the scope down: the content listeners, a pending exit, the layer tokens and portaled content (restored home, or dropped when the home is gone - never stranded).",
       "open": "Programmatically opens.",
       "openValueChanged": "Stimulus value callback - controllable state: a host (outlet / Turbo Stream / URL param) may own the open value; flipping the attribute drives the same machine.",
       "toggle": "The trigger's click action (native button Enter/Space arrive as click - no custom keydown map, the deliberate contrast with the menu trigger)."
@@ -2095,7 +2095,7 @@
       "blurClose": "The trigger's blur action: closes (the focus interaction's exit).",
       "clickClose": "The trigger's click action: an activation dismisses its hint.",
       "connect": "Wires the content listeners plus the document-level will-open listener, and reconciles a server-pinned tooltip (describedby, layer, scope count catch up; the DOM wins).",
-      "disconnect": "Clears the timers, balances the warm-scope count for an open tooltip, drops the scroll listener, restores portaled content (drop-never-strand), and unwires everything.",
+      "disconnect": "Clears the timers, balances the warm-scope count for an open tooltip, and tears the scope down: the listeners, the scroll listener, a pending exit, the layer tokens and portaled content (restored home, or dropped when the home is gone - never stranded).",
       "focusOpen": "The trigger's focus action: opens INSTANTLY (skipping all delays) - unless the focus was caused by a pointerdown (the latch).",
       "openValueChanged": "Stimulus value callback - controllable state: pinned tooltips (Turbo Stream / Outlet ownership).",
       "pointerDown": "The trigger's pointerdown action: activating the control dismisses its hint; the latch also suppresses the focus-open until pointerup (pointer users never get a focus-opened tooltip - contractual).",

@@ -1,6 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
-import { portalContent, resolvePortalContainer, restoreContent } from "@poetry/controllers/helpers/portal"
-import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
+import { useLayers } from "@poetry/controllers/behaviors/layers"
+import { useListen } from "@poetry/controllers/behaviors/listen"
+import { usePortal } from "@poetry/controllers/behaviors/portal"
+import { usePresence } from "@poetry/controllers/behaviors/presence"
+import { resolvePortalContainer } from "@poetry/controllers/helpers/portal"
+import { teardown } from "@poetry/controllers/helpers/scope"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 
 const TRIGGER_SELECTOR = '[data-slot="popover-trigger"]'
@@ -47,9 +51,10 @@ export default class PopoverController extends Controller {
   }
 
   #connected = false
-  #wired = []
   #suppressRestore = false
-  #cancelExit = null
+  #presence = null
+  #portal = null
+  #layers = null
 
   /**
    * Wires the content listeners (programmatic - portal-safe) and
@@ -57,6 +62,10 @@ export default class PopoverController extends Controller {
    * one frame late (the body comments hold the rules).
    */
   connect() {
+    this.#presence = usePresence(this)
+    this.#portal = usePortal(this)
+    this.#layers = useLayers(this)
+
     const content = this.#content()
 
     if (content) this.#wireContent(content)
@@ -77,22 +86,13 @@ export default class PopoverController extends Controller {
   }
 
   /**
-   * Restores portaled content (drop-never-strand) and unwires the
-   * content listeners.
+   * Tears the scope down: the content listeners, a pending exit, the
+   * layer tokens and portaled content (restored home, or dropped when
+   * the home is gone - never stranded).
    */
   disconnect() {
     this.#connected = false
-
-    // Never leave content stranded at the container (drop-never-strand).
-    const content = this.#content()
-
-    if (content) restoreContent(content)
-
-    for (const [target, type, listener] of this.#wired) target.removeEventListener(type, listener)
-
-    this.#wired = []
-    this.#cancelExit?.()
-    this.#cancelExit = null
+    teardown(this)
   }
 
   /**
@@ -143,8 +143,7 @@ export default class PopoverController extends Controller {
 
     if (!content || this.#isOpen()) return
 
-    this.#cancelExit?.()
-    this.#cancelExit = null
+    this.#presence.cancel(content)
     this.#suppressRestore = false
 
     const trigger = this.#trigger()
@@ -152,13 +151,13 @@ export default class PopoverController extends Controller {
     // Portal-on-open: move BEFORE the
     // enter presence (reparenting mid-animation restarts it), re-anchor
     // absolute - static under compositor scroll, transform-immune.
-    portalContent(content, { container: resolvePortalContainer(this.element) })
+    this.#portal.portal(content, { container: resolvePortalContainer(this.element) })
     this.element.setAttribute(POPPER_STRATEGY, "absolute")
 
     content.hidden = false
     trigger?.setAttribute("aria-expanded", "true")
     if (trigger) setState(trigger, "popup-open")
-    enterPresence(content)
+    this.#presence.enter(content)
     this.#activateLayers(content)
     this.openValue = true
 
@@ -189,16 +188,15 @@ export default class PopoverController extends Controller {
     if (trigger) setState(trigger, "popup-closed")
     this.openValue = false
 
-    this.#cancelExit = exitPresence(content, {
+    this.#presence.exit(content, {
       onRemove: () => {
-        this.#cancelExit = null
         content.hidden = true
         // Home AFTER the exit finished and hidden landed; the
         // focus-scope teardown below restores focus by element ref,
         // indifferent to where the node sits.
-        restoreContent(content)
+        this.#portal.restore(content)
         this.element.setAttribute(POPPER_STRATEGY, "fixed")
-        this.#removeControllers(content, CONTENT_LAYER_CONTROLLERS)
+        this.#layers.deactivate(content, CONTENT_LAYER_CONTROLLERS)
         this.dispatch("closed", { prefix: EVENT_PREFIX, detail: { reason } })
       }
     })
@@ -211,7 +209,7 @@ export default class PopoverController extends Controller {
     window.requestAnimationFrame(() => {
       if (!this.#connected || !this.#isOpen()) return
 
-      portalContent(content, { container: resolvePortalContainer(this.element) })
+      this.#portal.portal(content, { container: resolvePortalContainer(this.element) })
       this.element.setAttribute(POPPER_STRATEGY, "absolute")
     })
   }
@@ -219,14 +217,9 @@ export default class PopoverController extends Controller {
   // --- content wiring (programmatic: portal-safe, no data-action required) ---
 
   #wireContent(content) {
-    this.#listen(content, "poetry--core--dismissable:dismiss", this.#onDismiss)
-    this.#listen(content, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
-    this.#listen(content, "poetry--core--focus-scope:unmount-auto-focus", this.#onUnmountAutoFocus)
-  }
-
-  #listen(target, type, listener) {
-    target.addEventListener(type, listener)
-    this.#wired.push([target, type, listener])
+    useListen(this, content, "poetry--core--dismissable:dismiss", this.#onDismiss)
+    useListen(this, content, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
+    useListen(this, content, "poetry--core--focus-scope:unmount-auto-focus", this.#onUnmountAutoFocus)
   }
 
   // A press on the popover's OWN trigger is the toggle's job, not an
@@ -263,26 +256,9 @@ export default class PopoverController extends Controller {
     content.setAttribute(
       "data-poetry--core--dismissable-disable-outside-pointer-events-value", String(this.modalValue)
     )
-    this.#addControllers(content, CONTENT_LAYER_CONTROLLERS)
+    this.#layers.activate(content, CONTENT_LAYER_CONTROLLERS)
   }
 
-  #addControllers(element, identifiers) {
-    const tokens = (element.getAttribute("data-controller") ?? "").split(/\s+/).filter(Boolean)
-
-    for (const identifier of identifiers) {
-      if (!tokens.includes(identifier)) tokens.push(identifier)
-    }
-
-    element.setAttribute("data-controller", tokens.join(" "))
-  }
-
-  #removeControllers(element, identifiers) {
-    const tokens = (element.getAttribute("data-controller") ?? "")
-      .split(/\s+/)
-      .filter((token) => token && !identifiers.includes(token))
-
-    element.setAttribute("data-controller", tokens.join(" "))
-  }
 
   // --- structural resolution (the DOM is the registry; ids are the seams) ---
 
