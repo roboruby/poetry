@@ -1,6 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
-import { portalContent, resolvePortalContainer, restoreContent } from "@poetry/controllers/helpers/portal"
-import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
+import { useLayers } from "@poetry/controllers/behaviors/layers"
+import { useListen } from "@poetry/controllers/behaviors/listen"
+import { usePortal } from "@poetry/controllers/behaviors/portal"
+import { usePresence } from "@poetry/controllers/behaviors/presence"
+import { resolvePortalContainer } from "@poetry/controllers/helpers/portal"
+import { teardown } from "@poetry/controllers/helpers/scope"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 import { tabbableWithin } from "@poetry/controllers/helpers/tabbable"
 
@@ -54,10 +58,12 @@ export default class HoverCardController extends Controller {
   }
 
   #connected = false
-  #wired = []
   #openTimer = null
   #closeTimer = null
-  #cancelExit = null
+  #presence = null
+  #portal = null
+  #layers = null
+  #unlatch = null
   #containSelection = false
   #hasSelection = false
   #previousBodyUserSelect = null
@@ -65,7 +71,8 @@ export default class HoverCardController extends Controller {
   #onPointerup = () => this.#handlePointerup()
   #releaseLatch = () => {
     this.#isPointerDown = false
-    for (const type of LATCH_RELEASE_EVENTS) document.removeEventListener(type, this.#releaseLatch)
+    this.#unlatch?.()
+    this.#unlatch = null
   }
 
   /**
@@ -73,6 +80,10 @@ export default class HoverCardController extends Controller {
    * server-pinned card (layer + tabindex strip catch up; the DOM wins).
    */
   connect() {
+    this.#presence = usePresence(this)
+    this.#portal = usePortal(this)
+    this.#layers = useLayers(this)
+
     const content = this.#content()
 
     if (content) this.#wireContent(content)
@@ -90,27 +101,18 @@ export default class HoverCardController extends Controller {
   }
 
   /**
-   * Clears every timer, restores suppressed selection and portaled
-   * content (drop-never-strand), and unwires the listeners.
+   * Clears every timer, restores suppressed selection, releases the
+   * pointer latch, and tears the scope down: the listeners, a pending
+   * exit, the layer token and portaled content (restored home, or
+   * dropped when the home is gone - never stranded).
    */
   disconnect() {
     this.#connected = false
     this.#clearOpenTimer()
     this.#clearCloseTimer()
-    this.#cancelExit?.()
-    this.#cancelExit = null
     this.#restoreBodyUserSelect() // never strand suppressed selection (teardown contract)
-
-    // Never leave content stranded at the container (drop-never-strand).
-    const content = this.#content()
-
-    if (content) restoreContent(content)
-
-    for (const [target, type, listener] of this.#wired) target.removeEventListener(type, listener)
-
-    this.#wired = []
-    document.removeEventListener("pointerup", this.#onPointerup)
     this.#releaseLatch()
+    teardown(this)
   }
 
   /**
@@ -198,7 +200,11 @@ export default class HoverCardController extends Controller {
    */
   pointerDown() {
     this.#isPointerDown = true
-    for (const type of LATCH_RELEASE_EVENTS) document.addEventListener(type, this.#releaseLatch)
+    this.#unlatch?.()
+
+    const unlisten = LATCH_RELEASE_EVENTS.map((type) => useListen(this, document, type, this.#releaseLatch))
+
+    this.#unlatch = () => unlisten.forEach((off) => off())
   }
 
   // --- open / close ---
@@ -208,8 +214,7 @@ export default class HoverCardController extends Controller {
 
     if (!content || this.#isOpen()) return
 
-    this.#cancelExit?.()
-    this.#cancelExit = null
+    this.#presence.cancel(content)
     this.#clearCloseTimer()
 
     const trigger = this.#trigger()
@@ -217,12 +222,12 @@ export default class HoverCardController extends Controller {
     // Portal-on-open: move BEFORE the
     // enter presence (reparenting mid-animation restarts it), re-anchor
     // absolute - static under compositor scroll, transform-immune.
-    portalContent(content, { container: resolvePortalContainer(this.element) })
+    this.#portal.portal(content, { container: resolvePortalContainer(this.element) })
     this.element.setAttribute(POPPER_STRATEGY, "absolute")
 
     content.hidden = false
     if (trigger) setState(trigger, "popup-open")
-    enterPresence(content)
+    this.#presence.enter(content)
     this.#activateLayer(content)
     this.#stripTabbables(content)
     this.openValue = true
@@ -249,14 +254,13 @@ export default class HoverCardController extends Controller {
     if (trigger) setState(trigger, "popup-closed")
     this.openValue = false
 
-    this.#cancelExit = exitPresence(content, {
+    this.#presence.exit(content, {
       onRemove: () => {
-        this.#cancelExit = null
         content.hidden = true
         // Home AFTER the exit finished and hidden landed.
-        restoreContent(content)
+        this.#portal.restore(content)
         this.element.setAttribute(POPPER_STRATEGY, "fixed")
-        this.#removeControllers(content, [DISMISSABLE])
+        this.#layers.deactivate(content, [DISMISSABLE])
         this.dispatch("closed", { prefix: EVENT_PREFIX, detail: { reason } })
       }
     })
@@ -275,14 +279,14 @@ export default class HoverCardController extends Controller {
     window.requestAnimationFrame(() => {
       if (!this.#connected || !this.#isOpen()) return
 
-      portalContent(content, { container: resolvePortalContainer(this.element) })
+      this.#portal.portal(content, { container: resolvePortalContainer(this.element) })
       this.element.setAttribute(POPPER_STRATEGY, "absolute")
     })
   }
 
   #activateLayer(content) {
     content.setAttribute(`data-${DISMISSABLE}-disable-outside-pointer-events-value`, "false")
-    this.#addControllers(content, [DISMISSABLE])
+    this.#layers.activate(content, [DISMISSABLE])
   }
 
   // The tabindex strip (contractual; per-open so stream-appended content
@@ -325,12 +329,12 @@ export default class HoverCardController extends Controller {
   // --- content wiring (programmatic: portal-safe) ---
 
   #wireContent(content) {
-    this.#listen(content, "pointerenter", (event) => {
+    useListen(this, content, "pointerenter", (event) => {
       if (event.pointerType === "touch") return
 
       this.#clearCloseTimer()
     })
-    this.#listen(content, "pointerleave", (event) => {
+    useListen(this, content, "pointerleave", (event) => {
       if (event.pointerType === "touch") return
 
       const related = event.relatedTarget instanceof Element ? event.relatedTarget : null
@@ -338,13 +342,8 @@ export default class HoverCardController extends Controller {
       if (related && (this.#trigger()?.contains(related) || content.contains(related))) return
       if (this.#isOpen()) this.#scheduleClose()
     })
-    this.#listen(content, "pointerdown", (event) => this.#handleContentPointerdown(event))
-    this.#listen(content, `${DISMISSABLE}:dismiss`, this.#onDismiss)
-  }
-
-  #listen(target, type, listener) {
-    target.addEventListener(type, listener)
-    this.#wired.push([target, type, listener])
+    useListen(this, content, "pointerdown", (event) => this.#handleContentPointerdown(event))
+    useListen(this, content, `${DISMISSABLE}:dismiss`, this.#onDismiss)
   }
 
   // Esc (topmost-only) + pointerdown-outside arrive as the dismissable's
@@ -370,7 +369,7 @@ export default class HoverCardController extends Controller {
 
     this.#containSelection = true
     this.#suppressBodyUserSelect()
-    document.addEventListener("pointerup", this.#onPointerup, { once: true })
+    useListen(this, document, "pointerup", this.#onPointerup, { once: true })
   }
 
   #handlePointerup() {
@@ -432,21 +431,4 @@ export default class HoverCardController extends Controller {
     return Boolean(content) && stateOf(content) === "open"
   }
 
-  #addControllers(element, identifiers) {
-    const tokens = (element.getAttribute("data-controller") ?? "").split(/\s+/).filter(Boolean)
-
-    for (const identifier of identifiers) {
-      if (!tokens.includes(identifier)) tokens.push(identifier)
-    }
-
-    element.setAttribute("data-controller", tokens.join(" "))
-  }
-
-  #removeControllers(element, identifiers) {
-    const tokens = (element.getAttribute("data-controller") ?? "")
-      .split(/\s+/)
-      .filter((token) => token && !identifiers.includes(token))
-
-    element.setAttribute("data-controller", tokens.join(" "))
-  }
 }

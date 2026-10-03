@@ -122,6 +122,19 @@ files against the manifest stamped at last bless.
   pointer sentence.
 - Subclasses (Drawer extends Dialog) get their statics merged up the class
   chain by the manifest — declare only what the subclass itself adds.
+- Lifecycle work goes through the per-connect scope (`helpers/scope.js`)
+  and the behaviors over it (`behaviors/`: `useListen`, `useEscape`,
+  `useBeforeCache`, `usePresence`, `usePortal`, `useScrollLock`,
+  `useAnnounce`, `useLayers`, `useTypeahead`, `useMobile`): set up in
+  `connect()`, undone by the one line `teardown(this)` in `disconnect()`,
+  never by a hand-rolled list of unsubscribes. A behavior returns a handle
+  (an unlisten, a lock/unlock pair) and never assigns methods onto the
+  controller; a subclass that overrides `disconnect()` calls
+  `super.disconnect()`. `test/javascript/behaviors_teardown.test.js`
+  scans the source and fails a scope user without the teardown line or a
+  subclass override without the super call. Page-lifetime nets (the
+  presence and portal cache nets, id_integrity, registration_guard,
+  dismissable's static heal) stay outside the scope on purpose.
 - Component DOM ids derive through `Poetry::Core::StableId` (`key:` →
   dom_id-first token, explicit `id:` wins) so Turbo morph pairs identity
   across renders and cached fragments stay composable — never mint bare

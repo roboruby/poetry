@@ -1,4 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
+import { useListen } from "@poetry/controllers/behaviors/listen"
+import { teardown } from "@poetry/controllers/helpers/scope"
 import {
   IncompleteDate, PAGE_STEP, resolveHourCycle
 } from "@poetry/controllers/helpers/incomplete_date"
@@ -80,17 +82,16 @@ export default class DateFieldController extends Controller {
 
     // Native required validation fires on the (visually hidden) input;
     // route the browser's focus request to the first empty segment.
-    this.inputTarget.addEventListener("invalid", this.#onInvalid)
-    document.addEventListener("selectionchange", this.#onSelectionChange)
+    useListen(this, this.inputTarget, "invalid", this.#onInvalid)
+    useListen(this, document, "selectionchange", this.#onSelectionChange)
   }
 
   /**
-   * Restores the native input's tab order / AT visibility and unwires the
-   * document listeners.
+   * Restores the native input's tab order / AT visibility and tears the
+   * scope down: the input, document and per-segment listeners.
    */
   disconnect() {
-    this.inputTarget?.removeEventListener("invalid", this.#onInvalid)
-    document.removeEventListener("selectionchange", this.#onSelectionChange)
+    teardown(this)
     this.element.removeAttribute("data-enhanced")
     this.inputTarget?.removeAttribute("tabindex")
     this.inputTarget?.removeAttribute("aria-hidden")
@@ -232,10 +233,10 @@ export default class DateFieldController extends Controller {
 
     span.style.caretColor = "transparent"
 
-    span.addEventListener("keydown", (event) => this.#onKeydown(event, span, type))
-    span.addEventListener("beforeinput", (event) => this.#onBeforeinput(event, span, type))
-    span.addEventListener("input", (event) => this.#onInput(event, span, type))
-    span.addEventListener("focus", () => { this.#entered = "" })
+    useListen(this, span, "keydown", (event) => this.#onKeydown(event, span, type))
+    useListen(this, span, "beforeinput", (event) => this.#onBeforeinput(event, span, type))
+    useListen(this, span, "input", (event) => this.#onInput(event, span, type))
+    useListen(this, span, "focus", () => { this.#entered = "" })
 
     return span
   }

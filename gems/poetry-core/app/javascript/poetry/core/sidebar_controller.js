@@ -1,10 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
-import { watchMobile } from "@poetry/controllers/helpers/breakpoint"
+import { useBeforeCache } from "@poetry/controllers/behaviors/before_cache"
+import { useListen } from "@poetry/controllers/behaviors/listen"
+import { useMobile } from "@poetry/controllers/behaviors/mobile"
+import { useScrollLock } from "@poetry/controllers/behaviors/scroll_lock"
 import { matchesHotkey } from "@poetry/controllers/helpers/hotkey"
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
-import { lockScroll, unlockScroll } from "@poetry/controllers/helpers/scroll_lock"
+import { teardown } from "@poetry/controllers/helpers/scope"
 import { setState } from "@poetry/controllers/helpers/state"
-import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
 
 const EVENT_PREFIX = "poetry:sidebar"
 
@@ -47,13 +49,10 @@ export default class SidebarController extends Controller {
     shortcut: { type: String, default: "b" }
   }
 
-  #onKeydown = null
-  #unwatchMobile = null
-  #unsubscribeBeforeCache = null
   #isMobile = false
   #mobileOpen = false
   #closingMobile = false
-  #locked = false
+  #scrollLock = null
 
   /**
    * Heals a restored zombie snapshot, reflects the server value once (the
@@ -62,6 +61,7 @@ export default class SidebarController extends Controller {
    * shortcut.
    */
   connect() {
+    this.#scrollLock = useScrollLock(this)
     this.#healRestoredSnapshot()
     // Reflect the server value to the DOM once. We do NOT drive reflection
     // off openValueChanged - Stimulus fires value callbacks asynchronously
@@ -69,13 +69,13 @@ export default class SidebarController extends Controller {
     // mutators below reflect synchronously instead.
     this.#reflect()
 
-    this.#unwatchMobile = watchMobile((mobile) => this.#mobileChanged(mobile))
+    useMobile(this, (mobile) => this.#mobileChanged(mobile))
 
     // Close before Turbo snapshots (instantly - the page is being torn
     // down anyway): an open mobile sheet serialized into the cache
     // restores as a de-modalized zombie holding the nav children hostage
     // over a frozen scroll lock.
-    this.#unsubscribeBeforeCache = onBeforeCache(() => {
+    useBeforeCache(this, () => {
       if (!this.#mobileOpen) return
       this.#closingMobile = false
       this.mobileDialogTarget.removeAttribute("data-ending-style")
@@ -83,29 +83,22 @@ export default class SidebarController extends Controller {
       this.#restoreMobile()
     })
 
-    this.#onKeydown = (event) => {
+    useListen(this, window, "keydown", (event) => {
       // The full descriptor grammar (the dialog idiom): a bare metaKey||
       // ctrlKey check also fires on stray-modifier chords (Cmd+Shift+B).
       if (event.defaultPrevented || !matchesHotkey(event, `meta+${this.shortcutValue}`)) return
 
       event.preventDefault()
       this.toggle()
-    }
-    window.addEventListener("keydown", this.#onKeydown)
+    })
   }
 
   /**
-   * Unwires the shortcut / watcher / before-cache subscriptions and
-   * balances the scroll lock.
+   * Tears the scope down: the shortcut, the breakpoint watcher, the
+   * before-cache subscription and the scroll lock, balanced.
    */
   disconnect() {
-    if (this.#onKeydown) window.removeEventListener("keydown", this.#onKeydown)
-    this.#onKeydown = null
-    this.#unwatchMobile?.()
-    this.#unwatchMobile = null
-    this.#unsubscribeBeforeCache?.()
-    this.#unsubscribeBeforeCache = null
-    this.#unlock()
+    teardown(this)
   }
 
   /**
@@ -259,19 +252,13 @@ export default class SidebarController extends Controller {
   }
 
   // Shared refcounted lock with scrollbar-gutter compensation (the dialog
-  // idiom) - the instance flag keeps double-unlocks (before-cache close,
-  // then disconnect) balanced.
+  // idiom) - the per-instance behavior keeps double-unlocks (before-cache
+  // close, then disconnect) balanced.
   #lock() {
-    if (this.#locked) return
-
-    this.#locked = true
-    lockScroll()
+    this.#scrollLock?.lock()
   }
 
   #unlock() {
-    if (!this.#locked) return
-
-    this.#locked = false
-    unlockScroll()
+    this.#scrollLock?.unlock()
   }
 }

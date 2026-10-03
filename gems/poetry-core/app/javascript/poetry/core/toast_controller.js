@@ -1,7 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
+import { useListen } from "@poetry/controllers/behaviors/listen"
 import { announce } from "@poetry/controllers/helpers/announce"
 import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 import { exitPresence } from "@poetry/controllers/helpers/presence"
+import { teardown } from "@poetry/controllers/helpers/scope"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 
 const EVENT_PREFIX = "poetry:toast"
@@ -52,7 +54,6 @@ export default class ToastController extends Controller {
     politeness: { type: String, default: "polite" }
   }
 
-  #wired = []
   #timer = null
   #remaining = 0
   #startedAt = null
@@ -80,12 +81,12 @@ export default class ToastController extends Controller {
     announce(this.#message(), this.politenessValue)
 
     // APG timing: pause while the tab is hidden or the window is blurred.
-    this.#listen(document, "visibilitychange", this.#onVisibilityChange)
-    this.#listen(window, "blur", this.#onWindowBlur)
-    this.#listen(window, "focus", this.#onWindowFocus)
+    useListen(this, document, "visibilitychange", this.#onVisibilityChange)
+    useListen(this, window, "blur", this.#onWindowBlur)
+    useListen(this, window, "focus", this.#onWindowFocus)
     // Esc while focus is inside dismisses this toast (it reports as the
     // close affordance: close-press).
-    this.#listen(this.element, "keydown", (event) => {
+    useListen(this, this.element, "keydown", (event) => {
       if (event.key !== "Escape" || isImeKeydown(event)) return
 
       event.stopPropagation()
@@ -107,14 +108,11 @@ export default class ToastController extends Controller {
     })
   }
 
-  /** Stops the timer and unwires every listener. */
+  /** Stops the timer, clears the pause reasons and tears the scope down. */
   disconnect() {
     this.#stopTimer()
-
-    for (const [target, type, listener] of this.#wired) target.removeEventListener(type, listener)
-
-    this.#wired = []
     this.#pauseReasons.clear()
+    teardown(this)
   }
 
   // --- timer pause/resume (markup: mouseenter/focusin -> pause,
@@ -224,10 +222,5 @@ export default class ToastController extends Controller {
     const description = this.element.querySelector(DESCRIPTION_SELECTOR)?.textContent?.trim() ?? ""
 
     return [title, description].filter(Boolean).join(" ")
-  }
-
-  #listen(target, type, listener) {
-    target.addEventListener(type, listener)
-    this.#wired.push([target, type, listener])
   }
 }

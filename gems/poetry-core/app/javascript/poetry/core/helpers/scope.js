@@ -97,10 +97,22 @@ function createScope() {
   const listen = (target, type, listener, options = {}) => {
     const resolved = typeof options === "boolean" ? { capture: options } : { ...options }
     const capture = Boolean(resolved.capture)
+    let entry = null
 
-    target.addEventListener(type, listener, { ...resolved, signal: aborter.signal })
+    // A once-listener leaves the stack the moment it fires, so a
+    // pointerdown that binds its pointerup a thousand times costs nothing.
+    const handler = resolved.once
+      ? (event) => {
+        entry?.()
 
-    return defer(() => target.removeEventListener(type, listener, { capture }))
+        return listener(event)
+      }
+      : listener
+
+    target.addEventListener(type, handler, { ...resolved, signal: aborter.signal })
+    entry = defer(() => target.removeEventListener(type, handler, { capture }))
+
+    return entry
   }
 
   const dispose = () => {

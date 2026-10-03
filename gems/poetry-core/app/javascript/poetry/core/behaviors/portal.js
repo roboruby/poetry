@@ -15,8 +15,10 @@ import { scopeOf } from "@poetry/controllers/helpers/scope"
 export function usePortal(controller) {
   const moved = new Set()
 
+  // Newest first: a sub level portaled after its parent goes home before
+  // the parent does, while its placeholder still sits inside the parent.
   scopeOf(controller).defer(() => {
-    for (const content of [...moved]) restoreContent(content)
+    for (const content of [...moved].reverse()) restoreContent(content)
     moved.clear()
   })
 

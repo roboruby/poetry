@@ -1,6 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
+import { useTypeahead } from "@poetry/controllers/behaviors/typeahead"
 import { directionOf } from "@poetry/controllers/helpers/direction"
-import { createTypeahead, typeaheadLabel } from "@poetry/controllers/helpers/typeahead"
+import { teardown } from "@poetry/controllers/helpers/scope"
+import { typeaheadLabel } from "@poetry/controllers/helpers/typeahead"
 
 const EVENT_PREFIX = "poetry:tree"
 
@@ -23,15 +25,21 @@ export default class TreeController extends Controller {
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry:tree:toggle"]
 
-  #typeahead = createTypeahead()
+  #typeahead = null
 
   /**
    * Applies ancestor-expansion visibility and settles the single tab
    * stop.
    */
   connect() {
+    this.#typeahead = useTypeahead(this)
     this.#applyVisibility()
     this.#settleTabstop()
+  }
+
+  /** Tears the scope down: the typeahead buffer and its timer. */
+  disconnect() {
+    teardown(this)
   }
 
   /**

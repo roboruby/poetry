@@ -2,7 +2,9 @@ import { Controller } from "@hotwired/stimulus"
 import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 import { setState } from "@poetry/controllers/helpers/state"
 import { enterPresence, exitPresence, flushPendingExits } from "@poetry/controllers/helpers/presence"
-import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
+import { useBeforeCache } from "@poetry/controllers/behaviors/before_cache"
+import { useListen } from "@poetry/controllers/behaviors/listen"
+import { scopeOf, teardown } from "@poetry/controllers/helpers/scope"
 
 const TRIGGER_SELECTOR = '[data-slot="navigation-menu-trigger"]'
 const PANEL_SELECTOR = '[data-slot="navigation-menu-content"]'
@@ -47,9 +49,7 @@ export default class NavigationMenuController extends Controller {
   #openValue = null
   #timer = null
   #cancelExit = new Map() // value -> abandon-this-panel's-exit (per panel, not global)
-  #onOutsidePress = null
-  #unsubscribeBeforeCache = null
-  #itemsObserver = null
+  #unlistenOutsidePress = null
   #sizeGeneration = 0
 
   /**
@@ -62,7 +62,7 @@ export default class NavigationMenuController extends Controller {
     // adopted into the shared viewport). The explicit flush completes the
     // exit THIS close just started, regardless of listener order (the
     // dismissable layer's pattern).
-    this.#unsubscribeBeforeCache = onBeforeCache(() => {
+    useBeforeCache(this, () => {
       if (this.#openValue === null) return
       this.#clearTimer()
       this.#close()
@@ -75,22 +75,21 @@ export default class NavigationMenuController extends Controller {
     // trigger had been dismissed, and drop any adopted panel no trigger
     // owns any more.
     if (typeof MutationObserver !== "undefined") {
-      this.#itemsObserver = new MutationObserver(() => this.#reconcileRemovedItems())
-      this.#itemsObserver.observe(this.element, { childList: true, subtree: true })
+      const observer = new MutationObserver(() => this.#reconcileRemovedItems())
+
+      observer.observe(this.element, { childList: true, subtree: true })
+      scopeOf(this).defer(() => observer.disconnect())
     }
   }
 
   /**
-   * Clears the timer and unwires the outside-press and before-cache
-   * listeners.
+   * Clears the timer and tears the scope down (the outside-press and
+   * before-cache listeners, the items observer).
    */
   disconnect() {
     this.#clearTimer()
     this.#unbindOutsidePress()
-    this.#unsubscribeBeforeCache?.()
-    this.#unsubscribeBeforeCache = null
-    this.#itemsObserver?.disconnect()
-    this.#itemsObserver = null
+    teardown(this)
   }
 
   /**
@@ -437,9 +436,9 @@ export default class NavigationMenuController extends Controller {
 
   // Outside press closes - bound only while open (no idle listener).
   #bindOutsidePress() {
-    if (this.#onOutsidePress) return
+    if (this.#unlistenOutsidePress) return
 
-    this.#onOutsidePress = (event) => {
+    this.#unlistenOutsidePress = useListen(this, document, "pointerdown", (event) => {
       // The dismissable layer's press rules: a disconnected target says
       // nothing about WHERE the press landed (the false-dismiss class);
       // composedPath is fixed at dispatch, so a press on a node an inner
@@ -451,15 +450,12 @@ export default class NavigationMenuController extends Controller {
 
       this.#clearTimer()
       this.#close()
-    }
-    document.addEventListener("pointerdown", this.#onOutsidePress)
+    })
   }
 
   #unbindOutsidePress() {
-    if (!this.#onOutsidePress) return
-
-    document.removeEventListener("pointerdown", this.#onOutsidePress)
-    this.#onOutsidePress = null
+    this.#unlistenOutsidePress?.()
+    this.#unlistenOutsidePress = null
   }
 
   #schedule(action, delay) {

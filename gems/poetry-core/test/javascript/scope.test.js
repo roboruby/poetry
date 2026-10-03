@@ -340,3 +340,22 @@ describe("the reconnect matrix", () => {
     expect(second.escapes).toBe(1)
   })
 })
+
+describe("once-listeners through the scope", () => {
+  it("fire once and leave the stack, and teardown still removes an unfired one", () => {
+    const controller = {}
+    const target = document.createElement("div")
+    const fired = vi.fn()
+    const never = vi.fn()
+    scopeOf(controller).listen(target, "ping", fired, { once: true })
+    scopeOf(controller).listen(target, "pong", never, { once: true })
+
+    target.dispatchEvent(new Event("ping"))
+    target.dispatchEvent(new Event("ping"))
+    expect(fired).toHaveBeenCalledTimes(1)
+
+    teardown(controller)
+    target.dispatchEvent(new Event("pong"))
+    expect(never).not.toHaveBeenCalled()
+  })
+})

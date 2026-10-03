@@ -364,7 +364,7 @@
       "clear": "The show_clear X's click action - the trigger-side deselection surface: commits the blank value through the pipeline, then hands focus to the trigger (the X hides itself once the value empties, and a focused hidden button would drop focus to body). Single mode only (the component raises on multiple; the guard here is belt and braces).",
       "close": "Programmatically closes.",
       "connect": "Wires the content (and chips-field) listeners, captures the placeholder, reconciles silently from the native select / the Value (multiple parses the JSON-array seam), and catches a server-open popup up (layers + the late portal).",
-      "disconnect": "Restores portaled content (drop-never-strand) and unwires everything.",
+      "disconnect": "Tears the scope down: the content and chips listeners, a pending exit, the layer tokens and portaled content (restored home, or dropped when the home is gone - never stranded).",
       "inputKeydown": "The inline input's OWN keyboard map (multiple; the engine's map rides the same keydown): Backspace on an empty input removes the LAST chip (focus stays here), ArrowLeft at caret 0 walks into the chips, ArrowDown/Up reopen the popup, Enter with no highlight closes, and Escape on the CLOSED popup clears the query AND wipes the selection to [] (contractual; readOnly blocks every mutation).",
       "nativeChanged": "The hidden native's change action: browser autofill (or any programmatic write) adopts - multiple compares MEMBERSHIP, not order (the body comment holds the reorder rule).",
       "open": "Programmatically opens.",
@@ -507,7 +507,7 @@
     ],
     "method_docs": {
       "connect": "Builds the locale-driven segment row from formatToParts, marks the field enhanced, retires the native input from the tab order (it stays the form value and the constraint-validation carrier), and routes native invalid to the first empty segment.",
-      "disconnect": "Restores the native input's tab order / AT visibility and unwires the document listeners.",
+      "disconnect": "Restores the native input's tab order / AT visibility and tears the scope down: the input, document and per-segment listeners.",
       "focusGap": "The group's click action: clicking blank space lands on the earliest unfilled segment (the focusLast heuristic, simplified - segments themselves stop propagation by matching first).",
       "settle": "The group's focusout action: leaving the whole group constrains (Feb 31 -> Feb 29) and commits."
     }
@@ -569,7 +569,7 @@
     "events": [],
     "method_docs": {
       "connect": "Wires the three failure listeners, subscribes the before-cache reset, and arms src LAST (the boot contract above: no fetch can predate the instance).",
-      "disconnect": "Unwires the listeners and the before-cache subscription.",
+      "disconnect": "Tears the scope down: the listeners and the before-cache subscription.",
       "retry": "The retry action: back to the placeholder posture, then reload - Turbo's FrameElement#reload when the runtime is present, else the re-set-src fallback (the same signal Turbo reacts to)."
     }
   },
@@ -606,8 +606,8 @@
       "backdropClose": "The click action discriminating backdrop presses: a backdrop click targets the <dialog> element itself AND lands outside its bounding rect (the backdrop is rendered by the dialog). The target check alone is not enough: clicks on the dialog's own padding / grid gaps also target the element (found in a live browser pass - they were incorrectly dismissing).",
       "close": "Closes with the presence hold: flips the pair to data-closed and holds the dialog through its CSS exit animation before the native close() and the unlock (synchronous when no exit animation applies). The native cancel event (Esc) routes through here so state stays in sync.",
       "connect": "Heals a restored zombie snapshot, subscribes the before-cache close, and arms the opt-in global hotkey.",
-      "disconnect": "Balances the scroll lock and unwires the hotkey and before-cache subscriptions.",
-      "lockScroll": "Takes the shared refcounted body scroll lock (scrollbar-width compensated) - subclasses (sheet/drawer/sidebar) inherit these entry points unchanged; the instance flag keeps double-unlocks (disconnect after close) balanced.",
+      "disconnect": "Tears the scope down: the scroll lock balanced, the hotkey and before-cache subscriptions gone. Subclasses that override this call super.",
+      "lockScroll": "Takes the shared refcounted body scroll lock (scrollbar-width compensated) - subclasses (sheet/drawer/sidebar) inherit these entry points unchanged; the per-instance behavior keeps double-unlocks (disconnect after close) balanced.",
       "open": "Opens modally: showModal() (the platform trap, top-layer and focus return), the pair flip, and the body scroll lock. Returns the resulting state (what an agent tool reports back).",
       "toggle": "The toggle action (and the hotkey's landing): open <-> close.",
       "unlockScroll": "Balances {@link lockScroll}; safe when already unlocked."
@@ -634,7 +634,7 @@
     ],
     "method_docs": {
       "connect": "Registers on the layer stack, wires the capture-phase Escape and pointerdown listeners, subscribes the before-cache dismissal, and takes the body scrim when configured.",
-      "disconnect": "Leaves the stack and unwires everything, releasing the scrim when held."
+      "disconnect": "Leaves the stack, releases the scrim when held, and tears the scope down (Escape, pointerdown and the before-cache subscription)."
     }
   },
   "poetry--core--drawer": {
@@ -690,9 +690,9 @@
       "backdropClose": "The inherited backdrop click, minus the ghost: a press that started inside the panel can end over the backdrop (a drag against the clamp, a slip off an inner control) and the click the browser then fires is a backdrop click by target and coordinates, never by intent.",
       "close": "Closes through the animated exit (data-ending-style), then the native close(), the unlock, and the swipe-var reset. The native cancel event (Esc) routes through here so state stays in sync.",
       "connect": "Heals a restored zombie snapshot, subscribes the before-cache close, and arms the opt-in global hotkey.",
-      "disconnect": "Balances the scroll lock and unwires the hotkey and before-cache subscriptions.",
+      "disconnect": "Tears the scope down: the scroll lock balanced, the hotkey and before-cache subscriptions gone. Subclasses that override this call super.",
       "escapeClose": "The non-modal Escape exit (the component wires this keydown action only when modal is false): a non-modal dialog never fires cancel, so Esc needs its own path while focus is inside; modal drawers ride the native cancel.",
-      "lockScroll": "Takes the shared refcounted body scroll lock (scrollbar-width compensated) - subclasses (sheet/drawer/sidebar) inherit these entry points unchanged; the instance flag keeps double-unlocks (disconnect after close) balanced.",
+      "lockScroll": "Takes the shared refcounted body scroll lock (scrollbar-width compensated) - subclasses (sheet/drawer/sidebar) inherit these entry points unchanged; the per-instance behavior keeps double-unlocks (disconnect after close) balanced.",
       "open": "Opens per the modal value: showModal() plus the scroll lock, or the non-modal show() (no top layer - the component pins the panel; the body comment). The first snap offset lands BEFORE the enter transition starts, then the animated entry runs.",
       "swipeCancel": "The pointercancel action: abandons the drag and snaps home.",
       "swipeEnd": "The pointerup action - release physics: dismiss past half the travel or on a flick (exit duration scaled by the remaining travel), else snap back; snap-pointed sheets settle between their points instead.",
@@ -829,7 +829,7 @@
     "method_docs": {
       "blurClose": "The trigger's blur action: closes immediately.",
       "connect": "Wires the content listeners (portal-safe) and reconciles a server-pinned card (layer + tabindex strip catch up; the DOM wins).",
-      "disconnect": "Clears every timer, restores suppressed selection and portaled content (drop-never-strand), and unwires the listeners.",
+      "disconnect": "Clears every timer, restores suppressed selection, releases the pointer latch, and tears the scope down: the listeners, a pending exit, the layer token and portaled content (restored home, or dropped when the home is gone - never stranded).",
       "focusOpen": "The trigger's focus action: opens IMMEDIATELY, skipping the timers - a keyboard user sees the preview even though they cannot enter it. Focus a pointer caused (the latch) does not open.",
       "openValueChanged": "Stimulus value callback - controllable state: pinned previews (Turbo Stream / Outlet ownership).",
       "pointerDown": "The trigger's pointerdown action - the latch: the focus a tap or a click causes must not open the card (a pointer user never gets a focus-opened card; on touch it would be unreachable), so focusOpen stays shut until the press has landed (LATCH_RELEASE_EVENTS). The event is never cancelled: cancelling touchstart would cancel the tap's click, and the tap must still navigate the link.",
@@ -940,7 +940,7 @@
       "close": "Programmatically closes.",
       "closeSub": "Closes a sub-trigger's whole subtree (markup-declared affordances).",
       "connect": "Wires the content listeners (portal-safe) and reconciles: server-open content adopts the layer stack and re-portals one frame late.",
-      "disconnect": "Restores portaled subs then the content (drop-never-strand), unwires everything, and clears the sub hover-intent timers.",
+      "disconnect": "Clears the sub hover-intent timers and tears the scope down: the listeners, the pending exits, the typeahead timer, the layer tokens and portaled content (subs first, then the root, each restored home or dropped when the home is gone - never stranded).",
       "keydown": "The content's keydown route (also wired programmatically): Tab closes and lets focus move on, Enter/Space activate (Space defers to a live typeahead; native link/submit items act through the element itself), the direction-aware horizontal pair opens/closes submenus or fires the Menubar edge seam, and printable keys run typeahead per level.",
       "open": "Programmatically opens (the family surface Menubar's coordinator calls).",
       "openSub": "The sub-trigger's click action: opens its sub level (the delegated click claims first).",
@@ -1101,7 +1101,7 @@
     "method_docs": {
       "cancelClose": "The shared positioner's pointerenter action - in viewport mode the panel no longer lives inside its item, so entering the popup must cancel a pending close.",
       "connect": "Subscribes the before-cache close (the body comment holds the zombie rules).",
-      "disconnect": "Clears the timer and unwires the outside-press and before-cache listeners.",
+      "disconnect": "Clears the timer and tears the scope down (the outside-press and before-cache listeners, the items observer).",
       "focusLeft": "The root's focusout action - a disclosure closes when focus leaves it entirely (never traps).",
       "keydown": "The root's keydown action: Escape closes and refocuses the trigger; ArrowLeft/Right move between the bar's stops (triggers and top-level links).",
       "scheduleClose": "Each ITEM's pointerleave action: arms the close grace.",
@@ -1597,7 +1597,7 @@
       "close": "Programmatically closes.",
       "commit": "Each option's click action (markup-declared); the delegated content click claims first, so both paths never double-commit.",
       "connect": "Captures the placeholder, reconciles silently from the native select (the serialization truth) or the given Value, wires the content listeners, and catches a server-open listbox up (layers + the late portal).",
-      "disconnect": "Restores portaled content (drop-never-strand), unwires the content listeners, resets typeahead and the scroll hold, and abandons any exit.",
+      "disconnect": "Stops the scroll hold and tears the scope down: the content listeners, a pending exit, the typeahead timer, the layer tokens and portaled content (restored home, or dropped when the home is gone - never stranded).",
       "keydown": "The content's keydown route (also wired programmatically): Enter and Space commit the focused option (Space defers to a live typeahead), Tab is INERT while open (a value picker resolves by commit or Esc - contractual), Left/Right no-op (flat listbox), and printable keys move focus via typeahead - selection never follows focus.",
       "nativeChanged": "The hidden native select's change action: browser autofill (or any programmatic write) fires change there - the UI adopts it without re-writing the native (no loop).",
       "open": "Programmatically opens.",
@@ -1690,8 +1690,8 @@
       "backdropClose": "The click action discriminating backdrop presses: a backdrop click targets the <dialog> element itself AND lands outside its bounding rect (the backdrop is rendered by the dialog). The target check alone is not enough: clicks on the dialog's own padding / grid gaps also target the element (found in a live browser pass - they were incorrectly dismissing).",
       "close": "Closes with the presence hold: flips the pair to data-closed and holds the dialog through its CSS exit animation before the native close() and the unlock (synchronous when no exit animation applies). The native cancel event (Esc) routes through here so state stays in sync.",
       "connect": "Heals a restored zombie snapshot, subscribes the before-cache close, and arms the opt-in global hotkey.",
-      "disconnect": "Balances the scroll lock and unwires the hotkey and before-cache subscriptions.",
-      "lockScroll": "Takes the shared refcounted body scroll lock (scrollbar-width compensated) - subclasses (sheet/drawer/sidebar) inherit these entry points unchanged; the instance flag keeps double-unlocks (disconnect after close) balanced.",
+      "disconnect": "Tears the scope down: the scroll lock balanced, the hotkey and before-cache subscriptions gone. Subclasses that override this call super.",
+      "lockScroll": "Takes the shared refcounted body scroll lock (scrollbar-width compensated) - subclasses (sheet/drawer/sidebar) inherit these entry points unchanged; the per-instance behavior keeps double-unlocks (disconnect after close) balanced.",
       "open": "Opens with the animated entry: showModal(), then the presence enter so the data-starting-style hook fires like every other presence consumer (the exit half is inherited - the base close() already holds through the slide-out).",
       "toggle": "The toggle action (and the hotkey's landing): open <-> close.",
       "unlockScroll": "Balances {@link lockScroll}; safe when already unlocked."
@@ -1750,7 +1750,7 @@
       "close": "Programmatically collapses the desktop sidebar (persisted).",
       "closeMobile": "The mobile dialog's cancel action (and the close affordances): closes through the sheet exit, then moves the nav children home.",
       "connect": "Heals a restored zombie snapshot, reflects the server value once (the body comment explains why not openValueChanged), starts the breakpoint watcher, subscribes the before-cache close, and binds the shortcut.",
-      "disconnect": "Unwires the shortcut / watcher / before-cache subscriptions and balances the scroll lock.",
+      "disconnect": "Tears the scope down: the shortcut, the breakpoint watcher, the before-cache subscription and the scroll lock, balanced.",
       "mobileBackdropClose": "The mobile dialog's click action - the dialog's coordinate discrimination (a backdrop click targets the <dialog> itself AND lands outside its bounding rect).",
       "open": "Programmatically expands the desktop sidebar (persisted).",
       "toggle": "The trigger's (and rail's) click action - also the shortcut's landing. On mobile the SAME trigger routes to the sheet; on desktop it flips the collapse (inert when collapsible is \"none\")."
@@ -1964,7 +1964,7 @@
     ],
     "method_docs": {
       "connect": "Assigns an id when missing, adopts the open pair, announces ONCE through the singleton, wires the pause sources and the toast-local Escape, and starts the auto-dismiss timer (queued/hidden toasts hold theirs).",
-      "disconnect": "Stops the timer and unwires every listener.",
+      "disconnect": "Stops the timer, clears the pause reasons and tears the scope down.",
       "dismiss": "Dismisses the toast. Reasons: timeout | close-press | action | swipe(reserved) | manual - the family reason vocabulary plus poetry's own timeout/action/queued/manual extensions. A click on the action slot reports \"action\"; the close button \"close-press\". The dismiss event goes out BEFORE removal (the toaster's reflow + focus-return seam); presence then holds the node through its exit animation.",
       "pause": "Holds the auto-dismiss timer under a reason (hover/focus derive from events; the toaster and window paths pass strings). Reasons pool in a set, so overlapping pauses cannot resume early.",
       "resume": "Releases one pause reason; the timer restarts when none remain."
@@ -2025,7 +2025,7 @@
     "events": [],
     "method_docs": {
       "connect": "Acquires the announce singleton, wires the hotkey / stamp / dismiss listeners, and starts the childList reconciler.",
-      "disconnect": "Unwires everything and releases the announce singleton.",
+      "disconnect": "Tears the scope down: the listeners, the reconciler and the announce refcount.",
       "focusRegion": "The hotkey's landing (F8 default, configurable): moves focus into the region - onto the most recent visible toast, else the region itself. The prior focus is remembered for the dismiss return.",
       "reflow": "Stack reflow: newest toast = index 0 (the front of the stack), written as the offset/scale custom property."
     }
@@ -2110,6 +2110,7 @@
     "classes": [],
     "methods": [
       "connect",
+      "disconnect",
       "keydown",
       "press",
       "pressStart",
@@ -2120,6 +2121,7 @@
     ],
     "method_docs": {
       "connect": "Applies ancestor-expansion visibility and settles the single tab stop.",
+      "disconnect": "Tears the scope down: the typeahead buffer and its timer.",
       "keydown": "The treegrid container's keydown action (row-origin keys only): arrows rove the visible rows, the direction-aware expand/collapse pair runs the four-branch logic (collapse on a leaf focuses the parent), Home/End jump the edges, Enter toggles expandables, and printable keys run typeahead.",
       "press": "Each row's click action: toggles when expandable (the default press behavior with no action/link/selection); clicks on inner controls (links, the chevron) stay their own.",
       "pressStart": "The chevron's pointerdown action: never steal focus from the row.",

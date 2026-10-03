@@ -1,5 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
-import { acquire, release } from "@poetry/controllers/helpers/announce"
+import { useAnnounce } from "@poetry/controllers/behaviors/announce"
+import { useListen } from "@poetry/controllers/behaviors/listen"
+import { scopeOf, teardown } from "@poetry/controllers/helpers/scope"
 import { isEditingTarget, matchesHotkey } from "@poetry/controllers/helpers/hotkey"
 import { stateOf } from "@poetry/controllers/helpers/state"
 
@@ -36,7 +38,6 @@ export default class ToasterController extends Controller {
     position: String
   }
 
-  #observer = null
   #returnFocusTo = null
   #onKeydown = (event) => this.focusRegion(event)
   #onDismiss = (event) => this.#handleDismiss(event)
@@ -47,27 +48,24 @@ export default class ToasterController extends Controller {
    * listeners, and starts the childList reconciler.
    */
   connect() {
-    acquire() // the singleton lives while a toaster is connected
+    useAnnounce(this) // the singleton lives while a toaster is connected
 
-    window.addEventListener("keydown", this.#onKeydown)
-    window.addEventListener("poetry:toaster:stamp", this.#onStamp)
-    this.element.addEventListener("poetry:toast:dismiss", this.#onDismiss)
+    useListen(this, window, "keydown", this.#onKeydown)
+    useListen(this, window, "poetry:toaster:stamp", this.#onStamp)
+    useListen(this, this.element, "poetry:toast:dismiss", this.#onDismiss)
 
-    this.#observer = new MutationObserver(() => this.#reconcile())
-    this.#observer.observe(this.element, { childList: true })
+    const observer = new MutationObserver(() => this.#reconcile())
+
+    observer.observe(this.element, { childList: true })
+    scopeOf(this).defer(() => observer.disconnect())
 
     this.#reconcile()
   }
 
-  /** Unwires everything and releases the announce singleton. */
+  /** Tears the scope down: the listeners, the reconciler and the announce refcount. */
   disconnect() {
-    this.#observer?.disconnect()
-    this.#observer = null
-    window.removeEventListener("keydown", this.#onKeydown)
-    window.removeEventListener("poetry:toaster:stamp", this.#onStamp)
-    this.element.removeEventListener("poetry:toast:dismiss", this.#onDismiss)
     this.#returnFocusTo = null
-    release()
+    teardown(this)
   }
 
   // The stamp delivery path: clone a <template>'s toast into the region.

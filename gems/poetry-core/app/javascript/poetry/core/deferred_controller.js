@@ -1,5 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
-import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
+import { useBeforeCache } from "@poetry/controllers/behaviors/before_cache"
+import { useListen } from "@poetry/controllers/behaviors/listen"
+import { teardown } from "@poetry/controllers/helpers/scope"
 
 /**
  * Error isolation for deferred turbo-frames. Turbo owns the
@@ -43,25 +45,21 @@ export default class DeferredController extends Controller {
     // 404). Cancelling the response event here stops that promotion cold.
     // frame-missing still covers 2xx-without-a-matching-frame, and
     // fetch-request-error covers the network layer.
-    this.element.addEventListener("turbo:before-fetch-response", this.#onResponse)
-    this.element.addEventListener("turbo:frame-missing", this.#failed)
-    this.element.addEventListener("turbo:fetch-request-error", this.#failed)
+    useListen(this, this.element, "turbo:before-fetch-response", this.#onResponse)
+    useListen(this, this.element, "turbo:frame-missing", this.#failed)
+    useListen(this, this.element, "turbo:fetch-request-error", this.#failed)
 
     // Reset before Turbo snapshots: a stamped error message serialized
     // into the cache restores as a permanent failure - the placeholder
     // posture retries the (transient) fetch on the restoration visit.
-    this.#unsubscribeBeforeCache = onBeforeCache(() => this.#reset())
+    useBeforeCache(this, () => this.#reset())
 
     if (!this.element.getAttribute("src")) this.element.setAttribute("src", this.srcValue)
   }
 
-  /** Unwires the listeners and the before-cache subscription. */
+  /** Tears the scope down: the listeners and the before-cache subscription. */
   disconnect() {
-    this.element.removeEventListener("turbo:before-fetch-response", this.#onResponse)
-    this.element.removeEventListener("turbo:frame-missing", this.#failed)
-    this.element.removeEventListener("turbo:fetch-request-error", this.#failed)
-    this.#unsubscribeBeforeCache?.()
-    this.#unsubscribeBeforeCache = null
+    teardown(this)
   }
 
   /**
@@ -112,5 +110,4 @@ export default class DeferredController extends Controller {
   }
 
   #stamped = null
-  #unsubscribeBeforeCache = null
 }

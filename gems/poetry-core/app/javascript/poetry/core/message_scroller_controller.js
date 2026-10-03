@@ -21,6 +21,8 @@ import {
   getUnanchoredScrollAnchor,
   hasMultipleNewScrollAnchors
 } from "@poetry/controllers/helpers/scroller_geometry"
+import { useBeforeCache } from "@poetry/controllers/behaviors/before_cache"
+import { teardown } from "@poetry/controllers/helpers/scope"
 
 // How long (ms) data-autoscrolling stays set during a programmatic scroll
 // before clearing. While set, the follow-bottom RELEASE is suppressed so the
@@ -192,8 +194,7 @@ export default class extends Controller {
     if (this.itemCount === 0) this.pendingScroll = false
     this.#writePendingScroll()
     this.#observePendingScroll(viewport)
-    this.onBeforeCache = () => this.#rearmPendingScroll()
-    document.addEventListener("turbo:before-cache", this.onBeforeCache)
+    useBeforeCache(this, () => this.#rearmPendingScroll())
 
     if (this.trackVisibilityValue) this.#observeVisibility()
 
@@ -236,7 +237,6 @@ export default class extends Controller {
     this.visibilityObserver = null
     this.pendingScrollObserver?.disconnect()
     this.pendingScrollObserver = null
-    document.removeEventListener("turbo:before-cache", this.onBeforeCache)
     this.observedRows.clear()
     this.visibleMessageIds.clear()
 
@@ -245,6 +245,7 @@ export default class extends Controller {
     viewport.removeEventListener("wheel", this.onWheel)
     viewport.removeEventListener("touchmove", this.onTouchMove)
     viewport.removeEventListener("keydown", this.onKeydown)
+    teardown(this)
   }
 
   /**

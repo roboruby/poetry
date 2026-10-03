@@ -2,8 +2,19 @@
 
 ## [0.1.10]
 
+### Added
+
+- The per-connect scope for Stimulus controllers, `@poetry/controllers/helpers/scope`: `scopeOf(controller)` hands out one disposer stack per connect, `teardown(controller)` runs it newest first, aborts the scope's signal and drops it, and the next `connect()` starts clean (Stimulus keeps one instance per element and re-runs `connect()`, which the suite now pins). A controller's `disconnect()` is that one line.
+- Ten behaviors over it, under `@poetry/controllers/behaviors/`: `useListen`, `useEscape`, `useBeforeCache`, `usePresence`, `usePortal`, `useScrollLock`, `useAnnounce`, `useLayers`, `useTypeahead` and `useMobile`. Each is a plain function that does its setup, registers its undo in the scope and returns a handle; none assigns onto the controller. `usePresence` tracks exits per node, so an enter interrupts that node's exit alone; `usePortal` restores every node it moved at teardown, newest first; `useScrollLock` is idempotent per instance; `useLayers` is the one implementation of the layer-token add and remove.
+- A fourth source-scan gate, `behaviors_teardown.test.js`: a controller that uses the scope without `teardown(this)` in its `disconnect()`, or a subclass that overrides `disconnect()` without `super.disconnect()`, fails the suite.
+
+### Changed
+
+- Sixteen controllers run their lifecycle through the scope: the seven hand-rolled `#wired` lists (combobox, hover card, menu, popover, select, toast, tooltip), the `#unsubscribe` fields (dialog, dismissable, navigation menu, sidebar, deferred), the six copies of the layer-token add and remove, the typeahead and scroll-lock instances, and the message scroller's raw before-cache string. Rendered markup and behaviour are unchanged; the suites, the dommy tier and a browser pass are the oracle.
+
 ### Fixed
 
+- Three teardown leaks: a typeahead's reset timer outlived its controller (menu, select, tree), a date field's four per-segment listeners were never removed, and a submenu re-opened while its exit was still running had that exit's removal hide the re-opened level (the sub exits carried no cancel; the per-node presence gives them one).
 - A composed trigger lists its own wiring ahead of the caller's actions again. `Attributes` unified the flat and nested spellings of `data-action` and `data-controller` by appending the flat tokens after the nested ones whichever came first, so a Button composed as a Collapsible, Popover, Tooltip or DropdownMenu trigger rendered the caller's `data: { action: }` ahead of the component's `data-action`. Stimulus runs actions in attribute order, and a caller's action written to read the state the toggle leaves behind read the state before it instead: the docs sidebar remembered each disclosure as the opposite of what was chosen. The two spellings now keep the order the hash gave them.
 - A subclass without a `Style` sidecar of its own renders through its parent's dictionary. `Acme::Badge2 < Poetry::Ui::Badge::Component` with nothing beside it rendered no class attribute at all, in any mode, with no message: the dictionary lookup stopped at the class's own name. It now walks up to the nearest ancestor with a sidecar, short of `Poetry::Core::Component`, so a bare subclass renders what its parent renders and a sidecar of its own still takes over. A component built directly on the base with no sidecar stays dictionaryless, as before.
 

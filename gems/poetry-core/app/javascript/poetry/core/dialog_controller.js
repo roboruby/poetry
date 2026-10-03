@@ -1,8 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
+import { useBeforeCache } from "@poetry/controllers/behaviors/before_cache"
+import { useListen } from "@poetry/controllers/behaviors/listen"
+import { useScrollLock } from "@poetry/controllers/behaviors/scroll_lock"
 import { setState } from "@poetry/controllers/helpers/state"
 import { matchesHotkey } from "@poetry/controllers/helpers/hotkey"
-import { lockScroll, unlockScroll } from "@poetry/controllers/helpers/scroll_lock"
-import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
+import { teardown } from "@poetry/controllers/helpers/scope"
 import { exitPresence, flushPendingExits } from "@poetry/controllers/helpers/presence"
 
 /**
@@ -28,21 +30,21 @@ export default class extends Controller {
     hotkey: { type: String, default: "" }
   }
 
-  #onHotkey = null
-  #unsubscribeBeforeCache = null
+  #scrollLock = null
 
   /**
    * Heals a restored zombie snapshot, subscribes the before-cache close,
    * and arms the opt-in global hotkey.
    */
   connect() {
+    this.#scrollLock = useScrollLock(this)
     this.#healRestoredSnapshot()
     // Close before Turbo snapshots: an open dialog serialized into the
     // cache restores as a de-modalized zombie over a frozen scroll lock.
     // The close is animated now, so the exit it starts must settle in
     // this same tick - flush regardless of listener order (the presence
     // module's own before-cache flush may already have run).
-    this.#unsubscribeBeforeCache = onBeforeCache(() => {
+    useBeforeCache(this, () => {
       if (this.hasDialogTarget && this.dialogTarget.open) {
         this.close()
         flushPendingExits()
@@ -53,28 +55,21 @@ export default class extends Controller {
 
     // defaultPrevented gate: two dialogs bound to the same descriptor
     // degrade to first-registered-wins instead of both toggling open.
-    this.#onHotkey = (event) => {
+    useListen(this, window, "keydown", (event) => {
       if (event.defaultPrevented || !this.#matchesHotkey(event)) return
 
       event.preventDefault()
       this.toggle()
-    }
-    window.addEventListener("keydown", this.#onHotkey)
+    })
   }
 
   /**
-   * Balances the scroll lock and unwires the hotkey and before-cache
-   * subscriptions.
+   * Tears the scope down: the scroll lock balanced, the hotkey and
+   * before-cache subscriptions gone. Subclasses that override this call
+   * super.
    */
   disconnect() {
-    this.unlockScroll()
-    this.#unsubscribeBeforeCache?.()
-    this.#unsubscribeBeforeCache = null
-
-    if (this.#onHotkey) {
-      window.removeEventListener("keydown", this.#onHotkey)
-      this.#onHotkey = null
-    }
+    teardown(this)
   }
 
   // A dialog restored from a PRE-FIX cached snapshot: the open attribute
@@ -185,24 +180,16 @@ export default class extends Controller {
   /**
    * Takes the shared refcounted body scroll lock (scrollbar-width
    * compensated) - subclasses (sheet/drawer/sidebar) inherit these entry
-   * points unchanged; the instance flag keeps double-unlocks (disconnect
-   * after close) balanced.
+   * points unchanged; the per-instance behavior keeps double-unlocks
+   * (disconnect after close) balanced.
    */
   lockScroll() {
-    if (this.#locked) return
-
-    this.#locked = true
-    lockScroll()
+    this.#scrollLock?.lock()
   }
 
   /** Balances {@link lockScroll}; safe when already unlocked. */
   unlockScroll() {
-    if (!this.#locked) return
-
-    this.#locked = false
-    unlockScroll()
+    this.#scrollLock?.unlock()
   }
-
-  #locked = false
   #closing = false
 }

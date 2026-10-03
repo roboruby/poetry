@@ -1,9 +1,14 @@
 import { Controller } from "@hotwired/stimulus"
-import { portalContent, resolvePortalContainer, restoreContent } from "@poetry/controllers/helpers/portal"
+import { useLayers } from "@poetry/controllers/behaviors/layers"
+import { useListen } from "@poetry/controllers/behaviors/listen"
+import { usePortal } from "@poetry/controllers/behaviors/portal"
+import { usePresence } from "@poetry/controllers/behaviors/presence"
+import { useTypeahead } from "@poetry/controllers/behaviors/typeahead"
 import { collectionItems } from "@poetry/controllers/helpers/collection"
-import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
+import { resolvePortalContainer } from "@poetry/controllers/helpers/portal"
+import { teardown } from "@poetry/controllers/helpers/scope"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
-import { createTypeahead, typeaheadLabel } from "@poetry/controllers/helpers/typeahead"
+import { typeaheadLabel } from "@poetry/controllers/helpers/typeahead"
 
 const TRIGGER_SELECTOR = '[data-slot="select-trigger"]'
 const ITEM_SELECTOR = '[data-slot="select-item"]'
@@ -75,11 +80,12 @@ export default class SelectController extends Controller {
   }
 
   #connected = false
-  #wired = []
   #claimed = new WeakSet()
   #suppressRestore = false
-  #cancelExit = null
-  #typeahead = createTypeahead()
+  #presence = null
+  #portal = null
+  #layers = null
+  #typeahead = null
   #applied = ""
   #placeholder = ""
   #scrollFrame = null
@@ -91,6 +97,11 @@ export default class SelectController extends Controller {
    * portal).
    */
   connect() {
+    this.#presence = usePresence(this)
+    this.#portal = usePortal(this)
+    this.#layers = useLayers(this)
+    this.#typeahead = useTypeahead(this)
+
     const content = this.#content()
 
     if (content) this.#wireContent(content)
@@ -132,31 +143,21 @@ export default class SelectController extends Controller {
     window.requestAnimationFrame(() => {
       if (!this.#connected || !this.#isOpen()) return
 
-      portalContent(content, { container: resolvePortalContainer(this.element) })
+      this.#portal.portal(content, { container: resolvePortalContainer(this.element) })
       this.element.setAttribute(POPPER_STRATEGY, "absolute")
     })
   }
 
   /**
-   * Restores portaled content (drop-never-strand), unwires the content
-   * listeners, resets typeahead and the scroll hold, and abandons any
-   * exit.
+   * Stops the scroll hold and tears the scope down: the content
+   * listeners, a pending exit, the typeahead timer, the layer tokens and
+   * portaled content (restored home, or dropped when the home is gone -
+   * never stranded).
    */
   disconnect() {
     this.#connected = false
-
-    // Never leave content stranded at the container (drop-never-strand).
-    const content = this.#content()
-
-    if (content) restoreContent(content)
-
-    for (const [target, type, listener] of this.#wired) target.removeEventListener(type, listener)
-
-    this.#wired = []
-    this.#typeahead.reset()
     this.scrollHoldStop()
-    this.#cancelExit?.()
-    this.#cancelExit = null
+    teardown(this)
   }
 
   // --- controllable state ---
@@ -400,8 +401,7 @@ export default class SelectController extends Controller {
 
     if (!content || this.#isOpen()) return
 
-    this.#cancelExit?.()
-    this.#cancelExit = null
+    this.#presence.cancel(content)
     this.#suppressRestore = false
 
     const trigger = this.#trigger()
@@ -412,7 +412,7 @@ export default class SelectController extends Controller {
     // aligned mode the content fixed-positions ITSELF (viewport coords,
     // location-independent - the math is written in viewport
     // coordinates) and popper's writes stay bailed either way.
-    portalContent(content, { container: resolvePortalContainer(this.element) })
+    this.#portal.portal(content, { container: resolvePortalContainer(this.element) })
     this.element.setAttribute(POPPER_STRATEGY, "absolute")
 
     content.hidden = false
@@ -421,7 +421,7 @@ export default class SelectController extends Controller {
     else content.removeAttribute("data-open-seed")
     trigger?.setAttribute("aria-expanded", "true")
     if (trigger) setState(trigger, "popup-open")
-    enterPresence(content)
+    this.#presence.enter(content)
     this.#activateLayers(content)
     this.openValue = true
 
@@ -633,15 +633,14 @@ export default class SelectController extends Controller {
     }
     this.openValue = false
 
-    this.#cancelExit = exitPresence(content, {
+    this.#presence.exit(content, {
       onRemove: () => {
-        this.#cancelExit = null
         content.hidden = true
         // Home AFTER the exit finished and hidden landed; focus
         // return is focus-scope's ref-based job, indifferent to the move.
-        restoreContent(content)
+        this.#portal.restore(content)
         this.element.setAttribute(POPPER_STRATEGY, "fixed")
-        this.#removeControllers(content, CONTENT_LAYER_CONTROLLERS)
+        this.#layers.deactivate(content, CONTENT_LAYER_CONTROLLERS)
         this.dispatch("closed", { prefix: EVENT_PREFIX, detail: { reason } })
       }
     })
@@ -760,15 +759,15 @@ export default class SelectController extends Controller {
   // --- content wiring (programmatic: portal-safe) ---
 
   #wireContent(content) {
-    this.#listen(content, "keydown", (event) => this.keydown(event))
-    this.#listen(content, "click", this.#onClick)
-    this.#listen(content, "scroll", () => this.syncScrollButtons())
-    this.#listen(content, "pointerover", this.#onPointerover)
-    this.#listen(content, "pointerout", this.#onPointerout)
-    this.#listen(content, "poetry--core--dismissable:dismiss", this.#onDismiss)
-    this.#listen(content, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
-    this.#listen(content, "poetry--core--focus-scope:mount-auto-focus", this.#onMountAutoFocus)
-    this.#listen(content, "poetry--core--focus-scope:unmount-auto-focus", this.#onUnmountAutoFocus)
+    useListen(this, content, "keydown", (event) => this.keydown(event))
+    useListen(this, content, "click", this.#onClick)
+    useListen(this, content, "scroll", () => this.syncScrollButtons())
+    useListen(this, content, "pointerover", this.#onPointerover)
+    useListen(this, content, "pointerout", this.#onPointerout)
+    useListen(this, content, "poetry--core--dismissable:dismiss", this.#onDismiss)
+    useListen(this, content, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
+    useListen(this, content, "poetry--core--focus-scope:mount-auto-focus", this.#onMountAutoFocus)
+    useListen(this, content, "poetry--core--focus-scope:unmount-auto-focus", this.#onUnmountAutoFocus)
   }
 
   // Focus follows the pointer (the menu family's hover-highlight rule):
@@ -797,11 +796,6 @@ export default class SelectController extends Controller {
     if (item && document.activeElement === item && (!related || !related.closest(ITEM_SELECTOR))) {
       this.#content()?.focus()
     }
-  }
-
-  #listen(target, type, listener) {
-    target.addEventListener(type, listener)
-    this.#wired.push([target, type, listener])
   }
 
   #onClick = (event) => {
@@ -861,26 +855,9 @@ export default class SelectController extends Controller {
       content.setAttribute("data-action", `${action} ${ROVING_ACTION}`.trim())
     }
 
-    this.#addControllers(content, CONTENT_LAYER_CONTROLLERS)
+    this.#layers.activate(content, CONTENT_LAYER_CONTROLLERS)
   }
 
-  #addControllers(element, identifiers) {
-    const tokens = (element.getAttribute("data-controller") ?? "").split(/\s+/).filter(Boolean)
-
-    for (const identifier of identifiers) {
-      if (!tokens.includes(identifier)) tokens.push(identifier)
-    }
-
-    element.setAttribute("data-controller", tokens.join(" "))
-  }
-
-  #removeControllers(element, identifiers) {
-    const tokens = (element.getAttribute("data-controller") ?? "")
-      .split(/\s+/)
-      .filter((token) => token && !identifiers.includes(token))
-
-    element.setAttribute("data-controller", tokens.join(" "))
-  }
 
   // --- structural resolution (ids are the seams; portal-safe) ---
 

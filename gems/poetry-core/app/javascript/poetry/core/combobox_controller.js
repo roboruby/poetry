@@ -1,8 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
 import { collectionItems } from "@poetry/controllers/helpers/collection"
 import { isImeKeydown } from "@poetry/controllers/helpers/escape"
-import { isPortaled, portalContent, resolvePortalContainer, restoreContent } from "@poetry/controllers/helpers/portal"
-import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
+import { useLayers } from "@poetry/controllers/behaviors/layers"
+import { useListen } from "@poetry/controllers/behaviors/listen"
+import { usePortal } from "@poetry/controllers/behaviors/portal"
+import { usePresence } from "@poetry/controllers/behaviors/presence"
+import { isPortaled, resolvePortalContainer } from "@poetry/controllers/helpers/portal"
+import { teardown } from "@poetry/controllers/helpers/scope"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 import { tabbableWithin } from "@poetry/controllers/helpers/tabbable"
 
@@ -99,9 +103,10 @@ export default class ComboboxController extends Controller {
   }
 
   #connected = false
-  #wired = []
   #suppressRestore = false
-  #cancelExit = null
+  #presence = null
+  #portal = null
+  #layers = null
   #applied = ""
   #placeholder = ""
   #dismissedEvent = null
@@ -113,6 +118,10 @@ export default class ComboboxController extends Controller {
    * popup up (layers + the late portal).
    */
   connect() {
+    this.#presence = usePresence(this)
+    this.#portal = usePortal(this)
+    this.#layers = useLayers(this)
+
     const content = this.#content()
 
     if (content) this.#wireContent(content)
@@ -121,7 +130,7 @@ export default class ComboboxController extends Controller {
 
     // The chips FIELD is a second wired keyboard surface in multiple
     // (Tab-out closes from the inline input exactly like from the popup).
-    if (chips) this.#listen(chips, "keydown", this.#onKeydown)
+    if (chips) useListen(this, chips, "keydown", this.#onKeydown)
 
     const display = this.#display()
 
@@ -158,27 +167,19 @@ export default class ComboboxController extends Controller {
     window.requestAnimationFrame(() => {
       if (!this.#connected || !this.#isOpen()) return
 
-      portalContent(content, { container: resolvePortalContainer(this.element) })
+      this.#portal.portal(content, { container: resolvePortalContainer(this.element) })
       this.element.setAttribute(POPPER_STRATEGY, "absolute")
     })
   }
 
   /**
-   * Restores portaled content (drop-never-strand) and unwires everything.
+   * Tears the scope down: the content and chips listeners, a pending
+   * exit, the layer tokens and portaled content (restored home, or
+   * dropped when the home is gone - never stranded).
    */
   disconnect() {
     this.#connected = false
-
-    // Never leave content stranded at the container (drop-never-strand).
-    const content = this.#content()
-
-    if (content) restoreContent(content)
-
-    for (const [target, type, listener] of this.#wired) target.removeEventListener(type, listener)
-
-    this.#wired = []
-    this.#cancelExit?.()
-    this.#cancelExit = null
+    teardown(this)
   }
 
   // --- controllable state ---
@@ -525,8 +526,7 @@ export default class ComboboxController extends Controller {
 
     if (!content || this.#isOpen()) return
 
-    this.#cancelExit?.()
-    this.#cancelExit = null
+    this.#presence.cancel(content)
     this.#suppressRestore = false
 
     const expander = this.#expander()
@@ -536,7 +536,7 @@ export default class ComboboxController extends Controller {
     // absolute - static under compositor scroll, transform-immune. In
     // multiple mode only the popup (listbox) moves; the chips field with
     // its inline input stays home as the popper anchor.
-    portalContent(content, { container: resolvePortalContainer(this.element) })
+    this.#portal.portal(content, { container: resolvePortalContainer(this.element) })
     this.element.setAttribute(POPPER_STRATEGY, "absolute")
 
     content.hidden = false
@@ -545,7 +545,7 @@ export default class ComboboxController extends Controller {
     else content.removeAttribute("data-open-seed")
     expander?.setAttribute("aria-expanded", "true")
     if (expander) setState(expander, "popup-open")
-    enterPresence(content)
+    this.#presence.enter(content)
     this.#activateLayers(content)
     this.openValue = true
 
@@ -595,15 +595,14 @@ export default class ComboboxController extends Controller {
     content.removeAttribute("data-open-seed")
     this.openValue = false
 
-    this.#cancelExit = exitPresence(content, {
+    this.#presence.exit(content, {
       onRemove: () => {
-        this.#cancelExit = null
         content.hidden = true
         // Home AFTER the exit finished and hidden landed; focus
         // return is focus-scope's ref-based job, indifferent to the move.
-        restoreContent(content)
+        this.#portal.restore(content)
         this.element.setAttribute(POPPER_STRATEGY, "fixed")
-        this.#removeControllers(content, CONTENT_LAYER_CONTROLLERS)
+        this.#layers.deactivate(content, CONTENT_LAYER_CONTROLLERS)
         // Reset the query so reopen starts clean (a remount would get
         // this for free; persistent DOM does it deliberately).
         this.#command()?.reset()
@@ -842,17 +841,12 @@ export default class ComboboxController extends Controller {
   // --- content wiring (programmatic: portal-safe) ---
 
   #wireContent(content) {
-    this.#listen(content, "keydown", this.#onKeydown)
-    this.#listen(content, "poetry:command:select", this.#onCommandSelect)
-    this.#listen(content, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
-    this.#listen(content, "poetry--core--dismissable:dismiss", this.#onDismiss)
-    this.#listen(content, "poetry--core--focus-scope:mount-auto-focus", this.#onMountAutoFocus)
-    this.#listen(content, "poetry--core--focus-scope:unmount-auto-focus", this.#onUnmountAutoFocus)
-  }
-
-  #listen(target, type, listener) {
-    target.addEventListener(type, listener)
-    this.#wired.push([target, type, listener])
+    useListen(this, content, "keydown", this.#onKeydown)
+    useListen(this, content, "poetry:command:select", this.#onCommandSelect)
+    useListen(this, content, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
+    useListen(this, content, "poetry--core--dismissable:dismiss", this.#onDismiss)
+    useListen(this, content, "poetry--core--focus-scope:mount-auto-focus", this.#onMountAutoFocus)
+    useListen(this, content, "poetry--core--focus-scope:unmount-auto-focus", this.#onUnmountAutoFocus)
   }
 
   // Tab while open CLOSES WITHOUT COMMIT and lets focus proceed (Popover
@@ -945,26 +939,9 @@ export default class ComboboxController extends Controller {
       "data-poetry--core--dismissable-disable-outside-pointer-events-value", String(this.modalValue)
     )
 
-    this.#addControllers(content, CONTENT_LAYER_CONTROLLERS)
+    this.#layers.activate(content, CONTENT_LAYER_CONTROLLERS)
   }
 
-  #addControllers(element, identifiers) {
-    const tokens = (element.getAttribute("data-controller") ?? "").split(/\s+/).filter(Boolean)
-
-    for (const identifier of identifiers) {
-      if (!tokens.includes(identifier)) tokens.push(identifier)
-    }
-
-    element.setAttribute("data-controller", tokens.join(" "))
-  }
-
-  #removeControllers(element, identifiers) {
-    const tokens = (element.getAttribute("data-controller") ?? "")
-      .split(/\s+/)
-      .filter((token) => token && !identifiers.includes(token))
-
-    element.setAttribute("data-controller", tokens.join(" "))
-  }
 
   // --- structural resolution (ids are the seams; portal/stream-safe) ---
 

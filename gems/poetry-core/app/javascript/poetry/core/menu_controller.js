@@ -1,10 +1,14 @@
 import { Controller } from "@hotwired/stimulus"
 import { collectionItems } from "@poetry/controllers/helpers/collection"
 import { directionOf } from "@poetry/controllers/helpers/direction"
-import { portalContent, resolvePortalContainer, restoreContent } from "@poetry/controllers/helpers/portal"
-import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
+import { useLayers } from "@poetry/controllers/behaviors/layers"
+import { useListen } from "@poetry/controllers/behaviors/listen"
+import { usePortal } from "@poetry/controllers/behaviors/portal"
+import { usePresence } from "@poetry/controllers/behaviors/presence"
+import { useTypeahead } from "@poetry/controllers/behaviors/typeahead"
+import { resolvePortalContainer } from "@poetry/controllers/helpers/portal"
+import { teardown } from "@poetry/controllers/helpers/scope"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
-import { createTypeahead } from "@poetry/controllers/helpers/typeahead"
 
 const menuSlot = (suffix) => `[data-slot$="menu-${suffix}"], [data-slot$="menubar-${suffix}"]`
 const MENU_SELECTOR = '[role="menu"]'
@@ -95,11 +99,13 @@ export default class MenuController extends Controller {
   }
 
   #connected = false
-  #wired = []
+  #subListeners = new Map()
+  #presence = null
+  #portal = null
+  #layers = null
   #claimed = new WeakSet() // events already handled once (data-action + delegation both firing)
   #suppressRestore = false
-  #cancelExit = null
-  #typeahead = createTypeahead()
+  #typeahead = null
   #subOpenTimers = new Map()
   #subCloseTimers = new Map()
   #portaledSubs = new Set()
@@ -109,6 +115,11 @@ export default class MenuController extends Controller {
    * content adopts the layer stack and re-portals one frame late.
    */
   connect() {
+    this.#presence = usePresence(this)
+    this.#portal = usePortal(this)
+    this.#layers = useLayers(this)
+    this.#typeahead = useTypeahead(this)
+
     const content = this.#content()
 
     if (content) this.#wireContent(content)
@@ -135,43 +146,31 @@ export default class MenuController extends Controller {
     window.requestAnimationFrame(() => {
       if (!this.#connected || !this.#isOpen()) return
 
-      portalContent(content, { container: resolvePortalContainer(this.element) })
+      this.#portal.portal(content, { container: resolvePortalContainer(this.element) })
       this.#setStrategy(content, "absolute")
     })
   }
 
   /**
-   * Restores portaled subs then the content (drop-never-strand), unwires
-   * everything, and clears the sub hover-intent timers.
+   * Clears the sub hover-intent timers and tears the scope down: the
+   * listeners, the pending exits, the typeahead timer, the layer tokens
+   * and portaled content (subs first, then the root, each restored home
+   * or dropped when the home is gone - never stranded).
    */
   disconnect() {
     this.#connected = false
 
-    // Never leave content stranded at the container (drop-never-strand) -
-    // portaled subs first, their placeholders live inside the root content.
-    for (const subContent of this.#portaledSubs) {
-      restoreContent(subContent)
-      subContent.style.pointerEvents = ""
-    }
+    for (const subContent of this.#portaledSubs) subContent.style.pointerEvents = ""
 
     this.#portaledSubs.clear()
-
-    const content = this.#content()
-
-    if (content) restoreContent(content)
-
-    for (const [target, type, listener] of this.#wired) target.removeEventListener(type, listener)
-
-    this.#wired = []
+    this.#subListeners.clear()
 
     for (const timer of this.#subOpenTimers.values()) window.clearTimeout(timer)
     for (const timer of this.#subCloseTimers.values()) window.clearTimeout(timer)
 
     this.#subOpenTimers.clear()
     this.#subCloseTimers.clear()
-    this.#typeahead.reset()
-    this.#cancelExit?.()
-    this.#cancelExit = null
+    teardown(this)
   }
 
   /**
@@ -386,8 +385,7 @@ export default class MenuController extends Controller {
 
     if (!content || this.#isOpen()) return
 
-    this.#cancelExit?.()
-    this.#cancelExit = null
+    this.#presence.cancel(content)
     this.#suppressRestore = false
 
     const trigger = this.#trigger()
@@ -397,7 +395,7 @@ export default class MenuController extends Controller {
     // absolute - static under compositor scroll, transform-immune. Each
     // SUB level portals on its own open (#showSub) - kept inside, the
     // absolute sub is clipped by the content's overflow-y-auto scroller.
-    portalContent(content, { container: resolvePortalContainer(this.element) })
+    this.#portal.portal(content, { container: resolvePortalContainer(this.element) })
     this.#setStrategy(content, "absolute")
 
     content.hidden = false
@@ -409,7 +407,7 @@ export default class MenuController extends Controller {
     // menuitem) - never introduced onto a role-less span.
     if (trigger?.hasAttribute("aria-expanded")) trigger.setAttribute("aria-expanded", "true")
     if (trigger) setState(trigger, "popup-open")
-    enterPresence(content)
+    this.#presence.enter(content)
     this.#activateLayers(content)
     this.openValue = true
 
@@ -448,15 +446,14 @@ export default class MenuController extends Controller {
     content.removeAttribute("data-open-seed")
     this.openValue = false
 
-    this.#cancelExit = exitPresence(content, {
+    this.#presence.exit(content, {
       onRemove: () => {
-        this.#cancelExit = null
         content.hidden = true
         // Home AFTER the exit finished and hidden landed; focus
         // return is focus-scope's ref-based job, indifferent to the move.
-        restoreContent(content)
+        this.#portal.restore(content)
         this.#setStrategy(content, "fixed")
-        this.#removeControllers(content, CONTENT_LAYER_CONTROLLERS)
+        this.#layers.deactivate(content, CONTENT_LAYER_CONTROLLERS)
         this.dispatch("closed", { prefix: EVENT_PREFIX, detail: { reason } })
       }
     })
@@ -638,7 +635,7 @@ export default class MenuController extends Controller {
       // longer bubble through the root content from the container, so the
       // delegated listeners ride the portaled node too - the bridge
       // carries only poetry events home.
-      portalContent(subContent, { container: resolvePortalContainer(this.element) })
+      this.#portal.portal(subContent, { container: resolvePortalContainer(this.element) })
       this.#portaledSubs.add(subContent)
       this.#wireSub(subContent)
       // The modal scrim is body pointer-events none + per-layer auto; the
@@ -649,14 +646,14 @@ export default class MenuController extends Controller {
       subContent.hidden = false
       subTrigger.setAttribute("aria-expanded", "true")
       setState(subTrigger, "popup-open")
-      enterPresence(subContent)
+      this.#presence.enter(subContent)
 
       // Each sub level = its own dismissable layer (topmost-only Esc closes
       // just the deepest level) + its own roving group; NO focus-scope (subs
       // join the root trap) and the sub's popper root is markup-owned.
       subContent.setAttribute("data-poetry--core--dismissable-disable-outside-pointer-events-value", "false")
       this.#wireRoving(subContent)
-      this.#addControllers(subContent, SUB_LAYER_CONTROLLERS)
+      this.#layers.activate(subContent, SUB_LAYER_CONTROLLERS)
     }
 
     if (focusFirst) this.#enabledItems(subContent)[0]?.focus()
@@ -680,15 +677,15 @@ export default class MenuController extends Controller {
     setState(subTrigger, "popup-closed")
 
     if (subContent) {
-      exitPresence(subContent, {
+      this.#presence.exit(subContent, {
         onRemove: () => {
           subContent.hidden = true
           // Home AFTER the exit finished and hidden landed.
-          restoreContent(subContent)
+          this.#portal.restore(subContent)
           subContent.style.pointerEvents = ""
           this.#portaledSubs.delete(subContent)
           this.#unwireSub(subContent)
-          this.#removeControllers(subContent, SUB_LAYER_CONTROLLERS)
+          this.#layers.deactivate(subContent, SUB_LAYER_CONTROLLERS)
         }
       })
     }
@@ -750,19 +747,14 @@ export default class MenuController extends Controller {
   // --- content wiring (programmatic: portal-safe, no data-action required) ---
 
   #wireContent(content) {
-    this.#listen(content, "keydown", (event) => this.keydown(event))
-    this.#listen(content, "click", this.#onClick)
-    this.#listen(content, "pointerover", this.#onPointerover)
-    this.#listen(content, "pointerout", this.#onPointerout)
-    this.#listen(content, "poetry--core--dismissable:dismiss", this.#onDismiss)
-    this.#listen(content, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
-    this.#listen(content, "poetry--core--focus-scope:mount-auto-focus", this.#onMountAutoFocus)
-    this.#listen(content, "poetry--core--focus-scope:unmount-auto-focus", this.#onUnmountAutoFocus)
-  }
-
-  #listen(target, type, listener) {
-    target.addEventListener(type, listener)
-    this.#wired.push([target, type, listener])
+    useListen(this, content, "keydown", (event) => this.keydown(event))
+    useListen(this, content, "click", this.#onClick)
+    useListen(this, content, "pointerover", this.#onPointerover)
+    useListen(this, content, "pointerout", this.#onPointerout)
+    useListen(this, content, "poetry--core--dismissable:dismiss", this.#onDismiss)
+    useListen(this, content, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
+    useListen(this, content, "poetry--core--focus-scope:mount-auto-focus", this.#onMountAutoFocus)
+    useListen(this, content, "poetry--core--focus-scope:unmount-auto-focus", this.#onUnmountAutoFocus)
   }
 
   // The portaled sub is self-sufficient: while at the container it no
@@ -772,21 +764,21 @@ export default class MenuController extends Controller {
   // the dismissable pair from home (the wrapper), where level resolution
   // finds no sub content and the duplicate no-ops.
   #wireSub(subContent) {
-    this.#listen(subContent, "keydown", (event) => this.keydown(event))
-    this.#listen(subContent, "click", this.#onClick)
-    this.#listen(subContent, "pointerover", this.#onPointerover)
-    this.#listen(subContent, "pointerout", this.#onPointerout)
-    this.#listen(subContent, "poetry--core--dismissable:dismiss", this.#onDismiss)
-    this.#listen(subContent, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
+    this.#unwireSub(subContent)
+    this.#subListeners.set(subContent, [
+      useListen(this, subContent, "keydown", (event) => this.keydown(event)),
+      useListen(this, subContent, "click", this.#onClick),
+      useListen(this, subContent, "pointerover", this.#onPointerover),
+      useListen(this, subContent, "pointerout", this.#onPointerout),
+      useListen(this, subContent, "poetry--core--dismissable:dismiss", this.#onDismiss),
+      useListen(this, subContent, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
+    ])
   }
 
   #unwireSub(subContent) {
-    this.#wired = this.#wired.filter(([target, type, listener]) => {
-      if (target !== subContent) return true
+    for (const unlisten of this.#subListeners.get(subContent) ?? []) unlisten()
 
-      target.removeEventListener(type, listener)
-      return false
-    })
+    this.#subListeners.delete(subContent)
   }
 
   #onClick = (event) => {
@@ -929,7 +921,7 @@ export default class MenuController extends Controller {
       "data-poetry--core--dismissable-disable-outside-pointer-events-value", String(this.modalValue)
     )
     this.#wireRoving(content)
-    this.#addControllers(content, CONTENT_LAYER_CONTROLLERS)
+    this.#layers.activate(content, CONTENT_LAYER_CONTROLLERS)
   }
 
   // Menus are roving-focus's DEFAULT mode: vertical, manageTabindex TRUE
@@ -948,23 +940,6 @@ export default class MenuController extends Controller {
     }
   }
 
-  #addControllers(element, identifiers) {
-    const tokens = (element.getAttribute("data-controller") ?? "").split(/\s+/).filter(Boolean)
-
-    for (const identifier of identifiers) {
-      if (!tokens.includes(identifier)) tokens.push(identifier)
-    }
-
-    element.setAttribute("data-controller", tokens.join(" "))
-  }
-
-  #removeControllers(element, identifiers) {
-    const tokens = (element.getAttribute("data-controller") ?? "")
-      .split(/\s+/)
-      .filter((token) => token && !identifiers.includes(token))
-
-    element.setAttribute("data-controller", tokens.join(" "))
-  }
 
   // --- structural resolution (the DOM is the registry; ids are the seams) ---
 

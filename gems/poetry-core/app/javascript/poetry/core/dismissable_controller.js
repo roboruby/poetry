@@ -1,6 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
-import { onEscapeKeydown } from "@poetry/controllers/helpers/escape"
-import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
+import { useBeforeCache } from "@poetry/controllers/behaviors/before_cache"
+import { useEscape } from "@poetry/controllers/behaviors/escape"
+import { useListen } from "@poetry/controllers/behaviors/listen"
+import { teardown } from "@poetry/controllers/helpers/scope"
 import { flushPendingExits } from "@poetry/controllers/helpers/presence"
 
 /**
@@ -45,8 +47,6 @@ export default class DismissableController extends Controller {
     }
   }
 
-  #unsubscribeEscape = null
-  #unsubscribeBeforeCache = null
   #onPointerdown = (event) => this.#handlePointerdown(event)
 
   /**
@@ -59,8 +59,8 @@ export default class DismissableController extends Controller {
 
     // Both capture-phase: the layer must see the interaction before any
     // inner handler can swallow it (the escape helper defaults to capture).
-    this.#unsubscribeEscape = onEscapeKeydown((event) => this.#handleEscape(event))
-    document.addEventListener("pointerdown", this.#onPointerdown, { capture: true })
+    useEscape(this, (event) => this.#handleEscape(event))
+    useListen(this, document, "pointerdown", this.#onPointerdown, { capture: true })
     // A layer still open when Turbo snapshots serializes its scrim's
     // inline body pointer-events into the cache - a restored page is
     // click-dead. Dismiss synchronously so the snapshot is clean, and
@@ -68,7 +68,7 @@ export default class DismissableController extends Controller {
     // attributes in the same tick, but its unmount (which normally
     // releases the scrim via disconnect) can ride an exit transition -
     // after the snapshot is already taken.
-    this.#unsubscribeBeforeCache = onBeforeCache(() => {
+    useBeforeCache(this, () => {
       this.#dismiss(null)
       // The dismiss just started the owner's exit presence - flush it in
       // the same tick so hidden + layer-controller removal land BEFORE
@@ -81,21 +81,16 @@ export default class DismissableController extends Controller {
   }
 
   /**
-   * Leaves the stack and unwires everything, releasing the scrim when
-   * held.
+   * Leaves the stack, releases the scrim when held, and tears the scope
+   * down (Escape, pointerdown and the before-cache subscription).
    */
   disconnect() {
     const index = DismissableController.stack.indexOf(this)
 
     if (index !== -1) DismissableController.stack.splice(index, 1)
 
-    this.#unsubscribeEscape?.()
-    this.#unsubscribeEscape = null
-    document.removeEventListener("pointerdown", this.#onPointerdown, { capture: true })
-    this.#unsubscribeBeforeCache?.()
-    this.#unsubscribeBeforeCache = null
-
     if (this.disableOutsidePointerEventsValue) this.#disableScrim()
+    teardown(this)
   }
 
   #handleEscape(event) {
