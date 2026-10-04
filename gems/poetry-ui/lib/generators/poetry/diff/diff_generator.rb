@@ -123,10 +123,12 @@ module Poetry
       end
     end
 
-    # The components section of the manifest, empty when absent.
+    # The components section of the manifest, empty when absent. The
+    # overrides ledger beside it writes `created:` as a bare YAML date,
+    # so the load permits Date (the design task does the same).
     def manifest_components
       path = File.join(destination_root, MANIFEST)
-      config = File.exist?(path) ? YAML.safe_load_file(path) : nil
+      config = File.exist?(path) ? YAML.safe_load_file(path, permitted_classes: [Date]) : nil
       config.is_a?(Hash) && config["components"].is_a?(Hash) ? config["components"] : {}
     end
 

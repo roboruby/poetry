@@ -205,10 +205,12 @@ module Poetry
       sources
     end
 
-    # The manifest as a hash, empty when absent.
+    # The manifest as a hash, empty when absent. The overrides ledger
+    # writes `created:` as a bare YAML date, so the load permits Date
+    # (the design task does the same).
     def manifest_config
       path = File.join(destination_root, MANIFEST)
-      config = File.exist?(path) ? YAML.safe_load_file(path) : nil
+      config = File.exist?(path) ? YAML.safe_load_file(path, permitted_classes: [Date]) : nil
       config.is_a?(Hash) ? config : {}
     end
 

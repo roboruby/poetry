@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.11]
+
+### Fixed
+
+- `poetry:diff` and `poetry:add` read `config/poetry_components.yml` again on a host that has declared an override: the ledger writes `created:` as a bare YAML date, which the two generators loaded without permitting it (`Psych::DisallowedClass`). The design task already permitted the date; the generators now do too.
+
 ## [0.1.10] - 2026-10-03
 
 ### Changed

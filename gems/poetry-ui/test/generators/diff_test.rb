@@ -29,6 +29,20 @@ module Poetry
       assert_match(/all files match/, output)
     end
 
+    # The overrides ledger beside the components writes `created:` as a
+    # bare YAML date; the manifest still loads.
+    def test_manifest_with_a_dated_overrides_ledger_still_diffs
+      add %w[Icon]
+      manifest = File.join(destination_root, "config/poetry_components.yml")
+      ledger = "overrides:\n  - cn: cn-button\n    files: [app/assets/tailwind/brand.css]\n    " \
+               "reason: brand\n    created: 2026-09-24\n"
+      File.write(manifest, "#{File.read(manifest)}#{ledger}")
+
+      output = run_generator
+
+      assert_match(/all files match/, output)
+    end
+
     def test_edited_copy_reports_the_differing_file_with_line_counts
       add %w[Icon]
       component = File.join(destination_root, "app/components/poetry/ui/icon/component.rb")

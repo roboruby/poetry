@@ -759,6 +759,25 @@ module Poetry
       end
     end
 
+    # The overrides ledger writes `created:` as a bare YAML date; a later
+    # add still reads the manifest and keeps the ledger.
+    def test_add_keeps_a_dated_overrides_ledger
+      manifest = File.join(destination_root, "config/poetry_components.yml")
+      FileUtils.mkdir_p(File.dirname(manifest))
+      File.write(manifest,
+                 "components: {}\noverrides:\n  - cn: cn-button\n    files: [app/assets/tailwind/brand.css]\n    " \
+                 "reason: brand\n    created: 2026-09-24\n")
+
+      run_generator %w[Icon]
+
+      assert_file "config/poetry_components.yml" do |text|
+        config = YAML.safe_load(text, permitted_classes: [Date])
+
+        assert_includes config["components"].keys, "icon"
+        assert_equal "cn-button", config.dig("overrides", 0, "cn")
+      end
+    end
+
     def test_add_recipe_skill_bundle_writes_skill_files_and_skips_existing
       FileUtils.mkdir_p(File.join(destination_root, ".claude/skills/poetry"))
       File.write(File.join(destination_root, ".claude/skills/poetry/SKILL.md"), "mine\n")
