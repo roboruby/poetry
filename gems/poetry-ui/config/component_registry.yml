@@ -2406,6 +2406,10 @@ components:
           - the input carries the flip; single''s trigger owns it)'
     - name: combobox-list
       description: THE role=listbox - the aria-controls target of both combobox roles
+      states:
+      - attr: data-empty
+        condition: the filter pass left no visible item (engine-written; the empty
+          part shows and the theme drops the list padding)
     - name: combobox-empty
       description: Zero-matches message - rendered hidden; the engine unhides it when
         the filter pass leaves no visible items
@@ -2740,6 +2744,10 @@ components:
     - name: command-list
       description: The role=listbox holding empty/loading/items - the input's aria-controls
         target
+      states:
+      - attr: data-empty
+        condition: the filter pass left no visible item (controller-written; the empty
+          part shows at the same moment)
     - name: command-empty
       description: Zero-matches message - rendered hidden; the controller unhides
         it when the filter pass leaves no visible items
@@ -4374,7 +4382,8 @@ components:
     - name: show_swipe_handle
       type: boolean
       default: false
-      description: Renders the grab pill so the swipe gesture is discoverable.
+      description: 'Renders the grab pill so the swipe gesture is discoverable - direction:
+        :down only; an edge panel raises.'
     - name: snap_points
       type:
       description: 'Preset resting heights for a bottom sheet, ascending: fractions
@@ -4440,8 +4449,8 @@ components:
     - with_title is REQUIRED (the accessible name) - the inherited Dialog rule.
     - 'direction: is the DISMISS direction: :down is the mobile bottom sheet (the
       default); left/right make an edge panel - prefer Sheet on desktop.'
-    - 'show_swipe_handle: true renders the grab pill - use it on bottom sheets so
-      the gesture is discoverable.'
+    - 'show_swipe_handle: true renders the grab pill on a bottom sheet (direction:
+      :down) so the gesture is discoverable; an edge panel has no handle and raises.'
     - Esc and the backdrop still dismiss (the platform trap) - the swipe is an addition,
       never the only way out.
     - 'modal: false keeps the page interactive (no scrim, no focus trap) - pair a

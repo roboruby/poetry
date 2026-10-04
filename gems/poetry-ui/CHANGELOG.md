@@ -4,6 +4,8 @@
 
 ### Fixed
 
+- Drawer `show_swipe_handle: true` on an edge panel (`direction: :left`, `:right` or `:up`) raises instead of drawing the bottom sheet's horizontal pill as a bar across the panel's top. The pill is the bottom sheet's grip, as in the source, where no other direction has a handle; the option's doc and the component's rules say so.
+- The Combobox and Command list parts declare `data-empty`, the state the engine now writes when the filter pass leaves no visible item, so the themes' `data-empty:p-0` rule on the list is live and the allowlist entry that banked it is gone.
 - `poetry:diff` and `poetry:add` read `config/poetry_components.yml` again on a host that has declared an override: the ledger writes `created:` as a bare YAML date, which the two generators loaded without permitting it (`Psych::DisallowedClass`). The design task already permitted the date; the generators now do too.
 
 ## [0.1.10] - 2026-10-03

@@ -184,7 +184,7 @@ Slots: trigger (Optional custom trigger content rendered BEFORE the value span (
 - PART `combobox-input-wrapper` - The input row - search icon + filter input above the list
 - PART `combobox-search-icon` - Decorative search glyph beside the input
 - PART `combobox-input` - The filter input (role=combobox) - the typing session and aria-activedescendant live here. Single: in the popup with its own accessible name; multiple: INLINE in the chips frame (the input-inside layout), where the field label reaches it | states: data-popup-open (multiple: the popup is open (bare while open, absent while closed - the input carries the flip; single's trigger owns it))
-- PART `combobox-list` - THE role=listbox - the aria-controls target of both combobox roles
+- PART `combobox-list` - THE role=listbox - the aria-controls target of both combobox roles | states: data-empty (the filter pass left no visible item (engine-written; the empty part shows and the theme drops the list padding))
 - PART `combobox-empty` - Zero-matches message - rendered hidden; the engine unhides it when the filter pass leaves no visible items
 - PART `combobox-group` - role=group labelled by its heading - hidden by the engine when every member item is filtered out
 - PART `combobox-label` - The group heading - styled, no ARIA role (the group points at it via aria-labelledby)

@@ -5204,7 +5204,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 896
+          "line": 900
         },
         {
           "name": "search_placeholder",
@@ -5318,7 +5318,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 629
+          "line": 633
         },
         {
           "name": "width",
@@ -5654,7 +5654,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/command/component.rb",
-          "line": 495
+          "line": 499
         },
         {
           "name": "value",
@@ -10176,14 +10176,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/drawer/component.rb",
-          "line": 90
+          "line": 91
         },
         {
           "name": "show_swipe_handle",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Renders the grab pill so the swipe gesture is discoverable.\n\nConstructor option `show_swipe_handle:`.",
+          "docstring": "Renders the grab pill so the swipe gesture is discoverable - direction: :down only; an edge panel raises.\n\nConstructor option `show_swipe_handle:`.",
           "params": [],
           "return": {
             "types": [
@@ -10210,7 +10210,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/drawer/component.rb",
-          "line": 96
+          "line": 97
         }
       ],
       "constants": [

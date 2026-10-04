@@ -531,7 +531,11 @@ module Poetry
                "data-popup-open" => "multiple: the popup is open (bare while open, absent while " \
                                     "closed - the input carries the flip; single's trigger owns it)"
              }
-        part "combobox-list", "THE role=listbox - the aria-controls target of both combobox roles"
+        part "combobox-list", "THE role=listbox - the aria-controls target of both combobox roles",
+             states: {
+               "data-empty" => "the filter pass left no visible item (engine-written; the empty " \
+                               "part shows and the theme drops the list padding)"
+             }
         part "combobox-empty", "Zero-matches message - rendered hidden; the engine unhides it " \
                                "when the filter pass leaves no visible items"
         part "combobox-group", "role=group labelled by its heading - hidden by the engine when " \

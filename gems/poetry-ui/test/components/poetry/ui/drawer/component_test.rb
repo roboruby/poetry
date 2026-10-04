@@ -78,6 +78,20 @@ module Poetry
           assert_includes handle["class"], "touch-none", "the browser must not steal the drag for scroll"
         end
 
+        # The pill is the bottom sheet's horizontal grip; an edge panel drew
+        # it as a bar across its top. Now it raises, as the snap points do.
+        def test_the_swipe_handle_is_the_bottom_sheets_alone
+          %i[left right up].each do |direction|
+            error = assert_raises(ArgumentError) { render_drawer(show_swipe_handle: true, direction: direction) }
+
+            assert_match(/direction: :down only/, error.message)
+          end
+
+          bottom = render_drawer(show_swipe_handle: true, direction: :down)
+
+          assert_equal 1, bottom.css('[data-slot="drawer-swipe-handle"]').size
+        end
+
         def test_a_drawer_requires_its_title
           assert_raises(ArgumentError) do
             render_inline(Component.new) { |drawer| drawer.with_trigger { "Open" } }

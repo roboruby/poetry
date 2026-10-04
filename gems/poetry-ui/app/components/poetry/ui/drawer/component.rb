@@ -34,8 +34,8 @@ module Poetry
           "with_title is REQUIRED (the accessible name) - the inherited Dialog rule.",
           "direction: is the DISMISS direction: :down is the mobile bottom sheet (the default); " \
           "left/right make an edge panel - prefer Sheet on desktop.",
-          "show_swipe_handle: true renders the grab pill - use it on bottom sheets so the " \
-          "gesture is discoverable.",
+          "show_swipe_handle: true renders the grab pill on a bottom sheet (direction: :down) so the " \
+          "gesture is discoverable; an edge panel has no handle and raises.",
           "Esc and the backdrop still dismiss (the platform trap) - the swipe is an addition, " \
           "never the only way out.",
           "modal: false keeps the page interactive (no scrim, no focus trap) - pair a wired " \
@@ -85,7 +85,8 @@ module Poetry
                                "axis derive from it."
 
         option :show_swipe_handle, :boolean, default: false,
-                                             doc: "Renders the grab pill so the swipe gesture is discoverable."
+                                             doc: "Renders the grab pill so the swipe gesture is discoverable - " \
+                                                  "direction: :down only; an edge panel raises."
 
         option :modal, :boolean, default: true,
                                  doc: "Non-modal (false) opens with show() - no top layer, no scrim, no focus trap, " \
@@ -148,6 +149,7 @@ module Poetry
         def before_render
           super
           validate_snap_points! if snap_points.present?
+          validate_swipe_handle! if show_swipe_handle
         end
 
         # The parent's show_close_button does not apply: a Drawer has no
@@ -184,6 +186,17 @@ module Poetry
         end
 
         private
+
+        # Raises when the grab pill is asked for on an edge panel: the pill is
+        # the bottom sheet's horizontal grip, and an edge panel drew it as a
+        # bar across its top (verified bug); a direction other than :down has
+        # no handle, as in the source.
+        def validate_swipe_handle!
+          return if direction == :down
+
+          raise ArgumentError, "Drawer show_swipe_handle: true is the bottom sheet's grab pill - direction: :down " \
+                               "only (an edge panel has no handle; drop the option or use direction: :down)"
+        end
 
         # Raises unless the snap points are fractions or CSS lengths on a bottom drawer.
         def validate_snap_points!
