@@ -4,7 +4,9 @@
 // against the source. Options are read from the 8 lines following each
 // dispatch call (calls in this codebase are short); a dispatch with a
 // non-literal event name fails the count check on purpose - give it a
-// literal, or extend this scan alongside it.
+// literal, or extend this scan alongside it. A controller on the overlay
+// machine (behaviors/overlay.js) dispatches `open` and `closed` through
+// it, under the prefix it hands the machine; the scan counts those two.
 import { describe, it, expect } from "vitest"
 import fs from "node:fs"
 import path from "node:path"
@@ -19,6 +21,15 @@ const scanDispatches = (source, eventPrefix, identifier) => {
   const lines = source.split("\n")
   const found = new Set()
   let count = 0
+  // The overlay machine dispatches open and closed for the controller
+  // that built it with an eventPrefix.
+  const machine = source.match(/useOverlay\(this,\s*\{[^}]*eventPrefix:\s*(EVENT_PREFIX|"([^"]+)")/)
+  if (machine) {
+    const prefix = machine[1] === "EVENT_PREFIX" ? eventPrefix : machine[2]
+    count += 2
+    found.add(`${prefix}:open`)
+    found.add(`${prefix}:closed`)
+  }
   lines.forEach((line, index) => {
     // Hand-built window dispatches (toast_trigger's stamp) count too -
     // they are the same manifest surface as this.dispatch.
@@ -60,7 +71,8 @@ describe("events declarations", () => {
       const scanned = scanDispatches(source, eventPrefix, identifier)
 
       const total = (source.match(/this\.dispatch\(/g) ?? []).length +
-        (source.match(/window\.dispatchEvent\(new CustomEvent\(/g) ?? []).length
+        (source.match(/window\.dispatchEvent\(new CustomEvent\(/g) ?? []).length +
+        (/useOverlay\(this,/.test(source) ? 2 : 0)
       expect(scanned.count, "dispatch with a non-literal event name").toBe(total)
 
       const declared = Object.hasOwn(controller, "events") ? [...controller.events].sort() : []

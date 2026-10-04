@@ -1,14 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
 import { collectionItems } from "@poetry/controllers/helpers/collection"
 import { directionOf } from "@poetry/controllers/helpers/direction"
-import { useLayers } from "@poetry/controllers/behaviors/layers"
 import { useListen } from "@poetry/controllers/behaviors/listen"
-import { usePortal } from "@poetry/controllers/behaviors/portal"
-import { usePresence } from "@poetry/controllers/behaviors/presence"
+import { useOverlay } from "@poetry/controllers/behaviors/overlay"
 import { useTypeahead } from "@poetry/controllers/behaviors/typeahead"
 import { resolvePortalContainer } from "@poetry/controllers/helpers/portal"
 import { teardown } from "@poetry/controllers/helpers/scope"
-import { setState, stateOf } from "@poetry/controllers/helpers/state"
+import { setState } from "@poetry/controllers/helpers/state"
 
 const menuSlot = (suffix) => `[data-slot$="menu-${suffix}"], [data-slot$="menubar-${suffix}"]`
 const MENU_SELECTOR = '[role="menu"]'
@@ -98,13 +96,12 @@ export default class MenuController extends Controller {
     closeOnSelect: { type: Boolean, default: true }
   }
 
-  #connected = false
+  #overlay = null
   #subListeners = new Map()
   #presence = null
   #portal = null
   #layers = null
   #claimed = new WeakSet() // events already handled once (data-action + delegation both firing)
-  #suppressRestore = false
   #typeahead = null
   #subOpenTimers = new Map()
   #subCloseTimers = new Map()
@@ -115,40 +112,33 @@ export default class MenuController extends Controller {
    * content adopts the layer stack and re-portals one frame late.
    */
   connect() {
-    this.#presence = usePresence(this)
-    this.#portal = usePortal(this)
-    this.#layers = useLayers(this)
+    this.#overlay = useOverlay(this, {
+      content: () => this.#content(),
+      trigger: () => this.#trigger(),
+      layers: CONTENT_LAYER_CONTROLLERS,
+      eventPrefix: EVENT_PREFIX,
+      modal: () => this.modalValue,
+      reasons: true,
+      expandedWhenPresent: true,
+      vetoMountAutoFocus: true,
+      strategy: (content, strategy) => this.#setStrategy(content, strategy),
+      activateLayers: (content) => this.#activateLayers(content),
+      onOpen: (content, { seed, focus }) => { if (focus) this.#applyInitialFocus(content, seed) },
+      beforeHide: (content) => this.#settle(content),
+      onDismissElsewhere: (target, escaped) => this.#dismissSub(target, escaped)
+    })
+    // The sub levels ride the machine's behaviors, so teardown restores
+    // them newest first: subs before the root.
+    this.#presence = this.#overlay.presence
+    this.#portal = this.#overlay.portal
+    this.#layers = this.#overlay.layers
     this.#typeahead = useTypeahead(this)
 
     const content = this.#content()
 
     if (content) this.#wireContent(content)
 
-    this.#connected = true
-
-    // Reconcile-on-connect: the server may own the open state (Turbo Stream
-    // re-render). DOM attributes win; the layer stack catches up.
-    if (this.#isOpen()) {
-      if (content) {
-        this.#activateLayers(content)
-        this.#portalPinned(content)
-      }
-      this.openValue = true
-    } else if (this.openValue) {
-      this.#show("trigger-press", { focus: false })
-    }
-  }
-
-  // The reconcile path portals ONE FRAME LATE: connect order within a boot
-  // is unordered, and portaling before the sibling popper's connect would
-  // rob it of its content target before it could cache the node.
-  #portalPinned(content) {
-    window.requestAnimationFrame(() => {
-      if (!this.#connected || !this.#isOpen()) return
-
-      this.#portal.portal(content, { container: resolvePortalContainer(this.element) })
-      this.#setStrategy(content, "absolute")
-    })
+    this.#overlay.connect({ focus: false })
   }
 
   /**
@@ -158,7 +148,7 @@ export default class MenuController extends Controller {
    * or dropped when the home is gone - never stranded).
    */
   disconnect() {
-    this.#connected = false
+    this.#overlay?.disconnect()
 
     for (const subContent of this.#portaledSubs) subContent.style.pointerEvents = ""
 
@@ -181,7 +171,7 @@ export default class MenuController extends Controller {
    * @param {boolean} value
    */
   openValueChanged(value) {
-    if (!this.#connected) return
+    if (!this.#overlay?.connected()) return
 
     if (value && !this.#isOpen()) this.#show("trigger-press")
     else if (!value && this.#isOpen()) this.#hide("none")
@@ -381,86 +371,31 @@ export default class MenuController extends Controller {
   // --- open / close ---
 
   #show(reason, { focus = true, seed = null } = {}) {
-    const content = this.#content()
-
-    if (!content || this.#isOpen()) return
-
-    this.#presence.cancel(content)
-    this.#suppressRestore = false
-
-    const trigger = this.#trigger()
-
-    // Portal-on-open: move BEFORE the
-    // enter presence (reparenting mid-animation restarts it), re-anchor
-    // absolute - static under compositor scroll, transform-immune. Each
-    // SUB level portals on its own open (#showSub) - kept inside, the
-    // absolute sub is clipped by the content's overflow-y-auto scroller.
-    this.#portal.portal(content, { container: resolvePortalContainer(this.element) })
-    this.#setStrategy(content, "absolute")
-
-    content.hidden = false
-    content.setAttribute("data-open-reason", reason)
-    if (seed) content.setAttribute("data-open-seed", seed)
-    else content.removeAttribute("data-open-seed")
-    // ContextMenu's trigger SURFACE is not a widget: aria-expanded is only
-    // flipped where the server declared it (DropdownMenu button, Menubar
-    // menuitem) - never introduced onto a role-less span.
-    if (trigger?.hasAttribute("aria-expanded")) trigger.setAttribute("aria-expanded", "true")
-    if (trigger) setState(trigger, "popup-open")
-    this.#presence.enter(content)
-    this.#activateLayers(content)
-    this.openValue = true
-
-    // The layer controllers connect on the attribute-mutation microtask;
-    // initial focus must land AFTER focus-scope snapshots the trigger (its
-    // focus-return target), so it rides one microtask behind.
-    queueMicrotask(() => {
-      if (!this.#isOpen()) return
-      if (focus) this.#applyInitialFocus(content, seed)
-
-      this.dispatch("open", { prefix: EVENT_PREFIX, detail: seed ? { reason, seed } : { reason } })
-    })
+    this.#overlay.show(reason, { seed, focus })
   }
 
   #hide(reason, { restoreFocus = true } = {}) {
-    const content = this.#content()
+    this.#overlay.hide(reason, { restoreFocus })
+  }
 
-    if (!content || !this.#isOpen()) return
-
-    // The whole chain closes: subs first (no focus juggling on the way down).
+  // Before a hide: every open sub level closes and the typeahead resets.
+  #settle(content) {
     for (const subTrigger of this.#openSubTriggersIn(content)) {
       this.#closeSubTree(subTrigger, { focusTrigger: false })
     }
 
     this.#typeahead.reset()
-    // Focus return to the trigger is focus-scope's disconnect job - vetoed
-    // for Tab-out and for outside interaction on a non-modal menu
-    // (non-modal semantics: focus follows the click).
-    this.#suppressRestore = !restoreFocus || (reason === "outside-press" && !this.modalValue)
-
-    const trigger = this.#trigger()
-
-    if (trigger?.hasAttribute("aria-expanded")) trigger.setAttribute("aria-expanded", "false")
-    if (trigger) setState(trigger, "popup-closed")
-    content.removeAttribute("data-open-reason")
-    content.removeAttribute("data-open-seed")
-    this.openValue = false
-
-    this.#presence.exit(content, {
-      onRemove: () => {
-        content.hidden = true
-        // Home AFTER the exit finished and hidden landed; focus
-        // return is focus-scope's ref-based job, indifferent to the move.
-        this.#portal.restore(content)
-        this.#setStrategy(content, "fixed")
-        this.#layers.deactivate(content, CONTENT_LAYER_CONTROLLERS)
-        this.dispatch("closed", { prefix: EVENT_PREFIX, detail: { reason } })
-      }
-    })
   }
 
-  // The root popper rides this.element; each sub hosts its OWN popper on
-  // its wrapper inside the content - one coordinate space for the family.
+  // A dismiss from inside a sub level closes that level alone (Esc
+  // returns focus to its trigger; an outside press does not).
+  #dismissSub(target, escaped) {
+    const subContent = target.closest(SUB_CONTENT_SELECTOR)
+    const subTrigger = subContent && this.#subTriggerFor(subContent)
+
+    if (subTrigger) this.#closeSubTree(subTrigger, { focusTrigger: escaped })
+  }
+
   #setStrategy(content, strategy) {
     this.element.setAttribute(POPPER_STRATEGY, strategy)
 
@@ -751,10 +686,7 @@ export default class MenuController extends Controller {
     useListen(this, content, "click", this.#onClick)
     useListen(this, content, "pointerover", this.#onPointerover)
     useListen(this, content, "pointerout", this.#onPointerout)
-    useListen(this, content, "poetry--core--dismissable:dismiss", this.#onDismiss)
-    useListen(this, content, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
-    useListen(this, content, "poetry--core--focus-scope:mount-auto-focus", this.#onMountAutoFocus)
-    useListen(this, content, "poetry--core--focus-scope:unmount-auto-focus", this.#onUnmountAutoFocus)
+    this.#overlay.wire()
   }
 
   // The portaled sub is self-sufficient: while at the container it no
@@ -770,8 +702,7 @@ export default class MenuController extends Controller {
       useListen(this, subContent, "click", this.#onClick),
       useListen(this, subContent, "pointerover", this.#onPointerover),
       useListen(this, subContent, "pointerout", this.#onPointerout),
-      useListen(this, subContent, "poetry--core--dismissable:dismiss", this.#onDismiss),
-      useListen(this, subContent, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
+      ...this.#overlay.wireLevel(subContent)
     ])
   }
 
@@ -799,41 +730,6 @@ export default class MenuController extends Controller {
   // outside dismissal: without the veto the pointerdown closes and the
   // trailing click re-opens (the popover trigger-press rule; the menubar
   // coordinator vetoes the same way for bar-wide triggers).
-  #onInteractOutside = (event) => {
-    if (event.target !== this.#content()) return
-
-    const origin = event.detail?.originalEvent?.target
-
-    if (origin instanceof Element && this.#trigger()?.contains(origin)) event.preventDefault()
-  }
-
-  #onDismiss = (event) => {
-    const target = event.target instanceof Element ? event.target : null
-
-    if (!target) return
-
-    const escaped = event.detail?.originalEvent?.type === "keydown"
-
-    if (target === this.#content()) {
-      this.#hide(escaped ? "escape-key" : "outside-press")
-      return
-    }
-
-    const subContent = target.closest(SUB_CONTENT_SELECTOR)
-    const subTrigger = subContent && this.#subTriggerFor(subContent)
-
-    if (subTrigger) this.#closeSubTree(subTrigger, { focusTrigger: escaped })
-  }
-
-  // The menu owns initial focus (per data-open-reason), not focus-scope.
-  #onMountAutoFocus = (event) => {
-    if (event.target === this.#content()) event.preventDefault()
-  }
-
-  #onUnmountAutoFocus = (event) => {
-    if (event.target === this.#content() && this.#suppressRestore) event.preventDefault()
-  }
-
   #onPointerover = (event) => {
     const target = event.target instanceof Element ? event.target : null
 
@@ -921,7 +817,6 @@ export default class MenuController extends Controller {
       "data-poetry--core--dismissable-disable-outside-pointer-events-value", String(this.modalValue)
     )
     this.#wireRoving(content)
-    this.#layers.activate(content, CONTENT_LAYER_CONTROLLERS)
   }
 
   // Menus are roving-focus's DEFAULT mode: vertical, manageTabindex TRUE
@@ -958,9 +853,7 @@ export default class MenuController extends Controller {
   }
 
   #isOpen() {
-    const content = this.#content()
-
-    return Boolean(content) && stateOf(content) === "open"
+    return this.#overlay.isOpen()
   }
 
   #subContentFor(subTrigger) {

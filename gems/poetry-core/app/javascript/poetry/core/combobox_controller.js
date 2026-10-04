@@ -1,13 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
 import { collectionItems } from "@poetry/controllers/helpers/collection"
 import { isImeKeydown } from "@poetry/controllers/helpers/escape"
-import { useLayers } from "@poetry/controllers/behaviors/layers"
 import { useListen } from "@poetry/controllers/behaviors/listen"
-import { usePortal } from "@poetry/controllers/behaviors/portal"
-import { usePresence } from "@poetry/controllers/behaviors/presence"
-import { isPortaled, resolvePortalContainer } from "@poetry/controllers/helpers/portal"
+import { useOverlay } from "@poetry/controllers/behaviors/overlay"
+import { isPortaled } from "@poetry/controllers/helpers/portal"
 import { teardown } from "@poetry/controllers/helpers/scope"
-import { setState, stateOf } from "@poetry/controllers/helpers/state"
+import { setState } from "@poetry/controllers/helpers/state"
 import { tabbableWithin } from "@poetry/controllers/helpers/tabbable"
 
 const TRIGGER_SELECTOR = '[data-slot="combobox-trigger"]'
@@ -29,7 +27,6 @@ const COMMAND_IDENTIFIER = "poetry--core--command"
 // NO roving-focus (the popup is Command's activedescendant session - the
 // family's first popup without it).
 const CONTENT_LAYER_CONTROLLERS = ["poetry--core--focus-scope", "poetry--core--dismissable"]
-const POPPER_STRATEGY = "data-poetry--core--popper-strategy-value"
 
 /**
  * The Combobox ORCHESTRATOR: Select's shell
@@ -38,10 +35,12 @@ const POPPER_STRATEGY = "data-poetry--core--popper-strategy-value"
  * listens for the embedded engine's poetry:command:select; it contains NO
  * filter/highlight/scoring code (Command owns those) and Command gained no
  * combobox code (engine purity, fenced both directions by the conformance
- * greps). Zero code is shared with SelectController - the PATTERNS are
- * (the layer mechanism, the native-first 5-step pipeline, the adoption
- * path), re-instantiated here because a facade extraction was explicitly
- * declined (the Select contract's open question, answered by this build).
+ * greps). What it shares with SelectController is the SKELETON, the
+ * overlay machine in behaviors/overlay.js (show and hide sequencing,
+ * the late portal, the layer tokens, the vetoes); the policies (the
+ * native-first 5-step pipeline, the adoption path, the three deltas
+ * below) stay here. A facade over the policies was evaluated and
+ * declined once, and that call stands: only the sequence is shared.
  *
  * THE THREE DELIBERATE DELTAS vs Select, each pinned by tests so neither
  * sibling's rules leak:
@@ -102,11 +101,7 @@ export default class ComboboxController extends Controller {
     multiple: { type: Boolean, default: false }
   }
 
-  #connected = false
-  #suppressRestore = false
-  #presence = null
-  #portal = null
-  #layers = null
+  #overlay = null
   #applied = ""
   #placeholder = ""
   #dismissedEvent = null
@@ -118,9 +113,21 @@ export default class ComboboxController extends Controller {
    * popup up (layers + the late portal).
    */
   connect() {
-    this.#presence = usePresence(this)
-    this.#portal = usePortal(this)
-    this.#layers = useLayers(this)
+    this.#overlay = useOverlay(this, {
+      content: () => this.#content(),
+      trigger: () => this.#trigger(),
+      expander: () => this.#expander(),
+      layers: CONTENT_LAYER_CONTROLLERS,
+      eventPrefix: EVENT_PREFIX,
+      modal: () => this.modalValue,
+      reasons: true,
+      vetoMountAutoFocus: true,
+      activateLayers: (content) => this.#activateLayers(content),
+      onOpen: (content, { seed }) => this.#opened(seed),
+      onHidden: () => this.#command()?.reset(),
+      insideAlso: (origin) => this.multipleValue && Boolean(this.#chips()?.contains(origin)),
+      onDismiss: (event) => { this.#dismissedEvent = event.detail?.originalEvent ?? null }
+    })
 
     const content = this.#content()
 
@@ -147,29 +154,7 @@ export default class ComboboxController extends Controller {
     this.#applied = serverValue
     this.#apply(serverValue, { silent: true, force: true })
 
-    this.#connected = true
-
-    if (this.#isOpen()) {
-      if (content) {
-        this.#activateLayers(content)
-        this.#portalPinned(content)
-      }
-      this.openValue = true
-    } else if (this.openValue) {
-      this.#show("trigger-press")
-    }
-  }
-
-  // The reconcile path portals ONE FRAME LATE: connect order within a boot
-  // is unordered, and portaling before the sibling popper's connect would
-  // rob it of its content target before it could cache the node.
-  #portalPinned(content) {
-    window.requestAnimationFrame(() => {
-      if (!this.#connected || !this.#isOpen()) return
-
-      this.#portal.portal(content, { container: resolvePortalContainer(this.element) })
-      this.element.setAttribute(POPPER_STRATEGY, "absolute")
-    })
+    this.#overlay.connect()
   }
 
   /**
@@ -178,7 +163,7 @@ export default class ComboboxController extends Controller {
    * dropped when the home is gone - never stranded).
    */
   disconnect() {
-    this.#connected = false
+    this.#overlay?.disconnect()
     teardown(this)
   }
 
@@ -190,7 +175,7 @@ export default class ComboboxController extends Controller {
    * @param {boolean} value
    */
   openValueChanged(value) {
-    if (!this.#connected) return
+    if (!this.#overlay?.connected()) return
 
     if (value && !this.#isOpen()) this.#show("trigger-press")
     else if (!value && this.#isOpen()) this.#hide("none")
@@ -203,7 +188,7 @@ export default class ComboboxController extends Controller {
    * @param {string} value
    */
   valueValueChanged(value) {
-    if (!this.#connected) return
+    if (!this.#overlay?.connected()) return
 
     if (this.multipleValue) {
       const values = this.#listValues(value)
@@ -522,105 +507,31 @@ export default class ComboboxController extends Controller {
   // --- open / close ---
 
   #show(reason, { seed = "" } = {}) {
-    const content = this.#content()
+    this.#overlay.show(reason, { seed: seed || null })
+  }
 
-    if (!content || this.#isOpen()) return
+  // The open microtask: focus the input, seed the filter or highlight
+  // the selected (else the first enabled) option.
+  #opened(seed) {
+    const input = this.#input()
 
-    this.#presence.cancel(content)
-    this.#suppressRestore = false
+    input?.focus()
+    if (seed && input) {
+      input.value = seed
+      input.dispatchEvent(new Event("input", { bubbles: true }))
+    } else {
+      const items = this.#items()
+      const target = items.find((item) => item.getAttribute("aria-selected") === "true") ??
+        items.find((item) => !item.hasAttribute("data-disabled") && !item.closest("[hidden]"))
 
-    const expander = this.#expander()
-
-    // Portal-on-open: move BEFORE the
-    // enter presence (reparenting mid-animation restarts it), re-anchor
-    // absolute - static under compositor scroll, transform-immune. In
-    // multiple mode only the popup (listbox) moves; the chips field with
-    // its inline input stays home as the popper anchor.
-    this.#portal.portal(content, { container: resolvePortalContainer(this.element) })
-    this.element.setAttribute(POPPER_STRATEGY, "absolute")
-
-    content.hidden = false
-    content.setAttribute("data-open-reason", reason)
-    if (seed) content.setAttribute("data-open-seed", seed)
-    else content.removeAttribute("data-open-seed")
-    expander?.setAttribute("aria-expanded", "true")
-    if (expander) setState(expander, "popup-open")
-    this.#presence.enter(content)
-    this.#activateLayers(content)
-    this.openValue = true
-
-    // Layer controllers connect on the attribute-mutation microtask; focus
-    // rides one behind so focus-scope has snapshotted the trigger.
-    queueMicrotask(() => {
-      if (!this.#isOpen()) return
-
-      const input = this.#input()
-
-      // FOCUS GOES TO THE INPUT for every reason (the typing-session call);
-      // the selected option is communicated by highlight, not focus.
-      input?.focus()
-
-      if (seed && input) {
-        input.value = seed
-        // The engine's own action runs the pass (and re-seats highlight).
-        input.dispatchEvent(new Event("input", { bubbles: true }))
-      } else {
-        // Seed the highlight on the COMMITTED option via the Command
-        // controller (activedescendant + scrollIntoView) - first enabled
-        // when no value (the engine cannot seat while the popup was
-        // hidden, so the shell seeds every open).
-        const items = this.#items()
-        const target = items.find((item) => item.getAttribute("aria-selected") === "true") ??
-          items.find((item) => !item.hasAttribute("data-disabled") && !item.closest("[hidden]"))
-
-        if (target) this.#command()?.highlightItem(target)
-      }
-
-      this.dispatch("open", { prefix: EVENT_PREFIX, detail: seed ? { reason, seed } : { reason } })
-    })
+      if (target) this.#command()?.highlightItem(target)
+    }
   }
 
   #hide(reason, { restoreFocus = true } = {}) {
-    const content = this.#content()
-
-    if (!content || !this.#isOpen()) return
-
-    this.#suppressRestore = !restoreFocus || (reason === "outside-press" && !this.modalValue)
-
-    const expander = this.#expander()
-
-    expander?.setAttribute("aria-expanded", "false")
-    if (expander) setState(expander, "popup-closed")
-    content.removeAttribute("data-open-reason")
-    content.removeAttribute("data-open-seed")
-    this.openValue = false
-
-    this.#presence.exit(content, {
-      onRemove: () => {
-        content.hidden = true
-        // Home AFTER the exit finished and hidden landed; focus
-        // return is focus-scope's ref-based job, indifferent to the move.
-        this.#portal.restore(content)
-        this.element.setAttribute(POPPER_STRATEGY, "fixed")
-        this.#layers.deactivate(content, CONTENT_LAYER_CONTROLLERS)
-        // Reset the query so reopen starts clean (a remount would get
-        // this for free; persistent DOM does it deliberately).
-        this.#command()?.reset()
-        this.dispatch("closed", { prefix: EVENT_PREFIX, detail: { reason } })
-      }
-    })
+    this.#overlay.hide(reason, { restoreFocus })
   }
 
-  // --- the commit pipeline ---
-
-  // Command's select event is the ONLY commit trigger (no click handling
-  // here - the composition boundary). Cancelable BEFORE the value commits;
-  // vetoing keeps the popup open. Committing the already-selected value is
-  // IDEMPOTENT: close, value unchanged, no change events (deselection is a
-  // form affordance - include_blank - not a hidden toggle gesture).
-  // multiple INVERTS both rules: selection TOGGLES membership
-  // (appended at the array END) and the popup STAYS OPEN; a typed query
-  // clears immediately so the full list is restored for the next pick.
   #onCommandSelect = (event) => {
     const { item, value = "", label = "" } = event.detail ?? {}
 
@@ -843,10 +754,7 @@ export default class ComboboxController extends Controller {
   #wireContent(content) {
     useListen(this, content, "keydown", this.#onKeydown)
     useListen(this, content, "poetry:command:select", this.#onCommandSelect)
-    useListen(this, content, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
-    useListen(this, content, "poetry--core--dismissable:dismiss", this.#onDismiss)
-    useListen(this, content, "poetry--core--focus-scope:mount-auto-focus", this.#onMountAutoFocus)
-    useListen(this, content, "poetry--core--focus-scope:unmount-auto-focus", this.#onUnmountAutoFocus)
+    this.#overlay.wire()
   }
 
   // Tab while open CLOSES WITHOUT COMMIT and lets focus proceed (Popover
@@ -895,38 +803,6 @@ export default class ComboboxController extends Controller {
   // trailing click re-opens). In multiple, a press in the chips FIELD is
   // an anchor press too - vetoing the layer keeps the popup open while
   // chips mutate under the pointer.
-  #onInteractOutside = (event) => {
-    if (event.target !== this.#content()) return
-
-    const origin = event.detail?.originalEvent?.target
-
-    if (!(origin instanceof Element)) return
-    if (this.#trigger()?.contains(origin)) return event.preventDefault()
-    if (this.multipleValue && this.#chips()?.contains(origin)) event.preventDefault()
-  }
-
-  // Esc / outside press arrive as the dismissable layer's dismiss event.
-  // Neither EVER commits - the value is untouched (family rule).
-  #onDismiss = (event) => {
-    if (event.target !== this.#content()) return
-
-    const escaped = event.detail?.originalEvent?.type === "keydown"
-
-    // Remembered so the SAME keypress cannot double as the closed-popup
-    // Escape wipe in the multiple input map.
-    this.#dismissedEvent = event.detail?.originalEvent ?? null
-    this.#hide(escaped ? "escape-key" : "outside-press")
-  }
-
-  // The combobox owns initial focus (the command input), not focus-scope.
-  #onMountAutoFocus = (event) => {
-    if (event.target === this.#content()) event.preventDefault()
-  }
-
-  #onUnmountAutoFocus = (event) => {
-    if (event.target === this.#content() && this.#suppressRestore) event.preventDefault()
-  }
-
   // --- the layer stack (Select's proven mechanism, MINUS roving-focus) ---
 
   #activateLayers(content) {
@@ -938,8 +814,6 @@ export default class ComboboxController extends Controller {
     content.setAttribute(
       "data-poetry--core--dismissable-disable-outside-pointer-events-value", String(this.modalValue)
     )
-
-    this.#layers.activate(content, CONTENT_LAYER_CONTROLLERS)
   }
 
 
@@ -1065,9 +939,7 @@ export default class ComboboxController extends Controller {
   }
 
   #isOpen() {
-    const content = this.#content()
-
-    return Boolean(content) && stateOf(content) === "open"
+    return this.#overlay.isOpen()
   }
 
   #items() {
