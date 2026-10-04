@@ -317,6 +317,182 @@
       "constants": []
     },
     {
+      "path": "@poetry/controllers/behaviors/overlay",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useOverlay: the popup machine the layered overlays share (popover,\nmenu, select, combobox): show and hide sequencing, the late portal on\nreconcile, the layer tokens, the dismiss, interact-outside and\nauto-focus vetoes, and the focus-restore suppression rule. The\npolicies that make each component itself stay in the controller and\ncome in as hooks: how the content and the trigger resolve, which\nlayers go on, what happens on open, what to settle before a hide, how\nthe open event reads. Rendered markup and sequencing are what the six\ncontrollers did by hand; this is the skeleton, not the product.",
+      "examples": [],
+      "file": "app/javascript/poetry/core/behaviors/overlay.js",
+      "methods": [
+        {
+          "name": "useOverlay",
+          "scope": "class",
+          "group": null,
+          "signature": "useOverlay(controller, options)",
+          "docstring": "The overlay machine for one controller, over the controller's\ncurrent scope (its behaviors tear down with `teardown(controller)`).",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance; reads and writes `openValue`, dispatches through `controller.dispatch`"
+            },
+            {
+              "name": "options",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            },
+            {
+              "name": "options.content",
+              "types": [
+                "() => Element | null"
+              ],
+              "text": "the popup element"
+            },
+            {
+              "name": "options.trigger",
+              "types": [
+                "() => Element | null"
+              ],
+              "text": "the element whose press toggles the popup, the interact-outside veto's inside"
+            },
+            {
+              "name": "[options.expander]",
+              "types": [
+                "() => Element | null"
+              ],
+              "text": "the element that carries aria-expanded and the popup-open state; the trigger by default"
+            },
+            {
+              "name": "options.layers",
+              "types": [
+                "string[]"
+              ],
+              "text": "the layer controllers the content wears while open"
+            },
+            {
+              "name": "options.eventPrefix",
+              "types": [
+                "string"
+              ],
+              "text": "the prefix of the open and closed events"
+            },
+            {
+              "name": "[options.modal]",
+              "types": [
+                "() => boolean"
+              ],
+              "text": "whether the popup is modal; decides the suppression of focus restore after an outside press"
+            },
+            {
+              "name": "[options.reasons=false]",
+              "types": [
+                "boolean"
+              ],
+              "text": "whether the content carries data-open-reason and data-open-seed while open"
+            },
+            {
+              "name": "[options.expandedWhenPresent=false]",
+              "types": [
+                "boolean"
+              ],
+              "text": "write aria-expanded only when the expander already carries it"
+            },
+            {
+              "name": "[options.vetoMountAutoFocus=false]",
+              "types": [
+                "boolean"
+              ],
+              "text": "keep focus-scope from moving focus on mount (the controller places it itself)"
+            },
+            {
+              "name": "[options.activateLayers]",
+              "types": [
+                "(content: Element) => void"
+              ],
+              "text": "writes the layer values before the tokens go on; the tokens go on either way"
+            },
+            {
+              "name": "[options.strategy]",
+              "types": [
+                "(content: Element, strategy: string) => void"
+              ],
+              "text": "writes the popper strategy; the root's attribute by default"
+            },
+            {
+              "name": "[options.onOpen]",
+              "types": [
+                "(content: Element, open: Object) => void"
+              ],
+              "text": "runs on the microtask after a show, before the open event"
+            },
+            {
+              "name": "[options.openDetail]",
+              "types": [
+                "(reason: string, seed: string | null) => Object"
+              ],
+              "text": "the open event's detail"
+            },
+            {
+              "name": "[options.beforeHide]",
+              "types": [
+                "(content: Element, reason: string) => void"
+              ],
+              "text": "settles what a hide must settle first (sub levels, a typeahead)"
+            },
+            {
+              "name": "[options.beforeExit]",
+              "types": [
+                "(content: Element) => void"
+              ],
+              "text": "runs after the state flips closed and before the exit presence starts"
+            },
+            {
+              "name": "[options.onHidden]",
+              "types": [
+                "(content: Element) => void"
+              ],
+              "text": "runs once the exit finished and the content is home, before the closed event"
+            },
+            {
+              "name": "[options.insideAlso]",
+              "types": [
+                "(origin: Element) => boolean"
+              ],
+              "text": "more elements an outside press must not dismiss from (a chips field)"
+            },
+            {
+              "name": "[options.onDismiss]",
+              "types": [
+                "(event: Event) => void"
+              ],
+              "text": "sees every dismiss event on the content before the machine acts"
+            },
+            {
+              "name": "[options.onDismissElsewhere]",
+              "types": [
+                "(target: Element, escaped: boolean) => void"
+              ],
+              "text": "a dismiss from a node inside the content that is not the content"
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the machine: connect, show, hide, isOpen, portalPinned"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/behaviors/overlay.js",
+          "line": 68
+        }
+      ],
+      "constants": []
+    },
+    {
       "path": "@poetry/controllers/behaviors/portal",
       "type": "module",
       "superclass": null,
@@ -4095,7 +4271,7 @@
       "path": "poetry--core--combobox",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Combobox ORCHESTRATOR: Select's shell\nx Command's engine, composed VIA THE EVENT CONTRACT ONLY - this thin\ncontroller owns open/close + the commit pipeline + autofill adoption and\nlistens for the embedded engine's poetry:command:select; it contains NO\nfilter/highlight/scoring code (Command owns those) and Command gained no\ncombobox code (engine purity, fenced both directions by the conformance\ngreps). Zero code is shared with SelectController - the PATTERNS are\n(the layer mechanism, the native-first 5-step pipeline, the adoption\npath), re-instantiated here because a facade extraction was explicitly\ndeclined (the Select contract's open question, answered by this build).\n\nTHE THREE DELIBERATE DELTAS vs Select, each pinned by tests so neither\nsibling's rules leak:\n- open focuses the COMMAND INPUT for every reason (a combobox session is\n  a TYPING session - APG editable combobox); the selected option gets the\n  HIGHLIGHT (activedescendant, via the Command controller) + scroll, not\n  DOM focus;\n- Tab while open CLOSES WITHOUT COMMIT and lets focus proceed (Popover\n  semantics, modal:false default; modal:true restores the trap) - Select\n  is Tab-inert;\n- a printable key on the CLOSED trigger OPENS and SEEDS the filter\n  (typing filters, never blind-commits) - Select's closed-trigger\n  typeahead-commit does NOT port.\n\nTWO MEANINGS, TWO ATTRIBUTES, ONE LIST: data-highlighted +\naria-activedescendant = position (Command's, never aria-selected);\naria-selected + data-selected + the indicator = the COMMITTED value\n(Select's twin-write, written only here, in the pipeline).\n\nTHE SYNC INVARIANT (Select's, inherited): native_select.value, the value\nValue, the twin-write, and the display never diverge - every write path\nfunnels through #apply, NATIVE FIRST (serialization truth is never\nbehind the facade), with real bubbling change/input on the native so\nTurbo auto-submit and form listeners work unmodified.\n\nMULTIPLE (the input-inside layout): the value is a\nLIST (the value Value carries a JSON array over the same String seam),\nthe native is a <select multiple> posting name[], and the trigger is\nreplaced by the chips FIELD - one chip per committed value IN VALUE\nORDER with the filter input inline after them (data-slot=combobox-chip-input,\nwhich the engine resolves too; the engine itself rides the ROOT).\nSelection TOGGLES and the popup STAYS OPEN; chips take REAL DOM focus\n(:focus-visible styles it - never data-highlighted) and focusing a chip\ncloses the popup; Backspace on the empty input removes the last chip;\nEscape on the CLOSED popup clears the query and wipes the selection.\nThe input NEVER mirrors selection text; single-mode paths are\nbehavior-identical.\n\n**Values**:\n- `open` (Boolean, default: false): Whether the popup is open.\n- `value` (String, default: \"\"): Single: the committed value. multiple: a JSON array over the same String seam (parsed by #listValues, serialized by #applyValues).\n- `modal` (Boolean, default: false): DEFAULT FALSE - Popover semantics (Tab-out closes, no scrim); true restores the focus-scope trap for dialog-critical pickers.\n- `multiple` (Boolean, default: false): multiple: the value is a LIST, the trigger is the chips field, selection toggles, the popup stays open on select.\n\n**Events**: `poetry:combobox:change`, `poetry:combobox:closed`, `poetry:combobox:open`, `poetry:combobox:select`",
+      "docstring": "The Combobox ORCHESTRATOR: Select's shell\nx Command's engine, composed VIA THE EVENT CONTRACT ONLY - this thin\ncontroller owns open/close + the commit pipeline + autofill adoption and\nlistens for the embedded engine's poetry:command:select; it contains NO\nfilter/highlight/scoring code (Command owns those) and Command gained no\ncombobox code (engine purity, fenced both directions by the conformance\ngreps). What it shares with SelectController is the SKELETON, the\noverlay machine in behaviors/overlay.js (show and hide sequencing,\nthe late portal, the layer tokens, the vetoes); the policies (the\nnative-first 5-step pipeline, the adoption path, the three deltas\nbelow) stay here. A facade over the policies was evaluated and\ndeclined once, and that call stands: only the sequence is shared.\n\nTHE THREE DELIBERATE DELTAS vs Select, each pinned by tests so neither\nsibling's rules leak:\n- open focuses the COMMAND INPUT for every reason (a combobox session is\n  a TYPING session - APG editable combobox); the selected option gets the\n  HIGHLIGHT (activedescendant, via the Command controller) + scroll, not\n  DOM focus;\n- Tab while open CLOSES WITHOUT COMMIT and lets focus proceed (Popover\n  semantics, modal:false default; modal:true restores the trap) - Select\n  is Tab-inert;\n- a printable key on the CLOSED trigger OPENS and SEEDS the filter\n  (typing filters, never blind-commits) - Select's closed-trigger\n  typeahead-commit does NOT port.\n\nTWO MEANINGS, TWO ATTRIBUTES, ONE LIST: data-highlighted +\naria-activedescendant = position (Command's, never aria-selected);\naria-selected + data-selected + the indicator = the COMMITTED value\n(Select's twin-write, written only here, in the pipeline).\n\nTHE SYNC INVARIANT (Select's, inherited): native_select.value, the value\nValue, the twin-write, and the display never diverge - every write path\nfunnels through #apply, NATIVE FIRST (serialization truth is never\nbehind the facade), with real bubbling change/input on the native so\nTurbo auto-submit and form listeners work unmodified.\n\nMULTIPLE (the input-inside layout): the value is a\nLIST (the value Value carries a JSON array over the same String seam),\nthe native is a <select multiple> posting name[], and the trigger is\nreplaced by the chips FIELD - one chip per committed value IN VALUE\nORDER with the filter input inline after them (data-slot=combobox-chip-input,\nwhich the engine resolves too; the engine itself rides the ROOT).\nSelection TOGGLES and the popup STAYS OPEN; chips take REAL DOM focus\n(:focus-visible styles it - never data-highlighted) and focusing a chip\ncloses the popup; Backspace on the empty input removes the last chip;\nEscape on the CLOSED popup clears the query and wipes the selection.\nThe input NEVER mirrors selection text; single-mode paths are\nbehavior-identical.\n\n**Values**:\n- `open` (Boolean, default: false): Whether the popup is open.\n- `value` (String, default: \"\"): Single: the committed value. multiple: a JSON array over the same String seam (parsed by #listValues, serialized by #applyValues).\n- `modal` (Boolean, default: false): DEFAULT FALSE - Popover semantics (Tab-out closes, no scrim); true restores the focus-scope trap for dialog-critical pickers.\n- `multiple` (Boolean, default: false): multiple: the value is a LIST, the trigger is the chips field, selection toggles, the popup stays open on select.\n\n**Events**: `poetry:combobox:change`, `poetry:combobox:closed`, `poetry:combobox:open`, `poetry:combobox:select`",
       "examples": [],
       "file": "app/javascript/poetry/core/combobox_controller.js",
       "methods": [
@@ -4109,7 +4285,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 120
+          "line": 115
         },
         {
           "name": "disconnect",
@@ -4121,7 +4297,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 180
+          "line": 165
         },
         {
           "name": "openValueChanged",
@@ -4141,7 +4317,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 192
+          "line": 177
         },
         {
           "name": "valueValueChanged",
@@ -4161,7 +4337,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 205
+          "line": 190
         },
         {
           "name": "toggle",
@@ -4173,7 +4349,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 225
+          "line": 210
         },
         {
           "name": "triggerKeydown",
@@ -4193,7 +4369,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 240
+          "line": 225
         },
         {
           "name": "chipsPointerdown",
@@ -4213,7 +4389,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 265
+          "line": 250
         },
         {
           "name": "inputKeydown",
@@ -4233,7 +4409,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 290
+          "line": 275
         },
         {
           "name": "chipKeydown",
@@ -4253,7 +4429,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 346
+          "line": 331
         },
         {
           "name": "removeChip",
@@ -4273,7 +4449,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 399
+          "line": 384
         },
         {
           "name": "clear",
@@ -4290,7 +4466,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 428
+          "line": 413
         },
         {
           "name": "open",
@@ -4324,7 +4500,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 450
+          "line": 435
         },
         {
           "name": "close",
@@ -4344,7 +4520,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 460
+          "line": 445
         },
         {
           "name": "setValue",
@@ -4369,7 +4545,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 472
+          "line": 457
         },
         {
           "name": "nativeChanged",
@@ -4381,7 +4557,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/combobox_controller.js",
-          "line": 502
+          "line": 487
         }
       ],
       "constants": []
@@ -5536,7 +5712,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 117
+          "line": 114
         },
         {
           "name": "disconnect",
@@ -5548,7 +5724,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 160
+          "line": 150
         },
         {
           "name": "openValueChanged",
@@ -5568,7 +5744,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 183
+          "line": 173
         },
         {
           "name": "toggle",
@@ -5580,7 +5756,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 193
+          "line": 183
         },
         {
           "name": "triggerKeydown",
@@ -5600,7 +5776,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 206
+          "line": 196
         },
         {
           "name": "open",
@@ -5641,7 +5817,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 233
+          "line": 223
         },
         {
           "name": "close",
@@ -5675,7 +5851,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 247
+          "line": 237
         },
         {
           "name": "activate",
@@ -5695,7 +5871,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 261
+          "line": 251
         },
         {
           "name": "keydown",
@@ -5715,7 +5891,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 284
+          "line": 274
         },
         {
           "name": "subEnter",
@@ -5735,7 +5911,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 337
+          "line": 327
         },
         {
           "name": "subLeave",
@@ -5755,7 +5931,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 349
+          "line": 339
         },
         {
           "name": "openSub",
@@ -5775,7 +5951,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 362
+          "line": 352
         },
         {
           "name": "closeSub",
@@ -5795,7 +5971,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 375
+          "line": 365
         }
       ],
       "constants": []
@@ -6591,7 +6767,7 @@
       "path": "poetry--core--popover",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Popover controller (the popper-consumer trio's click-open member):\nthe menu controller's #show/#hide + token-activated layer skeleton with\nALL item machinery deleted - no typeahead, no roving, no subs, no\ncollection. What remains is exactly the APG dialog-pattern-lite: the\ntrigger toggles a role=dialog panel, focus MOVES INTO the content on open\n(focus-scope's mount default - deliberately NOT vetoed, the contrast with\nthe menu family's data-open-reason contract) and RETURNS to the trigger on\nclose; the trap is enforced only when modal (the default is\nmodal: FALSE - the deliberate contrast with the menu family's true).\n\nSTRUCTURAL RESOLUTION, no targets: the content is found via the trigger's\naria-controls id (portal-safe - the menu-controller pattern verbatim);\ncontent-level listeners are wired programmatically in connect for the same\nreason.\n\nThe layer stack is ACTIVATED on open: focus-scope + dismissable are\nappended to the content's data-controller (a statically-connected trap on\nhidden content would steal focus at page load; a static dismissable would\nswallow topmost-Esc), with trapped / disable-outside-pointer-events both\nset from modal. Close reverses: presence exit -> hidden -> tokens removed\n-> focus-scope's disconnect restores focus to the trigger (suppressed for\noutside-press when non-modal: focus follows the click).\n\n**Values**:\n- `open` (Boolean, default: false): Whether the popover is open.\n- `modal` (Boolean, default: false): Whether the open popover traps focus and blocks outside pointer events.\n\n**Events**: `poetry:popover:closed`, `poetry:popover:open`",
+      "docstring": "The Popover controller (the popper-consumer trio's click-open member):\nthe shared overlay machine with ALL item machinery deleted - no\ntypeahead, no roving, no subs, no collection. What remains is exactly\nthe APG dialog-pattern-lite: the trigger toggles a role=dialog panel,\nfocus MOVES INTO the content on open (focus-scope's mount default -\ndeliberately NOT vetoed, the contrast with the menu family's\ndata-open-reason contract) and RETURNS to the trigger on close; the\ntrap is enforced only when modal (the default is modal: FALSE - the\ndeliberate contrast with the menu family's true).\n\nSTRUCTURAL RESOLUTION, no targets: the content is found via the trigger's\naria-controls id (portal-safe - the menu-controller pattern verbatim);\ncontent-level listeners are wired programmatically in connect for the same\nreason.\n\nThe layer stack is ACTIVATED on open: focus-scope + dismissable are\nappended to the content's data-controller (a statically-connected trap on\nhidden content would steal focus at page load; a static dismissable would\nswallow topmost-Esc), with trapped / disable-outside-pointer-events both\nset from modal. Close reverses: presence exit -> hidden -> tokens removed\n-> focus-scope's disconnect restores focus to the trigger (suppressed for\noutside-press when non-modal: focus follows the click).\n\n**Values**:\n- `open` (Boolean, default: false): Whether the popover is open.\n- `modal` (Boolean, default: false): Whether the open popover traps focus and blocks outside pointer events.\n\n**Events**: `poetry:popover:closed`, `poetry:popover:open`",
       "examples": [],
       "file": "app/javascript/poetry/core/popover_controller.js",
       "methods": [
@@ -6600,12 +6776,12 @@
           "scope": "instance",
           "group": null,
           "signature": "connect()",
-          "docstring": "Wires the content listeners (programmatic - portal-safe) and\nreconciles: server-open content adopts the layer stack and re-portals\none frame late (the body comments hold the rules).",
+          "docstring": "Builds the overlay machine, wires the content listeners\n(programmatic - portal-safe) and reconciles: server-open content\nadopts the layer stack and re-portals one frame late.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/popover_controller.js",
-          "line": 64
+          "line": 54
         },
         {
           "name": "disconnect",
@@ -6617,7 +6793,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/popover_controller.js",
-          "line": 93
+          "line": 73
         },
         {
           "name": "openValueChanged",
@@ -6637,7 +6813,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/popover_controller.js",
-          "line": 105
+          "line": 85
         },
         {
           "name": "toggle",
@@ -6649,7 +6825,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/popover_controller.js",
-          "line": 117
+          "line": 97
         },
         {
           "name": "open",
@@ -6661,7 +6837,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/popover_controller.js",
-          "line": 125
+          "line": 103
         },
         {
           "name": "close",
@@ -6681,7 +6857,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/popover_controller.js",
-          "line": 135
+          "line": 113
         }
       ],
       "constants": []
@@ -7475,7 +7651,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 99
+          "line": 91
         },
         {
           "name": "disconnect",
@@ -7487,7 +7663,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 157
+          "line": 141
         },
         {
           "name": "openValueChanged",
@@ -7507,7 +7683,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 170
+          "line": 154
         },
         {
           "name": "valueValueChanged",
@@ -7527,7 +7703,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 183
+          "line": 167
         },
         {
           "name": "toggle",
@@ -7539,7 +7715,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 192
+          "line": 176
         },
         {
           "name": "triggerKeydown",
@@ -7559,7 +7735,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 206
+          "line": 190
         },
         {
           "name": "open",
@@ -7593,7 +7769,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 235
+          "line": 219
         },
         {
           "name": "close",
@@ -7613,7 +7789,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 246
+          "line": 230
         },
         {
           "name": "setValue",
@@ -7633,7 +7809,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 256
+          "line": 240
         },
         {
           "name": "commit",
@@ -7653,7 +7829,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 270
+          "line": 254
         },
         {
           "name": "keydown",
@@ -7673,7 +7849,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 292
+          "line": 276
         },
         {
           "name": "nativeChanged",
@@ -7685,7 +7861,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 338
+          "line": 322
         },
         {
           "name": "syncScrollButtons",
@@ -7697,7 +7873,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 352
+          "line": 336
         },
         {
           "name": "scrollHoldStart",
@@ -7717,7 +7893,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 371
+          "line": 355
         },
         {
           "name": "scrollHoldStop",
@@ -7729,7 +7905,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/select_controller.js",
-          "line": 390
+          "line": 374
         }
       ],
       "constants": []
