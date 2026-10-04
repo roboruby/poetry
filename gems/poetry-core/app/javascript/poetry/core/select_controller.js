@@ -1,13 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
-import { useLayers } from "@poetry/controllers/behaviors/layers"
 import { useListen } from "@poetry/controllers/behaviors/listen"
-import { usePortal } from "@poetry/controllers/behaviors/portal"
-import { usePresence } from "@poetry/controllers/behaviors/presence"
+import { useOverlay } from "@poetry/controllers/behaviors/overlay"
 import { useTypeahead } from "@poetry/controllers/behaviors/typeahead"
 import { collectionItems } from "@poetry/controllers/helpers/collection"
-import { resolvePortalContainer } from "@poetry/controllers/helpers/portal"
 import { teardown } from "@poetry/controllers/helpers/scope"
-import { setState, stateOf } from "@poetry/controllers/helpers/state"
+import { setState } from "@poetry/controllers/helpers/state"
 import { typeaheadLabel } from "@poetry/controllers/helpers/typeahead"
 
 const TRIGGER_SELECTOR = '[data-slot="select-trigger"]'
@@ -24,7 +21,6 @@ const EVENT_PREFIX = "poetry:select"
 const ROVING = "poetry--core--roving-focus"
 const ROVING_ACTION = `keydown->${ROVING}#keydown`
 const CONTENT_LAYER_CONTROLLERS = ["poetry--core--focus-scope", "poetry--core--dismissable", ROVING]
-const POPPER_STRATEGY = "data-poetry--core--popper-strategy-value"
 
 const SCROLL_HOLD_STEP = 4 // px per frame while hovering a scroll button
 
@@ -79,12 +75,8 @@ export default class SelectController extends Controller {
     alignItemWithTrigger: { type: Boolean, default: false }
   }
 
-  #connected = false
+  #overlay = null
   #claimed = new WeakSet()
-  #suppressRestore = false
-  #presence = null
-  #portal = null
-  #layers = null
   #typeahead = null
   #applied = ""
   #placeholder = ""
@@ -97,9 +89,23 @@ export default class SelectController extends Controller {
    * portal).
    */
   connect() {
-    this.#presence = usePresence(this)
-    this.#portal = usePortal(this)
-    this.#layers = useLayers(this)
+    this.#overlay = useOverlay(this, {
+      content: () => this.#content(),
+      trigger: () => this.#trigger(),
+      layers: CONTENT_LAYER_CONTROLLERS,
+      eventPrefix: EVENT_PREFIX,
+      modal: () => this.modalValue,
+      reasons: true,
+      vetoMountAutoFocus: true,
+      activateLayers: (content) => this.#activateLayers(content),
+      onOpen: (content) => this.#opened(content),
+      // Before a hide: the typeahead buffer and the scroll hold go first.
+      beforeHide: () => {
+        this.#typeahead.reset()
+        this.scrollHoldStop()
+      },
+      beforeExit: (content) => this.#clearAlignment(content)
+    })
     this.#typeahead = useTypeahead(this)
 
     const content = this.#content()
@@ -123,29 +129,7 @@ export default class SelectController extends Controller {
     this.#applied = serverValue
     this.#apply(serverValue, { silent: true, force: true })
 
-    this.#connected = true
-
-    if (this.#isOpen()) {
-      if (content) {
-        this.#activateLayers(content)
-        this.#portalPinned(content)
-      }
-      this.openValue = true
-    } else if (this.openValue) {
-      this.#show("trigger-press")
-    }
-  }
-
-  // The reconcile path portals ONE FRAME LATE: connect order within a boot
-  // is unordered, and portaling before the sibling popper's connect would
-  // rob it of its content target before it could cache the node.
-  #portalPinned(content) {
-    window.requestAnimationFrame(() => {
-      if (!this.#connected || !this.#isOpen()) return
-
-      this.#portal.portal(content, { container: resolvePortalContainer(this.element) })
-      this.element.setAttribute(POPPER_STRATEGY, "absolute")
-    })
+    this.#overlay.connect()
   }
 
   /**
@@ -155,7 +139,7 @@ export default class SelectController extends Controller {
    * never stranded).
    */
   disconnect() {
-    this.#connected = false
+    this.#overlay?.disconnect()
     this.scrollHoldStop()
     teardown(this)
   }
@@ -168,7 +152,7 @@ export default class SelectController extends Controller {
    * @param {boolean} value
    */
   openValueChanged(value) {
-    if (!this.#connected) return
+    if (!this.#overlay?.connected()) return
 
     if (value && !this.#isOpen()) this.#show("trigger-press")
     else if (!value && this.#isOpen()) this.#hide("none")
@@ -181,7 +165,7 @@ export default class SelectController extends Controller {
    * @param {string} value
    */
   valueValueChanged(value) {
-    if (!this.#connected || value === this.#applied) return
+    if (!this.#overlay?.connected() || value === this.#applied) return
 
     this.#apply(value)
   }
@@ -397,63 +381,16 @@ export default class SelectController extends Controller {
   // --- open / close ---
 
   #show(reason, { seed = null } = {}) {
-    const content = this.#content()
-
-    if (!content || this.#isOpen()) return
-
-    this.#presence.cancel(content)
-    this.#suppressRestore = false
-
-    const trigger = this.#trigger()
-
-    // Portal-on-open: move BEFORE the
-    // enter presence (reparenting mid-animation restarts it), re-anchor
-    // absolute - static under compositor scroll, transform-immune. In
-    // aligned mode the content fixed-positions ITSELF (viewport coords,
-    // location-independent - the math is written in viewport
-    // coordinates) and popper's writes stay bailed either way.
-    this.#portal.portal(content, { container: resolvePortalContainer(this.element) })
-    this.element.setAttribute(POPPER_STRATEGY, "absolute")
-
-    content.hidden = false
-    content.setAttribute("data-open-reason", reason)
-    if (seed) content.setAttribute("data-open-seed", seed)
-    else content.removeAttribute("data-open-seed")
-    trigger?.setAttribute("aria-expanded", "true")
-    if (trigger) setState(trigger, "popup-open")
-    this.#presence.enter(content)
-    this.#activateLayers(content)
-    this.openValue = true
-
-    // The layer controllers connect on the attribute-mutation microtask;
-    // initial focus rides one microtask behind so focus-scope has already
-    // snapshotted the trigger (its focus-return target).
-    queueMicrotask(() => {
-      if (!this.#isOpen()) return
-
-      this.#focusSelected(content)
-      // AFTER #focusSelected: the aligned scroll write must win over the
-      // focus scroll-into-view.
-      if (this.#alignEligible()) this.#alignWithTrigger(content)
-      this.syncScrollButtons()
-      this.dispatch("open", { prefix: EVENT_PREFIX, detail: seed ? { reason, seed } : { reason } })
-    })
+    this.#overlay.show(reason, { seed })
   }
 
-  // --- alignItemWithTrigger (the native-select-feel placement) ---
-  //
-  // The popup opens OVER the trigger with the selected item's TEXT center
-  // aligned to the trigger's value-text center (native <select> feel): the
-  // content stretches from the trigger line to the viewport bottom (or top,
-  // when the selection sits deep in a long list) and the LIST SCROLLS so
-  // the item lands on the trigger. Not a popper placement: the content is
-  // fixed-positioned by this routine and popper's writes are suppressed by
-  // the data-align-item-with-trigger attribute (its #update bails). The
-  // fallback rules: touch environments fall back (approximated by
-  // pointer:coarse), trigger within 20px of a viewport
-  // edge falls back, a popup squeezed under min(scrollHeight, 100px) falls
-  // back - all to plain popper positioning for THAT open. Skipped
-  // deliberately: WebKit pinch-zoom detection and scale normalization.
+  // The open microtask: focus the selected option, align in aligned
+  // mode, and settle the scroll buttons.
+  #opened(content) {
+    this.#focusSelected(content)
+    if (this.#alignEligible()) this.#alignWithTrigger(content)
+    this.syncScrollButtons()
+  }
 
   #alignEligible() {
     return this.alignItemWithTriggerValue && !window.matchMedia?.("(pointer: coarse)")?.matches
@@ -613,37 +550,15 @@ export default class SelectController extends Controller {
   }
 
   #hide(reason, { restoreFocus = true } = {}) {
-    const content = this.#content()
+    this.#overlay.hide(reason, { restoreFocus })
+  }
 
-    if (!content || !this.#isOpen()) return
+  // Between the state flip and the exit: aligned mode's inline styles.
+  #clearAlignment(content) {
+    if (!content.hasAttribute("data-align-item-with-trigger")) return
 
-    this.#typeahead.reset()
-    this.scrollHoldStop()
-    this.#suppressRestore = !restoreFocus || (reason === "outside-press" && !this.modalValue)
-
-    const trigger = this.#trigger()
-
-    trigger?.setAttribute("aria-expanded", "false")
-    if (trigger) setState(trigger, "popup-closed")
-    content.removeAttribute("data-open-reason")
-    content.removeAttribute("data-open-seed")
-    if (content.hasAttribute("data-align-item-with-trigger")) {
-      content.removeAttribute("data-align-item-with-trigger")
-      this.#clearAlignedStyles(content)
-    }
-    this.openValue = false
-
-    this.#presence.exit(content, {
-      onRemove: () => {
-        content.hidden = true
-        // Home AFTER the exit finished and hidden landed; focus
-        // return is focus-scope's ref-based job, indifferent to the move.
-        this.#portal.restore(content)
-        this.element.setAttribute(POPPER_STRATEGY, "fixed")
-        this.#layers.deactivate(content, CONTENT_LAYER_CONTROLLERS)
-        this.dispatch("closed", { prefix: EVENT_PREFIX, detail: { reason } })
-      }
-    })
+    content.removeAttribute("data-align-item-with-trigger")
+    this.#clearAlignedStyles(content)
   }
 
   // Initial focus: the SELECTED option for EVERY reason, pointer included
@@ -764,10 +679,7 @@ export default class SelectController extends Controller {
     useListen(this, content, "scroll", () => this.syncScrollButtons())
     useListen(this, content, "pointerover", this.#onPointerover)
     useListen(this, content, "pointerout", this.#onPointerout)
-    useListen(this, content, "poetry--core--dismissable:dismiss", this.#onDismiss)
-    useListen(this, content, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
-    useListen(this, content, "poetry--core--focus-scope:mount-auto-focus", this.#onMountAutoFocus)
-    useListen(this, content, "poetry--core--focus-scope:unmount-auto-focus", this.#onUnmountAutoFocus)
+    this.#overlay.wire()
   }
 
   // Focus follows the pointer (the menu family's hover-highlight rule):
@@ -811,33 +723,6 @@ export default class SelectController extends Controller {
   // A press on the select's OWN trigger is the toggle's job, not an
   // outside dismissal: without the veto the pointerdown closes and the
   // trailing click re-opens (the popover trigger-press rule).
-  #onInteractOutside = (event) => {
-    if (event.target !== this.#content()) return
-
-    const origin = event.detail?.originalEvent?.target
-
-    if (origin instanceof Element && this.#trigger()?.contains(origin)) event.preventDefault()
-  }
-
-  // Esc / outside press arrive as the dismissable layer's dismiss event.
-  // Esc NEVER commits - the value is untouched.
-  #onDismiss = (event) => {
-    if (event.target !== this.#content()) return
-
-    const escaped = event.detail?.originalEvent?.type === "keydown"
-
-    this.#hide(escaped ? "escape-key" : "outside-press")
-  }
-
-  // The select owns initial focus (the selected option), not focus-scope.
-  #onMountAutoFocus = (event) => {
-    if (event.target === this.#content()) event.preventDefault()
-  }
-
-  #onUnmountAutoFocus = (event) => {
-    if (event.target === this.#content() && this.#suppressRestore) event.preventDefault()
-  }
-
   // --- the layer stack (the menu controller's proven mechanism) ---
 
   #activateLayers(content) {
@@ -854,8 +739,6 @@ export default class SelectController extends Controller {
     if (!action.includes(ROVING_ACTION)) {
       content.setAttribute("data-action", `${action} ${ROVING_ACTION}`.trim())
     }
-
-    this.#layers.activate(content, CONTENT_LAYER_CONTROLLERS)
   }
 
 
@@ -880,9 +763,7 @@ export default class SelectController extends Controller {
   }
 
   #isOpen() {
-    const content = this.#content()
-
-    return Boolean(content) && stateOf(content) === "open"
+    return this.#overlay.isOpen()
   }
 
   #items() {

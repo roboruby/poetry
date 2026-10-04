@@ -135,6 +135,15 @@ files against the manifest stamped at last bless.
   subclass override without the super call. Page-lifetime nets (the
   presence and portal cache nets, id_integrity, registration_guard,
   dismissable's static heal) stay outside the scope on purpose.
+- A layered popup (a trigger, portaled content, focus-scope and
+  dismissable tokens while open) composes `behaviors/overlay.js`
+  (`useOverlay(this, { content, trigger, layers, eventPrefix, ... })`)
+  and keeps only its policies as hooks; popover, menu, select and
+  combobox are the four on it. The machine dispatches `open` and
+  `closed` under the prefix it is handed, and the events gate counts
+  them for the controller. Tooltip and hover card keep their own
+  pointer-timed machines on purpose: no aria-expanded, no focus-scope,
+  and the tooltip opens without an enter presence.
 - Component DOM ids derive through `Poetry::Core::StableId` (`key:` →
   dom_id-first token, explicit `id:` wins) so Turbo morph pairs identity
   across renders and cached fragments stay composable — never mint bare
