@@ -52,10 +52,6 @@ rules:
   - hook: cn-card
     attr: data-size
     reason: Card has no size option; the source's size axis.
-  - hook: cn-combobox-list
-    attr: data-empty
-    reason: the command engine marks emptiness by unhiding the empty part; emitting data-empty on
-      the list is a banked lead (it would make the source's data-empty:p-0 live).
   - hook: cn-context-menu-sub-trigger
     attr: data-variant
     reason: sub-menu triggers take no variant; the source styles its destructive variant here.

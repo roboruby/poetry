@@ -6,6 +6,10 @@
 
 - The four layered popups share one machine: `@poetry/controllers/behaviors/overlay` (`useOverlay`) owns the show and hide sequencing, the late portal on reconcile, the layer tokens, the dismiss, interact-outside and auto-focus vetoes and the focus-restore suppression rule, and popover, menu, select and combobox hand it their policies as hooks: how the content and the trigger resolve, which layers go on, what the open microtask does, what a hide settles first, how the open event reads. Rendered markup, event names and sequencing are unchanged; the controllers lose about a third of their lines between them. Tooltip and hover card stay on their own pointer-timed machines, which share less with the four than the hooks to express the difference would cost.
 
+### Fixed
+
+- The command engine writes `data-empty` on its list when the filter pass leaves no visible item, beside unhiding the empty part, so a theme can restyle an empty list; the Combobox themes' `data-empty:p-0` rule was dead without it.
+
 ## [0.1.10] - 2026-10-03
 
 ### Added
