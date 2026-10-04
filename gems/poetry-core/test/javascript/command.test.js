@@ -218,17 +218,19 @@ describe("poetry--core--command", () => {
       expect(el("item-calendar").hasAttribute("hidden")).toBe(true)
     })
 
-    it("zero match: everything hides, the empty part shows, both highlight writes clear", () => {
+    it("zero match: everything hides, the empty part shows, the list says data-empty, both highlight writes clear", () => {
       type("zzz")
 
       expect(visibleValues()).toEqual([])
       expect(el("empty").hidden).toBe(false)
+      expect(el("list").hasAttribute("data-empty")).toBe(true)
       expect(highlightedId()).toBeNull()
       expect(activedescendant()).toBeNull()
 
       type("cal")
 
       expect(el("empty").hidden).toBe(true)
+      expect(el("list").hasAttribute("data-empty")).toBe(false)
       expect(highlightedId()).toBe("item-calendar")
     })
 

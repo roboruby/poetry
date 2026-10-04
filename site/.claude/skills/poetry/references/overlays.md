@@ -53,7 +53,7 @@ Slots: empty (Custom zero-results content (defaults to t('poetry.command.empty')
 - PART `command-input-wrapper` - The input row - search icon + filter input above the list
 - PART `command-search-icon` - Decorative search glyph beside the input
 - PART `command-input` - The role=combobox filter input - real focus stays pinned here for the whole session; the highlight rides aria-activedescendant
-- PART `command-list` - The role=listbox holding empty/loading/items - the input's aria-controls target
+- PART `command-list` - The role=listbox holding empty/loading/items - the input's aria-controls target | states: data-empty (the filter pass left no visible item (controller-written; the empty part shows at the same moment))
 - PART `command-empty` - Zero-matches message - rendered hidden; the controller unhides it when the filter pass leaves no visible items
 - PART `command-loading` - Pending affordance (role=status) - rendered hidden; the HOST toggles it (Turbo frame events), Command never does
 - PART `command-group` - role=group labelled by its heading - hidden by the controller when every member item is filtered out | states: data-always-render (always_render: is set - the group survives every filter pass)
@@ -194,7 +194,7 @@ Slot REQUIRED: with_title (the accessible name) - a call without it raises.
 - `content_class:` (string) - Extra classes merged onto the <dialog> panel (e.g. "max-h-[50vh]" caps a top/bottom sheet).
 - `dismissible:` (boolean) - default true - Backdrop clicks close the dialog; false keeps confirmations from being dismissed accidentally (Esc still closes).
 - `modal:` (boolean) - default true - Non-modal (false) opens with show() - no top layer, no scrim, no focus trap, no scroll lock; the page behind stays interactive. Esc (while focus is inside), the swipe, and any wired close button still exit; there is no backdrop to click, so pointer dismissal is off by nature.
-- `show_swipe_handle:` (boolean) - default false - Renders the grab pill so the swipe gesture is discoverable.
+- `show_swipe_handle:` (boolean) - default false - Renders the grab pill so the swipe gesture is discoverable - direction: :down only; an edge panel raises.
 - `snap_points:` () - Preset resting heights for a bottom sheet, ascending: fractions of the full height (0..1] or CSS px/rem lengths (["31rem", 1]). The popup runs full-height and opens at the first point; drags move between points, below the first dismisses. direction: :down only.
 Slots: trigger (The trigger is a poetry Button wired to open the dialog - agents pass Button props: with_trigger(variant: :outline) { "Open" }.; takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly), title (The heading - the dialog's accessible name; required.), description (Muted copy under the title, wired to aria-describedby.), footer (The action row at the bottom of the panel.).
 - PART `drawer` - Root wrapper around the trigger and the <dialog> element
@@ -214,7 +214,7 @@ Slots: trigger (The trigger is a poetry Button wired to open the dialog - agents
 - RULE: Open drawers with with_trigger(...) - never a hand-wired button.
 - RULE: with_title is REQUIRED (the accessible name) - the inherited Dialog rule.
 - RULE: direction: is the DISMISS direction: :down is the mobile bottom sheet (the default); left/right make an edge panel - prefer Sheet on desktop.
-- RULE: show_swipe_handle: true renders the grab pill - use it on bottom sheets so the gesture is discoverable.
+- RULE: show_swipe_handle: true renders the grab pill on a bottom sheet (direction: :down) so the gesture is discoverable; an edge panel has no handle and raises.
 - RULE: Esc and the backdrop still dismiss (the platform trap) - the swipe is an addition, never the only way out.
 - RULE: modal: false keeps the page interactive (no scrim, no focus trap) - pair a wired footer close; Esc while focus is inside still exits.
 - RULE: snap_points: ["31rem", 1] snaps a bottom sheet between preset heights (ascending fractions or px/rem lengths; opens at the first) - direction: :down only.

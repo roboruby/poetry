@@ -333,7 +333,11 @@ module Poetry
         part "command-input", "The role=combobox filter input - real focus stays pinned here " \
                               "for the whole session; the highlight rides aria-activedescendant"
         part "command-list", "The role=listbox holding empty/loading/items - the input's " \
-                             "aria-controls target"
+                             "aria-controls target",
+             states: {
+               "data-empty" => "the filter pass left no visible item (controller-written; the empty " \
+                               "part shows at the same moment)"
+             }
         part "command-empty", "Zero-matches message - rendered hidden; the controller unhides " \
                               "it when the filter pass leaves no visible items"
         part "command-loading", "Pending affordance (role=status) - rendered hidden; the HOST " \

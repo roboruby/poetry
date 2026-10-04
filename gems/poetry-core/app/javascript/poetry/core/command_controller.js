@@ -347,6 +347,9 @@ export default class CommandController extends Controller {
     const empty = list.querySelector(EMPTY_SELECTOR) ?? this.element.querySelector(EMPTY_SELECTOR)
 
     if (empty) empty.hidden = visible !== 0
+    // The list says so too, so a theme can restyle it (the source drops
+    // the list padding when only the empty message shows).
+    list.toggleAttribute("data-empty", visible === 0)
 
     // Re-seat: highest score among visible ∩ enabled, first-in-DOM
     // tiebreak (strictly-greater replacement preserves DOM order as the
