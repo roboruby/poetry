@@ -54,13 +54,13 @@ module Dummy
     if Rails.env.production?
       config.eager_load = true
       config.consider_all_requests_local = false
-      config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
+      config.public_file_server.headers = { "cache-control" => "public, max-age=31536000" }
       config.assume_ssl = true
       config.force_ssl = true
       config.log_tags = [ :request_id ]
       config.logger = ActiveSupport::TaggedLogging.logger($stdout)
       config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
-      config.cache_store = :memory_store, { size: 256.megabytes }
+      config.cache_store = :memory_store, { size: 256 * 1024 * 1024 }
       config.action_dispatch.show_exceptions = :rescuable
     end
   end
