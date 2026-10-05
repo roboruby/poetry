@@ -1,4 +1,10 @@
-@import "tailwindcss";
+/* Sources are explicit, never auto-detected: the build must come out the
+   same on every machine, and a bundler that installs gems under
+   vendor/bundle beside this file (CI does) would otherwise be scanned. */
+@import "tailwindcss" source(none);
+@source "../app";
+@source "../data";
+@source "../lib";
 @import "./poetry/tokens.css" layer(theme);
 @import "./poetry/theme.css";
 @import "./poetry/animate.css";
