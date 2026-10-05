@@ -1,0 +1,85 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# pre-commit: the committed manifests follow the controllers they describe.
+#
+# A gem whose package.json has a `manifest` script commits
+# config/controllers_manifest.json (poetry-core beside it
+# config/state_vocabulary.json), generated from the live controller classes
+# and their JSDoc, and a drift gate in its vitest suite fails CI on a stale
+# file. The gate only runs when someone runs it, so an edit after the last
+# run reaches the commit untested; a class comment is part of the manifest
+# (the docs read it), and one such edit once shipped a stale file. So the
+# commit regenerates: for every gem whose staged paths touch its
+# JavaScript, this hook runs the gem's manifest script and stages what it
+# wrote. Installed by bin/setup (git config core.hooksPath .githooks);
+# `git commit --no-verify` skips it, and CI still fails on a stale file.
+
+require "json"
+require "open3"
+
+# Paths under a gem whose contents feed its manifests: the controllers and
+# the doc reader the generator runs them through.
+MANIFEST_INPUTS = %w[app/javascript/ test/javascript/support/].freeze
+MANIFEST_OUTPUTS = %w[config/controllers_manifest.json config/state_vocabulary.json].freeze
+
+def git(*args)
+  out, status = Open3.capture2("git", *args)
+  abort "pre-commit: git #{args.join(" ")} failed" unless status.success?
+  out
+end
+
+def changed_paths(*) = git("diff", "--name-only", "-z", *).split("\0")
+
+# The gems that generate a manifest, by the script in their package.json.
+def manifest_gems
+  files = Dir.glob("gems/*/package.json").select { |file| JSON.parse(File.read(file)).dig("scripts", "manifest") }
+  files.map { |file| File.dirname(file) }
+end
+
+def inputs_of(gem) = MANIFEST_INPUTS.map { |dir| File.join(gem, dir) }
+def outputs_of(gem) = MANIFEST_OUTPUTS.map { |file| File.join(gem, file) }.select { |file| File.exist?(file) }
+
+# Regenerates from the working tree, so the tree's JavaScript must be what
+# the commit carries; a partially staged change would describe the wrong
+# sources.
+def refuse_unstaged!(gem)
+  unstaged = changed_paths("--", *inputs_of(gem))
+  return if unstaged.empty?
+
+  abort <<~MSG
+    pre-commit: #{gem} has JavaScript changes outside the index (#{unstaged.join(", ")}).
+    The manifest regenerates from the working tree; stage them or stash them, then commit again.
+  MSG
+end
+
+def regenerate!(gem)
+  out, status = Open3.capture2e("npm", "run", "--silent", "manifest", chdir: gem)
+  abort "pre-commit: `npm run manifest` failed in #{gem}\n#{out}" unless status.success?
+
+  true
+rescue Errno::ENOENT
+  warn "pre-commit: npm is not on PATH, so #{gem}'s manifest was not regenerated; " \
+       "run `npm run manifest` there before pushing (CI fails on a stale one)"
+  false
+end
+
+def stage_outputs!(gem)
+  changed = outputs_of(gem).select { |file| changed_paths("--", file).any? }
+  if changed.empty?
+    puts "pre-commit: #{gem}: manifests fresh"
+  else
+    git("add", "--", *changed)
+    puts "pre-commit: #{gem}: #{changed.map { |file| File.basename(file) }.join(", ")} regenerated and staged"
+  end
+end
+
+Dir.chdir(git("rev-parse", "--show-toplevel").strip)
+staged = changed_paths("--cached", "--diff-filter=ACMRD")
+
+manifest_gems.each do |gem|
+  next if staged.none? { |path| inputs_of(gem).any? { |dir| path.start_with?(dir) } }
+
+  refuse_unstaged!(gem)
+  stage_outputs!(gem) if regenerate!(gem)
+end

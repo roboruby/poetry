@@ -15,7 +15,10 @@ server lives in poetry-agent; core keeps the `tool` DSL it projects.
 - `npm test` — vitest (controller behavior + the drift gates:
   controllers_manifest, state_vocabulary, events_declaration).
 - `npm run manifest` — regenerate `config/controllers_manifest.json` +
-  `config/state_vocabulary.json` after any controller surface change.
+  `config/state_vocabulary.json` after any edit under `app/javascript`,
+  comments included (the JSDoc text is part of the manifest). The
+  repository's pre-commit hook runs it for a commit that touches those
+  paths (`.githooks/pre-commit`, installed by the root `bin/setup`).
 - Generated artifacts regenerate with the matching task: `tokens:generate`
   (tokens/*.css + the DESIGN.md front matter), `registry:generate`.
 - CI (`.github/workflows/main.yml`) adds `bundle-audit`, the Herb linter

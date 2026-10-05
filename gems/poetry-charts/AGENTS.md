@@ -21,7 +21,9 @@ the swappability door.
   ran them.
 - `npm test` — verifies the vendored d3 kernel build (`vendor:d3:verify`),
   then vitest (+ the drift gates: controllers_manifest, events_declaration).
-- `npm run manifest` — regenerate `config/controllers_manifest.json`;
+- `npm run manifest` — regenerate `config/controllers_manifest.json` (the
+  repository's pre-commit hook runs it for a commit that touches
+  `app/javascript`, comments included);
   `npm run vendor:d3` rebuilds the kernel from `vendor/d3-kernel/` (its
   README is the doctrine: the exact d3 packages the geometry fixtures came
   from, unmodified, attribution banner included).
