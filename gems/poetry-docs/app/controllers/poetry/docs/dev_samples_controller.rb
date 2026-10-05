@@ -1,0 +1,16 @@
+# frozen_string_literal: true
+
+# Development-only: renders the landing page's code sample for real, so
+# edits to compose_example.erb.sample can be seen, not just read. Routed
+# only in development (config/routes.rb).
+module Poetry
+  module Docs
+    class DevSamplesController < ApplicationController
+      layout false
+
+      def card
+        @sample = render_to_string(inline: Poetry::Docs.root.join("app/views/landing/compose_example.erb.sample").read).html_safe # rubocop:disable Rails/OutputSafety
+      end
+    end
+  end
+end

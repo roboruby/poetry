@@ -13,9 +13,13 @@ require "uri"
 # separate so nothing here needs a runner to be understood.
 module Releaser
   ROOT = File.expand_path("../../..", __dir__)
-  # Publish order: dependencies first, the umbrella last.
+  # The family, in publish order: dependencies first, the umbrella last.
+  # Versions, changelog dates and release notes cover all of it.
   GEMS = %w[poetry-core poetry-lucide poetry-charts poetry-extract poetry-ui poetry-agent poetry-simple_form
-            poetry].freeze
+            poetry-docs poetry].freeze
+  # What the release builds, signs and pushes: the family without the docs
+  # engine, which a host takes from this repository at the tag instead.
+  PUBLISHED = (GEMS - %w[poetry-docs]).freeze
   # The package.json trees the family versions in lockstep.
   PACKAGES = %w[gems/poetry-core gems/poetry-charts gems/poetry-agent].freeze
   # What the umbrella gem may ship, and nothing else.
@@ -169,7 +173,7 @@ module Releaser
 
     def self.all(root, version, out_dir, epoch:)
       FileUtils.mkdir_p(out_dir)
-      GEMS.map { |name| build(root, name, version, out_dir, epoch: epoch) }
+      PUBLISHED.map { |name| build(root, name, version, out_dir, epoch: epoch) }
     end
 
     def self.checksums(files) = files.to_h { |f| [File.basename(f), Digest::SHA256.file(f).hexdigest] }
@@ -267,7 +271,7 @@ module Releaser
     end
 
     def self.all(root, version, out_dir, log: $stdout)
-      GEMS.each do |name|
+      PUBLISHED.each do |name|
         gem_path = File.join(out_dir, Releaser.gem_file(name, version))
         local_sha = Digest::SHA256.file(gem_path).hexdigest
         case decision(remote_sha(name, version), local_sha)
@@ -286,7 +290,7 @@ module Releaser
     end
 
     def self.await(version)
-      ok = system("rubygems-await", *GEMS.map { |name| "#{name}:#{version}" })
+      ok = system("rubygems-await", *PUBLISHED.map { |name| "#{name}:#{version}" })
       raise Error, "rubygems-await failed" unless ok
 
       true

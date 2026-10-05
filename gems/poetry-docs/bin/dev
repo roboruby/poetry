@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# The docs host for authoring: the engine at the root of test/dummy on
+# port 4110. Rebuild the stylesheet with `bundle exec rake poetry_docs:css`
+# after a change under tailwind/ or to the classes the views use.
+set -euo pipefail
+cd "$(dirname "$0")/../test/dummy"
+exec bundle exec rails server -p "${PORT:-4110}" "$@"

@@ -21,16 +21,10 @@ def ref = ENV.fetch("REF", "HEAD")
 
 def gems_in_pkg = Dir[File.join(PKG, "*.gem")].sort
 
-desc "Stamp VERSION into every version.rb and package.json, then re-lock the site on the new path gem versions"
+desc "Stamp VERSION into every version.rb and package.json"
 task :versions do
   changed = Releaser::Versions.stamp(ROOT, version)
   puts changed.empty? ? "versions: everything already at #{version}" : "versions: #{changed.size} files now say #{version}"
-  # The site's committed lock names the family's versions; Bundler rewrites
-  # them from the gemspecs beside it.
-  Bundler.with_unbundled_env do
-    system("bundle", "lock", chdir: File.join(ROOT, "site"), out: File::NULL, exception: true)
-  end
-  puts "versions: site/Gemfile.lock re-locked"
 end
 
 namespace :changelog do
