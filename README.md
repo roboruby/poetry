@@ -10,12 +10,11 @@ This is the umbrella gem. One line installs the library proper: the engine, the 
 
 This repository holds the whole family. Each gem keeps its own bundle, tests and gates, and resolves its siblings from the tree beside it.
 
-- `gems/` — poetry-core, poetry-lucide, poetry-charts, poetry-extract, poetry-ui, poetry-agent and poetry-simple_form, one directory each
-- `site/` — the poetryui.com app, documenting and testing the family from the tree
+- `gems/` — poetry-core, poetry-lucide, poetry-charts, poetry-extract, poetry-ui, poetry-agent and poetry-simple_form, one directory each, and poetry-docs, the poetryui.com documentation as an engine that documents and tests the family from the tree (versioned with the family, not published)
 - `tools/releaser/` — the release tooling; `VERSION` at the root is the single source of truth for all eight gems
 - this directory — the umbrella gem
 
-Work inside a gem's directory: `bundle install`, then `bundle exec rake` runs its default chain. At the root, `bundle exec rake family` runs every gem's chain in publish order, then the site's, then the umbrella's.
+Work inside a gem's directory: `bundle install`, then `bundle exec rake` runs its default chain. At the root, `bundle exec rake family` runs every gem's chain in publish order, then the umbrella's.
 
 ## What the umbrella installs
 

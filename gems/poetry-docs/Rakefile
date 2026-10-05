@@ -1,0 +1,28 @@
+# frozen_string_literal: true
+
+require "bundler/gem_tasks"
+require "minitest/test_task"
+
+Minitest::TestTask.create do |t|
+  t.test_globs = [ "test/**/*_test.rb" ]
+end
+
+require "rubocop/rake_task"
+RuboCop::RakeTask.new
+
+# The dummy host's tasks run from here: `environment` boots it, and with
+# it come the engine's own tasks under poetry_docs: (lib/tasks), the
+# generators and poetry:check from the gems.
+require_relative "test/dummy/config/application"
+Rails.application.load_tasks
+
+# poetry:check over the engine's templates and Ruby, on demand. Not in the
+# default chain: the check resolves a host's own helpers from the host
+# root, so the docs' poetry_pagy_nav reads as unknown here, and the site
+# never gated on it (DesignLint and the render graph are the tests).
+desc "poetry:check over the engine's templates and Ruby"
+task check: :environment do
+  Rake::Task["poetry:check"].invoke("../../{app/views,app/controllers,app/helpers,app/lib}/**/*.{html.erb,rb}")
+end
+
+task default: %i[test rubocop poetry_docs:css:verify]

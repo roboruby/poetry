@@ -1,0 +1,14 @@
+/.bundle
+/Gemfile.lock
+/gemfiles/*.lock
+/log/*
+!/log/.keep
+/tmp/*
+!/tmp/.keep
+/test/dummy/log/*
+!/test/dummy/log/.keep
+/test/dummy/tmp/*
+!/test/dummy/tmp/.keep
+/test/dummy/public/assets
+/test/dummy/config/master.key
+/pkg

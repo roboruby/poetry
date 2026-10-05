@@ -1,8 +1,8 @@
 # AGENTS.md — poetry
 
 This repository is the Poetry family: the umbrella gem at the root, the seven
-gems under `gems/`, the poetryui.com site under `site/`, and the release
-tooling under `tools/releaser/`. Each gem keeps its own AGENTS.md, bundle,
+published gems and the docs engine under `gems/`, and the release tooling
+under `tools/releaser/`. Each gem keeps its own AGENTS.md, bundle,
 tests and gates; read the gem's file before working in it.
 
 ## Layout
@@ -10,8 +10,10 @@ tests and gates; read the gem's file before working in it.
 - `gems/poetry-core`, `poetry-lucide`, `poetry-charts`, `poetry-extract`,
   `poetry-ui`, `poetry-agent`, `poetry-simple_form` — one directory per gem;
   siblings resolve by relative path (`../poetry-core`) inside the tree.
-- `site/` — the docs app on the family from the tree (`../gems/*`), lock
-  committed; a deploy builds from the release tag.
+- `gems/poetry-docs` — the poetryui.com documentation as a mountable engine
+  on the family from the tree, with its dummy host under `test/dummy`
+  (`bin/dev` serves it on 4110). Versioned with the family, never published:
+  a host takes it from this repository at a release tag.
 - `tools/releaser/` — versions, changelog dates, notes, build, sign, verify,
   push; its own small bundle and tests.
 - The root: the umbrella gem (`poetry.gemspec`, `lib/`, `test/`) plus
@@ -25,11 +27,11 @@ tests and gates; read the gem's file before working in it.
 - In a gem directory, `bundle exec rake` runs its default chain. At the
   root, `bundle exec rake` runs the umbrella's own chain (`test`, `rubocop`
   by explicit file list, the YARD gates) and `bundle exec rake family` runs
-  every gem's chain in publish order, then `site/bin/ci`, then this one.
+  every gem's chain in publish order, then this one.
 - CI (`.github/workflows/ci.yml`) runs every gem on Ruby 3.4 and 4.0 from
   its own directory, the JavaScript and Herb checks, `bundle-audit` per
-  bundle, the site, the reference-data freshness check and the releaser's
-  tests; `all-green` is the one status for branch rules.
+  bundle, the docs engine's reference-data freshness check and the
+  releaser's tests; `all-green` is the one status for branch rules.
 - The commit regenerates the controller manifests. `.githooks/pre-commit`
   runs a gem's `npm run manifest` when the commit touches its JavaScript
   (`app/javascript`, `test/javascript/support`) and stages what it wrote;
@@ -44,12 +46,13 @@ tests and gates; read the gem's file before working in it.
 ## Releases
 
 - `VERSION` at the root. `tools/releaser`'s `versions` task stamps every
-  `version.rb`, `package.json` and `package-lock.json` and re-locks the
-  site; the bump also runs the site's `docs:refresh`, because the reference
-  data carries the version. `changelog:date` dates each gem's `## [X]`
+  `version.rb`, `package.json` and `package-lock.json`; the bump also runs
+  the docs engine's `poetry_docs:refresh`, because the reference data
+  carries the version. `changelog:date` dates each gem's `## [X]`
   heading or inserts a no-changes section.
 - The train tags `vX` (annotated) and opens a draft GitHub release with
-  notes assembled from the eight changelogs. Publishing that release is the
+  notes assembled from the nine changelogs; the docs engine is in the
+  family for versions and notes and out of the publish list. Publishing that release is the
   word: `release.yml` builds all eight reproducibly from the tag's commit
   time, signs each with sigstore, verifies, then exchanges one trusted
   publishing credential and pushes in order, idempotently (a version already

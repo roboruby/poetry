@@ -1,0 +1,13 @@
+# Language statistics and diffs: templates count as Ruby; the installed
+# poetry CSS slots, the generated theme registry, the built stylesheet, the
+# vendored page-agent build, the API reference, the search index and the
+# skill references are generated or vendored and collapse in diffs.
+*.erb linguist-language=Ruby
+tailwind/poetry/** linguist-vendored
+tailwind/styles/** linguist-generated
+app/assets/builds/** linguist-generated
+app/assets/javascripts/poetry_docs/page-agent/** linguist-vendored
+data/api/** linguist-generated
+data/search-index.json linguist-generated
+.claude/skills/poetry/references/** linguist-generated
+test/dummy/config/credentials.yml.enc diff=rails_credentials

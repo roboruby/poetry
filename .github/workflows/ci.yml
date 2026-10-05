@@ -45,6 +45,7 @@ jobs:
           - { name: poetry-ui, dir: gems/poetry-ui, npm: gems/poetry-core }
           - { name: poetry-agent, dir: gems/poetry-agent }
           - { name: poetry-simple_form, dir: gems/poetry-simple_form }
+          - { name: poetry-docs, dir: gems/poetry-docs }
           - { name: poetry, dir: "." }
     defaults:
       run:
@@ -108,7 +109,7 @@ jobs:
           - { name: poetry-core, dir: gems/poetry-core, paths: app }
           - { name: poetry-charts, dir: gems/poetry-charts, paths: app }
           - { name: poetry-ui, dir: gems/poetry-ui, paths: app lib/generators }
-          - { name: site, dir: site, paths: app }
+          - { name: poetry-docs, dir: gems/poetry-docs, paths: app }
     defaults:
       run:
         working-directory: ${{ matrix.gem.dir }}
@@ -212,17 +213,17 @@ jobs:
       - name: Run the suite and the behaviour tier on Rails main
         run: bundle exec rake test test:dommy
 
-  # The site the same way, on the next release's framework defaults. Its
-  # bundle starts from the committed lock, so Rails is what moves.
-  rails-main-site:
-    name: Rails main (site)
+  # The docs engine the same way, on the next release's framework defaults;
+  # its dummy host boots under Herb there (POETRY_RAILS=main).
+  rails-main-docs:
+    name: Rails main (poetry-docs)
     runs-on: ubuntu-latest
     continue-on-error: true
     defaults:
       run:
-        working-directory: site
+        working-directory: gems/poetry-docs
     env:
-      BUNDLE_GEMFILE: ${{ github.workspace }}/site/gemfiles/rails_main.gemfile
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gems/poetry-docs/gemfiles/rails_main.gemfile
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -230,16 +231,11 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1
         with:
-          ruby-version: .ruby-version
-          working-directory: site
-      - name: Resolve the bundle from the committed lock
-        run: |
-          cp Gemfile.lock gemfiles/rails_main.gemfile.lock
-          bundle install --jobs 4
-      - name: Prepare the site
-        run: bin/setup --skip-server
+          ruby-version: "4.0"
+          bundler-cache: true
+          working-directory: gems/poetry-docs
       - name: Run the tests on Rails main
-        run: bin/rails test
+        run: bundle exec rake test
 
   audit:
     name: bundle audit (${{ matrix.gem.name }})
@@ -255,6 +251,7 @@ jobs:
           - { name: poetry-ui, dir: gems/poetry-ui }
           - { name: poetry-agent, dir: gems/poetry-agent }
           - { name: poetry-simple_form, dir: gems/poetry-simple_form }
+          - { name: poetry-docs, dir: gems/poetry-docs }
           - { name: poetry, dir: "." }
     defaults:
       run:
@@ -272,26 +269,6 @@ jobs:
       - name: Audit dependencies for known CVEs
         run: bundle exec bundle-audit check --update
 
-  # The site on the family from the tree: setup, rubocop, audits, tests.
-  site:
-    name: Site (bin/ci)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: site
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-          working-directory: site
-      - name: Run the CI pipeline (setup, rubocop, audits, tests)
-        run: bin/ci
-
   # The committed reference data (API reference, skill, search index) must
   # match the tree it documents; this replaces the release-time refresh.
   reference-fresh:
@@ -299,7 +276,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: site
+        working-directory: gems/poetry-docs
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -307,18 +284,16 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1
         with:
-          ruby-version: .ruby-version
+          ruby-version: "4.0"
           bundler-cache: true
-          working-directory: site
+          working-directory: gems/poetry-docs
       - name: Install each gem's own bundle (the reference export runs inside it)
         run: |
           for gem in poetry-core poetry-ui poetry-charts poetry-agent poetry-simple_form poetry-extract; do
-            (cd "../gems/$gem" && bundle install --quiet)
+            (cd "../$gem" && bundle install --quiet)
           done
-      - name: Prepare the site
-        run: bin/setup --skip-server
-      - name: Regenerate the reference data
-        run: bin/rails docs:refresh
+      - name: Regenerate the reference data, the skills, the search index and the stylesheet
+        run: bundle exec rake poetry_docs:refresh
       - name: Nothing changed
         run: git diff --exit-code --stat
 
@@ -347,7 +322,7 @@ jobs:
   all-green:
     name: All green
     if: always()
-    needs: [ruby, javascript, herb, reactionview, audit, site, reference-fresh, releaser]
+    needs: [ruby, javascript, herb, reactionview, audit, reference-fresh, releaser]
     runs-on: ubuntu-latest
     steps:
       - name: A job failed or was cancelled
