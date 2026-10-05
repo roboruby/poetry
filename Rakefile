@@ -12,7 +12,7 @@ require "rubocop/rake_task"
 # gems and the site with the wrong rules.
 RuboCop::RakeTask.new do |t|
   t.options = %w[--config .rubocop-umbrella.yml]
-  t.patterns = %w[Gemfile Rakefile poetry.gemspec lib test rakelib]
+  t.patterns = %w[Gemfile Rakefile poetry.gemspec lib test rakelib .githooks/pre-commit]
 end
 task default: %i[test rubocop yard:verify yard:coverage yard:coverage:all yard:lint]
 

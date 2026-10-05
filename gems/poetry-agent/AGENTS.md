@@ -21,7 +21,9 @@ component contract. Two ship:
   `yard:coverage` (every public object documented; floors at 0).
 - `npm test` — vitest over the controllers and the adapter (+ the
   controllers_manifest drift gate); `npm run manifest` regenerates
-  `config/controllers_manifest.json` after any controller surface change.
+  `config/controllers_manifest.json` after any edit under `app/javascript`,
+  comments included; the repository's pre-commit hook runs it for a commit
+  that touches those paths.
 
 ## Conventions
 
