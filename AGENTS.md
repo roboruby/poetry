@@ -30,6 +30,12 @@ tests and gates; read the gem's file before working in it.
   its own directory, the JavaScript and Herb checks, `bundle-audit` per
   bundle, the site, the reference-data freshness check and the releaser's
   tests; `all-green` is the one status for branch rules.
+- The commit regenerates the controller manifests. `.githooks/pre-commit`
+  runs a gem's `npm run manifest` when the commit touches its JavaScript
+  (`app/javascript`, `test/javascript/support`) and stages what it wrote;
+  `bin/setup` points `core.hooksPath` at the directory, so run it once per
+  clone. The JSDoc text is part of a manifest (the docs read it), so a
+  comment edit is a surface change. Its test is `test/pre_commit_hook_test.rb`.
 - RuboCop: there is deliberately no `.rubocop.yml` at the root. RuboCop
   merges a higher-level config's `Exclude` into every subproject, so a root
   exclusion silently empties the gems' lints. The umbrella lints from
