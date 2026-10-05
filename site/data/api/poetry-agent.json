@@ -1,5 +1,5 @@
 {
-  "poetry_version": "0.1.10",
+  "poetry_version": "0.1.11",
   "gem": "poetry-agent",
   "objects": [
     {
@@ -80,7 +80,7 @@
       "constants": [
         {
           "name": "VERSION",
-          "value": "\"0.1.10\"",
+          "value": "\"0.1.11\"",
           "docstring": "The gem version (lockstep with the poetry family)."
         }
       ]
