@@ -295,7 +295,15 @@ jobs:
       - name: Regenerate the reference data, the skills, the search index and the stylesheet
         run: bundle exec rake poetry_docs:refresh
       - name: Nothing changed
-        run: git diff --exit-code --stat
+        run: |
+          git diff --stat
+          # A stylesheet drift prints its rule-level diff, so the cause is
+          # readable from the log (the minified file is one line).
+          if ! git diff --quiet -- app/assets/builds/poetry_docs.css; then
+            diff <(git show HEAD:gems/poetry-docs/app/assets/builds/poetry_docs.css | tr '}' '\n') \
+                 <(tr '}' '\n' < app/assets/builds/poetry_docs.css) | head -120 || true
+          fi
+          git diff --exit-code --stat
 
   releaser:
     name: Releaser tests and a build
