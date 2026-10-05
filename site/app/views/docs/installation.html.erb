@@ -76,7 +76,11 @@
         writes the <code>AGENTS.md</code> section and the Claude Code skills
         (when your repository ignores <code>.claude/skills</code> the install
         says so: the skills still serve that checkout, and teammates and CI
-        get theirs with <code>bin/rails g poetry:skill</code>).
+        get theirs with <code>bin/rails g poetry:skill</code>). OpenCode reads
+        that same <code>.claude/skills</code> directory; for Codex and the
+        other agents, install the identical set with
+        <code>npx skills add &lt;this-site&gt;/agent-skills -a &lt;agent&gt;</code>
+        (the <%= link_to "Agent Skills guide", agent_skills_path %> lists them).
         Add <code>--charts</code> to wire
         poetry-charts, and <code>--no-preflight</code> when your Tailwind entry
         omits preflight (see
@@ -184,7 +188,9 @@
         A plain re-run refreshes every vendored file, the chart files
         included once they are installed, and the Claude Code skills, which
         are generated and are replaced without a question; pass
-        <code>--skip</code> to keep a skill file you edited by hand. It
+        <code>--skip</code> to keep a skill file you edited by hand, or
+        <code>--skip-skills</code> to leave the skills directory alone
+        entirely (add them later with <code>bin/rails g poetry:skill</code>). It
         keeps the theme already installed (it reads the
         fragment header back: the slot is always
         <code>poetry/style-default.css</code>, and its first line names the

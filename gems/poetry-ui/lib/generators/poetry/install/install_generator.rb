@@ -60,6 +60,9 @@ module Poetry
                           desc: %(Also wire poetry-charts (requires gem "poetry-charts" in the bundle))
     class_option :skip_bundle, type: :boolean, default: false,
                                desc: "Skip `bundle install` after adding the herb gem (poetry:check's parser)"
+    class_option :skip_skills, type: :boolean, default: false,
+                               desc: "Skip installing poetry's Claude Code skills into .claude/skills/ " \
+                                     "(install them later with `rails g poetry:skill`)"
     # --no-preflight: the host imports Tailwind without preflight (its own
     # reset). Poetry's components lean on a handful of preflight's
     # normalizations, so the install vendors the reset floor - preflight at
@@ -418,6 +421,8 @@ module Poetry
     # `rails g poetry:skill` (re-run after updating poetry gems).
     # @api private
     def write_skills
+      return if options[:skip_skills]
+
       apply_poetry_skills
     end
 

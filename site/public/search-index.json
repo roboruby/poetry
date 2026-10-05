@@ -648,6 +648,12 @@
     "path": "/editors#generate"
   },
   {
+    "title": "Skills",
+    "page": "Editors",
+    "section": "docs",
+    "path": "/editors#skills"
+  },
+  {
     "title": "The MCP server",
     "page": "Editors",
     "section": "docs",

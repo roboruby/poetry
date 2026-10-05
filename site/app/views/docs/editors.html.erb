@@ -90,6 +90,25 @@ CODE
 
   <section class="flex flex-col gap-4">
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="skills">Skills</h2>
+      <p>
+        MCP is the live surface; a skill is the static one.
+        <code>bin/rails g poetry:skill</code> (and every
+        <code>poetry:install</code> run) writes the
+        <code>poetry</code>, <code>poetry-design</code>, and
+        <code>poetry-component</code> skills to
+        <code>.claude/skills/</code>. OpenCode reads that directory; for
+        Codex and the rest, the same files install with the open agent-skills
+        CLI, <code>npx skills add &lt;this-site&gt;/agent-skills -a &lt;agent&gt;</code>.
+        The <%= link_to "Agent Skills guide", agent_skills_path %> names each
+        skill, the agents it targets, and the dependency-free fallback.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: "npx skills add #{request.base_url}/agent-skills -a codex -a opencode", language: "shell", label: "Skills for non-Claude agents") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <h2 id="mcp">The MCP server</h2>
       <p>
         Poetry's agent surface is a standard stdio MCP server

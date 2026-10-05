@@ -166,6 +166,14 @@ module Poetry
       assert_file ".claude/skills/poetry-component/references/checklist.md"
     end
 
+    def test_install_skip_skills_leaves_the_skills_directory_alone
+      run_generator %w[--skip-skills]
+
+      assert_no_file ".claude/skills/poetry/SKILL.md"
+      assert_no_file ".claude/skills/poetry-design/SKILL.md"
+      assert_no_file ".claude/skills/poetry-component/SKILL.md"
+    end
+
     def test_tailwind_entry_injection_is_idempotent
       entry = File.join(destination_root, InstallGenerator::TAILWIND_ENTRY)
       FileUtils.mkdir_p(File.dirname(entry))
