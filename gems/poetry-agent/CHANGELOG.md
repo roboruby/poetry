@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.12] - 2026-10-07
+
+### Changed
+
+- Version bump with the family; no changes in this gem.
+
 ## [0.1.11] - 2026-10-05
 
 ### Changed

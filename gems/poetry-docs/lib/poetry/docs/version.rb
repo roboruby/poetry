@@ -3,6 +3,6 @@
 module Poetry
   module Docs
     # The gem version, stamped with the family.
-    VERSION = "0.1.11"
+    VERSION = "0.1.12"
   end
 end

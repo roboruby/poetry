@@ -1,5 +1,5 @@
 {
-  "poetry_version": "0.1.11",
+  "poetry_version": "0.1.12",
   "gem": "poetry-extract",
   "objects": [
     {
@@ -23,7 +23,7 @@
       "constants": [
         {
           "name": "VERSION",
-          "value": "\"0.1.11\"",
+          "value": "\"0.1.12\"",
           "docstring": "The gem version."
         }
       ]
