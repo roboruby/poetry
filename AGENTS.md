@@ -1,6 +1,6 @@
 # AGENTS.md — poetry
 
-This repository is the Poetry family: the umbrella gem at the root, the seven
+This repository is the Poetry family: the umbrella gem at the root, the eight
 published gems and the docs engine under `gems/`, and the release tooling
 under `tools/releaser/`. Each gem keeps its own AGENTS.md, bundle,
 tests and gates; read the gem's file before working in it.
@@ -8,19 +8,25 @@ tests and gates; read the gem's file before working in it.
 ## Layout
 
 - `gems/poetry-core`, `poetry-lucide`, `poetry-charts`, `poetry-extract`,
-  `poetry-ui`, `poetry-agent`, `poetry-simple_form` — one directory per gem;
+  `poetry-ui`, `poetry-agent`, `poetry-simple_form`, `poetry-jumpstart_pro`
+  — one directory per gem;
   siblings resolve by relative path (`../poetry-core`) inside the tree.
 - `gems/poetry-docs` — the poetryui.com documentation as a mountable engine
   on the family from the tree, with its dummy host under `test/dummy`
   (`bin/dev` serves it on 4110). Versioned with the family, never published:
   a host takes it from this repository at a release tag.
+- `gems/poetry-jumpstart_pro` — the Jumpstart Pro installer, in the family
+  release from 0.1.12. Its drift, license and translation guards read a
+  private Jumpstart Pro checkout from `JUMPSTART_PRO_PATH` and skip without
+  one. Jumpstart Pro is commercial: never copy its markup, view code or
+  comments into the tree (the gem's AGENTS.md has the rule).
 - `tools/releaser/` — versions, changelog dates, notes, build, sign, verify,
   push; its own small bundle and tests.
 - The root: the umbrella gem (`poetry.gemspec`, `lib/`, `test/`) plus
-  `VERSION`, the single source of truth for all eight gems. One
+  `VERSION`, the single source of truth for all nine gems. One
   `gem "poetry"` installs core, ui and lucide as hard runtime dependencies,
-  required outright in `lib/poetry.rb`; charts, agent, extract and
-  simple_form are opt-in gems a host adds itself.
+  required outright in `lib/poetry.rb`; charts, agent, extract,
+  simple_form and jumpstart_pro are opt-in gems a host adds itself.
 
 ## Gates
 
@@ -51,9 +57,9 @@ tests and gates; read the gem's file before working in it.
   carries the version. `changelog:date` dates each gem's `## [X]`
   heading or inserts a no-changes section.
 - The train tags `vX` (annotated) and opens a draft GitHub release with
-  notes assembled from the nine changelogs; the docs engine is in the
+  notes assembled from the ten changelogs; the docs engine is in the
   family for versions and notes and out of the publish list. Publishing that release is the
-  word: `release.yml` builds all eight reproducibly from the tag's commit
+  word: `release.yml` builds all nine reproducibly from the tag's commit
   time, signs each with sigstore, verifies, then exchanges one trusted
   publishing credential and pushes in order, idempotently (a version already
   on RubyGems with the same checksum is skipped, a different checksum stops

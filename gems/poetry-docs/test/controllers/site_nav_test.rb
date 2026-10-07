@@ -87,6 +87,23 @@ class SiteNavTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "gem \"poetry\""
   end
 
+  test "the Jumpstart Pro library page renders, is linked from the umbrella and mirrors as markdown" do
+    get library_path("jumpstart-pro")
+
+    assert_response :success
+    assert_select "h1", "Jumpstart Pro"
+    assert_select "td code", "madmin"
+
+    get library_path("poetry")
+
+    assert_select "a[href=?]", library_path("jumpstart-pro")
+
+    get "/libraries/jumpstart-pro.md"
+
+    assert_response :success
+    assert_includes response.body, "poetry_jumpstart_pro:install"
+  end
+
 
   test "the docs header and the landing header link the code and the gem" do
     get introduction_path

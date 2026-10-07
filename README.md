@@ -10,8 +10,8 @@ This is the umbrella gem. One line installs the library proper: the engine, the 
 
 This repository holds the whole family. Each gem keeps its own bundle, tests and gates, and resolves its siblings from the tree beside it.
 
-- `gems/` — poetry-core, poetry-lucide, poetry-charts, poetry-extract, poetry-ui, poetry-agent and poetry-simple_form, one directory each, and poetry-docs, the poetryui.com documentation as an engine that documents and tests the family from the tree (versioned with the family, not published)
-- `tools/releaser/` — the release tooling; `VERSION` at the root is the single source of truth for all eight gems
+- `gems/` — poetry-core, poetry-lucide, poetry-charts, poetry-extract, poetry-ui, poetry-agent, poetry-simple_form and poetry-jumpstart_pro, one directory each, and poetry-docs, the poetryui.com documentation as an engine that documents and tests the family from the tree (versioned with the family, not published)
+- `tools/releaser/` — the release tooling; `VERSION` at the root is the single source of truth for all nine gems
 - this directory — the umbrella gem
 
 Work inside a gem's directory: `bundle install`, then `bundle exec rake` runs its default chain. At the root, `bundle exec rake family` runs every gem's chain in publish order, then the umbrella's.
@@ -94,6 +94,18 @@ gem "poetry-simple_form"
 
 ```bash
 bin/rails generate poetry:simple_form:install
+```
+
+### [poetry-jumpstart_pro](https://github.com/roboruby/poetry/tree/main/gems/poetry-jumpstart_pro) — the Jumpstart Pro installer
+
+For apps built on Jumpstart Pro. One generator installs Poetry recreations of the app's screens as `app/views` overrides, which Rails resolves ahead of the Jumpstart engine's originals: sign in and sign up, the app shell, accounts and teams, API tokens, notifications, announcements, billing and pricing, the checkout page, the public pages, the error pages and the admin dashboard. It runs `poetry:install` when the app needs it, reconciles Jumpstart's stylesheets with Poetry's tokens and components, and updates the selectors in Jumpstart's own tests that assert on the replaced markup. The gem ships only Poetry views, never Jumpstart's source; delete an override to fall back to Jumpstart's view.
+
+```ruby
+gem "poetry-jumpstart_pro", group: :development
+```
+
+```bash
+bin/rails generate poetry_jumpstart_pro:install
 ```
 
 ## Demo

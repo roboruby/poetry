@@ -46,6 +46,7 @@ jobs:
           - { name: poetry-agent, dir: gems/poetry-agent }
           - { name: poetry-simple_form, dir: gems/poetry-simple_form }
           - { name: poetry-docs, dir: gems/poetry-docs }
+          - { name: poetry-jumpstart_pro, dir: gems/poetry-jumpstart_pro }
           - { name: poetry, dir: "." }
     defaults:
       run:
@@ -252,6 +253,7 @@ jobs:
           - { name: poetry-agent, dir: gems/poetry-agent }
           - { name: poetry-simple_form, dir: gems/poetry-simple_form }
           - { name: poetry-docs, dir: gems/poetry-docs }
+          - { name: poetry-jumpstart_pro, dir: gems/poetry-jumpstart_pro }
           - { name: poetry, dir: "." }
     defaults:
       run:
@@ -323,7 +325,7 @@ jobs:
           working-directory: tools/releaser
       - name: Releaser tests
         run: bundle exec rake test
-      - name: Build all eight gems
+      - name: Build all nine gems
         run: bundle exec rake build checksums
 
   # One status for branch rules: green only when every job above is.

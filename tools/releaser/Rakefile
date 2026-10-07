@@ -46,7 +46,7 @@ task :notes do
   puts path
 end
 
-desc "Build all eight gems into pkg/, reproducibly from the commit time of REF (default HEAD)"
+desc "Build all nine gems into pkg/, reproducibly from the commit time of REF (default HEAD)"
 task :build do
   Releaser::Build.check_umbrella!(ROOT)
   epoch = Releaser::Build.epoch(ROOT, ref)

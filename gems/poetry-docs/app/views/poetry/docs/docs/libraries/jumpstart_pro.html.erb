@@ -1,0 +1,146 @@
+<% content_for :title, "Jumpstart Pro" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Jumpstart Pro") %>
+  <% end %>
+<% end %>
+<%
+  gemfile_source = <<~CODE
+    gem "poetry"
+    gem "poetry-jumpstart_pro", group: :development
+  CODE
+  generate_source = <<~CODE
+    bundle install
+    bin/rails generate poetry_jumpstart_pro:install
+    bin/rails tailwindcss:build
+    bin/rails poetry:check
+  CODE
+  subset_source = <<~CODE
+    bin/rails generate poetry_jumpstart_pro:install auth shell
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Jumpstart Pro</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      poetry-jumpstart_pro re-skins a Jumpstart Pro app with Poetry: one
+      generator installs Poetry recreations of the app's screens, from sign
+      in to billing to the admin dashboard, and wires what they need.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="how-it-works">How it works</h2>
+      <p>
+        Jumpstart Pro serves its interface from an engine inside the app. Rails
+        looks for a view in the app's own <code>app/views</code> before it
+        looks in an engine, so a file there replaces the engine's view of the
+        same path. The installer copies Poetry recreations into
+        <code>app/views</code>, written against the same routes, instance
+        variables, locals and translation keys as the screens they replace.
+      </p>
+      <p>
+        The gem ships only Poetry views, never Jumpstart Pro's source, and
+        your licensed Jumpstart code is never touched. Every installed file is
+        yours to edit, and deleting one falls back to Jumpstart's view.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="install">Install</h2>
+      <p>
+        Add the gem beside the umbrella, run the generator, then rebuild the
+        stylesheet and check the result. The generator installs Poetry first
+        when the app does not have it yet.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: gemfile_source, language: "ruby", label: "Gemfile") %>
+    <%= poetry_code_block(code: generate_source, language: "shell", label: "Install") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Name categories to install part of the app. Running it again is
+        safe: files that already match are skipped, and every other step
+        checks before it changes anything.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: subset_source, language: "shell", label: "Some categories") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="categories">Categories</h2>
+      <table>
+        <thead>
+          <tr><th>Category</th><th>Screens</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>auth</code></td><td>sign in, the two-factor challenge, sign up, the profile, password reset, sudo, the OAuth buttons and form errors</td></tr>
+          <tr><td><code>shell</code></td><td>the navbar and its Hotwire Native variant, the account, user and development menus, notifications, flash messages and the footer</td></tr>
+          <tr><td><code>accounts</code></td><td>accounts and teams, members, invitations, transfers, the account password and the settings navigation</td></tr>
+          <tr><td><code>users</code></td><td>the mention chip, agreements, connected accounts, referrals and two-factor backup codes</td></tr>
+          <tr><td><code>api_tokens</code></td><td>the token list, detail and forms, with usage examples in <%= link_to "code blocks", component_path("code-block") %></td></tr>
+          <tr><td><code>notifications</code></td><td>the notifications page, the navbar panel and the row</td></tr>
+          <tr><td><code>announcements</code></td><td>the announcements list, the announcement and the row</td></tr>
+          <tr><td><code>checkouts</code></td><td>the checkout page</td></tr>
+          <tr><td><code>public</code></td><td>the landing, about, privacy and terms pages</td></tr>
+          <tr><td><code>dashboard</code></td><td>the signed-in home</td></tr>
+          <tr><td><code>errors</code></td><td>the 404, 500 and generic error pages</td></tr>
+          <tr><td><code>billing</code></td><td>billing, charges, subscriptions and their changes, payment methods and pricing</td></tr>
+          <tr><td><code>madmin</code></td><td>the admin dashboard and the array field</td></tr>
+        </tbody>
+      </table>
+      <p>
+        A few views stay Jumpstart's, because they cannot be recreated
+        without copying them: the payment processors' checkout forms, the
+        Braintree and PayPal payment method forms, the agreement texts and
+        the mention list.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="what-changes">What else the installer changes</h2>
+      <ul>
+        <li>
+          <strong>Stylesheets.</strong> Jumpstart's stylesheet declares a few
+          things for the whole page that would win over Poetry's tokens and
+          components. The forms plugin moves to its class strategy, the
+          primary color and page background come from Poetry's tokens, the
+          global link and list rules go, and the heading, <code>code</code>
+          and <code>kbd</code> rules skip Poetry's components.
+        </li>
+        <li>
+          <strong>A helper.</strong> <code>app/helpers/poetry_jumpstart_pro_helper.rb</code>
+          draws Jumpstart's pagination as the <%= link_to "pagination", component_path("pagination") %>
+          component and maps its toasts onto Poetry's <%= link_to "toast", component_path("toast") %> variants.
+        </li>
+        <li>
+          <strong>The admin.</strong> Madmin's pages load the app stylesheet,
+          so the dashboard and the array field render styled.
+        </li>
+        <li>
+          <strong>Tests.</strong> Jumpstart's own sign in, two-factor and
+          pagination tests get selectors that match the Poetry markup.
+        </li>
+        <li>
+          <strong>Default views.</strong> In development, Jumpstart copies a
+          few of its views into the app on boot. A copy you never edited is
+          replaced without a prompt; an edited one asks first, like any
+          generator conflict.
+        </li>
+      </ul>
+      <p>
+        <code>--skip-stylesheets</code>, <code>--skip-tests</code> and
+        <code>--skip-poetry-install</code> leave those steps out, and
+        <code>--theme</code> picks the theme when Poetry is installed for the
+        first time.
+      </p>
+    <% end %>
+  </section>
+</div>

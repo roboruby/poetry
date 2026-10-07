@@ -16,7 +16,7 @@ module Releaser
   # The family, in publish order: dependencies first, the umbrella last.
   # Versions, changelog dates and release notes cover all of it.
   GEMS = %w[poetry-core poetry-lucide poetry-charts poetry-extract poetry-ui poetry-agent poetry-simple_form
-            poetry-docs poetry].freeze
+            poetry-jumpstart_pro poetry-docs poetry].freeze
   # What the release builds, signs and pushes: the family without the docs
   # engine, which a host takes from this repository at the tag instead.
   PUBLISHED = (GEMS - %w[poetry-docs]).freeze
@@ -152,7 +152,7 @@ module Releaser
     end
   end
 
-  # gem build for all eight, reproducible: SOURCE_DATE_EPOCH is the commit
+  # gem build for all nine, reproducible: SOURCE_DATE_EPOCH is the commit
   # time of the ref under release, so a rebuild is byte-identical.
   module Build
     def self.epoch(root, ref = "HEAD")

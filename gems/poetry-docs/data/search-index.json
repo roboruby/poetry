@@ -6756,6 +6756,36 @@
     "path": "/libraries/simple-form#end-state"
   },
   {
+    "title": "Jumpstart Pro",
+    "page": "Jumpstart Pro",
+    "section": "libraries",
+    "path": "/libraries/jumpstart-pro"
+  },
+  {
+    "title": "How it works",
+    "page": "Jumpstart Pro",
+    "section": "libraries",
+    "path": "/libraries/jumpstart-pro#how-it-works"
+  },
+  {
+    "title": "Install",
+    "page": "Jumpstart Pro",
+    "section": "libraries",
+    "path": "/libraries/jumpstart-pro#install"
+  },
+  {
+    "title": "Categories",
+    "page": "Jumpstart Pro",
+    "section": "libraries",
+    "path": "/libraries/jumpstart-pro#categories"
+  },
+  {
+    "title": "What else the installer changes",
+    "page": "Jumpstart Pro",
+    "section": "libraries",
+    "path": "/libraries/jumpstart-pro#what-changes"
+  },
+  {
     "title": "Extract",
     "page": "Extract",
     "section": "libraries",

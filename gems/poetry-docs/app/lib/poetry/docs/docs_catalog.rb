@@ -310,8 +310,8 @@ module Poetry
         LIBRARIES = [
           Entry.new(slug: "poetry", title: "Poetry", section: "libraries", icon: :feather,
                     description: "The umbrella gem: one gem \"poetry\" installs the engine, the components and " \
-                               "the default icon set together; charts, the agent surfaces, extraction and " \
-                               "the Simple Form bridge stay opt-in."),
+                               "the default icon set together; charts, the agent surfaces, extraction, " \
+                               "the Simple Form bridge and the Jumpstart Pro installer stay opt-in."),
           Entry.new(slug: "core", title: "Core", section: "libraries", icon: :cpu,
                     description: "The engine gem: the component DSL, design tokens, and 53 Stimulus " \
                                "primitives poetry-ui is built on - the same public surface you use " \
@@ -332,6 +332,9 @@ module Poetry
             Entry.new(slug: "simple-form", title: "Simple Form", section: "libraries", icon: :"clipboard-list",
                     description: "The migration bridge from Simple Form: one initializer re-maps " \
                                "f.input onto Poetry fields, so existing forms restyle without a rewrite."),
+          Entry.new(slug: "jumpstart-pro", title: "Jumpstart Pro", section: "libraries", icon: :rocket,
+                    description: "The Jumpstart Pro installer: one generator re-skins a Jumpstart Pro " \
+                               "app's screens with Poetry recreations, installed as app/views overrides."),
           Entry.new(slug: "extract", title: "Extract", section: "libraries", icon: :pipette,
                     description: "Domain-to-theme extraction: point it at a public site and it writes " \
                                "a DESIGN.md plus deterministic Poetry tokens, ready for the " \

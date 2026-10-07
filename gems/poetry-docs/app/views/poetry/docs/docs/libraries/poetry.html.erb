@@ -20,6 +20,7 @@
     gem "poetry-agent"         # MCP server, WebMCP, AG-UI, A2UI
     gem "poetry-extract"       # DESIGN.md + tokens from any public site
     gem "poetry-simple_form"   # the Simple Form migration bridge
+    gem "poetry-jumpstart_pro", group: :development # re-skins a Jumpstart Pro app
   CODE
 %>
 
@@ -93,6 +94,7 @@
         <li><%= link_to "Agent", library_path("agent") %>: the MCP server, the WebMCP runtime, the AG-UI relay and the A2UI catalog and renderer.</li>
         <li><%= link_to "Extract", library_path("extract") %>: a <code>DESIGN.md</code> and deterministic tokens from any public website.</li>
         <li><%= link_to "Simple Form", library_path("simple-form") %>: the migration bridge for apps already on Simple Form.</li>
+        <li><%= link_to "Jumpstart Pro", library_path("jumpstart-pro") %>: the installer that re-skins a Jumpstart Pro app with Poetry.</li>
       </ul>
     <% end %>
     <%= poetry_code_block(code: ecosystem_source, language: "ruby", label: "A full Gemfile") %>
