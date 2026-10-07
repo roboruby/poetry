@@ -50,6 +50,11 @@ module Poetry
         # flip is the whole toggle.
         element :item_indicator_state, "[[data-unchecked]>&]:hidden"
 
+        # POETRY ADDITION (family convention): a submit item is a <button>, which
+        # sizes to its label even as a flex box where the link and plain items
+        # fill the row; it takes the full width and starts its text like them.
+        element :item_submit, "w-full text-start"
+
         # The source's inline lucide icon classes, named per part.
         element :indicator_check, "size-4"
         element :indicator_circle, "size-2 fill-current"

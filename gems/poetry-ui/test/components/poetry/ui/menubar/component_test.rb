@@ -254,6 +254,7 @@ module Poetry
           assert_equal "menuitem", link["role"]
 
           assert_equal "button", submit.name
+          assert_includes submit["class"].split, "w-full", "the submit item fills the row"
           refute_nil submit.ancestors("form").first, "the submit item is wrapped in a form"
         end
 

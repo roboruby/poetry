@@ -3307,10 +3307,11 @@ components:
     - sub_content
     - item_indicator
     - item_indicator_state
+    - item_submit
     - indicator_check
     - indicator_circle
     - sub_indicator
-    capsule: 782677850eea
+    capsule: cc47e5e60e90
     controllers:
     - identifier: poetry--core--context-menu
       targets: []
@@ -4914,10 +4915,11 @@ components:
     - sub_content
     - item_indicator
     - item_indicator_state
+    - item_submit
     - indicator_check
     - indicator_circle
     - sub_indicator
-    capsule: 7e706784fb17
+    capsule: 7303732042e7
     controllers:
     - identifier: poetry--core--menu
       targets: []
@@ -6744,10 +6746,11 @@ components:
     - sub_content
     - item_indicator
     - item_indicator_state
+    - item_submit
     - indicator_check
     - indicator_circle
     - sub_indicator
-    capsule: '041619b53311'
+    capsule: 937cafa689af
     controllers:
     - identifier: poetry--core--menu
       targets: []

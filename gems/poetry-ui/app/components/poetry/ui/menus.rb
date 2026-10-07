@@ -134,10 +134,13 @@ module Poetry
           submit = options.delete(:submit)
           method = options.delete(:method)
           disabled = options[:disabled]
+          # A submit item is a <button>, which sizes to its label; the
+          # item_submit element makes it fill the row like the others.
+          item_class = [(family_style.css(:item_submit) if submit && !disabled), options.delete(:class)].compact
           attrs = {
             "data-slot" => "#{family_slot_prefix}-item", "role" => "menuitem", "tabindex" => "-1",
             "data-poetry-collection-item" => "", "data-variant" => variant,
-            "class" => family_style.css(:item, class: options.delete(:class))
+            "class" => family_style.css(:item, class: item_class)
           }.merge(item_action_attributes)
           apply_item_flags(attrs, **options.extract!(:inset, :disabled, :text_value, :close_on_select))
           content = safe_join([capture(&), shortcut_span(shortcut)].compact)

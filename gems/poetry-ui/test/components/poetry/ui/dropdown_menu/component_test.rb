@@ -184,6 +184,34 @@ module Poetry
           assert_equal "delete", method_override["value"], "the DELETE method override rides a hidden field"
         end
 
+        # A <button> sizes to its label where the link items fill the row, so
+        # the submit item carries the full width (and a host class still merges).
+        def test_submit_item_fills_the_row
+          html = render_menu do |menu|
+            menu.with_trigger { "Open" }
+            menu.with_item(href: "/settings") { "Settings" }
+            menu.with_item(submit: "/users/sign_out", method: :delete, class: "gap-3") { "Sign out" }
+          end
+          link, submit = doc(html).css('[data-slot="dropdown-menu-item"]').to_a
+          classes = submit["class"].split
+
+          assert_includes classes, "w-full"
+          assert_includes classes, "text-start"
+          assert_includes classes, "gap-3"
+          refute_includes link["class"].split, "w-full", "link items fill the row on their own"
+        end
+
+        def test_a_disabled_submit_item_is_the_plain_row
+          html = render_menu do |menu|
+            menu.with_trigger { "Open" }
+            menu.with_item(submit: "/users/sign_out", method: :delete, disabled: true) { "Sign out" }
+          end
+          item = doc(html).css('[data-slot="dropdown-menu-item"]').first
+
+          assert_equal "div", item.name
+          refute_includes item["class"].split, "w-full"
+        end
+
         def test_unknown_item_variant_raises
           assert_raises(ArgumentError) do
             render_menu do |menu|

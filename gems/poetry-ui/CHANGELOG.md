@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.12]
+
+### Fixed
+
+- A submit item in DropdownMenu, ContextMenu or Menubar (`with_item(submit:)`) fills its row like the link items. It renders a `<button>`, which sizes to its label even as a flex box, so its hover and focus highlight stopped at the text. Each family's new `item_submit` element carries `w-full text-start`, so the classes reach the host safelist with the rest of the dictionary.
+
 ## [0.1.11] - 2026-10-05
 
 ### Fixed
