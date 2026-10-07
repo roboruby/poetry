@@ -96,6 +96,13 @@ module Poetry
             # view - the adapter's helper
             <%= poetry_pagy_nav(@pagy) %>
           RUBY
+          jumpstart_pro: <<~RUBY.strip,
+            # controller - Jumpstart Pro's own Pagination concern, unchanged
+            @page, @products = paginate(Product.all)
+
+            # view - the helper poetry-jumpstart_pro installs
+            <%= poetry_pagination_nav(@page) %>
+          RUBY
           will_paginate: <<~RUBY.strip
             # controller - will_paginate's own API, unchanged
             @products = Product.paginate(page: params[:page], per_page: 10)

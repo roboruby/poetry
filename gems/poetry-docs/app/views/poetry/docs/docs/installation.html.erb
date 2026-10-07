@@ -28,6 +28,11 @@
     # app/assets/tailwind/poetry/reset.css        <- preflight at zero specificity
     # @import "./poetry/reset.css" layer(base);   <- ahead of the theme in your entry
   CODE
+  jumpstart_source = <<~CODE
+    bundle add poetry-jumpstart_pro --group development
+    bin/rails generate poetry_jumpstart_pro:install   # runs poetry:install when needed
+    bin/rails tailwindcss:build
+  CODE
   upgrade_source = <<~CODE
     bundle update poetry poetry-agent poetry-charts
     bin/rails g poetry:install     # your theme choice sticks; --theme switches
@@ -161,6 +166,24 @@
       </p>
     <% end %>
   </section>
+
+<section class="flex flex-col gap-4">
+  <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+    <h2 id="jumpstart-pro">Installing into a Jumpstart Pro app</h2>
+    <p>
+      A Jumpstart Pro app is the case above with a known answer. Its
+      stylesheet styles links, lists, headings and form controls for the
+      whole page, it declares its own primary color and page background
+      under names Poetry's tokens share, and its screens live in an engine
+      rather than in <code>app/views</code>. The
+      <%= link_to "Jumpstart Pro installer", library_path("jumpstart-pro") %>
+      handles all of it in one generator: it runs this install, reconciles
+      Jumpstart's stylesheets with Poetry's, and installs Poetry
+      recreations of the app's screens as overrides.
+    </p>
+  <% end %>
+  <%= poetry_code_block(code: jumpstart_source, language: "shell", label: "Jumpstart Pro") %>
+</section>
 
   <section class="flex flex-col gap-4">
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>

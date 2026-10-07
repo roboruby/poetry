@@ -19,6 +19,7 @@ gem "poetry-agent"         # optional: the MCP server exe, WebMCP, AG-UI and A2U
 # gem "poetry-charts"      # optional: server-rendered SVG charts
 # gem "poetry-simple_form" # optional: the migration bridge from simple_form
 # gem "poetry-extract"     # optional: extract a theme from a live site
+# gem "poetry-jumpstart_pro", group: :development # optional: re-skin a Jumpstart Pro app (see below)
 ```
 
 Then `bundle install`. The gems release in lockstep and pin each other to the
@@ -49,6 +50,23 @@ registerPoetryAgent(application)   // WebMCP: rendered components' tools for the
 
 For pre-paint dark mode, put `poetry_color_scheme_script` in your layout
 `<head>`.
+
+### In a Jumpstart Pro app
+
+Use the Jumpstart Pro installer instead of step 2. It runs `poetry:install`,
+reconciles Jumpstart's stylesheets with Poetry's tokens and components, and
+installs Poetry recreations of the app's screens as `app/views` overrides.
+It needs Jumpstart Pro on Rails 8 authentication and a migrated development
+database.
+
+```bash
+bin/rails db:prepare
+bin/rails g poetry_jumpstart_pro:install   # every category; name some to install a subset
+bin/rails tailwindcss:build
+bin/rails poetry:check
+```
+
+The details, including upgrading and removing it, are at `/libraries/jumpstart-pro`.
 
 ## 3. Render a component
 

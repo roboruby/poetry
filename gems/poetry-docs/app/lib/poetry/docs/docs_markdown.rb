@@ -312,6 +312,18 @@ module Poetry
             #{header(entry)}
 
             The Jumpstart Pro installer: `gem "poetry-jumpstart_pro", group: :development`, then `bin/rails generate poetry_jumpstart_pro:install`. It copies Poetry recreations of a Jumpstart Pro app's screens into `app/views`, where Rails resolves them ahead of the Jumpstart engine's views, written against the same routes, instance variables, locals and translation keys: thirteen categories (`auth`, `shell`, `accounts`, `users`, `api_tokens`, `notifications`, `announcements`, `checkouts`, `public`, `dashboard`, `errors`, `billing`, `madmin`), any subset by name. The gem ships only Poetry views, never Jumpstart's source; delete an override to fall back. The generator also runs `poetry:install` when Poetry is missing, reconciles Jumpstart's stylesheets with Poetry's tokens and components (the forms plugin's class strategy, the primary and background tokens, the global link and list rules, heading, `code` and `kbd` rules that skip Poetry's components), installs `app/helpers/poetry_jumpstart_pro_helper.rb` for pagination and toasts, adds the app stylesheet to Madmin, and updates the selectors in Jumpstart's own sign in, two-factor and pagination tests. In development an untouched copy of a Jumpstart default view is replaced without a prompt. Options: `--skip-stylesheets`, `--skip-tests`, `--skip-poetry-install`, `--theme`. The checkout processor forms, the Braintree and PayPal payment method forms, the agreement texts and the mention list stay Jumpstart's.
+
+Before you install: the app runs Jumpstart Pro on Rails 8 authentication (sign in screens under `users/`; Devise apps are not covered), the development database exists and is migrated (`poetry:install` loads the app, and Jumpstart's admin resources read the database), and your work is committed so the changes read as one diff.
+
+Customizing: the installed views are yours. A re-run skips files that match, replaces Jumpstart's untouched default copies, and treats anything else as a generator conflict: `--pretend` shows what would change, `--skip` keeps every file you have, `--force` takes the gem's version. Delete a file and re-run its category to restore the gem's version; delete an override to go back to Jumpstart's screen.
+
+Upgrading: `bundle update poetry poetry-jumpstart_pro`, re-run the installer, rebuild the stylesheet, run the tests; the conflicts are the files you changed. When a Jumpstart Pro update changes a screen, your override keeps rendering in its place: compare the engine views the update touched under `lib/jumpstart/app/views` with your overrides.
+
+Tests: Jumpstart's suite runs against the Poetry screens; the sign in helpers click any element named `commit` and the pagination test reads Poetry's navigation landmark. `Poetry::Ui::Testing` drives Poetry controls in new system tests ([testing](/testing)).
+
+Troubleshooting: unstyled screens need a stylesheet rebuild; a database error from `poetry:install` needs `bin/rails db:prepare`; dark mode follows Jumpstart's theme setting through the `dark` class; unstyled admin pages need the `Madmin.stylesheets` line and a restart.
+
+Removing it: delete the installed views and the helper, revert the stylesheet, initializer and test edits, and remove the gem.
           MD
         end
 

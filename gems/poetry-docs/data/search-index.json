@@ -36,6 +36,12 @@
     "path": "/installation#preflight"
   },
   {
+    "title": "Installing into a Jumpstart Pro app",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#jumpstart-pro"
+  },
+  {
     "title": "Upgrade an existing app",
     "page": "Installation",
     "section": "docs",
@@ -400,6 +406,12 @@
     "page": "Pagination",
     "section": "docs",
     "path": "/pagination#setup-will-paginate"
+  },
+  {
+    "title": "Jumpstart Pro",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination#setup-jumpstart-pro"
   },
   {
     "title": "The window, labels, and one page",
@@ -6768,6 +6780,12 @@
     "path": "/libraries/jumpstart-pro#how-it-works"
   },
   {
+    "title": "Before you install",
+    "page": "Jumpstart Pro",
+    "section": "libraries",
+    "path": "/libraries/jumpstart-pro#before-you-install"
+  },
+  {
     "title": "Install",
     "page": "Jumpstart Pro",
     "section": "libraries",
@@ -6784,6 +6802,36 @@
     "page": "Jumpstart Pro",
     "section": "libraries",
     "path": "/libraries/jumpstart-pro#what-changes"
+  },
+  {
+    "title": "Customizing the screens",
+    "page": "Jumpstart Pro",
+    "section": "libraries",
+    "path": "/libraries/jumpstart-pro#customizing"
+  },
+  {
+    "title": "Upgrading",
+    "page": "Jumpstart Pro",
+    "section": "libraries",
+    "path": "/libraries/jumpstart-pro#upgrading"
+  },
+  {
+    "title": "Your tests",
+    "page": "Jumpstart Pro",
+    "section": "libraries",
+    "path": "/libraries/jumpstart-pro#tests"
+  },
+  {
+    "title": "Troubleshooting",
+    "page": "Jumpstart Pro",
+    "section": "libraries",
+    "path": "/libraries/jumpstart-pro#troubleshooting"
+  },
+  {
+    "title": "Removing it",
+    "page": "Jumpstart Pro",
+    "section": "libraries",
+    "path": "/libraries/jumpstart-pro#removing"
   },
   {
     "title": "Extract",

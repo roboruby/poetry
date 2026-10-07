@@ -43,6 +43,16 @@
   </p>
   <%= poetry_code_block(code: pagination_guide_snippets[:will_paginate], language: "ruby",
                         label: "will_paginate setup") %>
+  <h3 class="font-medium" id="setup-jumpstart-pro">Jumpstart Pro</h3>
+  <p class="max-w-2xl text-muted-foreground">
+    Jumpstart Pro paginates with a concern of its own rather than a gem. The
+    <%= poetry_link(href: library_path("jumpstart-pro")) { "Jumpstart Pro installer" } %> adds
+    <code class="text-foreground">poetry_pagination_nav</code> to
+    <code class="text-foreground">app/helpers/poetry_jumpstart_pro_helper.rb</code>: it draws the
+    page object with this component and keeps every other query param.
+  </p>
+  <%= poetry_code_block(code: pagination_guide_snippets[:jumpstart_pro], language: "ruby",
+                        label: "Jumpstart Pro setup") %>
 </section>
 
 <section class="flex flex-col gap-3">

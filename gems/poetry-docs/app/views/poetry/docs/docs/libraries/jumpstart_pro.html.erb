@@ -12,12 +12,24 @@
   CODE
   generate_source = <<~CODE
     bundle install
+    bin/rails db:prepare
     bin/rails generate poetry_jumpstart_pro:install
     bin/rails tailwindcss:build
     bin/rails poetry:check
   CODE
   subset_source = <<~CODE
     bin/rails generate poetry_jumpstart_pro:install auth shell
+  CODE
+  conflicts_source = <<~CODE
+    bin/rails generate poetry_jumpstart_pro:install --pretend   # what would change
+    bin/rails generate poetry_jumpstart_pro:install --skip      # keep every file you have
+    bin/rails generate poetry_jumpstart_pro:install --force     # take the gem's version of each
+  CODE
+  upgrade_source = <<~CODE
+    bundle update poetry poetry-jumpstart_pro
+    bin/rails generate poetry_jumpstart_pro:install
+    bin/rails tailwindcss:build
+    bin/rails test && bin/rails test:system
   CODE
 %>
 
@@ -47,6 +59,30 @@
         your licensed Jumpstart code is never touched. Every installed file is
         yours to edit, and deleting one falls back to Jumpstart's view.
       </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="before-you-install">Before you install</h2>
+      <ul>
+        <li>
+          The app runs Jumpstart Pro on Rails 8 authentication, with its sign
+          in screens under <code>users/</code>. An app still on Devise is not
+          covered.
+        </li>
+        <li>
+          The development database exists and is migrated. The generator
+          runs <code>poetry:install</code>, which loads the app to build its
+          safelist, and Jumpstart's admin resources read the database as they
+          load.
+        </li>
+        <li>
+          Your work is committed, so the installer's changes read as one diff:
+          it adds views and a helper, and edits five stylesheets, the Madmin
+          initializer and three test files.
+        </li>
+      </ul>
     <% end %>
   </section>
 
@@ -140,6 +176,114 @@
         <code>--skip-poetry-install</code> leave those steps out, and
         <code>--theme</code> picks the theme when Poetry is installed for the
         first time.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="customizing">Customizing the screens</h2>
+      <p>
+        The installed views are yours. Edit them as you would any view; the
+        components inside are Poetry's, each documented under Components,
+        and <code>bin/rails poetry:check</code> verifies the markup you
+        compose. A run of the installer never overwrites a file you edited
+        without asking: files that match are skipped, Jumpstart's untouched
+        default copies are replaced, and anything else is a generator
+        conflict you answer.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: conflicts_source, language: "shell", label: "Conflicts") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        To restore one screen to the gem's version, delete it and run the
+        installer for its category. To go back to Jumpstart's own screen,
+        delete the override.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="upgrading">Upgrading</h2>
+      <p>
+        The gem releases with the rest of Poetry, so one
+        <code>bundle update</code> moves both. Run the installer again to
+        take the new versions of the screens; the conflicts it reports are
+        the files you changed.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: upgrade_source, language: "shell", label: "Upgrade") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        When a Jumpstart Pro update changes a screen, your override keeps
+        rendering in its place. Compare the engine views the update touched,
+        under <code>lib/jumpstart/app/views</code>, with your overrides of
+        the same paths, and run the suite.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="tests">Your tests</h2>
+      <p>
+        Jumpstart's own suite runs against the Poetry screens. The installer
+        updates the selectors that asserted on the replaced markup: the sign
+        in helpers click any element named <code>commit</code>, because a
+        Poetry submit is a button rather than an input, and the pagination
+        test reads Poetry's navigation landmark. <code>--skip-tests</code>
+        leaves them as they are. For new system tests,
+        <code>Poetry::Ui::Testing</code> drives Poetry's controls the way a
+        user does; the <%= link_to "Testing guide", testing_path %> has it.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="troubleshooting">Troubleshooting</h2>
+      <ul>
+        <li>
+          <strong>The screens look unstyled.</strong> Rebuild the stylesheet,
+          with <code>bin/rails tailwindcss:build</code> or
+          <code>bin/dev</code>: the new views and Poetry's safelist are new
+          sources for it.
+        </li>
+        <li>
+          <strong><code>poetry:install</code> stops with a database error.</strong>
+          Create and migrate the development database, then run the installer
+          again.
+        </li>
+        <li>
+          <strong>A screen still looks like Jumpstart's.</strong> It is one of
+          the views that stay Jumpstart's, or you kept your own copy at a
+          conflict.
+        </li>
+        <li>
+          <strong>Dark mode.</strong> It follows Jumpstart's theme setting: the
+          color theme in the profile puts the <code>dark</code> class on the
+          page, and Poetry's tokens follow it.
+        </li>
+        <li>
+          <strong>The admin pages are unstyled.</strong> Check that
+          <code>config/initializers/madmin.rb</code> has the
+          <code>Madmin.stylesheets</code> line the madmin category adds, and
+          restart the server.
+        </li>
+      </ul>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="removing">Removing it</h2>
+      <p>
+        Delete the installed views and
+        <code>app/helpers/poetry_jumpstart_pro_helper.rb</code>, revert the
+        installer's stylesheet, initializer and test edits from version
+        control, and remove the gem. Jumpstart's own screens are back as soon
+        as the overrides are gone.
       </p>
     <% end %>
   </section>

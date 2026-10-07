@@ -102,6 +102,31 @@ class SiteNavTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes response.body, "poetry_jumpstart_pro:install"
+    assert_includes response.body, "Upgrading:"
+  end
+
+  test "the Jumpstart Pro page covers installing through removing" do
+    get library_path("jumpstart-pro")
+
+    %w[before-you-install install categories what-changes customizing upgrading tests troubleshooting removing].each do |id|
+      assert_select "h2##{id}", 1, "the Jumpstart Pro page needs its #{id} section"
+    end
+  end
+
+  test "the installation and pagination guides send Jumpstart Pro apps to the installer" do
+    get installation_path
+
+    assert_select "h2#jumpstart-pro"
+    assert_select "a[href=?]", library_path("jumpstart-pro")
+
+    get pagination_path
+
+    assert_select "h3#setup-jumpstart-pro"
+    assert_select "a[href=?]", library_path("jumpstart-pro")
+
+    get "/installation.md"
+
+    assert_includes response.body, "bin/rails g poetry_jumpstart_pro:install"
   end
 
 
