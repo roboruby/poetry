@@ -377,4 +377,13 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  # The dummy requires none of the paginators, as a host that only mounts
+  # the engine does not: the engine has to load what the guide uses.
+  test "the pagination guide pages one collection through all three paginators" do
+    get pagination_path
+
+    assert_response :success
+    assert_select "nav[aria-label=pagination]", minimum: 3
+  end
 end

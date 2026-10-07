@@ -5,6 +5,16 @@ require "poetry/ui"
 require "poetry/lucide"
 require "poetry/charts"
 require "poetry/agent"
+# The pagination guide pages one array through the three paginators the
+# gemspec names, so the engine loads them rather than each host. Only their
+# array and view parts: kaminari's core and Action View pieces and
+# will_paginate's collection, never their Active Record extensions, so a
+# host's own models keep the methods they have. will_paginate's view
+# helpers load with the guide's link renderer.
+require "pagy"
+require "kaminari/core"
+require "kaminari/actionview"
+require "will_paginate/collection"
 require "poetry/docs/version"
 require "poetry/docs/engine"
 

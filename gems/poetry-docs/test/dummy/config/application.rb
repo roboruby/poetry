@@ -11,9 +11,6 @@ require "propshaft"
 require "importmap-rails"
 require "turbo-rails"
 require "stimulus-rails"
-require "kaminari"
-require "pagy"
-require "will_paginate"
 require "poetry/docs"
 
 # The dummy host: the engine at the root of a bare Rails app, for the tests
