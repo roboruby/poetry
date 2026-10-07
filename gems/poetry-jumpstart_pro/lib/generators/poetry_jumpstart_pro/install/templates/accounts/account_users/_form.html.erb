@@ -1,0 +1,20 @@
+<%# Poetry recreation of Jumpstart's account_users/_form: one checkbox per
+    role, each the builder's horizontal Field with its visible label; the
+    owner's admin box stays disabled (the same name/disabled contract the
+    integration tests assert). %>
+<%= form_with(model: [account_user.account, account_user], builder: Poetry::Ui::FormBuilder, class: "max-w-md space-y-6") do |form| %>
+  <%= render "application/error_messages", resource: form.object %>
+
+  <%= form.fieldset(legend: t("accounts.roles"), legend_variant: :label) do %>
+    <%= poetry_field_group(variant: :choices) do %>
+      <% AccountUser::ROLES.each do |role| %>
+        <%= form.check_box role, label: account_user_role_name(role), disabled: (role == :admin && account_user.account_owner?) %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <%= form.submit %>
+    <%= poetry_button(href: account_path(account_user.account), variant: :ghost) { t("cancel") } %>
+  </div>
+<% end %>

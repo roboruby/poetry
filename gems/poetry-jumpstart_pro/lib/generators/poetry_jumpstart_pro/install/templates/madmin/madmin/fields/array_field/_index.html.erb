@@ -1,0 +1,13 @@
+<%# Poetry recreation of Jumpstart's madmin array_field/_index: each value as
+    an outline badge (the engine printed the array's inspect string), a muted
+    dash when there are none. %>
+<% values = Array.wrap(field.value(record)).map(&:to_s).reject(&:blank?) %>
+<% if values.any? %>
+  <span class="inline-flex flex-wrap gap-1">
+    <% values.each do |value| %>
+      <%= poetry_badge(variant: :outline) { value } %>
+    <% end %>
+  </span>
+<% else %>
+  <span class="text-muted-foreground">&mdash;</span>
+<% end %>

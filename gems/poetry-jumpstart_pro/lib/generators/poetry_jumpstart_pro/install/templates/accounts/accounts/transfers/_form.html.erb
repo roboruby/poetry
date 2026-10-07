@@ -1,0 +1,30 @@
+<%# Poetry recreation of Jumpstart's accounts/transfers/_form: pick the new
+    owner, then confirm in an AlertDialog whose action submits the PATCH
+    form through submit: (Jumpstart put data-turbo-confirm on the form
+    instead). The pick is validated server-side (accounts.transfers.update.invalid). %>
+<% candidates = account.users.where.not(users: { id: current_user.id }) %>
+
+<section class="space-y-4" aria-labelledby="transfer-ownership-title">
+  <div class="space-y-1">
+    <h2 id="transfer-ownership-title" class="text-base font-semibold"><%= t(".title") %></h2>
+    <p class="text-sm text-muted-foreground"><%= t(".description") %></p>
+  </div>
+
+  <%= form_with(url: account_transfer_path(account), method: :patch, id: "account-transfer-form", class: "max-w-md") do %>
+    <%= poetry_field_group do %>
+      <%= poetry_field(id: "account_transfer_user_id", label_text: t(".new_owner", default: "New owner")) do |field| %>
+        <%= poetry_native_select(name: "user_id", class: "w-full",
+              options: [[t("helpers.select.prompt", default: "Please select"), ""]] + candidates.map { |user| [user.name || user.email, user.id] },
+              **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <%= poetry_alert_dialog do |dialog| %>
+    <% dialog.with_trigger(variant: :outline) { t(".transfer") } %>
+    <% dialog.with_title { t(".title") } %>
+    <% dialog.with_description { t(".are_you_sure") } %>
+    <% dialog.with_cancel { t("cancel") } %>
+    <% dialog.with_action(variant: :destructive, submit: "account-transfer-form") { t(".transfer") } %>
+  <% end %>
+</section>

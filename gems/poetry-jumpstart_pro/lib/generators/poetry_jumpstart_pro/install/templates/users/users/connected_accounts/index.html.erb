@@ -1,0 +1,34 @@
+<%# Poetry recreation of Jumpstart's users/connected_accounts/index: the OAuth
+    accounts linked to the profile, plus a connect button per enabled provider.
+    The provider forms stay full-page submits (data-turbo="false"): the OmniAuth
+    request phase is a POST the middleware answers with a redirect. %>
+<% content_for :title, t(".title") %>
+
+<header class="space-y-1">
+  <h1 class="text-2xl font-semibold tracking-tight"><%= t(".title") %></h1>
+  <p class="text-sm text-muted-foreground"><%= t(".description") %></p>
+</header>
+
+<div class="mt-6 flex flex-wrap gap-2">
+  <% Jumpstart::Omniauth.enabled_providers.each_key do |provider| %>
+    <%= form_with url: omniauth_authorize_path(provider), method: :post, data: { turbo: false } do %>
+      <%= poetry_button(type: :submit, variant: :outline) do |button| %>
+        <% button.with_leading { poetry_icon(name: :link) } %>
+        <%= t("oauth.sign_in_with", provider: t("oauth.#{provider}")) %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>
+
+<% if @connected_accounts.any? %>
+  <%= poetry_item_group(class: "mt-8") do %>
+    <%= render @connected_accounts %>
+  <% end %>
+<% else %>
+  <div class="mt-8">
+    <%= poetry_empty(media_variant: :icon, title_tag: :h2) do |empty| %>
+      <% empty.with_media { poetry_icon(name: :link) } %>
+      <% empty.with_title { t(".none") } %>
+    <% end %>
+  </div>
+<% end %>

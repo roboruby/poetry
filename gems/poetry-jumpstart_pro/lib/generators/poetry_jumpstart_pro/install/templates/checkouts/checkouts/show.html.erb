@@ -1,0 +1,125 @@
+<%# Poetry recreation of Jumpstart's checkouts/show. Stripe renders its
+    embedded checkout (checkouts/forms/_stripe); every other processor gets
+    the plan summary beside the account + payment-method column. The
+    id="recurringTotal" element (updated by the Paddle controllers), the
+    processor partials with their plan local, and their conditions are the
+    engine's contract - kept. The copy is this gem's own, with defaults, so
+    a host can localize it. %>
+<% content_for :title, t(".title") %>
+
+<% progress = capture do %>
+  <nav aria-label="<%= t(".progress", default: "Progress") %>">
+    <ol class="flex flex-wrap items-center justify-center gap-3">
+      <li>
+        <%= poetry_link(href: pricing_path, underline: :none, class: "flex items-center gap-3 rounded-md") do %>
+          <span class="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
+            <%= poetry_icon(name: :check, class: "size-4", label: t(".completed", default: "Completed")) %>
+          </span>
+          <span class="text-sm font-medium"><%= t("billing.show.choose_plan") %></span>
+        <% end %>
+      </li>
+      <li aria-hidden="true" class="h-px w-8 bg-primary"></li>
+      <li aria-current="step" class="flex items-center gap-3">
+        <span class="flex size-8 items-center justify-center rounded-full border-2 border-primary text-sm font-semibold text-primary">2</span>
+        <span class="text-sm font-medium"><%= t(".payment_method") %></span>
+      </li>
+    </ol>
+  </nav>
+<% end %>
+
+<% if Jumpstart.config.stripe? %>
+  <div class="mx-auto w-full max-w-5xl px-4 py-10 lg:px-6">
+    <div class="flex flex-col gap-8">
+      <%= progress %>
+      <h1 class="text-center text-2xl font-semibold tracking-tight"><%= t(".title") %></h1>
+      <%= render "checkouts/forms/stripe", client_secret: @checkout_session.client_secret %>
+      <%= render "checkouts/testimonial" %>
+    </div>
+  </div>
+<% else %>
+  <% amount = pay_amount_to_currency(@plan) %>
+  <% interval = formatted_plan_interval(@plan) %>
+  <div class="mx-auto w-full max-w-5xl px-4 py-10 lg:px-6">
+    <div class="flex flex-col gap-10">
+      <%= progress %>
+
+      <div class="grid gap-8 lg:grid-cols-2 lg:gap-16">
+        <div class="flex flex-col gap-6">
+          <%= poetry_card(title_tag: :h1) do |card| %>
+            <% if @plan.has_trial? %>
+              <% card.with_title { t(".trial_title", default: "%{plan}, free to start", plan: @plan.name) } %>
+              <p class="text-3xl font-semibold tracking-tight">
+                <%= t(".trial_length", default: "%{count} day trial", count: @plan.trial_period_days) %>
+              </p>
+              <p class="mt-1 text-muted-foreground">
+                <%= t(".trial_then", default: "then") %>
+                <span id="recurringTotal" class="font-medium text-foreground tabular-nums"><%= amount %></span>
+                <%= t(".trial_interval", default: "per %{interval}", interval: interval) %>
+              </p>
+            <% else %>
+              <% card.with_title { t(".subscribe_title", default: "%{plan} subscription", plan: @plan.name) } %>
+              <p class="flex flex-wrap items-baseline gap-x-2">
+                <span id="recurringTotal" class="text-4xl font-semibold tracking-tight tabular-nums"><%= amount %></span>
+                <span class="text-sm font-medium text-muted-foreground">
+                  <%= @plan.unit_label? ? t(".per_unit_interval", default: "per %{unit}, every %{interval}", unit: @plan.unit_label, interval: interval) : t(".per_interval", default: "every %{interval}", interval: interval) %>
+                </span>
+              </p>
+            <% end %>
+
+            <% if @plan.features.any? %>
+              <ul class="mt-6 hidden flex-col gap-2 text-sm text-muted-foreground lg:flex">
+                <% @plan.features.each do |plan_feature| %>
+                  <li class="flex items-start gap-2">
+                    <%= poetry_icon(name: :check, class: "mt-0.5 size-4 shrink-0 text-primary") %>
+                    <span><%= plan_feature %></span>
+                  </li>
+                <% end %>
+              </ul>
+            <% end %>
+          <% end %>
+
+          <%= render "checkouts/testimonial" %>
+        </div>
+
+        <div class="flex flex-col gap-6">
+          <h2 class="hidden text-2xl font-semibold tracking-tight lg:block"><%= t(".title") %></h2>
+
+          <%= poetry_card(title_tag: :h2) do |card| %>
+            <% card.with_title { t(".account") } %>
+            <div class="flex items-center gap-3">
+              <%= account_avatar current_account %>
+              <span class="font-medium"><%= current_account.name %></span>
+            </div>
+          <% end %>
+
+          <%= poetry_card(title_tag: :h2) do |card| %>
+            <% card.with_title { t(".payment_method") } %>
+            <div class="flex flex-col gap-4">
+              <%= render "checkouts/forms/paddle_billing", plan: @plan if Jumpstart.config.paddle_billing? %>
+              <%= render "checkouts/forms/braintree", plan: @plan if Jumpstart.config.braintree? %>
+              <%= render "checkouts/forms/paypal", plan: @plan if Jumpstart.config.paypal? %>
+
+              <p class="text-center text-sm text-muted-foreground">
+                <% if @plan.has_trial? %>
+                  <%= t(".trial_terms", default: "Nothing is charged during the trial. From %{date}, %{amount} per %{interval} is billed to this payment method; cancel before then and you pay nothing.",
+                        date: l(@plan.trial_period_days.days.from_now.to_date, format: :long), amount: amount, interval: interval) %>
+                <% else %>
+                  <%= t(".subscription_terms", default: "Subscribing authorizes %{name} to charge this payment method now and on every renewal, as set out in our terms.",
+                        name: Jumpstart.config.application_name) %>
+                <% end %>
+              </p>
+            </div>
+          <% end %>
+
+          <p class="flex items-center justify-center gap-2 text-center text-sm text-muted-foreground">
+            <%= poetry_icon(name: :"circle-question-mark", class: "size-4 shrink-0") %>
+            <span>
+              <%= t(".help") %>
+              <%= t(".contact_html", link: poetry_link(href: "mailto:#{Jumpstart.config.support_email}?subject=#{ERB::Util.url_encode(t(".contact_subject", product: Jumpstart.config.application_name))}") { t(".contact_support") }) %>
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

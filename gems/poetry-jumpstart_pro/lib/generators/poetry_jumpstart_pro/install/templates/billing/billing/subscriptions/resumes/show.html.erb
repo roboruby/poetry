@@ -1,0 +1,29 @@
+<%# Poetry recreation of Jumpstart's billing/subscriptions/resumes/show. The
+    PATCH form keeps the engine's route; the confirmation is an AlertDialog
+    whose action submits it (form= attribute) instead of data-turbo-confirm. %>
+<% content_for :title, t(".title") %>
+
+<div class="flex max-w-xl flex-col gap-8">
+  <header class="flex flex-col gap-1">
+    <h1 class="text-2xl font-semibold tracking-tight"><%= t(".title") %></h1>
+    <p class="text-sm text-muted-foreground"><%= t(".resume") %></p>
+  </header>
+
+  <%= poetry_card do |card| %>
+    <%= render partial: "billing/subscriptions/summary", locals: { subscription: @subscription, heading_tag: :h2 } %>
+  <% end %>
+
+  <%= form_with url: billing_subscription_resume_path(@subscription), method: :patch, id: "resume-subscription-form" do |f| %><% end %>
+
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <%= poetry_button(variant: :outline, href: billing_path) { t(".back") } %>
+
+    <%= poetry_alert_dialog do |dialog| %>
+      <% dialog.with_trigger { t(".button") } %>
+      <% dialog.with_title { t("are_you_sure") } %>
+      <% dialog.with_description { t(".resume") } %>
+      <% dialog.with_cancel { t("cancel") } %>
+      <% dialog.with_action(type: :submit, form: "resume-subscription-form", data: { turbo_submits_with: t(".processing") }) { t(".button") } %>
+    <% end %>
+  </div>
+</div>

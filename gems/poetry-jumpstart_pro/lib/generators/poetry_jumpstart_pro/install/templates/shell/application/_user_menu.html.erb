@@ -1,0 +1,34 @@
+<%# Poetry recreation of Jumpstart's application/_user_menu on
+    poetry_dropdown_menu: link items for the pages, a submit item for the
+    sign-out DELETE (the item IS the control, never a nested link or form). %>
+<%= poetry_dropdown_menu(align: :end, content_class: "w-56") do |menu| %>
+  <% menu.with_trigger(variant: :ghost, size: :icon, label: t(".user_menu", default: "User menu"), class: "rounded-full") do %>
+    <%= image_tag avatar_url_for(current_user), class: "size-6 shrink-0 rounded-full object-cover", alt: "" %>
+  <% end %>
+
+  <% menu.with_group do |group| %>
+    <% group.with_item(href: edit_registration_path) do %>
+      <%= poetry_icon(name: :settings) %><%= t(".settings") %>
+    <% end %>
+    <% if Jumpstart.config.payments_enabled? && Current.account_billing? %>
+      <% group.with_item(href: billing_path) do %>
+        <%= poetry_icon(name: :"credit-card") %><%= t(".billing") %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% if current_user.staff? %>
+    <% menu.with_separator %>
+    <% menu.with_item(href: madmin_root_path, external: true, data: { turbo: false }) do %>
+      <%= poetry_icon(name: :"shield-check") %><%= t(".admin") %>
+    <% end %>
+  <% end %>
+
+  <% menu.with_separator %>
+  <%# The sign-out item is a submit button inside a display:contents form, and
+      a button sizes to its label: w-full stretches it, and its hover, across
+      the row like the link items above. %>
+  <% menu.with_item(submit: session_path, method: :delete, class: "w-full") do %>
+    <%= poetry_icon(name: :"log-out") %><%= t(".sign_out") %>
+  <% end %>
+<% end %>

@@ -1,0 +1,55 @@
+<%# Poetry recreation of Jumpstart's users/registrations/new: sign up. The
+    same params (user[name|email|password|terms_of_service]), the spam
+    protection fields, and the invitation notice when arriving from an
+    invite. %>
+<% content_for :title, t("users.registrations.new.title") %>
+
+<div class="mx-auto w-full max-w-md px-4 py-10 lg:px-6">
+  <header class="mb-8 space-y-2 text-center">
+    <h1 class="text-2xl font-semibold tracking-tight"><%= t("users.registrations.new.sign_up") %></h1>
+    <p class="text-sm text-muted-foreground">
+      <%= t("users.registrations.new.login_html", link: poetry_link(href: login_path, underline: :always) { t("users.registrations.new.login") }) %>
+    </p>
+  </header>
+
+  <% if @account_invitation %>
+    <%= poetry_alert(class: "mb-6") do |invitation| %>
+      <% invitation.with_icon(name: :"user-plus") %>
+      <% invitation.with_title do %>
+        <%= t("users.registrations.new.invited_you_to_join_html", inviter: @account_invitation.invited_by.name, account: @account_invitation.account.name) %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <%= form_with model: @user, url: registration_path(invite: params[:invite]), builder: Poetry::Ui::FormBuilder do |f| %>
+    <%= render "application/error_messages", resource: @user %>
+
+    <%# Extra fields for creating an Account as part of registration belong
+        here, through f.fields_for :owned_accounts. %>
+
+    <%= f.group do %>
+      <%= f.text_field :name, autocomplete: "name" %>
+      <%= f.email_field :email, autocomplete: "email" %>
+      <%= f.password_field :password, autocomplete: "new-password",
+                           hint: t("users.shared.minimum_password_length", count: User::MINIMUM_PASSWORD_LENGTH) %>
+    <% end %>
+
+    <%= spam_protection_fields %>
+
+    <%# The terms label carries two links: the translated _html string stays
+        html-safe through the builder's label:, so the Field renders the markup. %>
+    <div class="mt-6">
+      <%= f.check_box :terms_of_service,
+                      label: t("users.registrations.new.terms_html",
+                               terms: poetry_link(href: terms_path, external: true, underline: :always) { t("users.registrations.new.terms_of_service") },
+                               privacy: poetry_link(href: privacy_path, external: true, underline: :always) { t("users.registrations.new.privacy_policy") }) %>
+    </div>
+
+    <div class="mt-6">
+      <%= f.submit t("users.registrations.new.sign_up"), class: "w-full",
+                   data: { "turbo-submits-with": t("users.registrations.new.submitting") } %>
+    </div>
+  <% end %>
+
+  <%= render "users/shared/oauth" %>
+</div>

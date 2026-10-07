@@ -1,0 +1,29 @@
+<%# Poetry recreation of Jumpstart's madmin array_field/_form. The rows keep
+    the DOM contract of app/javascript/madmin/controllers/array_field_controller.js:
+    one .row per value, "add" inserting a copy of the template before the
+    clicked control (e.target), "remove" walking up to .row. The controls are
+    type="button" Poetry Buttons whose children ignore the pointer, so a
+    click always targets the button itself, never its label. The blank hidden
+    value lets an emptied list save as []. %>
+<div data-controller="array-field" class="space-y-2">
+  <%= hidden_field_tag "#{form.object_name}[#{field.attribute_name}][]", "" %>
+
+  <% Array.wrap(form.object.send(field.attribute_name)).each do |item| %>
+    <div class="row flex items-center gap-2">
+      <%= poetry_input(name: "#{form.object_name}[#{field.attribute_name}][]", value: item.to_s, autocomplete: "off") %>
+      <%= poetry_button(type: :button, variant: :ghost, size: :sm, class: "*:pointer-events-none",
+                        data: { action: "array-field#remove" }) { "Remove" } %>
+    </div>
+  <% end %>
+
+  <%= poetry_button(type: :button, variant: :outline, size: :sm, class: "*:pointer-events-none",
+                    data: { action: "array-field#add" }) { "Add" } %>
+
+  <template data-array-field-target="template">
+    <div class="row flex items-center gap-2">
+      <%= poetry_input(name: "#{form.object_name}[#{field.attribute_name}][]", autocomplete: "off") %>
+      <%= poetry_button(type: :button, variant: :ghost, size: :sm, class: "*:pointer-events-none",
+                        data: { action: "array-field#remove" }) { "Remove" } %>
+    </div>
+  </template>
+</div>

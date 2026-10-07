@@ -1,0 +1,13 @@
+<%# Poetry recreation of Jumpstart's application/_dev_menu (development only). %>
+<%= poetry_dropdown_menu(align: :end) do |menu| %>
+  <% menu.with_trigger(variant: :ghost, size: :icon, label: "Jumpstart development") do %>
+    <%= poetry_icon(name: :code) %>
+  <% end %>
+
+  <% menu.with_label { "Jumpstart" } %>
+  <% menu.with_group do |group| %>
+    <% group.with_item(href: jumpstart_path(script_name: nil), data: { turbo: false }) { "Configuration" } %>
+    <% group.with_item(href: jumpstart.docs_path, external: true, data: { turbo: false }) { "Documentation" } %>
+    <% group.with_item(href: mailbin_path(script_name: nil), external: true, data: { turbo: false }) { "Mailbin" } %>
+  <% end %>
+<% end %>

@@ -1,0 +1,39 @@
+<%# Poetry recreation of Jumpstart's users/sessions/new: the log in form. It
+    posts user[email] and user[password] to session_path, as the original
+    does; the fields are composed from Field + Input by hand because the form
+    has no model behind it. %>
+<% content_for :title, t("users.sessions.new.title") %>
+
+<div class="mx-auto w-full max-w-md px-4 py-10 lg:px-6">
+  <header class="mb-8 space-y-2 text-center">
+    <h1 class="text-2xl font-semibold tracking-tight"><%= t("users.sessions.new.sign_in") %></h1>
+    <p class="text-sm text-muted-foreground">
+      <%= t("users.sessions.new.sign_up_html", link: poetry_link(href: signup_path, underline: :always) { t("users.sessions.new.sign_up") }) %>
+    </p>
+  </header>
+
+  <%= form_with url: session_path, scope: :user do %>
+    <%= poetry_field_group do %>
+      <%= poetry_field(id: "user_email", label_text: User.human_attribute_name(:email)) do |field| %>
+        <%= poetry_input(type: "email", name: "user[email]", value: params.dig(:user, :email),
+                         autofocus: true, autocomplete: "email",
+                         **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+
+      <%= poetry_field(id: "user_password", label_text: User.human_attribute_name(:password)) do |field| %>
+        <%= poetry_input(type: "password", name: "user[password]", autocomplete: "current-password",
+                         **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+    <% end %>
+
+    <div class="mt-6">
+      <%= poetry_button(type: :submit, name: "commit", value: t("users.sessions.new.sign_in"), class: "w-full") { t("users.sessions.new.sign_in") } %>
+    </div>
+  <% end %>
+
+  <p class="mt-4 text-center text-sm">
+    <%= poetry_link(href: new_password_path, class: "text-muted-foreground") { t("users.shared.forgot_your_password") } %>
+  </p>
+
+  <%= render "users/shared/oauth" %>
+</div>

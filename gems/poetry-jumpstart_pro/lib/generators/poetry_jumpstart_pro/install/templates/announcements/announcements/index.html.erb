@@ -1,0 +1,50 @@
+<%# Poetry recreation of Jumpstart's announcements/index: a page header with
+    the RSS action, one card per announcement (see _announcement), an empty
+    state with a next step, and Poetry pagination over Jumpstart's page. %>
+<% content_for :title, t(".title") %>
+
+<% content_for :head do %>
+  <%= auto_discovery_link_tag :rss, announcements_url(format: :rss), title: t(".title") %>
+<% end %>
+
+<% announcements = @announcements.to_a %>
+
+<div class="mx-auto w-full max-w-3xl px-4 py-10 lg:px-6">
+  <header class="flex flex-col gap-4">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="space-y-1">
+        <h1 class="text-3xl font-semibold tracking-tight"><%= t(".title") %></h1>
+        <p class="text-sm text-muted-foreground"><%= t(".description", name: Jumpstart.config.application_name) %></p>
+      </div>
+      <%= poetry_button(variant: :outline, size: :sm, href: announcements_path(format: :rss)) do |button| %>
+        <% button.with_leading { poetry_icon(name: :rss) } %>
+        <%= t(".rss", default: "RSS feed") %>
+      <% end %>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <% if announcements.any? %>
+    <div class="mt-8 flex flex-col gap-6">
+      <%= render announcements %>
+    </div>
+
+    <% if @page.multiple_pages? %>
+      <div class="mt-8 flex justify-center">
+        <%= poetry_pagination_nav(@page) %>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="mt-8">
+      <%= poetry_empty(media_variant: :icon) do |empty| %>
+        <% empty.with_media { poetry_icon(name: :megaphone) } %>
+        <% empty.with_title { t(".empty_placeholder") } %>
+        <% empty.with_description { t(".empty_description", default: "Nothing has been announced yet. Subscribe to the feed to hear about it first.") } %>
+        <%= poetry_button(variant: :outline, href: announcements_path(format: :rss)) do |button| %>
+          <% button.with_leading { poetry_icon(name: :rss) } %>
+          <%= t(".rss", default: "RSS feed") %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

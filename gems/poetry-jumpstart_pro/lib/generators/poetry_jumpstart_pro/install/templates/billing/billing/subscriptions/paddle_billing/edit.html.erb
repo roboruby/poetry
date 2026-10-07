@@ -1,0 +1,17 @@
+<%# Poetry recreation of Jumpstart's billing/subscriptions/paddle_billing/edit:
+    the page Paddle Billing renders its update/cancel flow into. The
+    paddle--billing controller element is processor wiring - kept verbatim;
+    only the surrounding surface and the back button are restyled. %>
+<div class="mx-auto w-full max-w-2xl px-4 py-10 lg:px-6">
+  <%= poetry_card(content_class: "flex flex-col items-center gap-6 text-center") do |card| %>
+    <%= tag.div data: {
+      controller: "paddle--billing",
+      paddle__billing_environment_value: Pay::PaddleBilling.environment,
+      paddle__billing_client_token_value: Pay::PaddleBilling.client_token,
+    } %>
+
+    <div>
+      <%= poetry_button(variant: :outline, href: billing_path) { t("back") } %>
+    </div>
+  <% end %>
+</div>

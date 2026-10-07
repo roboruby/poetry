@@ -1,0 +1,65 @@
+<%# Poetry recreation of Jumpstart's billing/subscriptions/edit (change plan).
+    The pricing Stimulus controller with its targets, actions and class
+    values, the data-turbo-prefetch guard and the per-plan PATCH form (hidden
+    plan param, data-turbo-confirm) are the switcher contract - kept. The
+    plan cards come from billing/subscriptions/_plan. %>
+<% content_for :title, t(".title") %>
+
+<div class="mx-auto w-full max-w-5xl px-4 py-10 lg:px-6">
+  <% if @subscription.on_trial? %>
+    <%= poetry_alert(class: "mb-8") do |alert| %>
+      <% alert.with_icon(name: :clock) %>
+      <% alert.with_title { t(".trial_ends", days: time_ago_in_words(@subscription.trial_ends_at)) } %>
+    <% end %>
+  <% end %>
+
+  <header class="flex flex-col items-center gap-2 text-center">
+    <h1 class="text-3xl font-semibold tracking-tight"><%= t(".title") %></h1>
+    <p class="text-lg text-muted-foreground"><%= t(".description") %></p>
+  </header>
+
+  <div data-controller="pricing"
+       data-pricing-frequency-value="<%= @subscription.plan&.yearly? ? "yearly" : "monthly" %>"
+       data-pricing-active-frequency-class="bg-background text-foreground shadow-xs"
+       data-pricing-inactive-frequency-class="text-muted-foreground"
+       data-pricing-inactive-plans-class="hidden"
+       data-pricing-hidden-toggle-class="hidden"
+       class="mt-10 flex flex-col items-center gap-8">
+    <div data-pricing-target="toggle" role="group" aria-label="<%= t(".billing_interval", default: "Billing interval") %>" class="hidden flex items-center gap-1 rounded-full border bg-muted p-1">
+      <%= poetry_button(variant: :ghost, size: :sm, class: "rounded-full", data: { action: "pricing#switch", pricing_target: "frequency", frequency: "monthly" }) { t(".monthly") } %>
+      <%= poetry_button(variant: :ghost, size: :sm, class: "rounded-full", data: { action: "pricing#switch", pricing_target: "frequency", frequency: "yearly" }) { t(".yearly") } %>
+    </div>
+
+    <div data-turbo-prefetch="false" class="w-full">
+      <div data-pricing-target="plans" data-frequency="monthly" class="<%= class_names("grid gap-6 sm:grid-cols-2 lg:grid-cols-none lg:grid-flow-col lg:auto-cols-fr", "mx-auto max-w-sm sm:grid-cols-1": @monthly_plans.one?) %>">
+        <% @monthly_plans.each do |plan| %>
+          <%= render layout: "billing/subscriptions/plan", locals: { plan: plan } do %>
+            <% if @subscription.plan == plan %>
+              <%= poetry_button(variant: :outline, disabled: true, class: "w-full") { t(".current_plan") } %>
+            <% else %>
+              <%= form_with url: billing_subscription_url(@subscription), method: :patch do |f| %>
+                <%= f.hidden_field :plan, value: plan.to_param %>
+                <%= poetry_button(type: :submit, variant: :outline, class: "w-full", data: { turbo_submits_with: t(".processing"), turbo_confirm: t("are_you_sure") }) { t(".change_plan") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+
+      <div data-pricing-target="plans" data-frequency="yearly" class="<%= class_names("hidden grid gap-6 sm:grid-cols-2 lg:grid-cols-none lg:grid-flow-col lg:auto-cols-fr", "mx-auto max-w-sm sm:grid-cols-1": @yearly_plans.one?) %>">
+        <% @yearly_plans.each do |plan| %>
+          <%= render layout: "billing/subscriptions/plan", locals: { plan: plan } do %>
+            <% if @subscription.plan == plan %>
+              <%= poetry_button(variant: :outline, disabled: true, class: "w-full") { t(".current_plan") } %>
+            <% else %>
+              <%= form_with url: billing_subscription_url(@subscription), method: :patch do |f| %>
+                <%= f.hidden_field :plan, value: plan.to_param %>
+                <%= poetry_button(type: :submit, variant: :outline, class: "w-full", data: { turbo_submits_with: t(".processing"), turbo_confirm: t("are_you_sure") }) { t(".change_plan") } %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

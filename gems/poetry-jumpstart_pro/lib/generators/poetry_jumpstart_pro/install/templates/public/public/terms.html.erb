@@ -1,0 +1,37 @@
+<%# Poetry recreation of Jumpstart's public/terms: the terms prose from
+    users/agreements/_terms_of_service typeset for reading, with the
+    agreement's last-updated date when config/initializers/agreements.rb
+    declares one. Terms that are still unwritten (the partial renders blank)
+    get an empty state with a way to ask, not a bare heading. %>
+<% content_for :title, t(".title") %>
+<% terms = capture { render "users/agreements/terms_of_service" } %>
+
+<div class="mx-auto w-full max-w-3xl px-4 py-10 lg:px-6">
+  <header class="flex flex-col gap-4">
+    <div class="space-y-1">
+      <h1 class="text-3xl font-semibold tracking-tight"><%= t(".title") %></h1>
+      <% if @agreement %>
+        <p class="text-sm text-muted-foreground"><%= t("users.agreements.show.last_updated", date: l(@agreement.updated.to_date, format: :long)) %></p>
+      <% end %>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <% if terms.present? %>
+    <%= poetry_typeset(class: "mt-8") do %>
+      <%= terms %>
+    <% end %>
+  <% else %>
+    <div class="mt-8">
+      <%= poetry_empty(media_variant: :icon) do |empty| %>
+        <% empty.with_media { poetry_icon(name: :"file-text") } %>
+        <% empty.with_title { t(".empty_title", default: "Not published yet") } %>
+        <% empty.with_description { t(".empty_description", default: "The %{title} will appear here once it is published. Until then, email us with any questions.", title: t(".title")) } %>
+        <%= poetry_button(href: "mailto:#{Jumpstart.config.support_email}") do |button| %>
+          <% button.with_leading { poetry_icon(name: :mail) } %>
+          <%= t(".contact", default: "Email %{email}", email: Jumpstart.config.support_email) %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

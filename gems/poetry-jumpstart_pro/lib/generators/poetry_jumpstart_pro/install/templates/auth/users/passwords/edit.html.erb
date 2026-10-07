@@ -1,0 +1,23 @@
+<%# Poetry recreation of Jumpstart's users/passwords/edit: choose a new
+    password from the emailed reset link. %>
+<% content_for :title, t("users.passwords.edit.title") %>
+
+<div class="mx-auto w-full max-w-md px-4 py-10 lg:px-6">
+  <header class="mb-8 space-y-2 text-center">
+    <h1 class="text-2xl font-semibold tracking-tight"><%= t("users.passwords.edit.change_your_password") %></h1>
+  </header>
+
+  <%= form_with model: @user, url: password_path(params[:token]), builder: Poetry::Ui::FormBuilder do |f| %>
+    <%= render "application/error_messages", resource: @user %>
+
+    <%= f.group do %>
+      <%= f.password_field :password, label: t("users.passwords.edit.new_password"), autofocus: true, autocomplete: "new-password",
+                           hint: t("users.shared.minimum_password_length", count: User::MINIMUM_PASSWORD_LENGTH) %>
+      <%= f.password_field :password_confirmation, label: t("users.passwords.edit.confirm_new_password"), autocomplete: "new-password" %>
+    <% end %>
+
+    <div class="mt-6">
+      <%= f.submit t("users.passwords.edit.change_my_password"), class: "w-full" %>
+    </div>
+  <% end %>
+</div>

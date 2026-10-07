@@ -1,0 +1,15 @@
+/.bundle/
+/Gemfile.lock
+/pkg/
+/tmp/
+/coverage/
+
+# The Jumpstart Pro repo is COMMERCIAL / private. Tests read it via
+# JUMPSTART_PRO_PATH and never copy it into this repo, but guard anyway:
+# no Jumpstart source, fixtures, or vendored checkout may be committed.
+/test/fixtures/jumpstart*
+/vendor/jumpstart*
+**/jumpstart-pro-rails/
+.env
+/.yardoc
+/doc/

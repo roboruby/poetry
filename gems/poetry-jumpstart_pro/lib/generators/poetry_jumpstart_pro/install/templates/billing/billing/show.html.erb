@@ -1,0 +1,26 @@
+<%# Poetry recreation of Jumpstart's billing/show: the account's current
+    plans, billing email, extra billing information and payment history.
+    Renders inside the sidebar layout column, which owns the container. %>
+<% content_for :title, t(".title") %>
+
+<div class="flex flex-col gap-8">
+  <h1 class="text-2xl font-semibold tracking-tight"><%= t(".title") %></h1>
+
+  <section class="flex flex-col gap-4" aria-labelledby="billing-subscriptions-title">
+    <h2 id="billing-subscriptions-title" class="text-lg font-semibold tracking-tight"><%= t(".subscriptions") %></h2>
+
+    <% if @subscriptions.any? %>
+      <%= render partial: "billing/subscriptions/subscription", collection: @subscriptions %>
+    <% else %>
+      <%= poetry_empty(media_variant: :icon, title_tag: :h3, class: "rounded-lg border py-10") do |empty| %>
+        <% empty.with_media { poetry_icon(name: :"credit-card") } %>
+        <% empty.with_title { t(".not_subscribed") } %>
+        <%= poetry_button(href: pricing_path) { t(".choose_plan") } %>
+      <% end %>
+    <% end %>
+  </section>
+
+  <%= render partial: "billing/email" %>
+  <%= render partial: "billing/info" %>
+  <%= render "billing/charges", charges: @charges %>
+</div>

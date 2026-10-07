@@ -1,0 +1,30 @@
+<%# Poetry recreation of Jumpstart's billing/_info: extra billing information
+    (PATCH /billing, account[extra_billing_info]) behind a disclosure, with the
+    saved text shown beneath. The collapsible replaces the toggle controller. %>
+<%= poetry_card(title_tag: :h2) do |card| %>
+  <% card.with_title { t(".extra_billing_info") } %>
+  <% card.with_description { t(".additional_information") } %>
+
+  <div class="flex flex-col gap-4">
+    <% if current_account.extra_billing_info? %>
+      <blockquote class="whitespace-pre-line border-l-4 border-border py-1 pl-4 font-mono text-sm text-muted-foreground"><%= current_account.extra_billing_info %></blockquote>
+    <% end %>
+
+    <%= poetry_collapsible do |collapsible| %>
+      <% collapsible.with_trigger(compose: true) do |wiring| %>
+        <%= poetry_button(variant: :outline, **wiring) { t(".add_info") } %>
+      <% end %>
+
+      <div class="max-w-lg pt-4">
+        <%= form_with model: current_account, url: billing_path, builder: Poetry::Ui::FormBuilder do |f| %>
+          <div class="flex flex-col gap-4">
+            <%= f.field :extra_billing_info, as: :textarea, rows: 4, label: t(".information", default: "Information") %>
+            <div>
+              <%= f.submit t(".save_info"), variant: :outline, data: { turbo_submits_with: t(".saving") } %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

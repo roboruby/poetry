@@ -1,0 +1,103 @@
+<%# Poetry recreation of Jumpstart's users/registrations/edit: the profile
+    page inside the settings sidebar. Three forms, as in the original: the
+    profile (with the Hotwire Native bridge form wiring), the email change
+    request, and the guarded account deletion. %>
+<% content_for :title, t("users.registrations.edit.title") %>
+
+<h1 class="text-2xl font-semibold tracking-tight"><%= t("users.registrations.edit.title", resource: @user.model_name.human) %></h1>
+
+<%= form_with(model: @user, url: registration_path, builder: Poetry::Ui::FormBuilder, class: "mt-6 max-w-md",
+              data: { controller: "bridge--form", action: "turbo:submit-start->bridge--form#submitStart turbo:submit-end->bridge--form#submitEnd" }) do |form| %>
+  <%= render "application/error_messages", resource: @user %>
+
+  <%= form.group do %>
+    <%# The builder's file_input makes the form multipart, and its block seats
+        the current avatar beside the control. %>
+    <%= form.file_input :avatar, accept: "image/png, image/jpeg, image/heic, image/heif, image/webp" do %>
+      <%= image_tag avatar_url_for(form.object), alt: "", class: "mt-3 size-16 shrink-0 rounded-full object-cover" %>
+    <% end %>
+
+    <%= form.text_field :name, autofocus: true, autocomplete: "name", required: true %>
+
+    <% if I18n.available_locales.length > 1 %>
+      <%= form.native_select :preferred_language, I18n.available_locales.map { |locale| [locale.to_s, locale.to_s] } %>
+    <% end %>
+
+    <%= form.native_select :theme, theme_options %>
+  <% end %>
+
+  <div class="mt-6">
+    <%= form.submit t("users.registrations.edit.update"),
+                    data: { "bridge--form-target": "submit", "bridge-title": t("users.registrations.edit.update"),
+                            "turbo-submits-with": t("users.registrations.edit.saving") } %>
+  </div>
+<% end %>
+
+<%= poetry_separator(class: "my-10") %>
+
+<section class="max-w-md space-y-4" aria-labelledby="email-change-title">
+  <div class="space-y-1">
+    <h2 id="email-change-title" class="text-lg font-semibold"><%= t("users.email_changes.title") %></h2>
+    <p class="text-sm text-muted-foreground"><%= t("users.email_changes.description_html", email: tag.strong(@user.email)) %></p>
+  </div>
+
+  <%= form_with(model: @user, url: email_change_path, method: :post, builder: Poetry::Ui::FormBuilder) do |form| %>
+    <%= form.group do %>
+      <%= form.input :unconfirmed_email, as: :email, required: true, autocomplete: "email" %>
+    <% end %>
+
+    <div class="mt-4">
+      <%= form.submit t("users.email_changes.title"), variant: :outline %>
+    </div>
+  <% end %>
+
+  <% if @user.unconfirmed_email? %>
+    <%# Outside the form above, since cancelling is a form of its own. %>
+    <%= poetry_alert do |pending| %>
+      <% pending.with_icon(name: :mail) %>
+      <% pending.with_action do %>
+        <%= form_with url: email_change_path, method: :delete do %>
+          <%= poetry_button(type: :submit, variant: :outline, size: :sm) { t("cancel") } %>
+        <% end %>
+      <% end %>
+      <p><%= t("users.email_changes.pending_html", email: tag.strong(@user.unconfirmed_email)) %></p>
+    <% end %>
+  <% end %>
+</section>
+
+<%= poetry_separator(class: "my-10") %>
+
+<section class="max-w-md space-y-4 rounded-lg border border-destructive/50 p-6" aria-labelledby="cancel-account-title">
+  <div class="space-y-1">
+    <h2 id="cancel-account-title" class="text-lg font-semibold"><%= t("users.registrations.edit.cancel_my_account") %></h2>
+    <p class="text-sm text-muted-foreground"><%= t("users.registrations.edit.cancel_my_account_description") %></p>
+  </div>
+
+  <%# A typed confirmation: the user types their email before deleting. The
+      dialog holds the DELETE form; its input demands the exact address
+      (pattern + required, enforced by the browser, no script) and the
+      destructive footer button submits the form. The bridge--sign-out
+      controller takes over the click inside the native apps. %>
+  <%= poetry_dialog do |dialog| %>
+    <% dialog.with_trigger(variant: :destructive) do %>
+      <%= poetry_icon(name: :trash) %>
+      <%= t("users.registrations.edit.cancel_my_account") %>
+    <% end %>
+    <% dialog.with_title { t("are_you_sure") } %>
+    <% dialog.with_description { t("users.registrations.edit.cancel_my_account_confirm_description_html") } %>
+    <%= form_with url: registration_path, method: :delete, id: "cancel-account-form" do %>
+      <%= poetry_field(id: "cancel-account-confirmation",
+                       label_text: t("users.registrations.edit.cancel_my_account_confirm_label", default: "Type %{email} to confirm", email: current_user.email)) do |field| %>
+        <%= poetry_input(name: "confirmation", autocomplete: "off", pattern: Regexp.escape(current_user.email), required: true,
+                         **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+    <% end %>
+    <% dialog.with_footer do %>
+      <%= poetry_button(type: :submit, form: "cancel-account-form", variant: :destructive,
+                        data: { controller: "bridge--sign-out", action: "bridge--sign-out#signOut",
+                                "bridge--sign-out-path-value": api_v1_me_path }) do %>
+        <%= t("users.registrations.edit.cancel_my_account") %>
+      <% end %>
+    <% end %>
+  <% end %>
+</section>

@@ -1,0 +1,22 @@
+<%# Poetry recreation of Jumpstart's users/shared/_oauth: the "or" divider
+    and one sign-in button per enabled OAuth provider under the log in and
+    sign up forms. Each form is a full-page submit (data-turbo="false"): the
+    OmniAuth request phase is a POST the middleware answers with a redirect. %>
+<% if Jumpstart::Omniauth.enabled_providers.any? %>
+  <%= poetry_field_separator(class: "my-6") { t("users.shared.or") } %>
+
+  <div class="grid gap-2">
+    <% Jumpstart::Omniauth.enabled_providers.each_key do |provider| %>
+      <%# Google refuses OAuth inside a web view, so the native app's
+          google-sign-in bridge component takes this button over and posts a
+          native ID token instead. The bridge controller only loads in an app
+          that supports the component, so the attributes are inert on the web. %>
+      <% bridge = { controller: "bridge--google-sign-in", action: "bridge--google-sign-in#signIn" } if provider == :google_oauth2 && Jumpstart.config.native_sign_in? %>
+      <%= form_with url: omniauth_authorize_path(provider), method: :post, data: { turbo: false } do %>
+        <%= poetry_button(type: :submit, variant: :outline, class: "w-full", data: bridge.to_h) do %>
+          <%= t("oauth.sign_in_with", provider: t("oauth.#{provider}")) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

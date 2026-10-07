@@ -1,0 +1,24 @@
+<%# Poetry recreation of Jumpstart's users/sessions/otps/new: the two-factor
+    challenge after a successful password check. The field is a plain Input
+    on purpose: it accepts a six-digit app code or a ten-character backup
+    code, so a fixed-length code control would lock recovery out. %>
+<% content_for :title, t("users.two_factor.title") %>
+
+<div class="mx-auto w-full max-w-md px-4 py-10 lg:px-6">
+  <header class="mb-8 space-y-2 text-center">
+    <h1 class="text-2xl font-semibold tracking-tight"><%= t("users.two_factor.title") %></h1>
+  </header>
+
+  <%= form_with url: session_otp_path do %>
+    <%= poetry_field_group do %>
+      <%= poetry_field(id: "otp_attempt", label_text: t("users.two_factor.verification_code"), required: true) do |field| %>
+        <%= poetry_input(name: "otp_attempt", autocomplete: "one-time-code", inputmode: "numeric", autofocus: true,
+                         **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+    <% end %>
+
+    <div class="mt-6">
+      <%= poetry_button(type: :submit, name: "commit", value: t("users.two_factor.submit"), class: "w-full") { t("users.two_factor.submit") } %>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,9 @@
+<%# Poetry recreation of Jumpstart's users/_user, the mention chip rich text
+    renders for an attached user: avatar and name on the secondary token
+    surface. Plain token classes rather than a component, because Action Text
+    sanitizes the rendered attachment and would strip a component's data
+    attributes. %>
+<span class="inline-flex items-center gap-1.5 rounded-md bg-secondary px-1.5 py-0.5 align-middle text-sm font-medium text-secondary-foreground">
+  <%= image_tag avatar_url_for(user), alt: "", height: 14, width: 14, class: "size-3.5 rounded-full object-cover" %>
+  <%= user.name %>
+</span>

@@ -1,0 +1,46 @@
+<%# Poetry recreation of Jumpstart's billing/subscriptions/cancels/show: the
+    destructive-panel pattern. The DELETE form keeps the engine's route; the
+    confirmation is an AlertDialog whose destructive action submits that form
+    (form= attribute) in place of the engine's data-turbo-confirm. %>
+<% content_for :title, t(".title") %>
+
+<% support_href = "mailto:#{Jumpstart.config.support_email}?subject=#{ERB::Util.url_encode(t(".subject", product: Jumpstart.config.application_name))}" %>
+
+<div class="flex max-w-xl flex-col gap-8">
+  <header class="flex flex-col gap-1">
+    <h1 class="text-2xl font-semibold tracking-tight"><%= t(".title") %></h1>
+    <p class="text-sm text-muted-foreground"><%= t(".description", product: Jumpstart.config.application_name) %></p>
+  </header>
+
+  <%= poetry_card do |card| %>
+    <%= render partial: "billing/subscriptions/summary", locals: { subscription: @subscription, heading_tag: :h2 } %>
+  <% end %>
+
+  <section class="flex flex-col gap-4 rounded-lg border border-destructive/50 p-6" aria-labelledby="cancel-plan-title">
+    <h2 id="cancel-plan-title" class="sr-only"><%= t(".button") %></h2>
+
+    <%= poetry_alert(variant: :destructive) do |alert| %>
+      <% alert.with_icon(name: :"triangle-alert") %>
+      <% alert.with_title { @subscription.metered? ? t(".cancel_immediately") : t(".active_until") } %>
+    <% end %>
+
+    <div class="flex flex-col gap-2 text-sm text-muted-foreground">
+      <p><%= t(".resume") %></p>
+      <p><%= t(".help_html", link: poetry_link(href: support_href) { t(".contact_us") }) %></p>
+    </div>
+
+    <%= form_with url: billing_subscription_cancel_path(@subscription), method: :delete, id: "cancel-subscription-form" do |f| %><% end %>
+
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <%= poetry_button(variant: :outline, href: billing_path) { t(".back") } %>
+
+      <%= poetry_alert_dialog do |dialog| %>
+        <% dialog.with_trigger(variant: :destructive) { t(".button") } %>
+        <% dialog.with_title { t("are_you_sure") } %>
+        <% dialog.with_description { @subscription.metered? ? t(".cancel_immediately") : t(".active_until") } %>
+        <% dialog.with_cancel { t(".keep_plan", default: "Keep my plan") } %>
+        <% dialog.with_action(variant: :destructive, type: :submit, form: "cancel-subscription-form", data: { turbo_submits_with: t(".processing") }) { t(".button") } %>
+      <% end %>
+    </div>
+  </section>
+</div>

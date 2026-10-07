@@ -1,0 +1,53 @@
+<%# Poetry recreation of Jumpstart's users/two_factor/verify: turning on
+    two-factor authentication. Scan the QR code (or copy the key), then
+    confirm with a six-digit code from the app; posts `code` to
+    user_two_factor_path, as the original does. %>
+<% content_for :title, t(".title") %>
+
+<div class="mx-auto w-full max-w-2xl px-4 py-10 lg:px-6">
+  <header class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight"><%= t(".title") %></h1>
+    <p class="text-sm text-muted-foreground"><%= t(".description") %></p>
+  </header>
+
+  <ol class="mt-6 list-inside list-decimal space-y-1 text-sm">
+    <li>
+      <%= t(".instructions_1_html",
+            android: poetry_link(href: "https://play.google.com/store/apps/details?id=com.authy.authy", external: true, underline: :always) { "Android" },
+            ios: poetry_link(href: "https://apps.apple.com/us/app/authy/id494168017", external: true, underline: :always) { "iOS" }) %>
+    </li>
+    <li><%= t(".instructions_2") %></li>
+    <li><%= t(".instructions_3") %></li>
+  </ol>
+
+  <%# The QR code sits on a white tile in both themes: scanners want dark
+      modules on a light ground, so this one surface does not follow the
+      theme tokens. %>
+  <div class="mx-auto my-8 w-48 max-w-full rounded-lg bg-white p-3 shadow-xs">
+    <%= current_user.two_factor_otp_qr_code(viewbox: true) %>
+  </div>
+
+  <div class="space-y-2">
+    <p class="text-sm text-muted-foreground"><%= t(".instructions_4") %></p>
+    <%= poetry_clipboard_text(value: current_user.otp_app_code, label: t(".instructions_4")) %>
+  </div>
+
+  <%= poetry_separator(class: "my-8") %>
+
+  <h2 class="text-lg font-semibold"><%= t(".verify_header") %></h2>
+  <p class="mt-1 text-sm text-muted-foreground"><%= t(".verify_description") %></p>
+
+  <%= form_with url: user_two_factor_path, class: "mt-6" do %>
+    <%= poetry_field_group do %>
+      <%= poetry_field(id: "code", label_text: t("users.two_factor.verification_code"), required: true) do |field| %>
+        <%= poetry_input_otp(name: "code", length: 6, groups: [3, 3], required: true,
+                             **field.control_attributes.slice("id", "aria-describedby").transform_keys(&:to_sym)) %>
+      <% end %>
+    <% end %>
+
+    <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
+      <%= poetry_button(variant: :outline, href: edit_account_password_path) { t("cancel") } %>
+      <%= poetry_button(type: :submit) { t(".verify") } %>
+    </div>
+  <% end %>
+</div>

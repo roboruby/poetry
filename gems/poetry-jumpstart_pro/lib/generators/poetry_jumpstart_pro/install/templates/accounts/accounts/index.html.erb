@@ -1,0 +1,56 @@
+<%# Poetry recreation of Jumpstart's accounts/index: the accounts the user
+    belongs to as a table, with Jumpstart's switch_account_button (a PATCH
+    form outside multitenancy) kept as the switch affordance per row. %>
+<% content_for :title, t(".title") %>
+
+<header class="flex flex-wrap items-end justify-between gap-4">
+  <h1 class="text-2xl font-semibold tracking-tight"><%= t(".title") %></h1>
+  <% if Jumpstart.config.team_accounts? %>
+    <%= poetry_button(href: new_account_path) do |button| %>
+      <% button.with_leading { poetry_icon(name: :plus) } %>
+      <%= t(".create") %>
+    <% end %>
+  <% end %>
+</header>
+
+<div class="mt-6 overflow-hidden rounded-lg border">
+  <%= poetry_table do %>
+    <%= poetry_table_caption(class: "sr-only") { t(".title") } %>
+    <%= poetry_table_header do %>
+      <%= poetry_table_row do %>
+        <%= poetry_table_head { Account.model_name.human } %>
+        <%= poetry_table_head { t("accounts.users") } %>
+        <%= poetry_table_head(class: "text-right") { tag.span(t(".actions", default: "Actions"), class: "sr-only") } %>
+      <% end %>
+    <% end %>
+    <%= poetry_table_body do %>
+      <% @accounts.sorted.each do |account| %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell do %>
+            <div class="flex flex-wrap items-center gap-3">
+              <%= poetry_link(href: account_path(account), underline: :none, class: "inline-flex items-center gap-3 font-medium") do %>
+                <%= account_avatar account %>
+                <span><%= account.name %></span>
+              <% end %>
+              <%= poetry_badge(variant: :outline) { t(".personal", default: "Personal") } if account.personal_account_for?(current_user) %>
+            </div>
+          <% end %>
+          <%= poetry_table_cell(class: "text-muted-foreground") { pluralize(account.account_users_count, t(".user")) } %>
+          <%= poetry_table_cell(class: "text-right") do %>
+            <% if current_account != account %>
+              <%= switch_account_button account, label: t(".switch"), class: "text-sm font-medium text-primary underline-offset-4 hover:underline", form_class: "inline-flex justify-end" %>
+            <% else %>
+              <%= poetry_badge(variant: :outline) { t(".current") } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>
+
+<% if @page.multiple_pages? %>
+  <div class="mt-6 flex justify-center">
+    <%= poetry_pagination_nav(@page) %>
+  </div>
+<% end %>

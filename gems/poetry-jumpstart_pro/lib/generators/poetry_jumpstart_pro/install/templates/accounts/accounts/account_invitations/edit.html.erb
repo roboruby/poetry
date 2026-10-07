@@ -1,0 +1,49 @@
+<%# Poetry recreation of Jumpstart's accounts/account_invitations/edit: the
+    invitation form plus a guarded delete (AlertDialog submitting the DELETE
+    form it sits in). %>
+<% content_for :title, t(".title") %>
+
+<header class="flex flex-col gap-4">
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item(t("accounts.index.title"), href: accounts_path) %>
+    <% crumb.with_item(@account.name, href: account_path(@account)) %>
+    <% crumb.with_item(t(".title")) %>
+  <% end %>
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight"><%= t(".title") %></h1>
+      <p class="text-sm text-muted-foreground"><%= t(".description") %></p>
+    </div>
+    <%= form_with(url: account_account_invitation_path(@account, @account_invitation), method: :delete, id: "destroy-invitation-form", class: "hidden") {} %>
+    <%= poetry_alert_dialog do |dialog| %>
+      <% dialog.with_trigger(variant: :outline, class: "text-destructive") { t(".destroy") } %>
+      <% dialog.with_title { t(".destroy") } %>
+      <% dialog.with_description { t(".destroy_description", default: "The invitation sent to %{email} will stop working.", email: @account_invitation.email) } %>
+      <% dialog.with_cancel { t("cancel") } %>
+      <% dialog.with_action(variant: :destructive, submit: "destroy-invitation-form") { t(".destroy") } %>
+    <% end %>
+  </div>
+  <%= poetry_separator %>
+</header>
+
+<%= form_with(model: [@account, @account_invitation], builder: Poetry::Ui::FormBuilder, class: "mt-6 max-w-md space-y-6") do |form| %>
+  <%= render "application/error_messages", resource: form.object %>
+
+  <%= form.group do %>
+    <%= form.input :name, placeholder: t("helpers.placeholder.account_invitation.name") %>
+    <%= form.input :email, placeholder: t("helpers.placeholder.account_invitation.email") %>
+
+    <%= form.fieldset(legend: t("accounts.roles"), legend_variant: :label) do %>
+      <%= poetry_field_group(variant: :choices) do %>
+        <% AccountUser::ROLES.each do |role| %>
+          <%= form.check_box role, label: account_user_role_name(role) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <%= form.submit t(".update") %>
+    <%= poetry_button(href: account_path(@account), variant: :ghost) { t("cancel") } %>
+  </div>
+<% end %>

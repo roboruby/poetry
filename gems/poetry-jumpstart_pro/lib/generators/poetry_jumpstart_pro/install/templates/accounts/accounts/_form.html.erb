@@ -1,0 +1,26 @@
+<%# Poetry recreation of Jumpstart's accounts/_form on the Poetry form
+    builder: labels, values, errors and aria-required derive from the
+    model; the avatar upload only exists once the account is persisted. %>
+<%= form_with(model: account, builder: Poetry::Ui::FormBuilder, class: "max-w-md space-y-6") do |form| %>
+  <%= render "application/error_messages", resource: form.object %>
+
+  <%= form.group do %>
+    <%= form.input :name, label: t("helpers.label.account.name"), placeholder: t("helpers.placeholder.account.name"), autofocus: true %>
+    <%= form.input :domain, placeholder: t("helpers.placeholder.account.domain") if Jumpstart::Multitenancy.domain? %>
+    <%= form.input :subdomain, placeholder: t("helpers.placeholder.account.subdomain") if Jumpstart::Multitenancy.subdomain? %>
+
+    <% if form.object.persisted? %>
+      <div class="flex items-center gap-4">
+        <%= account_avatar form.object, size: "size-12" %>
+        <div class="min-w-0 flex-1">
+          <%= form.file_input :avatar, accept: "image/png, image/jpeg, image/heic, image/heif, image/webp" %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <%= form.submit %>
+    <%= poetry_button(href: (form.object.persisted? ? account_path(form.object) : accounts_path), variant: :ghost) { t("cancel") } %>
+  </div>
+<% end %>

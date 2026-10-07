@@ -1,0 +1,37 @@
+<%# Poetry recreation of Jumpstart's accounts/account_invitations/new. %>
+<% content_for :title, t(".title") %>
+
+<header class="flex flex-col gap-4">
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item(t("accounts.index.title"), href: accounts_path) %>
+    <% crumb.with_item(@account.name, href: account_path(@account)) %>
+    <% crumb.with_item(t(".title")) %>
+  <% end %>
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight"><%= t(".title") %></h1>
+    <p class="text-sm text-muted-foreground"><%= t(".description") %></p>
+  </div>
+  <%= poetry_separator %>
+</header>
+
+<%= form_with(model: @account_invitation, url: account_account_invitations_path(@account), builder: Poetry::Ui::FormBuilder, class: "mt-6 max-w-md space-y-6") do |form| %>
+  <%= render "application/error_messages", resource: form.object %>
+
+  <%= form.group do %>
+    <%= form.input :name, placeholder: t("helpers.placeholder.account_invitation.name"), autofocus: true %>
+    <%= form.input :email, placeholder: t("helpers.placeholder.account_invitation.email") %>
+
+    <%= form.fieldset(legend: t("accounts.roles"), legend_variant: :label) do %>
+      <%= poetry_field_group(variant: :choices) do %>
+        <% AccountUser::ROLES.each do |role| %>
+          <%= form.check_box role, label: account_user_role_name(role) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <%= form.submit t(".send") %>
+    <%= poetry_button(href: account_path(@account), variant: :ghost) { t("cancel") } %>
+  </div>
+<% end %>

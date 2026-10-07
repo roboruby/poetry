@@ -1,0 +1,51 @@
+<%# Poetry recreation of Jumpstart's accounts/edit: the account form, the
+    ownership transfer (owner only) and a guarded delete - an AlertDialog
+    whose confirming action submits the DELETE form it sits in, replacing
+    Jumpstart's data-turbo-confirm + description pair. %>
+<% content_for :title, t(".title") %>
+
+<header class="flex flex-col gap-4">
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item(t("accounts.index.title"), href: accounts_path) %>
+    <% crumb.with_item(@account.name, href: account_path(@account)) %>
+    <% crumb.with_item(t(".title")) %>
+  <% end %>
+  <div class="flex items-center gap-4">
+    <%= account_avatar @account, size: "size-10" %>
+    <h1 class="text-2xl font-semibold tracking-tight"><%= t(".title") %></h1>
+  </div>
+  <%= poetry_separator %>
+</header>
+
+<div class="mt-6 space-y-10">
+  <%= render "accounts/form", account: @account %>
+
+  <% if @account.can_transfer?(current_user) %>
+    <%= poetry_separator %>
+    <%= render "accounts/transfers/form", account: @account %>
+  <% end %>
+
+  <% unless @account.personal? %>
+    <% delete_description = subscribed? ? t(".delete_with_payments_description") : t(".delete_description") %>
+    <section class="space-y-4 rounded-lg border border-destructive/50 p-6" aria-labelledby="delete-account-title">
+      <div class="space-y-1">
+        <h2 id="delete-account-title" class="text-base font-semibold"><%= t(".delete_account", default: "Delete account") %></h2>
+        <p class="text-sm text-muted-foreground"><%= delete_description %></p>
+      </div>
+      <%= poetry_alert(variant: :destructive) do |alert| %>
+        <% alert.with_icon(name: :"triangle-alert") %>
+        <% alert.with_title { t(".cannot_be_undone", default: "This cannot be undone") } %>
+      <% end %>
+      <%= form_with(url: account_path(@account), method: :delete, id: "delete-account-form", class: "hidden") {} %>
+      <div class="flex justify-end">
+        <%= poetry_alert_dialog do |dialog| %>
+          <% dialog.with_trigger(variant: :destructive) { t("delete") } %>
+          <% dialog.with_title { t("are_you_sure") } %>
+          <% dialog.with_description { delete_description } %>
+          <% dialog.with_cancel { t("cancel") } %>
+          <% dialog.with_action(variant: :destructive, submit: "delete-account-form") { t("delete") } %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>

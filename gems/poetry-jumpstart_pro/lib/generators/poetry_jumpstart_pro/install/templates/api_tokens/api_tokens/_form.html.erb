@@ -1,0 +1,39 @@
+<%# Poetry recreation of Jumpstart's api_tokens/_form. The scopes keep the
+    engine's serialization exactly (api_token[scopes][] checkboxes grouped by
+    resource behind one clearing hidden field): the builder's checkbox_group
+    would flatten the resources under a single "Scopes" label, so each
+    scope is a horizontal Field around a bare poetry_checkbox. %>
+<%= form_with(model: api_token, builder: Poetry::Ui::FormBuilder, class: "max-w-md space-y-6") do |form| %>
+  <%= render "application/error_messages", resource: form.object %>
+
+  <%= form.group do %>
+    <%= form.input :name, placeholder: t("helpers.placeholder.api_token.name"), autofocus: true %>
+
+    <% if ApiToken.available_scopes.any? %>
+      <% chosen = Array(form.object.scopes).map(&:to_s) %>
+      <%= form.fieldset(legend: ApiToken.human_attribute_name(:scopes)) do %>
+        <%= hidden_field_tag "api_token[scopes][]", "", id: nil %>
+        <%= poetry_field_group do %>
+          <% ApiToken.actions_by_resource.each do |resource, actions| %>
+            <%= poetry_fieldset(legend: t("api_tokens.resources.#{resource}", default: resource.humanize), legend_variant: :label) do %>
+              <%= poetry_field_group(variant: :choices) do %>
+                <% actions.each do |action| %>
+                  <% scope = "#{resource}:#{action}" %>
+                  <% scope_id = "api_token_scopes_#{resource}_#{action}".parameterize(separator: "_") %>
+                  <%= poetry_field(id: scope_id, label_text: t("api_tokens.actions.#{action}", default: action.humanize), orientation: :horizontal) do |field| %>
+                    <%= poetry_checkbox(id: scope_id, name: "api_token[scopes][]", value: scope, checked: chosen.include?(scope), unchecked_value: nil, **field.control_attributes.except("id").transform_keys(&:to_sym)) %>
+                  <% end %>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <%= form.submit %>
+    <%= poetry_button(href: (form.object.persisted? ? api_token_path(form.object) : api_tokens_path), variant: :ghost) { t("cancel") } %>
+  </div>
+<% end %>

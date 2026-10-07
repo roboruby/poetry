@@ -1,0 +1,18 @@
+<%# Poetry recreation of Jumpstart's accounts/new. %>
+<% content_for :title, t(".title") %>
+
+<header class="flex flex-col gap-4">
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item(t("accounts.index.title"), href: accounts_path) %>
+    <% crumb.with_item(t(".title")) %>
+  <% end %>
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight"><%= t(".title") %></h1>
+    <p class="text-sm text-muted-foreground"><%= t(".description") %></p>
+  </div>
+  <%= poetry_separator %>
+</header>
+
+<div class="mt-6">
+  <%= render "accounts/form", account: @account %>
+</div>

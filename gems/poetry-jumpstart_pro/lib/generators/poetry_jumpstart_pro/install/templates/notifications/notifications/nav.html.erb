@@ -1,0 +1,17 @@
+<%# Poetry recreation of Jumpstart's notifications/nav: the lazily loaded
+    frame inside the navbar sheet. It stays turbo_frame_tag "notifications"
+    with the rows as direct children (the notifications controller inserts
+    pushed rows at the top of this frame) and the empty state as the
+    `only:` child. %>
+<%= turbo_frame_tag "notifications" do %>
+  <%= render partial: "notifications/notification", collection: @notifications, cached: true %>
+
+  <% if @notifications.any? %>
+    <%= poetry_link(href: notifications_path, underline: :none, class: "block px-4 py-3 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground") { t("notifications.see_more") } %>
+  <% end %>
+
+  <div class="hidden p-6 text-center text-sm only:block">
+    <div class="mb-1 font-medium"><%= t("notifications.empty") %></div>
+    <div class="text-muted-foreground"><%= t("notifications.empty_description") %></div>
+  </div>
+<% end %>

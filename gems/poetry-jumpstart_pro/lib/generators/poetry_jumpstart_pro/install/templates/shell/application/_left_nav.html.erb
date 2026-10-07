@@ -1,0 +1,11 @@
+<%# Poetry recreation of Jumpstart's application/_left_nav: Pricing for
+    visitors; for signed-in members of more than one account, the team
+    account switcher. %>
+<% if authenticated? %>
+  <%= render "application/account_menu" if Jumpstart.config.team_accounts? && Current.other_accounts.any? %>
+<% else %>
+  <% active = current_page?(pricing_path) %>
+  <%= poetry_link(href: pricing_path, current: active, underline: :none,
+                  class: class_names("inline-flex h-9 items-center rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+                                     active ? "bg-accent text-accent-foreground" : "text-muted-foreground")) { t(".pricing") } %>
+<% end %>

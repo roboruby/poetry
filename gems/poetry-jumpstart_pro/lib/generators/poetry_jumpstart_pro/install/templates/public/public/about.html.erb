@@ -1,0 +1,32 @@
+<%# Poetry recreation of Jumpstart's public/about: a page header over the
+    facts the app already knows about itself (who to email, where the
+    changelog lives) so the stub page has a shape without inventing copy. %>
+<% content_for :title, t(".title") %>
+
+<div class="mx-auto w-full max-w-3xl px-4 py-10 lg:px-6">
+  <header class="flex flex-col gap-4">
+    <div class="space-y-1">
+      <h1 class="text-3xl font-semibold tracking-tight"><%= t(".title") %></h1>
+      <p class="text-sm text-muted-foreground"><%= t(".description", default: "Who runs %{name} and how to reach us.", name: Jumpstart.config.application_name) %></p>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <div class="mt-8 grid gap-4 sm:grid-cols-2">
+    <%= poetry_card(title_tag: :h2) do |card| %>
+      <% card.with_title { t(".contact", default: "Get in touch") } %>
+      <% card.with_description { t(".contact_description", default: "Questions or feedback about %{name}? Send %{business} an email.", name: Jumpstart.config.application_name, business: Jumpstart.config.business_name) } %>
+      <%= poetry_link(href: "mailto:#{Jumpstart.config.support_email}", underline: :always, class: "inline-flex items-center gap-1 text-sm") do %>
+        <%= poetry_icon(name: :mail, class: "size-3.5") %> <%= Jumpstart.config.support_email %>
+      <% end %>
+    <% end %>
+
+    <%= poetry_card(title_tag: :h2) do |card| %>
+      <% card.with_title { t("announcements.index.title") } %>
+      <% card.with_description { t("announcements.index.description", name: Jumpstart.config.application_name) } %>
+      <%= poetry_link(href: announcements_path, underline: :always, class: "inline-flex items-center gap-1 text-sm") do %>
+        <%= t(".read_updates", default: "Read the updates") %> <%= poetry_icon(name: :"arrow-right", class: "size-3.5") %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+<%# Poetry recreation of Jumpstart's billing/_charges: payment history with
+    the invoice and receipt PDF links per charge; billing/show passes the
+    charges in. %>
+<%# locals: (charges:) -%>
+<%= poetry_card(title_tag: :h2) do |card| %>
+  <% card.with_title { t(".title") } %>
+
+  <% if charges.any? %>
+    <div class="overflow-hidden rounded-lg border">
+      <%= poetry_table do %>
+        <%= poetry_table_caption(class: "sr-only") { t(".title") } %>
+        <%= poetry_table_header do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_head { t(".date") } %>
+            <%= poetry_table_head { t(".amount") } %>
+            <%= poetry_table_head { t(".invoice") } %>
+            <%= poetry_table_head { t(".receipt") } %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_body do %>
+          <% charges.each do |charge| %>
+            <%= poetry_table_row(id: dom_id(charge)) do %>
+              <%= poetry_table_cell(class: "font-medium") { charge.created_at.strftime("%B %e, %Y") } %>
+              <%= poetry_table_cell(class: "tabular-nums") { pay_amount_to_currency(charge) } %>
+              <%= poetry_table_cell do %>
+                <%= poetry_link(href: invoice_billing_charge_path(charge, format: :pdf), external: true, class: "inline-flex items-center gap-1 font-medium") do %>
+                  <%= poetry_icon(name: :"file-text", class: "size-4") %>
+                  <%= t(".view") %><span class="sr-only"> <%= t(".invoice") %></span>
+                <% end %>
+              <% end %>
+              <%= poetry_table_cell do %>
+                <%= poetry_link(href: billing_charge_path(charge, format: :pdf), external: true, class: "inline-flex items-center gap-1 font-medium") do %>
+                  <%= poetry_icon(name: :receipt, class: "size-4") %>
+                  <%= t(".view") %><span class="sr-only"> <%= t(".receipt") %></span>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-sm text-muted-foreground"><%= t(".empty") %></p>
+  <% end %>
+<% end %>

@@ -1,0 +1,12 @@
+<%# Poetry recreation of Jumpstart's errors/500. Self-contained on purpose:
+    this page renders while the rest of the app may be failing, so it uses
+    nothing that touches the database - the status, a plain-language message,
+    and a way home. The status number stays a bare <div> (tests assert on it). %>
+<div class="mx-auto flex w-full max-w-5xl flex-col items-center px-4 py-24 text-center lg:px-6">
+  <div class="text-7xl font-bold tracking-tighter tabular-nums">500</div>
+  <h1 class="mt-6 max-w-md text-2xl font-semibold tracking-tight sm:text-3xl"><%= t(".message", default: "Sorry, we had a problem loading this page.") %></h1>
+  <p class="mt-3 max-w-md text-muted-foreground"><%= t(".hint", default: "The problem is on our side. Please try again in a moment.") %></p>
+  <div class="mt-8">
+    <%= poetry_button(size: :lg, href: root_path) { t(".back", default: "Back to home") } %>
+  </div>
+</div>

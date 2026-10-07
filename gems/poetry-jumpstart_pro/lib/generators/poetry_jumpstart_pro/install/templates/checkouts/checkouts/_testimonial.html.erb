@@ -1,0 +1,15 @@
+<%# Poetry recreation of Jumpstart's checkouts/_testimonial: the quote card
+    shown beside the checkout on large screens (same copy and attribution). %>
+<div class="hidden lg:block">
+  <%= poetry_card do |card| %>
+    <figure class="flex flex-col gap-4">
+      <blockquote class="text-lg text-muted-foreground">
+        <p><%= t("checkouts.testimonial", product: Jumpstart.config.application_name) %></p>
+      </blockquote>
+      <figcaption class="flex items-center gap-3">
+        <%= poetry_avatar(src: "https://avatars1.githubusercontent.com/u/67093?s=40&v=4", label: "Chris Oliver", size: :sm) { "CO" } %>
+        <cite class="text-sm font-semibold not-italic">Chris Oliver</cite>
+      </figcaption>
+    </figure>
+  <% end %>
+</div>

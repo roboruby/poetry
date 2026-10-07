@@ -1,0 +1,36 @@
+<%# Poetry recreation of Jumpstart's application/_navbar for Hotwire Native.
+    The native app draws its own bar, so this is a panel its menu button
+    opens through the toggle-nav-bar window event: the left and right
+    navigation, the settings links, a bridged sign out, and the notification
+    badge bridge. A host _navbar override would shadow the engine's native
+    variant, so the gem ships both. %>
+<nav class="fixed inset-x-0 top-0 z-50 border-b bg-background shadow-sm" aria-label="<%= Jumpstart.config.application_name %>"
+     data-controller="toggle" data-action="toggle-nav-bar@window->toggle#toggle">
+  <div class="hidden flex-col gap-4 p-4 lg:flex" data-toggle-target="toggleable">
+    <div class="flex flex-col gap-1"><%= render "application/left_nav" %></div>
+    <div class="flex flex-col gap-2"><%= render "application/right_nav" %></div>
+
+    <% if authenticated? %>
+      <%= poetry_separator %>
+      <div class="flex flex-col gap-1">
+        <%= poetry_button(variant: :ghost, href: edit_registration_path, class: "justify-start") { t(".profile") } %>
+        <%= poetry_button(variant: :ghost, href: edit_account_password_path, class: "justify-start") { t(".password") } %>
+        <%= poetry_button(variant: :ghost, href: accounts_path, class: "justify-start") { t(".accounts") } %>
+        <%= form_with url: session_path, method: :delete do %>
+          <%= poetry_button(type: :submit, variant: :ghost, class: "w-full justify-start",
+                            data: { controller: "bridge--sign-out", action: "bridge--sign-out#signOut",
+                                    "bridge--sign-out-path-value": api_v1_auth_path }) { t(".sign_out") } %>
+        <% end %>
+      </div>
+
+      <%= tag.div data: {
+            controller: "notifications",
+            notifications_account_id_value: current_account.id,
+            notifications_account_unread_value: notification_counts[current_account.id],
+            notifications_total_unread_value: notification_counts.values.sum
+          } do %>
+        <%= tag.div data: { controller: "bridge--notification-badge", notifications_target: "nativeBadge" } %>
+      <% end %>
+    <% end %>
+  </div>
+</nav>

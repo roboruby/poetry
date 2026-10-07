@@ -1,0 +1,33 @@
+<%# Poetry recreation of Jumpstart's users/agreements/show: read a changed
+    agreement, then accept (PATCH) or decline (DELETE) it. The agreement text
+    comes from the app's own partial (users/agreements/_<id>), rendered as
+    prose inside a Typeset. %>
+<% content_for :title, t(".title", agreement: @agreement.title) %>
+
+<div class="mx-auto w-full max-w-3xl px-4 py-10 lg:px-6">
+  <header class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight"><%= t(".title", agreement: @agreement.title) %></h1>
+    <p class="text-sm text-muted-foreground"><%= t(".last_updated", date: l(@agreement.updated.to_date, format: :long)) %></p>
+  </header>
+
+  <div class="mt-8">
+    <%= poetry_typeset do %>
+      <%= render partial: @agreement %>
+    <% end %>
+  </div>
+
+  <%= poetry_separator(class: "my-10") %>
+
+  <div class="text-center">
+    <p class="text-sm text-muted-foreground"><%= t(".description", agreement: @agreement.title) %></p>
+
+    <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+      <%= form_with url: agreement_path(@agreement), method: :delete do %>
+        <%= poetry_button(type: :submit, variant: :outline, size: :lg) { t(".decline") } %>
+      <% end %>
+      <%= form_with url: agreement_path(@agreement), method: :patch do %>
+        <%= poetry_button(type: :submit, size: :lg) { t(".accept") } %>
+      <% end %>
+    </div>
+  </div>
+</div>

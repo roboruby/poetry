@@ -1,0 +1,33 @@
+<%# Poetry recreation of Jumpstart's billing/subscriptions/_plan: one plan
+    card. Rendered as a layout partial - the caller's block (yield) is the
+    plan's action, evaluated here so its lazy t(".…") keys resolve under
+    billing.subscriptions.plan, exactly as the engine's callers rely on. %>
+<%= poetry_card(key: plan, title_tag: :h2, class: "h-full", content_class: "flex flex-1 flex-col gap-6") do |card| %>
+  <% card.with_title { plan.name } %>
+  <% card.with_description { plan.description } if plan.description.present? %>
+
+  <p class="flex flex-wrap items-baseline gap-x-2">
+    <% if plan.contact_url? %>
+      <span class="text-4xl font-semibold tracking-tight"><%= t(".contact_us_price") %></span>
+    <% else %>
+      <span class="text-4xl font-semibold tracking-tight tabular-nums"><%= pay_amount_to_currency(plan, strip_insignificant_zeros: true) %></span>
+      <span class="text-sm font-medium text-muted-foreground">
+        <% if plan.unit_label? %>/ <%= plan.unit_label %> <% end %>/ <%= formatted_plan_interval(plan) %>
+      </span>
+    <% end %>
+  </p>
+
+  <%# The per-plan action supplied by the caller %>
+  <div><%= yield %></div>
+
+  <% if plan.features.any? %>
+    <ul class="flex flex-col gap-2 text-sm text-muted-foreground">
+      <% plan.features.each do |plan_feature| %>
+        <li class="flex items-start gap-2">
+          <%= poetry_icon(name: :check, class: "mt-0.5 size-4 shrink-0 text-primary") %>
+          <span><%= plan_feature %></span>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+<% end %>

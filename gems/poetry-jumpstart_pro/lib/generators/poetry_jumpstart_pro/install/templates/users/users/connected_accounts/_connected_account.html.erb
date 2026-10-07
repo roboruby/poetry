@@ -1,0 +1,25 @@
+<%# Poetry recreation of Jumpstart's users/connected_accounts/_connected_account:
+    one linked OAuth account as a list row with its remove action. %>
+<%# Some providers (the developer strategy, for one) hand back no name: the
+    provider then names the row, and the avatar's accessible name with it. %>
+<% name = connected_account.name.presence %>
+<% display_name = name || connected_account.provider_name.to_s.presence || connected_account.provider.to_s %>
+<% initials = display_name.split.first(2).map { |part| part[0] }.join.upcase.presence || "?" %>
+
+<%= poetry_item(variant: :outline, role: "listitem") do |item| %>
+  <% item.with_media do %>
+    <%= poetry_avatar(src: connected_account.image_url, label: display_name, size: :lg) { initials } %>
+  <% end %>
+  <% item.with_title { display_name } %>
+  <% if name %>
+    <% item.with_description { connected_account.provider_name } %>
+  <% end %>
+  <% item.with_actions do %>
+    <%= form_with url: user_connected_account_path(connected_account), method: :delete do %>
+      <%= poetry_button(type: :submit, variant: :outline, size: :sm) do |button| %>
+        <% button.with_leading { poetry_icon(name: :x) } %>
+        <%= t(".remove") %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

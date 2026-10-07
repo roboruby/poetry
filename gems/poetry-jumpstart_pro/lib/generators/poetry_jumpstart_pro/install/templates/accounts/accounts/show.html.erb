@@ -1,0 +1,102 @@
+<%# Poetry recreation of Jumpstart's accounts/show: the members and pending
+    invitations of an account as one table. Jumpstart's switch_account_button
+    and clipboard controller (data-clipboard-text) are kept as-is; @admin
+    and @account_users come from the controller. %>
+<% content_for :title, @account.name %>
+
+<% initials = ->(text) { text.to_s.split(/[\s@._-]+/).reject(&:blank?).first(2).map { |part| part[0] }.join.upcase } %>
+
+<header class="flex flex-col gap-4">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-4">
+      <%= account_avatar @account, size: "size-10" %>
+      <h1 class="text-2xl font-semibold tracking-tight"><%= @account.name %></h1>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <%= switch_account_button @account, label: t(".switch"), class: "text-sm font-medium text-primary underline-offset-4 hover:underline", form_class: "inline-flex" unless current_account == @account %>
+      <% if !@account.personal? && @admin %>
+        <%= poetry_button(href: edit_account_path(@account), variant: :outline) { t(".edit_account") } %>
+        <%= poetry_button(href: new_account_account_invitation_path(@account)) do |button| %>
+          <% button.with_leading { poetry_icon(name: :"user-plus") } %>
+          <%= t(".invite") %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+  <%= poetry_separator %>
+</header>
+
+<% if @account.personal? %>
+  <%= poetry_alert(class: "mt-6") do |alert| %>
+    <% alert.with_icon(name: :info) %>
+    <%= t(".personal_team_description") %>
+  <% end %>
+<% else %>
+  <div class="mt-6 overflow-hidden rounded-lg border">
+    <%= poetry_table do %>
+      <%= poetry_table_caption(class: "sr-only") { t("accounts.users") } %>
+      <%= poetry_table_header do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_head { AccountUser.human_attribute_name(:user) } %>
+          <%= poetry_table_head(class: "hidden md:table-cell") { AccountUser.human_attribute_name(:email) } %>
+          <%= poetry_table_head { AccountUser.human_attribute_name(:roles) } %>
+          <%= poetry_table_head(class: "text-right") { tag.span(t(".actions", default: "Actions"), class: "sr-only") } %>
+        <% end %>
+      <% end %>
+
+      <%= poetry_table_body do %>
+        <% @account_users.each do |account_user| %>
+          <% user = account_user.user %>
+          <% user_name = user.name || user.email %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") do %>
+              <div class="flex items-center gap-3">
+                <%= poetry_avatar(src: avatar_url_for(user), label: user_name, size: :sm) { initials.(user_name) } %>
+                <div class="min-w-0">
+                  <div class="truncate"><%= user_name %><%= " (#{t(".you")})" if Current.user == user %></div>
+                  <div class="truncate text-xs font-normal text-muted-foreground md:hidden"><%= user.email %></div>
+                </div>
+                <%= poetry_badge(variant: :outline) { t(".2fa") } if user.otp_required_for_login? %>
+              </div>
+            <% end %>
+            <%= poetry_table_cell(class: "hidden text-muted-foreground md:table-cell") { user.email } %>
+            <%= poetry_table_cell(class: "text-muted-foreground") { account_user_roles(@account, account_user).join(", ") } %>
+            <%= poetry_table_cell(class: "text-right") do %>
+              <%= poetry_button(href: edit_account_account_user_path(@account, account_user), variant: :outline, size: :sm) { t(".edit") } if @admin %>
+            <% end %>
+          <% end %>
+        <% end %>
+
+        <%# Pending invitations %>
+        <% @account.account_invitations.each do |account_invitation| %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") do %>
+              <div class="flex flex-wrap items-center gap-3">
+                <%= poetry_avatar(src: avatar_url_for(account_invitation), label: account_invitation.name, size: :sm) { initials.(account_invitation.name) } %>
+                <div class="min-w-0">
+                  <div class="truncate"><%= account_invitation.name %></div>
+                  <div class="truncate text-xs font-normal text-muted-foreground md:hidden"><%= account_invitation.email %></div>
+                </div>
+                <%= poetry_badge(variant: :outline) { t(".awaiting_response") } %>
+              </div>
+            <% end %>
+            <%= poetry_table_cell(class: "hidden text-muted-foreground md:table-cell") { account_invitation.email } %>
+            <%= poetry_table_cell(class: "text-muted-foreground") { account_user_roles(@account, account_invitation).join(", ") } %>
+            <%= poetry_table_cell(class: "text-right") do %>
+              <% if @admin %>
+                <div class="flex flex-wrap justify-end gap-2">
+                  <%= form_with(url: resend_account_account_invitation_path(@account, account_invitation), method: :post) do %>
+                    <%= poetry_button(type: :submit, variant: :outline, size: :sm) { t(".resend_invite") } %>
+                  <% end %>
+                  <%= poetry_button(variant: :outline, size: :sm, data: { controller: "clipboard", clipboard_text: account_invitation_url(account_invitation) }) { t(".copy_link") } %>
+                  <%= poetry_button(href: edit_account_account_invitation_path(@account, account_invitation), variant: :outline, size: :sm) { t(".edit") } %>
+                </div>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

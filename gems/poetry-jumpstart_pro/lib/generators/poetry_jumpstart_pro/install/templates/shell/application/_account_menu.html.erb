@@ -1,0 +1,41 @@
+<%# Poetry recreation of Jumpstart's application/_account_menu (the team
+    account switcher) on poetry_popover. Subdomain and path multitenancy
+    switch by link; the default mode PATCHes switch_account_path, and the
+    accounts controller reconnects Action Cable when that form finishes.
+    The controller sits INSIDE the panel so it travels with the content when
+    the popover portals to body on open. %>
+<%= poetry_popover(align: :start, content_class: "w-64 p-1", label: t(".switch_account", default: "Switch account"), class: "account-menu") do |popover| %>
+  <% popover.with_trigger(variant: :ghost, size: :sm, class: "gap-2") do %>
+    <%= account_avatar current_account, size: "size-6" %>
+    <span class="name max-w-32 truncate"><%= current_account.name %></span>
+    <%= poetry_icon(name: :"chevrons-up-down", class: "text-muted-foreground") %>
+  <% end %>
+
+  <div class="flex flex-col gap-0.5" data-controller="accounts" data-action="turbo:submit-end->accounts#reconnect">
+    <% Current.other_accounts.each do |account| %>
+      <% if Jumpstart::Multitenancy.subdomain? && account.subdomain? %>
+        <%= poetry_button(variant: :ghost, size: :sm, href: root_url(subdomain: account.subdomain), class: "w-full justify-start gap-2") do %>
+          <%= account_avatar account, size: "size-6" %>
+          <span class="truncate"><%= account.name %></span>
+        <% end %>
+      <% elsif Jumpstart::Multitenancy.path? %>
+        <%= poetry_button(variant: :ghost, size: :sm, href: root_url(script_name: "/#{account.id}"), class: "w-full justify-start gap-2") do %>
+          <%= account_avatar account, size: "size-6" %>
+          <span class="truncate"><%= account.name %></span>
+        <% end %>
+      <% else %>
+        <%= form_with url: switch_account_path(account), method: :patch do %>
+          <%= poetry_button(type: :submit, variant: :ghost, size: :sm, class: "w-full justify-start gap-2") do %>
+            <%= account_avatar account, size: "size-6" %>
+            <span class="truncate"><%= account.name %></span>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <%= poetry_separator(class: "my-1") %>
+    <%= poetry_button(variant: :ghost, size: :sm, href: accounts_path, class: "w-full justify-start gap-2") do %>
+      <%= poetry_icon(name: :users) %><%= t(".manage_accounts") %>
+    <% end %>
+  </div>
+<% end %>

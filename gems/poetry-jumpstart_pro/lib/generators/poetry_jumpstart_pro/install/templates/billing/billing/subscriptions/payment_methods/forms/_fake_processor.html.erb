@@ -1,0 +1,6 @@
+<%# Poetry recreation of Jumpstart's payment_methods/forms/_fake_processor:
+    an informational callout - the fake processor has no payment method. %>
+<%= poetry_alert do |alert| %>
+  <% alert.with_icon(name: :info) %>
+  <%= t(".message") %>
+<% end %>

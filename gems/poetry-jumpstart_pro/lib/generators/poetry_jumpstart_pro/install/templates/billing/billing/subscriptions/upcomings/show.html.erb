@@ -1,0 +1,67 @@
+<%# Poetry recreation of Jumpstart's billing/subscriptions/upcomings/show:
+    the Stripe upcoming-invoice preview (@invoice) as a line-item table with
+    subtotal, tax and total footer rows. %>
+<% content_for :title, t(".title") %>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-1">
+    <h1 class="text-2xl font-semibold tracking-tight"><%= t(".title") %></h1>
+    <p class="text-sm text-muted-foreground"><%= t(".description", product: Jumpstart.config.application_name) %></p>
+  </header>
+
+  <%= poetry_card do |card| %>
+    <%= render partial: "billing/subscriptions/summary", locals: { subscription: @subscription, heading_tag: :h2 } %>
+  <% end %>
+
+  <section class="flex flex-col gap-4" aria-labelledby="upcoming-invoice-period">
+    <h2 id="upcoming-invoice-period" class="text-lg font-semibold tracking-tight"><%= l Time.at(@invoice.period_end).to_date, format: :long %></h2>
+
+    <div class="overflow-hidden rounded-lg border">
+      <%= poetry_table do %>
+        <%= poetry_table_caption(class: "sr-only") { t(".title") } %>
+        <%= poetry_table_header do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_head { t(".line_items.description") } %>
+            <%= poetry_table_head(class: "text-right") { t(".line_items.quantity") } %>
+            <%= poetry_table_head(class: "text-right") { t(".line_items.unit_price") } %>
+            <%= poetry_table_head(class: "text-right") { t(".line_items.total") } %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_body do %>
+          <% @invoice.lines.auto_paging_each do |line_item| %>
+            <%= poetry_table_row(id: line_item.id) do %>
+              <%= poetry_table_cell do %>
+                <div><%= line_item.description %></div>
+                <div class="text-xs text-muted-foreground">
+                  <%= l Time.at(line_item.period.start).to_date, format: :long %> -
+                  <%= l Time.at(line_item.period.end).to_date, format: :long %>
+                </div>
+              <% end %>
+              <%= poetry_table_cell(class: "text-right tabular-nums") { line_item.quantity } %>
+              <%= poetry_table_cell(class: "text-right tabular-nums") { Pay::Currency.format line_item.pricing.unit_amount_decimal, currency: line_item.currency } %>
+              <%= poetry_table_cell(class: "text-right tabular-nums") { Pay::Currency.format line_item.amount, currency: line_item.currency } %>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_footer do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(colspan: 3, class: "text-right font-medium") { t(".subtotal", default: "Subtotal") } %>
+            <%= poetry_table_cell(class: "text-right tabular-nums") { Pay::Currency.format @invoice.subtotal, currency: @invoice.currency } %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(colspan: 3, class: "text-right font-medium") { t(".tax", default: "Tax") } %>
+            <%= poetry_table_cell(class: "text-right tabular-nums") { Pay::Currency.format (@invoice.total - @invoice.total_excluding_tax), currency: @invoice.currency } %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(colspan: 3, class: "text-right font-semibold") { t(".total", default: "Total") } %>
+            <%= poetry_table_cell(class: "text-right font-semibold tabular-nums") { Pay::Currency.format @invoice.total, currency: @invoice.currency } %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <div>
+    <%= poetry_button(variant: :outline, href: billing_path) { t(".back") } %>
+  </div>
+</div>

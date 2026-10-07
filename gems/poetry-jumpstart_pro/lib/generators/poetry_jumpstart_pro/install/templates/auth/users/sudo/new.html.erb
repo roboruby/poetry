@@ -1,0 +1,31 @@
+<%# Poetry recreation of Jumpstart's users/sudo/new: confirm the password
+    before a sensitive action. Rendered by the Users::Sudo concern from any
+    protected action and after a wrong password, so the redirect_to round
+    trip stays. %>
+<% content_for :title, t("users.sudo.title") %>
+
+<div class="mx-auto w-full max-w-md px-4 py-10 lg:px-6">
+  <header class="mb-8 space-y-2 text-center">
+    <h1 class="text-2xl font-semibold tracking-tight"><%= t("users.sudo.title") %></h1>
+  </header>
+
+  <%= poetry_card do %>
+    <%= form_with url: sudo_path do %>
+      <%= hidden_field_tag :redirect_to, params[:redirect_to] || request.url %>
+
+      <%= poetry_field_group do %>
+        <%= poetry_field(id: "password", label_text: User.human_attribute_name(:password)) do |field| %>
+          <% field.with_hint do %>
+            <%= poetry_link(href: new_password_path) { t("users.sudo.forgot_password") } %>
+          <% end %>
+          <%= poetry_input(type: "password", name: "password", autocomplete: "current-password", autofocus: true,
+                           **field.control_attributes.transform_keys(&:to_sym)) %>
+        <% end %>
+      <% end %>
+
+      <div class="mt-6">
+        <%= poetry_button(type: :submit, class: "w-full") { t("users.sudo.submit") } %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

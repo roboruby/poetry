@@ -1,0 +1,49 @@
+<%# Poetry recreation of Jumpstart's users/referrals/index: the referral link
+    and its stats. Users::ReferralsController renders in the application
+    layout (not layouts/sidebar), so the settings navigation column is composed
+    here the way layouts/sidebar composes it. %>
+<% content_for :title, t(".title") %>
+
+<div class="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-6 lg:flex-row lg:gap-10 lg:px-6 lg:py-8">
+  <aside class="w-full shrink-0 lg:w-60">
+    <%= render partial: "application/account_navbar" %>
+  </aside>
+
+  <div class="min-w-0 flex-1">
+    <header class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight"><%= t(".title") %></h1>
+      <p class="text-sm text-muted-foreground"><%= t(".instructions") %></p>
+    </header>
+
+    <div class="mt-6 max-w-xl">
+      <%= poetry_field(id: "referral-link", label_text: t(".link", default: "Your referral link")) do |field| %>
+        <%= poetry_clipboard_text(value: root_url(Refer.param_name => @referral_code.code), id: field.control_attributes["id"]) %>
+      <% end %>
+    </div>
+
+    <h2 class="mt-10 text-lg font-semibold"><%= t(".stats") %></h2>
+
+    <div class="mt-4 grid gap-4 sm:grid-cols-3">
+      <%= poetry_card do %>
+        <%= poetry_stat(label: t(".clicks")) do |stat| %>
+          <% stat.with_description { t(".clicks_description") } %>
+          <%= @referral_code.visits_count %>
+        <% end %>
+      <% end %>
+
+      <%= poetry_card do %>
+        <%= poetry_stat(label: t(".referrals")) do |stat| %>
+          <% stat.with_description { t(".referrals_description") } %>
+          <%= @referral_code.referrals.count %>
+        <% end %>
+      <% end %>
+
+      <%= poetry_card do %>
+        <%= poetry_stat(label: t(".completed")) do |stat| %>
+          <% stat.with_description { t(".completed_description") } %>
+          <%= @referral_code.referrals.completed.count %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

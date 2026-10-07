@@ -1,0 +1,32 @@
+<%# Poetry recreation of Jumpstart's application/_navbar: the brand mark, the
+    left and right navigation, and the signed-in controls. Below lg the two
+    navigation lists fold behind the menu button into a panel under the bar,
+    toggled by Jumpstart's toggle controller. The native variant is
+    _navbar.html+native. %>
+<nav class="border-b bg-background" data-controller="toggle" aria-label="<%= Jumpstart.config.application_name %>">
+  <div class="flex min-h-14 flex-wrap items-center justify-between gap-x-4 px-4 lg:flex-nowrap lg:px-6">
+    <%= link_to root_path, class: "flex shrink-0 items-center py-3" do %>
+      <%= render_svg "logo", class: "h-6 fill-current" %>
+      <span class="sr-only"><%= Jumpstart.config.application_name %></span>
+    <% end %>
+
+    <div class="order-last hidden w-full flex-col gap-3 border-t py-3 lg:order-none lg:flex lg:w-auto lg:flex-1 lg:flex-row lg:items-center lg:justify-between lg:border-0 lg:py-0"
+         data-toggle-target="toggleable">
+      <div class="flex flex-col gap-1 lg:flex-row lg:items-center"><%= render "application/left_nav" %></div>
+      <div class="flex flex-col gap-2 lg:flex-row lg:items-center"><%= render "application/right_nav" %></div>
+    </div>
+
+    <div class="flex items-center gap-1">
+      <%= poetry_button(variant: :ghost, size: :icon, label: t(".menu", default: "Menu"), id: "sidebar-open", class: "lg:hidden",
+                        data: { action: "click->toggle#toggle touch->toggle#toggle" }) do %>
+        <%= poetry_icon(name: :menu) %>
+      <% end %>
+
+      <%= render "application/dev_menu" if Rails.env.development? %>
+      <% if authenticated? %>
+        <%= render "application/notifications" %>
+        <%= render "application/user_menu" %>
+      <% end %>
+    </div>
+  </div>
+</nav>

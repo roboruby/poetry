@@ -1,0 +1,74 @@
+<%# Poetry recreation of Jumpstart's billing/subscriptions/_subscription: one
+    subscription card - status badge, plan summary, trial/grace copy and the
+    state-driven actions. Same routes and conditions as the engine partial. %>
+<%= tag.div id: dom_id(subscription) do %>
+<%= poetry_card(key: subscription) do |card| %>
+  <% if subscription.generic_trial? %>
+    <div class="flex flex-col items-start gap-2">
+      <%= poetry_badge(variant: :info) { t(".free_trial") } %>
+      <p class="text-sm"><%= t(".free_trial_ends", date: l(subscription.trial_ends_at.to_date, format: :long)) %></p>
+    </div>
+
+  <% else %>
+    <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+      <div class="flex flex-1 flex-col items-start gap-3">
+        <% if subscription.canceled? %>
+          <%= poetry_badge(variant: :outline) { t(".canceled") } %>
+        <% elsif subscription.incomplete? %>
+          <%= poetry_badge(variant: :outline) { t(".incomplete") } %>
+        <% elsif subscription.past_due? %>
+          <%= poetry_badge(variant: :warning) { t(".past_due") } %>
+        <% elsif subscription.unpaid? %>
+          <%= poetry_badge(variant: :warning) { t(".unpaid") } %>
+        <% end %>
+
+        <%= render partial: "billing/subscriptions/summary", locals: { subscription: subscription } %>
+
+        <% if subscription.metered? %>
+          <%= poetry_link(href: billing_subscription_upcoming_path(subscription), class: "text-sm font-medium") { t(".view_usage") } %>
+        <% elsif subscription.plan&.charge_per_unit? %>
+          <%= poetry_link(href: billing_subscription_upcoming_path(subscription), class: "text-sm font-medium") { t(".view_upcoming_invoice") } %>
+        <% end %>
+
+        <% if subscription.on_trial? && subscription.canceled? %>
+          <p class="text-sm text-muted-foreground"><%= t(".canceled_on_trial", date: l(subscription.trial_ends_at.to_date, format: :long)) %></p>
+        <% elsif subscription.on_trial? %>
+          <p class="text-sm text-muted-foreground"><%= t(".trial", date: l(subscription.trial_ends_at.to_date, format: :long)) %></p>
+        <% elsif subscription.on_grace_period? %>
+          <p class="flex items-center gap-2 text-sm text-muted-foreground">
+            <%= poetry_icon(name: :calendar, class: "size-4 shrink-0") %>
+            <% if subscription.ends_at? %>
+              <span><%= t(".ends_at", date: l(subscription.ends_at.to_date, format: :long)) %></span>
+            <% elsif subscription.pause_starts_at %>
+              <span><%= t(".paused_at", date: l(subscription.pause_starts_at.to_date, format: :long)) %></span>
+            <% end %>
+          </p>
+        <% elsif subscription.paused? %>
+          <p class="text-sm text-muted-foreground"><%= t(".paused") %></p>
+        <% end %>
+      </div>
+
+      <div class="flex flex-col gap-2 lg:w-56">
+        <% if subscription.on_grace_period? %>
+          <%= poetry_button(href: billing_subscription_resume_path(subscription)) { t(".resume") } if subscription.resumable? %>
+        <% elsif subscription.active? %>
+          <%= poetry_button(variant: :outline, href: edit_billing_subscription_path(subscription)) { t(".change_plan") } %>
+          <%= poetry_button(variant: :outline, href: new_billing_subscription_payment_method_path(subscription)) { t(".update_payment_method") } %>
+          <%= poetry_button(variant: :outline, href: billing_subscription_cancel_path(subscription)) { t(".cancel_plan") } %>
+        <% elsif subscription.paused? %>
+          <%= poetry_button(href: billing_subscription_resume_path(subscription)) { t(".resume") } %>
+          <%= poetry_button(variant: :outline, href: billing_subscription_cancel_path(subscription)) { t(".cancel_plan") } %>
+        <% elsif subscription.incomplete? %>
+          <%= poetry_button(href: pay.payment_path(subscription.latest_payment.id)) { t(".confirm_payment") } %>
+        <% elsif subscription.past_due? %>
+          <%= poetry_button(href: new_billing_subscription_payment_method_path(subscription)) { t(".update_payment_method") } %>
+          <%= poetry_button(variant: :outline, href: billing_subscription_cancel_path(subscription)) { t(".cancel_plan") } %>
+        <% elsif subscription.unpaid? %>
+          <%= poetry_button(href: new_billing_subscription_payment_method_path(subscription)) { t(".update_payment_method") } %>
+          <%= poetry_button(variant: :outline, href: billing_subscription_cancel_path(subscription)) { t(".cancel_plan") } %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+<% end %>

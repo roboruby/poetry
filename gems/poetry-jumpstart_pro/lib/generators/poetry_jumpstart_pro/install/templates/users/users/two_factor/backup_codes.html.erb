@@ -1,0 +1,32 @@
+<%# Poetry recreation of Jumpstart's users/two_factor/backup_codes: the
+    recovery codes shown before two-factor setup, in a code block whose copy
+    affordance grabs the whole set at once. %>
+<% content_for :title, t(".title") %>
+
+<div class="mx-auto w-full max-w-2xl px-4 py-10 lg:px-6">
+  <header class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight"><%= t(".title") %></h1>
+    <p class="text-sm text-muted-foreground"><%= t(".description") %></p>
+  </header>
+
+  <%= poetry_alert(class: "mt-6") do |warning| %>
+    <% warning.with_icon(name: :"triangle-alert") %>
+    <% warning.with_title { t(".warning") } %>
+  <% end %>
+
+  <div class="mt-6">
+    <%= poetry_code_block(code: current_user.otp_backup_codes.join("\n"), label: t(".title")) %>
+  </div>
+
+  <p class="mt-4 text-sm text-muted-foreground"><%= t(".save_codes") %></p>
+
+  <%= poetry_separator(class: "my-8") %>
+
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <%= poetry_button(variant: :outline, href: edit_account_password_path) { t("cancel") } %>
+    <%= poetry_button(href: verify_user_two_factor_path) do |button| %>
+      <% button.with_trailing { poetry_icon(name: :"arrow-right") } %>
+      <%= t(".next") %>
+    <% end %>
+  </div>
+</div>

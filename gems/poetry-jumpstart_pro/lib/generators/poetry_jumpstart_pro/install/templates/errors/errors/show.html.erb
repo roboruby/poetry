@@ -1,0 +1,16 @@
+<%# Poetry recreation of Jumpstart's errors/show, the fallback for every
+    4xx/5xx without a page of its own (406, 422, ...). Self-contained on
+    purpose: nothing here touches the database - the status (with its
+    standard name), a plain-language message, and a way home. The status
+    number stays a bare <div> (tests assert on it). %>
+<div class="mx-auto flex w-full max-w-5xl flex-col items-center px-4 py-24 text-center lg:px-6">
+  <div class="text-7xl font-bold tracking-tighter tabular-nums"><%= @status %></div>
+  <% if (status_name = Rack::Utils::HTTP_STATUS_CODES[@status]) %>
+    <p class="mt-2 text-sm font-medium text-muted-foreground"><%= status_name %></p>
+  <% end %>
+  <h1 class="mt-6 max-w-md text-2xl font-semibold tracking-tight sm:text-3xl"><%= t(".message", default: "Sorry, we couldn't complete your request.") %></h1>
+  <p class="mt-3 max-w-md text-muted-foreground"><%= t(".hint", default: "Try again, or head back to the homepage.") %></p>
+  <div class="mt-8">
+    <%= poetry_button(size: :lg, href: root_path) { t(".back", default: "Back to home") } %>
+  </div>
+</div>

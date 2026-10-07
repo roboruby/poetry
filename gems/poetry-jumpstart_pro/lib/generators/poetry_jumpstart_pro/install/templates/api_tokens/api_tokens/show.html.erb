@@ -1,0 +1,69 @@
+<%# Poetry recreation of Jumpstart's api_tokens/show. The secret rides a
+    SensitiveInput (masked, reveal on demand, copy without revealing - the
+    Poetry analogue of blur_secret), the facts a MetadataList, revocation an
+    AlertDialog submitting the DELETE form, and the usage snippets are
+    CodeBlocks kept behind a Collapsible so the raw token stays off-screen
+    until asked for (the intent of the engine's blurred snippet). %>
+<% content_for :title, @api_token.name %>
+
+<header class="flex flex-col gap-4">
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item(t("api_tokens.index.title"), href: api_tokens_path) %>
+    <% crumb.with_item(@api_token.name) %>
+  <% end %>
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <h1 class="text-2xl font-semibold tracking-tight"><%= @api_token.name %></h1>
+    <div class="flex flex-wrap items-center gap-2">
+      <%= poetry_button(href: edit_api_token_path(@api_token), variant: :outline) { t(".edit") } %>
+      <%= form_with(url: api_token_path(@api_token), method: :delete, id: "revoke-token-form", class: "hidden") {} %>
+      <%= poetry_alert_dialog do |dialog| %>
+        <% dialog.with_trigger(variant: :destructive) { t(".revoke") } %>
+        <% dialog.with_title { t(".revoke") } %>
+        <% dialog.with_description { t(".confirm") } %>
+        <% dialog.with_cancel { t("cancel") } %>
+        <% dialog.with_action(variant: :destructive, submit: "revoke-token-form") { t(".revoke") } %>
+      <% end %>
+    </div>
+  </div>
+  <%= poetry_separator %>
+</header>
+
+<div class="mt-6 space-y-8">
+  <div class="max-w-md space-y-2">
+    <%= poetry_label(for_id: "api_token_token") { ApiToken.human_attribute_name(:token) } %>
+    <%= poetry_sensitive_input(id: "api_token_token", name: "token", value: @api_token.token, readonly: true, copy: true, label: ApiToken.human_attribute_name(:token)) %>
+  </div>
+
+  <%= poetry_metadata_list(columns: :two) do |list| %>
+    <% list.with_item(label: ApiToken.human_attribute_name(:created_at)) { @api_token.created_at.strftime("%b %e, %Y") } %>
+    <% list.with_item(label: ApiToken.human_attribute_name(:last_used_at)) { @api_token.last_used_at? ? local_time_ago(@api_token.last_used_at) : "—" } %>
+    <% if ApiToken.available_scopes.any? %>
+      <% ApiToken.actions_by_resource.each do |resource, actions| %>
+        <% granted = actions.select { @api_token.can?("#{resource}:#{it}") } %>
+        <% list.with_item(label: t("api_tokens.resources.#{resource}", default: resource.humanize)) do %>
+          <%= tag.span(granted.map { |action| t("api_tokens.actions.#{action}", default: action.humanize) }.to_sentence.presence || t("api_tokens.no_access"), class: ("text-muted-foreground" if granted.empty?)) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <%= poetry_separator %>
+
+  <section class="space-y-4" aria-labelledby="api-token-usage-title">
+    <h2 id="api-token-usage-title" class="text-base font-semibold"><%= t(".auth_header") %></h2>
+    <%= poetry_collapsible do |collapsible| %>
+      <% collapsible.with_trigger(compose: true) do |wiring| %>
+        <%= poetry_button(variant: :outline, size: :sm, **wiring) do |button| %>
+          <% button.with_leading { poetry_icon(name: :"code") } %>
+          <%= t(".show_examples", default: "Show examples") %>
+        <% end %>
+      <% end %>
+      <div class="mt-4 flex flex-col gap-4">
+        <%= poetry_code_block(language: "http", label: t(".http_example", default: "HTTP request"),
+              code: "GET /api/v1/me.json\nAccept: application/json\nAuthorization: Bearer #{@api_token.token}") %>
+        <%= poetry_code_block(language: "bash", label: t(".curl_example", default: "curl"),
+              code: %(curl #{api_v1_me_url(format: :json)} \\\n  -H "Accept: application/json" \\\n  -H "Authorization: Bearer #{@api_token.token}")) %>
+      </div>
+    <% end %>
+  </section>
+</div>

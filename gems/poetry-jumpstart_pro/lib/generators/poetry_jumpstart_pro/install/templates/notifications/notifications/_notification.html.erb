@@ -1,0 +1,12 @@
+<%# Poetry recreation of Jumpstart's notifications/_notification: a clickable
+    Item row that KEEPS the notifications controller's contract - the
+    notification target with data-id/seen-at/read-at on the anchor (nil
+    values render no attribute, which the CSS keys on) and the `unread`
+    marker, now a token dot, toggled by CSS from data-read-at. Rendered by
+    the index, the navbar frame, and Noticed's Action Cable push. %>
+<%= poetry_item(tag: :a, href: notification_path(notification), size: :sm, class: "rounded-none px-4 py-3 hover:bg-accent",
+      data: { notifications_target: "notification", id: notification&.id, seen_at: notification&.seen_at, read_at: notification&.read_at }) do |item| %>
+  <% item.with_title { tag.span(notification.message, class: "line-clamp-3 text-wrap") } %>
+  <% item.with_description { local_time_ago notification&.created_at } %>
+  <% item.with_actions { tag.span(class: "unread size-2 shrink-0 rounded-full bg-primary", "aria-hidden": true) } %>
+<% end %>

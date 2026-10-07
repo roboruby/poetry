@@ -1,0 +1,6 @@
+<%# Poetry recreation of Jumpstart's application/_right_nav: the log in and
+    sign up actions for visitors. Signed-in controls live in _navbar. %>
+<% unless authenticated? %>
+  <%= poetry_button(variant: :ghost, size: :sm, href: login_path) { t(".log_in") } %>
+  <%= poetry_button(size: :sm, href: signup_path) { t(".sign_up") } %>
+<% end %>

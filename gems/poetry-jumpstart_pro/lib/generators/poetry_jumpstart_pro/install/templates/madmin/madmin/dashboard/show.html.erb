@@ -1,0 +1,40 @@
+<%# Poetry recreation of Jumpstart's madmin dashboard/show: the revenue and
+    account KPIs as poetry stats, one metric each. Madmin keeps its own layout
+    and stylesheet (the host's Tailwind/Poetry CSS is not loaded there), so
+    the grid rides madmin's .metrics/.metric containers - the frame that
+    layout paints - and each cell holds one poetry_stat. %>
+<% content_for :title, "Dashboard" %>
+
+<header class="header">
+  <h1>Dashboard</h1>
+</header>
+
+<section>
+  <div class="metrics">
+    <div class="metric">
+      <%= poetry_stat(label: "Total Revenue") { number_to_currency @total_revenue } %>
+    </div>
+
+    <div class="metric">
+      <%= poetry_stat(label: "Revenue Last 12mo") { number_to_currency @last_12_mos } %>
+    </div>
+
+    <div class="metric">
+      <%= poetry_stat(label: "Last Month's Revenue") { number_to_currency @last_month } %>
+    </div>
+
+    <div class="metric">
+      <%= poetry_stat(label: "This Month's Revenue To Date") { number_to_currency @this_month } %>
+    </div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric">
+      <%= poetry_stat(label: "Users") { number_with_delimiter ::User.count } %>
+    </div>
+
+    <div class="metric">
+      <%= poetry_stat(label: "Active Subscriptions") { number_with_delimiter ::Pay::Subscription.active.count } %>
+    </div>
+  </div>
+</section>

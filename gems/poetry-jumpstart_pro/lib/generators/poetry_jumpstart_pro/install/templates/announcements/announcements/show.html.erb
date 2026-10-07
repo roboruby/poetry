@@ -1,0 +1,32 @@
+<%# Poetry recreation of Jumpstart's announcements/show: a back link to the
+    list, the kind badge and publish time as the meta row, the title, and the
+    rich-text body typeset for reading. The badge mapping mirrors
+    _announcement so the two surfaces read as one set. %>
+<% kind_variants = { "new" => :success, "improvement" => :info, "fix" => :warning, "update" => :outline } %>
+
+<div class="mx-auto w-full max-w-3xl px-4 py-10 lg:px-6">
+  <%= poetry_link(href: announcements_path, underline: :hover, class: "inline-flex items-center gap-1 text-sm font-medium text-muted-foreground") do %>
+    <%= poetry_icon(name: :"arrow-left", class: "size-4") %> <%= t(".back") %>
+  <% end %>
+
+  <article id="<%= dom_id(@announcement) %>" class="mt-6">
+    <header class="flex flex-col gap-4">
+      <div class="flex flex-wrap items-center gap-3">
+        <%= poetry_badge(variant: kind_variants.fetch(@announcement.kind, :outline)) { @announcement.kind.humanize.titleize } %>
+        <%= poetry_link(href: announcement_path(@announcement), underline: :hover, class: "text-sm font-medium capitalize text-muted-foreground") do %>
+          <% if @announcement.published_at? %>
+            <%= local_relative_time(@announcement.published_at, "weekday-or-date") %>
+          <% else %>
+            <%= t(".draft", default: "Draft") %>
+          <% end %>
+        <% end %>
+      </div>
+      <h1 class="text-3xl font-semibold tracking-tight"><%= @announcement.title %></h1>
+      <%= poetry_separator %>
+    </header>
+
+    <%= poetry_typeset(class: "mt-6") do %>
+      <%= @announcement.description %>
+    <% end %>
+  </article>
+</div>

@@ -1,0 +1,60 @@
+<%# Poetry recreation of Jumpstart's dashboard/show, the signed-in home: a
+    page header with a welcome and, for staff, the Admin action; a note on
+    where the page lives; then a card grid of the account's everyday
+    destinations. The cards are a starting point - swap them for your app's
+    own content. %>
+<% content_for :title, t(".title") %>
+<% destinations = [
+     [t(".profile", default: "Profile"), edit_registration_path, :"user-round",
+      t(".profile_description", default: "Your name, avatar, language and theme.")],
+     [t(".security", default: "Password and security"), edit_account_password_path, :"lock-keyhole",
+      t(".security_description", default: "Change your password and turn on two-factor authentication.")],
+     [t(".accounts", default: "Accounts"), accounts_path, :users,
+      t(".accounts_description", default: "Your personal account and the teams you belong to.")],
+     [t(".notifications", default: "Notifications"), notifications_path, :bell,
+      t(".notifications_description", default: "Everything that happened while you were away.")],
+     [t(".api_tokens", default: "API tokens"), api_tokens_path, :"key-round",
+      t(".api_tokens_description", default: "Personal tokens for scripts and integrations.")]
+   ] %>
+<% if Jumpstart.config.payments_enabled? && Current.account_billing? %>
+  <% destinations << [t(".billing", default: "Billing"), billing_path, :"credit-card",
+                      t(".billing_description", default: "Your plan, payment method and receipts.")] %>
+<% end %>
+
+<div class="mx-auto w-full max-w-5xl px-4 py-10 lg:px-6">
+  <header class="flex flex-col gap-4">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="space-y-1">
+        <h1 class="text-3xl font-semibold tracking-tight"><%= t(".title") %></h1>
+        <p class="text-sm text-muted-foreground"><%= t(".welcome", default: "Welcome back, %{name}.", name: current_user.first_name.presence || current_user.name) %></p>
+      </div>
+      <% if current_user.staff? %>
+        <%= poetry_button(variant: :outline, href: madmin_root_path, data: { turbo: false }) do |button| %>
+          <% button.with_leading { poetry_icon(name: :"shield-check") } %>
+          <%= t(".admin", default: "Admin") %>
+        <% end %>
+      <% end %>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <%= poetry_alert(class: "mt-8") do |note| %>
+    <% note.with_icon(name: :"layout-dashboard") %>
+    <% note.with_title { t(".customize_title", default: "This page is yours to build") } %>
+    <p><%= t(".customize", default: "Edit it in") %> <%= tag.code("app/views/dashboard/show.html.erb", class: "font-mono text-xs") %></p>
+  <% end %>
+
+  <section class="mt-8 space-y-4" aria-labelledby="dashboard-destinations">
+    <h2 id="dashboard-destinations" class="text-lg font-semibold tracking-tight"><%= t(".destinations", default: "Your account") %></h2>
+
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <% destinations.each do |label, path, icon, description| %>
+        <%= poetry_card do |card| %>
+          <% card.with_title { poetry_link(href: path, underline: :hover) { label } } %>
+          <% card.with_action { poetry_icon(name: icon, class: "size-5 text-muted-foreground") } %>
+          <p class="text-sm text-muted-foreground"><%= description %></p>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+</div>

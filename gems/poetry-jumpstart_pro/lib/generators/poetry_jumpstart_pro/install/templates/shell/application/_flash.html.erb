@@ -1,0 +1,37 @@
+<%# Poetry recreation of Jumpstart's application/_flash: string flashes render
+    as edge-to-edge alerts; hash flashes (Jumpstart's toasts) stream into the
+    poetry_toaster below, which also carries them across Turbo visits. Every
+    Jumpstart layout renders this partial once, so the toaster lives here
+    and the layouts stay Jumpstart's own. %>
+<div id="flash" data-turbo-temporary>
+  <%# The message is the alert's body, as a sanitized paragraph: Jumpstart's
+      banner was an icon and a <p>, and its tests look for the text in a <p>. %>
+  <% if alert %>
+    <%= poetry_alert(variant: :destructive, class: "rounded-none border-x-0 border-t-0") do |flash_alert| %>
+      <% flash_alert.with_icon(name: :"triangle-alert") %>
+      <p><%= sanitize(alert) %></p>
+    <% end %>
+  <% end %>
+  <% if notice %>
+    <%= poetry_alert(class: "rounded-none border-x-0 border-t-0") do |flash_notice| %>
+      <% flash_notice.with_icon(name: :info) %>
+      <p><%= sanitize(notice) %></p>
+    <% end %>
+  <% end %>
+</div>
+
+<div id="toasts" data-turbo-temporary>
+  <% toasts.each do |_, toast| %>
+    <% toast = toast.deep_symbolize_keys %>
+    <%= turbo_stream.poetry_toast(title: toast[:title], description: toast[:description],
+                                  variant: poetry_toast_variant(toast[:icon_name]),
+                                  duration: toast[:dismiss_after],
+                                  show_close_button: toast.fetch(:dismissable, true)) do |streamed| %>
+      <% if toast[:link].is_a?(Hash) %>
+        <% streamed.with_action(href: toast[:link][:url]) { toast[:link][:text] } %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>
+
+<%= poetry_toaster %>

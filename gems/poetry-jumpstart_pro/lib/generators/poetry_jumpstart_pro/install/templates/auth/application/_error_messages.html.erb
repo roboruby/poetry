@@ -1,0 +1,17 @@
+<%# Poetry recreation of Jumpstart's application/_error_messages: a form's
+    validation errors as a destructive alert (the variant carries role=alert),
+    cleared from Turbo's cache like the original. %>
+<%# locals: (resource:) -%>
+<% if resource.errors.any? %>
+  <%= poetry_alert(variant: :destructive, class: "mb-6", data: { turbo_temporary: true }) do |errors| %>
+    <% errors.with_icon(name: :"circle-alert") %>
+    <% errors.with_title do %>
+      <%= I18n.t("errors.messages.not_saved", count: resource.errors.count, resource: resource.class.model_name.human.downcase) %>
+    <% end %>
+    <ul class="list-inside list-disc">
+      <% resource.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  <% end %>
+<% end %>

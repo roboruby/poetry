@@ -1,0 +1,34 @@
+<%# Poetry recreation of Jumpstart's account_users/edit: a member's roles,
+    with removal as an AlertDialog that submits the DELETE form it sits in.
+    The title key interpolates the member (the engine left %{user} unfilled). %>
+<% user_name = @account_user.user.name || @account_user.user.email %>
+<% content_for :title, t(".title", user: user_name) %>
+
+<header class="flex flex-col gap-4">
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item(t("accounts.index.title"), href: accounts_path) %>
+    <% crumb.with_item(@account.name, href: account_path(@account)) %>
+    <% crumb.with_item(user_name) %>
+  <% end %>
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight"><%= t(".title", user: user_name) %></h1>
+      <p class="text-sm text-muted-foreground"><%= t(".description", user: user_name) %></p>
+    </div>
+    <% unless @account_user.account_owner? %>
+      <%= form_with(url: account_account_user_path(@account, @account_user), method: :delete, id: "remove-member-form", class: "hidden") {} %>
+      <%= poetry_alert_dialog do |dialog| %>
+        <% dialog.with_trigger(variant: :outline, class: "text-destructive") { t("delete") } %>
+        <% dialog.with_title { t("are_you_sure") } %>
+        <% dialog.with_description { t(".remove_description", default: "%{user} will lose access to %{account}.", user: user_name, account: @account.name) } %>
+        <% dialog.with_cancel { t("cancel") } %>
+        <% dialog.with_action(variant: :destructive, submit: "remove-member-form") { t("delete") } %>
+      <% end %>
+    <% end %>
+  </div>
+  <%= poetry_separator %>
+</header>
+
+<div class="mt-6">
+  <%= render "account_users/form", account_user: @account_user %>
+</div>

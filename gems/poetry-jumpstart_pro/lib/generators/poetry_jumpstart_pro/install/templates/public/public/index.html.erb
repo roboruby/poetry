@@ -1,0 +1,71 @@
+<%# Poetry recreation of Jumpstart's public/index (the marketing landing):
+    a centered hero with placeholder copy to replace and the visitor calls
+    to action, a card row of the public destinations, and the development-only
+    Jumpstart links. The top navigation and footer come from the layout. %>
+<div class="mx-auto w-full max-w-5xl px-4 py-10 lg:px-6">
+  <section class="mx-auto flex max-w-2xl flex-col items-center py-16 text-center sm:py-24" aria-labelledby="landing-title">
+    <h1 id="landing-title" class="text-4xl font-semibold tracking-tight sm:text-5xl"><%= t(".headline", default: "Welcome to %{name}", name: Jumpstart.config.application_name) %></h1>
+    <p class="mt-4 text-xl leading-normal text-muted-foreground"><%= t(".lede", default: "Say what %{name} does and who it is for, in a sentence or two.", name: Jumpstart.config.application_name) %></p>
+    <p class="mt-4 text-sm text-muted-foreground"><%= t(".customize", default: "This public homepage lives in") %> <%= tag.code("app/views/public/index.html.erb", class: "font-mono text-xs") %></p>
+
+    <% unless authenticated? %>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <%= poetry_button(size: :lg, href: signup_path) { t(".sign_up", default: "Sign up") } %>
+        <%= poetry_button(variant: :outline, size: :lg, href: login_path) { t(".log_in", default: "Log in") } %>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="space-y-6" aria-labelledby="landing-explore">
+    <div class="space-y-1">
+      <h2 id="landing-explore" class="text-2xl font-semibold tracking-tight"><%= t(".explore", default: "Explore") %></h2>
+      <p class="text-sm text-muted-foreground"><%= t(".explore_description", default: "Where to go next on %{name}.", name: Jumpstart.config.application_name) %></p>
+    </div>
+
+    <%# Three columns only when the pricing card fills the third one. %>
+    <div class="<%= class_names("grid gap-4 sm:grid-cols-2", "lg:grid-cols-3": Jumpstart.config.payments_enabled?) %>">
+      <%= poetry_card do |card| %>
+        <% card.with_title { t("announcements.index.title") } %>
+        <% card.with_description { t("announcements.index.description", name: Jumpstart.config.application_name) } %>
+        <%= poetry_link(href: announcements_path, underline: :always, class: "inline-flex items-center gap-1 text-sm") do %>
+          <%= t(".read_updates", default: "Read the updates") %> <%= poetry_icon(name: :"arrow-right", class: "size-3.5") %>
+        <% end %>
+      <% end %>
+
+      <%= poetry_card do |card| %>
+        <% card.with_title { t("public.about.title") } %>
+        <% card.with_description { t(".about_description", default: "Who runs %{name} and how to reach us.", name: Jumpstart.config.application_name) } %>
+        <%= poetry_link(href: about_path, underline: :always, class: "inline-flex items-center gap-1 text-sm") do %>
+          <%= t(".about_us", default: "About us") %> <%= poetry_icon(name: :"arrow-right", class: "size-3.5") %>
+        <% end %>
+      <% end %>
+
+      <% if Jumpstart.config.payments_enabled? %>
+        <%= poetry_card do |card| %>
+          <% card.with_title { t(".pricing", default: "Pricing") } %>
+          <% card.with_description { t(".pricing_description", default: "Plans and what each one includes.") } %>
+          <%= poetry_link(href: pricing_path, underline: :always, class: "inline-flex items-center gap-1 text-sm") do %>
+            <%= t(".view_pricing", default: "View pricing") %> <%= poetry_icon(name: :"arrow-right", class: "size-3.5") %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <% if Rails.env.development? %>
+    <section class="mt-12 rounded-lg border bg-muted/50 p-6" aria-labelledby="landing-development">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="space-y-1">
+          <h2 id="landing-development" class="text-lg font-semibold tracking-tight"><%= t(".development", default: "Development") %></h2>
+          <p class="text-sm text-muted-foreground"><%= t(".development_description", default: "Jumpstart's configuration and documentation, shown only in development.") %></p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <%= poetry_button(variant: :outline, href: jumpstart_path, data: { turbo: false }) { "Configure Jumpstart" } %>
+          <%= poetry_link(href: jumpstart.docs_path, external: true, underline: :always, data: { turbo: false }, class: "inline-flex items-center gap-1 text-sm font-medium") do %>
+            Read the Docs <%= poetry_icon(name: :"arrow-right", class: "size-3.5") %>
+          <% end %>
+        </div>
+      </div>
+    </section>
+  <% end %>
+</div>

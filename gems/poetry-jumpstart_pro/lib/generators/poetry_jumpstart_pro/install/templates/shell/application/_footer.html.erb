@@ -1,0 +1,18 @@
+<%# Poetry recreation of Jumpstart's application/_footer. %>
+<footer class="w-full px-4 py-6 text-sm text-muted-foreground lg:px-6">
+  <div class="flex flex-col-reverse items-center gap-4 lg:flex-row lg:justify-between">
+    <div class="flex items-center gap-3">
+      <%= link_to root_path, class: "hidden sm:inline-block" do %>
+        <%= render_svg "mark", class: "size-6 fill-current" %>
+      <% end %>
+      <span>&copy; <%= Date.current.year %> <%= Jumpstart.config.business_name %></span>
+    </div>
+
+    <ul class="flex list-none flex-wrap items-center justify-center gap-x-6 gap-y-2">
+      <li><%= poetry_link(href: announcements_path, underline: :hover) { t(".announcements") } %></li>
+      <li><%= poetry_link(href: about_path, underline: :hover) { t(".about") } %></li>
+      <li><%= poetry_link(href: privacy_path, underline: :hover) { t(".privacy") } %></li>
+      <li><%= poetry_link(href: terms_path, underline: :hover) { t(".terms") } %></li>
+    </ul>
+  </div>
+</footer>

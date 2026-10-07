@@ -1,0 +1,40 @@
+<%# Poetry recreation of Jumpstart's application/_account_navbar: the settings
+    navigation for the sidebar layout. The class locals of the original are
+    accepted for callers that still pass them and ignored; the current entry is
+    the aria-current link. %>
+<%# locals: (default_class: nil, active_class: nil, inactive_class: nil) -%>
+<%
+  link_class = ->(active) {
+    class_names("block rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+                active ? "bg-accent text-accent-foreground" : "text-muted-foreground")
+  }
+  active_for = ->(path, starts_with = nil) { starts_with ? request.path.start_with?(starts_with) : request.path == path }
+  entry = ->(label, path, starts_with = nil) {
+    active = active_for.(path, starts_with)
+    poetry_link(href: path, current: active, underline: :none, class: link_class.(active)) { label }
+  }
+%>
+<nav class="flex flex-col gap-6" aria-label="<%= t(".settings", default: "Settings") %>">
+  <div class="flex flex-col gap-1">
+    <h2 class="px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">User</h2>
+    <%= entry.(t(".profile"), edit_registration_path) %>
+    <%= entry.(t(".password"), edit_account_password_path) %>
+    <% if Jumpstart::Omniauth.enabled_providers.any? %>
+      <%= entry.(t(".connected_accounts"), user_connected_accounts_path) %>
+    <% end %>
+    <%= entry.(t(".accounts"), accounts_path) if Jumpstart.config.team_accounts? %>
+    <%= entry.(t(".api_tokens"), api_tokens_path, "/api_tokens") %>
+    <% if defined? Refer %>
+      <%= entry.(t(".referrals"), referrals_path, "/referrals") %>
+    <% end %>
+  </div>
+
+  <% billing = Jumpstart.config.payments_enabled? && !hotwire_native_app? && Current.account_billing? %>
+  <% if billing || Current.account.team? %>
+    <div class="flex flex-col gap-1">
+      <h2 class="px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Account</h2>
+      <%= entry.(t(".billing"), billing_path, "/billing") if billing %>
+      <%= entry.(t(".members"), account_path(Current.account), account_path(Current.account)) if Current.account.team? %>
+    </div>
+  <% end %>
+</nav>

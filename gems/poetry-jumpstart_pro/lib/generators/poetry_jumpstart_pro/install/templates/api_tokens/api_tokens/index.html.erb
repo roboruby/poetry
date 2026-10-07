@@ -1,0 +1,48 @@
+<%# Poetry recreation of Jumpstart's api_tokens/index: the user's tokens as
+    a table, or an Empty state carrying the create action. %>
+<% content_for :title, t(".title") %>
+
+<header class="flex flex-wrap items-end justify-between gap-4">
+  <h1 class="text-2xl font-semibold tracking-tight"><%= t(".title") %></h1>
+  <% if @api_tokens.any? %>
+    <%= poetry_button(href: new_api_token_path) do |button| %>
+      <% button.with_leading { poetry_icon(name: :plus) } %>
+      <%= t(".create") %>
+    <% end %>
+  <% end %>
+</header>
+
+<% if @api_tokens.any? %>
+  <div class="mt-6 overflow-hidden rounded-lg border">
+    <%= poetry_table do %>
+      <%= poetry_table_caption(class: "sr-only") { t(".title") } %>
+      <%= poetry_table_header do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_head { ApiToken.human_attribute_name(:name) } %>
+          <%= poetry_table_head { ApiToken.human_attribute_name(:last_used_at) } %>
+          <%= poetry_table_head(class: "hidden sm:table-cell") { ApiToken.human_attribute_name(:created_at) } %>
+          <%= poetry_table_head(class: "text-right") { tag.span(t(".actions", default: "Actions"), class: "sr-only") } %>
+        <% end %>
+      <% end %>
+      <%= poetry_table_body do %>
+        <% @api_tokens.each do |api_token| %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { poetry_link(href: api_token_path(api_token), underline: :hover) { api_token.name } } %>
+            <%= poetry_table_cell(class: "text-muted-foreground") { api_token.last_used_at? ? local_time_ago(api_token.last_used_at) : "—" } %>
+            <%= poetry_table_cell(class: "hidden text-muted-foreground sm:table-cell") { api_token.created_at.strftime("%b %e, %Y") } %>
+            <%= poetry_table_cell(class: "text-right") { poetry_button(href: api_token_path(api_token), variant: :outline, size: :sm) { t(".view") } } %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <%= poetry_empty(media_variant: :icon, title_tag: :h2, class: "mt-6 rounded-lg border border-dashed py-12") do |empty| %>
+    <% empty.with_media { poetry_icon(name: :"key-round") } %>
+    <% empty.with_title { t(".none") } %>
+    <%= poetry_button(href: new_api_token_path) do |button| %>
+      <% button.with_leading { poetry_icon(name: :plus) } %>
+      <%= t(".create") %>
+    <% end %>
+  <% end %>
+<% end %>

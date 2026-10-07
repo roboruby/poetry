@@ -1,0 +1,29 @@
+<%# Poetry recreation of Jumpstart's account_invitations/show (accept or
+    decline an invitation): a centered card; Accept submits the PUT form,
+    Decline confirms in an AlertDialog that submits the DELETE form. %>
+<% content_for :title, t(".title", account: @account.name) %>
+
+<div class="mx-auto w-full max-w-2xl px-4 py-8 lg:px-6">
+  <%= poetry_card(title_tag: :h1, class: "mx-auto max-w-md text-center") do |card| %>
+    <% card.with_title { t(".title", account: @account.name) } %>
+    <% card.with_description { t(".invited_you_to_join_html", inviter: @account_invitation.invited_by.name, account: @account_invitation.account.name) } %>
+
+    <div class="flex justify-center">
+      <%= account_avatar @account, size: "size-16" %>
+    </div>
+
+    <% card.with_footer(class: "flex flex-wrap justify-center gap-3") do %>
+      <%= form_with(url: account_invitation_path(@account_invitation.token), method: :put) do %>
+        <%= poetry_button(type: :submit) { t(".accept") } %>
+      <% end %>
+      <%= form_with(url: account_invitation_path(@account_invitation.token), method: :delete, id: "decline-invitation-form", class: "hidden") {} %>
+      <%= poetry_alert_dialog do |dialog| %>
+        <% dialog.with_trigger(variant: :outline) { t(".decline") } %>
+        <% dialog.with_title { t(".decline") } %>
+        <% dialog.with_description { t("are_you_sure") } %>
+        <% dialog.with_cancel { t("cancel") } %>
+        <% dialog.with_action(variant: :destructive, submit: "decline-invitation-form") { t(".decline") } %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

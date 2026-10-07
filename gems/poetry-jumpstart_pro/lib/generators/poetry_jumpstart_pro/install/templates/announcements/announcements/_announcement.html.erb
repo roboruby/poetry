@@ -1,0 +1,28 @@
+<%# Poetry recreation of Jumpstart's announcements/_announcement: one card per
+    announcement. The title links to its page, the publish time sits in the
+    description, the kind reads as a soft status badge (one treatment family
+    across the list: success / info / warning, outline for the neutral
+    "update"), and the rich-text body is typeset. %>
+<% kind_variants = { "new" => :success, "improvement" => :info, "fix" => :warning, "update" => :outline } %>
+
+<article id="<%= dom_id(announcement) %>">
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title do %>
+      <%= poetry_link(href: announcement_path(announcement), underline: :hover) { announcement.title } %>
+    <% end %>
+    <% card.with_description do %>
+      <% if announcement.published_at? %>
+        <span class="capitalize"><%= local_relative_time(announcement.published_at, "weekday-or-date") %></span>
+      <% else %>
+        <%= t(".draft", default: "Draft") %>
+      <% end %>
+    <% end %>
+    <% card.with_action do %>
+      <%= poetry_badge(variant: kind_variants.fetch(announcement.kind, :outline)) { announcement.kind.humanize.titleize } %>
+    <% end %>
+
+    <%= poetry_typeset do %>
+      <%= announcement.description %>
+    <% end %>
+  <% end %>
+</article>

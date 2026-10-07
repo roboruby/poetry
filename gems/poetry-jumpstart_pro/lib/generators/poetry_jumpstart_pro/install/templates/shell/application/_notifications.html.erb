@@ -1,0 +1,26 @@
+<%# Poetry recreation of Jumpstart's application/_notifications: the bell with
+    its unread badge opens a right sheet holding Jumpstart's lazy notification
+    frame. A sheet (dialog family) stays in the DOM, so the notifications
+    controller keeps its badge and list targets in scope; the open action on
+    the wrapper fires for the trigger click (marking everything seen, as
+    Jumpstart does) and harmlessly again for clicks inside the panel. %>
+<%= tag.div class: "inline-flex", data: {
+      controller: "notifications",
+      action: "click->notifications#open",
+      notifications_account_id_value: current_account.id,
+      notifications_account_unread_value: notification_counts[current_account.id],
+      notifications_total_unread_value: notification_counts.values.sum
+    } do %>
+  <%= poetry_sheet(side: :right, content_class: "w-96 max-w-full") do |sheet| %>
+    <% sheet.with_trigger(variant: :ghost, size: :icon, label: t("notifications.index.title", default: "Notifications"), class: "relative") do %>
+      <%= poetry_icon(name: :bell) %>
+      <span data-notifications-target="badge" class="absolute right-1.5 top-1.5 hidden size-2 rounded-full bg-destructive" aria-hidden="true"></span>
+    <% end %>
+    <% sheet.with_title { t("notifications.index.title", default: "Notifications") } %>
+
+    <%= turbo_frame_tag "notifications", class: "block divide-y divide-border text-sm", loading: :lazy, target: :_top,
+          src: nav_notifications_path, data: { notifications_target: "list" } do %>
+      <p class="p-4 text-muted-foreground"><%= t("notifications.loading", default: "Loading...") %></p>
+    <% end %>
+  <% end %>
+<% end %>
