@@ -14,6 +14,7 @@ gem "poetry-core", **sibling.call("poetry-core")
 gem "poetry-lucide", **sibling.call("poetry-lucide")
 gem "poetry-ui", **sibling.call("poetry-ui")
 gem "poetry-charts", **sibling.call("poetry-charts")
+gem "poetry-motion", **sibling.call("poetry-motion")
 gem "poetry-agent", **sibling.call("poetry-agent")
 
 if ENV["POETRY_RAILS"] == "main"

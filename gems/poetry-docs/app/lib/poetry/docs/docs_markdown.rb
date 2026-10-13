@@ -238,6 +238,14 @@ module Poetry
         end
 
 
+        def library_motion(entry)
+          <<~MD
+            #{header(entry)}
+
+            poetry-motion adds animated effects on top of Poetry: #{DocsCatalog.motion.map { |e| e.title.downcase }.join(", ")}. The server renders every effect's finished state, so the page reads right before any script runs, in print and under reduced motion; motion is enhancement on top. The animation engine (the framework-free `motion` package, about 28 KB gzipped) is pinned without preload and loads only when an element asks for it, so a page without motion elements never fetches it, and a CSS-only effect like the marquee never does either. One motion policy decides reduced motion once (the user's setting, or `data-motion="reduce"` or `"full"` on `<html>`), reads the `--motion-duration-*`, `--motion-ease-*` and `--motion-spring-*` tokens, returns animated elements to their finished state before Turbo caches a page, and keeps layout animation out of a Turbo visit transition. Ten behaviors (`useAnimate`, `useSpring`, `useStagger`, `useScrollValue`, `usePointer`, `useFrame`, `useLayout`, `useDrag`, `useGesture`, `useCanvas`) compose into your own controllers and tear down with `teardown(this)`. No spring, pointer input, scroll link or interruption means a CSS keyframe, not poetry-motion. Install with `gem "poetry-motion"` plus `bin/rails g poetry:install --motion`.
+          MD
+        end
+
         # The recipes guide's mirror: the live projection, so the mirror lists
         # exactly what /r/ serves.
         def recipes(entry)
@@ -355,7 +363,7 @@ Removing it: delete the installed views and the helper, revert the stylesheet, i
           MD
           { "Guides" => DocsCatalog.docs, "Libraries" => DocsCatalog.libraries,
             "Icons" => DocsCatalog.icons, "Components" => DocsCatalog.components,
-            "Charts" => DocsCatalog.charts, "Blocks" => DocsCatalog.blocks,
+            "Charts" => DocsCatalog.charts, "Motion" => DocsCatalog.motion, "Blocks" => DocsCatalog.blocks,
             "Demos" => DocsCatalog.demos, "API" => DocsCatalog.apis }.each do |title, entries|
             out << "## #{title}\n\n" + entries.map { |e| "- [#{e.title}](#{e.path}): #{e.description}" }.join("\n")
           end
@@ -383,6 +391,8 @@ Removing it: delete the installed views and the helper, revert the stylesheet, i
             "Included in poetry-ui as `poetry_#{entry.slug.tr('-', '_')}` with no per-component step. To own and edit the source: `bin/rails g poetry:add #{entry.slug}`."
           when "charts"
             "Ships in the separate, optional poetry-charts gem."
+          when "motion"
+            "Ships in the separate, optional poetry-motion gem: `bundle add poetry-motion` and `bin/rails g poetry:install --motion`. The server renders the finished state; motion is enhancement on top."
           end
         end
 

@@ -59,8 +59,9 @@ module Poetry
              },
              vars: { "--marquee-duration" => "seconds per loop (duration:)",
                      "--marquee-gap" => "the space between items and between copies" }
+        part "marquee-viewport", "The clipped window the copies travel through"
         part "marquee-track", "One copy of the items; every copy after the first is aria-hidden and inert"
-        part "marquee-pause", "The pause control, a toggle button (aria-pressed)"
+        part "marquee-pause", "The pause control, a toggle button (aria-pressed) under the loop"
 
         def before_render
           ensure_content!
@@ -70,7 +71,9 @@ module Poetry
 
         def call
           tag.div(**root_attributes) do
-            safe_join(Array.new(repeat) { |index| track(index) } + [pause_control].compact)
+            viewport = tag.div(safe_join(Array.new(repeat) { |index| track(index) }),
+                               "data-slot" => "marquee-viewport", class: css(:viewport))
+            safe_join([viewport, pause_control].compact)
           end
         end
 

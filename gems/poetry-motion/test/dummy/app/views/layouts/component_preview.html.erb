@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>poetry-motion preview</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%# Static assets from `rake browser:assets`: the real Tailwind build and
+        the motion and core controllers over an importmap, so the effects'
+        controllers run in these pages. %>
+    <link rel="stylesheet" href="/assets/poetry.css">
+    <style>
+      /* Deterministic screenshots: the browser tasks emulate reduced motion
+         over CDP, the policy leaves every effect at its finished state, and
+         this rule stills transitions too. */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation: none !important; transition: none !important; }
+      }
+      *, *::before, *::after { caret-color: transparent !important; }
+    </style>
+    <% if (importmap = Rails.public_path.join("assets/importmap.json")).exist? %>
+      <script type="importmap"><%= raw importmap.read %></script>
+      <script type="module">
+        import { Application } from "@hotwired/stimulus"
+        import { registerPoetryMotionControllers } from "@poetry/motion"
+
+        const application = new Application()
+        registerPoetryMotionControllers(application)
+        await application.start()
+        // The browser tasks wait for this flag before running axe or screenshotting.
+        document.documentElement.dataset.poetryReady = "true"
+      </script>
+    <% end %>
+  </head>
+  <body>
+    <%= yield %>
+  </body>
+</html>

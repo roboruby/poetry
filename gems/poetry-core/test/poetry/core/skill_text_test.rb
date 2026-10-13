@@ -42,9 +42,9 @@ module Poetry
         end
       end
 
-      def skill(registry, charts_registry: nil)
+      def skill(registry, charts_registry: nil, motion_registry: nil)
         SkillText.new(registry: registry, families: { "data" => %w[badge] },
-                      charts_registry: charts_registry)
+                      charts_registry: charts_registry, motion_registry: motion_registry)
       end
 
       def test_app_components_get_their_own_reference
@@ -154,6 +154,20 @@ module Poetry
           assert_includes files.fetch("references/charts.md"), "## area_chart (`poetry_area_chart`)"
           assert_includes files.fetch("SKILL.md"), "1 chart components"
           refute_includes skill(registry).files.keys, "references/charts.md"
+        end
+      end
+
+      def test_motion_reference_appears_only_with_a_motion_registry
+        with_registry do |registry|
+          motion = FakeRegistry.new(entries: { "poetry/motion/marquee" => BADGE_ENTRY },
+                                    blocks: nil, source_root: Pathname("."))
+          files = skill(registry, motion_registry: motion).files
+
+          assert_includes files.fetch("references/motion.md"), "## marquee (`poetry_marquee`)"
+          assert_includes files.fetch("references/motion.md"), "finished state on the server"
+          assert_includes files.fetch("SKILL.md"), "1 motion effects"
+          assert_includes files.fetch("SKILL.md"), "**motion** (`references/motion.md`): marquee"
+          refute_includes skill(registry).files.keys, "references/motion.md"
         end
       end
     end

@@ -28,7 +28,7 @@ namespace :poetry_docs do
   task :api_reference do
     monorepo_only.call("poetry_docs:api_reference")
     root = Poetry::Docs.root
-    gems = %w[poetry-core poetry-ui poetry-charts poetry-agent poetry-simple_form poetry-extract]
+    gems = %w[poetry-core poetry-ui poetry-charts poetry-motion poetry-agent poetry-simple_form poetry-extract]
     out_dir = root.join("data/api")
     FileUtils.mkdir_p(out_dir)
 
@@ -55,6 +55,7 @@ namespace :poetry_docs do
     # parsing - no bundle switch needed).
     { "poetry-core" => "poetry-controllers",
       "poetry-charts" => "poetry-charts-controllers",
+      "poetry-motion" => "poetry-motion-controllers",
       "poetry-agent" => "poetry-agent-controllers" }.each do |js_gem, slug|
       js_root = root.join("..", js_gem).expand_path
       next warn("skip #{slug}: #{js_gem} not found") unless js_root.exist?

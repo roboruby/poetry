@@ -56,13 +56,13 @@
   to { translate: 0 calc(-100% - var(--marquee-gap)); }
 }
 
-[data-slot="marquee"] {
+[data-slot="marquee-viewport"] {
   --marquee-gap: 1rem;
   gap: var(--marquee-gap);
 }
 
-[data-slot="marquee"][data-direction="up"],
-[data-slot="marquee"][data-direction="down"] {
+[data-slot="marquee"][data-direction="up"] > [data-slot="marquee-viewport"],
+[data-slot="marquee"][data-direction="down"] > [data-slot="marquee-viewport"] {
   flex-direction: column;
 }
 
@@ -72,30 +72,30 @@
   animation: poetry-marquee-x var(--marquee-duration, 40s) linear infinite;
 }
 
-[data-slot="marquee"][data-direction="up"] > [data-slot="marquee-track"],
-[data-slot="marquee"][data-direction="down"] > [data-slot="marquee-track"] {
+[data-slot="marquee"][data-direction="up"] [data-slot="marquee-track"],
+[data-slot="marquee"][data-direction="down"] [data-slot="marquee-track"] {
   flex-direction: column;
   min-width: 0;
   min-height: 100%;
   animation-name: poetry-marquee-y;
 }
 
-[data-slot="marquee"][data-direction="right"] > [data-slot="marquee-track"],
-[data-slot="marquee"][data-direction="down"] > [data-slot="marquee-track"] {
+[data-slot="marquee"][data-direction="right"] [data-slot="marquee-track"],
+[data-slot="marquee"][data-direction="down"] [data-slot="marquee-track"] {
   animation-direction: reverse;
 }
 
-[data-slot="marquee"]:hover > [data-slot="marquee-track"],
-[data-slot="marquee"]:focus-within > [data-slot="marquee-track"],
-[data-slot="marquee"][data-paused] > [data-slot="marquee-track"] {
+[data-slot="marquee"]:hover [data-slot="marquee-track"],
+[data-slot="marquee"]:focus-within [data-slot="marquee-track"],
+[data-slot="marquee"][data-paused] [data-slot="marquee-track"] {
   animation-play-state: paused;
 }
 
-[data-slot="marquee"][data-animate="false"] > [data-slot="marquee-track"] {
+[data-slot="marquee"][data-animate="false"] [data-slot="marquee-track"] {
   animation: none;
 }
 
-[data-slot="marquee"][data-animate="false"] > [data-slot="marquee-track"][aria-hidden],
+[data-slot="marquee"][data-animate="false"] [data-slot="marquee-track"][aria-hidden],
 [data-slot="marquee"][data-animate="false"] > [data-slot="marquee-pause"] {
   display: none;
 }

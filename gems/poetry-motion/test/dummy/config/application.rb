@@ -23,5 +23,8 @@ module Dummy
 
     config.view_component.previews.enabled = true
     config.view_component.previews.route = "/previews"
+    config.view_component.previews.controller = "PreviewsController"
+    config.view_component.previews.default_layout = "component_preview"
+    config.public_file_server.enabled = true
   end
 end

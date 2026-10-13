@@ -208,6 +208,14 @@ module Poetry
           end.sort_by(&:slug)
         end
 
+        # The poetry-motion effects, one page each at /motion/<slug>.
+        def motion
+          @motion ||= registry_components(Poetry::Motion.root).map do |key, entry|
+            slug = key.split("/").last.tr("_", "-")
+            Entry.new(slug: slug, title: titleize(slug), section: "motion", description: entry["description"])
+          end.sort_by(&:slug)
+        end
+
         def demos = DEMOS
 
         def docs = DOCS
@@ -300,7 +308,7 @@ module Poetry
         def block_meta(slug) = blocks_meta[slug]
 
         def find(section, slug)
-          list = { "charts" => charts, "demos" => demos, "blocks" => blocks,
+          list = { "charts" => charts, "motion" => motion, "demos" => demos, "blocks" => blocks,
                    "api" => apis }.fetch(section, components)
           list.find { |entry| entry.slug == slug }
         end
@@ -325,6 +333,10 @@ module Poetry
                     description: "Nine chart families computed in Ruby and shipped as finished SVG in " \
                                "the initial HTML - valid in print, PDF, email, and without " \
                                "JavaScript, with live streaming and a frozen chart-spec for BYO engines."),
+          Entry.new(slug: "motion", title: "Motion", section: "libraries", icon: :"wand-sparkles",
+                    description: "Animated effects whose finished state the server renders: an engine that " \
+                               "loads only when an element asks, one motion policy for reduced motion and " \
+                               "the Turbo cache, and ten behaviors to compose into your own controllers."),
           Entry.new(slug: "agent", title: "Agent", section: "libraries", icon: :"radio-tower",
                     description: "The agent-interop gem: the boot-free poetry-agent MCP server for " \
                                "coding agents, and the WebMCP runtime that registers rendered " \
@@ -352,7 +364,7 @@ module Poetry
 
         def icons = ICONS
 
-        def all = docs + components + charts + blocks + demos + apis + libraries + icons
+        def all = docs + components + charts + motion + blocks + demos + apis + libraries + icons
 
         # The component class behind a gallery page - keys the YARD-export
         # lookup for the page's API section.
@@ -360,6 +372,7 @@ module Poetry
           case section
           when "components" then component_class_names[slug]
           when "charts" then chart_class_names[slug]
+          when "motion" then motion_registry_fact(slug, "class_name")
           end
         end
 
@@ -369,6 +382,7 @@ module Poetry
           case section
           when "components" then component_parts[slug]
           when "charts" then chart_parts[slug]
+          when "motion" then motion_registry_fact(slug, "parts")
           end
         end
 
@@ -378,6 +392,7 @@ module Poetry
           case section
           when "components" then component_wiring[slug]
           when "charts" then chart_wiring[slug]
+          when "motion" then motion_registry_fact(slug, "stimulus")
           end
         end
 
@@ -387,6 +402,7 @@ module Poetry
           case section
           when "components" then component_behaviors[slug]
           when "charts" then chart_behaviors[slug]
+          when "motion" then motion_registry_fact(slug, "behaviors")
           end
         end
 
@@ -431,6 +447,14 @@ module Poetry
           @component_wiring ||= registry_components(Poetry::Ui.root).to_h do |key, entry|
             [ key.split("/")[2..].join("-").tr("_", "-"), entry["stimulus"] ]
           end
+        end
+
+        # One fact of a motion effect's registry entry, by page slug.
+        def motion_registry_fact(slug, key)
+          @motion_entries ||= registry_components(Poetry::Motion.root).to_h do |path, entry|
+            [ path.split("/").last.tr("_", "-"), entry ]
+          end
+          @motion_entries.dig(slug, key)
         end
 
         def component_behaviors

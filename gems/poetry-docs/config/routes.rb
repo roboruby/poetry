@@ -94,7 +94,7 @@ Poetry::Docs::Engine.routes.draw do
   get "/.well-known/api-catalog" => "machine#api_catalog", as: :api_catalog, format: false
 
   get "examples/:section/:slug/:name" => "examples#show", as: :standalone_example, format: false,
-      constraints: { section: /components|charts|demos|docs/, slug: /[a-z0-9-]+/, name: /[a-z0-9_]+/ }
+      constraints: { section: /components|charts|motion|demos|docs/, slug: /[a-z0-9-]+/, name: /[a-z0-9_]+/ }
   get "examples/blocks/:slug" => "examples#block", as: :standalone_block, format: false,
       constraints: { slug: /[a-z0-9-]+/ }
 
@@ -105,6 +105,7 @@ Poetry::Docs::Engine.routes.draw do
 
   get "components/:slug" => "components#show", as: :component
   get "charts/:slug" => "charts#show", as: :chart
+  get "motion/:slug" => "motion#show", as: :motion_effect
   get "blocks/:slug" => "blocks#show", as: :block
   get "demos/chat-replay/stream" => "chat_replay#stream", as: :chat_replay_stream, format: false
   get "demos/agui-relay/stream" => "agui_relay#stream", as: :agui_relay_stream, format: false

@@ -40,6 +40,11 @@ CONFIGS = {
     prefix: "poetry--charts--", skip: [ "d3.js" ],
     superclasses: {}
   },
+  "poetry-motion" => {
+    subpath: "poetry/motion", package: "@poetry/motion",
+    prefix: "poetry--motion--", skip: [],
+    superclasses: {}
+  },
   "poetry-agent" => {
     subpath: "poetry/agent", package: "@poetry/agent",
     prefix: "poetry--agent--", skip: [],

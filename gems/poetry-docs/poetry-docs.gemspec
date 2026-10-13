@@ -49,6 +49,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "poetry-charts", "= #{Poetry::Docs::VERSION}"
   spec.add_dependency "poetry-core", "= #{Poetry::Docs::VERSION}"
   spec.add_dependency "poetry-lucide", "= #{Poetry::Docs::VERSION}"
+  spec.add_dependency "poetry-motion", "= #{Poetry::Docs::VERSION}"
   spec.add_dependency "poetry-ui", "= #{Poetry::Docs::VERSION}"
   # The host's asset and JavaScript pipeline the layouts assume.
   spec.add_dependency "importmap-rails", ">= 2.0"

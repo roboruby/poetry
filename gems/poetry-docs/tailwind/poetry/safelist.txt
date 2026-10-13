@@ -176,10 +176,12 @@ aria-disabled:pointer-events-none
 aria-expanded:opacity-100
 aria-invalid:border-destructive
 aria-invalid:ring-destructive/20
+aria-pressed:bg-accent
 aspect-(--ratio)
 aspect-square
 aspect-video
 auto-rows-min
+backdrop-blur
 backdrop:duration-450
 backdrop:opacity-[calc(1-var(--drawer-swipe-progress,0))]
 backdrop:transition-opacity
@@ -187,6 +189,7 @@ basis-full
 bg-(--color-bg)
 bg-[Canvas]
 bg-background
+bg-background/80
 bg-blend-color
 bg-border
 bg-card
@@ -717,6 +720,9 @@ data-[variant=image]:group-data-[upload-state=done]/attachment:opacity-100
 data-[variant=image]:group-data-[upload-state=idle]/attachment:opacity-100
 data-[variant=image]:opacity-60
 data-active:bg-background
+data-active:bg-muted/50
+data-active:focus:bg-muted
+data-active:hover:bg-muted
 data-active:text-foreground
 data-autoscrolling:scrollbar-none
 data-closed:overflow-hidden
@@ -787,6 +793,7 @@ focus-visible:border-ring
 focus-visible:opacity-100
 focus-visible:outline-1
 focus-visible:outline-hidden
+focus-visible:outline-none
 focus-visible:outline-ring
 focus-visible:ring-1
 focus-visible:ring-2
@@ -1033,6 +1040,7 @@ items-center
 items-end
 items-start
 items-stretch
+justify-around
 justify-between
 justify-center
 justify-end
@@ -1207,6 +1215,7 @@ self-start
 self-stretch
 shadow-lg
 shadow-none
+shadow-xs
 shrink-0
 size-(--cell-size)
 size-1.5

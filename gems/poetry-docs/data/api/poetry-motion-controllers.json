@@ -1,0 +1,1145 @@
+{
+  "poetry_version": "0.1.13",
+  "gem": "@poetry/motion",
+  "objects": [
+    {
+      "path": "@poetry/motion",
+      "type": "module",
+      "superclass": null,
+      "docstring": "@poetry/motion - poetry-motion's effects, behaviors and motion policy,\none source shipped over two channels: importmap-first (the engine pins\nthis tree) and this same tree as the npm package for bundler hosts.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/index.js",
+      "methods": [
+        {
+          "name": "registerPoetryMotionControllers",
+          "scope": "class",
+          "group": null,
+          "signature": "registerPoetryMotionControllers(application)",
+          "docstring": "The host one-liner: registers the effect controllers on the host's\nStimulus application and installs the motion policy.",
+          "params": [
+            {
+              "name": "application",
+              "types": [
+                "import(\"@hotwired/stimulus\").Application"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/index.js",
+          "line": 25
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/motion/behaviors/animate",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useAnimate: one engine animation for one connect, with the motion\npolicy applied. The keyframes end at the element's own,\nserver-rendered style: an entrance animates FROM an offset TO where the\nserver put the element. Under reduced motion nothing animates and the\nelement simply keeps its style. Teardown and the Turbo cache return the\nelement to that style.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/behaviors/animate.js",
+      "methods": [
+        {
+          "name": "transitionFor",
+          "scope": "class",
+          "group": null,
+          "signature": "transitionFor(options = {})",
+          "docstring": "The engine transition for poetry's options: token names for duration,\neasing and spring, milliseconds for a delay.",
+          "params": [
+            {
+              "name": "}",
+              "types": [
+                "{ duration?: string|number, easing?: string, spring?: string, delay?: number "
+              ],
+              "text": "options"
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/behaviors/animate.js",
+          "line": 18
+        },
+        {
+          "name": "useAnimate",
+          "scope": "class",
+          "group": null,
+          "signature": "useAnimate(controller, element, keyframes, options = {})",
+          "docstring": "Animates `element` through `keyframes` until it finishes or\nteardown(controller). With `entrance: true` it does not play on a cache\npreview or a restore visit.",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            },
+            {
+              "name": "element",
+              "types": [
+                "HTMLElement"
+              ],
+              "text": "the element to animate"
+            },
+            {
+              "name": "keyframes",
+              "types": [
+                "Object<string, Array>"
+              ],
+              "text": "property => values, ending at the element's own style"
+            },
+            {
+              "name": "}",
+              "types": [
+                "{ duration?: string|number, easing?: string, spring?: string, delay?: number, entrance?: boolean "
+              ],
+              "text": "[options]"
+            }
+          ],
+          "return": {
+            "types": [
+              "{ finished: Promise<void>, stop: () => void "
+            ],
+            "text": "}"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/behaviors/animate.js",
+          "line": 38
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/motion/behaviors/canvas",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useCanvas: the canvas pattern. One <canvas> sized to its box at the\ndevice pixel ratio (core's useMeasure), a frame loop paused off screen\nand in hidden tabs (useFrame), and one static frame under reduced\nmotion. Canvas pixels never reach a Turbo snapshot, so the cache needs\nnothing; the canvas is drawn again on the next connect.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/behaviors/canvas.js",
+      "methods": [
+        {
+          "name": "useCanvas",
+          "scope": "class",
+          "group": null,
+          "signature": "useCanvas(controller, canvas, draw)",
+          "docstring": "Drives `draw` on `canvas` until teardown(controller).",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            },
+            {
+              "name": "canvas",
+              "types": [
+                "HTMLCanvasElement"
+              ],
+              "text": "the canvas"
+            },
+            {
+              "name": ")",
+              "types": [
+                "(context: CanvasRenderingContext2D, frame: { width: number, height: number, time: number, delta: number "
+              ],
+              "text": "=> void} draw"
+            }
+          ],
+          "return": {
+            "types": [
+              "{ redraw: () => void "
+            ],
+            "text": "}"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/behaviors/canvas.js",
+          "line": 19
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/motion/behaviors/drag",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useDrag: free dragging with pointer capture, an axis lock and bounds,\nwritten to the element's translate. On release the element springs back\nto its own style unless onEnd keeps it (returns true). Dragging is\ndirect manipulation, so it works under reduced motion; only the spring\nback is skipped there.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/behaviors/drag.js",
+      "methods": [
+        {
+          "name": "useDrag",
+          "scope": "class",
+          "group": null,
+          "signature": "useDrag(controller, element, options = {})",
+          "docstring": "Makes `element` draggable until teardown(controller).",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            },
+            {
+              "name": "element",
+              "types": [
+                "HTMLElement"
+              ],
+              "text": "the element to drag"
+            },
+            {
+              "name": ",",
+              "types": [
+                "{ axis?: \"x\"|\"y\", bounds?: { left?: number, right?: number, top?: number, bottom?: number "
+              ],
+              "text": "onMove?: (offset: { x: number, y: number }) => void, onEnd?: (offset: { x: number, y: number }) => boolean|void, spring?: string }} [options]"
+            }
+          ],
+          "return": {
+            "types": [
+              "() => void"
+            ],
+            "text": "stops early; teardown stops it otherwise"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/behaviors/drag.js",
+          "line": 20
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/motion/behaviors/frame",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useFrame: a callback every animation frame, paused while the element is\noff screen and while the tab is hidden. Under reduced motion the loop\nnever starts, and it stops if reduced motion turns on mid-run.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/behaviors/frame.js",
+      "methods": [
+        {
+          "name": "useFrame",
+          "scope": "class",
+          "group": null,
+          "signature": "useFrame(controller, element, callback)",
+          "docstring": "Runs `callback(timestamp, delta)` every frame while `element` is visible,\nuntil teardown(controller).",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            },
+            {
+              "name": "element",
+              "types": [
+                "Element"
+              ],
+              "text": "the element whose visibility gates the loop"
+            },
+            {
+              "name": "callback",
+              "types": [
+                "(timestamp: number, delta: number) => void"
+              ],
+              "text": "the frame work"
+            }
+          ],
+          "return": {
+            "types": [
+              "{ running: () => boolean, stop: () => void "
+            ],
+            "text": "}"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/behaviors/frame.js",
+          "line": 18
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/motion/behaviors/gesture",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useGesture: press, hover and swipe on one element, through the engine's\npress and hover (which handle keyboard presses and filter emulated\nmouse events) and a swipe threshold over pointer events. Gestures are\ninput, not motion, so they work under reduced motion; the effect decides\nwhat to animate.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/behaviors/gesture.js",
+      "methods": [
+        {
+          "name": "useGesture",
+          "scope": "class",
+          "group": null,
+          "signature": "useGesture(controller, element, handlers = {})",
+          "docstring": "Wires the handlers given until teardown(controller). onPress and\nonHover may return an end handler, called on release and on leave.",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            },
+            {
+              "name": "element",
+              "types": [
+                "HTMLElement"
+              ],
+              "text": "the element"
+            },
+            {
+              "name": "}",
+              "types": [
+                "{ onPress?: Function, onHover?: Function, onSwipe?: (direction: \"left\"|\"right\"|\"up\"|\"down\") => void, threshold?: number "
+              ],
+              "text": "handlers"
+            }
+          ],
+          "return": {
+            "types": [
+              "() => void"
+            ],
+            "text": "stops early; teardown stops it otherwise"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/behaviors/gesture.js",
+          "line": 19
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/motion/behaviors/layout",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useLayout: a DOM change animated as a layout transition through the\nengine's animateView (the View Transitions API): reorder a list, move a\ntab indicator, share an element between two places. The change always\nhappens; it animates only when the motion policy allows a view\ntransition, so never during a Turbo visit transition, under reduced\nmotion, or without the API.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/behaviors/layout.js",
+      "methods": [
+        {
+          "name": "useLayout",
+          "scope": "class",
+          "group": null,
+          "signature": "useLayout(controller, options = {})",
+          "docstring": "A runner for layout changes during this connect.",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            },
+            {
+              "name": "}",
+              "types": [
+                "{ duration?: number "
+              ],
+              "text": "[options] - milliseconds for the transition"
+            }
+          ],
+          "return": {
+            "types": [
+              "(update: () => void) => Promise<void>"
+            ],
+            "text": "applies `update`, animated when allowed"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/behaviors/layout.js",
+          "line": 18
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/motion/behaviors/pointer",
+      "type": "module",
+      "superclass": null,
+      "docstring": "usePointer: the pointer's position over an element, from -1 to 1 on\neach axis with 0 at the center, for tilt, spotlight and magnetic\neffects. Fine pointers only: touch and coarse pointers are ignored, and\nreduced motion leaves it inert. One report per frame; onLeave fires when\nthe pointer leaves, so an effect can settle back to its own style.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/behaviors/pointer.js",
+      "methods": [
+        {
+          "name": "usePointer",
+          "scope": "class",
+          "group": null,
+          "signature": "usePointer(controller, element, onMove, options = {})",
+          "docstring": "Reports pointer positions over `element` until teardown(controller).",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            },
+            {
+              "name": "element",
+              "types": [
+                "HTMLElement"
+              ],
+              "text": "the element to track"
+            },
+            {
+              "name": ")",
+              "types": [
+                "(position: { x: number, y: number "
+              ],
+              "text": "=> void} onMove - the handler"
+            },
+            {
+              "name": "}",
+              "types": [
+                "{ onLeave?: () => void "
+              ],
+              "text": "[options]"
+            }
+          ],
+          "return": {
+            "types": [
+              "() => void"
+            ],
+            "text": "stops early; teardown stops it otherwise"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/behaviors/pointer.js",
+          "line": 18
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/motion/behaviors/scroll_value",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useScrollValue: a progress value from 0 to 1 tied to scrolling, for the\npage or for an element passing through the viewport. Under reduced\nmotion it reports 1, the finished state, once and never follows the\nscroll.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/behaviors/scroll_value.js",
+      "methods": [
+        {
+          "name": "useScrollValue",
+          "scope": "class",
+          "group": null,
+          "signature": "useScrollValue(controller, onProgress, options = {})",
+          "docstring": "Calls `onProgress` with the scroll progress until teardown(controller).",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            },
+            {
+              "name": "onProgress",
+              "types": [
+                "(progress: number) => void"
+              ],
+              "text": "the handler, 0 to 1"
+            },
+            {
+              "name": "}",
+              "types": [
+                "{ target?: Element, container?: Element, offset?: string[], axis?: \"x\"|\"y\" "
+              ],
+              "text": "[options]"
+            }
+          ],
+          "return": {
+            "types": [
+              "() => void"
+            ],
+            "text": "stops early; teardown stops it otherwise"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/behaviors/scroll_value.js",
+          "line": 17
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/motion/behaviors/spring",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useSpring: a value that springs to each new target, interrupted and\nretargeted without a jump, written to one CSS property (a custom\nproperty or an individual transform like `scale`). Under reduced motion\nset() writes the target at once. Teardown removes the property, so the\nelement returns to its own style.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/behaviors/spring.js",
+      "methods": [
+        {
+          "name": "useSpring",
+          "scope": "class",
+          "group": null,
+          "signature": "useSpring(controller, element, property, options = {})",
+          "docstring": "A spring on `property` of `element`.",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            },
+            {
+              "name": "element",
+              "types": [
+                "HTMLElement"
+              ],
+              "text": "the element whose style it writes"
+            },
+            {
+              "name": "property",
+              "types": [
+                "string"
+              ],
+              "text": "the CSS property (`--tilt-x`, `scale`, ...)"
+            },
+            {
+              "name": "}",
+              "types": [
+                "{ spring?: string, unit?: string "
+              ],
+              "text": "[options]"
+            }
+          ],
+          "return": {
+            "types": [
+              "{ set: (value: number) => Promise<void>, stop: () => void "
+            ],
+            "text": "}"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/behaviors/spring.js",
+          "line": 19
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/motion/behaviors/stagger",
+      "type": "module",
+      "superclass": null,
+      "docstring": "useStagger: one animation across a list, each element starting a step\nafter the last. Same contract as useAnimate: the keyframes end at each\nelement's own style, and reduced motion, teardown and the Turbo cache\nleave every element there.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/behaviors/stagger.js",
+      "methods": [
+        {
+          "name": "useStagger",
+          "scope": "class",
+          "group": null,
+          "signature": "useStagger(controller, elements, keyframes, options = {})",
+          "docstring": "Animates `elements` in order, `step` milliseconds apart.",
+          "params": [
+            {
+              "name": "controller",
+              "types": [
+                "Object"
+              ],
+              "text": "the Stimulus controller instance"
+            },
+            {
+              "name": "elements",
+              "types": [
+                "HTMLElement[]"
+              ],
+              "text": "the elements, in order"
+            },
+            {
+              "name": "keyframes",
+              "types": [
+                "Object<string, Array>"
+              ],
+              "text": "property => values, ending at each element's own style"
+            },
+            {
+              "name": "}",
+              "types": [
+                "{ step?: number, duration?: string|number, easing?: string, spring?: string, entrance?: boolean "
+              ],
+              "text": "[options]"
+            }
+          ],
+          "return": {
+            "types": [
+              "{ finished: Promise<void>, stop: () => void "
+            ],
+            "text": "}"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/behaviors/stagger.js",
+          "line": 19
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/motion/load_engine",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The one door to the vendored engine. It is pinned without preload and\nimported nowhere statically, so a page fetches it the first time a\nbehavior asks, and never on a page without motion elements.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/load_engine.js",
+      "methods": [
+        {
+          "name": "loadEngine",
+          "scope": "class",
+          "group": null,
+          "signature": "loadEngine()",
+          "docstring": "The engine module, fetched once per page lifetime and configured by the\nmotion policy.",
+          "params": [],
+          "return": {
+            "types": [
+              "Promise<Object>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/load_engine.js",
+          "line": 14
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "@poetry/motion/policy",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The motion policy: decided once, read by every motion behavior.\n\n- Reduced motion: the user's prefers-reduced-motion, or data-motion on\n  <html> (\"reduce\" forces it, \"full\" overrides it) for an in-app setting.\n  Under reduce, behaviors jump to their end state, and the engine's own\n  MotionGlobalConfig.skipAnimations is set once it loads.\n- Tokens: --motion-duration-*, --motion-ease-* and --motion-spring-*\n  from the theme, read at the moment of use.\n- The Turbo cache: the engine writes inline styles frame by frame, so a\n  snapshot taken mid-animation freezes an in-between frame, and the\n  engine's complete() only lands on the next frame, after Turbo has\n  cloned the page. The server renders every effect's finished state, so\n  the end of every animation is the element's own style: at\n  turbo:before-cache each tracked animation stops and the inline\n  properties it wrote are removed, now and once more after the engine's\n  next render, which would write the stopped value back.\n- One view-transition slot: a document runs one view transition at a\n  time, and a Turbo visit transition skips a layout animation started\n  beside it. canAnimateView() is false while a visit is in flight.\n\nThe listeners are page-lifetime and installed once (installPolicy).",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/policy.js",
+      "methods": [
+        {
+          "name": "prefersReducedMotion",
+          "scope": "class",
+          "group": null,
+          "signature": "prefersReducedMotion()",
+          "docstring": "Whether motion is reduced for this page right now.",
+          "params": [],
+          "return": {
+            "types": [
+              "boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/policy.js",
+          "line": 36
+        },
+        {
+          "name": "onReducedMotionChange",
+          "scope": "class",
+          "group": null,
+          "signature": "onReducedMotionChange(fn)",
+          "docstring": "Calls fn with the new reduced state whenever it changes (the media query\nor the data-motion attribute). Returns the unsubscribe.",
+          "params": [
+            {
+              "name": "fn",
+              "types": [
+                "Function"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Function"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/policy.js",
+          "line": 50
+        },
+        {
+          "name": "track",
+          "scope": "class",
+          "group": null,
+          "signature": "track(animation, { element = null, properties = [], finish = null } = {})",
+          "docstring": "Keeps a running animation in the policy's care until it finishes. At\nturbo:before-cache it stops, and the inline properties it writes on the\nelement are removed, so the snapshot shows the server-rendered finished\nstate. Without an element the animation completes instead (a Web\nAnimation, which leaves no inline style). Returns the animation.",
+          "params": [
+            {
+              "name": "animation",
+              "types": [
+                "Object"
+              ],
+              "text": "playback controls with stop(), complete() and finished"
+            },
+            {
+              "name": "[target]",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            },
+            {
+              "name": "[target.element]",
+              "types": [
+                "HTMLElement"
+              ],
+              "text": "the element the animation writes"
+            },
+            {
+              "name": "[target.properties]",
+              "types": [
+                "string[]"
+              ],
+              "text": "the CSS properties it writes inline"
+            },
+            {
+              "name": "[target.finish]",
+              "types": [
+                "Function"
+              ],
+              "text": "restores anything else it wrote (text a ticker counts), run after it stops"
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/policy.js",
+          "line": 70
+        },
+        {
+          "name": "flush",
+          "scope": "class",
+          "group": null,
+          "signature": "flush()",
+          "docstring": "Ends every tracked animation at its finished state, synchronously.\nTurbo calls it through turbo:before-cache, and it runs when reduced\nmotion turns on mid-animation.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/policy.js",
+          "line": 85
+        },
+        {
+          "name": "release",
+          "scope": "class",
+          "group": null,
+          "signature": "release(animation)",
+          "docstring": "Ends one tracked animation at its finished state, synchronously, and\nforgets it: an inline-animated element gets its own style back, now and\nafter the engine's next render; a Web Animation completes. Behaviors\nrelease their animations at teardown.",
+          "params": [
+            {
+              "name": "animation",
+              "types": [
+                "Object"
+              ],
+              "text": "a tracked animation"
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/policy.js",
+          "line": 98
+        },
+        {
+          "name": "entranceAllowed",
+          "scope": "class",
+          "group": null,
+          "signature": "entranceAllowed()",
+          "docstring": "Whether an entrance may play now. Not on Turbo's cache preview, and not\nwhile a back or forward visit restores a page the user already saw.",
+          "params": [],
+          "return": {
+            "types": [
+              "boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/policy.js",
+          "line": 125
+        },
+        {
+          "name": "canAnimateView",
+          "scope": "class",
+          "group": null,
+          "signature": "canAnimateView()",
+          "docstring": "Whether a layout animation may start now: the browser has View\nTransitions, motion is not reduced, and no Turbo visit holds the slot.",
+          "params": [],
+          "return": {
+            "types": [
+              "boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/policy.js",
+          "line": 144
+        },
+        {
+          "name": "visitInFlight",
+          "scope": "class",
+          "group": null,
+          "signature": "visitInFlight()",
+          "docstring": "Whether a Turbo visit is between its start and its render.",
+          "params": [],
+          "return": {
+            "types": [
+              "boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/policy.js",
+          "line": 153
+        },
+        {
+          "name": "token",
+          "scope": "class",
+          "group": null,
+          "signature": "token(name)",
+          "docstring": "The raw value of a motion token, or \"\" when the theme does not set it.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "string"
+              ],
+              "text": "the token without its prefix (\"duration-fast\")"
+            }
+          ],
+          "return": {
+            "types": [
+              "string"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/policy.js",
+          "line": 163
+        },
+        {
+          "name": "duration",
+          "scope": "class",
+          "group": null,
+          "signature": "duration(value)",
+          "docstring": "A duration in seconds (the engine's unit) from a token name or from\nmilliseconds. Reduced motion is 0.",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "string|number"
+              ],
+              "text": "\"fast\", \"normal\", \"slow\" or milliseconds"
+            }
+          ],
+          "return": {
+            "types": [
+              "number"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/policy.js",
+          "line": 174
+        },
+        {
+          "name": "easing",
+          "scope": "class",
+          "group": null,
+          "signature": "easing(name)",
+          "docstring": "An easing token as the engine's cubic-bezier array.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "string"
+              ],
+              "text": "\"standard\", \"emphasized\" or \"exit\""
+            }
+          ],
+          "return": {
+            "types": [
+              "number[]"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/policy.js",
+          "line": 189
+        },
+        {
+          "name": "spring",
+          "scope": "class",
+          "group": null,
+          "signature": "spring(name)",
+          "docstring": "A spring token as the engine's spring options.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "string"
+              ],
+              "text": "\"gentle\", \"snappy\" or \"bouncy\""
+            }
+          ],
+          "return": {
+            "types": [
+              "{type: string, stiffness: number, damping: number, mass: number"
+            ],
+            "text": "}"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/policy.js",
+          "line": 201
+        },
+        {
+          "name": "configureEngine",
+          "scope": "class",
+          "group": null,
+          "signature": "configureEngine(loaded)",
+          "docstring": "Hands the loaded engine to the policy: its global skip flag follows\nreduced motion from now on. Returns the engine.",
+          "params": [
+            {
+              "name": "loaded",
+              "types": [
+                "Object"
+              ],
+              "text": "the engine module"
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/policy.js",
+          "line": 217
+        },
+        {
+          "name": "installPolicy",
+          "scope": "class",
+          "group": null,
+          "signature": "installPolicy()",
+          "docstring": "Installs the page-lifetime listeners once: Turbo's cache and visit\nevents, the reduced-motion query and the data-motion attribute.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/policy.js",
+          "line": 230
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--motion--marquee",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Marquee: the loop itself is CSS (the motion stylesheet), so this\ncontroller never loads the engine. It owns the pause control: a toggle\nthat holds the loop still, mirrored to data-paused on the marquee and\naria-pressed on the button. Hover and focus inside pause it too, in CSS.\n\n**Targets**: `pause`\n\n**Values**:\n- `paused` (Boolean, default: false): Whether the loop is held still by the pause control.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/marquee_controller.js",
+      "methods": [
+        {
+          "name": "toggle",
+          "scope": "instance",
+          "group": null,
+          "signature": "toggle()",
+          "docstring": "Pauses a running loop or resumes a paused one.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/marquee_controller.js",
+          "line": 22
+        },
+        {
+          "name": "pausedValueChanged",
+          "scope": "instance",
+          "group": null,
+          "signature": "pausedValueChanged(paused)",
+          "docstring": "Mirrors the paused state to the marquee and the control.",
+          "params": [
+            {
+              "name": "paused",
+              "types": [
+                "boolean"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/marquee_controller.js",
+          "line": 32
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--motion--number-ticker",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Number ticker: counts up to a number the server already rendered. The\nvisible digits are aria-hidden; a screen reader reads the final number\nbeside them. The count springs from `from` to `value`, formatted with\nIntl.NumberFormat, and the server's own text comes back when it lands,\nat teardown and before Turbo caches the page. Reduced motion, a cache\npreview and a restore visit show the final number at once.\n\n**Targets**: `display`\n\n**Values**:\n- `value` (Number): The final number, already rendered by the server.\n- `from` (Number, default: 0): Where the count starts.\n- `locale` (String): The locale for Intl.NumberFormat; the page's when blank.\n- `format` (Object): Intl.NumberFormat options, as the server formatted the final number.\n- `spring` (String, default: \"gentle\"): The spring token the count follows.\n- `trigger` (String, default: \"in_view\"): When the count starts: \"load\" or \"in_view\".\n- `delay` (Number, default: 0): Milliseconds to wait before counting.\n- `animate` (Boolean, default: true): false renders the final number with no count.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/number_ticker_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Starts the effect for this connect.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/number_ticker_controller.js",
+          "line": 42
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Undoes everything this connect started, leaving the finished state.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/number_ticker_controller.js",
+          "line": 54
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--motion--text-reveal",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Text reveal: the words brighten as the text scrolls through the\nviewport. The server renders every word at full strength; this\ncontroller writes one --reveal-progress custom property, and the motion\nstylesheet turns it into each word's opacity. Removing it, at teardown\nand before Turbo caches the page, shows the finished text.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/text_reveal_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Starts the effect for this connect.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/text_reveal_controller.js",
+          "line": 19
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Undoes everything this connect started, leaving the finished state.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/text_reveal_controller.js",
+          "line": 33
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--motion--tilt-card",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Tilt card: the inner layer leans toward a fine pointer and springs back\nflat when it leaves. Two custom properties, --tilt-x and --tilt-y, carry\nthe angles; the motion stylesheet rotates the layer, never the outer\nelement. Touch, coarse pointers and reduced motion leave it flat.\n\n**Targets**: `layer`\n\n**Values**:\n- `max` (Number, default: 8): The largest lean, in degrees.\n- `spring` (String, default: \"snappy\"): The spring token the lean follows.\n- `animate` (Boolean, default: true): false leaves the card flat.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/tilt_card_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Starts the effect for this connect.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/tilt_card_controller.js",
+          "line": 29
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Undoes everything this connect started, leaving the finished state.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/tilt_card_controller.js",
+          "line": 45
+        }
+      ],
+      "constants": []
+    }
+  ]
+}

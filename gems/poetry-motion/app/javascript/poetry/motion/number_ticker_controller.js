@@ -55,11 +55,7 @@ export default class NumberTickerController extends Controller {
     teardown(this)
   }
 
-  /**
-   * Springs the visible digits from `from` to `value`.
-   *
-   * @returns {Promise<void>}
-   */
+  // Springs the visible digits from `from` to `value`.
   async #count() {
     const scope = scopeOf(this)
     const display = this.displayTarget

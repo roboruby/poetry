@@ -6,6 +6,7 @@ import { Application } from "@hotwired/stimulus"
 import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading"
 import { registerPoetryControllers } from "@poetry/controllers"
 import { registerPoetryChartsControllers } from "@poetry/charts"
+import { registerPoetryMotionControllers } from "@poetry/motion"
 import { registerPoetryAgent } from "@poetry/agent"
 
 const application = Application.start()
@@ -17,6 +18,7 @@ window.Stimulus = application
 eagerLoadControllersFrom("poetry_docs/controllers", application)
 registerPoetryControllers(application)
 registerPoetryChartsControllers(application)
+registerPoetryMotionControllers(application)
 registerPoetryAgent(application)
 
 // Keep the sidebar's scroll position across Turbo visits. The active item is

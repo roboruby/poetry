@@ -377,7 +377,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 232
+          "line": 244
         },
         {
           "name": "block_components",
@@ -404,7 +404,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 337
+          "line": 360
         },
         {
           "name": "charts_registry",
@@ -416,7 +416,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 209
+          "line": 210
         },
         {
           "name": "committed_charts_registry",
@@ -428,7 +428,19 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 263
+          "line": 276
+        },
+        {
+          "name": "committed_motion_registry",
+          "scope": "class",
+          "group": null,
+          "signature": "committed_motion_registry",
+          "docstring": "The motion reference rides along whenever the motion gem is present,\nfrom its committed registry, boot-free.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/ui.rb",
+          "line": 286
         },
         {
           "name": "helper_names",
@@ -452,7 +464,19 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 199
+          "line": 200
+        },
+        {
+          "name": "motion_registry",
+          "scope": "class",
+          "group": null,
+          "signature": "motion_registry",
+          "docstring": "Tolerant on motion, like charts: absent, the skill drops the motion reference.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/ui.rb",
+          "line": 221
         },
         {
           "name": "recipe_items",
@@ -496,7 +520,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 311
+          "line": 334
         },
         {
           "name": "registry_descriptions",
@@ -528,7 +552,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 295
+          "line": 318
         },
         {
           "name": "registry_items",
@@ -615,7 +639,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 191
+          "line": 192
         }
       ],
       "constants": [

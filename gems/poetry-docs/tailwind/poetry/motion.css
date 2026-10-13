@@ -1,0 +1,147 @@
+/*
+ * poetry-motion tokens. `poetry:install --motion` copies this file into the
+ * host's Tailwind tree and imports it. Themes and hosts override the
+ * tokens like any other: a later declaration wins.
+ *
+ * Durations and easings are CSS values. A spring is three numbers,
+ * stiffness, damping and mass, read by the motion policy. gentle and snappy
+ * are critically damped, so they settle without passing their target;
+ * bouncy overshoots on purpose.
+ *
+ * Reduced motion, from the user's setting or data-motion="reduce" on
+ * <html>, zeroes the durations, so CSS-only effects stop moving too; the
+ * policy makes the engine jump to end states. data-motion="full" keeps
+ * motion on for an in-app setting.
+ */
+:root {
+  --motion-duration-fast: 150ms;
+  --motion-duration-normal: 300ms;
+  --motion-duration-slow: 600ms;
+
+  --motion-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --motion-ease-emphasized: cubic-bezier(0.3, 0, 0, 1);
+  --motion-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  --motion-spring-gentle: 120 22 1;
+  --motion-spring-snappy: 400 40 1;
+  --motion-spring-bouncy: 300 10 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) {
+    --motion-duration-fast: 0ms;
+    --motion-duration-normal: 0ms;
+    --motion-duration-slow: 0ms;
+  }
+}
+
+:root[data-motion="reduce"] {
+  --motion-duration-fast: 0ms;
+  --motion-duration-normal: 0ms;
+  --motion-duration-slow: 0ms;
+}
+
+/*
+ * Marquee: the loop is CSS. Every copy travels one copy's length plus the
+ * gap, so the seam never shows. Hover, focus inside and the pause control
+ * hold it still; reduced motion stops it and hides the copies.
+ */
+@keyframes poetry-marquee-x {
+  from { translate: 0 0; }
+  to { translate: calc(-100% - var(--marquee-gap)) 0; }
+}
+
+@keyframes poetry-marquee-y {
+  from { translate: 0 0; }
+  to { translate: 0 calc(-100% - var(--marquee-gap)); }
+}
+
+[data-slot="marquee-viewport"] {
+  --marquee-gap: 1rem;
+  gap: var(--marquee-gap);
+}
+
+[data-slot="marquee"][data-direction="up"] > [data-slot="marquee-viewport"],
+[data-slot="marquee"][data-direction="down"] > [data-slot="marquee-viewport"] {
+  flex-direction: column;
+}
+
+[data-slot="marquee-track"] {
+  gap: var(--marquee-gap);
+  min-width: 100%;
+  animation: poetry-marquee-x var(--marquee-duration, 40s) linear infinite;
+}
+
+[data-slot="marquee"][data-direction="up"] [data-slot="marquee-track"],
+[data-slot="marquee"][data-direction="down"] [data-slot="marquee-track"] {
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100%;
+  animation-name: poetry-marquee-y;
+}
+
+[data-slot="marquee"][data-direction="right"] [data-slot="marquee-track"],
+[data-slot="marquee"][data-direction="down"] [data-slot="marquee-track"] {
+  animation-direction: reverse;
+}
+
+[data-slot="marquee"]:hover [data-slot="marquee-track"],
+[data-slot="marquee"]:focus-within [data-slot="marquee-track"],
+[data-slot="marquee"][data-paused] [data-slot="marquee-track"] {
+  animation-play-state: paused;
+}
+
+[data-slot="marquee"][data-animate="false"] [data-slot="marquee-track"] {
+  animation: none;
+}
+
+[data-slot="marquee"][data-animate="false"] [data-slot="marquee-track"][aria-hidden],
+[data-slot="marquee"][data-animate="false"] > [data-slot="marquee-pause"] {
+  display: none;
+}
+
+/*
+ * Text reveal: --reveal-progress runs 0 to 1 as the passage scrolls in, and
+ * each word's opacity follows its place in line. Without the property the
+ * progress is 1 and every word is at full strength.
+ */
+[data-slot="text-reveal-word"] {
+  opacity: clamp(0.2, calc(var(--reveal-progress, 1) * var(--reveal-count, 1) - var(--word-index, 0)), 1);
+  transition: opacity var(--motion-duration-fast) linear;
+}
+
+/*
+ * Tilt card: the layer leans by two custom properties. Before the pointer
+ * arrives the layer has no transform at all, so it holds no containing
+ * block for fixed descendants until it leans.
+ */
+[data-slot="tilt-card"] {
+  perspective: 900px;
+}
+
+[data-slot="tilt-card-layer"] {
+  transform-style: preserve-3d;
+}
+
+[data-slot="tilt-card-layer"][style*="--tilt"] {
+  transform: rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg));
+}
+
+/* Reduced motion: the loops stand still and the copies go away. */
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) [data-slot="marquee-track"] {
+    animation: none;
+  }
+
+  :root:not([data-motion="full"]) [data-slot="marquee-track"][aria-hidden] {
+    display: none;
+  }
+}
+
+:root[data-motion="reduce"] [data-slot="marquee-track"] {
+  animation: none;
+}
+
+:root[data-motion="reduce"] [data-slot="marquee-track"][aria-hidden] {
+  display: none;
+}

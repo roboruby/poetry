@@ -1,0 +1,5 @@
+<%= poetry_marquee(label: "Customers", class: "w-full max-w-2xl") do %>
+  <% %w[Acme Globex Initech Umbrella Hooli Vandelay].each do |name| %>
+    <span class="px-6 text-lg font-semibold text-muted-foreground"><%= name %></span>
+  <% end %>
+<% end %>

@@ -40,6 +40,12 @@
       <% end %>
     <% end %>
     <% palette.with_separator %>
+    <% palette.with_group(heading: "Motion") do |group| %>
+      <% Poetry::Docs::DocsCatalog.motion.each do |entry| %>
+        <% group.with_item(value: entry.path) { entry.title } %>
+      <% end %>
+    <% end %>
+    <% palette.with_separator %>
     <% palette.with_group(heading: "Demos") do |group| %>
       <% Poetry::Docs::DocsCatalog.demos.each do |entry| %>
         <% group.with_item(value: entry.path) { entry.title } %>

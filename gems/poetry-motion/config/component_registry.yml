@@ -47,9 +47,10 @@ components:
     description: Items that scroll in a loop, logos or testimonials, with a pause
       control; the loop is CSS.
     elements:
+    - viewport
     - track
     - pause
-    capsule: 95e9a8fd3d9d
+    capsule: 2811ee3416f5
     controllers:
     - identifier: poetry--motion--marquee
       targets:
@@ -87,11 +88,13 @@ components:
         description: seconds per loop (duration:)
       - name: "--marquee-gap"
         description: the space between items and between copies
+    - name: marquee-viewport
+      description: The clipped window the copies travel through
     - name: marquee-track
       description: One copy of the items; every copy after the first is aria-hidden
         and inert
     - name: marquee-pause
-      description: The pause control, a toggle button (aria-pressed)
+      description: The pause control, a toggle button (aria-pressed) under the loop
     stimulus:
     - element: root
       controllers:

@@ -4,6 +4,7 @@
 
 ### Added
 
+- The generated usage skill carries the motion effects' reference when poetry-motion is in the bundle.
 - `poetry:install --motion` wires poetry-motion like `--charts` wires poetry-charts: it fails before any file lands when the gem is not bundled, copies and imports the motion tokens stylesheet, and registers the motion controllers, which installs the motion policy. A plain re-run keeps refreshing the stylesheet once it is vendored.
 
 ### Changed

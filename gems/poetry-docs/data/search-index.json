@@ -6210,6 +6210,132 @@
     "path": "/charts/scatter#wiring"
   },
   {
+    "title": "Marquee",
+    "page": "Marquee",
+    "section": "motion",
+    "path": "/motion/marquee"
+  },
+  {
+    "title": "Installation",
+    "page": "Marquee",
+    "section": "motion",
+    "path": "/motion/marquee#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Marquee",
+    "section": "motion",
+    "path": "/motion/marquee#default"
+  },
+  {
+    "title": "Vertical",
+    "page": "Marquee",
+    "section": "motion",
+    "path": "/motion/marquee#vertical"
+  },
+  {
+    "title": "Wiring",
+    "page": "Marquee",
+    "section": "motion",
+    "path": "/motion/marquee#wiring"
+  },
+  {
+    "title": "Number Ticker",
+    "page": "Number Ticker",
+    "section": "motion",
+    "path": "/motion/number-ticker"
+  },
+  {
+    "title": "Installation",
+    "page": "Number Ticker",
+    "section": "motion",
+    "path": "/motion/number-ticker#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Number Ticker",
+    "section": "motion",
+    "path": "/motion/number-ticker#default"
+  },
+  {
+    "title": "Currency",
+    "page": "Number Ticker",
+    "section": "motion",
+    "path": "/motion/number-ticker#currency"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Number Ticker",
+    "section": "motion",
+    "path": "/motion/number-ticker#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Number Ticker",
+    "section": "motion",
+    "path": "/motion/number-ticker#wiring"
+  },
+  {
+    "title": "Text Reveal",
+    "page": "Text Reveal",
+    "section": "motion",
+    "path": "/motion/text-reveal"
+  },
+  {
+    "title": "Installation",
+    "page": "Text Reveal",
+    "section": "motion",
+    "path": "/motion/text-reveal#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Text Reveal",
+    "section": "motion",
+    "path": "/motion/text-reveal#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Text Reveal",
+    "section": "motion",
+    "path": "/motion/text-reveal#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Text Reveal",
+    "section": "motion",
+    "path": "/motion/text-reveal#wiring"
+  },
+  {
+    "title": "Tilt Card",
+    "page": "Tilt Card",
+    "section": "motion",
+    "path": "/motion/tilt-card"
+  },
+  {
+    "title": "Installation",
+    "page": "Tilt Card",
+    "section": "motion",
+    "path": "/motion/tilt-card#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Tilt Card",
+    "section": "motion",
+    "path": "/motion/tilt-card#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Tilt Card",
+    "section": "motion",
+    "path": "/motion/tilt-card#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Tilt Card",
+    "section": "motion",
+    "path": "/motion/tilt-card#wiring"
+  },
+  {
     "title": "Action bar",
     "page": "Action bar",
     "section": "blocks",
@@ -6582,6 +6708,18 @@
     "path": "/api/poetry-charts-controllers"
   },
   {
+    "title": "poetry-motion",
+    "page": "poetry-motion",
+    "section": "api",
+    "path": "/api/poetry-motion"
+  },
+  {
+    "title": "@poetry/motion",
+    "page": "@poetry/motion",
+    "section": "api",
+    "path": "/api/poetry-motion-controllers"
+  },
+  {
     "title": "poetry-agent",
     "page": "poetry-agent",
     "section": "api",
@@ -6832,6 +6970,54 @@
     "page": "Charts",
     "section": "libraries",
     "path": "/libraries/charts#palette"
+  },
+  {
+    "title": "Motion",
+    "page": "Motion",
+    "section": "libraries",
+    "path": "/libraries/motion"
+  },
+  {
+    "title": "What it is",
+    "page": "Motion",
+    "section": "libraries",
+    "path": "/libraries/motion#what-it-is"
+  },
+  {
+    "title": "Install",
+    "page": "Motion",
+    "section": "libraries",
+    "path": "/libraries/motion#install"
+  },
+  {
+    "title": "What it costs a page",
+    "page": "Motion",
+    "section": "libraries",
+    "path": "/libraries/motion#payload"
+  },
+  {
+    "title": "The motion policy",
+    "page": "Motion",
+    "section": "libraries",
+    "path": "/libraries/motion#policy"
+  },
+  {
+    "title": "Tokens",
+    "page": "Motion",
+    "section": "libraries",
+    "path": "/libraries/motion#tokens"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Motion",
+    "section": "libraries",
+    "path": "/libraries/motion#behaviors"
+  },
+  {
+    "title": "This is CSS",
+    "page": "Motion",
+    "section": "libraries",
+    "path": "/libraries/motion#this-is-css"
   },
   {
     "title": "Agent",

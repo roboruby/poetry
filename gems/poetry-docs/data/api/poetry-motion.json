@@ -1,0 +1,599 @@
+{
+  "poetry_version": "0.1.13",
+  "gem": "poetry-motion",
+  "objects": [
+    {
+      "path": "Poetry::Motion",
+      "type": "module",
+      "superclass": null,
+      "docstring": "poetry-motion: opt-in animated effects. The server renders each\neffect's finished state; the vendored animation engine\n(`@poetry/motion/engine`) is pinned without preload and fetched by a\ndynamic import the first time an element asks for it, so a page with no\nmotion element loads none of it. One policy module\n(`@poetry/motion/policy`) owns reduced motion, the motion tokens, the\nTurbo cache flush and the one view-transition slot.",
+      "examples": [],
+      "file": "lib/poetry/motion.rb",
+      "methods": [
+        {
+          "name": "registry",
+          "scope": "class",
+          "group": null,
+          "signature": "registry",
+          "docstring": "The agent-surface registry of the effects (the poetry-charts pattern):\nconfig/component_registry.yml, generated from source and drift-gated.",
+          "params": [],
+          "return": {
+            "types": [
+              "Poetry::Core::Registry"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/motion.rb",
+          "line": 33
+        },
+        {
+          "name": "registry_helper_args",
+          "scope": "class",
+          "group": null,
+          "signature": "registry_helper_args",
+          "docstring": "Each poetry_* helper's positional arity, read from its signature.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => Integer}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/motion.rb",
+          "line": 41
+        },
+        {
+          "name": "root",
+          "scope": "class",
+          "group": null,
+          "signature": "root",
+          "docstring": "The gem root.",
+          "params": [],
+          "return": {
+            "types": [
+              "Pathname"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/motion.rb",
+          "line": 25
+        }
+      ],
+      "constants": [
+        {
+          "name": "VERSION",
+          "value": "\"0.1.13\"",
+          "docstring": "The gem version."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::Behaviors",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The behaviors poetry-motion ships ({Poetry::Core::Behavior}).",
+      "examples": [],
+      "file": "app/components/poetry/motion/behaviors/drag.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::Behaviors::Animate",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The Ruby side of `useAnimate` (@poetry/motion/behaviors/animate): an\neffect's controller runs it, so it declares no wiring of its own,\nand the registry, llms.txt and the docs list it on every effect\nthat uses it.",
+      "examples": [],
+      "file": "app/components/poetry/motion/behaviors/animate.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::Behaviors::Canvas",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The Ruby side of `useCanvas` (@poetry/motion/behaviors/canvas): an\neffect's controller runs it, so it declares no wiring of its own,\nand the registry, llms.txt and the docs list it on every effect\nthat uses it.",
+      "examples": [],
+      "file": "app/components/poetry/motion/behaviors/canvas.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::Behaviors::Drag",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The Ruby side of `useDrag` (@poetry/motion/behaviors/drag): an\neffect's controller runs it, so it declares no wiring of its own,\nand the registry, llms.txt and the docs list it on every effect\nthat uses it.",
+      "examples": [],
+      "file": "app/components/poetry/motion/behaviors/drag.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::Behaviors::Frame",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The Ruby side of `useFrame` (@poetry/motion/behaviors/frame): an\neffect's controller runs it, so it declares no wiring of its own,\nand the registry, llms.txt and the docs list it on every effect\nthat uses it.",
+      "examples": [],
+      "file": "app/components/poetry/motion/behaviors/frame.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::Behaviors::Gesture",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The Ruby side of `useGesture` (@poetry/motion/behaviors/gesture): an\neffect's controller runs it, so it declares no wiring of its own,\nand the registry, llms.txt and the docs list it on every effect\nthat uses it.",
+      "examples": [],
+      "file": "app/components/poetry/motion/behaviors/gesture.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::Behaviors::Layout",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The Ruby side of `useLayout` (@poetry/motion/behaviors/layout): an\neffect's controller runs it, so it declares no wiring of its own,\nand the registry, llms.txt and the docs list it on every effect\nthat uses it.",
+      "examples": [],
+      "file": "app/components/poetry/motion/behaviors/layout.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::Behaviors::Pointer",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The Ruby side of `usePointer` (@poetry/motion/behaviors/pointer): an\neffect's controller runs it, so it declares no wiring of its own,\nand the registry, llms.txt and the docs list it on every effect\nthat uses it.",
+      "examples": [],
+      "file": "app/components/poetry/motion/behaviors/pointer.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::Behaviors::ScrollValue",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The Ruby side of `useScrollValue` (@poetry/motion/behaviors/scroll_value): an\neffect's controller runs it, so it declares no wiring of its own,\nand the registry, llms.txt and the docs list it on every effect\nthat uses it.",
+      "examples": [],
+      "file": "app/components/poetry/motion/behaviors/scroll_value.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::Behaviors::Spring",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The Ruby side of `useSpring` (@poetry/motion/behaviors/spring): an\neffect's controller runs it, so it declares no wiring of its own,\nand the registry, llms.txt and the docs list it on every effect\nthat uses it.",
+      "examples": [],
+      "file": "app/components/poetry/motion/behaviors/spring.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::Behaviors::Stagger",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The Ruby side of `useStagger` (@poetry/motion/behaviors/stagger): an\neffect's controller runs it, so it declares no wiring of its own,\nand the registry, llms.txt and the docs list it on every effect\nthat uses it.",
+      "examples": [],
+      "file": "app/components/poetry/motion/behaviors/stagger.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::ComponentsHelper",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The view helpers for poetry-motion's effects, included into every\nview by the engine.",
+      "examples": [],
+      "file": "app/helpers/poetry/motion/components_helper.rb",
+      "methods": [
+        {
+          "name": "poetry_marquee",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_marquee(**, &)",
+          "docstring": "A looping marquee of the block's items.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/helpers/poetry/motion/components_helper.rb",
+          "line": 9
+        },
+        {
+          "name": "poetry_number_ticker",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_number_ticker(**)",
+          "docstring": "A number that counts up to its value.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/helpers/poetry/motion/components_helper.rb",
+          "line": 15
+        },
+        {
+          "name": "poetry_text_reveal",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_text_reveal(text = nil, **)",
+          "docstring": "A passage whose words brighten as it scrolls into view.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/helpers/poetry/motion/components_helper.rb",
+          "line": 12
+        },
+        {
+          "name": "poetry_tilt_card",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_tilt_card(**, &)",
+          "docstring": "A surface that leans toward the pointer.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/helpers/poetry/motion/components_helper.rb",
+          "line": 18
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::Engine",
+      "type": "class",
+      "superclass": "Rails::Engine",
+      "docstring": "The Rails engine: component autoload paths, the controllers manifest,\npreviews, asset paths and the importmap pins. Loading the gem is the\nonly integration step besides `poetry:install --motion`.",
+      "examples": [
+        {
+          "title": "Install via the host Gemfile",
+          "text": "gem \"poetry-motion\""
+        }
+      ],
+      "file": "lib/poetry/motion/engine.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::Marquee::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "A row (or column) of items that scrolls in a loop, logos or\ntestimonials. The loop is CSS, so no engine loads. The server\nrenders the items once for readers and `repeat:` copies for the\nloop, aria-hidden and inert. Hover and focus inside pause it, and a\npause control holds it still (WCAG 2.2.2). Under reduced motion it\nstands still and only the readable copy shows.",
+      "examples": [
+        {
+          "title": "",
+          "text": "<%= poetry_marquee(label: \"Our customers\") do %>\n  <% customers.each do |customer| %><%= image_tag customer.logo, alt: customer.name %><% end %>\n<% end %>"
+        }
+      ],
+      "file": "app/components/poetry/motion/marquee/component.rb",
+      "methods": [],
+      "constants": [
+        {
+          "name": "DIRECTIONS",
+          "value": "%i[left right up down].freeze",
+          "docstring": "The directions the loop can travel."
+        },
+        {
+          "name": "DOCS",
+          "value": "{\n  duration: \"How long the motion runs: a duration token (#{DURATIONS.join(\", \")}) or milliseconds.\",\n  easing: \"The easing token: #{EASINGS.join(\", \")}.\",\n  spring: \"The spring token: #{SPRINGS.join",
+          "docstring": "What each option means, for the registry and the docs."
+        },
+        {
+          "name": "DURATIONS",
+          "value": "%i[fast normal slow].freeze",
+          "docstring": "The duration tokens (--motion-duration-*); duration: also takes milliseconds."
+        },
+        {
+          "name": "EASINGS",
+          "value": "%i[standard emphasized exit].freeze",
+          "docstring": "The easing tokens (--motion-ease-*)."
+        },
+        {
+          "name": "SPRINGS",
+          "value": "%i[gentle snappy bouncy].freeze",
+          "docstring": "The spring tokens (--motion-spring-*)."
+        },
+        {
+          "name": "TRIGGERS",
+          "value": "%i[load in_view hover].freeze",
+          "docstring": "When an effect starts: on connect, when it scrolls into view, or on hover."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::Marquee::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "The marquee's classes; the loop and its pauses live in the motion stylesheet.",
+      "examples": [],
+      "file": "app/components/poetry/motion/marquee/style.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::NumberTicker::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "A number that counts up to its value when it comes into view. The\nserver renders the final number, formatted, so the page is right\nbefore any script runs; the count is decoration on top. Screen\nreaders get the final number once, never the count.",
+      "examples": [
+        {
+          "title": "",
+          "text": "<%= poetry_number_ticker(value: 12_480, format: { style: \"currency\", currency: \"USD\" }) %>"
+        }
+      ],
+      "file": "app/components/poetry/motion/number_ticker/component.rb",
+      "methods": [
+        {
+          "name": "formatted",
+          "scope": "instance",
+          "group": null,
+          "signature": "formatted",
+          "docstring": "The final number as the server shows it: Rails' number helpers\nwith the same precision, currency and percent the format names.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/motion/number_ticker/component.rb",
+          "line": 77
+        }
+      ],
+      "constants": [
+        {
+          "name": "CURRENCY_UNITS",
+          "value": "{ \"USD\" => \"$\", \"EUR\" => \"€\", \"GBP\" => \"£\", \"JPY\" => \"¥\", \"CAD\" => \"CA$\",\n\"AUD\" => \"A$\" }.freeze",
+          "docstring": "The symbols the server writes for common currencies; any other code renders before the number."
+        },
+        {
+          "name": "DOCS",
+          "value": "{\n  duration: \"How long the motion runs: a duration token (#{DURATIONS.join(\", \")}) or milliseconds.\",\n  easing: \"The easing token: #{EASINGS.join(\", \")}.\",\n  spring: \"The spring token: #{SPRINGS.join",
+          "docstring": "What each option means, for the registry and the docs."
+        },
+        {
+          "name": "DURATIONS",
+          "value": "%i[fast normal slow].freeze",
+          "docstring": "The duration tokens (--motion-duration-*); duration: also takes milliseconds."
+        },
+        {
+          "name": "EASINGS",
+          "value": "%i[standard emphasized exit].freeze",
+          "docstring": "The easing tokens (--motion-ease-*)."
+        },
+        {
+          "name": "SPRINGS",
+          "value": "%i[gentle snappy bouncy].freeze",
+          "docstring": "The spring tokens (--motion-spring-*)."
+        },
+        {
+          "name": "TRIGGERS",
+          "value": "%i[load in_view hover].freeze",
+          "docstring": "When an effect starts: on connect, when it scrolls into view, or on hover."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::NumberTicker::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "The ticker's classes: tabular figures, so the count does not jitter.",
+      "examples": [],
+      "file": "app/components/poetry/motion/number_ticker/style.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::Options",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The motion options an effect declares, each validated against the\nmotion tokens: an effect calls `motion_options` with the options it\ntakes and their defaults, and every effect also gets `animate:` to\nturn its motion off.\n\n  motion_options spring: :gentle, trigger: :in_view, delay: 0\n\nThe values reach the effect's controller as Stimulus values, and the\nmotion policy reads the tokens they name.",
+      "examples": [],
+      "file": "app/components/poetry/motion/options.rb",
+      "methods": [
+        {
+          "name": "ensure_motion_options!",
+          "scope": "instance",
+          "group": null,
+          "signature": "ensure_motion_options!",
+          "docstring": "Raises for a motion option out of range: a duration that is neither a\ntoken nor milliseconds, or a negative delay. Effects call it from\nbefore_render.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/motion/options.rb",
+          "line": 87
+        },
+        {
+          "name": "ensure_within!",
+          "scope": "instance",
+          "group": null,
+          "signature": "ensure_within!(name, range)",
+          "docstring": "Raises unless the numeric option is within the range.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol"
+              ],
+              "text": "the option"
+            },
+            {
+              "name": "range",
+              "types": [
+                "Range"
+              ],
+              "text": "the values it may take"
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/motion/options.rb",
+          "line": 105
+        }
+      ],
+      "constants": [
+        {
+          "name": "DOCS",
+          "value": "{\n  duration: \"How long the motion runs: a duration token (#{DURATIONS.join(\", \")}) or milliseconds.\",\n  easing: \"The easing token: #{EASINGS.join(\", \")}.\",\n  spring: \"The spring token: #{SPRINGS.join",
+          "docstring": "What each option means, for the registry and the docs."
+        },
+        {
+          "name": "DURATIONS",
+          "value": "%i[fast normal slow].freeze",
+          "docstring": "The duration tokens (--motion-duration-*); duration: also takes milliseconds."
+        },
+        {
+          "name": "EASINGS",
+          "value": "%i[standard emphasized exit].freeze",
+          "docstring": "The easing tokens (--motion-ease-*)."
+        },
+        {
+          "name": "SPRINGS",
+          "value": "%i[gentle snappy bouncy].freeze",
+          "docstring": "The spring tokens (--motion-spring-*)."
+        },
+        {
+          "name": "TRIGGERS",
+          "value": "%i[load in_view hover].freeze",
+          "docstring": "When an effect starts: on connect, when it scrolls into view, or on hover."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::TextReveal::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "A passage whose words brighten one after another as it scrolls into\nview. The server renders every word at full strength and the whole\ntext once for screen readers; the words are aria-hidden spans, so\nthe reveal never chops what a reader hears. The scroll writes one\ncustom property; under reduced motion the text is simply there.",
+      "examples": [
+        {
+          "title": "",
+          "text": "<%= poetry_text_reveal(\"Poetry renders the finished page on the server.\") %>"
+        }
+      ],
+      "file": "app/components/poetry/motion/text_reveal/component.rb",
+      "methods": [
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(text = nil, **options)",
+          "docstring": "",
+          "params": [],
+          "return": {
+            "types": [
+              "Component"
+            ],
+            "text": "a new instance of Component"
+          },
+          "examples": [],
+          "file": "app/components/poetry/motion/text_reveal/component.rb",
+          "line": 47
+        }
+      ],
+      "constants": [
+        {
+          "name": "DOCS",
+          "value": "{\n  duration: \"How long the motion runs: a duration token (#{DURATIONS.join(\", \")}) or milliseconds.\",\n  easing: \"The easing token: #{EASINGS.join(\", \")}.\",\n  spring: \"The spring token: #{SPRINGS.join",
+          "docstring": "What each option means, for the registry and the docs."
+        },
+        {
+          "name": "DURATIONS",
+          "value": "%i[fast normal slow].freeze",
+          "docstring": "The duration tokens (--motion-duration-*); duration: also takes milliseconds."
+        },
+        {
+          "name": "EASINGS",
+          "value": "%i[standard emphasized exit].freeze",
+          "docstring": "The easing tokens (--motion-ease-*)."
+        },
+        {
+          "name": "SPRINGS",
+          "value": "%i[gentle snappy bouncy].freeze",
+          "docstring": "The spring tokens (--motion-spring-*)."
+        },
+        {
+          "name": "TAGS",
+          "value": "%i[p h1 h2 h3 h4 blockquote div].freeze",
+          "docstring": "The tags the passage can render as."
+        },
+        {
+          "name": "TRIGGERS",
+          "value": "%i[load in_view hover].freeze",
+          "docstring": "When an effect starts: on connect, when it scrolls into view, or on hover."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::TextReveal::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "The text reveal's classes; the word opacity lives in the motion stylesheet.",
+      "examples": [],
+      "file": "app/components/poetry/motion/text_reveal/style.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::TiltCard::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "A surface that leans toward a fine pointer and springs back flat\nwhen it leaves. It wraps whatever it is given, a poetry Card most\noften. The lean rotates an inner layer, never the outer element,\nand the server renders the card flat; touch, coarse pointers and\nreduced motion leave it that way.",
+      "examples": [
+        {
+          "title": "",
+          "text": "<%= poetry_tilt_card do %>\n  <%= poetry_card do |card| %>...<% end %>\n<% end %>"
+        }
+      ],
+      "file": "app/components/poetry/motion/tilt_card/component.rb",
+      "methods": [],
+      "constants": [
+        {
+          "name": "DOCS",
+          "value": "{\n  duration: \"How long the motion runs: a duration token (#{DURATIONS.join(\", \")}) or milliseconds.\",\n  easing: \"The easing token: #{EASINGS.join(\", \")}.\",\n  spring: \"The spring token: #{SPRINGS.join",
+          "docstring": "What each option means, for the registry and the docs."
+        },
+        {
+          "name": "DURATIONS",
+          "value": "%i[fast normal slow].freeze",
+          "docstring": "The duration tokens (--motion-duration-*); duration: also takes milliseconds."
+        },
+        {
+          "name": "EASINGS",
+          "value": "%i[standard emphasized exit].freeze",
+          "docstring": "The easing tokens (--motion-ease-*)."
+        },
+        {
+          "name": "SPRINGS",
+          "value": "%i[gentle snappy bouncy].freeze",
+          "docstring": "The spring tokens (--motion-spring-*)."
+        },
+        {
+          "name": "TRIGGERS",
+          "value": "%i[load in_view hover].freeze",
+          "docstring": "When an effect starts: on connect, when it scrolls into view, or on hover."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::TiltCard::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "The tilt card's classes; the rotation lives in the motion stylesheet.",
+      "examples": [],
+      "file": "app/components/poetry/motion/tilt_card/style.rb",
+      "methods": [],
+      "constants": []
+    }
+  ]
+}

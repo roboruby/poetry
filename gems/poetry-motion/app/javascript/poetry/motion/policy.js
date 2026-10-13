@@ -126,12 +126,7 @@ export function entranceAllowed() {
   return !restoring && !document.documentElement.hasAttribute("data-turbo-preview")
 }
 
-/**
- * Runs a playback call, ignoring an animation that already ended.
- *
- * @param {Function} call
- * @returns {void}
- */
+// Runs a playback call, ignoring an animation that already ended.
 function settle(call) {
   try {
     call()
@@ -263,11 +258,7 @@ export function installPolicy() {
   new MutationObserver(notify).observe(document.documentElement, { attributes: true, attributeFilter: ["data-motion"] })
 }
 
-/**
- * Sets the engine's skip flag from the reduced state.
- *
- * @returns {void}
- */
+// Sets the engine's skip flag from the reduced state.
 function syncEngine() {
   if (engine?.MotionGlobalConfig) engine.MotionGlobalConfig.skipAnimations = prefersReducedMotion()
 }

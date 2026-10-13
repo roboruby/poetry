@@ -175,6 +175,7 @@ module Poetry
       def skill_files(host_registry: nil)
         Poetry::Core::SkillText.new(
           registry: registry, families: SKILL_FAMILIES, charts_registry: charts_registry,
+          motion_registry: motion_registry,
           host_registry: host_registry
         ).files
       end
@@ -216,6 +217,17 @@ module Poetry
         nil
       end
 
+      # Tolerant on motion, like charts: absent, the skill drops the motion reference.
+      def motion_registry
+        # archspec:disable-next-line constants.forbid -- a defined? probe, never a dependency
+        return nil unless defined?(Poetry::Motion::Engine)
+
+        # archspec:disable-next-line constants.forbid -- guarded by the defined? probe above
+        Poetry::Motion.registry
+      rescue StandardError
+        nil
+      end
+
       # The MCP server's runtime skill map (get_skill): the SAME
       # files `rails g poetry:skill` writes, for hosts that cannot write
       # files. Boot-free by construction - the usage skill regenerates from
@@ -253,7 +265,8 @@ module Poetry
         host = published ? Poetry::Core::Registry.committed(app_root) : nil
         Poetry::Core::SkillText.new(
           registry: Poetry::Core::Registry.committed(root),
-          families: SKILL_FAMILIES, charts_registry: committed_charts_registry, host_registry: host
+          families: SKILL_FAMILIES, charts_registry: committed_charts_registry,
+          motion_registry: committed_motion_registry, host_registry: host
         ).files
       end
 
@@ -264,6 +277,16 @@ module Poetry
         require "poetry/charts"
         # archspec:disable-next-line constants.forbid -- a defined? probe, never a dependency
         Poetry::Core::Registry.committed(Poetry::Charts.root)
+      rescue LoadError, StandardError
+        nil
+      end
+
+      # The motion reference rides along whenever the motion gem is present,
+      # from its committed registry, boot-free.
+      def committed_motion_registry
+        require "poetry/motion"
+        # archspec:disable-next-line constants.forbid -- a defined? probe, never a dependency
+        Poetry::Core::Registry.committed(Poetry::Motion.root)
       rescue LoadError, StandardError
         nil
       end

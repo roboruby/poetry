@@ -12,7 +12,7 @@ module Poetry
         end
 
         def vertical
-          render_component(label: "Testimonials", direction: :up, duration: 30) { items }
+          render_component(label: "Testimonials", direction: :up, duration: 30, class: "h-48") { items }
         end
 
         def right_and_slow

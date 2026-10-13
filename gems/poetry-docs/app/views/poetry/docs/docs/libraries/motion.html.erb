@@ -1,0 +1,189 @@
+<% content_for :title, "Motion" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Motion") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag; ERB delimiters are assembled by
+  # interpolation so none appear literally inside a heredoc.
+  eo = "<" + "%="
+  ce = "%" + ">"
+  install_source = <<~CODE
+    bundle add poetry-motion
+    bin/rails g poetry:install --motion
+  CODE
+  usage_source = <<~CODE
+    #{eo} poetry_number_ticker(value: @orders.count) #{ce}
+    #{eo} poetry_text_reveal("Every word arrives in order.", tag: :h2) #{ce}
+  CODE
+  component_source = <<~CODE
+    class StatComponent < Poetry::Core::Component
+      include Poetry::Motion::Options
+
+      use_behavior :animate          # listed in the registry, llms.txt and this page
+      motion_options duration: :normal, delay: 0
+
+      use_stimulus do
+        on(:root) { controller("stat") { register } }
+      end
+    end
+  CODE
+  controller_source = <<~CODE
+    import { Controller } from "@hotwired/stimulus"
+    import { teardown } from "@poetry/controllers/helpers/scope"
+    import { useAnimate } from "@poetry/motion/behaviors/animate"
+
+    export default class extends Controller {
+      connect() {
+        // From an offset TO the server-rendered position: the last keyframe is the element's own style.
+        useAnimate(this, this.element, { translate: ["0 12px", "0 0"], opacity: [0, 1] },
+                   { duration: "normal", entrance: true })
+      }
+
+      disconnect() {
+        teardown(this)
+      }
+    }
+  CODE
+  keyframe_source = <<~CODE
+    @keyframes blink { 50% { opacity: 0; } }
+    .caret { animation: blink 1s step-end infinite; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .caret { animation: none; }
+    }
+  CODE
+  tokens_source = <<~CODE
+    :root {
+      --motion-duration-normal: 240ms;
+      --motion-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+      --motion-spring-snappy: 400 40 1;   /* stiffness damping mass */
+    }
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Motion</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      poetry-motion adds animated effects to Poetry without giving up what makes
+      it Poetry: the server renders every effect's finished state, and motion is
+      only ever the way there.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="what-it-is">What it is</h2>
+      <p>
+        An optional gem of effects and the machinery under them. Four effects
+        ship today:
+        <% Poetry::Docs::DocsCatalog.motion.each_with_index do |entry, index| %><%= ", " if index.positive? %><%= link_to entry.title.downcase, motion_effect_path(entry.slug) %><% end %>.
+        Each renders its finished state on the server, so the page reads right
+        before any script runs, in print, and for a reader who asked for less motion.
+      </p>
+      <h2 id="install">Install</h2>
+    <% end %>
+    <%= poetry_code_block(code: install_source, language: "shell", label: "Install") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        The installer copies the motion tokens into your Tailwind tree and
+        registers the effect controllers, which installs the motion policy.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: usage_source, language: "erb", label: "Usage") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="payload">What it costs a page</h2>
+      <p>
+        The animation engine is the framework-free <code>motion</code> package,
+        vendored as one file of about 28 KB gzipped. It is pinned without
+        preload and fetched by the first element that needs it, so a page with
+        no motion element never loads it. The marquee is CSS and never loads it
+        either.
+      </p>
+      <h2 id="policy">The motion policy</h2>
+      <p>One module decides, for every effect and every behavior:</p>
+      <ul>
+        <li>
+          <strong>Reduced motion.</strong> The user's
+          <code>prefers-reduced-motion</code>, or <code>data-motion="reduce"</code>
+          on <code>&lt;html&gt;</code> for an in-app setting (<code>"full"</code>
+          keeps motion on). Under reduce, effects stay at their finished state,
+          loops stand still, and pointer effects go inert. If it turns on
+          mid-animation, running animations jump to their end.
+        </li>
+        <li>
+          <strong>The Turbo cache.</strong> Before Turbo snapshots a page, every
+          running animation stops and the element gets its own style back, so a
+          back visit never shows a frozen in-between frame. Entrances do not
+          replay on the cache preview or on a restore visit.
+        </li>
+        <li>
+          <strong>One view transition at a time.</strong> Layout animation waits
+          out a Turbo visit transition and applies the change directly while one
+          runs.
+        </li>
+      </ul>
+      <h2 id="tokens">Tokens</h2>
+      <p>
+        Durations, easings and springs are theme tokens. Effects take their names
+        (<code>spring: :snappy</code>), and you override them like any other token.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: tokens_source, language: "css", label: "Tokens") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="behaviors">Behaviors</h2>
+      <p>
+        The effects are built from ten behaviors you can compose into your own
+        components. Declare them in Ruby, so the registry, llms.txt and the docs
+        list them, and run them in the controller, where <code>teardown(this)</code>
+        undoes them. Poetry behaviors are not Herb's client behaviors.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: component_source, language: "ruby", label: "Ruby") %>
+    <%= poetry_code_block(code: controller_source, language: "javascript", label: "Controller") %>
+    <div class="overflow-x-auto">
+      <%= poetry_table do %>
+        <%= poetry_table_header do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_head { "Behavior" } %>
+            <%= poetry_table_head { "JavaScript" } %>
+            <%= poetry_table_head { "Does" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_body do %>
+          <% %i[animate spring stagger scroll_value pointer frame layout drag gesture canvas].each do |name| %>
+            <% behavior = Poetry::Core::Behavior.resolve(name) %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { name.to_s } %>
+              <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { "use#{name.to_s.camelize}" } %>
+              <%= poetry_table_cell(class: "text-muted-foreground") { behavior.behavior_description } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="this-is-css">This is CSS</h2>
+      <p>
+        Most motion needs no engine. No spring, no pointer input, no scroll link
+        and no interruption means a CSS keyframe: a blinking caret, a pulse, a
+        shimmer, a fade on hover. Presence (enter and exit) and the
+        <code>animate-*</code> utilities already ship in Poetry's core. Reach for
+        poetry-motion when the motion has to follow something.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: keyframe_source, language: "css", label: "A keyframe") %>
+  </section>
+</div>

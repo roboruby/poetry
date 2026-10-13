@@ -1,0 +1,7 @@
+<%= poetry_tilt_card(class: "w-full max-w-sm") do %>
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Hover me" } %>
+    <% card.with_description { "The card leans toward a fine pointer." } %>
+    <p class="text-sm">Touch, coarse pointers and reduced motion leave it flat.</p>
+  <% end %>
+<% end %>
