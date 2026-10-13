@@ -744,6 +744,12 @@ components:
           'on': pointerdown
         - method: itemEnter
           'on': pointerenter
+    behaviors:
+    - name: popper
+      description: Positions the panel against its anchor and keeps it inside the
+        viewport.
+      elements:
+      - root
   poetry/ui/avatar:
     class_name: Poetry::Ui::Avatar::Component
     identifier: poetry--ui--avatar
@@ -1778,6 +1784,11 @@ components:
         actions:
         - method: toggle
           'on': click
+    behaviors:
+    - name: checked
+      description: A click toggles the checked state and keeps the form input in step.
+      elements:
+      - root
   poetry/ui/clipboard_text:
     class_name: Poetry::Ui::ClipboardText::Component
     identifier: poetry--ui--clipboard_text
@@ -2597,9 +2608,18 @@ components:
         - method: removeChip
           'on': click
     behaviors:
+    - name: focus_scope
+      description: Focus moves into the open layer, stays inside a modal one and returns
+        on close.
+      runtime: true
     - name: dismissable
       description: Escape or a press outside closes the open layer, the topmost first.
       runtime: true
+    - name: popper
+      description: Positions the panel against its anchor and keeps it inside the
+        viewport.
+      elements:
+      - root
     tools:
     - name: set_value
       title: Set value
@@ -3607,9 +3627,18 @@ components:
         targets:
         - name: anchor
     behaviors:
+    - name: focus_scope
+      description: Focus moves into the open layer, stays inside a modal one and returns
+        on close.
+      runtime: true
     - name: dismissable
       description: Escape or a press outside closes the open layer, the topmost first.
       runtime: true
+    - name: popper
+      description: Positions the panel against its anchor and keeps it inside the
+        viewport.
+      elements:
+      - root
   poetry/ui/data_table:
     class_name: Poetry::Ui::DataTable::Component
     identifier: poetry--ui--data_table
@@ -5199,9 +5228,18 @@ components:
         targets:
         - name: anchor
     behaviors:
+    - name: focus_scope
+      description: Focus moves into the open layer, stays inside a modal one and returns
+        on close.
+      runtime: true
     - name: dismissable
       description: Escape or a press outside closes the open layer, the topmost first.
       runtime: true
+    - name: popper
+      description: Positions the panel against its anchor and keeps it inside the
+        viewport.
+      elements:
+      - root
   poetry/ui/empty:
     class_name: Poetry::Ui::Empty::Component
     identifier: poetry--ui--empty
@@ -5884,6 +5922,11 @@ components:
     - name: dismissable
       description: Escape or a press outside closes the open layer, the topmost first.
       runtime: true
+    - name: popper
+      description: Positions the panel against its anchor and keeps it inside the
+        viewport.
+      elements:
+      - root
   poetry/ui/icon:
     class_name: Poetry::Ui::Icon::Component
     identifier: poetry--ui--icon
@@ -7088,6 +7131,10 @@ components:
         targets:
         - name: anchor
     behaviors:
+    - name: focus_scope
+      description: Focus moves into the open layer, stays inside a modal one and returns
+        on close.
+      runtime: true
     - name: dismissable
       description: Escape or a press outside closes the open layer, the topmost first.
       runtime: true
@@ -7095,6 +7142,11 @@ components:
       description: Arrow, Home and End keys move focus across the group's items.
       elements:
       - root
+    - name: popper
+      description: Positions the panel against its anchor and keeps it inside the
+        viewport.
+      elements:
+      - menu_wrapper
   poetry/ui/message:
     class_name: Poetry::Ui::Message::Component
     identifier: poetry--ui--message
@@ -8288,9 +8340,18 @@ components:
         targets:
         - name: content
     behaviors:
+    - name: focus_scope
+      description: Focus moves into the open layer, stays inside a modal one and returns
+        on close.
+      runtime: true
     - name: dismissable
       description: Escape or a press outside closes the open layer, the topmost first.
       runtime: true
+    - name: popper
+      description: Positions the panel against its anchor and keeps it inside the
+        viewport.
+      elements:
+      - root
   poetry/ui/progress:
     class_name: Poetry::Ui::Progress::Component
     identifier: poetry--ui--progress
@@ -9404,9 +9465,18 @@ components:
         - method: scrollHoldStop
           'on': pointerleave
     behaviors:
+    - name: focus_scope
+      description: Focus moves into the open layer, stays inside a modal one and returns
+        on close.
+      runtime: true
     - name: dismissable
       description: Escape or a press outside closes the open layer, the topmost first.
       runtime: true
+    - name: popper
+      description: Positions the panel against its anchor and keeps it inside the
+        viewport.
+      elements:
+      - root
   poetry/ui/sensitive_input:
     class_name: Poetry::Ui::SensitiveInput::Component
     identifier: poetry--ui--sensitive_input
@@ -10529,6 +10599,11 @@ components:
         actions:
         - method: toggle
           'on': click
+    behaviors:
+    - name: checked
+      description: A click toggles the checked state and keeps the form input in step.
+      elements:
+      - root
   poetry/ui/table:
     class_name: Poetry::Ui::Table::Component
     identifier: poetry--ui--table
@@ -12053,6 +12128,11 @@ components:
     - name: dismissable
       description: Escape or a press outside closes the open layer, the topmost first.
       runtime: true
+    - name: popper
+      description: Positions the panel against its anchor and keeps it inside the
+        viewport.
+      elements:
+      - root
   poetry/ui/tree:
     class_name: Poetry::Ui::Tree::Component
     identifier: poetry--ui--tree

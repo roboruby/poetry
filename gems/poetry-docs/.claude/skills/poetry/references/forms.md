@@ -29,6 +29,7 @@ Class: Poetry::Ui::Autocomplete::Component - BEM block `poetry-ui-autocomplete`.
 - WIRING list: `poetry--core--autocomplete` targets list
 - WIRING empty: `poetry--core--autocomplete` targets empty
 - WIRING item: `poetry--core--autocomplete` actions itemPress on pointerdown, itemEnter on pointerenter
+- BEHAVIOR popper (on root) - Positions the panel against its anchor and keeps it inside the viewport.
 - RULE: The input IS the value: name: is the param key and free text submits as-is - suggestions are conveniences, not constraints (constrained pick = Combobox).
 - RULE: Items via with_item(label:) - label is what filtering matches and what commit writes; value: overrides the committed text when it differs from the label.
 - RULE: empty_text: renders the no-matches state (hidden while anything matches).
@@ -136,6 +137,7 @@ Class: Poetry::Ui::Checkbox::Component - BEM block `poetry-ui-checkbox`.
 - PART `checkbox` - The visual button[role=checkbox] - reflects the hidden input via aria-checked plus the checked triple | states: data-checked (checked (the controller reflects every toggle here, aria-checked in step)); data-unchecked (unchecked - the indicator goes invisible); data-indeterminate (checked: :indeterminate (server/programmatic only; the first toggle resolves it to checked))
 - PART `checkbox-indicator` - Centering span around the check glyph (minus when indeterminate) - CSS-hidden while unchecked, never unmounted | states: data-checked (mirrors the control (the controller reflects state on every part wearing the triple)); data-unchecked (mirrors the control - the indicator is invisible); data-indeterminate (mirrors the control - the glyph swaps to minus)
 - WIRING root: `poetry--core--checked` registers; values input_id (if form_participant?); actions toggle on click
+- BEHAVIOR checked (on root) - A click toggles the checked state and keeps the form input in step.
 - RULE: A select-all run rides poetry_checkbox_group (wrapper) + poetry_checkbox_group_all (the mixed-state parent) + poetry_checkbox_group_item per member - toggles fan out and re-derive automatically.
 - RULE: Use poetry_checkbox (or f.check_box) - never a raw input[type=checkbox] with hand-written Tailwind, and never a hand-rolled button[role=checkbox].
 - RULE: Always give it a name: in forms - a checkbox without one submits nothing (visual-only mode is for controlled UI like DataTable row selection ONLY).
@@ -209,7 +211,9 @@ Slots: trigger (Optional custom trigger content rendered BEFORE the value span (
 - WIRING clear: `poetry--core--combobox` actions clear on click
 - WIRING chip: `poetry--core--combobox` actions chipKeydown on keydown
 - WIRING chip_remove: `poetry--core--combobox` actions removeChip on click
+- BEHAVIOR focus_scope (activated by the JS when it opens) - Focus moves into the open layer, stays inside a modal one and returns on close.
 - BEHAVIOR dismissable (activated by the JS when it opens) - Escape or a press outside closes the open layer, the topmost first.
+- BEHAVIOR popper (on root) - Positions the panel against its anchor and keeps it inside the viewport.
 - tool set_value (mutating; params: value (string, required)) - Select the option whose value matches; the schema lists the rendered options, and clear selects nothing. [opt in with webmcp: "name" on the call; dispatches poetry--core--combobox#setValue]
 - tool clear (mutating) - Clear the current selection. [opt in with webmcp: "name" on the call; dispatches poetry--core--combobox#clear]
 - RULE: Use poetry_combobox (f.poetry_combobox in forms) - never hand-wire Popover+Command+hidden-input; this component IS that wiring, with the form story done right.
@@ -677,7 +681,9 @@ Slots: trigger (Optional custom trigger content rendered BEFORE the value span (
 - WIRING native: `poetry--core--select` actions nativeChanged on change
 - WIRING viewport: `poetry--core--select` actions syncScrollButtons on scroll
 - WIRING scroll_button: `poetry--core--select` actions scrollHoldStart on pointerenter, scrollHoldStop on pointerleave
+- BEHAVIOR focus_scope (activated by the JS when it opens) - Focus moves into the open layer, stays inside a modal one and returns on close.
 - BEHAVIOR dismissable (activated by the JS when it opens) - Escape or a press outside closes the open layer, the topmost first.
+- BEHAVIOR popper (on root) - Positions the panel against its anchor and keeps it inside the viewport.
 - RULE: Use poetry_select (f.poetry_select in forms) - never hand-roll role=listbox popups, and never fake a select with DropdownMenu radio items bound to a hidden field.
 - RULE: Options are VALUES. If activating an option should DO something beyond setting a value, it's a DropdownMenu item.
 - RULE: In forms, ALWAYS go through f.poetry_select - it wires name/id/value/errors/required; bare poetry_select in a form is a smell.
@@ -774,6 +780,7 @@ Class: Poetry::Ui::Switch::Component - BEM block `poetry-ui-switch`.
 - PART `switch` - The visual button[role=switch] - reflects the hidden input via aria-checked plus the checked pair (never indeterminate) | states: data-checked (on (the shared checked controller reflects every toggle here, aria-checked in step)); data-unchecked (off (the server-rendered default)); data-size=default|sm (always - the resolved size (the thumb reads it via group/switch selectors))
 - PART `switch-thumb` - The sliding knob - travel is pure CSS off the checked pair | states: data-checked (mirrors the control (the controller reflects state on every part wearing the pair)); data-unchecked (mirrors the control - the thumb sits at the start)
 - WIRING root: `poetry--core--checked` registers; values input_id (if form_participant?); actions toggle on click
+- BEHAVIOR checked (on root) - A click toggles the checked state and keeps the form input in step.
 - RULE: Use poetry_switch - never a styled checkbox pretending to be a switch (role=switch announces on/off; that's the point).
 - RULE: Switch = instant effect; Checkbox = staged for submit. If nothing happens until a Save button, use Checkbox.
 - RULE: Every switch needs an accessible name (Label/Field for= or label:).

@@ -38,7 +38,9 @@ module Poetry
       class Component < Poetry::Core::Component
         include Poetry::Ui::ComposableTrigger
 
-        # Escape and an outside press close the open layer (activated by the JS on open).
+        # The layers the JS activates on open: focus held inside, and
+        # Escape or an outside press to close.
+        use_behavior :focus_scope
         use_behavior :dismissable
 
         include ItemSlots
@@ -97,14 +99,8 @@ module Poetry
               value :modal
               value :loop
             end
-            controller :popper do
-              register
-              value :side
-              value :align
-              value :side_offset
-              value :align_offset
-              value :avoid_collisions
-            end
+            behavior :popper, side: :option, align: :option, side_offset: :option, align_offset: :option,
+                              avoid_collisions: :option
           end
           on :trigger do
             controller :menu do

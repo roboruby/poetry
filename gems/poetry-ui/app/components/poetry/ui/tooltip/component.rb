@@ -91,14 +91,8 @@ module Poetry
               value :delay_duration, unless: -> { delay_duration.nil? }
               value :disable_hoverable_content, unless: -> { disable_hoverable_content.nil? }
             end
-            controller :popper do
-              register
-              value :side
-              value :align
-              value :side_offset
-              value :align_offset
-              value :avoid_collisions
-            end
+            behavior :popper, side: :option, align: :option, side_offset: :option, align_offset: :option,
+                              avoid_collisions: :option
           end
           # The trigger handlers: pointermove opens (touch excluded, once
           # per hover), pointerdown/click close, focus opens instantly /

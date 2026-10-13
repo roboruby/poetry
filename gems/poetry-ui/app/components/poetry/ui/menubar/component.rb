@@ -56,7 +56,9 @@ module Poetry
       #     end
       #   end
       class Component < Poetry::Core::Component
-        # Escape and an outside press close the open layer (activated by the JS on open).
+        # The layers the JS activates on open: focus held inside, and
+        # Escape or an outside press to close.
+        use_behavior :focus_scope
         use_behavior :dismissable
 
         # Projected into the registry, llms.txt, and the agent surface.
@@ -104,14 +106,7 @@ module Poetry
               value :open
               value :modal, false
             end
-            controller :popper do
-              register
-              value :side, :bottom
-              value :align, :start
-              value :side_offset, 8
-              value :align_offset, -4
-              value :avoid_collisions, true
-            end
+            behavior :popper, side: :bottom, align: :start, side_offset: 8, align_offset: -4, avoid_collisions: true
           end
           on :trigger do
             controller :menubar do

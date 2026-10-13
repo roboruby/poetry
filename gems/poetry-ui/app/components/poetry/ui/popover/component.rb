@@ -31,7 +31,9 @@ module Poetry
         include Poetry::Ui::ComposableTrigger
         include Poetry::Ui::PopperConsumer
 
-        # Escape and an outside press close the open layer (activated by the JS on open).
+        # The layers the JS activates on open: focus held inside, and
+        # Escape or an outside press to close.
+        use_behavior :focus_scope
         use_behavior :dismissable
 
         # Projected into the registry, llms.txt, and the agent surface.
@@ -96,19 +98,13 @@ module Poetry
               value :open
               value :modal
             end
-            controller :popper do
-              register
-              # The trigger anchors by id selector; an anchor part
-              # overrides it with the anchor TARGET (render-time decision -
-              # slots may be set in any order, so the trigger itself
-              # carries no popper target).
-              value :anchor, from: :trigger_anchor_selector, unless: :anchor?
-              value :side
-              value :align
-              value :side_offset
-              value :align_offset
-              value :avoid_collisions
-            end
+            # The trigger anchors by id selector; an anchor part
+            # overrides it with the anchor TARGET (render-time decision -
+            # slots may be set in any order, so the trigger itself
+            # carries no popper target).
+            behavior :popper, anchor: { from: :trigger_anchor_selector, unless: :anchor? }, side: :option,
+                              align: :option, side_offset: :option, align_offset: :option,
+                              avoid_collisions: :option
           end
           on :trigger do
             controller(:popover) { action :toggle, on: :click }

@@ -1560,6 +1560,12 @@
     "path": "/components/autocomplete#value-override"
   },
   {
+    "title": "Behaviors",
+    "page": "Autocomplete",
+    "section": "components",
+    "path": "/components/autocomplete#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Autocomplete",
     "section": "components",
@@ -2140,6 +2146,12 @@
     "page": "Checkbox",
     "section": "components",
     "path": "/components/checkbox#with-description"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#behaviors"
   },
   {
     "title": "Wiring",
@@ -5050,6 +5062,12 @@
     "page": "Switch",
     "section": "components",
     "path": "/components/switch#states"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#behaviors"
   },
   {
     "title": "Wiring",
