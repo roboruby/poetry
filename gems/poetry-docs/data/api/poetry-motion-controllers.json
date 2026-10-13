@@ -33,7 +33,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/index.js",
-          "line": 54
+          "line": 56
         }
       ],
       "constants": [
@@ -206,7 +206,7 @@
               "text": "the element to drag"
             },
             {
-              "name": ",",
+              "name": "|Function,",
               "types": [
                 "{ axis?: \"x\"|\"y\", bounds?: { left?: number, right?: number, top?: number, bottom?: number "
               ],
@@ -1143,6 +1143,51 @@
       "constants": []
     },
     {
+      "path": "poetry--motion--draggable",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Draggable: the content follows a drag, within its parent's box when\nbounded, and springs home on release unless snap-back is off. Dragging\nis direct manipulation, so it works under reduced motion; only the\nspring home is skipped there. The server renders the content in place,\nwhich is where teardown puts it back.\n\n**Values**:\n- `axis` (String): \"x\" or \"y\" locks the drag to one axis; blank drags freely.\n- `bounded` (Boolean, default: false): Keeps the drag inside the parent's box.\n- `snapBack` (Boolean, default: true): Springs home on release; false leaves it where it was dropped.\n- `spring` (String, default: \"snappy\"): The spring token the return follows.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/draggable_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Makes the content draggable.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/draggable_controller.js",
+          "line": 29
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Stops dragging and puts the content back.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/draggable_controller.js",
+          "line": 43
+        }
+      ],
+      "constants": []
+    },
+    {
       "path": "poetry--motion--globe",
       "type": "controller",
       "superclass": null,
@@ -1596,6 +1641,85 @@
           "examples": [],
           "file": "app/javascript/poetry/motion/spotlight_card_controller.js",
           "line": 37
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--motion--swipe-cards",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Swipe cards: a stack whose top card drags sideways. Past the threshold\nit flies off that way, is hidden, and the stack dispatches\npoetry--motion--swipe-cards:swipe with { direction, card, index } so the\nhost can record the choice; short of it, the card springs back. The\narrow keys on the focused stack and the swipeLeft and swipeRight actions\ndo the same without a pointer. When the last card goes, the stack is\nmarked data-empty and dispatches :empty. Reduced motion still drags and\ndismisses, without the flight.\n\n**Targets**: `card`\n\n**Values**:\n- `threshold` (Number, default: 100): Pixels of drag that commit a swipe.\n\n**Events**: `poetry--motion--swipe-cards:empty`, `poetry--motion--swipe-cards:swipe`",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/swipe_cards_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Makes the top card swipeable and listens for the arrow keys.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/swipe_cards_controller.js",
+          "line": 32
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Stops listening; the cards keep what was swiped.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/swipe_cards_controller.js",
+          "line": 61
+        },
+        {
+          "name": "swipeLeft",
+          "scope": "instance",
+          "group": null,
+          "signature": "swipeLeft()",
+          "docstring": "Swipes the top card to the left.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/swipe_cards_controller.js",
+          "line": 70
+        },
+        {
+          "name": "swipeRight",
+          "scope": "instance",
+          "group": null,
+          "signature": "swipeRight()",
+          "docstring": "Swipes the top card to the right.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/swipe_cards_controller.js",
+          "line": 80
         }
       ],
       "constants": []

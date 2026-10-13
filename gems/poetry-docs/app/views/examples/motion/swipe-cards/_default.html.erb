@@ -1,0 +1,9 @@
+<div class="flex flex-col items-center gap-4" data-controller="poetry--motion--swipe-cards" data-poetry--motion--swipe-cards-threshold-value="100">
+  <%# The buttons sit inside the controller's element, so their actions reach the stack's controller. %>
+  <%= poetry_swipe_cards(label: "Candidates", class: "w-64", data: { controller: "" }) do |stack| %>
+    <% %w[Ada Grace Edsger].each do |name| %>
+      <% stack.with_card { tag.div(name, class: "rounded-xl border bg-card p-10 text-center text-lg shadow-sm") } %>
+    <% end %>
+    <% stack.with_empty { "That's everyone." } %>
+  <% end %>
+</div>

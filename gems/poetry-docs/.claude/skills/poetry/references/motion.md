@@ -72,6 +72,22 @@ Content block REQUIRED (the items, each a direct child) - a blockless call raise
 - RULE: Each item is a real link or button with an accessible name; the swell is decoration and the dock works the same without it.
 - RULE: Leave room around the dock for the swell: items scale past their box without moving others.
 
+## draggable (`poetry_draggable`)
+
+Content you can pick up and move, springing home on release or staying where it lands.
+
+Class: Poetry::Motion::Draggable::Component - BEM block `poetry-motion-draggable`.
+Content block REQUIRED (the content that drags) - a blockless call raises.
+- `animate:` (boolean) - default true - Turns the motion off; the effect renders its finished state either way.
+- `axis:` (symbol) - one of both|x|y, default "both" - both drags freely; x or y locks it to one axis.
+- `bounded:` (boolean) - default false - Keeps the drag inside the parent's box.
+- `snap_back:` (boolean) - default true - Springs home on release; false leaves it where it was dropped.
+- `spring:` (symbol) - one of gentle|snappy|bouncy, default "snappy" - The spring token: gentle, snappy, bouncy.
+- PART `draggable` - The content that drags | states: data-dragging (a drag is under way) | vars: --motion-drag-x (the drag's x offset, in pixels); --motion-drag-y (the drag's y offset, in pixels)
+- WIRING root: `poetry--motion--draggable` (if animate) registers; values axis (unless), bounded (if bounded), snap_back (unless snap_back), spring
+- BEHAVIOR drag (activated by its JS) - Free dragging with an axis lock and bounds, springing back unless the effect keeps the position.
+- RULE: Dragging is decoration or play here; never the only way to do something. A drag that reorders or chooses needs a keyboard and a button path too.
+
 ## globe (`poetry_globe`)
 
 A dotted, slowly turning globe with markers at the places you give it.
@@ -253,6 +269,29 @@ Content block REQUIRED (the surface the glow follows the pointer across) - a blo
 - BEHAVIOR pointer (activated by its JS) - The pointer's position over the element, once a frame; fine pointers only, inert under reduced motion.
 - RULE: Pointer effects never move focus and never carry information a keyboard user would miss.
 - RULE: The glow is decoration: the surface reads the same without it, and it never carries state.
+
+## swipe_cards (`poetry_swipe_cards`)
+
+A stack of cards to swipe left or right, one decision each, with keyboard and button paths.
+
+Class: Poetry::Motion::SwipeCards::Component - BEM block `poetry-motion-swipe_cards`.
+- `label:` (string) - required - What the stack holds, for a screen reader.
+- `threshold:` (integer) - default 100 - Pixels of drag that commit a swipe.
+Slots: cards (One card; the first is on top. Options ride onto the card's element.; many; with_card yields NOTHING to the block - no |param|, write content directly), empty (What shows once every card is swiped away.), actions (Buttons under the stack; wire them to poetry--motion--swipe-cards#swipeLeft and #swipeRight.).
+- PART `swipe-cards` - The focusable stack; the arrow keys swipe its top card | states: data-empty (every card has been swiped)
+- PART `swipe-cards-card` - One card | states: data-top (the card on top, the one that takes the pointer); data-dismissed=left|right (it was swiped, which way); data-dragging (the card is being dragged) | vars: --swipe-rotate (the tilt while it drags)
+- PART `swipe-cards-deck` - The cell the cards share
+- PART `swipe-cards-empty` - What shows once every card is gone
+- PART `swipe-cards-actions` - The buttons under the stack
+- WIRING root: `poetry--motion--swipe-cards` registers; values threshold
+- WIRING card: `poetry--motion--swipe-cards` targets card
+- BEHAVIOR drag (activated by its JS) - Free dragging with an axis lock and bounds, springing back unless the effect keeps the position.
+- BEHAVIOR animate (activated by its JS) - One engine animation toward the element's server-rendered style; skipped under reduced motion and on return visits.
+- RULE: Effects are decoration; the server-rendered content stands alone and reads right with motion off.
+- RULE: No spring, pointer input, scroll link or interruption means a CSS keyframe, not poetry-motion.
+- RULE: Animate toward the server-rendered state: the last keyframe is the element's own style.
+- RULE: Swiping is one way to decide, never the only one: give the stack a label:, and put buttons beside it wired to poetry--motion--swipe-cards#swipeLeft and #swipeRight.
+- RULE: The swipe event is the decision; persist it from the event. The cards themselves are not a form.
 
 ## text_reveal (`poetry_text_reveal`)
 

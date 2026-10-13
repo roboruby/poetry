@@ -320,6 +320,92 @@ components:
       description: A value that springs to each new target and is retargeted without
         a jump.
       runtime: true
+  poetry/motion/draggable:
+    class_name: Poetry::Motion::Draggable::Component
+    identifier: poetry--motion--draggable
+    bem_block: poetry-motion-draggable
+    styles: []
+    options:
+    - name: animate
+      type: boolean
+      default: true
+      description: Turns the motion off; the effect renders its finished state either
+        way.
+    - name: axis
+      type: symbol
+      variants:
+      - both
+      - x
+      - "y"
+      default: both
+      description: both drags freely; x or y locks it to one axis.
+    - name: bounded
+      type: boolean
+      default: false
+      description: Keeps the drag inside the parent's box.
+    - name: snap_back
+      type: boolean
+      default: true
+      description: Springs home on release; false leaves it where it was dropped.
+    - name: spring
+      type: symbol
+      variants:
+      - gentle
+      - snappy
+      - bouncy
+      default: snappy
+      description: 'The spring token: gentle, snappy, bouncy.'
+    slots: []
+    helper: poetry_draggable
+    description: Content you can pick up and move, springing home on release or staying
+      where it lands.
+    elements: []
+    capsule: 91141f32118b
+    controllers:
+    - identifier: poetry--motion--draggable
+      targets: []
+      values:
+      - axis
+      - bounded
+      - snapBack
+      - spring
+      actions: []
+      events: []
+    agent_rules:
+    - Dragging is decoration or play here; never the only way to do something. A drag
+      that reorders or chooses needs a keyboard and a button path too.
+    requires_content: the content that drags
+    identity: false
+    parts:
+    - name: draggable
+      description: The content that drags
+      states:
+      - attr: data-dragging
+        condition: a drag is under way
+      vars:
+      - name: "--motion-drag-x"
+        description: the drag's x offset, in pixels
+      - name: "--motion-drag-y"
+        description: the drag's y offset, in pixels
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--motion--draggable
+        conditional: if animate
+        registers: true
+        values:
+        - name: axis
+          conditional: unless
+        - name: bounded
+          conditional: if bounded
+        - name: snap_back
+          conditional: unless snap_back
+        - name: spring
+    behaviors:
+    - name: drag
+      description: Free dragging with an axis lock and bounds, springing back unless
+        the effect keeps the position.
+      runtime: true
   poetry/motion/globe:
     class_name: Poetry::Motion::Globe::Component
     identifier: poetry--motion--globe
@@ -1106,6 +1192,117 @@ components:
       description: The pointer's position over the element, once a frame; fine pointers
         only, inert under reduced motion.
       runtime: true
+  poetry/motion/swipe_cards:
+    class_name: Poetry::Motion::SwipeCards::Component
+    identifier: poetry--motion--swipe_cards
+    bem_block: poetry-motion-swipe_cards
+    styles: []
+    options:
+    - name: label
+      type: string
+      required: true
+      description: What the stack holds, for a screen reader.
+    - name: threshold
+      type: integer
+      default: 100
+      description: Pixels of drag that commit a swipe.
+    slots:
+    - name: cards
+      many: true
+      description: One card; the first is on top. Options ride onto the card's element.
+      setter_args:
+        card: 0
+      yieldless:
+      - card
+    - name: empty
+      many: false
+      description: What shows once every card is swiped away.
+    - name: actions
+      many: false
+      description: 'Buttons under the stack; wire them to poetry--motion--swipe-cards#swipeLeft
+        and #swipeRight.'
+    helper: poetry_swipe_cards
+    description: A stack of cards to swipe left or right, one decision each, with
+      keyboard and button paths.
+    elements:
+    - deck
+    - actions
+    - card
+    - empty
+    capsule: 909289b1a706
+    controllers:
+    - identifier: poetry--motion--swipe-cards
+      targets:
+      - card
+      values:
+      - threshold
+      actions:
+      - swipeLeft
+      - swipeRight
+      events:
+      - poetry--motion--swipe-cards:empty
+      - poetry--motion--swipe-cards:swipe
+    agent_rules:
+    - Effects are decoration; the server-rendered content stands alone and reads right
+      with motion off.
+    - No spring, pointer input, scroll link or interruption means a CSS keyframe,
+      not poetry-motion.
+    - 'Animate toward the server-rendered state: the last keyframe is the element''s
+      own style.'
+    - 'Swiping is one way to decide, never the only one: give the stack a label:,
+      and put buttons beside it wired to poetry--motion--swipe-cards#swipeLeft and
+      #swipeRight.'
+    - The swipe event is the decision; persist it from the event. The cards themselves
+      are not a form.
+    identity: false
+    parts:
+    - name: swipe-cards
+      description: The focusable stack; the arrow keys swipe its top card
+      states:
+      - attr: data-empty
+        condition: every card has been swiped
+    - name: swipe-cards-card
+      description: One card
+      states:
+      - attr: data-top
+        condition: the card on top, the one that takes the pointer
+      - attr: data-dismissed
+        condition: it was swiped, which way
+        values:
+        - left
+        - right
+      - attr: data-dragging
+        condition: the card is being dragged
+      vars:
+      - name: "--swipe-rotate"
+        description: the tilt while it drags
+    - name: swipe-cards-deck
+      description: The cell the cards share
+    - name: swipe-cards-empty
+      description: What shows once every card is gone
+    - name: swipe-cards-actions
+      description: The buttons under the stack
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--motion--swipe-cards
+        registers: true
+        values:
+        - name: threshold
+    - element: card
+      controllers:
+      - identifier: poetry--motion--swipe-cards
+        targets:
+        - name: card
+    behaviors:
+    - name: drag
+      description: Free dragging with an axis lock and bounds, springing back unless
+        the effect keeps the position.
+      runtime: true
+    - name: animate
+      description: One engine animation toward the element's server-rendered style;
+        skipped under reduced motion and on return visits.
+      runtime: true
   poetry/motion/text_reveal:
     class_name: Poetry::Motion::TextReveal::Component
     identifier: poetry--motion--text_reveal
@@ -1419,6 +1616,7 @@ helper_args:
   poetry_background: 0
   poetry_confetti: 0
   poetry_dock: 0
+  poetry_draggable: 0
   poetry_globe: 0
   poetry_layout_group: 0
   poetry_magnetic: 0
@@ -1430,6 +1628,7 @@ helper_args:
   poetry_scroll_progress: 0
   poetry_shared_element: 0
   poetry_spotlight_card: 0
+  poetry_swipe_cards: 0
   poetry_text_reveal: 1
   poetry_tilt_card: 0
   poetry_typewriter: 1

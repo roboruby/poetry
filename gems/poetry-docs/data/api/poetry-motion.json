@@ -320,7 +320,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 18
+          "line": 21
         },
         {
           "name": "poetry_background",
@@ -356,7 +356,19 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 27
+          "line": 30
+        },
+        {
+          "name": "poetry_draggable",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_draggable(**, &)",
+          "docstring": "Content you can pick up and move.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/helpers/poetry/motion/components_helper.rb",
+          "line": 15
         },
         {
           "name": "poetry_globe",
@@ -368,7 +380,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 15
+          "line": 18
         },
         {
           "name": "poetry_layout_group",
@@ -380,7 +392,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 21
+          "line": 24
         },
         {
           "name": "poetry_magnetic",
@@ -392,7 +404,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 30
+          "line": 33
         },
         {
           "name": "poetry_marquee",
@@ -404,7 +416,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 54
+          "line": 60
         },
         {
           "name": "poetry_number_ticker",
@@ -416,7 +428,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 60
+          "line": 66
         },
         {
           "name": "poetry_parallax",
@@ -428,7 +440,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 48
+          "line": 51
         },
         {
           "name": "poetry_particles",
@@ -440,7 +452,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 45
+          "line": 48
         },
         {
           "name": "poetry_scramble",
@@ -452,7 +464,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 36
+          "line": 39
         },
         {
           "name": "poetry_scroll_progress",
@@ -464,7 +476,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 51
+          "line": 54
         },
         {
           "name": "poetry_shared_element",
@@ -476,7 +488,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 24
+          "line": 27
         },
         {
           "name": "poetry_spotlight_card",
@@ -488,7 +500,19 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 33
+          "line": 36
+        },
+        {
+          "name": "poetry_swipe_cards",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_swipe_cards(**, &)",
+          "docstring": "A stack of cards to swipe through, one decision each.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/helpers/poetry/motion/components_helper.rb",
+          "line": 57
         },
         {
           "name": "poetry_text_reveal",
@@ -500,7 +524,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 57
+          "line": 63
         },
         {
           "name": "poetry_tilt_card",
@@ -512,7 +536,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 63
+          "line": 69
         },
         {
           "name": "poetry_typewriter",
@@ -524,7 +548,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 39
+          "line": 42
         },
         {
           "name": "poetry_word_rotate",
@@ -536,7 +560,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 42
+          "line": 45
         }
       ],
       "constants": []
@@ -645,6 +669,62 @@
       "docstring": "The dock's classes; the swell lives in the motion stylesheet.",
       "examples": [],
       "file": "app/components/poetry/motion/dock/style.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::Draggable::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "Content you can pick up and move - a sticker, a playful card. It\nfollows the drag, within its parent's box when bounded:, and springs\nhome on release unless snap_back: false leaves it where it was\ndropped. Dragging is direct manipulation and works under reduced\nmotion; only the spring home is skipped. Where it lands is not\nsaved: the server renders it in place.",
+      "examples": [
+        {
+          "title": "",
+          "text": "<div class=\"relative h-64\">\n  <%= poetry_draggable(bounded: true) do %><span class=\"text-4xl\">🎉</span><% end %>\n</div>"
+        }
+      ],
+      "file": "app/components/poetry/motion/draggable/component.rb",
+      "methods": [],
+      "constants": [
+        {
+          "name": "AXES",
+          "value": "%i[both x y].freeze",
+          "docstring": "The axes a drag can be locked to."
+        },
+        {
+          "name": "DOCS",
+          "value": "{\n  duration: \"How long the motion runs: a duration token (#{DURATIONS.join(\", \")}) or milliseconds.\",\n  easing: \"The easing token: #{EASINGS.join(\", \")}.\",\n  spring: \"The spring token: #{SPRINGS.join",
+          "docstring": "What each option means, for the registry and the docs."
+        },
+        {
+          "name": "DURATIONS",
+          "value": "%i[fast normal slow].freeze",
+          "docstring": "The duration tokens (--motion-duration-*); duration: also takes milliseconds."
+        },
+        {
+          "name": "EASINGS",
+          "value": "%i[standard emphasized exit].freeze",
+          "docstring": "The easing tokens (--motion-ease-*)."
+        },
+        {
+          "name": "SPRINGS",
+          "value": "%i[gentle snappy bouncy].freeze",
+          "docstring": "The spring tokens (--motion-spring-*)."
+        },
+        {
+          "name": "TRIGGERS",
+          "value": "%i[load in_view hover].freeze",
+          "docstring": "When an effect starts: on connect, when it scrolls into view, or on hover."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::Draggable::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "The draggable's classes: a grab cursor, and no text selection or browser panning mid-drag.",
+      "examples": [],
+      "file": "app/components/poetry/motion/draggable/style.rb",
       "methods": [],
       "constants": []
     },
@@ -1339,6 +1419,57 @@
       "docstring": "The spotlight card's classes; the glow lives in the motion stylesheet.",
       "examples": [],
       "file": "app/components/poetry/motion/spotlight_card/style.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::SwipeCards::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "A stack of cards to swipe through, one decision each: drag the top\ncard left or right past the threshold, press the arrow keys on the\nfocused stack, or wire your own buttons to swipeLeft and swipeRight.\nwith_actions renders inside the stack, so its buttons reach the\ncontroller. Each swipe dispatches poetry--motion--swipe-cards:swipe with\n{ direction, card, index }; record it there (a form post, a Turbo\nStream). When the last card goes, the with_empty content shows.",
+      "examples": [
+        {
+          "title": "",
+          "text": "<%= poetry_swipe_cards(label: \"Candidates\") do |stack| %>\n  <% candidates.each do |candidate| %>\n    <% stack.with_card(data: { id: candidate.id }) { render candidate } %>\n  <% end %>\n  <% stack.with_empty { \"That's everyone.\" } %>\n  <% stack.with_actions do %>\n    <%= poetry_button(variant: :outline,\n                      data: { action: \"poetry--motion--swipe-cards#swipeLeft\" }) { \"Skip\" } %>\n    <%= poetry_button(data: { action: \"poetry--motion--swipe-cards#swipeRight\" }) { \"Keep\" } %>\n  <% end %>\n<% end %>"
+        }
+      ],
+      "file": "app/components/poetry/motion/swipe_cards/component.rb",
+      "methods": [],
+      "constants": [
+        {
+          "name": "DOCS",
+          "value": "{\n  duration: \"How long the motion runs: a duration token (#{DURATIONS.join(\", \")}) or milliseconds.\",\n  easing: \"The easing token: #{EASINGS.join(\", \")}.\",\n  spring: \"The spring token: #{SPRINGS.join",
+          "docstring": "What each option means, for the registry and the docs."
+        },
+        {
+          "name": "DURATIONS",
+          "value": "%i[fast normal slow].freeze",
+          "docstring": "The duration tokens (--motion-duration-*); duration: also takes milliseconds."
+        },
+        {
+          "name": "EASINGS",
+          "value": "%i[standard emphasized exit].freeze",
+          "docstring": "The easing tokens (--motion-ease-*)."
+        },
+        {
+          "name": "SPRINGS",
+          "value": "%i[gentle snappy bouncy].freeze",
+          "docstring": "The spring tokens (--motion-spring-*)."
+        },
+        {
+          "name": "TRIGGERS",
+          "value": "%i[load in_view hover].freeze",
+          "docstring": "When an effect starts: on connect, when it scrolls into view, or on hover."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::SwipeCards::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "The stack's classes: the cards share one cell; the depth lives in the motion stylesheet.",
+      "examples": [],
+      "file": "app/components/poetry/motion/swipe_cards/style.rb",
       "methods": [],
       "constants": []
     },

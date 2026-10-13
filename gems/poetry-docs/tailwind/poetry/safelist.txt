@@ -741,6 +741,7 @@ data-closed:overflow-hidden
 data-disabled:cursor-not-allowed
 data-disabled:opacity-50
 data-disabled:pointer-events-none
+data-dragging:cursor-grabbing
 data-ending-style:absolute
 data-ending-style:duration-[calc(var(--drawer-swipe-strength,1)*400ms)]
 data-ending-style:left-0
@@ -914,6 +915,7 @@ group-data-[variant=line]/tabs-list:data-active:bg-transparent
 group-data-[viewport=false]/navigation-menu:duration-300
 group-data-[viewport=true]/navigation-menu:h-full
 group-data-checked/questionnaire-choice:block
+group-data-empty/swipe:block
 group-data-horizontal/tabs:after:bottom-[-5px]
 group-data-horizontal/tabs:after:h-0.5
 group-data-horizontal/tabs:after:inset-x-0
@@ -980,6 +982,7 @@ group/questionnaire-input
 group/radio-group-item
 group/sensitive
 group/sidebar-wrapper
+group/swipe
 group/switch
 group/tabs
 group/tabs-list
@@ -1182,6 +1185,7 @@ pl-4
 pl-[calc(0.5rem+(var(--poetry-tree-level)-1)*1.25rem)]
 place-content-center
 place-items-center
+place-self-center
 placeholder:text-muted-foreground
 pointer-events-auto
 pointer-events-none

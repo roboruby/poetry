@@ -1,6 +1,8 @@
 # Per-effect one-line descriptions (editorial, hand-authored), merged into
 # the generated registry by Poetry::Motion.registry. Keyed by component_path.
 ---
+poetry/motion/draggable: "Content you can pick up and move, springing home on release or staying where it lands."
+poetry/motion/swipe_cards: "A stack of cards to swipe left or right, one decision each, with keyboard and button paths."
 poetry/motion/confetti: "A burst of confetti over the page from a click, or once when a success message renders."
 poetry/motion/globe: "A dotted, slowly turning globe with markers at the places you give it."
 poetry/motion/particles: "A field of slow-drifting dots behind the content, optionally linked by faint lines."

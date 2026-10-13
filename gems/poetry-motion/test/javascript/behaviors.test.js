@@ -76,7 +76,7 @@ describe("the teardown gate", () => {
     const loop = useFrame(host, element, frames)
     useDrag(host, element)
     useGesture(host, element, { onSwipe: vi.fn() })
-    await wait(80)
+    for (let i = 0; i < 100 && (element.style.translate === "" || !loop.running()); i++) await wait(10)
 
     expect(element.style.translate).not.toBe("")
     expect(loop.running()).toBe(true)
@@ -173,7 +173,7 @@ describe("reduced motion", () => {
     reduce = false
     const element = box()
     useAnimate(controller(), element, { translate: ["-40px 0px", "0px 0px"] }, { duration: 5000 })
-    await wait(80)
+    for (let i = 0; i < 100 && element.style.translate === ""; i++) await wait(10)
     expect(element.style.translate).not.toBe("")
     document.documentElement.dataset.motion = "reduce"
     await wait(0)

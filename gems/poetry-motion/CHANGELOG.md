@@ -12,6 +12,8 @@
 
 - Three canvas effects: `poetry_particles` (drifting, optionally linked dots drawn by the canvas pattern, seeded so a still frame is the same every visit), `poetry_confetti` (a burst from a click, or once on render, on a server-rendered full-viewport canvas) and `poetry_globe` (a dotted, turning globe with markers). Confetti and the globe each load their own vendored kernel on demand: canvas-confetti 1.9.4 (ISC) and cobe 2.0.1 (MIT), recorded in THIRD_PARTY_NOTICES.
 
+- Two drag effects: `poetry_draggable` (content you can pick up, bounded to its parent if you like, springing home or staying where dropped) and `poetry_swipe_cards` (a labelled, focusable stack: drag the top card past the threshold, press the arrow keys, or use the `with_actions` buttons; each swipe dispatches `poetry--motion--swipe-cards:swipe`). `useDrag` measures function bounds per drag and survives a lost pointer capture.
+
 ### Changed
 
 - The effect controllers load lazily: only the entry, the policy and the engine loader preload, and `registerPoetryMotionControllers` imports each controller the first time its identifier appears on the page.

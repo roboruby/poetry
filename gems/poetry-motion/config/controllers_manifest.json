@@ -81,6 +81,40 @@
       "disconnect": "Stops swelling and settles every item."
     }
   },
+  "poetry--motion--draggable": {
+    "doc": "Draggable: the content follows a drag, within its parent's box when bounded, and springs home on release unless snap-back is off. Dragging is direct manipulation, so it works under reduced motion; only the spring home is skipped there. The server renders the content in place, which is where teardown puts it back.",
+    "targets": [],
+    "values": {
+      "axis": {
+        "type": "String",
+        "doc": "\"x\" or \"y\" locks the drag to one axis; blank drags freely."
+      },
+      "bounded": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Keeps the drag inside the parent's box."
+      },
+      "snapBack": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "Springs home on release; false leaves it where it was dropped."
+      },
+      "spring": {
+        "type": "String",
+        "default": "snappy",
+        "doc": "The spring token the return follows."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Makes the content draggable.",
+      "disconnect": "Stops dragging and puts the content back."
+    }
+  },
   "poetry--motion--globe": {
     "doc": "Globe: a dotted, turning globe with markers, drawn by the cobe kernel (WebGL) on the server-rendered canvas. It turns through useFrame, so it pauses off screen and in hidden tabs, and reduced motion draws it once, still. The kernel loads when the globe connects; teardown destroys the WebGL context. It follows the page's dark class.",
     "targets": [
@@ -356,6 +390,35 @@
     "method_docs": {
       "connect": "Starts following the pointer.",
       "disconnect": "Stops following and clears the glow."
+    }
+  },
+  "poetry--motion--swipe-cards": {
+    "doc": "Swipe cards: a stack whose top card drags sideways. Past the threshold it flies off that way, is hidden, and the stack dispatches poetry--motion--swipe-cards:swipe with { direction, card, index } so the host can record the choice; short of it, the card springs back. The arrow keys on the focused stack and the swipeLeft and swipeRight actions do the same without a pointer. When the last card goes, the stack is marked data-empty and dispatches :empty. Reduced motion still drags and dismisses, without the flight.",
+    "targets": [
+      "card"
+    ],
+    "values": {
+      "threshold": {
+        "type": "Number",
+        "default": 100,
+        "doc": "Pixels of drag that commit a swipe."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect",
+      "swipeLeft",
+      "swipeRight"
+    ],
+    "events": [
+      "poetry--motion--swipe-cards:empty",
+      "poetry--motion--swipe-cards:swipe"
+    ],
+    "method_docs": {
+      "connect": "Makes the top card swipeable and listens for the arrow keys.",
+      "disconnect": "Stops listening; the cards keep what was swiped.",
+      "swipeLeft": "Swipes the top card to the left.",
+      "swipeRight": "Swipes the top card to the right."
     }
   },
   "poetry--motion--text-reveal": {

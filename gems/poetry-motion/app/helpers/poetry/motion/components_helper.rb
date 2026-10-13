@@ -11,6 +11,9 @@ module Poetry
       # A burst of confetti from a click, or once on render.
       def poetry_confetti(**, &) = render(Poetry::Motion::Confetti::Component.new(**), &)
 
+      # Content you can pick up and move.
+      def poetry_draggable(**, &) = render(Poetry::Motion::Draggable::Component.new(**), &)
+
       # A dotted, turning globe with markers.
       def poetry_globe(**) = render(Poetry::Motion::Globe::Component.new(**))
 
@@ -49,6 +52,9 @@ module Poetry
 
       # A bar that fills as the reader scrolls.
       def poetry_scroll_progress(**) = render(Poetry::Motion::ScrollProgress::Component.new(**))
+
+      # A stack of cards to swipe through, one decision each.
+      def poetry_swipe_cards(**, &) = render(Poetry::Motion::SwipeCards::Component.new(**), &)
 
       # A looping marquee of the block's items.
       def poetry_marquee(**, &) = render(Poetry::Motion::Marquee::Component.new(**), &)

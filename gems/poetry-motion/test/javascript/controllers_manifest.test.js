@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url"
 import AnimatedListController from "../../app/javascript/poetry/motion/animated_list_controller.js"
 import ConfettiController from "../../app/javascript/poetry/motion/confetti_controller.js"
 import DockController from "../../app/javascript/poetry/motion/dock_controller.js"
+import DraggableController from "../../app/javascript/poetry/motion/draggable_controller.js"
 import GlobeController from "../../app/javascript/poetry/motion/globe_controller.js"
 import LayoutGroupController from "../../app/javascript/poetry/motion/layout_group_controller.js"
 import MagneticController from "../../app/javascript/poetry/motion/magnetic_controller.js"
@@ -14,6 +15,7 @@ import ParticlesController from "../../app/javascript/poetry/motion/particles_co
 import ScrambleController from "../../app/javascript/poetry/motion/scramble_controller.js"
 import ScrollProgressController from "../../app/javascript/poetry/motion/scroll_progress_controller.js"
 import SpotlightCardController from "../../app/javascript/poetry/motion/spotlight_card_controller.js"
+import SwipeCardsController from "../../app/javascript/poetry/motion/swipe_cards_controller.js"
 import TypewriterController from "../../app/javascript/poetry/motion/typewriter_controller.js"
 import WordRotateController from "../../app/javascript/poetry/motion/word_rotate_controller.js"
 import MarqueeController from "../../app/javascript/poetry/motion/marquee_controller.js"
@@ -34,6 +36,7 @@ const CONTROLLERS = {
   "poetry--motion--animated-list": AnimatedListController,
   "poetry--motion--confetti": ConfettiController,
   "poetry--motion--dock": DockController,
+  "poetry--motion--draggable": DraggableController,
   "poetry--motion--globe": GlobeController,
   "poetry--motion--layout-group": LayoutGroupController,
   "poetry--motion--magnetic": MagneticController,
@@ -44,6 +47,7 @@ const CONTROLLERS = {
   "poetry--motion--scramble": ScrambleController,
   "poetry--motion--scroll-progress": ScrollProgressController,
   "poetry--motion--spotlight-card": SpotlightCardController,
+  "poetry--motion--swipe-cards": SwipeCardsController,
   "poetry--motion--text-reveal": TextRevealController,
   "poetry--motion--tilt-card": TiltCardController,
   "poetry--motion--typewriter": TypewriterController,

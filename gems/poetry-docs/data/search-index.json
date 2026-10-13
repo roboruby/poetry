@@ -6324,6 +6324,36 @@
     "path": "/motion/dock#wiring"
   },
   {
+    "title": "Draggable",
+    "page": "Draggable",
+    "section": "motion",
+    "path": "/motion/draggable"
+  },
+  {
+    "title": "Installation",
+    "page": "Draggable",
+    "section": "motion",
+    "path": "/motion/draggable#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Draggable",
+    "section": "motion",
+    "path": "/motion/draggable#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Draggable",
+    "section": "motion",
+    "path": "/motion/draggable#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Draggable",
+    "section": "motion",
+    "path": "/motion/draggable#wiring"
+  },
+  {
     "title": "Globe",
     "page": "Globe",
     "section": "motion",
@@ -6640,6 +6670,36 @@
     "page": "Spotlight Card",
     "section": "motion",
     "path": "/motion/spotlight-card#wiring"
+  },
+  {
+    "title": "Swipe Cards",
+    "page": "Swipe Cards",
+    "section": "motion",
+    "path": "/motion/swipe-cards"
+  },
+  {
+    "title": "Installation",
+    "page": "Swipe Cards",
+    "section": "motion",
+    "path": "/motion/swipe-cards#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Swipe Cards",
+    "section": "motion",
+    "path": "/motion/swipe-cards#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Swipe Cards",
+    "section": "motion",
+    "path": "/motion/swipe-cards#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Swipe Cards",
+    "section": "motion",
+    "path": "/motion/swipe-cards#wiring"
   },
   {
     "title": "Text Reveal",

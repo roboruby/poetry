@@ -12,7 +12,7 @@ import { prefersReducedMotion } from "@poetry/motion/policy"
  *
  * @param {Object} controller - the Stimulus controller instance
  * @param {HTMLElement} element - the element to drag
- * @param {{ axis?: "x"|"y", bounds?: { left?: number, right?: number, top?: number, bottom?: number },
+ * @param {{ axis?: "x"|"y", bounds?: { left?: number, right?: number, top?: number, bottom?: number }|Function,
  *   onMove?: (offset: { x: number, y: number }) => void,
  *   onEnd?: (offset: { x: number, y: number }) => boolean|void, spring?: string }} [options]
  * @returns {() => void} stops early; teardown stops it otherwise
@@ -21,9 +21,20 @@ export function useDrag(controller, element, options = {}) {
   const scope = scopeOf(controller)
   const x = useSpring(controller, element, "--motion-drag-x", { unit: "px", spring: options.spring })
   const y = useSpring(controller, element, "--motion-drag-y", { unit: "px", spring: options.spring })
-  const bounds = options.bounds ?? {}
+  // Bounds may be a function, measured when each drag starts (the parent's box).
+  const boundsNow = () => (typeof options.bounds === "function" ? options.bounds() : options.bounds) ?? {}
+  let bounds = {}
   const clamp = (value, low, high) => Math.min(high ?? Infinity, Math.max(low ?? -Infinity, value))
   let start = null
+  // Pointer capture throws for a pointer the browser no longer tracks (it
+  // was lost or cancelled); the drag goes on without it.
+  const capture = (call) => {
+    try {
+      call()
+    } catch (_error) {
+      // nothing to capture or release
+    }
+  }
 
   const place = (offset) => {
     element.style.setProperty("--motion-drag-x", `${offset.x}px`)
@@ -39,7 +50,8 @@ export function useDrag(controller, element, options = {}) {
     scope.listen(element, "pointerdown", (event) => {
       if (event.button !== 0) return
       start = { x: event.clientX, y: event.clientY, pointer: event.pointerId }
-      element.setPointerCapture?.(event.pointerId)
+      bounds = boundsNow()
+      capture(() => element.setPointerCapture?.(event.pointerId))
       element.dataset.dragging = ""
     }),
     scope.listen(element, "pointermove", (event) => {
@@ -56,7 +68,7 @@ export function useDrag(controller, element, options = {}) {
     const offset = offsetFor(event)
     start = null
     delete element.dataset.dragging
-    element.releasePointerCapture?.(event.pointerId)
+    capture(() => element.releasePointerCapture?.(event.pointerId))
     if (options.onEnd?.(offset) === true) return
     if (prefersReducedMotion()) {
       settle()

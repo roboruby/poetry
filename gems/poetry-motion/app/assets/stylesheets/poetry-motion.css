@@ -318,6 +318,37 @@
   translate: 0 var(--parallax-y, 0px);
 }
 
+/* Draggable and swipe cards: the drag offset, the swipe's tilt, and a stack with depth. */
+[data-slot="draggable"] {
+  translate: var(--motion-drag-x, 0px) var(--motion-drag-y, 0px);
+}
+
+[data-slot="swipe-cards-card"] {
+  rotate: var(--swipe-rotate, 0deg);
+  pointer-events: none;
+  scale: 0.94;
+  translate: 0 0.75rem;
+  transition: scale var(--motion-duration-normal) var(--motion-ease-standard),
+              translate var(--motion-duration-normal) var(--motion-ease-standard);
+}
+
+[data-slot="swipe-cards-card"]:first-child,
+[data-slot="swipe-cards-card"][data-top] {
+  pointer-events: auto;
+  scale: 1;
+  translate: var(--motion-drag-x, 0px) var(--motion-drag-y, 0px);
+  z-index: 1;
+}
+
+[data-slot="swipe-cards-card"][data-top] {
+  cursor: grab;
+}
+
+[data-slot="swipe-cards-card"][data-dragging] {
+  cursor: grabbing;
+  transition: none;
+}
+
 /* Reduced motion: the loops stand still, the copies go away, and page and
    layout view transitions swap without animating. */
 @media (prefers-reduced-motion: reduce) {
