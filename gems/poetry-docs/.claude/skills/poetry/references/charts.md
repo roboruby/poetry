@@ -72,6 +72,7 @@ Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stro
 - WIRING tooltip_layer: `poetry--charts--tooltip` (if tooltip?) targets tooltip
 - WIRING live_payload: `poetry--charts--live` targets payload
 - WIRING brush: `poetry--charts--window` (if) actions startBrush on pointerdown
+- BEHAVIOR entrance_animation (on frame) - Animates the chart in toward its server-computed geometry; reduced motion shows it finished.
 - RULE: Compose from slots: with_grid / with_x_axis(data_key:) / with_area(data_key:) / with_legend.
 - RULE: Stack areas by giving them the same stack: id; offset: :expand makes the stack percent-based.
 - RULE: Colors come from the config - never set fill/stroke on an area directly.
@@ -125,6 +126,7 @@ Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stro
 - WIRING tooltip_layer: `poetry--charts--tooltip` (if tooltip?) targets tooltip
 - WIRING live_payload: `poetry--charts--live` targets payload
 - WIRING brush: `poetry--charts--window` (if) actions startBrush on pointerdown
+- BEHAVIOR entrance_animation (on frame) - Animates the chart in toward its server-computed geometry; reduced motion shows it finished.
 - RULE: Compose from slots: with_grid / with_x_axis(data_key:) / with_bar(data_key:) / with_legend.
 - RULE: radius: 8 rounds all corners; stacked bars use arrays - [0,0,4,4] bottom bar, [4,4,0,0] top bar.
 - RULE: Stack bars with the same stack: id; negatives automatically drop below the zero line.
@@ -173,6 +175,7 @@ Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stro
 - WIRING svg: `poetry--charts--tooltip` (if tooltip?) actions move on pointermove, leave on pointerleave, focus on focus, blur on blur, keydown on keydown; targets svg
 - WIRING coordinates: `poetry--charts--tooltip` (if tooltip?) targets data
 - WIRING tooltip_layer: `poetry--charts--tooltip` (if tooltip?) targets tooltip
+- BEHAVIOR entrance_animation (on frame) - Animates the chart in toward its server-computed geometry; reduced motion shows it finished.
 - RULE: Mix marks freely: with_area / with_bar / with_line - declaration order is paint order.
 - RULE: All marks share the x band and ONE y domain; lines and areas ride the band centers.
 - RULE: stack: ids only combine within the same mark type (a bar stack never joins an area stack).
@@ -250,6 +253,7 @@ Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stro
 - WIRING tooltip_layer: `poetry--charts--tooltip` (if tooltip?) targets tooltip
 - WIRING live_payload: `poetry--charts--live` targets payload
 - WIRING brush: `poetry--charts--window` (if) actions startBrush on pointerdown
+- BEHAVIOR entrance_animation (on frame) - Animates the chart in toward its server-computed geometry; reduced motion shows it finished.
 - RULE: Compose from slots: with_grid / with_x_axis(data_key:) / with_line(data_key:) / with_legend.
 - RULE: Lines default to stroke-width 2 and NO dots (the ported block look); dots: true adds them.
 - RULE: dot_color_key: reads a per-row data key for per-point dot colors (the dots-colors block).
@@ -285,6 +289,7 @@ Slots: pies (One ring of slices reading data_key: values and name_key: slice nam
 - WIRING svg: `poetry--charts--tooltip` (if tooltip?) actions move on pointermove, leave on pointerleave, focus on focus, blur on blur, keydown on keydown; targets svg | `poetry--charts--tooltip` (if tooltip?) actions enter on pointerover
 - WIRING coordinates: `poetry--charts--tooltip` (if tooltip?) targets data
 - WIRING tooltip_layer: `poetry--charts--tooltip` (if tooltip?) targets tooltip
+- BEHAVIOR entrance_animation (on frame) - Animates the chart in toward its server-computed geometry; reduced motion shows it finished.
 - RULE: Rows carry their slice color in a fill key (var(--color-<name>)); the config maps names to labels.
 - RULE: inner_radius: 60 makes the donut; with_center_label(title:, subtitle:) fills the hole.
 - RULE: Stacked pies: two with_pie slots with their own data: and non-overlapping radii.
@@ -325,6 +330,7 @@ Slots: radars (A radar series bound to data_key:. fill_opacity: 0 with stroke_wi
 - WIRING svg: `poetry--charts--tooltip` (if tooltip?) actions move on pointermove, leave on pointerleave, focus on focus, blur on blur, keydown on keydown; targets svg | `poetry--charts--tooltip` (if tooltip?) actions enter on pointerover
 - WIRING coordinates: `poetry--charts--tooltip` (if tooltip?) targets data
 - WIRING tooltip_layer: `poetry--charts--tooltip` (if tooltip?) targets tooltip
+- BEHAVIOR entrance_animation (on frame) - Animates the chart in toward its server-computed geometry; reduced motion shows it finished.
 - RULE: Compose from slots: with_angle_axis(data_key:) / with_grid / with_radar(data_key:) / with_legend.
 - RULE: Radars fill at 0.6 opacity by default; lines-only = fill_opacity: 0, stroke_width: 2.
 - RULE: with_grid type: :circle swaps polygons for circles; fill: :desktop tints every grid ring (opacity 0.2, compounding toward the center - the grid-fill look).
@@ -368,6 +374,7 @@ Slots: radial_bars (A radial series reading data_key: values. background: draws 
 - WIRING svg: `poetry--charts--tooltip` (if tooltip?) actions move on pointermove, leave on pointerleave, focus on focus, blur on blur, keydown on keydown; targets svg | `poetry--charts--tooltip` (if tooltip?) actions enter on pointerover
 - WIRING coordinates: `poetry--charts--tooltip` (if tooltip?) targets data
 - WIRING tooltip_layer: `poetry--charts--tooltip` (if tooltip?) targets tooltip
+- BEHAVIOR entrance_animation (on frame) - Animates the chart in toward its server-computed geometry; reduced motion shows it finished.
 - RULE: One ring per data row; rows carry their color in a fill key (var(--color-<name>)).
 - RULE: background: true draws the muted track ring behind each bar (the gauge look).
 - RULE: Stack two radial bars with the same stack: id - they share the ring and stack by ANGLE.
@@ -406,6 +413,7 @@ Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stro
 - WIRING svg: `poetry--charts--tooltip` (if tooltip?) actions move on pointermove, leave on pointerleave, focus on focus, blur on blur, keydown on keydown; targets svg | `poetry--charts--tooltip` (if tooltip?) actions enter on pointerover
 - WIRING coordinates: `poetry--charts--tooltip` (if tooltip?) targets data
 - WIRING tooltip_layer: `poetry--charts--tooltip` (if tooltip?) targets tooltip
+- BEHAVIOR entrance_animation (on frame) - Animates the chart in toward its server-computed geometry; reduced motion shows it finished.
 - RULE: Both axes are numeric: with_x_axis(data_key:) / with_y_axis(data_key:) name the row keys to plot.
 - RULE: with_scatter(key:) colors points var(--color-<key>); data: gives a series its own rows.
 - RULE: with_z_axis(data_key:, range: [64, 144]) sizes points by a third dimension - the range is marker AREA in px2 (the source's z-axis contract).

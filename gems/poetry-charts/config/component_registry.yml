@@ -506,6 +506,12 @@ components:
         actions:
         - method: startBrush
           'on': pointerdown
+    behaviors:
+    - name: entrance_animation
+      description: Animates the chart in toward its server-computed geometry; reduced
+        motion shows it finished.
+      elements:
+      - frame
   poetry/charts/bar_chart:
     class_name: Poetry::Charts::BarChart::Component
     identifier: poetry--charts--bar_chart
@@ -943,6 +949,12 @@ components:
         actions:
         - method: startBrush
           'on': pointerdown
+    behaviors:
+    - name: entrance_animation
+      description: Animates the chart in toward its server-computed geometry; reduced
+        motion shows it finished.
+      elements:
+      - frame
   poetry/charts/composed_chart:
     class_name: Poetry::Charts::ComposedChart::Component
     identifier: poetry--charts--composed_chart
@@ -1301,6 +1313,12 @@ components:
         conditional: if tooltip?
         targets:
         - name: tooltip
+    behaviors:
+    - name: entrance_animation
+      description: Animates the chart in toward its server-computed geometry; reduced
+        motion shows it finished.
+      elements:
+      - frame
   poetry/charts/container:
     class_name: Poetry::Charts::Container::Component
     identifier: poetry--charts--container
@@ -1820,6 +1838,12 @@ components:
         actions:
         - method: startBrush
           'on': pointerdown
+    behaviors:
+    - name: entrance_animation
+      description: Animates the chart in toward its server-computed geometry; reduced
+        motion shows it finished.
+      elements:
+      - frame
   poetry/charts/pie_chart:
     class_name: Poetry::Charts::PieChart::Component
     identifier: poetry--charts--pie_chart
@@ -2065,6 +2089,12 @@ components:
         conditional: if tooltip?
         targets:
         - name: tooltip
+    behaviors:
+    - name: entrance_animation
+      description: Animates the chart in toward its server-computed geometry; reduced
+        motion shows it finished.
+      elements:
+      - frame
   poetry/charts/radar_chart:
     class_name: Poetry::Charts::RadarChart::Component
     identifier: poetry--charts--radar_chart
@@ -2321,6 +2351,12 @@ components:
         conditional: if tooltip?
         targets:
         - name: tooltip
+    behaviors:
+    - name: entrance_animation
+      description: Animates the chart in toward its server-computed geometry; reduced
+        motion shows it finished.
+      elements:
+      - frame
   poetry/charts/radial_bar_chart:
     class_name: Poetry::Charts::RadialBarChart::Component
     identifier: poetry--charts--radial_bar_chart
@@ -2613,6 +2649,12 @@ components:
         conditional: if tooltip?
         targets:
         - name: tooltip
+    behaviors:
+    - name: entrance_animation
+      description: Animates the chart in toward its server-computed geometry; reduced
+        motion shows it finished.
+      elements:
+      - frame
   poetry/charts/scatter_chart:
     class_name: Poetry::Charts::ScatterChart::Component
     identifier: poetry--charts--scatter_chart
@@ -2914,6 +2956,12 @@ components:
         conditional: if tooltip?
         targets:
         - name: tooltip
+    behaviors:
+    - name: entrance_animation
+      description: Animates the chart in toward its server-computed geometry; reduced
+        motion shows it finished.
+      elements:
+      - frame
   poetry/charts/tooltip_content:
     class_name: Poetry::Charts::TooltipContent::Component
     identifier: poetry--charts--tooltip_content
