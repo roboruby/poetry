@@ -1,0 +1,7 @@
+<%# The same name on the detail page morphs this card into it on a Turbo visit. %>
+<%= poetry_shared_element(name: "product-42", class: "w-full max-w-xs") do %>
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Field notebook" } %>
+    <% card.with_description { "$24" } %>
+  <% end %>
+<% end %>

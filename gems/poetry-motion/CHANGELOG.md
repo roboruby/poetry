@@ -2,8 +2,13 @@
 
 ## [0.1.14]
 
+- Six more effects. Layout: `poetry_animated_list` (Turbo Stream changes run as layout transitions), `poetry_layout_group` (elements sharing a `data-layout-id` move between places, the active-tab indicator pattern) and `poetry_shared_element` (a morph across a Turbo visit). Pointer: `poetry_spotlight_card`, `poetry_magnetic` and `poetry_dock`.
+
 ### Changed
 
+- The effect controllers load lazily: only the entry, the policy and the engine loader preload, and `registerPoetryMotionControllers` imports each controller the first time its identifier appears on the page.
+- An animation that finishes on its own now leaves the element its own style, as a teardown does; springs keep their value until teardown.
+- Reduced motion stills page and layout view transitions too.
 - The gentle and snappy spring tokens are critically damped (120 22 1 and 400 40 1), so they settle without passing their target; bouncy keeps its bounce.
 
 ### Added

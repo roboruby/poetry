@@ -14,6 +14,15 @@ module Poetry
       # An element a Turbo visit morphs between two pages.
       def poetry_shared_element(**, &) = render(Poetry::Motion::SharedElement::Component.new(**), &)
 
+      # A row of items that swell toward the pointer.
+      def poetry_dock(**, &) = render(Poetry::Motion::Dock::Component.new(**), &)
+
+      # A wrapper that pulls its control toward the pointer.
+      def poetry_magnetic(**, &) = render(Poetry::Motion::Magnetic::Component.new(**), &)
+
+      # A surface with a glow that follows the pointer.
+      def poetry_spotlight_card(**, &) = render(Poetry::Motion::SpotlightCard::Component.new(**), &)
+
       # A looping marquee of the block's items.
       def poetry_marquee(**, &) = render(Poetry::Motion::Marquee::Component.new(**), &)
 

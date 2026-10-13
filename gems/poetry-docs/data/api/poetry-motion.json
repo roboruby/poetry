@@ -71,6 +71,62 @@
       ]
     },
     {
+      "path": "Poetry::Motion::AnimatedList::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "A list whose Turbo Stream changes animate: appended items fade in,\nremoved items fade out, and the rest slide to their new places. The\nserver renders the list as it is, and a stream's own render does\nthe change; the effect only animates it, as a layout transition.",
+      "examples": [
+        {
+          "title": "A feed that streams new entries in",
+          "text": "<%= poetry_animated_list(id: \"comments\") do %>\n  <%= render @comments %>\n<% end %>\n<%# a turbo_stream.append \"comments\" from the server now animates %>"
+        }
+      ],
+      "file": "app/components/poetry/motion/animated_list/component.rb",
+      "methods": [],
+      "constants": [
+        {
+          "name": "DOCS",
+          "value": "{\n  duration: \"How long the motion runs: a duration token (#{DURATIONS.join(\", \")}) or milliseconds.\",\n  easing: \"The easing token: #{EASINGS.join(\", \")}.\",\n  spring: \"The spring token: #{SPRINGS.join",
+          "docstring": "What each option means, for the registry and the docs."
+        },
+        {
+          "name": "DURATIONS",
+          "value": "%i[fast normal slow].freeze",
+          "docstring": "The duration tokens (--motion-duration-*); duration: also takes milliseconds."
+        },
+        {
+          "name": "EASINGS",
+          "value": "%i[standard emphasized exit].freeze",
+          "docstring": "The easing tokens (--motion-ease-*)."
+        },
+        {
+          "name": "SPRINGS",
+          "value": "%i[gentle snappy bouncy].freeze",
+          "docstring": "The spring tokens (--motion-spring-*)."
+        },
+        {
+          "name": "TAGS",
+          "value": "%i[ul ol div].freeze",
+          "docstring": "The elements the list can render as."
+        },
+        {
+          "name": "TRIGGERS",
+          "value": "%i[load in_view hover].freeze",
+          "docstring": "When an effect starts: on connect, when it scrolls into view, or on hover."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::AnimatedList::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "The animated list's classes: none of its own, the items bring theirs.",
+      "examples": [],
+      "file": "app/components/poetry/motion/animated_list/style.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
       "path": "Poetry::Motion::Behaviors",
       "type": "module",
       "superclass": null,
@@ -189,6 +245,54 @@
       "file": "app/helpers/poetry/motion/components_helper.rb",
       "methods": [
         {
+          "name": "poetry_animated_list",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_animated_list(**, &)",
+          "docstring": "A list whose Turbo Stream changes animate.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/helpers/poetry/motion/components_helper.rb",
+          "line": 9
+        },
+        {
+          "name": "poetry_dock",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_dock(**, &)",
+          "docstring": "A row of items that swell toward the pointer.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/helpers/poetry/motion/components_helper.rb",
+          "line": 18
+        },
+        {
+          "name": "poetry_layout_group",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_layout_group(**, &)",
+          "docstring": "A region whose data-layout-id elements move between places.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/helpers/poetry/motion/components_helper.rb",
+          "line": 12
+        },
+        {
+          "name": "poetry_magnetic",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_magnetic(**, &)",
+          "docstring": "A wrapper that pulls its control toward the pointer.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/helpers/poetry/motion/components_helper.rb",
+          "line": 21
+        },
+        {
           "name": "poetry_marquee",
           "scope": "instance",
           "group": null,
@@ -198,7 +302,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 9
+          "line": 27
         },
         {
           "name": "poetry_number_ticker",
@@ -210,7 +314,31 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
+          "line": 33
+        },
+        {
+          "name": "poetry_shared_element",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_shared_element(**, &)",
+          "docstring": "An element a Turbo visit morphs between two pages.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/helpers/poetry/motion/components_helper.rb",
           "line": 15
+        },
+        {
+          "name": "poetry_spotlight_card",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_spotlight_card(**, &)",
+          "docstring": "A surface with a glow that follows the pointer.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/helpers/poetry/motion/components_helper.rb",
+          "line": 24
         },
         {
           "name": "poetry_text_reveal",
@@ -222,7 +350,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 12
+          "line": 30
         },
         {
           "name": "poetry_tilt_card",
@@ -234,9 +362,65 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 18
+          "line": 36
         }
       ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::Dock::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "A row of items, links or buttons, that swell toward a fine pointer,\nthe nearest most - the magnifying launcher. Each direct child is\none item. The items keep their size in the layout and scale from\nthe edge the dock sits on, so nothing reflows; the server renders\nthem at rest, and touch and reduced motion leave them there.",
+      "examples": [
+        {
+          "title": "",
+          "text": "<%= poetry_dock(label: \"Apps\") do %>\n  <% apps.each do |app| %><%= link_to app.icon, app, aria: { label: app.name } %><% end %>\n<% end %>"
+        }
+      ],
+      "file": "app/components/poetry/motion/dock/component.rb",
+      "methods": [],
+      "constants": [
+        {
+          "name": "DOCS",
+          "value": "{\n  duration: \"How long the motion runs: a duration token (#{DURATIONS.join(\", \")}) or milliseconds.\",\n  easing: \"The easing token: #{EASINGS.join(\", \")}.\",\n  spring: \"The spring token: #{SPRINGS.join",
+          "docstring": "What each option means, for the registry and the docs."
+        },
+        {
+          "name": "DURATIONS",
+          "value": "%i[fast normal slow].freeze",
+          "docstring": "The duration tokens (--motion-duration-*); duration: also takes milliseconds."
+        },
+        {
+          "name": "EASINGS",
+          "value": "%i[standard emphasized exit].freeze",
+          "docstring": "The easing tokens (--motion-ease-*)."
+        },
+        {
+          "name": "ORIENTATIONS",
+          "value": "%i[horizontal vertical].freeze",
+          "docstring": "The ways a dock can run."
+        },
+        {
+          "name": "SPRINGS",
+          "value": "%i[gentle snappy bouncy].freeze",
+          "docstring": "The spring tokens (--motion-spring-*)."
+        },
+        {
+          "name": "TRIGGERS",
+          "value": "%i[load in_view hover].freeze",
+          "docstring": "When an effect starts: on connect, when it scrolls into view, or on hover."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::Dock::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "The dock's classes; the swell lives in the motion stylesheet.",
+      "examples": [],
+      "file": "app/components/poetry/motion/dock/style.rb",
+      "methods": [],
       "constants": []
     },
     {
@@ -251,6 +435,108 @@
         }
       ],
       "file": "lib/poetry/motion/engine.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::LayoutGroup::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "A region where elements that share a data-layout-id are one thing in\ndifferent places: an active-tab indicator, a selected-item\nhighlight. When the visible one changes, it slides and resizes from\nwhere the last one was. Mark every candidate with the same\ndata-layout-id and show only the current one; the server renders it\nin place.",
+      "examples": [
+        {
+          "title": "A highlight that follows the checked item",
+          "text": "<%= poetry_layout_group do %>\n  <%= poetry_toggle_group(type: :single, default: \"week\") do |group| %>\n    <% %w[day week month].each do |range| %>\n      <% group.with_item(value: range) do %>\n        <span data-slot=\"layout-group-item\" data-layout-id=\"range\"\n              class=\"hidden in-aria-checked:block ...\"></span><%= range %>\n      <% end %>\n    <% end %>\n  <% end %>\n<% end %>"
+        }
+      ],
+      "file": "app/components/poetry/motion/layout_group/component.rb",
+      "methods": [],
+      "constants": [
+        {
+          "name": "DOCS",
+          "value": "{\n  duration: \"How long the motion runs: a duration token (#{DURATIONS.join(\", \")}) or milliseconds.\",\n  easing: \"The easing token: #{EASINGS.join(\", \")}.\",\n  spring: \"The spring token: #{SPRINGS.join",
+          "docstring": "What each option means, for the registry and the docs."
+        },
+        {
+          "name": "DURATIONS",
+          "value": "%i[fast normal slow].freeze",
+          "docstring": "The duration tokens (--motion-duration-*); duration: also takes milliseconds."
+        },
+        {
+          "name": "EASINGS",
+          "value": "%i[standard emphasized exit].freeze",
+          "docstring": "The easing tokens (--motion-ease-*)."
+        },
+        {
+          "name": "SPRINGS",
+          "value": "%i[gentle snappy bouncy].freeze",
+          "docstring": "The spring tokens (--motion-spring-*)."
+        },
+        {
+          "name": "TRIGGERS",
+          "value": "%i[load in_view hover].freeze",
+          "docstring": "When an effect starts: on connect, when it scrolls into view, or on hover."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::LayoutGroup::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "The layout group's classes: a positioning context for its moving elements.",
+      "examples": [],
+      "file": "app/components/poetry/motion/layout_group/style.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::Magnetic::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "A wrapper that pulls its content a few pixels toward a fine pointer\nand springs it home when the pointer leaves - a magnetic button. Only\nan inner layer moves; the wrapped control keeps its hit area, its\nfocus ring and its place in the layout.",
+      "examples": [
+        {
+          "title": "",
+          "text": "<%= poetry_magnetic do %>\n  <%= poetry_button { \"Get started\" } %>\n<% end %>"
+        }
+      ],
+      "file": "app/components/poetry/motion/magnetic/component.rb",
+      "methods": [],
+      "constants": [
+        {
+          "name": "DOCS",
+          "value": "{\n  duration: \"How long the motion runs: a duration token (#{DURATIONS.join(\", \")}) or milliseconds.\",\n  easing: \"The easing token: #{EASINGS.join(\", \")}.\",\n  spring: \"The spring token: #{SPRINGS.join",
+          "docstring": "What each option means, for the registry and the docs."
+        },
+        {
+          "name": "DURATIONS",
+          "value": "%i[fast normal slow].freeze",
+          "docstring": "The duration tokens (--motion-duration-*); duration: also takes milliseconds."
+        },
+        {
+          "name": "EASINGS",
+          "value": "%i[standard emphasized exit].freeze",
+          "docstring": "The easing tokens (--motion-ease-*)."
+        },
+        {
+          "name": "SPRINGS",
+          "value": "%i[gentle snappy bouncy].freeze",
+          "docstring": "The spring tokens (--motion-spring-*)."
+        },
+        {
+          "name": "TRIGGERS",
+          "value": "%i[load in_view hover].freeze",
+          "docstring": "When an effect starts: on connect, when it scrolls into view, or on hover."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::Magnetic::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "The magnetic wrapper's classes: it hugs its control.",
+      "examples": [],
+      "file": "app/components/poetry/motion/magnetic/style.rb",
       "methods": [],
       "constants": []
     },
@@ -469,6 +755,101 @@
           "docstring": "When an effect starts: on connect, when it scrolls into view, or on hover."
         }
       ]
+    },
+    {
+      "path": "Poetry::Motion::SharedElement::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "One element on two pages: give it the same name on both, and a Turbo\nvisit between them morphs it from one place to the other (a card\ninto its detail page, a thumbnail into the hero). It is a\nview-transition-name and needs Turbo's page view transitions, the\nview-transition meta tag in your layout. Reduced motion swaps the\npages without the morph. No script.",
+      "examples": [
+        {
+          "title": "",
+          "text": "<%= poetry_shared_element(name: \"product-#{product.id}\") do %>\n  <%= image_tag product.photo %>\n<% end %>"
+        }
+      ],
+      "file": "app/components/poetry/motion/shared_element/component.rb",
+      "methods": [
+        {
+          "name": "before_render",
+          "scope": "instance",
+          "group": null,
+          "signature": "before_render",
+          "docstring": "",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/motion/shared_element/component.rb",
+          "line": 35
+        }
+      ],
+      "constants": [
+        {
+          "name": "NAME",
+          "value": "/\\A[a-z][a-z0-9_-]*\\z/i",
+          "docstring": "A name that is a valid CSS identifier."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::SharedElement::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "The shared element's classes: none, it takes the caller's.",
+      "examples": [],
+      "file": "app/components/poetry/motion/shared_element/style.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::SpotlightCard::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "A surface with a soft glow that follows a fine pointer across it. It\nwraps whatever it is given, a poetry Card most often. The glow is a\nradial gradient behind the content, drawn from two custom\nproperties; no engine loads, and the server renders the surface\nwithout it.",
+      "examples": [
+        {
+          "title": "",
+          "text": "<%= poetry_spotlight_card do %>\n  <%= poetry_card do |card| %>...<% end %>\n<% end %>"
+        }
+      ],
+      "file": "app/components/poetry/motion/spotlight_card/component.rb",
+      "methods": [],
+      "constants": [
+        {
+          "name": "DOCS",
+          "value": "{\n  duration: \"How long the motion runs: a duration token (#{DURATIONS.join(\", \")}) or milliseconds.\",\n  easing: \"The easing token: #{EASINGS.join(\", \")}.\",\n  spring: \"The spring token: #{SPRINGS.join",
+          "docstring": "What each option means, for the registry and the docs."
+        },
+        {
+          "name": "DURATIONS",
+          "value": "%i[fast normal slow].freeze",
+          "docstring": "The duration tokens (--motion-duration-*); duration: also takes milliseconds."
+        },
+        {
+          "name": "EASINGS",
+          "value": "%i[standard emphasized exit].freeze",
+          "docstring": "The easing tokens (--motion-ease-*)."
+        },
+        {
+          "name": "SPRINGS",
+          "value": "%i[gentle snappy bouncy].freeze",
+          "docstring": "The spring tokens (--motion-spring-*)."
+        },
+        {
+          "name": "TRIGGERS",
+          "value": "%i[load in_view hover].freeze",
+          "docstring": "When an effect starts: on connect, when it scrolls into view, or on hover."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::SpotlightCard::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "The spotlight card's classes; the glow lives in the motion stylesheet.",
+      "examples": [],
+      "file": "app/components/poetry/motion/spotlight_card/style.rb",
+      "methods": [],
+      "constants": []
     },
     {
       "path": "Poetry::Motion::TextReveal::Component",

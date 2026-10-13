@@ -1,0 +1,7 @@
+<%= poetry_dock(label: "Apps") do %>
+  <% { "Mail" => :mail, "Calendar" => :calendar, "Music" => :music, "Photos" => :image, "Maps" => :map }.each do |app, icon| %>
+    <a href="#" aria-label="<%= app %>" class="flex size-10 items-center justify-center rounded-xl bg-muted">
+      <%= poetry_icon(name: icon, class: "size-5") %>
+    </a>
+  <% end %>
+<% end %>

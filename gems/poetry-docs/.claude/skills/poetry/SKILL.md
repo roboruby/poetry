@@ -9,7 +9,7 @@ description: >-
 
 # poetry - component usage
 
-Generated from the poetry registry (88 components + 13 chart components + 4 motion effects + 8 blocks). After updating
+Generated from the poetry registry (88 components + 13 chart components + 10 motion effects + 8 blocks). After updating
 poetry gems, regenerate with `bin/rails g poetry:skill`.
 
 ## Guardrails
@@ -70,7 +70,7 @@ lines) for its components:
 - **layout** (`references/layout.md`): aspect_ratio, resizable, scroll_area
 - **blocks** (`references/blocks.md`): action-bar, app-shell, data-index, destructive-panel, page-header, section-card, stepper, top-nav
 - **charts** (`references/charts.md`): adapter_chart, area_chart, bar_chart, composed_chart, container, legend_content, line_chart, pie_chart, radar_chart, radial_bar_chart, scatter_chart, tooltip_content, tooltip_layer
-- **motion** (`references/motion.md`): marquee, number_ticker, text_reveal, tilt_card
+- **motion** (`references/motion.md`): animated_list, dock, layout_group, magnetic, marquee, number_ticker, shared_element, spotlight_card, text_reveal, tilt_card
 
 ## Composing a page? Load poetry-design
 

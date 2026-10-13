@@ -19,6 +19,36 @@
       "disconnect": "Stops wrapping streams."
     }
   },
+  "poetry--motion--dock": {
+    "doc": "Dock: the items nearest a fine pointer swell, each by how close it is, and settle back when the pointer leaves - the magnifying launcher. Each item springs its own --dock-scale; the motion stylesheet scales it from the edge the dock sits on, so the layout never reflows. Touch, coarse pointers and reduced motion leave the items still.",
+    "targets": [],
+    "values": {
+      "magnification": {
+        "type": "Number",
+        "default": 1.5,
+        "doc": "The scale of the item right under the pointer."
+      },
+      "distance": {
+        "type": "Number",
+        "default": 120,
+        "doc": "How far, in pixels, the swell reaches from the pointer."
+      },
+      "spring": {
+        "type": "String",
+        "default": "snappy",
+        "doc": "The spring token the items follow."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts swelling the items toward the pointer.",
+      "disconnect": "Stops swelling and settles every item."
+    }
+  },
   "poetry--motion--layout-group": {
     "doc": "Layout group: elements that share a data-layout-id are one thing in different places, an active-tab indicator or a selected-item highlight. When the visible one changes (a class, an attribute or a child changes inside the group), the new one animates from where the old one was to where it is, by translate and scale, and ends at its own style. The group remembers each id's last box relative to itself, so scrolling between changes does not throw the move off.",
     "targets": [],
@@ -37,6 +67,33 @@
     "method_docs": {
       "connect": "Records the visible boxes and starts watching the group.",
       "disconnect": "Stops watching and returns the moving elements to their own style."
+    }
+  },
+  "poetry--motion--magnetic": {
+    "doc": "Magnetic: the inner layer leans a few pixels toward a fine pointer over it and springs home when the pointer leaves, through --magnet-x and --magnet-y. The wrapped control never moves its hit area or its focus; only the layer that draws it shifts. Touch and reduced motion leave it still.",
+    "targets": [
+      "layer"
+    ],
+    "values": {
+      "strength": {
+        "type": "Number",
+        "default": 8,
+        "doc": "The farthest the layer moves, in pixels."
+      },
+      "spring": {
+        "type": "String",
+        "default": "snappy",
+        "doc": "The spring token the pull follows."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts pulling the layer toward the pointer.",
+      "disconnect": "Stops the pull and puts the layer home."
     }
   },
   "poetry--motion--marquee": {
@@ -113,6 +170,20 @@
     "method_docs": {
       "connect": "Starts the effect for this connect.",
       "disconnect": "Undoes everything this connect started, leaving the finished state."
+    }
+  },
+  "poetry--motion--spotlight-card": {
+    "doc": "Spotlight card: a soft glow follows a fine pointer across the card. The controller writes the pointer's position as --spotlight-x and --spotlight-y and switches --spotlight-opacity on; the motion stylesheet draws the glow. No engine loads. The server renders the card without a glow, and touch, coarse pointers and reduced motion leave it that way.",
+    "targets": [],
+    "values": {},
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts following the pointer.",
+      "disconnect": "Stops following and clears the glow."
     }
   },
   "poetry--motion--text-reveal": {

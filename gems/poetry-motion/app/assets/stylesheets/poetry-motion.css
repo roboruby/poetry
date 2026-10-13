@@ -127,6 +127,40 @@
   transform: rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg));
 }
 
+/*
+ * Spotlight card: a radial glow behind the content, at the pointer. Without
+ * the properties its opacity is 0 and the surface is plain.
+ */
+[data-slot="spotlight-card"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    calc(var(--spotlight-size, 320px) / 2) circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+    color-mix(in oklab, var(--primary) 18%, transparent),
+    transparent 70%
+  );
+  opacity: var(--spotlight-opacity, 0);
+  transition: opacity var(--motion-duration-normal) ease;
+}
+
+/* Magnetic: the layer shifts by the pull; the wrapper and its hit area stay. */
+[data-slot="magnetic-layer"] {
+  translate: var(--magnet-x, 0px) var(--magnet-y, 0px);
+}
+
+/* Dock: each item scales from the edge the dock sits on. */
+[data-slot="dock"] > * {
+  scale: var(--dock-scale, 1);
+  transform-origin: bottom center;
+}
+
+[data-slot="dock"][data-orientation="vertical"] > * {
+  transform-origin: left center;
+}
+
 /* Reduced motion: the loops stand still, the copies go away, and page and
    layout view transitions swap without animating. */
 @media (prefers-reduced-motion: reduce) {

@@ -6,7 +6,7 @@
       "path": "@poetry/motion",
       "type": "module",
       "superclass": null,
-      "docstring": "@poetry/motion - poetry-motion's effects, behaviors and motion policy,\none source shipped over two channels: importmap-first (the engine pins\nthis tree) and this same tree as the npm package for bundler hosts.",
+      "docstring": "@poetry/motion - poetry-motion's effects, behaviors and motion policy,\none source shipped over two channels: importmap-first (the engine pins\nthis tree) and this same tree as the npm package for bundler hosts.\n\nThe controllers register lazily: registerPoetryMotionControllers watches\nthe page for a poetry--motion--* identifier and imports that one\ncontroller the first time it appears, so a page without an effect loads\nnone of them, and a page with one loads only its own.",
       "examples": [],
       "file": "app/javascript/poetry/motion/index.js",
       "methods": [
@@ -15,7 +15,7 @@
           "scope": "class",
           "group": null,
           "signature": "registerPoetryMotionControllers(application)",
-          "docstring": "The host one-liner: registers the effect controllers on the host's\nStimulus application and installs the motion policy.",
+          "docstring": "The host one-liner: installs the motion policy and registers each\neffect controller on the host's Stimulus application the first time its\nidentifier appears in the page, now or after any later render.",
           "params": [
             {
               "name": "application",
@@ -27,16 +27,22 @@
           ],
           "return": {
             "types": [
-              "void"
+              "Promise<void>"
             ],
-            "text": ""
+            "text": "settles once the controllers already on the page are registered"
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/index.js",
-          "line": 25
+          "line": 46
         }
       ],
-      "constants": []
+      "constants": [
+        {
+          "name": "CONTROLLERS",
+          "value": "{",
+          "docstring": "Each effect's identifier and the import that loads its controller, the\nmap registerPoetryMotionControllers loads from."
+        }
+      ]
     },
     {
       "path": "@poetry/motion/behaviors/animate",
@@ -324,7 +330,7 @@
       "path": "@poetry/motion/behaviors/layout",
       "type": "module",
       "superclass": null,
-      "docstring": "useLayout: a DOM change animated as a layout transition through the\nengine's animateView (the View Transitions API): reorder a list, move a\ntab indicator, share an element between two places. The change always\nhappens; it animates only when the motion policy allows a view\ntransition, so never during a Turbo visit transition, under reduced\nmotion, or without the API.",
+      "docstring": "useLayout: a DOM change animated as a layout transition through the\nengine's animateView (the View Transitions API): reorder a list, add and\nremove items, share an element between two places. The change always\nhappens; it animates only when the motion policy allows a view\ntransition, so never during a Turbo visit transition, under reduced\nmotion, or without the API. `configure` receives the transition before\nit starts, to name its subjects: view.add(selector).enter(...).exit(...).",
       "examples": [],
       "file": "app/javascript/poetry/motion/behaviors/layout.js",
       "methods": [
@@ -352,13 +358,13 @@
           ],
           "return": {
             "types": [
-              "(update: () => void) => Promise<void>"
+              "(update: () => void, configure?: (view: Object) => void) => Promise<void>"
             ],
             "text": "applies `update`, animated when allowed"
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/behaviors/layout.js",
-          "line": 18
+          "line": 19
         }
       ],
       "constants": []
@@ -666,7 +672,7 @@
           "name": "track",
           "scope": "class",
           "group": null,
-          "signature": "track(animation, { element = null, properties = [], finish = null } = {})",
+          "signature": "track(animation, { element = null, properties = [], finish = null, persist = false } = {})",
           "docstring": "Keeps a running animation in the policy's care until it finishes. At\nturbo:before-cache it stops, and the inline properties it writes on the\nelement are removed, so the snapshot shows the server-rendered finished\nstate. Without an element the animation completes instead (a Web\nAnimation, which leaves no inline style). Returns the animation.",
           "params": [
             {
@@ -703,6 +709,13 @@
                 "Function"
               ],
               "text": "restores anything else it wrote (text a ticker counts), run after it stops"
+            },
+            {
+              "name": "[target.persist]",
+              "types": [
+                "boolean"
+              ],
+              "text": "keeps the value when the animation finishes on its own (a spring holding a lean); teardown and the cache still clear it"
             }
           ],
           "return": {
@@ -713,7 +726,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/policy.js",
-          "line": 70
+          "line": 72
         },
         {
           "name": "flush",
@@ -730,13 +743,13 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/policy.js",
-          "line": 85
+          "line": 89
         },
         {
           "name": "release",
           "scope": "class",
           "group": null,
-          "signature": "release(animation)",
+          "signature": "release(animation, { finished = false } = {})",
           "docstring": "Ends one tracked animation at its finished state, synchronously, and\nforgets it: an inline-animated element gets its own style back, now and\nafter the engine's next render; a Web Animation completes. Behaviors\nrelease their animations at teardown.",
           "params": [
             {
@@ -745,6 +758,13 @@
                 "Object"
               ],
               "text": "a tracked animation"
+            },
+            {
+              "name": "}",
+              "types": [
+                "{ finished?: boolean "
+              ],
+              "text": "[options] finished: it ended on its own, so only its styles go"
             }
           ],
           "return": {
@@ -755,7 +775,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/policy.js",
-          "line": 98
+          "line": 103
         },
         {
           "name": "entranceAllowed",
@@ -772,7 +792,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/policy.js",
-          "line": 125
+          "line": 136
         },
         {
           "name": "canAnimateView",
@@ -789,7 +809,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/policy.js",
-          "line": 144
+          "line": 155
         },
         {
           "name": "visitInFlight",
@@ -806,7 +826,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/policy.js",
-          "line": 153
+          "line": 164
         },
         {
           "name": "token",
@@ -831,7 +851,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/policy.js",
-          "line": 163
+          "line": 174
         },
         {
           "name": "duration",
@@ -856,7 +876,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/policy.js",
-          "line": 174
+          "line": 185
         },
         {
           "name": "easing",
@@ -881,7 +901,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/policy.js",
-          "line": 189
+          "line": 200
         },
         {
           "name": "spring",
@@ -906,7 +926,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/policy.js",
-          "line": 201
+          "line": 212
         },
         {
           "name": "configureEngine",
@@ -931,7 +951,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/policy.js",
-          "line": 217
+          "line": 228
         },
         {
           "name": "installPolicy",
@@ -948,7 +968,187 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/policy.js",
-          "line": 230
+          "line": 241
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--motion--animated-list",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Animated list: a Turbo Stream that changes the list (append, prepend,\nremove, replace, update, or a refresh that morphs it) runs as a layout\ntransition, so new items fade in, removed items fade out and the rest\nslide to their new places. The server renders the list as it is; the\nstream's own render does the change, and the transition only animates\nit. Reduced motion and a running Turbo visit apply the change directly.\n\n**Values**:\n- `duration` (Number, default: 300): Milliseconds for each transition.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/animated_list_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Starts wrapping the streams that touch this list.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/animated_list_controller.js",
+          "line": 24
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Stops wrapping streams.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/animated_list_controller.js",
+          "line": 43
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--motion--dock",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Dock: the items nearest a fine pointer swell, each by how close it is,\nand settle back when the pointer leaves - the magnifying launcher. Each\nitem springs its own --dock-scale; the motion stylesheet scales it from\nthe edge the dock sits on, so the layout never reflows. Touch, coarse\npointers and reduced motion leave the items still.\n\n**Values**:\n- `magnification` (Number, default: 1.5): The scale of the item right under the pointer.\n- `distance` (Number, default: 120): How far, in pixels, the swell reaches from the pointer.\n- `spring` (String, default: \"snappy\"): The spring token the items follow.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/dock_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Starts swelling the items toward the pointer.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/dock_controller.js",
+          "line": 28
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Stops swelling and settles every item.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/dock_controller.js",
+          "line": 53
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--motion--layout-group",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Layout group: elements that share a data-layout-id are one thing in\ndifferent places, an active-tab indicator or a selected-item highlight.\nWhen the visible one changes (a class, an attribute or a child changes\ninside the group), the new one animates from where the old one was to\nwhere it is, by translate and scale, and ends at its own style. The\ngroup remembers each id's last box relative to itself, so scrolling\nbetween changes does not throw the move off.\n\n**Values**:\n- `duration` (Number, default: 300): Milliseconds for each move.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/layout_group_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Records the visible boxes and starts watching the group.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/layout_group_controller.js",
+          "line": 27
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Stops watching and returns the moving elements to their own style.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/layout_group_controller.js",
+          "line": 43
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--motion--magnetic",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Magnetic: the inner layer leans a few pixels toward a fine pointer over\nit and springs home when the pointer leaves, through --magnet-x and\n--magnet-y. The wrapped control never moves its hit area or its focus;\nonly the layer that draws it shifts. Touch and reduced motion leave it\nstill.\n\n**Targets**: `layer`\n\n**Values**:\n- `strength` (Number, default: 8): The farthest the layer moves, in pixels.\n- `spring` (String, default: \"snappy\"): The spring token the pull follows.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/magnetic_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Starts pulling the layer toward the pointer.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/magnetic_controller.js",
+          "line": 28
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Stops the pull and puts the layer home.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/magnetic_controller.js",
+          "line": 44
         }
       ],
       "constants": []
@@ -1047,6 +1247,51 @@
           "examples": [],
           "file": "app/javascript/poetry/motion/number_ticker_controller.js",
           "line": 54
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--motion--spotlight-card",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Spotlight card: a soft glow follows a fine pointer across the card. The\ncontroller writes the pointer's position as --spotlight-x and\n--spotlight-y and switches --spotlight-opacity on; the motion stylesheet\ndraws the glow. No engine loads. The server renders the card without a\nglow, and touch, coarse pointers and reduced motion leave it that way.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/spotlight_card_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Starts following the pointer.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/spotlight_card_controller.js",
+          "line": 18
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Stops following and clears the glow.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/spotlight_card_controller.js",
+          "line": 37
         }
       ],
       "constants": []

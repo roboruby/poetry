@@ -1,6 +1,9 @@
 # Per-effect one-line descriptions (editorial, hand-authored), merged into
 # the generated registry by Poetry::Motion.registry. Keyed by component_path.
 ---
+poetry/motion/dock: "A row of links or buttons that swell toward the pointer, the nearest most, like a launcher."
+poetry/motion/magnetic: "A wrapper that pulls its control a few pixels toward the pointer and springs it home."
+poetry/motion/spotlight_card: "A surface with a soft glow that follows the pointer across it."
 poetry/motion/animated_list: "A list whose Turbo Stream changes animate: new items fade in, removed ones fade out, the rest slide into place."
 poetry/motion/layout_group: "Elements that share a data-layout-id move as one thing between places, like an active-tab indicator."
 poetry/motion/shared_element: "An element a Turbo visit morphs from one page to the next, like a card into its detail page."

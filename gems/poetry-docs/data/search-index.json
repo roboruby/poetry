@@ -6210,6 +6210,126 @@
     "path": "/charts/scatter#wiring"
   },
   {
+    "title": "Animated List",
+    "page": "Animated List",
+    "section": "motion",
+    "path": "/motion/animated-list"
+  },
+  {
+    "title": "Installation",
+    "page": "Animated List",
+    "section": "motion",
+    "path": "/motion/animated-list#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Animated List",
+    "section": "motion",
+    "path": "/motion/animated-list#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Animated List",
+    "section": "motion",
+    "path": "/motion/animated-list#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Animated List",
+    "section": "motion",
+    "path": "/motion/animated-list#wiring"
+  },
+  {
+    "title": "Dock",
+    "page": "Dock",
+    "section": "motion",
+    "path": "/motion/dock"
+  },
+  {
+    "title": "Installation",
+    "page": "Dock",
+    "section": "motion",
+    "path": "/motion/dock#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Dock",
+    "section": "motion",
+    "path": "/motion/dock#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Dock",
+    "section": "motion",
+    "path": "/motion/dock#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Dock",
+    "section": "motion",
+    "path": "/motion/dock#wiring"
+  },
+  {
+    "title": "Layout Group",
+    "page": "Layout Group",
+    "section": "motion",
+    "path": "/motion/layout-group"
+  },
+  {
+    "title": "Installation",
+    "page": "Layout Group",
+    "section": "motion",
+    "path": "/motion/layout-group#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Layout Group",
+    "section": "motion",
+    "path": "/motion/layout-group#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Layout Group",
+    "section": "motion",
+    "path": "/motion/layout-group#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Layout Group",
+    "section": "motion",
+    "path": "/motion/layout-group#wiring"
+  },
+  {
+    "title": "Magnetic",
+    "page": "Magnetic",
+    "section": "motion",
+    "path": "/motion/magnetic"
+  },
+  {
+    "title": "Installation",
+    "page": "Magnetic",
+    "section": "motion",
+    "path": "/motion/magnetic#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Magnetic",
+    "section": "motion",
+    "path": "/motion/magnetic#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Magnetic",
+    "section": "motion",
+    "path": "/motion/magnetic#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Magnetic",
+    "section": "motion",
+    "path": "/motion/magnetic#wiring"
+  },
+  {
     "title": "Marquee",
     "page": "Marquee",
     "section": "motion",
@@ -6274,6 +6394,54 @@
     "page": "Number Ticker",
     "section": "motion",
     "path": "/motion/number-ticker#wiring"
+  },
+  {
+    "title": "Shared Element",
+    "page": "Shared Element",
+    "section": "motion",
+    "path": "/motion/shared-element"
+  },
+  {
+    "title": "Installation",
+    "page": "Shared Element",
+    "section": "motion",
+    "path": "/motion/shared-element#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Shared Element",
+    "section": "motion",
+    "path": "/motion/shared-element#default"
+  },
+  {
+    "title": "Spotlight Card",
+    "page": "Spotlight Card",
+    "section": "motion",
+    "path": "/motion/spotlight-card"
+  },
+  {
+    "title": "Installation",
+    "page": "Spotlight Card",
+    "section": "motion",
+    "path": "/motion/spotlight-card#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Spotlight Card",
+    "section": "motion",
+    "path": "/motion/spotlight-card#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Spotlight Card",
+    "section": "motion",
+    "path": "/motion/spotlight-card#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Spotlight Card",
+    "section": "motion",
+    "path": "/motion/spotlight-card#wiring"
   },
   {
     "title": "Text Reveal",

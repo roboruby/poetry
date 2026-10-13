@@ -15,12 +15,20 @@ export {
 } from "@poetry/motion/policy"
 export { loadEngine } from "@poetry/motion/load_engine"
 
-// Each effect's identifier and the import that loads its controller.
+/**
+ * Each effect's identifier and the import that loads its controller, the
+ * map registerPoetryMotionControllers loads from.
+ *
+ * @type {Object<string, Function>}
+ */
 export const CONTROLLERS = {
   "poetry--motion--animated-list": () => import("@poetry/motion/animated_list_controller"),
+  "poetry--motion--dock": () => import("@poetry/motion/dock_controller"),
   "poetry--motion--layout-group": () => import("@poetry/motion/layout_group_controller"),
+  "poetry--motion--magnetic": () => import("@poetry/motion/magnetic_controller"),
   "poetry--motion--marquee": () => import("@poetry/motion/marquee_controller"),
   "poetry--motion--number-ticker": () => import("@poetry/motion/number_ticker_controller"),
+  "poetry--motion--spotlight-card": () => import("@poetry/motion/spotlight_card_controller"),
   "poetry--motion--text-reveal": () => import("@poetry/motion/text_reveal_controller"),
   "poetry--motion--tilt-card": () => import("@poetry/motion/tilt_card_controller"),
 }

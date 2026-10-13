@@ -65,6 +65,95 @@ components:
       description: DOM changes animated as layout transitions, only when no Turbo
         visit holds the view-transition slot.
       runtime: true
+  poetry/motion/dock:
+    class_name: Poetry::Motion::Dock::Component
+    identifier: poetry--motion--dock
+    bem_block: poetry-motion-dock
+    styles: []
+    options:
+    - name: animate
+      type: boolean
+      default: true
+      description: Turns the motion off; the effect renders its finished state either
+        way.
+    - name: distance
+      type: integer
+      default: 120
+      description: How far, in pixels, the swell reaches from the pointer.
+    - name: label
+      type: string
+      description: The navigation's accessible name.
+    - name: magnification
+      type: float
+      default: 1.5
+      description: The scale of the item right under the pointer.
+    - name: orientation
+      type: symbol
+      variants:
+      - horizontal
+      - vertical
+      default: horizontal
+      description: Which way the dock runs.
+    - name: spring
+      type: symbol
+      variants:
+      - gentle
+      - snappy
+      - bouncy
+      default: snappy
+      description: 'The spring token: gentle, snappy, bouncy.'
+    slots: []
+    helper: poetry_dock
+    description: A row of links or buttons that swell toward the pointer, the nearest
+      most, like a launcher.
+    elements: []
+    capsule: 81a83f3be781
+    controllers:
+    - identifier: poetry--motion--dock
+      targets: []
+      values:
+      - distance
+      - magnification
+      - spring
+      actions: []
+      events: []
+    agent_rules:
+    - Pointer effects never move focus and never carry information a keyboard user
+      would miss.
+    - Each item is a real link or button with an accessible name; the swell is decoration
+      and the dock works the same without it.
+    - 'Leave room around the dock for the swell: items scale past their box without
+      moving others.'
+    requires_content: the items, each a direct child
+    identity: false
+    parts:
+    - name: dock
+      description: The row of items; the swell reaches across it
+      states:
+      - attr: data-orientation
+        condition: always - which way the dock runs
+        values:
+        - horizontal
+        - vertical
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--motion--dock
+        conditional: if animate
+        registers: true
+        values:
+        - name: magnification
+        - name: distance
+        - name: spring
+    behaviors:
+    - name: pointer
+      description: The pointer's position over the element, once a frame; fine pointers
+        only, inert under reduced motion.
+      runtime: true
+    - name: spring
+      description: A value that springs to each new target and is retargeted without
+        a jump.
+      runtime: true
   poetry/motion/layout_group:
     class_name: Poetry::Motion::LayoutGroup::Component
     identifier: poetry--motion--layout_group
@@ -126,6 +215,86 @@ components:
     - name: animate
       description: One engine animation toward the element's server-rendered style;
         skipped under reduced motion and on return visits.
+      runtime: true
+  poetry/motion/magnetic:
+    class_name: Poetry::Motion::Magnetic::Component
+    identifier: poetry--motion--magnetic
+    bem_block: poetry-motion-magnetic
+    styles: []
+    options:
+    - name: animate
+      type: boolean
+      default: true
+      description: Turns the motion off; the effect renders its finished state either
+        way.
+    - name: spring
+      type: symbol
+      variants:
+      - gentle
+      - snappy
+      - bouncy
+      default: snappy
+      description: 'The spring token: gentle, snappy, bouncy.'
+    - name: strength
+      type: integer
+      default: 8
+      description: The farthest the content moves, in pixels.
+    slots: []
+    helper: poetry_magnetic
+    description: A wrapper that pulls its control a few pixels toward the pointer
+      and springs it home.
+    elements:
+    - layer
+    capsule: 2e28b16062c5
+    controllers:
+    - identifier: poetry--motion--magnetic
+      targets:
+      - layer
+      values:
+      - spring
+      - strength
+      actions: []
+      events: []
+    agent_rules:
+    - Pointer effects never move focus and never carry information a keyboard user
+      would miss.
+    - Wrap one control, a call to action; a page of magnetic controls is noise. The
+      pull is decoration and never the only cue that something is interactive.
+    requires_content: the control the pointer pulls
+    identity: false
+    parts:
+    - name: magnetic
+      description: The wrapper that catches the pointer; never moves itself
+    - name: magnetic-layer
+      description: The layer that moves
+      vars:
+      - name: "--magnet-x"
+        description: the pull along x, in pixels
+      - name: "--magnet-y"
+        description: the pull along y, in pixels
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--motion--magnetic
+        conditional: if animate
+        registers: true
+        values:
+        - name: strength
+        - name: spring
+    - element: layer
+      controllers:
+      - identifier: poetry--motion--magnetic
+        conditional: if animate
+        targets:
+        - name: layer
+    behaviors:
+    - name: pointer
+      description: The pointer's position over the element, once a frame; fine pointers
+        only, inert under reduced motion.
+      runtime: true
+    - name: spring
+      description: A value that springs to each new target and is retargeted without
+        a jump.
       runtime: true
   poetry/motion/marquee:
     class_name: Poetry::Motion::Marquee::Component
@@ -381,6 +550,62 @@ components:
     parts:
     - name: shared-element
       description: The element the visit morphs between pages; carries view-transition-name
+  poetry/motion/spotlight_card:
+    class_name: Poetry::Motion::SpotlightCard::Component
+    identifier: poetry--motion--spotlight_card
+    bem_block: poetry-motion-spotlight_card
+    styles: []
+    options:
+    - name: animate
+      type: boolean
+      default: true
+      description: Turns the motion off; the effect renders its finished state either
+        way.
+    - name: size
+      type: integer
+      default: 320
+      description: The glow's diameter in pixels.
+    slots: []
+    helper: poetry_spotlight_card
+    description: A surface with a soft glow that follows the pointer across it.
+    elements: []
+    capsule: 58588ea5f3ba
+    controllers:
+    - identifier: poetry--motion--spotlight-card
+      targets: []
+      values: []
+      actions: []
+      events: []
+    agent_rules:
+    - Pointer effects never move focus and never carry information a keyboard user
+      would miss.
+    - 'The glow is decoration: the surface reads the same without it, and it never
+      carries state.'
+    requires_content: the surface the glow follows the pointer across
+    identity: false
+    parts:
+    - name: spotlight-card
+      description: The surface; ::before draws the glow
+      vars:
+      - name: "--spotlight-x"
+        description: the pointer's x within the card
+      - name: "--spotlight-y"
+        description: the pointer's y within the card
+      - name: "--spotlight-opacity"
+        description: 1 while a fine pointer is over the card
+      - name: "--spotlight-size"
+        description: the glow's diameter (size:)
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--motion--spotlight-card
+        conditional: if animate
+        registers: true
+    behaviors:
+    - name: pointer
+      description: The pointer's position over the element, once a frame; fine pointers
+        only, inert under reduced motion.
+      runtime: true
   poetry/motion/text_reveal:
     class_name: Poetry::Motion::TextReveal::Component
     identifier: poetry--motion--text_reveal
@@ -537,9 +762,12 @@ components:
       runtime: true
 helper_args:
   poetry_animated_list: 0
+  poetry_dock: 0
   poetry_layout_group: 0
+  poetry_magnetic: 0
   poetry_marquee: 0
   poetry_number_ticker: 0
   poetry_shared_element: 0
+  poetry_spotlight_card: 0
   poetry_text_reveal: 1
   poetry_tilt_card: 0

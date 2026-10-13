@@ -4,7 +4,10 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 import AnimatedListController from "../../app/javascript/poetry/motion/animated_list_controller.js"
+import DockController from "../../app/javascript/poetry/motion/dock_controller.js"
 import LayoutGroupController from "../../app/javascript/poetry/motion/layout_group_controller.js"
+import MagneticController from "../../app/javascript/poetry/motion/magnetic_controller.js"
+import SpotlightCardController from "../../app/javascript/poetry/motion/spotlight_card_controller.js"
 import MarqueeController from "../../app/javascript/poetry/motion/marquee_controller.js"
 import TextRevealController from "../../app/javascript/poetry/motion/text_reveal_controller.js"
 import NumberTickerController from "../../app/javascript/poetry/motion/number_ticker_controller.js"
@@ -21,9 +24,12 @@ const MANIFEST_PATH = path.join(ROOT, "config", "controllers_manifest.json")
 
 const CONTROLLERS = {
   "poetry--motion--animated-list": AnimatedListController,
+  "poetry--motion--dock": DockController,
   "poetry--motion--layout-group": LayoutGroupController,
+  "poetry--motion--magnetic": MagneticController,
   "poetry--motion--marquee": MarqueeController,
   "poetry--motion--number-ticker": NumberTickerController,
+  "poetry--motion--spotlight-card": SpotlightCardController,
   "poetry--motion--text-reveal": TextRevealController,
   "poetry--motion--tilt-card": TiltCardController,
 }

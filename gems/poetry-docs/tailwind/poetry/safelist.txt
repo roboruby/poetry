@@ -177,11 +177,11 @@ aria-expanded:opacity-100
 aria-invalid:border-destructive
 aria-invalid:ring-destructive/20
 aria-pressed:bg-accent
+aria-pressed:text-accent-foreground
 aspect-(--ratio)
 aspect-square
 aspect-video
 auto-rows-min
-backdrop-blur
 backdrop:duration-450
 backdrop:opacity-[calc(1-var(--drawer-swipe-progress,0))]
 backdrop:transition-opacity
@@ -699,6 +699,7 @@ data-[orientation=vertical]:bottom-[calc(var(--slider-mid)-0.5rem)]
 data-[orientation=vertical]:bottom-[calc(var(--slider-start)-0.5rem)]
 data-[orientation=vertical]:flex-col
 data-[orientation=vertical]:h-full
+data-[orientation=vertical]:items-start
 data-[orientation=vertical]:left-1/2
 data-[orientation=vertical]:top-[calc(100%-var(--slider-end))]
 data-[orientation=vertical]:w-auto
@@ -1018,11 +1019,13 @@ has-focus-visible:border-ring
 has-focus-visible:ring-[3px]
 has-focus-visible:ring-ring/50
 hidden
+hover:bg-accent
 hover:bg-accent/30
 hover:bg-accent/50
 hover:bg-muted
 hover:group-data-[collapsible=offcanvas]:bg-sidebar
 hover:opacity-100
+hover:text-accent-foreground
 hover:text-foreground
 hover:underline
 in-data-[slot=card-content]:bg-transparent
@@ -1191,12 +1194,14 @@ ring-background
 ring-offset-background
 rotate-45
 rotate-90
+rounded-2xl
 rounded-[2px]
 rounded-[inherit]
 rounded-full
 rounded-lg
 rounded-md
 rounded-sm
+rounded-xl
 row-span-2
 row-start-1
 rtl:translate-x-1/2
@@ -1215,7 +1220,6 @@ self-start
 self-stretch
 shadow-lg
 shadow-none
-shadow-xs
 shrink-0
 size-(--cell-size)
 size-1.5
