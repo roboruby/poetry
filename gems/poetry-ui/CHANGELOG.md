@@ -2,6 +2,10 @@
 
 ## [0.1.14]
 
+### Added
+
+- `poetry:install --motion` wires poetry-motion like `--charts` wires poetry-charts: it fails before any file lands when the gem is not bundled, copies and imports the motion tokens stylesheet, and registers the motion controllers, which installs the motion policy. A plain re-run keeps refreshing the stylesheet once it is vendored.
+
 ### Changed
 
 - Tabs, toggle group, radio group, tag group, menubar and accordion use the `roving_focus` behavior; checkbox and switch use `checked`; nine anchored overlays use `popper`; the overlays use the `focus_scope` and `dismissable` runtime behaviors. The rendered HTML is unchanged, and the registry lists each component's behaviors.

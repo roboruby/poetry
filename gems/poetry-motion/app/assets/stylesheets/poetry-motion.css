@@ -1,0 +1,40 @@
+/*
+ * poetry-motion tokens. `poetry:install --motion` copies this file into the
+ * host's Tailwind tree and imports it. Themes and hosts override the
+ * tokens like any other: a later declaration wins.
+ *
+ * Durations and easings are CSS values. A spring is three numbers,
+ * stiffness, damping and mass, read by the motion policy.
+ *
+ * Reduced motion, from the user's setting or data-motion="reduce" on
+ * <html>, zeroes the durations, so CSS-only effects stop moving too; the
+ * policy makes the engine jump to end states. data-motion="full" keeps
+ * motion on for an in-app setting.
+ */
+:root {
+  --motion-duration-fast: 150ms;
+  --motion-duration-normal: 300ms;
+  --motion-duration-slow: 600ms;
+
+  --motion-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --motion-ease-emphasized: cubic-bezier(0.3, 0, 0, 1);
+  --motion-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  --motion-spring-gentle: 120 14 1;
+  --motion-spring-snappy: 400 30 1;
+  --motion-spring-bouncy: 300 10 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) {
+    --motion-duration-fast: 0ms;
+    --motion-duration-normal: 0ms;
+    --motion-duration-slow: 0ms;
+  }
+}
+
+:root[data-motion="reduce"] {
+  --motion-duration-fast: 0ms;
+  --motion-duration-normal: 0ms;
+  --motion-duration-slow: 0ms;
+}

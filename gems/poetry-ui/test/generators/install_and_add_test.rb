@@ -526,6 +526,63 @@ module Poetry
       end
     end
 
+    # -- the --motion flag (cross-repo: poetry-motion), stubbed like charts --
+
+    MOTION_CSS_MARKER = "--motion-duration-fast: 150ms;"
+
+    def with_motion_stub
+      root = Pathname.new(File.expand_path("../tmp/motion-stub", __dir__))
+      FileUtils.mkdir_p(root.join("app/assets/stylesheets"))
+      root.join("app/assets/stylesheets/poetry-motion.css").write(":root { #{MOTION_CSS_MARKER} }\n")
+
+      motion = Module.new do
+        const_set(:Engine, Class.new)
+        define_singleton_method(:root) { root }
+      end
+      Poetry.const_set(:Motion, motion)
+      yield
+    ensure
+      Poetry.send(:remove_const, :Motion) if Poetry.const_defined?(:Motion, false)
+    end
+
+    def test_motion_flag_copies_the_tokens_and_registers_once
+      index = File.join(destination_root, "app/javascript/controllers/index.js")
+      FileUtils.mkdir_p(File.dirname(index))
+      File.write(index, "import { application } from \"controllers/application\"\n")
+
+      with_motion_stub do
+        run_generator %w[--motion --skip-bundle]
+        run_generator %w[--motion --skip-bundle]
+      end
+
+      assert_file "app/assets/tailwind/poetry/motion.css", /#{Regexp.escape(MOTION_CSS_MARKER)}/o
+      entry = File.read(File.join(destination_root, InstallGenerator::TAILWIND_ENTRY))
+
+      assert_equal 1, entry.scan('@import "./poetry/motion.css";').size, "entry line appended exactly once"
+      content = File.read(index)
+
+      assert_equal 1, content.scan("registerPoetryMotionControllers(application)").size
+      assert_includes content, %(import { registerPoetryMotionControllers } from "@poetry/motion")
+    end
+
+    def test_motion_is_remembered_by_the_vendored_file_on_a_plain_rerun
+      with_motion_stub do
+        run_generator %w[--motion --skip-bundle]
+        File.write(File.join(destination_root, "app/assets/tailwind/poetry/motion.css"), "/* stale */\n")
+
+        run_generator %w[--skip-bundle]
+      end
+
+      assert_file "app/assets/tailwind/poetry/motion.css", /#{Regexp.escape(MOTION_CSS_MARKER)}/o
+    end
+
+    def test_motion_without_the_gem_fails_before_any_file_lands
+      error = assert_raises(Thor::Error) { run_generator %w[--motion --skip-bundle], debug: true }
+
+      assert_includes error.message, %(gem "poetry-motion")
+      assert_no_file "app/assets/tailwind/poetry/tokens.css"
+    end
+
     def test_a_superseded_tokens_line_converges_however_it_was_written
       { "crlf" => "@import \"./poetry/tokens.css\";\r\n",
         "comment" => "@import \"./poetry/tokens.css\"; /* poetry tokens */\n",

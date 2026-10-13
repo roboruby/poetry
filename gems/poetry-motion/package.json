@@ -1,0 +1,36 @@
+{
+  "name": "@poetry/motion",
+  "version": "0.1.13",
+  "private": true,
+  "description": "poetry-motion's behaviors and motion policy. Importmap-first (the engine pins this tree); the same tree is the npm channel for bundler hosts.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./app/javascript/poetry/motion/index.js",
+    "./engine": "./app/javascript/poetry/motion-kernel/engine.js",
+    "./*": "./app/javascript/poetry/motion/*.js"
+  },
+  "files": [
+    "app/javascript"
+  ],
+  "peerDependencies": {
+    "@hotwired/stimulus": ">= 3.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@hotwired/stimulus": "^3.2.2",
+    "esbuild": "^0.28.1",
+    "eslint": "^9.39.5",
+    "eslint-plugin-jsdoc": "^63.0.0",
+    "globals": "^16.0.0",
+    "jsdom": "^30.0.1",
+    "motion": "14.1.0",
+    "vitest": "^4.1.11"
+  },
+  "scripts": {
+    "test": "npm run vendor:motion:verify && eslint app/javascript && vitest run",
+    "vendor:motion": "node vendor/motion-kernel/build.mjs",
+    "vendor:motion:verify": "node vendor/motion-kernel/build.mjs --verify",
+    "lint": "eslint app/javascript"
+  }
+}

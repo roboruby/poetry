@@ -35,6 +35,8 @@ module Poetry
   # safelist pass picks the chart dictionaries up on its own; what a host
   # still needs by hand is the motion stylesheet in the Tailwind entry and
   # the Stimulus registration, and that is exactly what the flag does).
+  # `--motion` does the same for poetry-motion: its tokens stylesheet and
+  # the controller registration, which installs the motion policy.
   #
   # @example
   #   bin/rails g poetry:install --theme vega
@@ -58,6 +60,8 @@ module Poetry
 
     class_option :charts, type: :boolean, default: false,
                           desc: %(Also wire poetry-charts (requires gem "poetry-charts" in the bundle))
+    class_option :motion, type: :boolean, default: false,
+                          desc: %(Also wire poetry-motion (requires gem "poetry-motion" in the bundle))
     class_option :skip_bundle, type: :boolean, default: false,
                                desc: "Skip `bundle install` after adding the herb gem (poetry:check's parser)"
     # --no-preflight: the host imports Tailwind without preflight (its own
@@ -176,6 +180,15 @@ module Poetry
 
       raise Thor::Error, "--charts needs poetry-charts in the bundle - add " \
                          '`gem "poetry-charts"` to the Gemfile, bundle, and re-run'
+    end
+
+    # The same fail-fast for --motion.
+    # @api private
+    def verify_motion_gem
+      return if !options[:motion] || motion_available?
+
+      raise Thor::Error, "--motion needs poetry-motion in the bundle - add " \
+                         '`gem "poetry-motion"` to the Gemfile, bundle, and re-run'
     end
 
     # Same fail-fast for --theme: an unknown name (or one poetry-charts
@@ -352,6 +365,36 @@ module Poetry
       JS
     end
 
+    # --motion: the tokens stylesheet, copied and imported like charts.css,
+    # and the controller registration, which installs the motion policy. The
+    # engine's pins (the animation engine without preload) come from the gem.
+    # @api private
+    def wire_motion
+      return unless motion?
+
+      unless motion_available? && Poetry::Motion.respond_to?(:root)
+        say_status :note, "poetry/motion.css is installed but poetry-motion is not in the bundle - " \
+                          "the motion files were not refreshed (add the gem, or delete the file)", :yellow
+        return
+      end
+
+      create_file "app/assets/tailwind/poetry/motion.css",
+                  Poetry::Motion.root.join("app/assets/stylesheets/poetry-motion.css").read, force: true
+      inject_unless_present(TAILWIND_ENTRY, %(@import "./poetry/motion.css";))
+
+      index = "app/javascript/controllers/index.js"
+      unless File.exist?(File.join(destination_root, index))
+        say_status :note, "no #{index} - register the motion controllers yourself: " \
+                          "registerPoetryMotionControllers(application) from \"@poetry/motion\"", :yellow
+        return
+      end
+
+      inject_unless_present(index, <<~JS.strip)
+        import { registerPoetryMotionControllers } from "@poetry/motion"
+        registerPoetryMotionControllers(application)
+      JS
+    end
+
     # poetry-agent's stylesheet (the WebMCP agent-focus states) rides along
     # when the gem is bundled: vendored like charts.css, imported into
     # layer(base) beside the theme. Hosts without the gem carry neither the
@@ -452,6 +495,11 @@ module Poetry
       options[:charts] || File.exist?(File.join(destination_root, "app/assets/tailwind/poetry/charts.css"))
     end
 
+    # --motion, or a motion stylesheet already vendored (the upgrade path).
+    def motion?
+      options[:motion] || File.exist?(File.join(destination_root, "app/assets/tailwind/poetry/motion.css"))
+    end
+
     # Whether preflight is skipped: by option, or a reset file is present.
     def floor?
       options[:preflight] == false || File.exist?(File.join(destination_root, RESET_FILE))
@@ -492,6 +540,11 @@ module Poetry
     # Whether the charts gem is bundled.
     def charts_available?
       defined?(Poetry::Charts::Engine) ? true : false
+    end
+
+    # Whether the motion gem is bundled.
+    def motion_available?
+      defined?(Poetry::Motion::Engine) ? true : false
     end
 
     # Whether the agent gem is bundled.
