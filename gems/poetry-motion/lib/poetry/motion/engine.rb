@@ -21,6 +21,15 @@ module Poetry
         Poetry::Core::Stimulus::Manifest.register("#{Poetry::Motion.root}/config/controllers_manifest.json")
       end
 
+      # Registered from to_prepare, so a host that loads ActionView early
+      # never resolves the helper before the autoload paths exist (the
+      # poetry-charts fix).
+      initializer "poetry_motion.helpers" do |app|
+        app.config.to_prepare do
+          ActiveSupport.on_load(:action_view) { include Poetry::Motion::ComponentsHelper }
+        end
+      end
+
       initializer "poetry_motion.previews" do |app|
         if app.config.respond_to?(:view_component)
           app.config.view_component.previews.paths << "#{Poetry::Motion.root}/app/components"

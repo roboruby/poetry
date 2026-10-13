@@ -1,0 +1,7 @@
+# Per-effect one-line descriptions (editorial, hand-authored), merged into
+# the generated registry by Poetry::Motion.registry. Keyed by component_path.
+---
+poetry/motion/marquee: "Items that scroll in a loop, logos or testimonials, with a pause control; the loop is CSS."
+poetry/motion/number_ticker: "A number that counts up to its server-rendered value when it comes into view."
+poetry/motion/text_reveal: "A short passage whose words brighten one after another as it scrolls into view."
+poetry/motion/tilt_card: "A surface that leans toward a fine pointer and springs back flat."

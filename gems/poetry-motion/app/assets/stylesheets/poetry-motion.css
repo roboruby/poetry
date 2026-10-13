@@ -38,3 +38,108 @@
   --motion-duration-normal: 0ms;
   --motion-duration-slow: 0ms;
 }
+
+/*
+ * Marquee: the loop is CSS. Every copy travels one copy's length plus the
+ * gap, so the seam never shows. Hover, focus inside and the pause control
+ * hold it still; reduced motion stops it and hides the copies.
+ */
+@keyframes poetry-marquee-x {
+  from { translate: 0 0; }
+  to { translate: calc(-100% - var(--marquee-gap)) 0; }
+}
+
+@keyframes poetry-marquee-y {
+  from { translate: 0 0; }
+  to { translate: 0 calc(-100% - var(--marquee-gap)); }
+}
+
+[data-slot="marquee"] {
+  --marquee-gap: 1rem;
+  gap: var(--marquee-gap);
+}
+
+[data-slot="marquee"][data-direction="up"],
+[data-slot="marquee"][data-direction="down"] {
+  flex-direction: column;
+}
+
+[data-slot="marquee-track"] {
+  gap: var(--marquee-gap);
+  min-width: 100%;
+  animation: poetry-marquee-x var(--marquee-duration, 40s) linear infinite;
+}
+
+[data-slot="marquee"][data-direction="up"] > [data-slot="marquee-track"],
+[data-slot="marquee"][data-direction="down"] > [data-slot="marquee-track"] {
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100%;
+  animation-name: poetry-marquee-y;
+}
+
+[data-slot="marquee"][data-direction="right"] > [data-slot="marquee-track"],
+[data-slot="marquee"][data-direction="down"] > [data-slot="marquee-track"] {
+  animation-direction: reverse;
+}
+
+[data-slot="marquee"]:hover > [data-slot="marquee-track"],
+[data-slot="marquee"]:focus-within > [data-slot="marquee-track"],
+[data-slot="marquee"][data-paused] > [data-slot="marquee-track"] {
+  animation-play-state: paused;
+}
+
+[data-slot="marquee"][data-animate="false"] > [data-slot="marquee-track"] {
+  animation: none;
+}
+
+[data-slot="marquee"][data-animate="false"] > [data-slot="marquee-track"][aria-hidden],
+[data-slot="marquee"][data-animate="false"] > [data-slot="marquee-pause"] {
+  display: none;
+}
+
+/*
+ * Text reveal: --reveal-progress runs 0 to 1 as the passage scrolls in, and
+ * each word's opacity follows its place in line. Without the property the
+ * progress is 1 and every word is at full strength.
+ */
+[data-slot="text-reveal-word"] {
+  opacity: clamp(0.2, calc(var(--reveal-progress, 1) * var(--reveal-count, 1) - var(--word-index, 0)), 1);
+  transition: opacity var(--motion-duration-fast) linear;
+}
+
+/*
+ * Tilt card: the layer leans by two custom properties. Before the pointer
+ * arrives the layer has no transform at all, so it holds no containing
+ * block for fixed descendants until it leans.
+ */
+[data-slot="tilt-card"] {
+  perspective: 900px;
+}
+
+[data-slot="tilt-card-layer"] {
+  transform-style: preserve-3d;
+}
+
+[data-slot="tilt-card-layer"][style*="--tilt"] {
+  transform: rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg));
+}
+
+/* Reduced motion: the loops stand still and the copies go away. */
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) [data-slot="marquee-track"] {
+    animation: none;
+  }
+
+  :root:not([data-motion="full"]) [data-slot="marquee-track"][aria-hidden] {
+    display: none;
+  }
+}
+
+:root[data-motion="reduce"] [data-slot="marquee-track"] {
+  animation: none;
+}
+
+:root[data-motion="reduce"] [data-slot="marquee-track"][aria-hidden] {
+  display: none;
+}

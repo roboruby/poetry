@@ -64,11 +64,12 @@ export function onReducedMotionChange(fn) {
  * @param {Object} [target]
  * @param {HTMLElement} [target.element] the element the animation writes
  * @param {string[]} [target.properties] the CSS properties it writes inline
+ * @param {Function} [target.finish] restores anything else it wrote (text a ticker counts), run after it stops
  * @returns {Object}
  */
-export function track(animation, { element = null, properties = [] } = {}) {
+export function track(animation, { element = null, properties = [], finish = null } = {}) {
   installPolicy()
-  running.set(animation, { element, properties })
+  running.set(animation, { element, properties, finish })
   const forget = () => running.delete(animation)
   Promise.resolve(animation.finished).then(forget, forget)
   return animation
@@ -99,7 +100,12 @@ export function release(animation) {
   if (!target) return
 
   running.delete(animation)
-  const { element, properties } = target
+  const { element, properties, finish } = target
+  if (finish) {
+    settle(() => animation.stop())
+    finish()
+    return
+  }
   if (!element) {
     settle(() => animation.complete())
     return
@@ -172,7 +178,7 @@ export function token(name) {
  */
 export function duration(value) {
   if (prefersReducedMotion()) return 0
-  const raw = typeof value === "number" ? `${value}ms` : token(`duration-${value}`)
+  const raw = typeof value === "number" || /^\d+$/.test(value) ? `${value}ms` : token(`duration-${value}`)
   const match = /^([\d.]+)(ms|s)$/.exec(raw)
   if (!match) throw new Error(`poetry-motion: unknown duration ${JSON.stringify(value)}`)
   const amount = Number(match[1])

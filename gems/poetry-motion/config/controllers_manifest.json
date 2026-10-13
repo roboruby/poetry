@@ -1,1 +1,124 @@
-{}
+{
+  "poetry--motion--marquee": {
+    "doc": "Marquee: the loop itself is CSS (the motion stylesheet), so this controller never loads the engine. It owns the pause control: a toggle that holds the loop still, mirrored to data-paused on the marquee and aria-pressed on the button. Hover and focus inside pause it too, in CSS.",
+    "targets": [
+      "pause"
+    ],
+    "values": {
+      "paused": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether the loop is held still by the pause control."
+      }
+    },
+    "methods": [
+      "pausedValueChanged",
+      "toggle"
+    ],
+    "events": [],
+    "method_docs": {
+      "pausedValueChanged": "Mirrors the paused state to the marquee and the control.",
+      "toggle": "Pauses a running loop or resumes a paused one."
+    }
+  },
+  "poetry--motion--number-ticker": {
+    "doc": "Number ticker: counts up to a number the server already rendered. The visible digits are aria-hidden; a screen reader reads the final number beside them. The count springs from `from` to `value`, formatted with Intl.NumberFormat, and the server's own text comes back when it lands, at teardown and before Turbo caches the page. Reduced motion, a cache preview and a restore visit show the final number at once.",
+    "targets": [
+      "display"
+    ],
+    "values": {
+      "value": {
+        "type": "Number",
+        "doc": "The final number, already rendered by the server."
+      },
+      "from": {
+        "type": "Number",
+        "default": 0,
+        "doc": "Where the count starts."
+      },
+      "locale": {
+        "type": "String",
+        "doc": "The locale for Intl.NumberFormat; the page's when blank."
+      },
+      "format": {
+        "type": "Object",
+        "doc": "Intl.NumberFormat options, as the server formatted the final number."
+      },
+      "spring": {
+        "type": "String",
+        "default": "gentle",
+        "doc": "The spring token the count follows."
+      },
+      "trigger": {
+        "type": "String",
+        "default": "in_view",
+        "doc": "When the count starts: \"load\" or \"in_view\"."
+      },
+      "delay": {
+        "type": "Number",
+        "default": 0,
+        "doc": "Milliseconds to wait before counting."
+      },
+      "animate": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "false renders the final number with no count."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts the effect for this connect.",
+      "disconnect": "Undoes everything this connect started, leaving the finished state."
+    }
+  },
+  "poetry--motion--text-reveal": {
+    "doc": "Text reveal: the words brighten as the text scrolls through the viewport. The server renders every word at full strength; this controller writes one --reveal-progress custom property, and the motion stylesheet turns it into each word's opacity. Removing it, at teardown and before Turbo caches the page, shows the finished text.",
+    "targets": [],
+    "values": {},
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts the effect for this connect.",
+      "disconnect": "Undoes everything this connect started, leaving the finished state."
+    }
+  },
+  "poetry--motion--tilt-card": {
+    "doc": "Tilt card: the inner layer leans toward a fine pointer and springs back flat when it leaves. Two custom properties, --tilt-x and --tilt-y, carry the angles; the motion stylesheet rotates the layer, never the outer element. Touch, coarse pointers and reduced motion leave it flat.",
+    "targets": [
+      "layer"
+    ],
+    "values": {
+      "max": {
+        "type": "Number",
+        "default": 8,
+        "doc": "The largest lean, in degrees."
+      },
+      "spring": {
+        "type": "String",
+        "default": "snappy",
+        "doc": "The spring token the lean follows."
+      },
+      "animate": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "false leaves the card flat."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts the effect for this connect.",
+      "disconnect": "Undoes everything this connect started, leaving the finished state."
+    }
+  }
+}

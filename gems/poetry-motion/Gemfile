@@ -29,5 +29,6 @@ gem "yard", require: false
 
 group :test do
   # The importmap gate boots the real pins: preload: false on the engine.
+  gem "capybara" # ViewComponent's page matchers
   gem "importmap-rails", require: false
 end

@@ -33,6 +33,7 @@
     "test": "npm run vendor:motion:verify && eslint app/javascript && vitest run",
     "vendor:motion": "node vendor/motion-kernel/build.mjs",
     "vendor:motion:verify": "node vendor/motion-kernel/build.mjs --verify",
-    "lint": "eslint app/javascript"
+    "lint": "eslint app/javascript",
+    "manifest": "MANIFEST_WRITE=1 vitest run test/javascript/controllers_manifest.test.js"
   }
 }
