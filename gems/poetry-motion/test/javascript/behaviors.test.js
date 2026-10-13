@@ -49,7 +49,7 @@ beforeEach(() => {
   root.style.setProperty("--motion-duration-normal", "300ms")
   root.style.setProperty("--motion-duration-slow", "600ms")
   root.style.setProperty("--motion-ease-standard", "cubic-bezier(0.2, 0, 0, 1)")
-  root.style.setProperty("--motion-spring-snappy", "400 30 1")
+  root.style.setProperty("--motion-spring-snappy", "400 40 1")
 })
 
 afterEach(() => {

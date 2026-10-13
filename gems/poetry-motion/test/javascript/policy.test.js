@@ -23,7 +23,7 @@ beforeEach(() => {
   root.style.setProperty("--motion-duration-fast", "150ms")
   root.style.setProperty("--motion-duration-slow", "0.6s")
   root.style.setProperty("--motion-ease-standard", "cubic-bezier(0.2, 0, 0, 1)")
-  root.style.setProperty("--motion-spring-snappy", "400 30 1")
+  root.style.setProperty("--motion-spring-snappy", "400 40 1")
   document.startViewTransition = () => ({})
 })
 
@@ -83,7 +83,7 @@ describe("tokens", () => {
 
   it("easings and springs", () => {
     expect(easing("standard")).toEqual([0.2, 0, 0, 1])
-    expect(spring("snappy")).toEqual({ type: "spring", stiffness: 400, damping: 30, mass: 1 })
+    expect(spring("snappy")).toEqual({ type: "spring", stiffness: 400, damping: 40, mass: 1 })
   })
 
   it("an unknown token raises with its name", () => {

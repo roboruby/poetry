@@ -20,8 +20,8 @@ beforeEach(() => {
   }))
   const root = document.documentElement
   delete root.dataset.motion
-  root.style.setProperty("--motion-spring-gentle", "120 14 1")
-  root.style.setProperty("--motion-spring-snappy", "400 30 1")
+  root.style.setProperty("--motion-spring-gentle", "120 22 1")
+  root.style.setProperty("--motion-spring-snappy", "400 40 1")
   application = Application.start()
   registerPoetryMotionControllers(application)
 })
@@ -61,7 +61,7 @@ describe("marquee", () => {
 const ticker = (attrs = "") => `
   <span data-slot="number-ticker" data-controller="poetry--motion--number-ticker"
         data-poetry--motion--number-ticker-value-value="1200" data-poetry--motion--number-ticker-trigger-value="load"
-        data-poetry--motion--number-ticker-spring-value="snappy" ${attrs}>
+        data-poetry--motion--number-ticker-spring-value="gentle" ${attrs}>
     <span class="sr-only">1,200</span>
     <span aria-hidden="true" data-slot="number-ticker-display" data-poetry--motion--number-ticker-target="display">1,200</span>
   </span>`

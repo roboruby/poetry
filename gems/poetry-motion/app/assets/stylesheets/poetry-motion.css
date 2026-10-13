@@ -4,7 +4,9 @@
  * tokens like any other: a later declaration wins.
  *
  * Durations and easings are CSS values. A spring is three numbers,
- * stiffness, damping and mass, read by the motion policy.
+ * stiffness, damping and mass, read by the motion policy. gentle and snappy
+ * are critically damped, so they settle without passing their target;
+ * bouncy overshoots on purpose.
  *
  * Reduced motion, from the user's setting or data-motion="reduce" on
  * <html>, zeroes the durations, so CSS-only effects stop moving too; the
@@ -20,8 +22,8 @@
   --motion-ease-emphasized: cubic-bezier(0.3, 0, 0, 1);
   --motion-ease-exit: cubic-bezier(0.4, 0, 1, 1);
 
-  --motion-spring-gentle: 120 14 1;
-  --motion-spring-snappy: 400 30 1;
+  --motion-spring-gentle: 120 22 1;
+  --motion-spring-snappy: 400 40 1;
   --motion-spring-bouncy: 300 10 1;
 }
 

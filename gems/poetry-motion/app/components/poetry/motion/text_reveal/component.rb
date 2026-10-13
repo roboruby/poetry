@@ -19,7 +19,9 @@ module Poetry
 
         AGENT_RULES = [
           "Text reveal is for a short passage of plain text (a statement, a quote), never body copy, " \
-          "links or form labels: the words are rebuilt as spans."
+          "links or form labels: the words are rebuilt as spans.",
+          "Words not yet revealed are dimmed below text contrast on purpose; readers get the whole " \
+          "passage from its hidden copy, and nothing the page needs may live only in a reveal."
         ].freeze
 
         use_behavior :scroll_value

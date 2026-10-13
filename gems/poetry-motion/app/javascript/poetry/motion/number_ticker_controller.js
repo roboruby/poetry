@@ -64,7 +64,9 @@ export default class NumberTickerController extends Controller {
     const scope = scopeOf(this)
     const display = this.displayTarget
     const final = display.textContent
-    const formatter = new Intl.NumberFormat(this.localeValue || undefined, this.formatValue)
+    // A whole number counts in whole numbers unless the format says otherwise.
+    const digits = Number.isInteger(this.valueValue) ? { maximumFractionDigits: 0 } : {}
+    const formatter = new Intl.NumberFormat(this.localeValue || undefined, { ...digits, ...this.formatValue })
     let animation = null
     let stopped = false
     scope.defer(() => {
