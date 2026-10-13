@@ -10,6 +10,8 @@
 
 - Two scroll effects: `poetry_scroll_progress`, a reading bar for the page or one long element that keeps following under reduced motion since it is feedback on the reader's own scrolling, and `poetry_parallax`, content that drifts at its own pace and rests where the server put it under reduced motion. `useScrollValue` takes `follow: true` for scroll feedback.
 
+- Three canvas effects: `poetry_particles` (drifting, optionally linked dots drawn by the canvas pattern, seeded so a still frame is the same every visit), `poetry_confetti` (a burst from a click, or once on render, on a server-rendered full-viewport canvas) and `poetry_globe` (a dotted, turning globe with markers). Confetti and the globe each load their own vendored kernel on demand: canvas-confetti 1.9.4 (ISC) and cobe 2.0.1 (MIT), recorded in THIRD_PARTY_NOTICES.
+
 ### Changed
 
 - The effect controllers load lazily: only the entry, the policy and the engine loader preload, and `registerPoetryMotionControllers` imports each controller the first time its identifier appears on the page.

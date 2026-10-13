@@ -37,6 +37,21 @@ describe("the vendored engine", () => {
     expect(pkg.devDependencies.motion).toMatch(/^\d+\.\d+\.\d+$/)
   })
 
+  it("the confetti and globe kernels match their packages and stay small", async () => {
+    const installed = (name) =>
+      JSON.parse(fs.readFileSync(path.join(ROOT, "node_modules", name, "package.json"), "utf8")).version
+    const confetti = await import("@poetry/motion/confetti")
+    const globe = await import("@poetry/motion/globe")
+    expect(typeof confetti.create).toBe("function")
+    expect(typeof globe.createGlobe).toBe("function")
+    expect(confetti.KERNEL_VERSIONS).toEqual({ "canvas-confetti": installed("canvas-confetti") })
+    expect(globe.KERNEL_VERSIONS).toEqual({ cobe: installed("cobe") })
+    for (const [name, budget] of [["confetti", 8], ["globe", 10]]) {
+      const file = path.join(ROOT, `app/javascript/poetry/motion-kernel/${name}.js`)
+      expect(zlib.gzipSync(fs.readFileSync(file), { level: 9 }).length, name).toBeLessThanOrEqual(budget * 1024)
+    }
+  })
+
   it(`stays within ${BUDGET / 1024} KB gzipped`, () => {
     const gzipped = zlib.gzipSync(fs.readFileSync(ENGINE), { level: 9 }).length
     expect(gzipped).toBeLessThanOrEqual(BUDGET)

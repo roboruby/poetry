@@ -8,6 +8,12 @@ module Poetry
       # A decorative CSS background behind the block's content.
       def poetry_background(**, &) = render(Poetry::Motion::Background::Component.new(**), &)
 
+      # A burst of confetti from a click, or once on render.
+      def poetry_confetti(**, &) = render(Poetry::Motion::Confetti::Component.new(**), &)
+
+      # A dotted, turning globe with markers.
+      def poetry_globe(**) = render(Poetry::Motion::Globe::Component.new(**))
+
       # A list whose Turbo Stream changes animate.
       def poetry_animated_list(**, &) = render(Poetry::Motion::AnimatedList::Component.new(**), &)
 
@@ -34,6 +40,9 @@ module Poetry
 
       # A word that turns over into the next, in place.
       def poetry_word_rotate(**) = render(Poetry::Motion::WordRotate::Component.new(**))
+
+      # A field of drifting dots behind the block's content.
+      def poetry_particles(**, &) = render(Poetry::Motion::Particles::Component.new(**), &)
 
       # Content that drifts at its own pace as it scrolls by.
       def poetry_parallax(**, &) = render(Poetry::Motion::Parallax::Component.new(**), &)

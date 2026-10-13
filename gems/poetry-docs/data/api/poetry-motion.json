@@ -320,7 +320,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 12
+          "line": 18
         },
         {
           "name": "poetry_background",
@@ -335,6 +335,18 @@
           "line": 9
         },
         {
+          "name": "poetry_confetti",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_confetti(**, &)",
+          "docstring": "A burst of confetti from a click, or once on render.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/helpers/poetry/motion/components_helper.rb",
+          "line": 12
+        },
+        {
           "name": "poetry_dock",
           "scope": "instance",
           "group": null,
@@ -344,7 +356,19 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 21
+          "line": 27
+        },
+        {
+          "name": "poetry_globe",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_globe(**)",
+          "docstring": "A dotted, turning globe with markers.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/helpers/poetry/motion/components_helper.rb",
+          "line": 15
         },
         {
           "name": "poetry_layout_group",
@@ -356,7 +380,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 15
+          "line": 21
         },
         {
           "name": "poetry_magnetic",
@@ -368,7 +392,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 24
+          "line": 30
         },
         {
           "name": "poetry_marquee",
@@ -380,7 +404,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 45
+          "line": 54
         },
         {
           "name": "poetry_number_ticker",
@@ -392,7 +416,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 51
+          "line": 60
         },
         {
           "name": "poetry_parallax",
@@ -404,7 +428,19 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 39
+          "line": 48
+        },
+        {
+          "name": "poetry_particles",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_particles(**, &)",
+          "docstring": "A field of drifting dots behind the block's content.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/helpers/poetry/motion/components_helper.rb",
+          "line": 45
         },
         {
           "name": "poetry_scramble",
@@ -416,7 +452,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 30
+          "line": 36
         },
         {
           "name": "poetry_scroll_progress",
@@ -428,7 +464,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 42
+          "line": 51
         },
         {
           "name": "poetry_shared_element",
@@ -440,7 +476,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 18
+          "line": 24
         },
         {
           "name": "poetry_spotlight_card",
@@ -452,7 +488,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 27
+          "line": 33
         },
         {
           "name": "poetry_text_reveal",
@@ -464,7 +500,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 48
+          "line": 57
         },
         {
           "name": "poetry_tilt_card",
@@ -476,7 +512,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 54
+          "line": 63
         },
         {
           "name": "poetry_typewriter",
@@ -488,7 +524,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 33
+          "line": 39
         },
         {
           "name": "poetry_word_rotate",
@@ -500,9 +536,60 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 36
+          "line": 42
         }
       ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::Confetti::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "A burst of confetti over the page: from a click on the control it\nwraps (trigger: :click), or once when it renders (trigger: :load, for\na success message a Turbo Stream delivers). The full-viewport canvas\nis server-rendered, aria-hidden and never takes a pointer; the\ncanvas-confetti kernel loads on the first burst. Reduced motion\nbursts nothing.",
+      "examples": [
+        {
+          "title": "",
+          "text": "<%= poetry_confetti do %>\n  <%= poetry_button { \"Ship it\" } %>\n<% end %>"
+        }
+      ],
+      "file": "app/components/poetry/motion/confetti/component.rb",
+      "methods": [],
+      "constants": [
+        {
+          "name": "DOCS",
+          "value": "{\n  duration: \"How long the motion runs: a duration token (#{DURATIONS.join(\", \")}) or milliseconds.\",\n  easing: \"The easing token: #{EASINGS.join(\", \")}.\",\n  spring: \"The spring token: #{SPRINGS.join",
+          "docstring": "What each option means, for the registry and the docs."
+        },
+        {
+          "name": "DURATIONS",
+          "value": "%i[fast normal slow].freeze",
+          "docstring": "The duration tokens (--motion-duration-*); duration: also takes milliseconds."
+        },
+        {
+          "name": "EASINGS",
+          "value": "%i[standard emphasized exit].freeze",
+          "docstring": "The easing tokens (--motion-ease-*)."
+        },
+        {
+          "name": "SPRINGS",
+          "value": "%i[gentle snappy bouncy].freeze",
+          "docstring": "The spring tokens (--motion-spring-*)."
+        },
+        {
+          "name": "TRIGGERS",
+          "value": "%i[load in_view hover].freeze",
+          "docstring": "When an effect starts: on connect, when it scrolls into view, or on hover."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::Confetti::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "The confetti's classes: the canvas covers the viewport and lets every pointer through.",
+      "examples": [],
+      "file": "app/components/poetry/motion/confetti/style.rb",
+      "methods": [],
       "constants": []
     },
     {
@@ -573,6 +660,70 @@
         }
       ],
       "file": "lib/poetry/motion/engine.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::Globe::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "A dotted globe that turns slowly, with markers at the places you\ngive it - a decorative map of where something happens. It is drawn\nby the cobe kernel with WebGL on a server-rendered canvas, turns only\nwhile on screen, and stands still under reduced motion. Say what it\nshows in text nearby or with label:; the canvas itself is a picture.",
+      "examples": [
+        {
+          "title": "",
+          "text": "<%= poetry_globe(markers: offices.map { [_1.lat, _1.lng] }, label: \"Our offices\") %>"
+        }
+      ],
+      "file": "app/components/poetry/motion/globe/component.rb",
+      "methods": [
+        {
+          "name": "before_render",
+          "scope": "instance",
+          "group": null,
+          "signature": "before_render",
+          "docstring": "",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/components/poetry/motion/globe/component.rb",
+          "line": 45
+        }
+      ],
+      "constants": [
+        {
+          "name": "DOCS",
+          "value": "{\n  duration: \"How long the motion runs: a duration token (#{DURATIONS.join(\", \")}) or milliseconds.\",\n  easing: \"The easing token: #{EASINGS.join(\", \")}.\",\n  spring: \"The spring token: #{SPRINGS.join",
+          "docstring": "What each option means, for the registry and the docs."
+        },
+        {
+          "name": "DURATIONS",
+          "value": "%i[fast normal slow].freeze",
+          "docstring": "The duration tokens (--motion-duration-*); duration: also takes milliseconds."
+        },
+        {
+          "name": "EASINGS",
+          "value": "%i[standard emphasized exit].freeze",
+          "docstring": "The easing tokens (--motion-ease-*)."
+        },
+        {
+          "name": "SPRINGS",
+          "value": "%i[gentle snappy bouncy].freeze",
+          "docstring": "The spring tokens (--motion-spring-*)."
+        },
+        {
+          "name": "TRIGGERS",
+          "value": "%i[load in_view hover].freeze",
+          "docstring": "When an effect starts: on connect, when it scrolls into view, or on hover."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::Globe::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "The globe's classes: a square, the canvas filling it.",
+      "examples": [],
+      "file": "app/components/poetry/motion/globe/style.rb",
       "methods": [],
       "constants": []
     },
@@ -942,6 +1093,57 @@
       "docstring": "The parallax wrapper's classes; the drift lives in the motion stylesheet.",
       "examples": [],
       "file": "app/components/poetry/motion/parallax/style.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::Particles::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "A field of slow-drifting dots behind its content, optionally linked by\nfaint lines - drawn on a server-rendered, aria-hidden canvas. It is\nthe canvas pattern: drawn every visible frame, paused off screen and\nin hidden tabs, one still frame under reduced motion. The dots take\nthe canvas's text color; set it with a text-* class.",
+      "examples": [
+        {
+          "title": "A hero over linked particles",
+          "text": "<%= poetry_particles(link: 90, class: \"py-24 text-primary/40\") do %>\n  <h1>...</h1>\n<% end %>"
+        }
+      ],
+      "file": "app/components/poetry/motion/particles/component.rb",
+      "methods": [],
+      "constants": [
+        {
+          "name": "DOCS",
+          "value": "{\n  duration: \"How long the motion runs: a duration token (#{DURATIONS.join(\", \")}) or milliseconds.\",\n  easing: \"The easing token: #{EASINGS.join(\", \")}.\",\n  spring: \"The spring token: #{SPRINGS.join",
+          "docstring": "What each option means, for the registry and the docs."
+        },
+        {
+          "name": "DURATIONS",
+          "value": "%i[fast normal slow].freeze",
+          "docstring": "The duration tokens (--motion-duration-*); duration: also takes milliseconds."
+        },
+        {
+          "name": "EASINGS",
+          "value": "%i[standard emphasized exit].freeze",
+          "docstring": "The easing tokens (--motion-ease-*)."
+        },
+        {
+          "name": "SPRINGS",
+          "value": "%i[gentle snappy bouncy].freeze",
+          "docstring": "The spring tokens (--motion-spring-*)."
+        },
+        {
+          "name": "TRIGGERS",
+          "value": "%i[load in_view hover].freeze",
+          "docstring": "When an effect starts: on connect, when it scrolls into view, or on hover."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::Particles::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "The particles' classes: a canvas filling the region behind the content.",
+      "examples": [],
+      "file": "app/components/poetry/motion/particles/style.rb",
       "methods": [],
       "constants": []
     },

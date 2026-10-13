@@ -4,10 +4,13 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 import AnimatedListController from "../../app/javascript/poetry/motion/animated_list_controller.js"
+import ConfettiController from "../../app/javascript/poetry/motion/confetti_controller.js"
 import DockController from "../../app/javascript/poetry/motion/dock_controller.js"
+import GlobeController from "../../app/javascript/poetry/motion/globe_controller.js"
 import LayoutGroupController from "../../app/javascript/poetry/motion/layout_group_controller.js"
 import MagneticController from "../../app/javascript/poetry/motion/magnetic_controller.js"
 import ParallaxController from "../../app/javascript/poetry/motion/parallax_controller.js"
+import ParticlesController from "../../app/javascript/poetry/motion/particles_controller.js"
 import ScrambleController from "../../app/javascript/poetry/motion/scramble_controller.js"
 import ScrollProgressController from "../../app/javascript/poetry/motion/scroll_progress_controller.js"
 import SpotlightCardController from "../../app/javascript/poetry/motion/spotlight_card_controller.js"
@@ -29,12 +32,15 @@ const MANIFEST_PATH = path.join(ROOT, "config", "controllers_manifest.json")
 
 const CONTROLLERS = {
   "poetry--motion--animated-list": AnimatedListController,
+  "poetry--motion--confetti": ConfettiController,
   "poetry--motion--dock": DockController,
+  "poetry--motion--globe": GlobeController,
   "poetry--motion--layout-group": LayoutGroupController,
   "poetry--motion--magnetic": MagneticController,
   "poetry--motion--marquee": MarqueeController,
   "poetry--motion--number-ticker": NumberTickerController,
   "poetry--motion--parallax": ParallaxController,
+  "poetry--motion--particles": ParticlesController,
   "poetry--motion--scramble": ScrambleController,
   "poetry--motion--scroll-progress": ScrollProgressController,
   "poetry--motion--spotlight-card": SpotlightCardController,

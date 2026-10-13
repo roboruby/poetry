@@ -36,6 +36,22 @@ Class: Poetry::Motion::Background::Component - BEM block `poetry-motion-backgrou
 - RULE: Backgrounds are decoration: text on them still meets contrast, and the content stands on its own with the background removed.
 - RULE: This is the CSS tier: a background that follows the pointer, draws on a canvas or runs a shader is not this component.
 
+## confetti (`poetry_confetti`)
+
+A burst of confetti over the page from a click, or once when a success message renders.
+
+Class: Poetry::Motion::Confetti::Component - BEM block `poetry-motion-confetti`.
+- `animate:` (boolean) - default true - Turns the motion off; the effect renders its finished state either way.
+- `count:` (integer) - default 120 - How many pieces per burst.
+- `spread:` (integer) - default 70 - The burst's spread, in degrees.
+- `trigger:` (symbol) - one of click|load, default "click" - When the motion starts: click, load.
+- PART `confetti` - The control the burst comes from, or the moment it marks
+- PART `confetti-canvas` - The full-viewport, aria-hidden canvas the pieces fly on
+- WIRING root: `poetry--motion--confetti` (if animate) registers; values trigger, count, spread
+- WIRING canvas: `poetry--motion--confetti` (if animate) targets canvas
+- BEHAVIOR canvas (activated by its JS) - A canvas sized to its box at the pixel ratio, drawn every visible frame; one static frame under reduced motion.
+- RULE: Confetti celebrates a moment the user caused - a finished task, a purchase. It never carries the message: say what happened in text, and let the confetti decorate it.
+
 ## dock (`poetry_dock`)
 
 A row of links or buttons that swell toward the pointer, the nearest most, like a launcher.
@@ -55,6 +71,22 @@ Content block REQUIRED (the items, each a direct child) - a blockless call raise
 - RULE: Pointer effects never move focus and never carry information a keyboard user would miss.
 - RULE: Each item is a real link or button with an accessible name; the swell is decoration and the dock works the same without it.
 - RULE: Leave room around the dock for the swell: items scale past their box without moving others.
+
+## globe (`poetry_globe`)
+
+A dotted, slowly turning globe with markers at the places you give it.
+
+Class: Poetry::Motion::Globe::Component - BEM block `poetry-motion-globe`.
+- `animate:` (boolean) - default true - Turns the motion off; the effect renders its finished state either way.
+- `label:` (string) - What the globe shows, for a screen reader.
+- `markers:` () - default [] - [[latitude, longitude], ...]
+- `speed:` (float) - default 0.3 - Radians per second it turns; 0 holds it still.
+- PART `globe` - The square the globe fills
+- PART `globe-canvas` - The canvas cobe draws on
+- WIRING root: `poetry--motion--globe` (if animate) registers; values markers (if), speed
+- WIRING canvas: `poetry--motion--globe` (if animate) targets canvas
+- BEHAVIOR frame (activated by its JS) - A callback every frame, paused off screen and in hidden tabs; never runs under reduced motion.
+- RULE: The globe is a picture: give it label: or put the places in text beside it; the markers are not readable on their own.
 
 ## layout_group (`poetry_layout_group`)
 
@@ -150,6 +182,23 @@ Content block REQUIRED (the content that drifts) - a blockless call raises.
 - WIRING root: `poetry--motion--parallax` (if animate) registers; values distance
 - BEHAVIOR scroll_value (activated by its JS) - Progress from 0 to 1 tied to scrolling; the finished state under reduced motion.
 - RULE: Parallax is for decoration and imagery, never for text a reader is reading; keep the distance small, and leave room so the drift never clips the content.
+
+## particles (`poetry_particles`)
+
+A field of slow-drifting dots behind the content, optionally linked by faint lines.
+
+Class: Poetry::Motion::Particles::Component - BEM block `poetry-motion-particles`.
+- `animate:` (boolean) - default true - Turns the motion off; the effect renders its finished state either way.
+- `count:` (integer) - default 60 - How many dots.
+- `link:` (integer) - default 0 - Pixels within which two dots are linked by a line; 0 links none.
+- `speed:` (integer) - default 12 - Drift speed, in pixels per second.
+- PART `particles` - The region; the canvas sits behind its content
+- PART `particles-canvas` - The aria-hidden canvas the dots are drawn on
+- WIRING root: `poetry--motion--particles` (if animate) registers; values count, speed, link (if)
+- WIRING canvas: `poetry--motion--particles` (if animate) targets canvas
+- BEHAVIOR canvas (activated by its JS) - A canvas sized to its box at the pixel ratio, drawn every visible frame; one static frame under reduced motion.
+- BEHAVIOR frame (activated by its JS) - A callback every frame, paused off screen and in hidden tabs; never runs under reduced motion.
+- RULE: Particles are a background: the content stands on its own and keeps its contrast without them.
 
 ## scramble (`poetry_scramble`)
 

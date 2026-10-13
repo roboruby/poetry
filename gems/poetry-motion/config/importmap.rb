@@ -21,3 +21,5 @@ end
 pin_all_from File.join(motion, "behaviors"), under: "@poetry/motion/behaviors", to: "poetry/motion/behaviors",
                                              preload: false
 pin "@poetry/motion/engine", to: "poetry/motion-kernel/engine.js", preload: false
+pin "@poetry/motion/confetti", to: "poetry/motion-kernel/confetti.js", preload: false
+pin "@poetry/motion/globe", to: "poetry/motion-kernel/globe.js", preload: false

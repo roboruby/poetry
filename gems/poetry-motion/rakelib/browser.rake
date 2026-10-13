@@ -10,6 +10,11 @@
 POETRY_MOTION_VIEWPORT = [1024, 768].freeze
 POETRY_MOTION_AXE_RULESETS = %w[wcag2a wcag2aa].freeze
 POETRY_MOTION_PIXEL_TOLERANCE = 0.001
+# Previews the headless rig cannot draw, each with its reason. Axe still runs on them.
+POETRY_MOTION_VISUAL_SKIPS = {
+  "globe--default.png" => "WebGL: headless Chrome in the rig has no GPU context, so the canvas is blank; " \
+                          "the globe is proven in a real browser instead"
+}.freeze
 
 def poetry_motion_assets_dir = Poetry::Motion.root.join("test/dummy/public/assets")
 
@@ -172,6 +177,10 @@ namespace :test do
     compared = 0
     poetry_motion_preview_pages.each do |component, example, url|
       name = "#{component}--#{example}.png"
+      if POETRY_MOTION_VISUAL_SKIPS.key?(name)
+        next puts("visual: skipped #{name} (#{POETRY_MOTION_VISUAL_SKIPS[name]})")
+      end
+
       baseline = baselines.join(name)
       poetry_motion_visit(session, url)
       candidate = Poetry::Motion.root.join("tmp/visual_candidate.png")

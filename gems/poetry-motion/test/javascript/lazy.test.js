@@ -19,9 +19,14 @@ describe("the engine loads on demand", () => {
     expect(offenders).toEqual([])
   })
 
-  it("is imported dynamically by load_engine.js alone", () => {
-    const dynamic = files(TREE).filter((file) => fs.readFileSync(file, "utf8").includes('import("@poetry/motion/engine")'))
-    expect(dynamic.map((file) => path.relative(TREE, file))).toEqual(["load_engine.js"])
+  it("each kernel is imported dynamically by load_engine.js alone", () => {
+    for (const kernel of ["engine", "confetti", "globe"]) {
+      const dynamic = files(TREE).filter((file) => fs.readFileSync(file, "utf8").includes(`import("@poetry/motion/${kernel}")`))
+      expect(dynamic.map((file) => path.relative(TREE, file)), kernel).toEqual(["load_engine.js"])
+      const statically = files(TREE).filter((file) =>
+        new RegExp(`^\\s*(import|export)[^;]*from\\s+"@poetry/motion/${kernel}"`, "m").test(fs.readFileSync(file, "utf8")))
+      expect(statically, kernel).toEqual([])
+    }
   })
 
   it("lives outside the pinned tree", () => {

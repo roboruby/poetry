@@ -6264,6 +6264,36 @@
     "path": "/motion/background#effects"
   },
   {
+    "title": "Confetti",
+    "page": "Confetti",
+    "section": "motion",
+    "path": "/motion/confetti"
+  },
+  {
+    "title": "Installation",
+    "page": "Confetti",
+    "section": "motion",
+    "path": "/motion/confetti#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Confetti",
+    "section": "motion",
+    "path": "/motion/confetti#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Confetti",
+    "section": "motion",
+    "path": "/motion/confetti#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Confetti",
+    "section": "motion",
+    "path": "/motion/confetti#wiring"
+  },
+  {
     "title": "Dock",
     "page": "Dock",
     "section": "motion",
@@ -6292,6 +6322,36 @@
     "page": "Dock",
     "section": "motion",
     "path": "/motion/dock#wiring"
+  },
+  {
+    "title": "Globe",
+    "page": "Globe",
+    "section": "motion",
+    "path": "/motion/globe"
+  },
+  {
+    "title": "Installation",
+    "page": "Globe",
+    "section": "motion",
+    "path": "/motion/globe#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Globe",
+    "section": "motion",
+    "path": "/motion/globe#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Globe",
+    "section": "motion",
+    "path": "/motion/globe#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Globe",
+    "section": "motion",
+    "path": "/motion/globe#wiring"
   },
   {
     "title": "Layout Group",
@@ -6448,6 +6508,36 @@
     "page": "Parallax",
     "section": "motion",
     "path": "/motion/parallax#wiring"
+  },
+  {
+    "title": "Particles",
+    "page": "Particles",
+    "section": "motion",
+    "path": "/motion/particles"
+  },
+  {
+    "title": "Installation",
+    "page": "Particles",
+    "section": "motion",
+    "path": "/motion/particles#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Particles",
+    "section": "motion",
+    "path": "/motion/particles#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Particles",
+    "section": "motion",
+    "path": "/motion/particles#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Particles",
+    "section": "motion",
+    "path": "/motion/particles#wiring"
   },
   {
     "title": "Scramble",

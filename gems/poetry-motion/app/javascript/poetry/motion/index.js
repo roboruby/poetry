@@ -23,12 +23,15 @@ export { loadEngine } from "@poetry/motion/load_engine"
  */
 export const CONTROLLERS = {
   "poetry--motion--animated-list": () => import("@poetry/motion/animated_list_controller"),
+  "poetry--motion--confetti": () => import("@poetry/motion/confetti_controller"),
   "poetry--motion--dock": () => import("@poetry/motion/dock_controller"),
+  "poetry--motion--globe": () => import("@poetry/motion/globe_controller"),
   "poetry--motion--layout-group": () => import("@poetry/motion/layout_group_controller"),
   "poetry--motion--magnetic": () => import("@poetry/motion/magnetic_controller"),
   "poetry--motion--marquee": () => import("@poetry/motion/marquee_controller"),
   "poetry--motion--number-ticker": () => import("@poetry/motion/number_ticker_controller"),
   "poetry--motion--parallax": () => import("@poetry/motion/parallax_controller"),
+  "poetry--motion--particles": () => import("@poetry/motion/particles_controller"),
   "poetry--motion--scramble": () => import("@poetry/motion/scramble_controller"),
   "poetry--motion--scroll-progress": () => import("@poetry/motion/scroll_progress_controller"),
   "poetry--motion--spotlight-card": () => import("@poetry/motion/spotlight_card_controller"),

@@ -157,6 +157,80 @@ components:
         description: its horizontal start, in percent
       - name: "--particle-delay"
         description: its delay, in seconds
+  poetry/motion/confetti:
+    class_name: Poetry::Motion::Confetti::Component
+    identifier: poetry--motion--confetti
+    bem_block: poetry-motion-confetti
+    styles: []
+    options:
+    - name: animate
+      type: boolean
+      default: true
+      description: Turns the motion off; the effect renders its finished state either
+        way.
+    - name: count
+      type: integer
+      default: 120
+      description: How many pieces per burst.
+    - name: spread
+      type: integer
+      default: 70
+      description: The burst's spread, in degrees.
+    - name: trigger
+      type: symbol
+      variants:
+      - click
+      - load
+      default: click
+      description: 'When the motion starts: click, load.'
+    slots: []
+    helper: poetry_confetti
+    description: A burst of confetti over the page from a click, or once when a success
+      message renders.
+    elements:
+    - canvas
+    capsule: 38523fd03fdf
+    controllers:
+    - identifier: poetry--motion--confetti
+      targets:
+      - canvas
+      values:
+      - count
+      - spread
+      - trigger
+      actions: []
+      events: []
+    agent_rules:
+    - 'Confetti celebrates a moment the user caused - a finished task, a purchase.
+      It never carries the message: say what happened in text, and let the confetti
+      decorate it.'
+    identity: false
+    parts:
+    - name: confetti
+      description: The control the burst comes from, or the moment it marks
+    - name: confetti-canvas
+      description: The full-viewport, aria-hidden canvas the pieces fly on
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--motion--confetti
+        conditional: if animate
+        registers: true
+        values:
+        - name: trigger
+        - name: count
+        - name: spread
+    - element: canvas
+      controllers:
+      - identifier: poetry--motion--confetti
+        conditional: if animate
+        targets:
+        - name: canvas
+    behaviors:
+    - name: canvas
+      description: A canvas sized to its box at the pixel ratio, drawn every visible
+        frame; one static frame under reduced motion.
+      runtime: true
   poetry/motion/dock:
     class_name: Poetry::Motion::Dock::Component
     identifier: poetry--motion--dock
@@ -245,6 +319,75 @@ components:
     - name: spring
       description: A value that springs to each new target and is retargeted without
         a jump.
+      runtime: true
+  poetry/motion/globe:
+    class_name: Poetry::Motion::Globe::Component
+    identifier: poetry--motion--globe
+    bem_block: poetry-motion-globe
+    styles: []
+    options:
+    - name: animate
+      type: boolean
+      default: true
+      description: Turns the motion off; the effect renders its finished state either
+        way.
+    - name: label
+      type: string
+      description: What the globe shows, for a screen reader.
+    - name: markers
+      type:
+      default: []
+      description: "[[latitude, longitude], ...]"
+    - name: speed
+      type: float
+      default: 0.3
+      description: Radians per second it turns; 0 holds it still.
+    slots: []
+    helper: poetry_globe
+    description: A dotted, slowly turning globe with markers at the places you give
+      it.
+    elements:
+    - canvas
+    capsule: f6030bc1200f
+    controllers:
+    - identifier: poetry--motion--globe
+      targets:
+      - canvas
+      values:
+      - markers
+      - speed
+      - tilt
+      actions: []
+      events: []
+    agent_rules:
+    - 'The globe is a picture: give it label: or put the places in text beside it;
+      the markers are not readable on their own.'
+    identity: false
+    parts:
+    - name: globe
+      description: The square the globe fills
+    - name: globe-canvas
+      description: The canvas cobe draws on
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--motion--globe
+        conditional: if animate
+        registers: true
+        values:
+        - name: markers
+          conditional: if
+        - name: speed
+    - element: canvas
+      controllers:
+      - identifier: poetry--motion--globe
+        conditional: if animate
+        targets:
+        - name: canvas
+    behaviors:
+    - name: frame
+      description: A callback every frame, paused off screen and in hidden tabs; never
+        runs under reduced motion.
       runtime: true
   poetry/motion/layout_group:
     class_name: Poetry::Motion::LayoutGroup::Component
@@ -663,6 +806,82 @@ components:
     - name: scroll_value
       description: Progress from 0 to 1 tied to scrolling; the finished state under
         reduced motion.
+      runtime: true
+  poetry/motion/particles:
+    class_name: Poetry::Motion::Particles::Component
+    identifier: poetry--motion--particles
+    bem_block: poetry-motion-particles
+    styles: []
+    options:
+    - name: animate
+      type: boolean
+      default: true
+      description: Turns the motion off; the effect renders its finished state either
+        way.
+    - name: count
+      type: integer
+      default: 60
+      description: How many dots.
+    - name: link
+      type: integer
+      default: 0
+      description: Pixels within which two dots are linked by a line; 0 links none.
+    - name: speed
+      type: integer
+      default: 12
+      description: Drift speed, in pixels per second.
+    slots: []
+    helper: poetry_particles
+    description: A field of slow-drifting dots behind the content, optionally linked
+      by faint lines.
+    elements:
+    - canvas
+    - content
+    capsule: ecc64770dc16
+    controllers:
+    - identifier: poetry--motion--particles
+      targets:
+      - canvas
+      values:
+      - count
+      - link
+      - speed
+      actions: []
+      events: []
+    agent_rules:
+    - 'Particles are a background: the content stands on its own and keeps its contrast
+      without them.'
+    identity: false
+    parts:
+    - name: particles
+      description: The region; the canvas sits behind its content
+    - name: particles-canvas
+      description: The aria-hidden canvas the dots are drawn on
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--motion--particles
+        conditional: if animate
+        registers: true
+        values:
+        - name: count
+        - name: speed
+        - name: link
+          conditional: if
+    - element: canvas
+      controllers:
+      - identifier: poetry--motion--particles
+        conditional: if animate
+        targets:
+        - name: canvas
+    behaviors:
+    - name: canvas
+      description: A canvas sized to its box at the pixel ratio, drawn every visible
+        frame; one static frame under reduced motion.
+      runtime: true
+    - name: frame
+      description: A callback every frame, paused off screen and in hidden tabs; never
+        runs under reduced motion.
       runtime: true
   poetry/motion/scramble:
     class_name: Poetry::Motion::Scramble::Component
@@ -1198,12 +1417,15 @@ components:
 helper_args:
   poetry_animated_list: 0
   poetry_background: 0
+  poetry_confetti: 0
   poetry_dock: 0
+  poetry_globe: 0
   poetry_layout_group: 0
   poetry_magnetic: 0
   poetry_marquee: 0
   poetry_number_ticker: 0
   poetry_parallax: 0
+  poetry_particles: 0
   poetry_scramble: 1
   poetry_scroll_progress: 0
   poetry_shared_element: 0

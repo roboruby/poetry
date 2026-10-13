@@ -1,6 +1,9 @@
 # Per-effect one-line descriptions (editorial, hand-authored), merged into
 # the generated registry by Poetry::Motion.registry. Keyed by component_path.
 ---
+poetry/motion/confetti: "A burst of confetti over the page from a click, or once when a success message renders."
+poetry/motion/globe: "A dotted, slowly turning globe with markers at the places you give it."
+poetry/motion/particles: "A field of slow-drifting dots behind the content, optionally linked by faint lines."
 poetry/motion/parallax: "Content that drifts at its own pace as it scrolls through the viewport."
 poetry/motion/scroll_progress: "A thin bar that fills as the reader scrolls the page or one long element."
 poetry/motion/background: "A decorative background in CSS alone: a grid or dot pattern, with aurora, meteors, a retro grid or ripples."

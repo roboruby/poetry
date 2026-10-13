@@ -33,7 +33,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/index.js",
-          "line": 51
+          "line": 54
         }
       ],
       "constants": [
@@ -594,7 +594,7 @@
       "path": "@poetry/motion/load_engine",
       "type": "module",
       "superclass": null,
-      "docstring": "The one door to the vendored engine. It is pinned without preload and\nimported nowhere statically, so a page fetches it the first time a\nbehavior asks, and never on a page without motion elements.",
+      "docstring": "The one door to the vendored kernels. Each is pinned without preload and\nimported nowhere statically, so a page fetches it the first time an\neffect asks, and never on a page without one: the engine for the\nbehaviors, confetti and the globe for their own effects.",
       "examples": [],
       "file": "app/javascript/poetry/motion/load_engine.js",
       "methods": [
@@ -613,7 +613,41 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/load_engine.js",
-          "line": 14
+          "line": 16
+        },
+        {
+          "name": "loadConfetti",
+          "scope": "class",
+          "group": null,
+          "signature": "loadConfetti()",
+          "docstring": "The canvas-confetti kernel (create), fetched once.",
+          "params": [],
+          "return": {
+            "types": [
+              "Promise<Object>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/load_engine.js",
+          "line": 26
+        },
+        {
+          "name": "loadGlobe",
+          "scope": "class",
+          "group": null,
+          "signature": "loadGlobe()",
+          "docstring": "The cobe kernel (createGlobe), fetched once.",
+          "params": [],
+          "return": {
+            "types": [
+              "Promise<Object>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/load_engine.js",
+          "line": 36
         }
       ],
       "constants": []
@@ -1019,6 +1053,51 @@
       "constants": []
     },
     {
+      "path": "poetry--motion--confetti",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Confetti: a burst over the page from the server-rendered, full-viewport\ncanvas - on a click inside the effect (from where the click landed), or\nonce when it connects (trigger \"load\": a success message a Turbo Stream\nrendered). The canvas-confetti kernel loads on the first burst. Reduced\nmotion, a cache preview and a restore visit burst nothing; teardown and\nthe Turbo cache clear the canvas.\n\n**Targets**: `canvas`\n\n**Values**:\n- `trigger` (String, default: \"click\"): When it bursts: \"click\" or \"load\".\n- `count` (Number, default: 120): How many pieces per burst.\n- `spread` (Number, default: 70): The burst's spread, in degrees.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/confetti_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Arms the burst.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/confetti_controller.js",
+          "line": 32
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Disarms and clears the canvas.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/confetti_controller.js",
+          "line": 71
+        }
+      ],
+      "constants": []
+    },
+    {
       "path": "poetry--motion--dock",
       "type": "controller",
       "superclass": null,
@@ -1059,6 +1138,51 @@
           "examples": [],
           "file": "app/javascript/poetry/motion/dock_controller.js",
           "line": 53
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--motion--globe",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Globe: a dotted, turning globe with markers, drawn by the cobe kernel\n(WebGL) on the server-rendered canvas. It turns through useFrame, so it\npauses off screen and in hidden tabs, and reduced motion draws it once,\nstill. The kernel loads when the globe connects; teardown destroys the\nWebGL context. It follows the page's dark class.\n\n**Targets**: `canvas`\n\n**Values**:\n- `markers` (Array, default: []): [[latitude, longitude], ...] for the markers.\n- `speed` (Number, default: 0.3): Radians per second it turns.\n- `tilt` (Number, default: 0.25): Its starting tilt toward the viewer, in radians.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/globe_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Builds the globe and starts it turning.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/globe_controller.js",
+          "line": 32
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Stops turning and releases the WebGL context.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/globe_controller.js",
+          "line": 77
         }
       ],
       "constants": []
@@ -1292,6 +1416,51 @@
           "examples": [],
           "file": "app/javascript/poetry/motion/parallax_controller.js",
           "line": 43
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--motion--particles",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Particles: a field of slow-drifting dots on the server-rendered canvas,\noptionally linked by faint lines when close - the canvas pattern\n(useCanvas): sized to its box at the pixel ratio, drawn every visible\nframe, paused off screen and in hidden tabs, and one still frame under\nreduced motion. The dots take the canvas's text color.\n\n**Targets**: `canvas`\n\n**Values**:\n- `count` (Number, default: 60): How many dots.\n- `speed` (Number, default: 12): Drift speed, in pixels per second.\n- `link` (Number, default: 0): Pixels within which two dots are linked by a line; 0 links none.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/particles_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Seeds the field and starts drawing.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/particles_controller.js",
+          "line": 38
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Stops drawing and clears the canvas.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/particles_controller.js",
+          "line": 71
         }
       ],
       "constants": []

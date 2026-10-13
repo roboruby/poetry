@@ -8,6 +8,8 @@
   "exports": {
     ".": "./app/javascript/poetry/motion/index.js",
     "./engine": "./app/javascript/poetry/motion-kernel/engine.js",
+    "./confetti": "./app/javascript/poetry/motion-kernel/confetti.js",
+    "./globe": "./app/javascript/poetry/motion-kernel/globe.js",
     "./*": "./app/javascript/poetry/motion/*.js"
   },
   "files": [
@@ -21,6 +23,8 @@
     "@eslint/js": "^9.39.5",
     "@hotwired/stimulus": "^3.2.2",
     "@poetry/controllers": "file:../poetry-core",
+    "canvas-confetti": "1.9.4",
+    "cobe": "2.0.1",
     "esbuild": "^0.28.1",
     "eslint": "^9.39.5",
     "eslint-plugin-jsdoc": "^63.0.0",
