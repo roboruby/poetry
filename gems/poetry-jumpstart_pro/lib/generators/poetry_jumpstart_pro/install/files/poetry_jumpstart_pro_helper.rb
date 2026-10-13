@@ -27,8 +27,12 @@ module PoetryJumpstartProHelper
   def poetry_pagination_nav(page, **)
     return "".html_safe unless page.multiple_pages?
 
-    poetry_pagination(current: page.number, total: page.total_pages,
-                      path: ->(number) { pagination_path(page, number) }, **)
+    poetry_pagination(
+      current: page.number,
+      total: page.total_pages,
+      path: ->(number) { pagination_path(page, number) },
+      **
+    )
   end
 
   # The Poetry toast variant for a Jumpstart toast's icon_name.
