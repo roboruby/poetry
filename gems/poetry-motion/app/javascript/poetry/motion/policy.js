@@ -25,6 +25,7 @@ const running = new Map()
 const reducedListeners = new Set()
 let installed = false
 let visiting = false
+let restoring = false
 let engine = null
 
 /**
@@ -75,23 +76,48 @@ export function track(animation, { element = null, properties = [] } = {}) {
 
 /**
  * Ends every tracked animation at its finished state, synchronously.
- * Turbo calls it through turbo:before-cache; a behavior may call it before
- * it tears down.
+ * Turbo calls it through turbo:before-cache, and it runs when reduced
+ * motion turns on mid-animation.
  *
  * @returns {void}
  */
 export function flush() {
-  for (const [animation, { element, properties }] of running) {
-    if (!element) {
-      settle(() => animation.complete())
-      continue
-    }
-    settle(() => animation.stop())
-    const clear = () => { for (const property of properties) element.style.removeProperty(property) }
-    clear()
-    engine?.frame?.postRender(clear)
+  for (const animation of [...running.keys()]) release(animation)
+}
+
+/**
+ * Ends one tracked animation at its finished state, synchronously, and
+ * forgets it: an inline-animated element gets its own style back, now and
+ * after the engine's next render; a Web Animation completes. Behaviors
+ * release their animations at teardown.
+ *
+ * @param {Object} animation a tracked animation
+ * @returns {void}
+ */
+export function release(animation) {
+  const target = running.get(animation)
+  if (!target) return
+
+  running.delete(animation)
+  const { element, properties } = target
+  if (!element) {
+    settle(() => animation.complete())
+    return
   }
-  running.clear()
+  settle(() => animation.stop())
+  const clear = () => { for (const property of properties) element.style.removeProperty(property) }
+  clear()
+  engine?.frame?.postRender(clear)
+}
+
+/**
+ * Whether an entrance may play now. Not on Turbo's cache preview, and not
+ * while a back or forward visit restores a page the user already saw.
+ *
+ * @returns {boolean}
+ */
+export function entranceAllowed() {
+  return !restoring && !document.documentElement.hasAttribute("data-turbo-preview")
 }
 
 /**
@@ -205,14 +231,24 @@ export function installPolicy() {
   installed = true
 
   document.addEventListener("turbo:before-cache", flush)
-  document.addEventListener("turbo:visit", () => { visiting = true })
-  for (const done of ["turbo:load", "turbo:render", "turbo:fetch-request-error", "turbo:visit-error"]) {
+  document.addEventListener("turbo:visit", (event) => {
+    visiting = true
+    restoring = event.detail?.action === "restore"
+  })
+  for (const done of ["turbo:render", "turbo:fetch-request-error", "turbo:visit-error"]) {
     document.addEventListener(done, () => { visiting = false })
   }
+  // Controllers connect while the page renders, before turbo:load: the
+  // restore flag holds through that render.
+  document.addEventListener("turbo:load", () => {
+    visiting = false
+    restoring = false
+  })
 
   const notify = () => {
     syncEngine()
     const reduced = prefersReducedMotion()
+    if (reduced) flush()
     for (const fn of reducedListeners) fn(reduced)
   }
   if (typeof window.matchMedia === "function") {

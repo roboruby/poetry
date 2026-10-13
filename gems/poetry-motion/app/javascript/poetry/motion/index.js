@@ -5,7 +5,7 @@
 import { installPolicy } from "@poetry/motion/policy"
 
 export {
-  prefersReducedMotion, onReducedMotionChange, track, flush, canAnimateView, visitInFlight,
+  prefersReducedMotion, onReducedMotionChange, track, flush, release, entranceAllowed, canAnimateView, visitInFlight,
   token, duration, easing, spring, installPolicy,
 } from "@poetry/motion/policy"
 export { loadEngine } from "@poetry/motion/load_engine"

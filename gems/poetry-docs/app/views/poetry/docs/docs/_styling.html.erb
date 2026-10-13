@@ -138,8 +138,8 @@
         The shared behaviors this component uses, declared in Ruby with
         <code class="font-mono">behavior :name</code> inside an element of
         <code class="font-mono">use_stimulus</code>, or
-        <code class="font-mono">use_behavior :name</code> for one the JavaScript
-        turns on when the component opens. Poetry behaviors are not Herb's client
+        <code class="font-mono">use_behavior :name</code> for one the component's
+        JavaScript turns on itself. Poetry behaviors are not Herb's client
         behaviors, which follow elements the client adds and removes.
       </p>
       <div class="overflow-x-auto">
@@ -156,7 +156,7 @@
               <%= poetry_table_row do %>
                 <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { behavior["name"] } %>
                 <%= poetry_table_cell(class: "whitespace-nowrap text-muted-foreground") do %>
-                  <%= behavior["runtime"] ? "when it opens" : Array(behavior["elements"]).join(", ") %>
+                  <%= behavior["runtime"] ? "by its JS" : Array(behavior["elements"]).join(", ") %>
                 <% end %>
                 <%= poetry_table_cell(class: "text-muted-foreground") { behavior["description"] } %>
               <% end %>

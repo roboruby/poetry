@@ -211,8 +211,8 @@ Slots: trigger (Optional custom trigger content rendered BEFORE the value span (
 - WIRING clear: `poetry--core--combobox` actions clear on click
 - WIRING chip: `poetry--core--combobox` actions chipKeydown on keydown
 - WIRING chip_remove: `poetry--core--combobox` actions removeChip on click
-- BEHAVIOR focus_scope (activated by the JS when it opens) - Focus moves into the open layer, stays inside a modal one and returns on close.
-- BEHAVIOR dismissable (activated by the JS when it opens) - Escape or a press outside closes the open layer, the topmost first.
+- BEHAVIOR focus_scope (activated by its JS) - Focus moves into the open layer, stays inside a modal one and returns on close.
+- BEHAVIOR dismissable (activated by its JS) - Escape or a press outside closes the open layer, the topmost first.
 - BEHAVIOR popper (on root) - Positions the panel against its anchor and keeps it inside the viewport.
 - tool set_value (mutating; params: value (string, required)) - Select the option whose value matches; the schema lists the rendered options, and clear selects nothing. [opt in with webmcp: "name" on the call; dispatches poetry--core--combobox#setValue]
 - tool clear (mutating) - Clear the current selection. [opt in with webmcp: "name" on the call; dispatches poetry--core--combobox#clear]
@@ -681,8 +681,8 @@ Slots: trigger (Optional custom trigger content rendered BEFORE the value span (
 - WIRING native: `poetry--core--select` actions nativeChanged on change
 - WIRING viewport: `poetry--core--select` actions syncScrollButtons on scroll
 - WIRING scroll_button: `poetry--core--select` actions scrollHoldStart on pointerenter, scrollHoldStop on pointerleave
-- BEHAVIOR focus_scope (activated by the JS when it opens) - Focus moves into the open layer, stays inside a modal one and returns on close.
-- BEHAVIOR dismissable (activated by the JS when it opens) - Escape or a press outside closes the open layer, the topmost first.
+- BEHAVIOR focus_scope (activated by its JS) - Focus moves into the open layer, stays inside a modal one and returns on close.
+- BEHAVIOR dismissable (activated by its JS) - Escape or a press outside closes the open layer, the topmost first.
 - BEHAVIOR popper (on root) - Positions the panel against its anchor and keeps it inside the viewport.
 - RULE: Use poetry_select (f.poetry_select in forms) - never hand-roll role=listbox popups, and never fake a select with DropdownMenu radio items bound to a hidden field.
 - RULE: Options are VALUES. If activating an option should DO something beyond setting a value, it's a DropdownMenu item.

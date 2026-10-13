@@ -113,7 +113,7 @@ module Poetry
       # @return [Array<String>]
       def self.behavior_lines(entry)
         (entry["behaviors"] || []).map do |behavior|
-          where = if behavior["runtime"] then "activated by the JS when it opens"
+          where = if behavior["runtime"] then "activated by its JS"
                   elsif behavior["elements"] then "on #{behavior["elements"].join(", ")}"
                   end
           "- BEHAVIOR #{behavior["name"]}#{" (#{where})" if where} - #{behavior["description"]}"
