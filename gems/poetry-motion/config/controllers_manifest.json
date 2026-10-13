@@ -172,6 +172,26 @@
       "disconnect": "Undoes everything this connect started, leaving the finished state."
     }
   },
+  "poetry--motion--parallax": {
+    "doc": "Parallax: the content drifts at its own pace as it passes through the viewport, by --parallax-y. It sits where the server put it when the passage is centered, which is also where teardown, the Turbo cache and reduced motion leave it.",
+    "targets": [],
+    "values": {
+      "distance": {
+        "type": "Number",
+        "default": 80,
+        "doc": "Pixels of drift from entering the viewport to leaving it; negative drifts the other way."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts drifting with the scroll.",
+      "disconnect": "Stops drifting and puts the content back."
+    }
+  },
   "poetry--motion--scramble": {
     "doc": "Scramble: the text decodes from random glyphs into itself, left to right, when it comes into view. The server renders the text, a screen reader reads it once, and the aria-hidden display scrambles; the text comes back when it lands, at teardown and before Turbo caches the page. Spaces stay spaces, so the line keeps its shape. Reduced motion, a cache preview and a restore visit show the text at once.",
     "targets": [
@@ -207,6 +227,25 @@
     "method_docs": {
       "connect": "Scrambles the text when the trigger fires.",
       "disconnect": "Stops scrambling and shows the text."
+    }
+  },
+  "poetry--motion--scroll-progress": {
+    "doc": "Scroll progress: a bar that fills as the reader scrolls the page, or one element (target-id). The controller writes --scroll-progress (0 to 1); the motion stylesheet scales the bar. It is feedback on the reader's own scrolling, so it keeps following under reduced motion. The bar is decorative; the server renders it empty, and teardown and the Turbo cache empty it again.",
+    "targets": [],
+    "values": {
+      "targetId": {
+        "type": "String",
+        "doc": "The id of the element whose scroll the bar follows; the page when blank."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts following the scroll.",
+      "disconnect": "Stops following and empties the bar."
     }
   },
   "poetry--motion--spotlight-card": {

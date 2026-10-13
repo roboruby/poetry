@@ -33,7 +33,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/index.js",
-          "line": 49
+          "line": 51
         }
       ],
       "constants": [
@@ -430,7 +430,7 @@
       "path": "@poetry/motion/behaviors/scroll_value",
       "type": "module",
       "superclass": null,
-      "docstring": "useScrollValue: a progress value from 0 to 1 tied to scrolling, for the\npage or for an element passing through the viewport. Under reduced\nmotion it reports 1, the finished state, once and never follows the\nscroll.",
+      "docstring": "useScrollValue: a progress value from 0 to 1 tied to scrolling, for the\npage or for an element passing through the viewport. Under reduced\nmotion it reports 1, the finished state, once and never follows the\nscroll - right for decoration. Feedback on the user's own scrolling (a\nreading-progress bar) passes follow: true and keeps following.",
       "examples": [],
       "file": "app/javascript/poetry/motion/behaviors/scroll_value.js",
       "methods": [
@@ -458,9 +458,9 @@
             {
               "name": "}",
               "types": [
-                "{ target?: Element, container?: Element, offset?: string[], axis?: \"x\"|\"y\" "
+                "{ target?: Element, container?: Element, offset?: string[], axis?: \"x\"|\"y\", follow?: boolean "
               ],
-              "text": "[options]"
+              "text": "[options] follow: true keeps following under reduced motion"
             }
           ],
           "return": {
@@ -471,7 +471,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/behaviors/scroll_value.js",
-          "line": 17
+          "line": 19
         }
       ],
       "constants": []
@@ -1252,6 +1252,51 @@
       "constants": []
     },
     {
+      "path": "poetry--motion--parallax",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Parallax: the content drifts at its own pace as it passes through the\nviewport, by --parallax-y. It sits where the server put it when the\npassage is centered, which is also where teardown, the Turbo cache and\nreduced motion leave it.\n\n**Values**:\n- `distance` (Number, default: 80): Pixels of drift from entering the viewport to leaving it; negative drifts the other way.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/parallax_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Starts drifting with the scroll.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/parallax_controller.js",
+          "line": 24
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Stops drifting and puts the content back.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/parallax_controller.js",
+          "line": 43
+        }
+      ],
+      "constants": []
+    },
+    {
       "path": "poetry--motion--scramble",
       "type": "controller",
       "superclass": null,
@@ -1292,6 +1337,51 @@
           "examples": [],
           "file": "app/javascript/poetry/motion/scramble_controller.js",
           "line": 68
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--motion--scroll-progress",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Scroll progress: a bar that fills as the reader scrolls the page, or\none element (target-id). The controller writes --scroll-progress (0 to\n1); the motion stylesheet scales the bar. It is feedback on the reader's\nown scrolling, so it keeps following under reduced motion. The bar is\ndecorative; the server renders it empty, and teardown and the Turbo\ncache empty it again.\n\n**Values**:\n- `targetId` (String): The id of the element whose scroll the bar follows; the page when blank.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/scroll_progress_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Starts following the scroll.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/scroll_progress_controller.js",
+          "line": 25
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Stops following and empties the bar.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/scroll_progress_controller.js",
+          "line": 39
         }
       ],
       "constants": []

@@ -35,6 +35,12 @@ module Poetry
       # A word that turns over into the next, in place.
       def poetry_word_rotate(**) = render(Poetry::Motion::WordRotate::Component.new(**))
 
+      # Content that drifts at its own pace as it scrolls by.
+      def poetry_parallax(**, &) = render(Poetry::Motion::Parallax::Component.new(**), &)
+
+      # A bar that fills as the reader scrolls.
+      def poetry_scroll_progress(**) = render(Poetry::Motion::ScrollProgress::Component.new(**))
+
       # A looping marquee of the block's items.
       def poetry_marquee(**, &) = render(Poetry::Motion::Marquee::Component.new(**), &)
 

@@ -707,6 +707,14 @@ data-[orientation=vertical]:left-1/2
 data-[orientation=vertical]:top-[calc(100%-var(--slider-end))]
 data-[orientation=vertical]:w-auto
 data-[orientation=vertical]:w-full
+data-[position=bottom]:bottom-0
+data-[position=bottom]:fixed
+data-[position=bottom]:inset-x-0
+data-[position=bottom]:z-50
+data-[position=top]:fixed
+data-[position=top]:inset-x-0
+data-[position=top]:top-0
+data-[position=top]:z-50
 data-[side=bottom]:-bottom-4.5
 data-[side=left]:group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]
 data-[side=left]:left-0
@@ -986,6 +994,7 @@ grow-0
 h-(--cell-size)
 h-(--popup-height)
 h-(--positioner-height)
+h-1
 h-14
 h-2.5
 h-3

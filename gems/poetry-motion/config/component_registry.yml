@@ -612,6 +612,58 @@ components:
       description: A value that springs to each new target and is retargeted without
         a jump.
       runtime: true
+  poetry/motion/parallax:
+    class_name: Poetry::Motion::Parallax::Component
+    identifier: poetry--motion--parallax
+    bem_block: poetry-motion-parallax
+    styles: []
+    options:
+    - name: animate
+      type: boolean
+      default: true
+      description: Turns the motion off; the effect renders its finished state either
+        way.
+    - name: distance
+      type: integer
+      default: 80
+      description: Pixels of drift from entering the viewport to leaving it; negative
+        drifts the other way.
+    slots: []
+    helper: poetry_parallax
+    description: Content that drifts at its own pace as it scrolls through the viewport.
+    elements: []
+    capsule: 42e5df339fc2
+    controllers:
+    - identifier: poetry--motion--parallax
+      targets: []
+      values:
+      - distance
+      actions: []
+      events: []
+    agent_rules:
+    - Parallax is for decoration and imagery, never for text a reader is reading;
+      keep the distance small, and leave room so the drift never clips the content.
+    requires_content: the content that drifts
+    identity: false
+    parts:
+    - name: parallax
+      description: The drifting content
+      vars:
+      - name: "--parallax-y"
+        description: the current drift, in pixels; 0 when centered
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--motion--parallax
+        conditional: if animate
+        registers: true
+        values:
+        - name: distance
+    behaviors:
+    - name: scroll_value
+      description: Progress from 0 to 1 tied to scrolling; the finished state under
+        reduced motion.
+      runtime: true
   poetry/motion/scramble:
     class_name: Poetry::Motion::Scramble::Component
     identifier: poetry--motion--scramble
@@ -687,6 +739,68 @@ components:
         conditional: if animate
         targets:
         - name: display
+  poetry/motion/scroll_progress:
+    class_name: Poetry::Motion::ScrollProgress::Component
+    identifier: poetry--motion--scroll_progress
+    bem_block: poetry-motion-scroll_progress
+    styles: []
+    options:
+    - name: position
+      type: symbol
+      variants:
+      - top
+      - bottom
+      - inline
+      default: top
+      description: top or bottom pins the bar to the viewport edge; inline leaves
+        it in place.
+    - name: target
+      type: string
+      description: The id of the element whose scroll the bar follows; the page when
+        blank.
+    slots: []
+    helper: poetry_scroll_progress
+    description: A thin bar that fills as the reader scrolls the page or one long
+      element.
+    elements: []
+    capsule: c4903c40cdb6
+    controllers:
+    - identifier: poetry--motion--scroll-progress
+      targets: []
+      values:
+      - targetId
+      actions: []
+      events: []
+    agent_rules:
+    - Use one scroll progress bar per page, for long reading; it is decorative and
+      never the only sign of where the reader is.
+    identity: false
+    parts:
+    - name: scroll-progress
+      description: The bar; it fills from the start edge
+      states:
+      - attr: data-position
+        condition: always - where the bar sits
+        values:
+        - top
+        - bottom
+        - inline
+      vars:
+      - name: "--scroll-progress"
+        description: how far the reader has scrolled, 0 to 1
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--motion--scroll-progress
+        registers: true
+        values:
+        - name: target_id
+          conditional: if
+    behaviors:
+    - name: scroll_value
+      description: Progress from 0 to 1 tied to scrolling; the finished state under
+        reduced motion.
+      runtime: true
   poetry/motion/shared_element:
     class_name: Poetry::Motion::SharedElement::Component
     identifier: poetry--motion--shared_element
@@ -1089,7 +1203,9 @@ helper_args:
   poetry_magnetic: 0
   poetry_marquee: 0
   poetry_number_ticker: 0
+  poetry_parallax: 0
   poetry_scramble: 1
+  poetry_scroll_progress: 0
   poetry_shared_element: 0
   poetry_spotlight_card: 0
   poetry_text_reveal: 1

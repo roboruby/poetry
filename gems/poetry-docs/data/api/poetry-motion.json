@@ -380,7 +380,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 39
+          "line": 45
         },
         {
           "name": "poetry_number_ticker",
@@ -392,7 +392,19 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 45
+          "line": 51
+        },
+        {
+          "name": "poetry_parallax",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_parallax(**, &)",
+          "docstring": "Content that drifts at its own pace as it scrolls by.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/helpers/poetry/motion/components_helper.rb",
+          "line": 39
         },
         {
           "name": "poetry_scramble",
@@ -405,6 +417,18 @@
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
           "line": 30
+        },
+        {
+          "name": "poetry_scroll_progress",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_scroll_progress(**)",
+          "docstring": "A bar that fills as the reader scrolls.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/helpers/poetry/motion/components_helper.rb",
+          "line": 42
         },
         {
           "name": "poetry_shared_element",
@@ -440,7 +464,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 42
+          "line": 48
         },
         {
           "name": "poetry_tilt_card",
@@ -452,7 +476,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 48
+          "line": 54
         },
         {
           "name": "poetry_typewriter",
@@ -871,6 +895,57 @@
       ]
     },
     {
+      "path": "Poetry::Motion::Parallax::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "Content that drifts at its own pace as it scrolls through the\nviewport - a hero image, a layered illustration. It rests where the\nserver put it when centered, and reduced motion leaves it there.",
+      "examples": [
+        {
+          "title": "",
+          "text": "<%= poetry_parallax(distance: 120) do %>\n  <%= image_tag \"hero.jpg\", alt: \"\" %>\n<% end %>"
+        }
+      ],
+      "file": "app/components/poetry/motion/parallax/component.rb",
+      "methods": [],
+      "constants": [
+        {
+          "name": "DOCS",
+          "value": "{\n  duration: \"How long the motion runs: a duration token (#{DURATIONS.join(\", \")}) or milliseconds.\",\n  easing: \"The easing token: #{EASINGS.join(\", \")}.\",\n  spring: \"The spring token: #{SPRINGS.join",
+          "docstring": "What each option means, for the registry and the docs."
+        },
+        {
+          "name": "DURATIONS",
+          "value": "%i[fast normal slow].freeze",
+          "docstring": "The duration tokens (--motion-duration-*); duration: also takes milliseconds."
+        },
+        {
+          "name": "EASINGS",
+          "value": "%i[standard emphasized exit].freeze",
+          "docstring": "The easing tokens (--motion-ease-*)."
+        },
+        {
+          "name": "SPRINGS",
+          "value": "%i[gentle snappy bouncy].freeze",
+          "docstring": "The spring tokens (--motion-spring-*)."
+        },
+        {
+          "name": "TRIGGERS",
+          "value": "%i[load in_view hover].freeze",
+          "docstring": "When an effect starts: on connect, when it scrolls into view, or on hover."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::Parallax::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "The parallax wrapper's classes; the drift lives in the motion stylesheet.",
+      "examples": [],
+      "file": "app/components/poetry/motion/parallax/style.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
       "path": "Poetry::Motion::Scramble::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
@@ -936,6 +1011,37 @@
       "docstring": "The scramble's classes: tabular figures keep digits steady.",
       "examples": [],
       "file": "app/components/poetry/motion/scramble/style.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Motion::ScrollProgress::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "A thin bar that fills as the reader scrolls the page, or one long\nelement (target:). It is decorative feedback on the reader's own\nscrolling, so it keeps following under reduced motion; the server\nrenders it empty. Place it in the layout, or at the top of the\nelement it follows.",
+      "examples": [
+        {
+          "title": "A reading bar for an article",
+          "text": "<%= poetry_scroll_progress(target: \"article\") %>\n<article id=\"article\">...</article>"
+        }
+      ],
+      "file": "app/components/poetry/motion/scroll_progress/component.rb",
+      "methods": [],
+      "constants": [
+        {
+          "name": "POSITIONS",
+          "value": "%i[top bottom inline].freeze",
+          "docstring": "Where the bar sits."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::ScrollProgress::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "The bar's classes; its fill lives in the motion stylesheet.",
+      "examples": [],
+      "file": "app/components/poetry/motion/scroll_progress/style.rb",
       "methods": [],
       "constants": []
     },

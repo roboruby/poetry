@@ -303,6 +303,21 @@
   animation: none !important;
 }
 
+/* Scroll progress: the bar fills from the start edge. */
+[data-slot="scroll-progress"] {
+  scale: var(--scroll-progress, 0) 1;
+  transform-origin: left center;
+}
+
+[dir="rtl"] [data-slot="scroll-progress"] {
+  transform-origin: right center;
+}
+
+/* Parallax: the content drifts by the scroll; centered, it rests in place. */
+[data-slot="parallax"] {
+  translate: 0 var(--parallax-y, 0px);
+}
+
 /* Reduced motion: the loops stand still, the copies go away, and page and
    layout view transitions swap without animating. */
 @media (prefers-reduced-motion: reduce) {

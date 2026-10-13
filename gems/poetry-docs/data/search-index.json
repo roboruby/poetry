@@ -6420,6 +6420,36 @@
     "path": "/motion/number-ticker#wiring"
   },
   {
+    "title": "Parallax",
+    "page": "Parallax",
+    "section": "motion",
+    "path": "/motion/parallax"
+  },
+  {
+    "title": "Installation",
+    "page": "Parallax",
+    "section": "motion",
+    "path": "/motion/parallax#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Parallax",
+    "section": "motion",
+    "path": "/motion/parallax#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Parallax",
+    "section": "motion",
+    "path": "/motion/parallax#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Parallax",
+    "section": "motion",
+    "path": "/motion/parallax#wiring"
+  },
+  {
     "title": "Scramble",
     "page": "Scramble",
     "section": "motion",
@@ -6442,6 +6472,36 @@
     "page": "Scramble",
     "section": "motion",
     "path": "/motion/scramble#wiring"
+  },
+  {
+    "title": "Scroll Progress",
+    "page": "Scroll Progress",
+    "section": "motion",
+    "path": "/motion/scroll-progress"
+  },
+  {
+    "title": "Installation",
+    "page": "Scroll Progress",
+    "section": "motion",
+    "path": "/motion/scroll-progress#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Scroll Progress",
+    "section": "motion",
+    "path": "/motion/scroll-progress#default"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Scroll Progress",
+    "section": "motion",
+    "path": "/motion/scroll-progress#behaviors"
+  },
+  {
+    "title": "Wiring",
+    "page": "Scroll Progress",
+    "section": "motion",
+    "path": "/motion/scroll-progress#wiring"
   },
   {
     "title": "Shared Element",

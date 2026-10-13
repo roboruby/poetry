@@ -7,7 +7,9 @@ import AnimatedListController from "../../app/javascript/poetry/motion/animated_
 import DockController from "../../app/javascript/poetry/motion/dock_controller.js"
 import LayoutGroupController from "../../app/javascript/poetry/motion/layout_group_controller.js"
 import MagneticController from "../../app/javascript/poetry/motion/magnetic_controller.js"
+import ParallaxController from "../../app/javascript/poetry/motion/parallax_controller.js"
 import ScrambleController from "../../app/javascript/poetry/motion/scramble_controller.js"
+import ScrollProgressController from "../../app/javascript/poetry/motion/scroll_progress_controller.js"
 import SpotlightCardController from "../../app/javascript/poetry/motion/spotlight_card_controller.js"
 import TypewriterController from "../../app/javascript/poetry/motion/typewriter_controller.js"
 import WordRotateController from "../../app/javascript/poetry/motion/word_rotate_controller.js"
@@ -32,7 +34,9 @@ const CONTROLLERS = {
   "poetry--motion--magnetic": MagneticController,
   "poetry--motion--marquee": MarqueeController,
   "poetry--motion--number-ticker": NumberTickerController,
+  "poetry--motion--parallax": ParallaxController,
   "poetry--motion--scramble": ScrambleController,
+  "poetry--motion--scroll-progress": ScrollProgressController,
   "poetry--motion--spotlight-card": SpotlightCardController,
   "poetry--motion--text-reveal": TextRevealController,
   "poetry--motion--tilt-card": TiltCardController,

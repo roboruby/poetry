@@ -8,6 +8,8 @@
 
 - `poetry_background`: a decorative background in CSS alone, a grid or dot pattern with an aurora, meteors, a retro grid or ripples, faded at the edges. No script; every layer is aria-hidden and placed deterministically, and reduced motion stills the effect.
 
+- Two scroll effects: `poetry_scroll_progress`, a reading bar for the page or one long element that keeps following under reduced motion since it is feedback on the reader's own scrolling, and `poetry_parallax`, content that drifts at its own pace and rests where the server put it under reduced motion. `useScrollValue` takes `follow: true` for scroll feedback.
+
 ### Changed
 
 - The effect controllers load lazily: only the entry, the policy and the engine loader preload, and `registerPoetryMotionControllers` imports each controller the first time its identifier appears on the page.

@@ -1,0 +1,7 @@
+<%# In a layout, poetry_scroll_progress pins to the top and follows the page; here it follows the box below. %>
+<div class="w-full max-w-md space-y-2">
+  <%= poetry_scroll_progress(target: "reading", position: :inline, class: "rounded-full") %>
+  <div id="reading" class="h-40 overflow-y-auto rounded-md border p-4 text-sm">
+    <% 12.times do |i| %><p class="mb-3">Paragraph <%= i + 1 %> of a long read.</p><% end %>
+  </div>
+</div>

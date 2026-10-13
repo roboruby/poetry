@@ -138,6 +138,19 @@ Class: Poetry::Motion::NumberTicker::Component - BEM block `poetry-motion-number
 - RULE: The value is the real number, rendered by the server; never put a placeholder there and let the count fill it in.
 - RULE: format: takes Intl.NumberFormat options (style, currency, minimumFractionDigits, ...); the server formats the same number the browser counts to.
 
+## parallax (`poetry_parallax`)
+
+Content that drifts at its own pace as it scrolls through the viewport.
+
+Class: Poetry::Motion::Parallax::Component - BEM block `poetry-motion-parallax`.
+Content block REQUIRED (the content that drifts) - a blockless call raises.
+- `animate:` (boolean) - default true - Turns the motion off; the effect renders its finished state either way.
+- `distance:` (integer) - default 80 - Pixels of drift from entering the viewport to leaving it; negative drifts the other way.
+- PART `parallax` - The drifting content | vars: --parallax-y (the current drift, in pixels; 0 when centered)
+- WIRING root: `poetry--motion--parallax` (if animate) registers; values distance
+- BEHAVIOR scroll_value (activated by its JS) - Progress from 0 to 1 tied to scrolling; the finished state under reduced motion.
+- RULE: Parallax is for decoration and imagery, never for text a reader is reading; keep the distance small, and leave room so the drift never clips the content.
+
 ## scramble (`poetry_scramble`)
 
 Text that decodes from random glyphs into itself when it comes into view.
@@ -153,6 +166,18 @@ Class: Poetry::Motion::Scramble::Component - BEM block `poetry-motion-scramble`.
 - WIRING root: `poetry--motion--scramble` (if animate) registers; values duration, delay (if), trigger
 - WIRING display: `poetry--motion--scramble` (if animate) targets display
 - RULE: Scramble a short label or heading, ideally in a monospace face so the width holds; never text a reader needs mid-animation.
+
+## scroll_progress (`poetry_scroll_progress`)
+
+A thin bar that fills as the reader scrolls the page or one long element.
+
+Class: Poetry::Motion::ScrollProgress::Component - BEM block `poetry-motion-scroll_progress`.
+- `position:` (symbol) - one of top|bottom|inline, default "top" - top or bottom pins the bar to the viewport edge; inline leaves it in place.
+- `target:` (string) - The id of the element whose scroll the bar follows; the page when blank.
+- PART `scroll-progress` - The bar; it fills from the start edge | states: data-position=top|bottom|inline (always - where the bar sits) | vars: --scroll-progress (how far the reader has scrolled, 0 to 1)
+- WIRING root: `poetry--motion--scroll-progress` registers; values target_id (if)
+- BEHAVIOR scroll_value (activated by its JS) - Progress from 0 to 1 tied to scrolling; the finished state under reduced motion.
+- RULE: Use one scroll progress bar per page, for long reading; it is decorative and never the only sign of where the reader is.
 
 ## shared_element (`poetry_shared_element`)
 
