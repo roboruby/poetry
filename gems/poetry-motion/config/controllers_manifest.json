@@ -1,4 +1,44 @@
 {
+  "poetry--motion--animated-list": {
+    "doc": "Animated list: a Turbo Stream that changes the list (append, prepend, remove, replace, update, or a refresh that morphs it) runs as a layout transition, so new items fade in, removed items fade out and the rest slide to their new places. The server renders the list as it is; the stream's own render does the change, and the transition only animates it. Reduced motion and a running Turbo visit apply the change directly.",
+    "targets": [],
+    "values": {
+      "duration": {
+        "type": "Number",
+        "default": 300,
+        "doc": "Milliseconds for each transition."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts wrapping the streams that touch this list.",
+      "disconnect": "Stops wrapping streams."
+    }
+  },
+  "poetry--motion--layout-group": {
+    "doc": "Layout group: elements that share a data-layout-id are one thing in different places, an active-tab indicator or a selected-item highlight. When the visible one changes (a class, an attribute or a child changes inside the group), the new one animates from where the old one was to where it is, by translate and scale, and ends at its own style. The group remembers each id's last box relative to itself, so scrolling between changes does not throw the move off.",
+    "targets": [],
+    "values": {
+      "duration": {
+        "type": "Number",
+        "default": 300,
+        "doc": "Milliseconds for each move."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Records the visible boxes and starts watching the group.",
+      "disconnect": "Stops watching and returns the moving elements to their own style."
+    }
+  },
   "poetry--motion--marquee": {
     "doc": "Marquee: the loop itself is CSS (the motion stylesheet), so this controller never loads the engine. It owns the pause control: a toggle that holds the loop still, mirrored to data-paused on the marquee and aria-pressed on the button. Hover and focus inside pause it too, in CSS.",
     "targets": [

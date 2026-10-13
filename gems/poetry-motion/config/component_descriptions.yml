@@ -1,6 +1,9 @@
 # Per-effect one-line descriptions (editorial, hand-authored), merged into
 # the generated registry by Poetry::Motion.registry. Keyed by component_path.
 ---
+poetry/motion/animated_list: "A list whose Turbo Stream changes animate: new items fade in, removed ones fade out, the rest slide into place."
+poetry/motion/layout_group: "Elements that share a data-layout-id move as one thing between places, like an active-tab indicator."
+poetry/motion/shared_element: "An element a Turbo visit morphs from one page to the next, like a card into its detail page."
 poetry/motion/marquee: "Items that scroll in a loop, logos or testimonials, with a pause control; the loop is CSS."
 poetry/motion/number_ticker: "A number that counts up to its server-rendered value when it comes into view."
 poetry/motion/text_reveal: "A short passage whose words brighten one after another as it scrolls into view."

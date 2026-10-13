@@ -33,7 +33,11 @@ afterEach(() => {
 
 const mount = async (html) => {
   document.body.innerHTML = html
-  await wait(20) // the lazy import, then the connect
+  // The lazy import, then the connect: wait until every controller on the page is live.
+  const connected = () => [...document.querySelectorAll("[data-controller]")].every((element) =>
+    element.dataset.controller.split(/\s+/).every((identifier) =>
+      application.getControllerForElementAndIdentifier(element, identifier)))
+  for (let i = 0; i < 100 && !connected(); i++) await wait(10)
   return document.body.firstElementChild
 }
 
@@ -70,10 +74,12 @@ describe("number ticker", () => {
   it("counts from `from` and lands on the server's text", async () => {
     const root = await mount(ticker())
     const display = root.querySelector("[data-slot=number-ticker-display]")
-    await wait(80)
-    const midway = Number(display.textContent.replace(/,/g, ""))
-    expect(midway).toBeGreaterThan(0)
-    expect(midway).toBeLessThan(1200)
+    const seen = []
+    for (let i = 0; i < 40; i++) {
+      seen.push(Number(display.textContent.replace(/,/g, "")))
+      await wait(10)
+    }
+    expect(seen.some((value) => value > 0 && value < 1200)).toBe(true)
     await wait(1500)
     expect(display.textContent).toBe("1,200")
   })

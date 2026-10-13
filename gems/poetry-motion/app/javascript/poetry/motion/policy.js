@@ -65,13 +65,17 @@ export function onReducedMotionChange(fn) {
  * @param {HTMLElement} [target.element] the element the animation writes
  * @param {string[]} [target.properties] the CSS properties it writes inline
  * @param {Function} [target.finish] restores anything else it wrote (text a ticker counts), run after it stops
+ * @param {boolean} [target.persist] keeps the value when the animation finishes on its own (a spring
+ *   holding a lean); teardown and the cache still clear it
  * @returns {Object}
  */
-export function track(animation, { element = null, properties = [], finish = null } = {}) {
+export function track(animation, { element = null, properties = [], finish = null, persist = false } = {}) {
   installPolicy()
   running.set(animation, { element, properties, finish })
-  const forget = () => running.delete(animation)
-  Promise.resolve(animation.finished).then(forget, forget)
+  // A finished animation ends at the element's own style, so its inline
+  // values go too; a persistent one keeps its value but leaves the policy.
+  const done = () => (persist ? running.delete(animation) : release(animation, { finished: true }))
+  Promise.resolve(animation.finished).then(done, () => running.delete(animation))
   return animation
 }
 
@@ -93,25 +97,32 @@ export function flush() {
  * release their animations at teardown.
  *
  * @param {Object} animation a tracked animation
+ * @param {{ finished?: boolean }} [options] finished: it ended on its own, so only its styles go
  * @returns {void}
  */
-export function release(animation) {
+export function release(animation, { finished = false } = {}) {
   const target = running.get(animation)
   if (!target) return
 
   running.delete(animation)
   const { element, properties, finish } = target
   if (finish) {
-    settle(() => animation.stop())
+    if (!finished) settle(() => animation.stop())
     finish()
     return
   }
   if (!element) {
-    settle(() => animation.complete())
+    if (!finished) settle(() => animation.complete())
     return
   }
-  settle(() => animation.stop())
-  const clear = () => { for (const property of properties) element.style.removeProperty(property) }
+  if (!finished) settle(() => animation.stop())
+  // Engine keyframes may name a property in camelCase (transformOrigin); the style takes kebab-case.
+  const names = properties.map((property) => property.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`))
+  const clear = () => {
+    for (const name of names) element.style.removeProperty(name)
+    // The engine writes transform: none beside the individual transforms; nothing of the element's own.
+    if (element.style.transform === "none") element.style.removeProperty("transform")
+  }
   clear()
   engine?.frame?.postRender(clear)
 }

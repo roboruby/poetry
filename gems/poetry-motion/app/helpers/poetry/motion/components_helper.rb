@@ -5,6 +5,15 @@ module Poetry
     # The view helpers for poetry-motion's effects, included into every
     # view by the engine.
     module ComponentsHelper
+      # A list whose Turbo Stream changes animate.
+      def poetry_animated_list(**, &) = render(Poetry::Motion::AnimatedList::Component.new(**), &)
+
+      # A region whose data-layout-id elements move between places.
+      def poetry_layout_group(**, &) = render(Poetry::Motion::LayoutGroup::Component.new(**), &)
+
+      # An element a Turbo visit morphs between two pages.
+      def poetry_shared_element(**, &) = render(Poetry::Motion::SharedElement::Component.new(**), &)
+
       # A looping marquee of the block's items.
       def poetry_marquee(**, &) = render(Poetry::Motion::Marquee::Component.new(**), &)
 

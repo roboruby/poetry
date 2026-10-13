@@ -63,7 +63,7 @@ module Poetry
         def motion_option(name, default, triggers)
           case name
           when :duration
-            option :duration, :symbol, default: default, doc: DOCS[:duration]
+            option :duration, ActiveModel::Type::Value.new, default: default, doc: DOCS[:duration]
           when :easing, :spring
             option name, :symbol, default: default, doc: DOCS[name]
             validates name, inclusion: { in: Options.const_get("#{name.to_s.upcase}S") }
@@ -87,7 +87,7 @@ module Poetry
       def ensure_motion_options!
         names = self.class.motion_option_names
         if names.include?(:duration) &&
-           !(DURATIONS.include?(duration&.to_sym) || duration.to_s.match?(/\A[1-9]\d*\z/))
+           !(DURATIONS.include?(duration.to_s.to_sym) || duration.to_s.match?(/\A[1-9]\d*\z/))
           raise ArgumentError, "#{self.class.component_title} duration: #{duration.inspect} is not " \
                                "#{DURATIONS.join(", ")} or milliseconds"
         end

@@ -17,6 +17,8 @@ export { loadEngine } from "@poetry/motion/load_engine"
 
 // Each effect's identifier and the import that loads its controller.
 export const CONTROLLERS = {
+  "poetry--motion--animated-list": () => import("@poetry/motion/animated_list_controller"),
+  "poetry--motion--layout-group": () => import("@poetry/motion/layout_group_controller"),
   "poetry--motion--marquee": () => import("@poetry/motion/marquee_controller"),
   "poetry--motion--number-ticker": () => import("@poetry/motion/number_ticker_controller"),
   "poetry--motion--text-reveal": () => import("@poetry/motion/text_reveal_controller"),

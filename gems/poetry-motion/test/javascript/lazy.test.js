@@ -55,7 +55,7 @@ describe("the engine loads on demand", () => {
     const later = document.createElement("span")
     later.setAttribute("data-controller", "poetry--motion--tilt-card other")
     document.body.append(later)
-    await new Promise((resolve) => setTimeout(resolve, 30))
+    for (let i = 0; i < 100 && registered.length < 2; i++) await new Promise((resolve) => setTimeout(resolve, 10))
     expect(registered).toEqual(["poetry--motion--marquee", "poetry--motion--tilt-card"])
 
     later.setAttribute("data-controller", "poetry--motion--tilt-card")

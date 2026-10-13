@@ -127,8 +127,15 @@
   transform: rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg));
 }
 
-/* Reduced motion: the loops stand still and the copies go away. */
+/* Reduced motion: the loops stand still, the copies go away, and page and
+   layout view transitions swap without animating. */
 @media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"])::view-transition-group(*),
+  :root:not([data-motion="full"])::view-transition-old(*),
+  :root:not([data-motion="full"])::view-transition-new(*) {
+    animation: none !important;
+  }
+
   :root:not([data-motion="full"]) [data-slot="marquee-track"] {
     animation: none;
   }
@@ -140,6 +147,12 @@
 
 :root[data-motion="reduce"] [data-slot="marquee-track"] {
   animation: none;
+}
+
+:root[data-motion="reduce"]::view-transition-group(*),
+:root[data-motion="reduce"]::view-transition-old(*),
+:root[data-motion="reduce"]::view-transition-new(*) {
+  animation: none !important;
 }
 
 :root[data-motion="reduce"] [data-slot="marquee-track"][aria-hidden] {

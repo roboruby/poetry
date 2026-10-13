@@ -3,6 +3,8 @@ import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
+import AnimatedListController from "../../app/javascript/poetry/motion/animated_list_controller.js"
+import LayoutGroupController from "../../app/javascript/poetry/motion/layout_group_controller.js"
 import MarqueeController from "../../app/javascript/poetry/motion/marquee_controller.js"
 import TextRevealController from "../../app/javascript/poetry/motion/text_reveal_controller.js"
 import NumberTickerController from "../../app/javascript/poetry/motion/number_ticker_controller.js"
@@ -18,6 +20,8 @@ const ROOT = path.dirname(path.dirname(path.dirname(fileURLToPath(import.meta.ur
 const MANIFEST_PATH = path.join(ROOT, "config", "controllers_manifest.json")
 
 const CONTROLLERS = {
+  "poetry--motion--animated-list": AnimatedListController,
+  "poetry--motion--layout-group": LayoutGroupController,
   "poetry--motion--marquee": MarqueeController,
   "poetry--motion--number-ticker": NumberTickerController,
   "poetry--motion--text-reveal": TextRevealController,

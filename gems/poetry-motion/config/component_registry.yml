@@ -2,6 +2,131 @@
 # DO NOT EDIT: CI verifies this file matches a fresh build (rake registry:verify).
 ---
 components:
+  poetry/motion/animated_list:
+    class_name: Poetry::Motion::AnimatedList::Component
+    identifier: poetry--motion--animated_list
+    bem_block: poetry-motion-animated_list
+    styles: []
+    options:
+    - name: animate
+      type: boolean
+      default: true
+      description: Turns the motion off; the effect renders its finished state either
+        way.
+    - name: as
+      type: symbol
+      variants:
+      - ul
+      - ol
+      - div
+      default: ul
+      description: 'The element the list renders as: ul, ol or div.'
+    - name: duration
+      type:
+      default: normal
+      description: 'How long the motion runs: a duration token (fast, normal, slow)
+        or milliseconds.'
+    slots: []
+    helper: poetry_animated_list
+    description: 'A list whose Turbo Stream changes animate: new items fade in, removed
+      ones fade out, the rest slide into place.'
+    elements: []
+    capsule: e6c7e56a6ff5
+    controllers:
+    - identifier: poetry--motion--animated-list
+      targets: []
+      values:
+      - duration
+      actions: []
+      events: []
+    agent_rules:
+    - 'Give the list an id: and target it (or its items) with Turbo Streams; the streams
+      animate, the server-rendered list is the finished state.'
+    - Each direct child is one item. Keep item elements stable across renders so survivors
+      slide instead of fading out and back in.
+    requires_content: the list's items
+    parts:
+    - name: animated-list
+      description: The list; its direct children are the items that enter, leave and
+        move
+      states:
+      - attr: data-animated-list
+        condition: always - the list's own key, which names its items in the transition
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--motion--animated-list
+        conditional: if animate
+        registers: true
+        values:
+        - name: duration
+    behaviors:
+    - name: layout
+      description: DOM changes animated as layout transitions, only when no Turbo
+        visit holds the view-transition slot.
+      runtime: true
+  poetry/motion/layout_group:
+    class_name: Poetry::Motion::LayoutGroup::Component
+    identifier: poetry--motion--layout_group
+    bem_block: poetry-motion-layout_group
+    styles: []
+    options:
+    - name: animate
+      type: boolean
+      default: true
+      description: Turns the motion off; the effect renders its finished state either
+        way.
+    - name: duration
+      type:
+      default: normal
+      description: 'How long the motion runs: a duration token (fast, normal, slow)
+        or milliseconds.'
+    slots: []
+    helper: poetry_layout_group
+    description: Elements that share a data-layout-id move as one thing between places,
+      like an active-tab indicator.
+    elements: []
+    capsule: e6c7e56a6ff5
+    controllers:
+    - identifier: poetry--motion--layout-group
+      targets: []
+      values:
+      - duration
+      actions: []
+      events: []
+    agent_rules:
+    - Effects are decoration; the server-rendered content stands alone and reads right
+      with motion off.
+    - No spring, pointer input, scroll link or interruption means a CSS keyframe,
+      not poetry-motion.
+    - 'Animate toward the server-rendered state: the last keyframe is the element''s
+      own style.'
+    - Show exactly one element per data-layout-id at a time; the group animates the
+      newly visible one from the old one's box. Hide the others with display, never
+      visibility or opacity.
+    requires_content: the elements that carry data-layout-id
+    identity: false
+    parts:
+    - name: layout-group
+      description: The region whose data-layout-id elements move between places
+    - name: layout-group-item
+      description: One place a moving element can be; the visible one is current
+      states:
+      - attr: data-layout-id
+        condition: always - the id every place of one moving element shares
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--motion--layout-group
+        conditional: if animate
+        registers: true
+        values:
+        - name: duration
+    behaviors:
+    - name: animate
+      description: One engine animation toward the element's server-rendered style;
+        skipped under reduced motion and on return visits.
+      runtime: true
   poetry/motion/marquee:
     class_name: Poetry::Motion::Marquee::Component
     identifier: poetry--motion--marquee
@@ -226,6 +351,36 @@ components:
       description: A value that springs to each new target and is retargeted without
         a jump.
       runtime: true
+  poetry/motion/shared_element:
+    class_name: Poetry::Motion::SharedElement::Component
+    identifier: poetry--motion--shared_element
+    bem_block: poetry-motion-shared_element
+    styles: []
+    options:
+    - name: as
+      type: symbol
+      default: div
+      description: The element it renders as.
+    - name: name
+      type: string
+      required: true
+      description: The view-transition name both pages give the element.
+    slots: []
+    helper: poetry_shared_element
+    description: An element a Turbo visit morphs from one page to the next, like a
+      card into its detail page.
+    elements: []
+    capsule: 42e5df339fc2
+    agent_rules:
+    - 'Use one name per element per page: two elements with the same name on one page
+      cancel the transition. Build names from the record, such as product-42.'
+    - Shared elements need <meta name="view-transition" content="same-origin"> in
+      the layout; without it the visit swaps the page with no morph.
+    requires_content: the element both pages share
+    identity: false
+    parts:
+    - name: shared-element
+      description: The element the visit morphs between pages; carries view-transition-name
   poetry/motion/text_reveal:
     class_name: Poetry::Motion::TextReveal::Component
     identifier: poetry--motion--text_reveal
@@ -381,7 +536,10 @@ components:
         a jump.
       runtime: true
 helper_args:
+  poetry_animated_list: 0
+  poetry_layout_group: 0
   poetry_marquee: 0
   poetry_number_ticker: 0
+  poetry_shared_element: 0
   poetry_text_reveal: 1
   poetry_tilt_card: 0

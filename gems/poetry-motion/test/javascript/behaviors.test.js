@@ -204,6 +204,13 @@ describe("return visits", () => {
 })
 
 describe("the behaviors with the engine", () => {
+  it("an animation that finishes on its own leaves the element its own style", async () => {
+    const element = box()
+    await useAnimate(controller(), element, { translate: ["0px 20px", "0px 0px"], scale: [0.9, 1] }, { duration: 80 }).finished
+    await wait(40)
+    expect(element.getAttribute("style") ?? "").toBe("")
+  })
+
   it("useStagger starts each element a step after the last", async () => {
     const elements = [box(), box(), box()]
     useStagger(controller(), elements, { translate: ["-40px 0px", "0px 0px"] }, { step: 200, duration: 5000 })

@@ -44,7 +44,7 @@ export function useSpring(controller, element, property, options = {}) {
     if (stopped) return
     const previous = animation
     animation = track(animate(element, { [property]: `${value}${unit}` }, spring(options.spring ?? "snappy")),
-      { element, properties: [property] })
+      { element, properties: [property], persist: true })
     if (previous) previous.stop()
     await animation.finished
   }
