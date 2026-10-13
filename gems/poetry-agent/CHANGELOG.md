@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.14]
+
+### Added
+
+- `describe_component` prints one line per behavior the component uses.
+
 ## [0.1.13] - 2026-10-13
 
 ### Changed

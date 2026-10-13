@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.14]
+
+### Changed
+
+- Tabs, toggle group, radio group, tag group, menubar and accordion use the `roving_focus` behavior; checkbox and switch use `checked`; nine anchored overlays use `popper`; the overlays use the `focus_scope` and `dismissable` runtime behaviors. The rendered HTML is unchanged, and the registry lists each component's behaviors.
+- The component skill shows how to use a behavior before declaring a controller by hand.
+
 ## [0.1.13] - 2026-10-13
 
 ### Added

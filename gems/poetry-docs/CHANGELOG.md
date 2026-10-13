@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.14]
+
+### Added
+
+- Component and chart pages show a Behaviors table beside Wiring: each behavior the component uses, where it is wired and what it does. The table says Poetry behaviors are not Herb's client behaviors.
+
 ## [0.1.13] - 2026-10-13
 
 ### Added

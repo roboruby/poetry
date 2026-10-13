@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.14]
+
+### Changed
+
+- The animated chart families use the `entrance_animation` behavior for their frame's motion controller, from poetry-charts' own behavior namespace. The rendered HTML is unchanged.
+
 ## [0.1.13] - 2026-10-13
 
 ### Changed
