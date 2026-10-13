@@ -1326,6 +1326,12 @@
     "path": "/components/accordion#non-collapsible"
   },
   {
+    "title": "Behaviors",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Accordion",
     "section": "components",
@@ -2340,6 +2346,12 @@
     "path": "/components/combobox#agent-tools"
   },
   {
+    "title": "Behaviors",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Combobox",
     "section": "components",
@@ -2524,6 +2536,12 @@
     "page": "Context Menu",
     "section": "components",
     "path": "/components/context-menu#with-icon"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#behaviors"
   },
   {
     "title": "Wiring",
@@ -2928,6 +2946,12 @@
     "path": "/components/dropdown-menu#with-icons"
   },
   {
+    "title": "Behaviors",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Dropdown Menu",
     "section": "components",
@@ -3208,6 +3232,12 @@
     "page": "Hover Card",
     "section": "components",
     "path": "/components/hover-card#sides"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Hover Card",
+    "section": "components",
+    "path": "/components/hover-card#behaviors"
   },
   {
     "title": "Wiring",
@@ -3804,6 +3834,12 @@
     "path": "/components/menubar#submenu"
   },
   {
+    "title": "Behaviors",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Menubar",
     "section": "components",
@@ -4218,6 +4254,12 @@
     "path": "/components/popover#with-form"
   },
   {
+    "title": "Behaviors",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Popover",
     "section": "components",
@@ -4392,6 +4434,12 @@
     "path": "/components/radio-group#with-description"
   },
   {
+    "title": "Behaviors",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Radio Group",
     "section": "components",
@@ -4558,6 +4606,12 @@
     "page": "Select",
     "section": "components",
     "path": "/components/select#valued"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#behaviors"
   },
   {
     "title": "Wiring",
@@ -5094,6 +5148,12 @@
     "path": "/components/tabs#agent-tools"
   },
   {
+    "title": "Behaviors",
+    "page": "Tabs",
+    "section": "components",
+    "path": "/components/tabs#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Tabs",
     "section": "components",
@@ -5122,6 +5182,12 @@
     "page": "Tag Group",
     "section": "components",
     "path": "/components/tag-group#as-form-value"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Tag Group",
+    "section": "components",
+    "path": "/components/tag-group#behaviors"
   },
   {
     "title": "Wiring",
@@ -5454,6 +5520,12 @@
     "path": "/components/toggle-group#vertical"
   },
   {
+    "title": "Behaviors",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#behaviors"
+  },
+  {
     "title": "Wiring",
     "page": "Toggle Group",
     "section": "components",
@@ -5536,6 +5608,12 @@
     "page": "Tooltip",
     "section": "components",
     "path": "/components/tooltip#with-label"
+  },
+  {
+    "title": "Behaviors",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#behaviors"
   },
   {
     "title": "Wiring",

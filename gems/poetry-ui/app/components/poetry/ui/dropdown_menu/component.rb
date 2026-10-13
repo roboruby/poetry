@@ -38,6 +38,9 @@ module Poetry
       class Component < Poetry::Core::Component
         include Poetry::Ui::ComposableTrigger
 
+        # Escape and an outside press close the open layer (activated by the JS on open).
+        use_behavior :dismissable
+
         include ItemSlots
 
         # Projected into the registry, llms.txt, and the agent surface.

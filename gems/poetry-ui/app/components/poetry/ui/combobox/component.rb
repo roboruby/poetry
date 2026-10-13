@@ -283,6 +283,9 @@ module Poetry
       class Component < Poetry::Core::Component
         include Helpers
 
+        # Escape and an outside press close the open layer (activated by the JS on open).
+        use_behavior :dismissable
+
         # The trigger-bound ARIA surface: Field's control_attributes (and
         # bare aria-label usage) land on the TRIGGER - the combobox is the
         # interactive control the label must reach - never on the root div.

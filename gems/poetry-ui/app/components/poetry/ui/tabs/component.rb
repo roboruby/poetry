@@ -66,12 +66,7 @@ module Poetry
           # the list - its focus_activate action routes up to the root
           # instance.
           on :list do
-            controller :roving_focus do
-              register
-              value :orientation
-              value :loop, true
-              action :keydown, on: :keydown
-            end
+            behavior :roving_focus, orientation: :option, loop: true
             controller :tabs do
               action :focus_activate, on: event(:roving_focus, :entry)
             end

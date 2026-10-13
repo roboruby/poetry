@@ -443,8 +443,13 @@ module Poetry
       def contract_facts(component, props)
         facts = {}
         # Component-specific constraints agents must honor (the contract's
-        # agent_rules section) - declared as an AGENT_RULES constant.
-        facts["agent_rules"] = component::AGENT_RULES.dup if component.const_defined?(:AGENT_RULES)
+        # agent_rules section) - the rules of the behaviors it uses, then
+        # its AGENT_RULES constant.
+        rules = if component.respond_to?(:agent_rules) then component.agent_rules
+                elsif component.const_defined?(:AGENT_RULES) then component::AGENT_RULES
+                else []
+                end
+        facts["agent_rules"] = rules.dup if rules.any?
         # The requires_content declaration: the same fact that raises at
         # render lets poetry check flag a blockless call statically.
         if component.respond_to?(:required_content) && (hint = component.required_content)
@@ -481,6 +486,13 @@ module Poetry
         if component.respond_to?(:stimulus_definitions)
           wiring = component.stimulus_definitions
           facts["stimulus"] = plain(wiring) if wiring.any?
+        end
+        # The behaviors the component uses (Poetry::Core::Behavior): name,
+        # description, the elements each wires, and whether the JS
+        # activates it on its own.
+        if component.respond_to?(:behavior_definitions)
+          behaviors = component.behavior_definitions
+          facts["behaviors"] = plain(behaviors) if behaviors.any?
         end
         # The agent-tool projection (tool declarations, MCP Tool-shaped):
         # the component's operate surface - what an in-page agent may

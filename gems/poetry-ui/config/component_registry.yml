@@ -160,6 +160,11 @@ components:
         actions:
         - method: toggle
           'on': click
+    behaviors:
+    - name: roving_focus
+      description: Arrow, Home and End keys move focus across the group's items.
+      elements:
+      - root
   poetry/ui/alert:
     class_name: Poetry::Ui::Alert::Component
     identifier: poetry--ui--alert
@@ -2591,6 +2596,10 @@ components:
         actions:
         - method: removeChip
           'on': click
+    behaviors:
+    - name: dismissable
+      description: Escape or a press outside closes the open layer, the topmost first.
+      runtime: true
     tools:
     - name: set_value
       title: Set value
@@ -3597,6 +3606,10 @@ components:
       - identifier: poetry--core--popper
         targets:
         - name: anchor
+    behaviors:
+    - name: dismissable
+      description: Escape or a press outside closes the open layer, the topmost first.
+      runtime: true
   poetry/ui/data_table:
     class_name: Poetry::Ui::DataTable::Component
     identifier: poetry--ui--data_table
@@ -5185,6 +5198,10 @@ components:
       - identifier: poetry--core--popper
         targets:
         - name: anchor
+    behaviors:
+    - name: dismissable
+      description: Escape or a press outside closes the open layer, the topmost first.
+      runtime: true
   poetry/ui/empty:
     class_name: Poetry::Ui::Empty::Component
     identifier: poetry--ui--empty
@@ -5863,6 +5880,10 @@ components:
       - identifier: poetry--core--popper
         targets:
         - name: content
+    behaviors:
+    - name: dismissable
+      description: Escape or a press outside closes the open layer, the topmost first.
+      runtime: true
   poetry/ui/icon:
     class_name: Poetry::Ui::Icon::Component
     identifier: poetry--ui--icon
@@ -7066,6 +7087,14 @@ components:
       - identifier: poetry--core--popper
         targets:
         - name: anchor
+    behaviors:
+    - name: dismissable
+      description: Escape or a press outside closes the open layer, the topmost first.
+      runtime: true
+    - name: roving_focus
+      description: Arrow, Home and End keys move focus across the group's items.
+      elements:
+      - root
   poetry/ui/message:
     class_name: Poetry::Ui::Message::Component
     identifier: poetry--ui--message
@@ -8258,6 +8287,10 @@ components:
       - identifier: poetry--core--popper
         targets:
         - name: content
+    behaviors:
+    - name: dismissable
+      description: Escape or a press outside closes the open layer, the topmost first.
+      runtime: true
   poetry/ui/progress:
     class_name: Poetry::Ui::Progress::Component
     identifier: poetry--ui--progress
@@ -8747,6 +8780,11 @@ components:
       - identifier: poetry--core--radio-group
         targets:
         - name: input
+    behaviors:
+    - name: roving_focus
+      description: Arrow, Home and End keys move focus across the group's items.
+      elements:
+      - root
   poetry/ui/resizable:
     class_name: Poetry::Ui::Resizable::Component
     identifier: poetry--ui--resizable
@@ -9365,6 +9403,10 @@ components:
           'on': pointerenter
         - method: scrollHoldStop
           'on': pointerleave
+    behaviors:
+    - name: dismissable
+      description: Escape or a press outside closes the open layer, the topmost first.
+      runtime: true
   poetry/ui/sensitive_input:
     class_name: Poetry::Ui::SensitiveInput::Component
     identifier: poetry--ui--sensitive_input
@@ -10699,6 +10741,11 @@ components:
         actions:
         - method: activate
           'on': click
+    behaviors:
+    - name: roving_focus
+      description: Arrow, Home and End keys move focus across the group's items.
+      elements:
+      - list
     tools:
     - name: set_value
       title: Set value
@@ -10829,6 +10876,11 @@ components:
         actions:
         - method: remove
           'on': click
+    behaviors:
+    - name: roving_focus
+      description: Arrow, Home and End keys move focus across the group's items.
+      elements:
+      - grid
   poetry/ui/textarea:
     class_name: Poetry::Ui::Textarea::Component
     identifier: poetry--ui--textarea
@@ -11684,6 +11736,11 @@ components:
         actions:
         - method: toggle
           'on': click
+    behaviors:
+    - name: roving_focus
+      description: Arrow, Home and End keys move focus across the group's items.
+      elements:
+      - root
   poetry/ui/toolbar:
     class_name: Poetry::Ui::Toolbar::Component
     identifier: poetry--ui--toolbar
@@ -11992,6 +12049,10 @@ components:
       - identifier: poetry--core--popper
         targets:
         - name: arrow
+    behaviors:
+    - name: dismissable
+      description: Escape or a press outside closes the open layer, the topmost first.
+      runtime: true
   poetry/ui/tree:
     class_name: Poetry::Ui::Tree::Component
     identifier: poetry--ui--tree

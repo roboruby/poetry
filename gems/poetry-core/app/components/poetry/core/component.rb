@@ -46,6 +46,7 @@ module Poetry
       include Poetry::Core::Concerns::Introspection
       include Poetry::Core::Concerns::Parts
       include Poetry::Core::Concerns::AgentTools
+      include Poetry::Core::Concerns::Behaviors
 
       # Implementation-detail component classes (a family's inner Item /
       # Group / Sub / Menu classes) inherit the full Component machinery

@@ -73,6 +73,7 @@
   <% if (parts = Poetry::Docs::DocsCatalog.parts_for(@entry.section, @entry.slug)).present? %>
     <%= render "poetry/docs/docs/styling", parts: parts,
                                wiring: Poetry::Docs::DocsCatalog.wiring_for(@entry.section, @entry.slug),
+                               behaviors: Poetry::Docs::DocsCatalog.behaviors_for(@entry.section, @entry.slug),
                                tools: Poetry::Docs::DocsCatalog.tools_for(@entry.section, @entry.slug) %>
   <% end %>
 </div>

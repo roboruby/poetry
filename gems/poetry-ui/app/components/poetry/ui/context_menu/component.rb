@@ -38,6 +38,9 @@ module Poetry
       class Component < Poetry::Core::Component
         include ItemSlots
 
+        # Escape and an outside press close the open layer (activated by the JS on open).
+        use_behavior :dismissable
+
         # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "NEVER make a context menu the only path to an action - it is an invisible affordance; every " \

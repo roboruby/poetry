@@ -209,6 +209,7 @@ Slots: trigger (Optional custom trigger content rendered BEFORE the value span (
 - WIRING clear: `poetry--core--combobox` actions clear on click
 - WIRING chip: `poetry--core--combobox` actions chipKeydown on keydown
 - WIRING chip_remove: `poetry--core--combobox` actions removeChip on click
+- BEHAVIOR dismissable (activated by the JS when it opens) - Escape or a press outside closes the open layer, the topmost first.
 - tool set_value (mutating; params: value (string, required)) - Select the option whose value matches; the schema lists the rendered options, and clear selects nothing. [opt in with webmcp: "name" on the call; dispatches poetry--core--combobox#setValue]
 - tool clear (mutating) - Clear the current selection. [opt in with webmcp: "name" on the call; dispatches poetry--core--combobox#clear]
 - RULE: Use poetry_combobox (f.poetry_combobox in forms) - never hand-wire Popover+Command+hidden-input; this component IS that wiring, with the form story done right.
@@ -593,6 +594,7 @@ Slots: items (One item per option: a real button[role=radio] carrying its own hi
 - WIRING root: `poetry--core--radio-group` registers; values value (if value?); actions entryCheck on poetry--core--roving-focus:entry | `poetry--core--roving-focus` registers; values orientation, loop; actions keydown on keydown
 - WIRING item: `poetry--core--radio-group` actions check on click
 - WIRING input: `poetry--core--radio-group` targets input
+- BEHAVIOR roving_focus (on root) - Arrow, Home and End keys move focus across the group's items.
 - RULE: Use poetry_radio_group / form.radio_group - never hand-roll role=radio buttons.
 - RULE: Every item MUST have a unique value: (ArgumentError on duplicates).
 - RULE: The GROUP must be labelled - label: (or aria-labelledby) - an unlabelled radiogroup is an APG violation (ArgumentError).
@@ -675,6 +677,7 @@ Slots: trigger (Optional custom trigger content rendered BEFORE the value span (
 - WIRING native: `poetry--core--select` actions nativeChanged on change
 - WIRING viewport: `poetry--core--select` actions syncScrollButtons on scroll
 - WIRING scroll_button: `poetry--core--select` actions scrollHoldStart on pointerenter, scrollHoldStop on pointerleave
+- BEHAVIOR dismissable (activated by the JS when it opens) - Escape or a press outside closes the open layer, the topmost first.
 - RULE: Use poetry_select (f.poetry_select in forms) - never hand-roll role=listbox popups, and never fake a select with DropdownMenu radio items bound to a hidden field.
 - RULE: Options are VALUES. If activating an option should DO something beyond setting a value, it's a DropdownMenu item.
 - RULE: In forms, ALWAYS go through f.poetry_select - it wires name/id/value/errors/required; bare poetry_select in a form is a smell.
@@ -864,6 +867,7 @@ Slots: items (Declares one item: value: (unique - duplicates raise), label: (req
 - PART `toggle-group-item` - One dumb <button> under the group machine - Toggle-styled, no per-item controller | states: data-pressed (pressed (bare presence boolean - absent when off; the controller rederives the type-correct aria attribute from it)); data-disabled (the item (or the whole group) is disabled - the roving-focus collection filter); data-value (the item's key in the value set (always present, unique)); data-variant=default|outline (cascaded from the root); data-size=default|sm|lg (cascaded from the root); data-spacing (cascaded from the root - keys the segmented corner/border chain)
 - WIRING root: `poetry--core--toggle-group` registers; values type | `poetry--core--roving-focus` registers; values orientation, loop; actions keydown on keydown
 - WIRING item: `poetry--core--toggle-group` actions toggle on click
+- BEHAVIOR roving_focus (on root) - Arrow, Home and End keys move focus across the group's items.
 - RULE: Use poetry_toggle_group - never hand-assemble Toggles with your own exclusivity logic.
 - RULE: ToggleGroup is UI state, NOT form data: submitting single-select -> RadioGroup; submitting multi-select -> Checkbox group. No name: exists; don't route around it.
 - RULE: Every item MUST have a unique value: (ArgumentError on duplicates); icon-only items MUST pass label: (state-invariant).

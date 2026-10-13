@@ -136,6 +136,7 @@ Slots: tabs (Declares one tab: the title, its value:, and the panel as the block
 - WIRING root: `poetry--core--tabs` registers
 - WIRING list: `poetry--core--roving-focus` registers; values orientation, loop; actions keydown on keydown | `poetry--core--tabs` actions focusActivate on poetry--core--roving-focus:entry
 - WIRING trigger: `poetry--core--tabs` actions activate on click
+- BEHAVIOR roving_focus (on list) - Arrow, Home and End keys move focus across the group's items.
 - tool set_value (mutating; params: value (string, required)) - Activate the tab whose value matches and show its panel. [opt in with webmcp: "name" on the call; dispatches poetry--core--tabs#setValue]
 - RULE: Declare tabs with with_tab(title, value:) + the panel block (or defer: for a lazy turbo-frame panel) - never hand-wire role=tab/tabpanel ids.
 - RULE: panel: false declares a list-only tab (no tabpanel renders, the trigger drops aria-controls) - for demos/pattern shells; real tab sets carry panels.

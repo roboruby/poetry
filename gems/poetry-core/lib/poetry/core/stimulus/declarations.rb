@@ -248,7 +248,12 @@ module Poetry
         # block's vocabulary is {#on} (declare an element) and {#event}
         # (build a validated event name).
         class RootDSL
+          # The declared elements.
+          # @return [Array<Element>]
           attr_reader :elements
+          # The behaviors the elements used, in declaration order.
+          # @return [Array<Poetry::Core::Behavior::Use>]
+          attr_reader :behavior_uses
 
           # Starts an empty harvest for one declaring class.
           #
@@ -257,6 +262,7 @@ module Poetry
           def initialize(declaring)
             @declaring = declaring
             @elements = []
+            @behavior_uses = []
           end
 
           # Declares the wiring of one element of the component's anatomy.
@@ -282,7 +288,7 @@ module Poetry
             conditions = Declarations.extract_conditions!("#{@declaring} element #{name.inspect}", options)
             element = Element.new(name: name, extend_inherited: extend,
                                   conditions: conditions, wirings: [])
-            ElementDSL.new(@declaring, element).instance_exec(&block) if block
+            ElementDSL.new(@declaring, element, @behavior_uses).instance_exec(&block) if block
             @elements << element
           end
 
@@ -303,9 +309,39 @@ module Poetry
           # @param declaring [String] the declaring class's name, for error
           #   messages
           # @param element [Element] the element being wired
-          def initialize(declaring, element)
+          # @param behavior_uses [Array] the harvest the element's behavior
+          #   uses join
+          def initialize(declaring, element, behavior_uses = [])
             @declaring = declaring
             @element = element
+            @behavior_uses = behavior_uses
+          end
+
+          # Adds a Poetry behavior's wiring to this element, here in
+          # declaration order, and records the use for the registry and
+          # the agent rules ({Poetry::Core::Behavior}).
+          #
+          # @param name [Symbol, Module] the behavior's name or module
+          # @param options [Hash] the behavior's own options
+          # @return [void]
+          # @raise [DeclarationError] for a runtime behavior, which wires
+          #   nothing, or options the behavior does not take
+          # @example
+          #   on(:list) { behavior :roving_focus, orientation: :option, loop: true }
+          def behavior(name, **options)
+            behavior = Poetry::Core::Behavior.resolve(name)
+            unless behavior.wiring
+              raise DeclarationError,
+                    "#{@declaring}: behavior #{behavior.behavior_name} wires nothing - use_behavior it at class level"
+            end
+
+            begin
+              instance_exec(**options, &behavior.wiring)
+            rescue ArgumentError => e
+              raise DeclarationError, "#{@declaring}: behavior #{behavior.behavior_name} - #{e.message}"
+            end
+            @behavior_uses << Poetry::Core::Behavior::Use.new(behavior: behavior, element: @element.name,
+                                                              options: options)
           end
 
           # Wires one Stimulus controller to this element.
@@ -396,6 +432,25 @@ module Poetry
                      else { type: :implicit, value: name.to_sym }
                      end
             push(kind: :value, name: name.to_sym, source: source, options: options)
+          end
+
+          # A behavior's value from the option its user passed: nil declares
+          # nothing, `:option` reads the component's same-named option, a
+          # Hash passes from:, if: and unless: through to {#value}, and
+          # anything else is a literal. Behavior wiring blocks call it so a
+          # component decides which values it sets and how.
+          #
+          # @param name [Symbol] the value name
+          # @param given [Object] the option the component passed
+          # @return [void]
+          def behavior_value(name, given)
+            return if given.nil?
+
+            case given
+            when :option then value(name)
+            when Hash then value(name, **given)
+            else value(name, given)
+            end
           end
 
           # Declares one action the render emits into this element's

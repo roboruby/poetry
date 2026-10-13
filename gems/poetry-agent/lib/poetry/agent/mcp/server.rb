@@ -1024,6 +1024,7 @@ module Poetry
           (entry["parts"] || []).each { |part| lines << part_line(part) }
           # The operate surface: the tools an in-page agent may invoke on a
           # rendered instance once the call opts in (webmcp: "name").
+          lines.concat(Poetry::Core::LlmsText.behavior_lines(entry))
           (entry["tools"] || []).each { |tool| lines << tool_line(tool) }
           (entry["agent_rules"] || []).each { |rule| lines << "- RULE: #{rule}" }
           lines

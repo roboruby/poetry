@@ -91,14 +91,9 @@ module Poetry
               register
               value :type
             end
-            controller :roving_focus do
-              register
-              # DEFAULT tabindex-managing mode (contrast Accordion's
-              # manage_tabindex: false).
-              value :orientation
-              value :loop, true
-              action :keydown, on: :keydown
-            end
+            # DEFAULT tabindex-managing mode (contrast Accordion's
+            # manage_tabindex: false).
+            behavior :roving_focus, orientation: :option, loop: true
           end
           on :item do
             controller(:toggle_group) { action :toggle, on: :click }

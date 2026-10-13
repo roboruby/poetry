@@ -146,6 +146,7 @@ Slots: items (The menu composition API: one ordered items collection accepting s
 - WIRING content: `poetry--core--popper` targets content
 - WIRING item: `poetry--core--menu` actions activate on click
 - WIRING sub_trigger: `poetry--core--menu` actions subEnter on pointerenter, subLeave on pointerleave, openSub on click | `poetry--core--popper` targets anchor
+- BEHAVIOR dismissable (activated by the JS when it opens) - Escape or a press outside closes the open layer, the topmost first.
 - RULE: NEVER make a context menu the only path to an action - it is an invisible affordance; every item needs a visible equivalent (a '...' DropdownMenu button, a toolbar, a detail page).
 - RULE: Choose ContextMenu only for right-click-on-an-object semantics; a visible button opening a menu is DropdownMenu.
 - RULE: Do not add aria-haspopup or a role to the trigger surface; do not make it focusable except via focusable_surface: true.
@@ -258,6 +259,7 @@ Slots: items (The menu composition API: one ordered items collection accepting s
 - WIRING content: `poetry--core--popper` targets content
 - WIRING item: `poetry--core--menu` actions activate on click
 - WIRING sub_trigger: `poetry--core--menu` actions subEnter on pointerenter, subLeave on pointerleave, openSub on click | `poetry--core--popper` targets anchor
+- BEHAVIOR dismissable (activated by the JS when it opens) - Escape or a press outside closes the open layer, the topmost first.
 - RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the trigger wiring (the Stimulus behavior the overlay needs; poppers add id/aria and their trigger slot, modals hand only the open action) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.
 - RULE: Items are ACTIONS. Choosing a form VALUE is a Select/Combobox - do not fake it with radio items.
@@ -293,6 +295,7 @@ Slots: trigger (The enriched LINK: a real navigable <a> - THE no-JS fallback. ta
 - WIRING root: `poetry--core--hover-card` registers; values open, open_delay, close_delay | `poetry--core--popper` registers; values side, align, side_offset, align_offset, avoid_collisions
 - WIRING trigger: `poetry--core--hover-card` actions pointerEnter on pointerenter, pointerLeave on pointerleave, focusOpen on focus, blurClose on blur, pointerDown on pointerdown | `poetry--core--popper` targets anchor
 - WIRING content: `poetry--core--popper` targets content
+- BEHAVIOR dismissable (activated by the JS when it opens) - Escape or a press outside closes the open layer, the topmost first.
 - RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the trigger wiring (the Stimulus behavior the overlay needs; poppers add id/aria and their trigger slot, modals hand only the open action) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: Use poetry_hover_card - never hand-roll hover-div previews.
 - RULE: THE REACHABLE-ELSEWHERE RULE (non-negotiable): every piece of information in a hover card MUST exist at the trigger link's destination (or another keyboard/touch-reachable surface). The card is pointer-only enrichment - keyboard and touch users never see inside it.
@@ -336,6 +339,8 @@ Slots: menus (The top-level menus. Each takes with_trigger (the menu button) plu
 - WIRING content: `poetry--core--popper` targets content
 - WIRING item: `poetry--core--menu` actions activate on click
 - WIRING sub_trigger: `poetry--core--menu` actions subEnter on pointerenter, subLeave on pointerleave, openSub on click | `poetry--core--popper` targets anchor
+- BEHAVIOR dismissable (activated by the JS when it opens) - Escape or a press outside closes the open layer, the topmost first.
+- BEHAVIOR roving_focus (on root) - Arrow, Home and End keys move focus across the group's items.
 - RULE: Use poetry_menubar for app-chrome command menus ONLY - site navigation is NavigationMenu (untrapped), a single actions menu is DropdownMenu.
 - RULE: label: is REQUIRED (the bar's accessible name).
 - RULE: Never put non-menuitem interactive elements directly in the bar (breaks roving focus + APG roles) - a Toolbar is the component for mixed controls.
@@ -369,6 +374,7 @@ Slots: trigger (The control that opens the panel - a composed Button. The slot o
 - WIRING trigger: `poetry--core--popover` actions toggle on click
 - WIRING anchor_part: `poetry--core--popper` targets anchor
 - WIRING content: `poetry--core--popper` targets content
+- BEHAVIOR dismissable (activated by the JS when it opens) - Escape or a press outside closes the open layer, the topmost first.
 - RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the trigger wiring (the Stimulus behavior the overlay needs; poppers add id/aria and their trigger slot, modals hand only the open action) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: Use poetry_popover - never hand-roll an anchored role=dialog panel with Tailwind.
 - RULE: Popover content is INTERACTIVE - for text-only hover hints use Tooltip; for pointer-only previews use HoverCard.
@@ -431,6 +437,7 @@ Slots: trigger (The described control - commonly a poetry Button (with_trigger(v
 - WIRING trigger: `poetry--core--tooltip` actions pointerMove on pointermove, pointerLeave on pointerleave, pointerDown on pointerdown, clickClose on click, focusOpen on focus, blurClose on blur | `poetry--core--popper` targets anchor
 - WIRING content: `poetry--core--popper` targets content
 - WIRING arrow: `poetry--core--popper` targets arrow
+- BEHAVIOR dismissable (activated by the JS when it opens) - Escape or a press outside closes the open layer, the topmost first.
 - RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the trigger wiring (the Stimulus behavior the overlay needs; poppers add id/aria and their trigger slot, modals hand only the open action) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: Use poetry_tooltip - never hand-roll title-attribute replacements or hover divs.
 - RULE: Tooltip content is TEXT and never interactive/focusable - links, buttons, or inputs inside are a contract violation (use Popover).

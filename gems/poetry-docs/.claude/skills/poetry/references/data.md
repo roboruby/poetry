@@ -22,6 +22,7 @@ Slots: items (The accordion sections. Each takes value: (its open-state key), ti
 - PART `accordion-content` - The role=region panel - the presence animation and the measured height var ride here | states: data-open (panel is open or entering); data-closed (panel is closed or animating out (hidden lands after the exit finishes)) | vars: --accordion-panel-height (the measured content height (controller-written) that feeds the accordion-down/up keyframes)
 - WIRING root: `poetry--core--accordion` registers; values type, collapsible | `poetry--core--roving-focus` registers; values orientation, manage_tabindex; actions keydown on keydown
 - WIRING trigger: `poetry--core--accordion` actions toggle on click
+- BEHAVIOR roving_focus (on root) - Arrow, Home and End keys move focus across the group's items.
 - RULE: Items via with_item(value:, title:) { panel content } - value is the open-state key.
 - RULE: type: :single (default) opens one at a time; pass collapsible: true to allow closing it.
 - RULE: Server-render the open item(s) via open: %w[value] - never toggle data-open/data-closed by hand.
@@ -349,6 +350,7 @@ Slots: tags (Declares one chip. value: is its identity (and form value); label: 
 - PART `tag-group-remove` - The per-tag remove button - tabbable (Tab steps from the row into it), removes exactly its own tag
 - WIRING grid: `poetry--core--tag-group` registers; actions keydown on keydown | `poetry--core--roving-focus` registers; values orientation, loop; actions keydown on keydown
 - WIRING remove: `poetry--core--tag-group` actions remove on click
+- BEHAVIOR roving_focus (on grid) - Arrow, Home and End keys move focus across the group's items.
 - RULE: Removable chips are a TagGroup - never hand-rolled badges with x buttons; removal keyboard (Delete/Backspace), focus recovery, and the live region ride the controller.
 - RULE: label: is REQUIRED (the grid's accessible name, rendered as a caption span).
 - RULE: name: turns the group into a form value - one hidden <name>[] input per tag submits; removing a tag removes its input.

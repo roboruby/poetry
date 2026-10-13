@@ -34,6 +34,9 @@ module Poetry
         include Poetry::Ui::ComposableTrigger
         include Poetry::Ui::PopperConsumer
 
+        # Escape and an outside press close the open layer (activated by the JS on open).
+        use_behavior :dismissable
+
         # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           ComposableTrigger::AGENT_RULE,

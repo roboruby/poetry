@@ -381,6 +381,15 @@ module Poetry
           end
         end
 
+        # The behaviors a component uses (the registry's behaviors
+        # section) - rendered as the Behaviors table beside the Wiring.
+        def behaviors_for(section, slug)
+          case section
+          when "components" then component_behaviors[slug]
+          when "charts" then chart_behaviors[slug]
+          end
+        end
+
         # One controller's manifest entry, or nil for a host identifier.
         def controller_definition(identifier)
           Poetry::Core::Stimulus::Manifest.catalog[identifier]
@@ -421,6 +430,18 @@ module Poetry
         def component_wiring
           @component_wiring ||= registry_components(Poetry::Ui.root).to_h do |key, entry|
             [ key.split("/")[2..].join("-").tr("_", "-"), entry["stimulus"] ]
+          end
+        end
+
+        def component_behaviors
+          @component_behaviors ||= registry_components(Poetry::Ui.root).to_h do |key, entry|
+            [ key.split("/")[2..].join("-").tr("_", "-"), entry["behaviors"] ]
+          end
+        end
+
+        def chart_behaviors
+          @chart_behaviors ||= registry_components(Poetry::Charts.root).to_h do |key, entry|
+            [ key.split("/").last.delete_suffix("_chart").tr("_", "-"), entry["behaviors"] ]
           end
         end
 

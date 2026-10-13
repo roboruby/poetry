@@ -106,6 +106,20 @@ module Poetry
         "#{lines.join("\n")}\n"
       end
 
+      # The behaviors a component uses (Poetry::Core::Behavior), one line
+      # each - shared with describe_component so no surface can lag.
+      #
+      # @param entry [Hash] a registry entry
+      # @return [Array<String>]
+      def self.behavior_lines(entry)
+        (entry["behaviors"] || []).map do |behavior|
+          where = if behavior["runtime"] then "activated by the JS when it opens"
+                  elsif behavior["elements"] then "on #{behavior["elements"].join(", ")}"
+                  end
+          "- BEHAVIOR #{behavior["name"]}#{" (#{where})" if where} - #{behavior["description"]}"
+        end
+      end
+
       private
 
       # The helper is poetry_ + the path under the ui/ namespace, so
@@ -153,6 +167,7 @@ module Poetry
                    "(MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch."
         end
         lines.concat(wiring_lines(entry))
+        lines.concat(LlmsText.behavior_lines(entry))
         lines.concat(tool_lines(entry))
         (entry["agent_rules"] || []).each { |rule| lines << "- RULE: #{rule}" }
         "#{lines.join("\n")}\n"
