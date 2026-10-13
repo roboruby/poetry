@@ -520,6 +520,81 @@ components:
       description: A value that springs to each new target and is retargeted without
         a jump.
       runtime: true
+  poetry/motion/scramble:
+    class_name: Poetry::Motion::Scramble::Component
+    identifier: poetry--motion--scramble
+    bem_block: poetry-motion-scramble
+    styles: []
+    options:
+    - name: animate
+      type: boolean
+      default: true
+      description: Turns the motion off; the effect renders its finished state either
+        way.
+    - name: delay
+      type: integer
+      default: 0
+      description: Milliseconds to wait before the motion starts.
+    - name: duration
+      type:
+      default: slow
+      description: 'How long the motion runs: a duration token (fast, normal, slow)
+        or milliseconds.'
+    - name: text
+      type: string
+      required: true
+      description: The text, plain.
+    - name: trigger
+      type: symbol
+      variants:
+      - load
+      - in_view
+      default: in_view
+      description: 'When the motion starts: load, in_view.'
+    slots: []
+    helper: poetry_scramble
+    description: Text that decodes from random glyphs into itself when it comes into
+      view.
+    elements:
+    - reader
+    capsule: 5ca4174ef820
+    controllers:
+    - identifier: poetry--motion--scramble
+      targets:
+      - display
+      values:
+      - animate
+      - delay
+      - duration
+      - trigger
+      actions: []
+      events: []
+    agent_rules:
+    - Scramble a short label or heading, ideally in a monospace face so the width
+      holds; never text a reader needs mid-animation.
+    identity: false
+    parts:
+    - name: scramble
+      description: The text
+    - name: scramble-display
+      description: The aria-hidden copy that scrambles
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--motion--scramble
+        conditional: if animate
+        registers: true
+        values:
+        - name: duration
+        - name: delay
+          conditional: if
+        - name: trigger
+    - element: display
+      controllers:
+      - identifier: poetry--motion--scramble
+        conditional: if animate
+        targets:
+        - name: display
   poetry/motion/shared_element:
     class_name: Poetry::Motion::SharedElement::Component
     identifier: poetry--motion--shared_element
@@ -760,6 +835,160 @@ components:
       description: A value that springs to each new target and is retargeted without
         a jump.
       runtime: true
+  poetry/motion/typewriter:
+    class_name: Poetry::Motion::Typewriter::Component
+    identifier: poetry--motion--typewriter
+    bem_block: poetry-motion-typewriter
+    styles: []
+    options:
+    - name: animate
+      type: boolean
+      default: true
+      description: Turns the motion off; the effect renders its finished state either
+        way.
+    - name: cursor
+      type: boolean
+      default: true
+      description: Shows a caret after the text while it types.
+    - name: delay
+      type: integer
+      default: 0
+      description: Milliseconds to wait before the motion starts.
+    - name: speed
+      type: integer
+      default: 50
+      description: Milliseconds per character.
+    - name: text
+      type: string
+      required: true
+      description: The line, plain text.
+    - name: trigger
+      type: symbol
+      variants:
+      - load
+      - in_view
+      default: in_view
+      description: 'When the motion starts: load, in_view.'
+    slots: []
+    helper: poetry_typewriter
+    description: A line typed out a character at a time when it comes into view.
+    elements:
+    - reader
+    capsule: 0f57aa34a3eb
+    controllers:
+    - identifier: poetry--motion--typewriter
+      targets:
+      - display
+      values:
+      - animate
+      - delay
+      - speed
+      - trigger
+      actions: []
+      events: []
+    agent_rules:
+    - Type one short line, a headline or a prompt; never body copy or anything a reader
+      must wait for. The line is complete in the page before it types.
+    identity: false
+    parts:
+    - name: typewriter
+      description: The line; a caret follows the text while it types
+      states:
+      - attr: data-typing
+        condition: the line is typing
+      - attr: data-cursor
+        condition: the caret is on (cursor:)
+    - name: typewriter-display
+      description: The aria-hidden copy that types
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--motion--typewriter
+        conditional: if animate
+        registers: true
+        values:
+        - name: speed
+        - name: delay
+          conditional: if
+        - name: trigger
+    - element: display
+      controllers:
+      - identifier: poetry--motion--typewriter
+        conditional: if animate
+        targets:
+        - name: display
+  poetry/motion/word_rotate:
+    class_name: Poetry::Motion::WordRotate::Component
+    identifier: poetry--motion--word_rotate
+    bem_block: poetry-motion-word_rotate
+    styles: []
+    options:
+    - name: animate
+      type: boolean
+      default: true
+      description: Turns the motion off; the effect renders its finished state either
+        way.
+    - name: interval
+      type: integer
+      default: 2500
+      description: Milliseconds each word shows.
+    - name: rounds
+      type: integer
+      default: 1
+      description: How many times it goes through the words; 0 keeps going.
+    - name: words
+      type: list
+      required: true
+      description: The words, the first one first.
+    slots: []
+    helper: poetry_word_rotate
+    description: A word that turns over into the next in place, then settles on the
+      first.
+    elements:
+    - reader
+    - stack
+    - word
+    capsule: b5e0c38c987b
+    controllers:
+    - identifier: poetry--motion--word-rotate
+      targets:
+      - word
+      values:
+      - animate
+      - interval
+      - rounds
+      actions: []
+      events: []
+    agent_rules:
+    - 'The first word is the one that counts: it is what renders, what a screen reader
+      hears and where the rotation stops. Order the words so the sentence reads right
+      with only it.'
+    - 'Keep rounds: small. A rotation that runs past five seconds is auto-updating
+      content and needs a way to stop it (WCAG 2.2.2); rounds: 0 never stops.'
+    identity: false
+    parts:
+    - name: word-rotate
+      description: The cell the words share, sized to the longest
+    - name: word-rotate-word
+      description: One word; the active one shows
+      states:
+      - attr: data-active
+        condition: the word showing
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--motion--word-rotate
+        conditional: if animate
+        registers: true
+        values:
+        - name: interval
+        - name: rounds
+    - element: word
+      controllers:
+      - identifier: poetry--motion--word-rotate
+        conditional: if animate
+        targets:
+        - name: word
 helper_args:
   poetry_animated_list: 0
   poetry_dock: 0
@@ -767,7 +996,10 @@ helper_args:
   poetry_magnetic: 0
   poetry_marquee: 0
   poetry_number_ticker: 0
+  poetry_scramble: 1
   poetry_shared_element: 0
   poetry_spotlight_card: 0
   poetry_text_reveal: 1
   poetry_tilt_card: 0
+  poetry_typewriter: 1
+  poetry_word_rotate: 0

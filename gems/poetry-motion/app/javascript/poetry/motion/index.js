@@ -28,9 +28,12 @@ export const CONTROLLERS = {
   "poetry--motion--magnetic": () => import("@poetry/motion/magnetic_controller"),
   "poetry--motion--marquee": () => import("@poetry/motion/marquee_controller"),
   "poetry--motion--number-ticker": () => import("@poetry/motion/number_ticker_controller"),
+  "poetry--motion--scramble": () => import("@poetry/motion/scramble_controller"),
   "poetry--motion--spotlight-card": () => import("@poetry/motion/spotlight_card_controller"),
   "poetry--motion--text-reveal": () => import("@poetry/motion/text_reveal_controller"),
   "poetry--motion--tilt-card": () => import("@poetry/motion/tilt_card_controller"),
+  "poetry--motion--typewriter": () => import("@poetry/motion/typewriter_controller"),
+  "poetry--motion--word-rotate": () => import("@poetry/motion/word_rotate_controller"),
 }
 
 const PREFIX = "poetry--motion--"

@@ -6396,6 +6396,30 @@
     "path": "/motion/number-ticker#wiring"
   },
   {
+    "title": "Scramble",
+    "page": "Scramble",
+    "section": "motion",
+    "path": "/motion/scramble"
+  },
+  {
+    "title": "Installation",
+    "page": "Scramble",
+    "section": "motion",
+    "path": "/motion/scramble#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Scramble",
+    "section": "motion",
+    "path": "/motion/scramble#default"
+  },
+  {
+    "title": "Wiring",
+    "page": "Scramble",
+    "section": "motion",
+    "path": "/motion/scramble#wiring"
+  },
+  {
     "title": "Shared Element",
     "page": "Shared Element",
     "section": "motion",
@@ -6502,6 +6526,54 @@
     "page": "Tilt Card",
     "section": "motion",
     "path": "/motion/tilt-card#wiring"
+  },
+  {
+    "title": "Typewriter",
+    "page": "Typewriter",
+    "section": "motion",
+    "path": "/motion/typewriter"
+  },
+  {
+    "title": "Installation",
+    "page": "Typewriter",
+    "section": "motion",
+    "path": "/motion/typewriter#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Typewriter",
+    "section": "motion",
+    "path": "/motion/typewriter#default"
+  },
+  {
+    "title": "Wiring",
+    "page": "Typewriter",
+    "section": "motion",
+    "path": "/motion/typewriter#wiring"
+  },
+  {
+    "title": "Word Rotate",
+    "page": "Word Rotate",
+    "section": "motion",
+    "path": "/motion/word-rotate"
+  },
+  {
+    "title": "Installation",
+    "page": "Word Rotate",
+    "section": "motion",
+    "path": "/motion/word-rotate#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Word Rotate",
+    "section": "motion",
+    "path": "/motion/word-rotate#default"
+  },
+  {
+    "title": "Wiring",
+    "page": "Word Rotate",
+    "section": "motion",
+    "path": "/motion/word-rotate#wiring"
   },
   {
     "title": "Action bar",

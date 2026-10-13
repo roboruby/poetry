@@ -1,6 +1,9 @@
 # Per-effect one-line descriptions (editorial, hand-authored), merged into
 # the generated registry by Poetry::Motion.registry. Keyed by component_path.
 ---
+poetry/motion/scramble: "Text that decodes from random glyphs into itself when it comes into view."
+poetry/motion/typewriter: "A line typed out a character at a time when it comes into view."
+poetry/motion/word_rotate: "A word that turns over into the next in place, then settles on the first."
 poetry/motion/dock: "A row of links or buttons that swell toward the pointer, the nearest most, like a launcher."
 poetry/motion/magnetic: "A wrapper that pulls its control a few pixels toward the pointer and springs it home."
 poetry/motion/spotlight_card: "A surface with a soft glow that follows the pointer across it."

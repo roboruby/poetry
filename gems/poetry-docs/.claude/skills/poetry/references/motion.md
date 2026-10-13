@@ -122,6 +122,22 @@ Class: Poetry::Motion::NumberTicker::Component - BEM block `poetry-motion-number
 - RULE: The value is the real number, rendered by the server; never put a placeholder there and let the count fill it in.
 - RULE: format: takes Intl.NumberFormat options (style, currency, minimumFractionDigits, ...); the server formats the same number the browser counts to.
 
+## scramble (`poetry_scramble`)
+
+Text that decodes from random glyphs into itself when it comes into view.
+
+Class: Poetry::Motion::Scramble::Component - BEM block `poetry-motion-scramble`.
+- `animate:` (boolean) - default true - Turns the motion off; the effect renders its finished state either way.
+- `delay:` (integer) - default 0 - Milliseconds to wait before the motion starts.
+- `duration:` () - default "slow" - How long the motion runs: a duration token (fast, normal, slow) or milliseconds.
+- `text:` (string) - required - The text, plain.
+- `trigger:` (symbol) - one of load|in_view, default "in_view" - When the motion starts: load, in_view.
+- PART `scramble` - The text
+- PART `scramble-display` - The aria-hidden copy that scrambles
+- WIRING root: `poetry--motion--scramble` (if animate) registers; values duration, delay (if), trigger
+- WIRING display: `poetry--motion--scramble` (if animate) targets display
+- RULE: Scramble a short label or heading, ideally in a monospace face so the width holds; never text a reader needs mid-animation.
+
 ## shared_element (`poetry_shared_element`)
 
 An element a Turbo visit morphs from one page to the next, like a card into its detail page.
@@ -181,4 +197,37 @@ Content block REQUIRED (the surface that tilts, a card most often) - a blockless
 - RULE: Pointer effects never move focus and never carry information a keyboard user would miss.
 - RULE: Never put a popover, menu, select, combobox, tooltip or hover card trigger inside a tilt card: the tilted layer becomes the containing block for their fixed-position panels. poetry check flags it.
 - RULE: The lean is decoration: nothing on the card may depend on it, and the card reads the same flat.
+
+## typewriter (`poetry_typewriter`)
+
+A line typed out a character at a time when it comes into view.
+
+Class: Poetry::Motion::Typewriter::Component - BEM block `poetry-motion-typewriter`.
+- `animate:` (boolean) - default true - Turns the motion off; the effect renders its finished state either way.
+- `cursor:` (boolean) - default true - Shows a caret after the text while it types.
+- `delay:` (integer) - default 0 - Milliseconds to wait before the motion starts.
+- `speed:` (integer) - default 50 - Milliseconds per character.
+- `text:` (string) - required - The line, plain text.
+- `trigger:` (symbol) - one of load|in_view, default "in_view" - When the motion starts: load, in_view.
+- PART `typewriter` - The line; a caret follows the text while it types | states: data-typing (the line is typing); data-cursor (the caret is on (cursor:))
+- PART `typewriter-display` - The aria-hidden copy that types
+- WIRING root: `poetry--motion--typewriter` (if animate) registers; values speed, delay (if), trigger
+- WIRING display: `poetry--motion--typewriter` (if animate) targets display
+- RULE: Type one short line, a headline or a prompt; never body copy or anything a reader must wait for. The line is complete in the page before it types.
+
+## word_rotate (`poetry_word_rotate`)
+
+A word that turns over into the next in place, then settles on the first.
+
+Class: Poetry::Motion::WordRotate::Component - BEM block `poetry-motion-word_rotate`.
+- `animate:` (boolean) - default true - Turns the motion off; the effect renders its finished state either way.
+- `interval:` (integer) - default 2500 - Milliseconds each word shows.
+- `rounds:` (integer) - default 1 - How many times it goes through the words; 0 keeps going.
+- `words:` (list) - required - The words, the first one first.
+- PART `word-rotate` - The cell the words share, sized to the longest
+- PART `word-rotate-word` - One word; the active one shows | states: data-active (the word showing)
+- WIRING root: `poetry--motion--word-rotate` (if animate) registers; values interval, rounds
+- WIRING word: `poetry--motion--word-rotate` (if animate) targets word
+- RULE: The first word is the one that counts: it is what renders, what a screen reader hears and where the rotation stops. Order the words so the sentence reads right with only it.
+- RULE: Keep rounds: small. A rotation that runs past five seconds is auto-updating content and needs a way to stop it (WCAG 2.2.2); rounds: 0 never stops.
 

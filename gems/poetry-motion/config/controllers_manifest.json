@@ -172,6 +172,43 @@
       "disconnect": "Undoes everything this connect started, leaving the finished state."
     }
   },
+  "poetry--motion--scramble": {
+    "doc": "Scramble: the text decodes from random glyphs into itself, left to right, when it comes into view. The server renders the text, a screen reader reads it once, and the aria-hidden display scrambles; the text comes back when it lands, at teardown and before Turbo caches the page. Spaces stay spaces, so the line keeps its shape. Reduced motion, a cache preview and a restore visit show the text at once.",
+    "targets": [
+      "display"
+    ],
+    "values": {
+      "duration": {
+        "type": "Number",
+        "default": 800,
+        "doc": "Milliseconds from the first scramble to the last letter landing."
+      },
+      "delay": {
+        "type": "Number",
+        "default": 0,
+        "doc": "Milliseconds before it starts."
+      },
+      "trigger": {
+        "type": "String",
+        "default": "in_view",
+        "doc": "When it starts: \"load\" or \"in_view\"."
+      },
+      "animate": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "false shows the text with no scramble."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Scrambles the text when the trigger fires.",
+      "disconnect": "Stops scrambling and shows the text."
+    }
+  },
   "poetry--motion--spotlight-card": {
     "doc": "Spotlight card: a soft glow follows a fine pointer across the card. The controller writes the pointer's position as --spotlight-x and --spotlight-y and switches --spotlight-opacity on; the motion stylesheet draws the glow. No engine loads. The server renders the card without a glow, and touch, coarse pointers and reduced motion leave it that way.",
     "targets": [],
@@ -230,6 +267,75 @@
     "method_docs": {
       "connect": "Starts the effect for this connect.",
       "disconnect": "Undoes everything this connect started, leaving the finished state."
+    }
+  },
+  "poetry--motion--typewriter": {
+    "doc": "Typewriter: the server renders the whole line, and a screen reader reads it once; the aria-hidden display types it out a character at a time when it comes into view. The full line comes back when it is done, at teardown and before Turbo caches the page. No engine loads. Reduced motion, a cache preview and a restore visit show the line at once.",
+    "targets": [
+      "display"
+    ],
+    "values": {
+      "speed": {
+        "type": "Number",
+        "default": 50,
+        "doc": "Milliseconds per character."
+      },
+      "delay": {
+        "type": "Number",
+        "default": 0,
+        "doc": "Milliseconds before typing starts."
+      },
+      "trigger": {
+        "type": "String",
+        "default": "in_view",
+        "doc": "When typing starts: \"load\" or \"in_view\"."
+      },
+      "animate": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "false shows the line with no typing."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Types the line when the trigger fires.",
+      "disconnect": "Stops typing and shows the whole line."
+    }
+  },
+  "poetry--motion--word-rotate": {
+    "doc": "Word rotate: the words sit stacked in one cell, the first one showing, and the controller moves data-active from word to word; the motion stylesheet slides them. Hover and focus pause it. It stops after its rounds, back on the first word, which is also what a screen reader hears and what teardown, the Turbo cache and reduced motion show.",
+    "targets": [
+      "word"
+    ],
+    "values": {
+      "interval": {
+        "type": "Number",
+        "default": 2500,
+        "doc": "Milliseconds each word shows."
+      },
+      "rounds": {
+        "type": "Number",
+        "default": 1,
+        "doc": "How many times it goes through the words; 0 keeps going."
+      },
+      "animate": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "false leaves the first word showing."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [],
+    "method_docs": {
+      "connect": "Starts rotating.",
+      "disconnect": "Stops rotating and shows the first word."
     }
   }
 }

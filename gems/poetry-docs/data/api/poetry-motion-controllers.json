@@ -33,7 +33,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/index.js",
-          "line": 46
+          "line": 49
         }
       ],
       "constants": [
@@ -1252,6 +1252,51 @@
       "constants": []
     },
     {
+      "path": "poetry--motion--scramble",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Scramble: the text decodes from random glyphs into itself, left to\nright, when it comes into view. The server renders the text, a screen\nreader reads it once, and the aria-hidden display scrambles; the text\ncomes back when it lands, at teardown and before Turbo caches the page.\nSpaces stay spaces, so the line keeps its shape. Reduced motion, a cache\npreview and a restore visit show the text at once.\n\n**Targets**: `display`\n\n**Values**:\n- `duration` (Number, default: 800): Milliseconds from the first scramble to the last letter landing.\n- `delay` (Number, default: 0): Milliseconds before it starts.\n- `trigger` (String, default: \"in_view\"): When it starts: \"load\" or \"in_view\".\n- `animate` (Boolean, default: true): false shows the text with no scramble.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/scramble_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Scrambles the text when the trigger fires.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/scramble_controller.js",
+          "line": 37
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Stops scrambling and shows the text.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/scramble_controller.js",
+          "line": 68
+        }
+      ],
+      "constants": []
+    },
+    {
       "path": "poetry--motion--spotlight-card",
       "type": "controller",
       "superclass": null,
@@ -1382,6 +1427,96 @@
           "examples": [],
           "file": "app/javascript/poetry/motion/tilt_card_controller.js",
           "line": 45
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--motion--typewriter",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Typewriter: the server renders the whole line, and a screen reader reads\nit once; the aria-hidden display types it out a character at a time\nwhen it comes into view. The full line comes back when it is done, at\nteardown and before Turbo caches the page. No engine loads. Reduced\nmotion, a cache preview and a restore visit show the line at once.\n\n**Targets**: `display`\n\n**Values**:\n- `speed` (Number, default: 50): Milliseconds per character.\n- `delay` (Number, default: 0): Milliseconds before typing starts.\n- `trigger` (String, default: \"in_view\"): When typing starts: \"load\" or \"in_view\".\n- `animate` (Boolean, default: true): false shows the line with no typing.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/typewriter_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Types the line when the trigger fires.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/typewriter_controller.js",
+          "line": 34
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Stops typing and shows the whole line.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/typewriter_controller.js",
+          "line": 69
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "poetry--motion--word-rotate",
+      "type": "controller",
+      "superclass": null,
+      "docstring": "Word rotate: the words sit stacked in one cell, the first one showing,\nand the controller moves data-active from word to word; the motion\nstylesheet slides them. Hover and focus pause it. It stops after its\nrounds, back on the first word, which is also what a screen reader\nhears and what teardown, the Turbo cache and reduced motion show.\n\n**Targets**: `word`\n\n**Values**:\n- `interval` (Number, default: 2500): Milliseconds each word shows.\n- `rounds` (Number, default: 1): How many times it goes through the words; 0 keeps going.\n- `animate` (Boolean, default: true): false leaves the first word showing.",
+      "examples": [],
+      "file": "app/javascript/poetry/motion/word_rotate_controller.js",
+      "methods": [
+        {
+          "name": "connect",
+          "scope": "instance",
+          "group": null,
+          "signature": "connect()",
+          "docstring": "Starts rotating.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/word_rotate_controller.js",
+          "line": 31
+        },
+        {
+          "name": "disconnect",
+          "scope": "instance",
+          "group": null,
+          "signature": "disconnect()",
+          "docstring": "Stops rotating and shows the first word.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/motion/word_rotate_controller.js",
+          "line": 63
         }
       ],
       "constants": []

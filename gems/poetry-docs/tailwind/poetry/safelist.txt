@@ -134,6 +134,7 @@
 [contain-intrinsic-size:auto_10rem]
 [content-visibility:auto]
 [counter-reset:line]
+[grid-area:1/1]
 [scrollbar-color:var(--color-border)_transparent]
 [scrollbar-width:none]
 [scrollbar-width:thin]
@@ -159,6 +160,7 @@ after:start-1/2
 after:transition-opacity
 after:w-1
 after:w-[2px]
+align-bottom
 animate-caret-blink
 animate-pulse
 animate-spin
@@ -1030,8 +1032,10 @@ hover:text-foreground
 hover:underline
 in-data-[slot=card-content]:bg-transparent
 in-data-[slot=popover-content]:bg-transparent
+inline
 inline-block
 inline-flex
+inline-grid
 inset-0
 inset-s-1/2
 inset-x-8

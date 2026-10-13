@@ -161,6 +161,35 @@
   transform-origin: left center;
 }
 
+/* Typewriter: a caret follows the text while it types. */
+@keyframes poetry-caret {
+  50% { opacity: 0; }
+}
+
+[data-slot="typewriter"][data-cursor][data-typing] > [data-slot="typewriter-display"]::after {
+  content: "";
+  display: inline-block;
+  width: 0.08em;
+  height: 1em;
+  margin-inline-start: 0.06em;
+  vertical-align: -0.1em;
+  background: currentColor;
+  animation: poetry-caret 1s step-end infinite;
+}
+
+/* Word rotate: the active word sits in place; the others wait just below, faded. */
+[data-slot="word-rotate-word"] {
+  opacity: 0;
+  translate: 0 0.6em;
+  transition: opacity var(--motion-duration-normal) var(--motion-ease-standard),
+              translate var(--motion-duration-normal) var(--motion-ease-standard);
+}
+
+[data-slot="word-rotate-word"][data-active] {
+  opacity: 1;
+  translate: 0 0;
+}
+
 /* Reduced motion: the loops stand still, the copies go away, and page and
    layout view transitions swap without animating. */
 @media (prefers-reduced-motion: reduce) {

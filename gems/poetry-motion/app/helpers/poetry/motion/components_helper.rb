@@ -23,6 +23,15 @@ module Poetry
       # A surface with a glow that follows the pointer.
       def poetry_spotlight_card(**, &) = render(Poetry::Motion::SpotlightCard::Component.new(**), &)
 
+      # Text that decodes from random glyphs into itself.
+      def poetry_scramble(text = nil, **) = render(Poetry::Motion::Scramble::Component.new(text, **))
+
+      # A line typed out a character at a time.
+      def poetry_typewriter(text = nil, **) = render(Poetry::Motion::Typewriter::Component.new(text, **))
+
+      # A word that turns over into the next, in place.
+      def poetry_word_rotate(**) = render(Poetry::Motion::WordRotate::Component.new(**))
+
       # A looping marquee of the block's items.
       def poetry_marquee(**, &) = render(Poetry::Motion::Marquee::Component.new(**), &)
 
