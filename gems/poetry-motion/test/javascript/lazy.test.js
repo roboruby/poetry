@@ -34,6 +34,37 @@ describe("the engine loads on demand", () => {
     expect(relative).toEqual([])
   })
 
+  it("the entrypoint imports no controller statically", () => {
+    const index = fs.readFileSync(path.join(TREE, "index.js"), "utf8")
+    expect(index).not.toMatch(/^import .*_controller"/m)
+    expect(index).toMatch(/import\("@poetry\/motion\/marquee_controller"\)/)
+  })
+
+  it("registers a controller only when its identifier appears", async () => {
+    const { Application } = await import("@hotwired/stimulus")
+    const { registerPoetryMotionControllers } = await import("@poetry/motion")
+    const application = Application.start()
+    const registered = []
+    const register = application.register.bind(application)
+    application.register = (identifier, controller) => { registered.push(identifier); register(identifier, controller) }
+
+    document.body.innerHTML = `<div data-controller="poetry--motion--marquee"></div>`
+    await registerPoetryMotionControllers(application)
+    expect(registered).toEqual(["poetry--motion--marquee"])
+
+    const later = document.createElement("span")
+    later.setAttribute("data-controller", "poetry--motion--tilt-card other")
+    document.body.append(later)
+    await new Promise((resolve) => setTimeout(resolve, 30))
+    expect(registered).toEqual(["poetry--motion--marquee", "poetry--motion--tilt-card"])
+
+    later.setAttribute("data-controller", "poetry--motion--tilt-card")
+    await new Promise((resolve) => setTimeout(resolve, 30))
+    expect(registered).toHaveLength(2)
+    application.stop()
+    document.body.innerHTML = ""
+  })
+
   it("loadEngine fetches once and hands the engine to the policy", async () => {
     const { loadEngine } = await import("@poetry/motion/load_engine")
     const first = loadEngine()

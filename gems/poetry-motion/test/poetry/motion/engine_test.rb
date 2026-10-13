@@ -24,12 +24,20 @@ module Poetry
         assert packages.fetch("@poetry/motion").preload
       end
 
-      def test_the_pinned_tree_preloads_and_leaves_the_engine_out
+      def test_only_the_entry_the_policy_and_the_loader_preload
         pinned = Rails.application.importmap.preloaded_module_paths(resolver: PathResolver.new, cache_key: :motion)
+                      .select { |pin| pin.include?("/poetry/motion") }
 
-        assert_includes pinned, "/poetry/motion/policy.js"
-        assert_includes pinned, "/poetry/motion/load_engine.js"
-        refute(pinned.any? { |pin| pin.include?("motion-kernel") }, "the engine preloads")
+        assert_equal %w[/poetry/motion/index.js /poetry/motion/load_engine.js /poetry/motion/policy.js], pinned.sort
+      end
+
+      def test_every_shipped_file_has_a_pin
+        javascript = Poetry::Motion.root.join("app/javascript")
+        imports = JSON.parse(Rails.application.importmap.to_json(resolver: PathResolver.new))["imports"]
+        pinned = imports.values.map { |url| url.delete_prefix("/") }
+        files = Dir.glob("poetry/motion{,-kernel}/**/*.js", base: javascript)
+
+        assert_empty files - pinned, "files with no importmap pin"
       end
 
       def test_every_pinned_file_exists

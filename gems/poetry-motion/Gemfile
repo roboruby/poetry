@@ -29,8 +29,8 @@ gem "yard", require: false
 
 group :test do
   # The importmap gate boots the real pins: preload: false on the engine.
-  gem "importmap-rails", require: false
   gem "capybara" # ViewComponent's page matchers
+  gem "importmap-rails", require: false
 
   # The real-browser layer (rake test:accessibility / test:visual) - needs
   # Chrome, so neither task joins the default gate.

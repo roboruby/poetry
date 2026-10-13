@@ -12,7 +12,7 @@ let reduce = false
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 const tick = () => wait(0)
 
-beforeEach(() => {
+beforeEach(async () => {
   reduce = false
   window.matchMedia = vi.fn((query) => ({
     get matches() { return query.includes("reduced-motion") ? reduce : false },
@@ -23,7 +23,7 @@ beforeEach(() => {
   root.style.setProperty("--motion-spring-gentle", "120 22 1")
   root.style.setProperty("--motion-spring-snappy", "400 40 1")
   application = Application.start()
-  registerPoetryMotionControllers(application)
+  await registerPoetryMotionControllers(application)
 })
 
 afterEach(() => {
@@ -33,7 +33,7 @@ afterEach(() => {
 
 const mount = async (html) => {
   document.body.innerHTML = html
-  await tick()
+  await wait(20) // the lazy import, then the connect
   return document.body.firstElementChild
 }
 
