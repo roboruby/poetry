@@ -190,6 +190,119 @@
   translate: 0 0;
 }
 
+/*
+ * Background: patterns from gradients, effects from keyframes, all behind
+ * the content and aria-hidden. Colors come from the theme's tokens.
+ */
+[data-slot="background"] {
+  --background-line: color-mix(in oklab, var(--foreground) 9%, transparent);
+  --background-glow: color-mix(in oklab, var(--primary) 35%, transparent);
+}
+
+[data-slot="background"][data-pattern="grid"] > [data-slot="background-layer"] {
+  background-image:
+    linear-gradient(to right, var(--background-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--background-line) 1px, transparent 1px);
+  background-size: 2.5rem 2.5rem;
+}
+
+[data-slot="background"][data-pattern="dots"] > [data-slot="background-layer"] {
+  background-image: radial-gradient(var(--background-line) 1.5px, transparent 1.5px);
+  background-size: 1.25rem 1.25rem;
+}
+
+[data-slot="background"][data-fade="radial"] > [data-slot="background-layer"] {
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+}
+
+[data-slot="background"][data-fade="bottom"] > [data-slot="background-layer"] {
+  mask-image: linear-gradient(to bottom, black 40%, transparent);
+}
+
+/* Aurora: two soft bands drifting across the top. */
+@keyframes poetry-aurora {
+  from { background-position: 0% 50%, 100% 50%; }
+  to { background-position: 100% 50%, 0% 50%; }
+}
+
+[data-slot="background"][data-effect="aurora"] > [data-slot="background-layer"]::before {
+  content: "";
+  position: absolute;
+  inset: -20% -10% 30%;
+  background-image:
+    radial-gradient(ellipse at center, var(--background-glow), transparent 60%),
+    radial-gradient(ellipse at center, color-mix(in oklab, var(--chart-2, var(--primary)) 30%, transparent), transparent 60%);
+  background-size: 120% 100%, 140% 100%;
+  filter: blur(40px);
+  animation: poetry-aurora 18s ease-in-out infinite alternate;
+}
+
+/* Meteors: thin streaks falling at an angle, each from its own place and delay. */
+@keyframes poetry-meteor {
+  0% { translate: 0 0; opacity: 0; }
+  10% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { translate: -20rem 20rem; opacity: 0; }
+}
+
+[data-slot="background"][data-effect="meteors"] [data-slot="background-particle"] {
+  position: absolute;
+  top: -1rem;
+  left: var(--particle-x);
+  width: 5rem;
+  height: 1px;
+  rotate: -45deg;
+  background: linear-gradient(to right, var(--foreground), transparent);
+  opacity: 0;
+  animation: poetry-meteor 6s linear infinite;
+  animation-delay: var(--particle-delay);
+}
+
+/* Retro grid: a floor of lines receding to the horizon, scrolling toward you. */
+@keyframes poetry-retro-grid {
+  to { background-position: 0 2.5rem; }
+}
+
+[data-slot="background"][data-effect="retro_grid"] > [data-slot="background-layer"] {
+  perspective: 200px;
+}
+
+[data-slot="background"][data-effect="retro_grid"] > [data-slot="background-layer"]::before {
+  content: "";
+  position: absolute;
+  inset: 50% -50% -50%;
+  transform: rotateX(65deg);
+  background-image:
+    linear-gradient(to right, var(--background-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--background-line) 1px, transparent 1px);
+  background-size: 2.5rem 2.5rem;
+  mask-image: linear-gradient(to bottom, transparent, black 30%);
+  animation: poetry-retro-grid 2s linear infinite;
+}
+
+/* Ripple: rings spreading from the center, one after another. */
+@keyframes poetry-ripple {
+  from { scale: 0.2; opacity: 0.6; }
+  to { scale: 1; opacity: 0; }
+}
+
+[data-slot="background"][data-effect="ripple"] [data-slot="background-particle"] {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 36rem;
+  aspect-ratio: 1;
+  margin: -18rem 0 0 -18rem;
+  border: 1px solid var(--background-line);
+  border-radius: 9999px;
+  animation: poetry-ripple 6s ease-out infinite;
+  animation-delay: calc(var(--particle-index) * -1.2s);
+}
+
+[data-slot="background"][data-animate="false"] *,
+[data-slot="background"][data-animate="false"] *::before {
+  animation: none !important;
+}
+
 /* Reduced motion: the loops stand still, the copies go away, and page and
    layout view transitions swap without animating. */
 @media (prefers-reduced-motion: reduce) {
@@ -199,7 +312,9 @@
     animation: none !important;
   }
 
-  :root:not([data-motion="full"]) [data-slot="marquee-track"] {
+  :root:not([data-motion="full"]) [data-slot="marquee-track"],
+  :root:not([data-motion="full"]) [data-slot="background"] *,
+  :root:not([data-motion="full"]) [data-slot="background"] *::before {
     animation: none;
   }
 
@@ -208,7 +323,9 @@
   }
 }
 
-:root[data-motion="reduce"] [data-slot="marquee-track"] {
+:root[data-motion="reduce"] [data-slot="marquee-track"],
+:root[data-motion="reduce"] [data-slot="background"] *,
+:root[data-motion="reduce"] [data-slot="background"] *::before {
   animation: none;
 }
 

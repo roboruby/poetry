@@ -20,6 +20,22 @@ Content block REQUIRED (the list's items) - a blockless call raises.
 - RULE: Give the list an id: and target it (or its items) with Turbo Streams; the streams animate, the server-rendered list is the finished state.
 - RULE: Each direct child is one item. Keep item elements stable across renders so survivors slide instead of fading out and back in.
 
+## background (`poetry_background`)
+
+A decorative background in CSS alone: a grid or dot pattern, with aurora, meteors, a retro grid or ripples.
+
+Class: Poetry::Motion::Background::Component - BEM block `poetry-motion-background`.
+- `animate:` (boolean) - default true - Turns the motion off; the effect renders its finished state either way.
+- `count:` (integer) - default 12 - How many meteors or rings the effect draws.
+- `effect:` (symbol) - one of none|aurora|meteors|retro_grid|ripple, default "none" - The effect: none, aurora, meteors, retro_grid or ripple.
+- `fade:` (symbol) - one of none|radial|bottom, default "radial" - How the decoration fades: none, radial or bottom.
+- `pattern:` (symbol) - one of none|grid|dots, default "grid" - The pattern: none, grid or dots.
+- PART `background` - The region; the decoration sits behind its content | states: data-pattern=none|grid|dots (always - the pattern); data-effect=none|aurora|meteors|retro_grid|ripple (always - the effect); data-fade=none|radial|bottom (always - the edge fade); data-animate (present as false when the effect is still (animate: false))
+- PART `background-layer` - The decoration behind the content, aria-hidden
+- PART `background-particle` - One meteor or ring of the effect | vars: --particle-index (its place among the effect's particles); --particle-x (its horizontal start, in percent); --particle-delay (its delay, in seconds)
+- RULE: Backgrounds are decoration: text on them still meets contrast, and the content stands on its own with the background removed.
+- RULE: This is the CSS tier: a background that follows the pointer, draws on a canvas or runs a shader is not this component.
+
 ## dock (`poetry_dock`)
 
 A row of links or buttons that swell toward the pointer, the nearest most, like a launcher.

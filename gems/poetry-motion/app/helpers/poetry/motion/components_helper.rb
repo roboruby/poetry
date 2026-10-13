@@ -5,6 +5,9 @@ module Poetry
     # The view helpers for poetry-motion's effects, included into every
     # view by the engine.
     module ComponentsHelper
+      # A decorative CSS background behind the block's content.
+      def poetry_background(**, &) = render(Poetry::Motion::Background::Component.new(**), &)
+
       # A list whose Turbo Stream changes animate.
       def poetry_animated_list(**, &) = render(Poetry::Motion::AnimatedList::Component.new(**), &)
 

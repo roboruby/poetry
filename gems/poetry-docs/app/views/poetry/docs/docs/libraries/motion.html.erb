@@ -183,6 +183,15 @@
         <code>animate-*</code> utilities already ship in Poetry's core. Reach for
         poetry-motion when the motion has to follow something.
       </p>
+      <p>
+        Decorative backgrounds are the same story. A grid or dot pattern, an aurora,
+        meteors, a retro grid and ripples are all CSS, and
+        <%= link_to "poetry_background", motion_effect_path("background") %> draws them with no
+        script. Grain and noise textures, mesh gradients and progressive blur are a
+        gradient or a filter in your own stylesheet. A background that follows the
+        pointer, draws on a canvas or runs a shader is a different thing: the first is
+        a pointer behavior, the second the canvas pattern, the third an island.
+      </p>
     <% end %>
     <%= poetry_code_block(code: keyframe_source, language: "css", label: "A keyframe") %>
   </section>

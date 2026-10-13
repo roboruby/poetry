@@ -25,6 +25,7 @@
 -translate-x-1/2
 -translate-x-px
 -translate-y-1/2
+-z-10
 @container/card-header
 @container/field-group
 @md/field-group:[&>:not([data-slot=field-label],[data-slot=field-description],[data-slot=field-error])]:col-start-2

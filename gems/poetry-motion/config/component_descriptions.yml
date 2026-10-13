@@ -1,6 +1,7 @@
 # Per-effect one-line descriptions (editorial, hand-authored), merged into
 # the generated registry by Poetry::Motion.registry. Keyed by component_path.
 ---
+poetry/motion/background: "A decorative background in CSS alone: a grid or dot pattern, with aurora, meteors, a retro grid or ripples."
 poetry/motion/scramble: "Text that decodes from random glyphs into itself when it comes into view."
 poetry/motion/typewriter: "A line typed out a character at a time when it comes into view."
 poetry/motion/word_rotate: "A word that turns over into the next in place, then settles on the first."

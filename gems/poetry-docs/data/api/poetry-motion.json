@@ -127,6 +127,72 @@
       "constants": []
     },
     {
+      "path": "Poetry::Motion::Background::Component",
+      "type": "class",
+      "superclass": "Poetry::Core::Component",
+      "docstring": "A decorative background behind its content, all CSS: a grid or dot\npattern, and optionally an effect (aurora, meteors, a retro grid,\nripples), faded at the edges. No script and no engine. Every layer\nis server-rendered, aria-hidden and placed deterministically; reduced\nmotion stills the effect and keeps the pattern.",
+      "examples": [
+        {
+          "title": "A hero over a faded dot grid with meteors",
+          "text": "<%= poetry_background(pattern: :dots, effect: :meteors, fade: :radial, class: \"py-24\") do %>\n  <h1>...</h1>\n<% end %>"
+        }
+      ],
+      "file": "app/components/poetry/motion/background/component.rb",
+      "methods": [],
+      "constants": [
+        {
+          "name": "DOCS",
+          "value": "{\n  duration: \"How long the motion runs: a duration token (#{DURATIONS.join(\", \")}) or milliseconds.\",\n  easing: \"The easing token: #{EASINGS.join(\", \")}.\",\n  spring: \"The spring token: #{SPRINGS.join",
+          "docstring": "What each option means, for the registry and the docs."
+        },
+        {
+          "name": "DURATIONS",
+          "value": "%i[fast normal slow].freeze",
+          "docstring": "The duration tokens (--motion-duration-*); duration: also takes milliseconds."
+        },
+        {
+          "name": "EASINGS",
+          "value": "%i[standard emphasized exit].freeze",
+          "docstring": "The easing tokens (--motion-ease-*)."
+        },
+        {
+          "name": "EFFECTS",
+          "value": "%i[none aurora meteors retro_grid ripple].freeze",
+          "docstring": "The effects the background can run."
+        },
+        {
+          "name": "FADES",
+          "value": "%i[none radial bottom].freeze",
+          "docstring": "How the decoration fades toward the edges."
+        },
+        {
+          "name": "PATTERNS",
+          "value": "%i[none grid dots].freeze",
+          "docstring": "The patterns the background can draw."
+        },
+        {
+          "name": "SPRINGS",
+          "value": "%i[gentle snappy bouncy].freeze",
+          "docstring": "The spring tokens (--motion-spring-*)."
+        },
+        {
+          "name": "TRIGGERS",
+          "value": "%i[load in_view hover].freeze",
+          "docstring": "When an effect starts: on connect, when it scrolls into view, or on hover."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Motion::Background::Style",
+      "type": "class",
+      "superclass": "Poetry::Core::Style",
+      "docstring": "The background's classes; the patterns and effects live in the motion stylesheet.",
+      "examples": [],
+      "file": "app/components/poetry/motion/background/style.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
       "path": "Poetry::Motion::Behaviors",
       "type": "module",
       "superclass": null,
@@ -254,6 +320,18 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
+          "line": 12
+        },
+        {
+          "name": "poetry_background",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_background(**, &)",
+          "docstring": "A decorative CSS background behind the block's content.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/helpers/poetry/motion/components_helper.rb",
           "line": 9
         },
         {
@@ -266,7 +344,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 18
+          "line": 21
         },
         {
           "name": "poetry_layout_group",
@@ -278,7 +356,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 12
+          "line": 15
         },
         {
           "name": "poetry_magnetic",
@@ -290,7 +368,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 21
+          "line": 24
         },
         {
           "name": "poetry_marquee",
@@ -302,7 +380,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 36
+          "line": 39
         },
         {
           "name": "poetry_number_ticker",
@@ -314,7 +392,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 42
+          "line": 45
         },
         {
           "name": "poetry_scramble",
@@ -326,7 +404,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 27
+          "line": 30
         },
         {
           "name": "poetry_shared_element",
@@ -338,7 +416,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 15
+          "line": 18
         },
         {
           "name": "poetry_spotlight_card",
@@ -350,7 +428,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 24
+          "line": 27
         },
         {
           "name": "poetry_text_reveal",
@@ -362,7 +440,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 39
+          "line": 42
         },
         {
           "name": "poetry_tilt_card",
@@ -374,7 +452,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 45
+          "line": 48
         },
         {
           "name": "poetry_typewriter",
@@ -386,7 +464,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 30
+          "line": 33
         },
         {
           "name": "poetry_word_rotate",
@@ -398,7 +476,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/motion/components_helper.rb",
-          "line": 33
+          "line": 36
         }
       ],
       "constants": []

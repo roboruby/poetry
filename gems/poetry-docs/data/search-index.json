@@ -6240,6 +6240,30 @@
     "path": "/motion/animated-list#wiring"
   },
   {
+    "title": "Background",
+    "page": "Background",
+    "section": "motion",
+    "path": "/motion/background"
+  },
+  {
+    "title": "Installation",
+    "page": "Background",
+    "section": "motion",
+    "path": "/motion/background#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Background",
+    "section": "motion",
+    "path": "/motion/background#default"
+  },
+  {
+    "title": "Effects",
+    "page": "Background",
+    "section": "motion",
+    "path": "/motion/background#effects"
+  },
+  {
     "title": "Dock",
     "page": "Dock",
     "section": "motion",

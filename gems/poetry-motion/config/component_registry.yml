@@ -65,6 +65,98 @@ components:
       description: DOM changes animated as layout transitions, only when no Turbo
         visit holds the view-transition slot.
       runtime: true
+  poetry/motion/background:
+    class_name: Poetry::Motion::Background::Component
+    identifier: poetry--motion--background
+    bem_block: poetry-motion-background
+    styles: []
+    options:
+    - name: animate
+      type: boolean
+      default: true
+      description: Turns the motion off; the effect renders its finished state either
+        way.
+    - name: count
+      type: integer
+      default: 12
+      description: How many meteors or rings the effect draws.
+    - name: effect
+      type: symbol
+      variants:
+      - none
+      - aurora
+      - meteors
+      - retro_grid
+      - ripple
+      default: none
+      description: 'The effect: none, aurora, meteors, retro_grid or ripple.'
+    - name: fade
+      type: symbol
+      variants:
+      - none
+      - radial
+      - bottom
+      default: radial
+      description: 'How the decoration fades: none, radial or bottom.'
+    - name: pattern
+      type: symbol
+      variants:
+      - none
+      - grid
+      - dots
+      default: grid
+      description: 'The pattern: none, grid or dots.'
+    slots: []
+    helper: poetry_background
+    description: 'A decorative background in CSS alone: a grid or dot pattern, with
+      aurora, meteors, a retro grid or ripples.'
+    elements:
+    - layer
+    - content
+    capsule: 672d8f1f94b7
+    agent_rules:
+    - 'Backgrounds are decoration: text on them still meets contrast, and the content
+      stands on its own with the background removed.'
+    - 'This is the CSS tier: a background that follows the pointer, draws on a canvas
+      or runs a shader is not this component.'
+    identity: false
+    parts:
+    - name: background
+      description: The region; the decoration sits behind its content
+      states:
+      - attr: data-pattern
+        condition: always - the pattern
+        values:
+        - none
+        - grid
+        - dots
+      - attr: data-effect
+        condition: always - the effect
+        values:
+        - none
+        - aurora
+        - meteors
+        - retro_grid
+        - ripple
+      - attr: data-fade
+        condition: always - the edge fade
+        values:
+        - none
+        - radial
+        - bottom
+      - attr: data-animate
+        condition: 'present as false when the effect is still (animate: false)'
+    - name: background-layer
+      description: The decoration behind the content, aria-hidden
+    - name: background-particle
+      description: One meteor or ring of the effect
+      vars:
+      - name: "--particle-index"
+        description: its place among the effect's particles
+      - name: "--particle-x"
+        description: its horizontal start, in percent
+      - name: "--particle-delay"
+        description: its delay, in seconds
   poetry/motion/dock:
     class_name: Poetry::Motion::Dock::Component
     identifier: poetry--motion--dock
@@ -991,6 +1083,7 @@ components:
         - name: word
 helper_args:
   poetry_animated_list: 0
+  poetry_background: 0
   poetry_dock: 0
   poetry_layout_group: 0
   poetry_magnetic: 0

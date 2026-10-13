@@ -6,6 +6,8 @@
 
 - Three text effects: `poetry_typewriter`, `poetry_scramble` and `poetry_word_rotate`. Each renders the finished text for readers and the eye and animates an aria-hidden copy; the word rotate pauses on hover and focus and stops after its rounds on the first word.
 
+- `poetry_background`: a decorative background in CSS alone, a grid or dot pattern with an aurora, meteors, a retro grid or ripples, faded at the edges. No script; every layer is aria-hidden and placed deterministically, and reduced motion stills the effect.
+
 ### Changed
 
 - The effect controllers load lazily: only the entry, the policy and the engine loader preload, and `registerPoetryMotionControllers` imports each controller the first time its identifier appears on the page.
