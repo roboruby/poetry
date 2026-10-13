@@ -5,6 +5,7 @@
 ### Added
 
 - Behaviors: a named, reusable piece of a component's client behavior, declared once in Ruby. A module extends `Poetry::Core::Behavior` and declares a name, a one-line description, optional agent rules, the wiring it adds to an element and class-level contributions. A component uses one inside a `use_stimulus` element (`behavior :roving_focus, loop: true`), where it lands in order with the element's own controllers, or at class level with `use_behavior` for a runtime behavior the JavaScript turns on when a layer opens. Core ships `roving_focus`, `popper`, `checked`, `focus_scope` and `dismissable`; other gems add their own namespace to `Poetry::Core::Behavior.namespaces`.
+- `poetry check` warns on two poetry-motion mistakes: `motion-autoplay-pause` for a marquee rendered with `pausable: false` (WCAG 2.2.2), and `motion-overlay-in-transform` for a component with the `popper` behavior inside a tilt card, whose tilted layer would become the containing block for the panel.
 - The registry gains a `behaviors` section per component, and a component's agent rules lead with the rules of the behaviors it uses. llms.txt and the skills print one `BEHAVIOR` line per behavior.
 
 ## [0.1.13] - 2026-10-13

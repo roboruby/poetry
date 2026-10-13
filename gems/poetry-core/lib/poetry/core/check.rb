@@ -224,6 +224,12 @@ module Poetry
           @components.dig(path, "tools") || []
         end
 
+        # The names of the behaviors a component uses (the registry's
+        # behaviors section).
+        def behaviors_of(path)
+          (@components.dig(path, "behaviors") || []).map { |behavior| behavior["name"] }
+        end
+
         # Every option and style name a component declares.
         def option_names(path)
           entry = @components.fetch(path, {})
@@ -412,6 +418,7 @@ module Poetry
             findings.concat(fake_button_findings(node)) if INERT_TAGS.include?(open_tag_name(node))
           end
           findings.concat(missing_slot_findings)
+          findings.concat(transform_overlay_findings(document.value))
           findings.sort_by { |finding| [finding.line || 0, finding.rule] }
         end
 
@@ -513,7 +520,7 @@ module Poetry
           findings = pairs.flat_map do |key, value, kw_line|
             option_findings(path, key, value, base_line + kw_line - 1)
           end
-          findings + webmcp_findings(path, pairs, line) +
+          findings + webmcp_findings(path, pairs, line) + motion_findings(path, call, base_line) +
             missing_option_findings(path, helper_of(path), call, pairs, line) +
             helper_arity_findings(helper, call, line) +
             content_findings(path, helper, call, line, content_fed) +
@@ -1293,6 +1300,59 @@ module Poetry
             else []
             end
           end
+        end
+
+        # --- Motion rules (poetry-motion's effects) ---
+
+        # A looping effect rendered without its pause control: anything
+        # that moves on its own for more than five seconds needs one (WCAG
+        # 2.2.2).
+        def motion_findings(path, call, base_line)
+          return [] unless path == "poetry/motion/marquee"
+
+          hash = call.arguments&.arguments&.find { |argument| argument.is_a?(Prism::KeywordHashNode) }
+          pausable = hash&.elements&.find do |element|
+            element.is_a?(Prism::AssocNode) && element.key.respond_to?(:unescaped) &&
+              element.key.unescaped == "pausable" && element.value.is_a?(Prism::FalseNode)
+          end
+          return [] unless pausable
+
+          [Finding.new(rule: "motion-autoplay-pause", severity: :warning,
+                       message: "#{helper_of(path)} with pausable: false loops with no pause control - " \
+                                "WCAG 2.2.2 needs one for motion longer than five seconds",
+                       line: base_line + pausable.location.start_line - 1)]
+        end
+
+        # A component with the popper behavior (an anchored panel) inside a
+        # transforming effect's block.
+        def transform_overlay_findings(node, inside = nil, into = [])
+          return into unless node
+
+          if erb?(node)
+            paths = erb_call_paths(node)
+            if inside && (overlay = paths.find { |path| @catalog.behaviors_of(path).include?("popper") })
+              into << Finding.new(rule: "motion-overlay-in-transform", severity: :warning,
+                                  message: "#{helper_of(overlay)} sits inside #{helper_of(inside)}: the tilted " \
+                                           "layer becomes the containing block for its panel - move it outside",
+                                  line: line_of(node))
+            end
+            inside ||= paths.find { |path| motion_transform?(path) } if node.respond_to?(:body)
+          end
+          node.child_nodes.compact.each { |child| transform_overlay_findings(child, inside, into) }
+          into
+        end
+
+        # Whether the effect rotates or scales a layer around its content. A
+        # transformed element becomes the containing block for its
+        # fixed-position descendants, so a popper panel inside one is
+        # positioned against the layer, not the viewport.
+        def motion_transform?(path) = path == "poetry/motion/tilt_card"
+
+        # The component paths of the helper calls in one ERB tag.
+        def erb_call_paths(node)
+          calls = []
+          collect_calls(Prism.parse(node.content.value).value, calls)
+          calls.filter_map { |call| @catalog.path_for(call.name.to_s) }
         end
 
         # --- WebMCP rules (the operate surface) ---

@@ -1600,6 +1600,45 @@ module Poetry
         assert_empty(findings.select { |f| f.rule == "unknown-option" })
       end
 
+      # --- motion rules (poetry-motion's effects) ---
+
+      MOTION_CATALOG = Check::Catalog.new({
+                                            "poetry/motion/marquee" => { "options" => [{ "name" => "pausable" }],
+                                                                         "slots" => [] },
+                                            "poetry/motion/tilt_card" => { "options" => [], "slots" => [] },
+                                            "poetry/ui/popover" => { "options" => [], "slots" => [],
+                                                                     "behaviors" => [{ "name" => "popper" }] },
+                                            "poetry/ui/badge" => { "options" => [], "slots" => [] }
+                                          })
+
+      def test_a_marquee_without_its_pause_control_is_a_warning
+        findings = Check.lint(<<~ERB, catalog: MOTION_CATALOG)
+          <%= poetry_marquee { "a" } %>
+          <%= poetry_marquee(pausable: true) { "b" } %>
+          <%= poetry_marquee(label: "Logos",
+                             pausable: false) { "c" } %>
+        ERB
+
+        assert_equal([["motion-autoplay-pause", 4]], findings.map { |f| [f.rule, f.line] })
+        assert_equal :warning, findings.first.severity
+      end
+
+      def test_an_anchored_panel_inside_a_tilt_card_is_a_warning
+        findings = Check.lint(<<~ERB, catalog: MOTION_CATALOG)
+          <%= poetry_popover { "outside" } %>
+          <%= poetry_tilt_card do %>
+            <div>
+              <%= poetry_badge { "fine" } %>
+              <%= poetry_popover { "inside" } %>
+            </div>
+          <% end %>
+          <%= poetry_popover { "after" } %>
+        ERB
+
+        assert_equal([["motion-overlay-in-transform", 5]], findings.map { |f| [f.rule, f.line] })
+        assert_includes findings.first.message, "poetry_popover sits inside poetry_tilt_card"
+      end
+
       # --- internal constants (the family's @api private namespaces) ---
 
       INTERNALS_CATALOG = Check::Catalog.new({}, internals: %w[Poetry::Core::Check Poetry::Core::HostComponents])
