@@ -8,7 +8,8 @@ module Poetry
   # `rails g poetry:add Button [@acme/fancy-chart ...]` - the copy-in tier
   # plus the ecosystem address scheme.
   #
-  # Bare names and @poetry/* are the installed gems' own items: component
+  # Bare names and the @poetry/* names the gems ship are the installed
+  # gems' own items: component
   # source copies into app/components where Rails autoload precedence
   # shadows the gem ("own the code"; dependencies resolve recursively,
   # existing files are SKIPPED - local edits win, always), and block names
@@ -19,7 +20,10 @@ module Poetry
   # recursively and writes in topo order, poetry components satisfy at
   # RUNTIME (the gem provides them - no copy), targets are
   # traversal-checked, and gem dependencies are REPORTED, never installed.
-  # Every install records provenance in the manifest.
+  # Every install records provenance in the manifest. An @poetry name the
+  # gems do not ship is a community item, fetched from poetryui.com (or the
+  # manifest's community: template); a port also lands its origin's
+  # license in the host's THIRD_PARTY_NOTICES.md.
   #
   # @example
   #   bin/rails g poetry:add button
@@ -38,6 +42,10 @@ module Poetry
     # Where an item's Stimulus controllers land; a write here refreshes the
     # app's controllers manifest.
     CONTROLLERS_DIR = "app/javascript/controllers/"
+    # Where @poetry names the gems do not ship come from.
+    COMMUNITY = "https://poetryui.com/r/{name}.json"
+    # The host's credits for the ports it installed.
+    NOTICES = "THIRD_PARTY_NOTICES.md"
 
     desc "Copy poetry components/blocks (plus dependencies) into the app, from the gems or any registry address"
 
@@ -53,12 +61,15 @@ module Poetry
 
     private
 
-    # Bare names and @poetry/* resolve against the installed gems; anything
-    # the gems don't ship is a hard error for @poetry (never a fetch - the
-    # gem IS the official registry on a poetry host) and a hard error with
-    # the classic message for bare names.
+    # Bare names resolve against the installed gems, an unknown one a hard
+    # error. @poetry names do too when the gems ship them; any other
+    # @poetry name is a community item and fetches.
     def local?(address)
-      address.kind == :bare || (address.kind == :namespace && address.namespace == "@poetry")
+      return true if address.kind == :bare
+      return false unless address.kind == :namespace && address.namespace == "@poetry"
+
+      name = address.name
+      gem_components.include?(name) || gem_blocks.include?(name) || gem_recipes.include?(name)
     end
 
     # Installs local names: components, blocks and recipes; raises for unknown ones.
@@ -67,7 +78,10 @@ module Poetry
       components, rest = names.partition { |name| source_dir(name).directory? }
       blocks, rest = rest.partition { |name| gem_blocks.include?(name.tr("_", "-")) }
       recipes, missing = rest.partition { |name| gem_recipes.include?(name.tr("_", "-")) }
-      raise ArgumentError, "unknown component(s): #{missing.join(", ")}" if missing.any?
+      if missing.any?
+        raise ArgumentError, "unknown component(s): #{missing.join(", ")} - for a community item, " \
+                             "add it as @poetry/#{missing.first.tr("_", "-")}"
+      end
 
       copy_components(components) if components.any?
       blocks.each { |name| install_block(name.tr("_", "-")) }
@@ -121,7 +135,28 @@ module Poetry
       apply_css(plan)
       refresh_controllers_manifest(plan)
       report(plan)
+      credit_origins(plan)
       record_in_manifest(plan.manifest)
+    end
+
+    # Each port's origin, license and copyright in the host's notices, with
+    # the license text, once per item: the notice MIT asks to travel with
+    # the copy, kept even after the host edits the files.
+    def credit_origins(plan)
+      plan.provenance.select(&:origin).each do |record|
+        origin = record.origin
+        marker = "<!-- poetry:add #{record.name} -->"
+        path = File.join(destination_root, NOTICES)
+        next if File.exist?(path) && File.read(path).include?(marker)
+
+        create_file NOTICES, "# Third-party notices\n", skip: true unless File.exist?(path)
+        entry = ["", marker, "## #{record.name}", "",
+                 "Adapted from #{origin["registry"]}/#{origin["item"]} (#{origin["url"]}), " \
+                 "#{origin["repository"]}.",
+                 "License: #{origin["license"]}. #{origin["copyright"]}", ""]
+        entry += ["```", origin["notice"].strip, "```", ""] if origin["notice"]
+        append_to_file NOTICES, entry.join("\n")
+      end
     end
 
     # An item that brings a Stimulus controller joins the app's controllers
@@ -147,6 +182,7 @@ module Poetry
       config = manifest_config
       client = Poetry::Core::RegistryClient.new(
         registries: config["registries"] || {}, directory: config["directory"],
+        community: config["community"] || COMMUNITY,
         base_dir: destination_root
       )
       Poetry::Core::RegistryInstaller.new(
@@ -176,6 +212,12 @@ module Poetry
         say_status :gemfile, "this item needs gem #{dep.inspect} - add it to your Gemfile (never run for you)", :yellow
       end
       plan.docs.each { |docs| say_status :docs, docs, :blue }
+      plan.provenance.select(&:community).each do |record|
+        origin = record.origin && " - adapted from #{record.origin["registry"]}/#{record.origin["item"]} " \
+                                  "(#{record.origin["license"]})"
+        say_status :community, "#{record.name}: a community item, reviewed and checked in CI, not audited#{origin}",
+                   :cyan
+      end
     end
 
     # Runs the block generator for a name.

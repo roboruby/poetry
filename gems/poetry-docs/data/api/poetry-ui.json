@@ -16,7 +16,7 @@
       "path": "Poetry::AddGenerator",
       "type": "class",
       "superclass": "Rails::Generators::Base",
-      "docstring": "`rails g poetry:add Button [@acme/fancy-chart ...]` - the copy-in tier\nplus the ecosystem address scheme.\n\nBare names and @poetry/* are the installed gems' own items: component\nsource copies into app/components where Rails autoload precedence\nshadows the gem (\"own the code\"; dependencies resolve recursively,\nexisting files are SKIPPED - local edits win, always), and block names\nhand off to poetry:block. Everything else is a REMOTE registry address -\na URL, a local item file, or @namespace/item against the registries:\nsection of config/poetry_components.yml - resolved through\nRegistryClient + RegistryInstaller: the dependency DAG fetches\nrecursively and writes in topo order, poetry components satisfy at\nRUNTIME (the gem provides them - no copy), targets are\ntraversal-checked, and gem dependencies are REPORTED, never installed.\nEvery install records provenance in the manifest.",
+      "docstring": "`rails g poetry:add Button [@acme/fancy-chart ...]` - the copy-in tier\nplus the ecosystem address scheme.\n\nBare names and the @poetry/* names the gems ship are the installed\ngems' own items: component\nsource copies into app/components where Rails autoload precedence\nshadows the gem (\"own the code\"; dependencies resolve recursively,\nexisting files are SKIPPED - local edits win, always), and block names\nhand off to poetry:block. Everything else is a REMOTE registry address -\na URL, a local item file, or @namespace/item against the registries:\nsection of config/poetry_components.yml - resolved through\nRegistryClient + RegistryInstaller: the dependency DAG fetches\nrecursively and writes in topo order, poetry components satisfy at\nRUNTIME (the gem provides them - no copy), targets are\ntraversal-checked, and gem dependencies are REPORTED, never installed.\nEvery install records provenance in the manifest. An @poetry name the\ngems do not ship is a community item, fetched from poetryui.com (or the\nmanifest's community: template); a port also lands its origin's\nlicense in the host's THIRD_PARTY_NOTICES.md.",
       "examples": [
         {
           "title": "",
@@ -26,6 +26,11 @@
       "file": "lib/generators/poetry/add/add_generator.rb",
       "methods": [],
       "constants": [
+        {
+          "name": "COMMUNITY",
+          "value": "\"https://poetryui.com/r/{name}.json\"",
+          "docstring": "Where @poetry names the gems do not ship come from."
+        },
         {
           "name": "CONTROLLERS_DIR",
           "value": "\"app/javascript/controllers/\"",
@@ -40,6 +45,11 @@
           "name": "MANIFEST",
           "value": "\"config/poetry_components.yml\"",
           "docstring": "The copy-in provenance manifest poetry:install seeds."
+        },
+        {
+          "name": "NOTICES",
+          "value": "\"THIRD_PARTY_NOTICES.md\"",
+          "docstring": "The host's credits for the ports it installed."
         },
         {
           "name": "TAILWIND_ENTRY",

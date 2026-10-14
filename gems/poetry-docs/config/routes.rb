@@ -54,6 +54,7 @@ Poetry::Docs::Engine.routes.draw do
   # registries; literal routes before the catch.
   get "r/registry.json" => "registry#index", as: :registry_index
   get "r/registries.json" => "registry#directory", as: :registry_directory
+  get "r/community/registry.json" => "registry#community", as: :registry_community
   get "r/:name" => "registry#show", as: :registry_item, format: false,
                    constraints: { name: /[a-z0-9.-]+\.json/ }
 

@@ -78,11 +78,12 @@ module Poetry
                      plan.writes.map(&:target), "dependencies write before dependents"
       end
 
-      def test_an_unsatisfiable_poetry_dep_raises
-        installer, = build_installer({ "@acme/x" => item("x", deps: ["@poetry/no-such-thing"]) })
-        error = assert_raises(RegistryInstaller::Error) { installer.plan([address("@acme/x")]) }
+      def test_a_poetry_dep_the_gems_do_not_ship_is_a_community_item
+        installer, client = build_installer({ "@acme/x" => item("x", deps: ["@poetry/phone-mockup"]),
+                                              "@poetry/phone-mockup" => item("phone-mockup") })
+        installer.plan([address("@acme/x")])
 
-        assert_match(/not provided by the installed poetry gems/, error.message)
+        assert_includes client.resolved, "@poetry/phone-mockup"
       end
 
       def test_cycles_are_named_not_spun

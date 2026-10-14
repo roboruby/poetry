@@ -27,7 +27,10 @@ module Poetry
 
       # The install plan: the writes, css writes, import lines and what the gems already satisfy.
       Plan = Struct.new(:writes, :css_writes, :entry_lines, :gem_satisfied, :block_installs,
-                        :gem_deps, :docs, :manifest, keyword_init: true)
+                        :gem_deps, :docs, :manifest, :provenance, keyword_init: true)
+      # Where an item came from: its address, whether it is a community
+      # item, and the origin a port credits (meta.source), if any.
+      Provenance = Struct.new(:name, :address, :community, :origin, keyword_init: true)
       # One file write of the plan.
       Write = Struct.new(:target, :content, :item, keyword_init: true)
 
@@ -112,7 +115,8 @@ module Poetry
         elsif dep_address.kind == :bare
           resolve_into(state, parent.sibling(kebab))
         else
-          raise Error, "#{dep} is not provided by the installed poetry gems"
+          # An @poetry name the gems do not ship: a community item.
+          resolve_into(state, dep_address)
         end
       end
 
@@ -135,8 +139,26 @@ module Poetry
           block_installs: state[:block_installs].sort,
           gem_deps: missing_gem_deps(items),
           docs: items.filter_map { |item| item["docs"] },
-          manifest: order.to_h { |name| [name, { "source" => state[:sources][name] }] }
+          manifest: order.to_h { |name| [name, manifest_entry(state, name)] },
+          provenance: order.map { |name| provenance(state, name) }
         )
+      end
+
+      # The manifest record: the address, and for a community item or a
+      # port, that and the origin it credits.
+      def manifest_entry(state, name)
+        record = provenance(state, name)
+        entry = { "source" => record.address }
+        entry["community"] = true if record.community
+        entry["origin"] = record.origin.except("notice") if record.origin
+        entry
+      end
+
+      # The item's provenance.
+      def provenance(state, name)
+        meta = state[:items][name]["meta"] || {}
+        Provenance.new(name: name, address: state[:sources][name], community: meta["community"] == true,
+                       origin: meta["source"])
       end
 
       # Kahn: an item writes only after every remote item it depends on has

@@ -14,7 +14,11 @@ module Poetry
     # config files), schema validation before anything downstream touches an
     # item, and NEVER any script execution. Namespaces resolve from the
     # registries: section of config/poetry_components.yml first, then from
-    # the public registries.json directory when one is configured.
+    # the public registries.json directory when one is configured. @poetry
+    # names the installed gems do not ship resolve from the community
+    # registry (community:, poetryui.com unless the host says otherwise).
+    # A template that is a path, not a URL, reads local files: a mirror of
+    # a registry's build output, as the community repository's CI uses.
     #
     # @api private
     class RegistryClient
@@ -25,17 +29,22 @@ module Poetry
       MAX_REDIRECTS = 3
       LOCAL_HOSTS = %w[localhost 127.0.0.1 ::1 [::1]].freeze
       NAME_FORMAT = /\A[a-z0-9][a-z0-9._-]*\z/
+      # The fields a port's meta.source must name, each a non-empty String.
+      SOURCE_FIELDS = %w[registry item url repository license copyright].freeze
 
       # A client over the configured registries, with an optional directory and fetcher.
       # @param registries [Hash] "@ns" => a url template String containing
       #   "{name}", or {"url" => template, "headers" => {header => value}}
       # @param directory [String, nil] a registries.json URL for resolving
       #   namespaces that are not configured locally
+      # @param community [String, nil] the url template @poetry names the
+      #   gems do not ship resolve from
       # @param base_dir [String] :file addresses resolve relative to this
       # @param fetcher [#call, nil] injectable transport (url, headers) ->
       #   body String; defaults to the hardened Net::HTTP transport
-      def initialize(registries: {}, directory: nil, base_dir: Dir.pwd, fetcher: nil)
+      def initialize(registries: {}, directory: nil, community: nil, base_dir: Dir.pwd, fetcher: nil)
         @registries = registries || {}
+        @community = community
         @directory = directory
         @base_dir = base_dir
         @fetcher = fetcher || method(:default_fetch)
@@ -48,7 +57,7 @@ module Poetry
           case address.kind
           when :url then fetch_json(address.location)
           when :file then read_json(address.location)
-          when :namespace then fetch_json(*namespace_request(address))
+          when :namespace then fetch_namespaced(*namespace_request(address))
           else raise Error, "#{address.raw.inspect} is not a remote address"
           end
         validate_item!(payload, source: address.raw)
@@ -56,9 +65,15 @@ module Poetry
 
       private
 
+      # A namespaced item: fetched from a URL, or read from a local mirror.
+      def fetch_namespaced(location, headers)
+        location.match?(%r{\A[a-z]+://}) ? fetch_json(location, headers) : read_json(location)
+      end
+
       # The URL and headers for a namespace address, raising for an unknown namespace.
       def namespace_request(address)
-        entry = @registries[address.namespace] || directory_entry(address.namespace)
+        entry = @registries[address.namespace] || community_entry(address.namespace) ||
+                directory_entry(address.namespace)
         unless entry
           raise Error, "unknown registry namespace #{address.namespace} - add it to the " \
                        "registries: section of config/poetry_components.yml " \
@@ -81,6 +96,11 @@ module Poetry
         end
 
         [template, headers]
+      end
+
+      # The community registry, for @poetry names the gems do not ship.
+      def community_entry(namespace)
+        @community if namespace == "@poetry"
       end
 
       # The public directory (registries.json): {"registries" => {"@ns" =>
@@ -223,9 +243,33 @@ module Poetry
           raise Error, "#{source}: #{key} must be an array of strings"
         end
         raise Error, "#{source}: css must be a string" unless payload["css"].nil? || payload["css"].is_a?(String)
-        return if payload["cssVars"].nil? || payload["cssVars"].is_a?(Hash)
+        unless payload["cssVars"].nil? || payload["cssVars"].is_a?(Hash)
+          raise Error,
+                "#{source}: cssVars must be an object"
+        end
 
-        raise Error, "#{source}: cssVars must be an object"
+        validate_meta!(payload["meta"], source: source)
+      end
+
+      # Raises unless meta is an object, community a boolean, and a port's
+      # source names its origin in full: what the host's manifest and
+      # notices record.
+      def validate_meta!(meta, source:)
+        return if meta.nil?
+        raise Error, "#{source}: meta must be an object" unless meta.is_a?(Hash)
+        raise Error, "#{source}: meta.community must be true or false" unless [nil, true,
+                                                                               false].include?(meta["community"])
+
+        origin = meta["source"]
+        return if origin.nil?
+
+        missing = SOURCE_FIELDS.reject do |field|
+          origin.is_a?(Hash) && origin[field].is_a?(String) && !origin[field].empty?
+        end
+        raise Error, "#{source}: meta.source needs #{missing.join(", ")}" if missing.any?
+        return if origin["notice"].nil? || origin["notice"].is_a?(String)
+
+        raise Error, "#{source}: meta.source.notice must be the license text"
       end
     end
   end

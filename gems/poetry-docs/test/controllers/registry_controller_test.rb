@@ -1,4 +1,5 @@
 require "test_helper"
+require "tmpdir"
 
 # The official registry endpoints: shadcn-schema
 # payloads generated live from the gems' committed registries - if these
@@ -60,5 +61,35 @@ class RegistryControllerTest < ActionDispatch::IntegrationTest
 
     assert_match %r{/r/\{name\}\.json\z}, entry["url"]
     assert entry["verified"], "@poetry is verified by construction (CI-gated registries)"
+  end
+  test "community items serve where the gems ship no item of that name" do
+    Dir.mktmpdir do |dir|
+      File.write(File.join(dir, "registry.json"), JSON.generate({ "name" => "poetry-community", "items" => [ { "name" => "phone-mockup" } ] }))
+      File.write(File.join(dir, "phone-mockup.json"), JSON.generate({ "name" => "phone-mockup", "type" => "registry:component" }))
+      File.write(File.join(dir, "button.json"), JSON.generate({ "name" => "button", "type" => "registry:lib" }))
+      Poetry::Docs.config.community_registry = dir
+
+      get "/r/phone-mockup.json"
+
+      assert_response :success
+      assert_equal "phone-mockup", JSON.parse(response.body)["name"]
+      get "/r/button.json"
+
+      assert_equal "registry:component", JSON.parse(response.body)["type"], "the gems' item wins"
+      get "/r/community/registry.json"
+
+      assert_equal [ "phone-mockup" ], JSON.parse(response.body)["items"].map { it["name"] }
+      get "/r/absent.json"
+
+      assert_response :not_found
+    ensure
+      Poetry::Docs.config.community_registry = nil
+    end
+  end
+
+  test "no community registry configured serves none" do
+    get "/r/community/registry.json"
+
+    assert_response :not_found
   end
 end

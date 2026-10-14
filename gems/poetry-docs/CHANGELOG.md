@@ -4,6 +4,7 @@
 
 ### Added
 
+- `config.community_registry` names a directory of community items: `/r/<name>.json` serves one when the gems ship no item of that name, and `/r/community/registry.json` serves their index. The UI library page explains the community fallback.
 - A Motion section: one page per poetry-motion effect at `/motion/<slug>`, the Motion library guide (the payload, the motion policy, the tokens, the ten behaviors and when motion is just CSS), the poetry-motion API pages, and the effects in the sidebar, search and llms.txt.
 - Component and chart pages show a Behaviors table beside Wiring: each behavior the component uses, where it is wired and what it does. The table says Poetry behaviors are not Herb's client behaviors.
 

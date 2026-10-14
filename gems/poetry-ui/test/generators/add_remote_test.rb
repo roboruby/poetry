@@ -163,5 +163,74 @@ module Poetry
 
       assert_no_file "config/controllers_manifest.json"
     end
+    PORT = {
+      "name" => "phone-mockup", "type" => "registry:component",
+      "registryDependencies" => %w[button frame-helper],
+      "meta" => { "community" => true,
+                  "source" => { "registry" => "@acme", "item" => "iphone", "url" => "https://acme.dev/r/iphone",
+                                "repository" => "https://github.com/acme/ui", "license" => "MIT",
+                                "copyright" => "Copyright (c) 2025 Acme",
+                                "notice" => "MIT License\n\nPermission is hereby granted" } },
+      "files" => [{ "path" => "app/components/community/phone_mockup/component.rb",
+                    "content" => "class Community::PhoneMockup::Component < Poetry::Core::Component\nend\n" }]
+    }.freeze
+
+    FRAME = { "name" => "frame-helper", "type" => "registry:lib", "meta" => { "community" => true },
+              "files" => [{ "path" => "app/helpers/community/frame_helper.rb",
+                            "content" => "module Community::FrameHelper\nend\n" }] }.freeze
+
+    def prepare_community(manifest = {})
+      write_fixture("phone-mockup", PORT)
+      write_fixture("frame-helper", FRAME)
+      FileUtils.mkdir_p(File.join(destination_root, "config"))
+      File.write(File.join(destination_root, "config/poetry_components.yml"),
+                 YAML.dump({ "community" => "./items/{name}.json" }.merge(manifest)))
+    end
+
+    def test_an_at_poetry_name_the_gems_do_not_ship_is_a_community_item
+      prepare_community
+      output = run_generator %w[@poetry/phone-mockup]
+
+      assert_file "app/components/community/phone_mockup/component.rb"
+      assert_file "app/helpers/community/frame_helper.rb", /FrameHelper/
+      assert_no_file "app/components/poetry/ui/button/component.rb"
+      assert_match(/phone-mockup: a community item, reviewed and checked in CI, not audited/, output)
+      assert_match(%r{adapted from @acme/iphone \(MIT\)}, output)
+    end
+
+    def test_an_at_poetry_name_the_gems_ship_stays_local
+      prepare_community
+      run_generator %w[@poetry/badge]
+
+      assert_file "app/components/poetry/ui/badge/component.rb"
+    end
+
+    def test_a_ports_origin_lands_in_the_manifest_and_the_notices_once
+      prepare_community("registries" => { "@acme" => "https://acme.dev/r/{name}.json" })
+      run_generator %w[@poetry/phone-mockup]
+      run_generator %w[@poetry/phone-mockup]
+
+      assert_file "config/poetry_components.yml" do |manifest|
+        entry = YAML.safe_load(manifest).dig("components", "phone-mockup")
+
+        assert_equal "@poetry/phone-mockup", entry["source"]
+        assert entry["community"]
+        assert_equal "https://github.com/acme/ui", entry.dig("origin", "repository")
+        assert_nil entry.dig("origin", "notice"), "the license text lives in the notices, not the manifest"
+      end
+      assert_file "THIRD_PARTY_NOTICES.md" do |notices|
+        assert_equal 1, notices.scan("## phone-mockup").size
+        assert_match(%r{Adapted from @acme/iphone \(https://acme.dev/r/iphone\), https://github.com/acme/ui\.}, notices)
+        assert_match(/License: MIT\. Copyright \(c\) 2025 Acme/, notices)
+        assert_match(/Permission is hereby granted/, notices)
+        refute_match(/frame-helper/, notices, "an original community item credits no origin")
+      end
+    end
+
+    def test_an_unknown_bare_name_points_at_the_community_address
+      error = assert_raises(ArgumentError) { run_generator %w[phone-mockup] }
+
+      assert_match(%r{add it as @poetry/phone-mockup}, error.message)
+    end
   end
 end

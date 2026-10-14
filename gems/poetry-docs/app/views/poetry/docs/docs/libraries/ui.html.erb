@@ -39,6 +39,7 @@
   CODE
   add_source = <<~CODE
     bin/rails g poetry:add button             # copy the gem's source into app/components
+    bin/rails g poetry:add @poetry/phone-mockup  # a community item from poetryui.com
     bin/rails g poetry:add @acme/fancy-chart  # install from a configured registry
     bin/rails g poetry:diff                   # read-only drift report for your copies
   CODE
@@ -204,6 +205,16 @@
         <code>poetry:stimulus:manifest</code> would, so the component that
         names the controller loads. Commit the manifest, and restart a
         running server: the manifest is read at boot.
+      </p>
+      <p>
+        An <code>@poetry</code> name the gems do not ship is a community
+        item: <code>poetry:add</code> fetches it from this site, where every
+        one was reviewed and passed CI. Reviewed is not audited; read what
+        you install. A community item adapted from another registry names its
+        origin, license and copyright in <code>config/poetry_components.yml</code>,
+        and adds that license to your <code>THIRD_PARTY_NOTICES.md</code>.
+        A <code>community:</code> URL template in the same file points the
+        fallback at a mirror.
       </p>
     <% end %>
   </section>
