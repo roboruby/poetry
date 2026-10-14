@@ -657,8 +657,11 @@ module Poetry
         def missing_option_findings(path, owner, call, pairs, line)
           # A receiver'd call owns its contract (a form builder's
           # poetry_date_picker supplies name: itself) - same stand-down as
-          # helper arity.
+          # helper arity. A positional argument may feed a required option
+          # (poetry_typewriter("Hello") is text: "Hello"), as it may feed
+          # content - the same stand-down as the content rule.
           return [] if splatted?(call) || call.receiver
+          return [] if positional_arguments(call)&.any?
 
           (@catalog.required_options(path) - pairs.map(&:first)).map do |key|
             Finding.new(rule: "missing-option", severity: :error,
@@ -1510,8 +1513,9 @@ module Poetry
           name_node = node.name
           return unless name_node
 
+          # An attribute named by ERB has no literal name; nothing to read.
           first = Array(name_node.child_nodes).compact.first
-          first.content if first.respond_to?(:content)
+          first.content if first.is_a?(Herb::AST::LiteralNode)
         end
 
         # Whether the attribute's value carries ERB (its literal fragments

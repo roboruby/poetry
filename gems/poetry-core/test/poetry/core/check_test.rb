@@ -502,6 +502,10 @@ module Poetry
         assert_includes finding.message, "name: is required on poetry_icon"
       end
 
+      def test_a_positional_argument_stands_down_on_required_options
+        refute_includes rules(%(<%= poetry_icon("plus", label: "Plus") %>)), "missing-option"
+      end
+
       def test_a_splatted_call_stands_down_on_required_options
         refute_includes rules(%(<%= poetry_icon(**icon_attrs) %>)), "missing-option"
       end
@@ -1438,6 +1442,10 @@ module Poetry
         ERB
 
         refute_includes rules(clean), "fake-button"
+      end
+
+      def test_an_attribute_named_by_erb_is_read_as_no_name_not_a_crash
+        refute_includes rules(%(<div <%= "hidden" if flag %> class="p-4">x</div>)), "fake-button"
       end
 
       def test_a_dynamic_role_is_left_alone_but_a_dynamic_onclick_still_counts
