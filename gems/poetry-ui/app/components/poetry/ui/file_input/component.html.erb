@@ -9,6 +9,12 @@
       <% if hint.present? %><span data-slot="file-input-hint" class="<%= css(:hint) %>"><%= hint %></span><% end %>
     <% end %>
     <%= element_tag(:ul, "", list_attributes) %>
+    <%= element_tag(:ul, "", errors_attributes) %>
     <%= element_tag(:button, t("poetry.file_input.clear"), clear_attributes) %>
+    <% if overlay %>
+      <div data-slot="file-input-overlay" class="<%= css(:overlay) %>" aria-hidden="true">
+        <span class="<%= css(:overlay_prompt) %>"><%= t("poetry.file_input.overlay") %></span>
+      </div>
+    <% end %>
   <% end %>
 <% end %>

@@ -702,10 +702,86 @@
       "unlockScroll": "Balances {@link lockScroll}; safe when already unlocked."
     }
   },
+  "poetry--core--file-drop": {
+    "doc": "The file-drop behavior's controller: files arrive on this element by drop, picker or paste, are checked against accept, size and count, and land in the native input inside it (the input target, or the first file input below). Values only, zero actions: the behavior binds the zone, the document and the paste listeners in connect, through the scope. A component listens for the files event to reflect the selection, and a trigger outside the label may call open.",
+    "targets": [
+      "input"
+    ],
+    "values": {
+      "accept": {
+        "type": "String",
+        "default": "",
+        "doc": "The native accept list; empty takes everything."
+      },
+      "multiple": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether the selection may hold several files; a single zone keeps the first."
+      },
+      "maxFiles": {
+        "type": "Number",
+        "default": 0,
+        "doc": "The most files the selection may hold; 0 is unlimited."
+      },
+      "maxSize": {
+        "type": "Number",
+        "default": 0,
+        "doc": "The largest file in bytes; 0 is unlimited."
+      },
+      "minSize": {
+        "type": "Number",
+        "default": 0,
+        "doc": "The smallest file in bytes."
+      },
+      "paste": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether a paste carrying files lands here."
+      },
+      "overlay": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether the whole page is the drop target, with data-drag-global while files are over it."
+      },
+      "directory": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether dropped folders are walked for their files."
+      },
+      "preventDocumentDrop": {
+        "type": "Boolean",
+        "default": true,
+        "doc": "Whether a drop outside the zone is swallowed instead of navigating to the file."
+      },
+      "messages": {
+        "type": "Object",
+        "default": {},
+        "doc": "Rejection messages by code, with {name}, {size}, {count} and {reason} tokens."
+      }
+    },
+    "classes": [],
+    "methods": [
+      "clear",
+      "connect",
+      "disconnect",
+      "open"
+    ],
+    "events": [
+      "poetry:file-drop:drag",
+      "poetry:file-drop:files"
+    ],
+    "method_docs": {
+      "clear": "Empties the selection.",
+      "connect": "Binds the intake for this connect.",
+      "disconnect": "Unbinds everything the connect bound.",
+      "open": "Opens the native picker: the action for a trigger that is not the label (a button beside the zone)."
+    }
+  },
   "poetry--core--file-input": {
-    "doc": "The FileInput dropzone engine: the component renders a <label> wrapping a visually-hidden native <input type=file>, so click-to-browse and keyboard access are the PLATFORM's - this controller adds only what HTML cannot: drag-and-drop onto the label, the selected-file list, and the clear affordance. The native input stays the single source of truth (its FileList is the form value; ActiveStorage direct upload rides it untouched).\n\nDrag state uses an enter/leave COUNTER: dragenter/dragleave fire per descendant crossed, so a boolean flickers over child elements - the counter nets out to zero only when the pointer truly leaves the zone.",
+    "doc": "The FileInput dropzone's reflection: the component renders a <label> wrapping a visually-hidden native <input type=file>, so click-to-browse and keyboard access are the PLATFORM's, and the file-drop controller beside this one takes drops, pastes and picker selections through the accept, size and count checks. This controller only shows the result: the selected-file list, the rejections, the populated state and the clear affordance. The native input stays the single source of truth (its FileList is the form value; ActiveStorage direct upload rides it untouched).",
     "targets": [
       "clear",
+      "errors",
       "input",
       "list"
     ],
@@ -713,30 +789,22 @@
       "multiple": {
         "type": "Boolean",
         "default": false,
-        "doc": "Whether more than one file may be chosen; otherwise a drop keeps the first."
+        "doc": "Whether more than one file may be chosen; the file-drop controller enforces it."
       }
     },
     "classes": [],
     "methods": [
-      "changed",
       "clear",
       "connect",
-      "dragenter",
-      "dragleave",
-      "dragover",
-      "drop"
+      "files"
     ],
     "events": [
       "poetry:file-input:change"
     ],
     "method_docs": {
-      "changed": "The native input's change action (picker AND drop land here): reflects the selection and reports the file names.",
-      "clear": "The clear button's click action: empties the input and dispatches a real change.",
+      "clear": "The clear button's click action: empties the input and dispatches a real change, which the file-drop controller hears as a cleared selection.",
       "connect": "Reflects the input's current FileList (list, clear, data-populated).",
-      "dragenter": "File drags flip the zone into its accepting state - depth-counted (the header explains the counter).",
-      "dragleave": "Nets the depth counter down; at zero the drag styling clears.",
-      "dragover": "The required preventDefault - without it the browser navigates to the dropped file.",
-      "drop": "Assigns the dropped files to the native input (single-file zones take the FIRST - the native picker's rule) and dispatches a real change so every listener sees a picker-identical selection."
+      "files": "The file-drop controller's files action (drop, paste and picker land here): reflects the selection, shows the rejections and reports the file names."
     }
   },
   "poetry--core--focus-scope": {

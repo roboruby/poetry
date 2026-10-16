@@ -31,6 +31,15 @@ en:
     file_input:
       prompt: "Drag and drop or click to browse"
       clear: "Clear selection"
+      overlay: "Drop files to add them"
+      # The {name}, {size}, {count} and {reason} tokens are the file-drop
+      # controller's to fill; they are not I18n interpolations.
+      rejected:
+        type: "{name} is not an accepted file type"
+        large: "{name} is larger than {size}"
+        small: "{name} is smaller than {size}"
+        count: "{name} was not added: at most {count} files"
+        invalid: "{name}: {reason}"
     number_field:
       roledescription: "Number field"
       increment: "Increase"

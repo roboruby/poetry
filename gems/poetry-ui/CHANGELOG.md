@@ -7,9 +7,11 @@
 - `poetry:add @poetry/<name>` installs a community item from poetryui.com when the gems ship no item of that name (`community:` in `config/poetry_components.yml` points it elsewhere). A port records its origin in the manifest and adds its license to the host's `THIRD_PARTY_NOTICES.md`, once. An unknown bare name points at the `@poetry/` address.
 - The generated usage skill carries the motion effects' reference when poetry-motion is in the bundle.
 - `poetry:install --motion` wires poetry-motion like `--charts` wires poetry-charts: it fails before any file lands when the gem is not bundled, copies and imports the motion tokens stylesheet, and registers the motion controllers, which installs the motion policy. A plain re-run keeps refreshing the stylesheet once it is vendored.
+- FileInput's dropzone wires the `file_drop` behavior: `accept:` rejects at intake, with `max_size:`, `min_size:` and `max_files:` (bytes and a count), `paste:` for pasted files, `overlay:` for the whole page as the drop target behind a fixed drop surface, `directory:` for folders, and `camera:` for the native capture attribute on mobile. Rejections fill a `role=alert` list under the zone, translated under `poetry.file_input.rejected`.
 
 ### Changed
 
+- FileInput writes `data-dragging`, `data-drag-reject` and `data-drag-global` on its root through the file-drop controller; the dropzone label carries no actions of its own.
 - Tabs, toggle group, radio group, tag group, menubar and accordion use the `roving_focus` behavior; checkbox and switch use `checked`; nine anchored overlays use `popper`; the overlays use the `focus_scope` and `dismissable` runtime behaviors. The rendered HTML is unchanged, and the registry lists each component's behaviors.
 - The component skill shows how to use a behavior before declaring a controller by hand.
 - The Icon component draws each icon with its set's own drawing attributes instead of Lucide's stroke for every set, so filled sets, a 256-unit grid and 16 or 20 pixel styles render right. `poetry check` reads every registered set and its aliases.

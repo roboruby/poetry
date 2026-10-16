@@ -2,46 +2,50 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { Application } from "@hotwired/stimulus"
 import { registerPoetryControllers } from "@poetry/controllers"
 
-// poetry--core--file-input JS-unit: the dropzone engine over a native
-// input - drag counter (no flicker over children), file-only drags,
-// drop -> input.files + a real change event, single-mode first-file rule,
-// the built (never innerHTML'd) selection list, clear, disabled inertness.
-// Click-to-browse is the <label>'s platform behavior - not JS, not here.
+// poetry--core--file-input JS-unit: the dropzone's reflection beside the
+// file-drop controller - a selection (picker or drop) builds the list
+// (never innerHTML'd), flips data-populated and reveals clear; the
+// rejections fill the role=alert list; clear empties everything and never
+// re-opens the picker; the drag styling rides the root the file-drop
+// controller writes. Click-to-browse is the <label>'s platform behavior -
+// not JS, not here.
 
 const nextFrame = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 const el = (id) => document.getElementById(id)
 
-const file = (name, size = 10) => new File([new Uint8Array(size)], name, { type: "text/plain" })
+const file = (name, size = 10, type = "text/plain") => new File([new Uint8Array(size)], name, { type })
 
 // jsdom's input.files is not assignable with a plain array - swap it for
-// a writable data property so the controller's assignment lands.
+// a writable data property so the controllers' assignments land.
 const writableFiles = (input) => {
   Object.defineProperty(input, "files", { writable: true, configurable: true, value: [] })
 }
 
 const drag = (type, files = [], types = ["Files"]) => {
   const event = new Event(type, { bubbles: true, cancelable: true })
-  event.dataTransfer = { files, types }
+  event.dataTransfer = { files, types, items: files.map((f) => ({ kind: "file", type: f.type })) }
   return event
 }
 
-const markup = ({ multiple = false, disabled = false } = {}) => `
-  <label id="zone" data-slot="file-input" data-component="file-input"
-         data-controller="poetry--core--file-input"
-         data-poetry--core--file-input-multiple-value="${multiple}"
-         data-action="dragenter->poetry--core--file-input#dragenter
-                      dragover->poetry--core--file-input#dragover
-                      dragleave->poetry--core--file-input#dragleave
-                      drop->poetry--core--file-input#drop">
-    <input id="input" type="file" ${multiple ? "multiple" : ""} ${disabled ? "disabled" : ""}
-           data-poetry--core--file-input-target="input"
-           data-action="change->poetry--core--file-input#changed">
-    <span data-slot="file-input-prompt">Drag and drop</span>
+const markup = ({ multiple = false, disabled = false, accept = "" } = {}) => `
+  <div id="zone" data-slot="file-input" data-component="file-input"
+       data-controller="poetry--core--file-drop poetry--core--file-input"
+       data-poetry--core--file-drop-multiple-value="${multiple}"
+       data-poetry--core--file-drop-accept-value="${accept}"
+       data-poetry--core--file-input-multiple-value="${multiple}"
+       data-action="poetry:file-drop:files->poetry--core--file-input#files">
+    <label>
+      <input id="input" type="file" ${multiple ? "multiple" : ""} ${disabled ? "disabled" : ""}
+             data-poetry--core--file-drop-target="input"
+             data-poetry--core--file-input-target="input">
+      <span data-slot="file-input-prompt">Drag and drop</span>
+      <button id="clear" type="button" data-poetry--core--file-input-target="clear"
+              data-action="click->poetry--core--file-input#clear">Clear</button>
+    </label>
     <ul id="list" data-poetry--core--file-input-target="list"></ul>
-    <button id="clear" type="button" data-poetry--core--file-input-target="clear"
-            data-action="click->poetry--core--file-input#clear">Clear</button>
-  </label>`
+    <ul id="errors" role="alert" hidden data-poetry--core--file-input-target="errors"></ul>
+  </div>`
 
 describe("poetry--core--file-input", () => {
   let application
@@ -51,7 +55,13 @@ describe("poetry--core--file-input", () => {
     application = Application.start()
     registerPoetryControllers(application)
     await nextFrame()
-    return () => application.stop()
+    // The zone leaves the document before the application stops, so the
+    // file-drop controller's document listeners go with it.
+    return async () => {
+      el("zone")?.remove()
+      await nextFrame()
+      application.stop()
+    }
   })
 
   async function mount(options = {}) {
@@ -67,6 +77,7 @@ describe("poetry--core--file-input", () => {
 
     el("input").files = [file("report.pdf", 2048)]
     el("input").dispatchEvent(new Event("change", { bubbles: true }))
+    await nextFrame()
 
     const items = el("list").querySelectorAll("[data-slot=file-input-item]")
 
@@ -78,7 +89,7 @@ describe("poetry--core--file-input", () => {
     expect(seen).toEqual([["report.pdf"]])
   })
 
-  it("the drag counter survives children: two enters + one leave stay dragging; the second clears", async () => {
+  it("the drag styling rides the root: two enters + one leave stay dragging; the second clears", async () => {
     await mount()
 
     el("zone").dispatchEvent(drag("dragenter"))
@@ -95,29 +106,40 @@ describe("poetry--core--file-input", () => {
     expect(el("zone").hasAttribute("data-dragging")).toBe(false)
   })
 
-  it("a non-file drag (text, links) never arms the zone", async () => {
-    await mount()
-
-    el("zone").dispatchEvent(drag("dragenter", [], ["text/plain"]))
-
-    expect(el("zone").hasAttribute("data-dragging")).toBe(false)
-  })
-
-  it("drop assigns the files to the native input and fires a real change through it", async () => {
+  it("drop assigns the files to the native input and the list follows", async () => {
     await mount({ multiple: true })
-    const dropped = [file("a.txt"), file("b.txt")]
 
     el("zone").dispatchEvent(drag("dragenter"))
-    el("zone").dispatchEvent(drag("drop", dropped))
+    el("zone").dispatchEvent(drag("drop", [file("a.txt"), file("b.txt")]))
+    await nextFrame()
 
     expect(Array.from(el("input").files).map((f) => f.name)).toEqual(["a.txt", "b.txt"])
     expect(el("zone").hasAttribute("data-dragging")).toBe(false)
     expect(el("list").children.length).toBe(2)
+    expect(el("errors").hidden).toBe(true)
   })
 
-  it("a single-file zone takes the FIRST dropped file (the native picker's rule)", async () => {
+  it("a rejected file fills the role=alert list with its message, and the next clean drop empties it", async () => {
+    await mount({ multiple: true, accept: ".txt" })
+
+    el("zone").dispatchEvent(drag("drop", [file("a.txt"), file("b.png", 10, "image/png")]))
+    await nextFrame()
+
+    expect(el("list").children.length).toBe(1)
+    expect(el("errors").hidden).toBe(false)
+    expect(el("errors").children.length).toBe(1)
+    expect(el("errors").textContent).toContain("b.png")
+
+    el("zone").dispatchEvent(drag("drop", [file("c.txt")]))
+    await nextFrame()
+
+    expect(el("errors").hidden).toBe(true)
+    expect(el("list").children.length).toBe(2)
+  })
+
+  it("a single-file zone lists the FIRST dropped file (built through the platform's DataTransfer)", async () => {
     await mount()
-    // The stub DataTransfer the normalizer builds through.
+    // The stub DataTransfer the mirror builds through.
     class StubTransfer {
       constructor() {
         this.stored = []
@@ -132,8 +154,10 @@ describe("poetry--core--file-input", () => {
 
     try {
       el("zone").dispatchEvent(drag("drop", [file("first.png"), file("second.png")]))
+      await nextFrame()
 
       expect(Array.from(el("input").files).map((f) => f.name)).toEqual(["first.png"])
+      expect(el("list").children.length).toBe(1)
     } finally {
       delete globalThis.DataTransfer
     }
@@ -143,12 +167,14 @@ describe("poetry--core--file-input", () => {
     await mount()
     el("input").files = [file("a.txt")]
     el("input").dispatchEvent(new Event("change", { bubbles: true }))
+    await nextFrame()
 
     expect(el("zone").hasAttribute("data-populated")).toBe(true)
 
     const click = new MouseEvent("click", { bubbles: true, cancelable: true })
     el("input").files = []
     el("clear").dispatchEvent(click)
+    await nextFrame()
 
     expect(click.defaultPrevented).toBe(true) // the label must not re-open the picker
     expect(el("zone").hasAttribute("data-populated")).toBe(false)
@@ -164,7 +190,9 @@ describe("poetry--core--file-input", () => {
     expect(el("zone").hasAttribute("data-dragging")).toBe(false)
 
     el("zone").dispatchEvent(drag("drop", [file("a.txt")]))
+    await nextFrame()
 
     expect(Array.from(el("input").files)).toEqual([])
+    expect(el("list").children.length).toBe(0)
   })
 })

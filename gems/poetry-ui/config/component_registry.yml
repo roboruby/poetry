@@ -5560,10 +5560,23 @@ components:
     options:
     - name: accept
       type: string
-      description: The native accept filter (e.g. "image/*,.pdf").
+      description: The native accept filter (e.g. "image/*,.pdf"); the dropzone rejects
+        a file outside it at intake.
+    - name: camera
+      type: symbol
+      variants:
+      - user
+      - environment
+      description: 'Opens a camera on mobile, as the native capture attribute: :user
+        (front) or :environment (back); needs an image, audio or video accept:.'
     - name: described_by
       type: string
       description: Ids for the native input's aria-describedby (Field wires this).
+    - name: directory
+      type: boolean
+      default: false
+      description: Dropped folders are walked for their files, and the picker selects
+        folders.
     - name: disabled
       type: boolean
       default: false
@@ -5579,6 +5592,16 @@ components:
       default: false
       description: Marks the control aria-invalid (set by Field/FormBuilder from model
         errors).
+    - name: max_files
+      type: integer
+      description: 'The most files the dropzone holds (multiple: true); the surplus
+        is rejected file by file.'
+    - name: max_size
+      type: integer
+      description: The largest file the dropzone takes, in bytes (10.megabytes).
+    - name: min_size
+      type: integer
+      description: The smallest file the dropzone takes, in bytes.
     - name: multiple
       type: boolean
       default: false
@@ -5587,6 +5610,15 @@ components:
       type: string
       description: 'The native input''s name - the submitted param (multiple: true
         wants a name ending in [] for Rails params).'
+    - name: overlay
+      type: boolean
+      default: false
+      description: 'The whole page is the drop target: a fixed overlay shows while
+        files are dragged over the window.'
+    - name: paste
+      type: boolean
+      default: false
+      description: Files pasted over the dropzone land in it (a chat composer, a screenshot).
     - name: prompt
       type: string
       description: The dropzone's instruction line - overrides the translated default.
@@ -5600,40 +5632,65 @@ components:
     - prompt
     - hint
     - list
+    - errors
     - clear
-    capsule: 14a68c52b6be
+    - overlay
+    - overlay_prompt
+    capsule: a0459a0eaa85
     controllers:
+    - identifier: poetry--core--file-drop
+      targets:
+      - input
+      values:
+      - accept
+      - directory
+      - maxFiles
+      - maxSize
+      - messages
+      - minSize
+      - multiple
+      - overlay
+      - paste
+      - preventDocumentDrop
+      actions:
+      - clear
+      - open
+      events:
+      - poetry:file-drop:drag
+      - poetry:file-drop:files
     - identifier: poetry--core--file-input
       targets:
       - clear
+      - errors
       - input
       - list
       values:
       - multiple
       actions:
-      - changed
       - clear
-      - dragenter
-      - dragleave
-      - dragover
-      - drop
+      - files
       events:
       - poetry:file-input:change
     agent_rules:
+    - 'Client-side accept, size and count limits are advisory: validate the attachment
+      on the model as well.'
     - 'File selection is a FileInput: variant: :input for compact forms, :dropzone
       when dragging is expected (uploads as the page''s point) - never a hand-rolled
       drop div.'
     - 'The native input is the form value: set name: (multiple: true wants a name
       ending in [] for Rails params); ActiveStorage direct upload attaches to it as
       usual.'
-    - 'The dropzone''s selected-file list and clear button are controller-rendered
+    - 'The dropzone''s selected-file list, rejections and clear button are controller-rendered
       - compose prompt:/hint: copy instead of adding your own list markup.'
+    - 'Limits are options, never prose alone: accept:, max_size: and max_files: reject
+      the file at intake; the hint: tells people the same limits in words.'
     - In a Field, prefer form.file_input (the builder wires id/label/errors); the
       bare component suits standalone dropzones.
     identity: false
     parts:
     - name: file-input
-      description: The dropzone root - wraps the zone, the selection list, and clear
+      description: The dropzone root - the drop target, wrapping the zone, the selection
+        list, the rejections and clear
       states:
       - attr: data-variant
         condition: always on the dropzone root (the input variant renders the Input
@@ -5642,6 +5699,11 @@ components:
         - dropzone
       - attr: data-dragging
         condition: a file drag is over the zone (controller-written, enter/leave counted)
+      - attr: data-drag-reject
+        condition: the drag carries only files the accept filter or the count would
+          reject (controller-written, best effort mid-drag)
+      - attr: data-drag-global
+        condition: 'overlay: true and files are dragged anywhere over the window (controller-written)'
       - attr: data-populated
         condition: the native input holds at least one file (controller-written)
     - name: file-input-dropzone
@@ -5657,41 +5719,55 @@ components:
     - name: file-input-list
       description: The selected-file <ul> the controller fills (name + size per item;
         items are controller-built, not server parts)
+    - name: file-input-errors
+      description: The rejections <ul> (role=alert) the controller fills - one line
+        per file the accept, size or count checks refused; hidden when empty
+    - name: file-input-overlay
+      description: 'The fixed full-window drop surface (overlay: true) - decorative,
+        shown while data-drag-global is on the root'
     - name: file-input-clear
       description: The clear affordance - hidden until populated; never re-opens the
         picker
     stimulus:
     - element: root
       controllers:
+      - identifier: poetry--core--file-drop
+        registers: true
+        values:
+        - name: accept
+        - name: multiple
+        - name: max_files
+        - name: max_size
+        - name: min_size
+        - name: paste
+        - name: overlay
+        - name: directory
+        - name: messages
       - identifier: poetry--core--file-input
         registers: true
         values:
         - name: multiple
-    - element: dropzone
-      controllers:
-      - identifier: poetry--core--file-input
         actions:
-        - method: dragenter
-          'on': dragenter
-        - method: dragover
-          'on': dragover
-        - method: dragleave
-          'on': dragleave
-        - method: drop
-          'on': drop
+        - method: files
+          'on': poetry:file-drop:files
     - element: control
       controllers:
+      - identifier: poetry--core--file-drop
+        targets:
+        - name: input
       - identifier: poetry--core--file-input
         targets:
         - name: input
-        actions:
-        - method: changed
-          'on': change
     - element: list
       controllers:
       - identifier: poetry--core--file-input
         targets:
         - name: list
+    - element: errors
+      controllers:
+      - identifier: poetry--core--file-input
+        targets:
+        - name: errors
     - element: clear
       controllers:
       - identifier: poetry--core--file-input
@@ -5700,6 +5776,12 @@ components:
         actions:
         - method: clear
           'on': click
+    behaviors:
+    - name: file_drop
+      description: Files arrive by drop, picker or paste and are checked against accept,
+        size and count before they land in the native input.
+      elements:
+      - root
   poetry/ui/hover_card:
     class_name: Poetry::Ui::HoverCard::Component
     identifier: poetry--ui--hover_card

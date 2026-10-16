@@ -70,6 +70,10 @@ module Poetry
         "instant" => "tooltip instant-open reason (JS)",
         "queued" => "toast overflow queue marker (JS)",
         "dragging" => "slider drag marker (JS)",
+        "drag-reject" => "file-input drag verdict while files the zone cannot take are over it " \
+                         "(behaviors/file_drop.js via toggleAttribute, best effort mid-drag)",
+        "drag-global" => "file-input files-over-the-window marker in overlay mode " \
+                         "(behaviors/file_drop.js via setAttribute; the overlay surface shows on it)",
         "complete" => "OTP complete marker (JS)",
         "completed" => "timeline progress marker (server-rendered)",
         "swiping" => "drawer swipe drag marker (poetry--core--drawer writes it; toast swipe reserved)",
