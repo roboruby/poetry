@@ -4,6 +4,8 @@
 
 ### Added
 
+- `poetry:install` registers the island controller and pins `app/javascript/islands/` as `islands/*` when poetry-island is bundled, once each; `poetry:add` pins `app/javascript/community/` as `community/*` once when an item brings a module there (an island's bundle, a kernel).
+
 - `poetry:add @poetry/<name>` installs a community item from poetryui.com when the gems ship no item of that name (`community:` in `config/poetry_components.yml` points it elsewhere). A port records its origin in the manifest and adds its license to the host's `THIRD_PARTY_NOTICES.md`, once. An unknown bare name points at the `@poetry/` address.
 - The generated usage skill carries the motion effects' reference when poetry-motion is in the bundle.
 - `poetry:install --motion` wires poetry-motion like `--charts` wires poetry-charts: it fails before any file lands when the gem is not bundled, copies and imports the motion tokens stylesheet, and registers the motion controllers, which installs the motion policy. A plain re-run keeps refreshing the stylesheet once it is vendored.

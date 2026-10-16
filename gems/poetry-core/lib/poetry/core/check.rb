@@ -549,7 +549,7 @@ module Poetry
             option_findings(path, key, value, base_line + kw_line - 1, library: library)
           end
           findings + webmcp_findings(path, pairs, line) + motion_findings(path, call, base_line) +
-            upload_findings(path, call, pairs, line) +
+            upload_findings(path, call, pairs, line) + island_findings(path, pairs, line) +
             missing_option_findings(path, helper_of(path), call, pairs, line) +
             helper_arity_findings(helper, call, line) +
             content_findings(path, helper, call, line, content_fed) +
@@ -1405,6 +1405,27 @@ module Poetry
                                     line: line)
           end
           findings
+        end
+
+        # --- Island rules (poetry-island's mounts) ---
+
+        # An island whose module the host's importmap does not pin: the
+        # dynamic import fails that one island, with the shell left in
+        # place, but every time. A pin covers the specifier exactly, or as
+        # the `under:` prefix of a pin_all_from.
+        def island_findings(path, pairs, line)
+          return [] unless path == "poetry/island/island" && @importmap_pins
+
+          import = pairs.to_h { |key, value, _kw_line| [key, value] }["import"]
+          return [] unless import.is_a?(String) && !import.empty?
+          return [] if @importmap_pins.any? { |pin| import == pin || import.start_with?("#{pin}/") }
+
+          [Finding.new(rule: "island-import-unpinned", severity: :warning,
+                       message: "poetry_island loads #{import.inspect} through the importmap and " \
+                                "config/importmap.rb does not pin it - add pin \"#{import}\", to: ..., or " \
+                                "pin_all_from its directory under: its prefix (poetry:install pins " \
+                                "app/javascript/islands as islands)",
+                       line: line)]
         end
 
         # --- Motion rules (poetry-motion's effects) ---

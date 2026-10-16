@@ -418,6 +418,34 @@ module Poetry
       JS
     end
 
+    # poetry-island, when bundled: the island controller registered beside
+    # core's, and the app's own islands directory pinned as islands/*, so
+    # app/javascript/islands/map.js is `import: "islands/map"`. Idempotent.
+    # @api private
+    def wire_island
+      return unless island_available?
+
+      index = "app/javascript/controllers/index.js"
+      if File.exist?(File.join(destination_root, index))
+        inject_unless_present(index, <<~JS.strip)
+          import { registerPoetryIslandControllers } from "@poetry/island"
+          registerPoetryIslandControllers(application)
+        JS
+      else
+        say_status :note, "no #{index} - register the island controller yourself: " \
+                          "registerPoetryIslandControllers(application) from \"@poetry/island\"", :yellow
+      end
+      importmap = "config/importmap.rb"
+      if File.exist?(File.join(destination_root, importmap))
+        source = File.read(File.join(destination_root, importmap))
+        pinned = source.match?(%r{pin_all_from\s+["']app/javascript/islands["']})
+        append_to_file importmap, %(pin_all_from "app/javascript/islands", under: "islands"\n) unless pinned
+      else
+        say_status :note, "no #{importmap} - serve your islands from your bundler and name them with import:", :yellow
+      end
+      create_file "app/javascript/islands/.keep", "", skip: true
+    end
+
     # poetry-agent's stylesheet (the WebMCP agent-focus states) rides along
     # when the gem is bundled: vendored like charts.css, imported into
     # layer(base) beside the theme. Hosts without the gem carry neither the
@@ -568,6 +596,11 @@ module Poetry
     # Whether the motion gem is bundled.
     def motion_available?
       defined?(Poetry::Motion::Engine) ? true : false
+    end
+
+    # Whether the island gem is bundled.
+    def island_available?
+      defined?(Poetry::Island::Engine) ? true : false
     end
 
     # Whether the agent gem is bundled.

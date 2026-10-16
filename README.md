@@ -10,7 +10,7 @@ This is the umbrella gem. One line installs the library proper: the engine, the 
 
 This repository holds the whole family. Each gem keeps its own bundle, tests and gates, and resolves its siblings from the tree beside it.
 
-- `gems/` — poetry-core, poetry-lucide, poetry-charts, poetry-extract, poetry-ui, poetry-agent, poetry-simple_form, poetry-jumpstart_pro and seven more icon sets, one directory each, and poetry-docs, the poetryui.com documentation as an engine that documents and tests the family from the tree (versioned with the family, not published)
+- `gems/` — poetry-core, poetry-lucide, poetry-charts, poetry-motion, poetry-island, poetry-extract, poetry-ui, poetry-agent, poetry-simple_form, poetry-jumpstart_pro and seven more icon sets, one directory each, and poetry-docs, the poetryui.com documentation as an engine that documents and tests the family from the tree (versioned with the family, not published)
 - `tools/releaser/` — the release tooling; `VERSION` at the root is the single source of truth for every gem in the family
 - this directory — the umbrella gem
 

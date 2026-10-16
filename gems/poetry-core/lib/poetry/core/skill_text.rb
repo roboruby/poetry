@@ -20,16 +20,20 @@ module Poetry
       # @param families [Hash{String => Array<String>}] family name => component names
       # @param charts_registry [Registry, nil] the charts registry, when the gem is present
       # @param motion_registry [Registry, nil] the motion effects registry, when the gem is present
+      # @param island_registry [Registry, nil] the islands registry, when the gem is present
       # @param builder_family [String] the family whose reference carries the registry's
       #   form_builder section (rules, method summaries, the f.input as: vocabulary)
       # @param host_registry [Registry, nil] the app's own components
       #   (HostComponents.registry) - a references/app.md of their own
-      def initialize(registry:, families:, charts_registry: nil, motion_registry: nil,
+      # rubocop:disable Metrics/ParameterLists
+      def initialize(registry:, families:, charts_registry: nil, motion_registry: nil, island_registry: nil,
                      builder_family: "forms", host_registry: nil)
+        # rubocop:enable Metrics/ParameterLists
         super(registry: registry)
         @families = families
         @charts_registry = charts_registry
         @motion_registry = motion_registry
+        @island_registry = island_registry
         @builder_family = builder_family
         @host_registry = host_registry if host_registry&.entries&.any?
       end
@@ -42,6 +46,7 @@ module Poetry
         files["references/deciding.md"] = self.class.deciding_reference
         files["references/charts.md"] = charts_reference if @charts_registry
         files["references/motion.md"] = motion_reference if @motion_registry
+        files["references/islands.md"] = island_reference if @island_registry
         files["references/app.md"] = app_reference if @host_registry
         files
       end
@@ -238,6 +243,7 @@ module Poetry
         parts = ["#{@registry.entries.size} components"]
         parts << "#{@charts_registry.entries.size} chart components" if @charts_registry
         parts << "#{@motion_registry.entries.size} motion effects" if @motion_registry
+        parts << "#{@island_registry.entries.size} island components" if @island_registry
         parts << "#{@host_registry.entries.size} app components" if @host_registry
         blocks = @registry.blocks
         parts << "#{blocks.size} blocks" if blocks&.any?
@@ -252,8 +258,14 @@ module Poetry
         lines << "- **blocks** (`references/blocks.md`): #{(@registry.blocks || {}).keys.join(", ")}"
         lines << "- **charts** (`references/charts.md`): #{chart_names.join(", ")}" if @charts_registry
         lines << "- **motion** (`references/motion.md`): #{motion_names.join(", ")}" if @motion_registry
+        lines << "- **islands** (`references/islands.md`): #{island_names.join(", ")}" if @island_registry
         lines << "- **app** (`references/app.md`): #{app_helper_names.join(", ")}" if @host_registry
         lines.join("\n")
+      end
+
+      # The island components' names.
+      def island_names
+        @island_registry.entries.keys.map { |path| path.split("/").drop(2).join("_") }
       end
 
       # The chart components' names.
@@ -370,6 +382,26 @@ module Poetry
           scroll link or interruption means a CSS keyframe, not an effect.
 
           #{motion.sections}
+        MD
+      end
+
+      # The islands reference: the contract of the one place in a page where
+      # the client owns the state, and when to reach for it.
+      def island_reference
+        islands = self.class.new(registry: @island_registry, families: {})
+        <<~MD
+          # poetry islands
+
+          Contracts generated from the poetry-island registry. An island is the
+          declared exception to "state lives on the server and the URL": a
+          bounded mount for a widget whose state changes many times a second
+          (an editor, a canvas, a map, a 3D scene). Everything else is a
+          component with a Stimulus behavior. The block is the shell the server
+          renders; the module is an importmap specifier exporting
+          mount(element, props); state that must outlive the page leaves
+          through name:, a hidden input inside the island. Reach for it last.
+
+          #{islands.sections}
         MD
       end
     end

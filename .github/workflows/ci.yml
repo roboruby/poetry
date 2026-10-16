@@ -48,6 +48,8 @@ jobs:
           - { name: poetry-solar, dir: gems/poetry-solar }
           - { name: poetry-blode, dir: gems/poetry-blode }
           - { name: poetry-charts, dir: gems/poetry-charts, npm: gems/poetry-charts }
+          - { name: poetry-motion, dir: gems/poetry-motion, npm: gems/poetry-motion }
+          - { name: poetry-island, dir: gems/poetry-island, npm: gems/poetry-island }
           - { name: poetry-extract, dir: gems/poetry-extract }
           - { name: poetry-ui, dir: gems/poetry-ui, npm: gems/poetry-core }
           - { name: poetry-agent, dir: gems/poetry-agent }
@@ -91,6 +93,8 @@ jobs:
         gem:
           - { name: poetry-core, dir: gems/poetry-core }
           - { name: poetry-charts, dir: gems/poetry-charts }
+          - { name: poetry-motion, dir: gems/poetry-motion }
+          - { name: poetry-island, dir: gems/poetry-island }
           - { name: poetry-agent, dir: gems/poetry-agent }
     defaults:
       run:
@@ -262,6 +266,8 @@ jobs:
           - { name: poetry-solar, dir: gems/poetry-solar }
           - { name: poetry-blode, dir: gems/poetry-blode }
           - { name: poetry-charts, dir: gems/poetry-charts }
+          - { name: poetry-motion, dir: gems/poetry-motion }
+          - { name: poetry-island, dir: gems/poetry-island }
           - { name: poetry-extract, dir: gems/poetry-extract }
           - { name: poetry-ui, dir: gems/poetry-ui }
           - { name: poetry-agent, dir: gems/poetry-agent }

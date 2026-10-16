@@ -4,6 +4,8 @@
 
 ### Added
 
+- `poetry check` warns on a `poetry_island` whose `import:` the host's importmap does not pin, exactly or as a `pin_all_from` prefix (`island-import-unpinned`); the skill carries `references/islands.md` when poetry-island is bundled.
+
 - `RegistryClient` takes a `community:` URL template that `@poetry` names the gems do not ship resolve from, and a namespace template that is a path reads local files, a mirror of a registry's build output. Items may carry `meta.community` and, for a port, `meta.source` naming its origin in full (registry, item, url, repository, license, copyright, and the license text as `notice`); the install plan reports each item's provenance.
 - The usage skill gains a `references/motion.md` of the motion effects' contracts whenever a motion registry is passed.
 - Behaviors: a named, reusable piece of a component's client behavior, declared once in Ruby. A module extends `Poetry::Core::Behavior` and declares a name, a one-line description, optional agent rules, the wiring it adds to an element and class-level contributions. A component uses one inside a `use_stimulus` element (`behavior :roving_focus, loop: true`), where it lands in order with the element's own controllers, or at class level with `use_behavior` for a runtime behavior the JavaScript turns on when a layer opens. Core ships `roving_focus`, `popper`, `checked`, `focus_scope` and `dismissable`; other gems add their own namespace to `Poetry::Core::Behavior.namespaces`.

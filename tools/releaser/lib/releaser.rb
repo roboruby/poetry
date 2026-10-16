@@ -17,13 +17,13 @@ module Releaser
   # The family, in publish order: dependencies first, the umbrella last.
   # Versions, changelog dates and release notes cover all of it.
   GEMS = %w[poetry-core poetry-lucide poetry-tabler poetry-hugeicons poetry-phosphor poetry-heroicons
-            poetry-simple_icons poetry-solar poetry-blode poetry-charts poetry-extract poetry-ui poetry-agent poetry-simple_form
-            poetry-jumpstart_pro poetry-docs poetry].freeze
+            poetry-simple_icons poetry-solar poetry-blode poetry-charts poetry-motion poetry-island poetry-extract poetry-ui
+            poetry-agent poetry-simple_form poetry-jumpstart_pro poetry-docs poetry].freeze
   # What the release builds, signs and pushes: the family without the docs
   # engine, which a host takes from this repository at the tag instead.
   PUBLISHED = (GEMS - %w[poetry-docs]).freeze
   # The package.json trees the family versions in lockstep.
-  PACKAGES = %w[gems/poetry-core gems/poetry-charts gems/poetry-agent].freeze
+  PACKAGES = %w[gems/poetry-core gems/poetry-charts gems/poetry-motion gems/poetry-island gems/poetry-agent].freeze
   # What the umbrella gem may ship, and nothing else.
   UMBRELLA_DOCS = %w[README.md CHANGELOG.md LICENSE.txt].freeze
   ISSUER = "https://token.actions.githubusercontent.com"

@@ -1724,6 +1724,31 @@ module Poetry
         assert_empty Check.lint(source, catalog: UPLOAD_CATALOG), "no importmap known: the pin rule stands down"
       end
 
+      ISLAND_CATALOG = Check::Catalog.new({
+                                            "poetry/island/island" => {
+                                              "options" => [{ "name" => "import" }, { "name" => "mode" },
+                                                            { "name" => "props" }],
+                                              "slots" => []
+                                            }
+                                          })
+
+      def test_an_island_warns_when_the_importmap_does_not_pin_its_module
+        source = <<~ERB
+          <%= poetry_island(import: "islands/map") { "shell" } %>
+          <%= poetry_island(import: "community/islands/editor", mode: :flow) { "shell" } %>
+          <%= poetry_island(import: "@acme/scene", props: { tone: 1 }) { "shell" } %>
+          <%= poetry_island(import: island_module) { "shell" } %>
+        ERB
+        unpinned = Check.lint(source, catalog: ISLAND_CATALOG, importmap_pins: %w[application islands])
+
+        assert_equal([["island-import-unpinned", 2], ["island-import-unpinned", 3]],
+                     unpinned.map { |f| [f.rule, f.line] })
+        assert_equal :warning, unpinned.first.severity
+        assert_includes unpinned.first.message, %(pin "community/islands/editor")
+        assert_empty Check.lint(source, catalog: ISLAND_CATALOG, importmap_pins: %w[islands community @acme/scene])
+        assert_empty Check.lint(source, catalog: ISLAND_CATALOG), "no importmap known: the pin rule stands down"
+      end
+
       def test_importmap_pins_read_pin_and_pin_all_from
         Dir.mktmpdir do |root|
           FileUtils.mkdir_p(File.join(root, "config"))

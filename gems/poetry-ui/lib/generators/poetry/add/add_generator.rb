@@ -42,6 +42,11 @@ module Poetry
     # Where an item's Stimulus controllers land; a write here refreshes the
     # app's controllers manifest.
     CONTROLLERS_DIR = "app/javascript/controllers/"
+    # Where an item's other JavaScript lands (an island's module, a
+    # kernel); a write here pins the directory in the host's importmap once.
+    COMMUNITY_MODULES_DIR = "app/javascript/community/"
+    # The pin that serves app/javascript/community as community/*.
+    COMMUNITY_PIN = %(pin_all_from "app/javascript/community", under: "community")
     # Where @poetry names the gems do not ship come from.
     COMMUNITY = "https://poetryui.com/r/{name}.json"
     # The host's credits for the ports it installed.
@@ -134,6 +139,7 @@ module Poetry
       plan.block_installs.each { |name| install_block(name) }
       apply_css(plan)
       refresh_controllers_manifest(plan)
+      pin_community_modules(plan)
       report(plan)
       credit_origins(plan)
       record_in_manifest(plan.manifest)
@@ -175,6 +181,27 @@ module Poetry
         say_status :stimulus,
                    "skipped #{skip.identifier}: #{skip.reason} (unvalidated until written by hand)", :yellow
       end
+    end
+
+    # An item that brings a JavaScript module outside the controllers (an
+    # island's bundle, a kernel) lands under app/javascript/community/, and
+    # the host's importmap pins that directory once, as community/*, so the
+    # module loads by the specifier the item's component names.
+    def pin_community_modules(plan)
+      return if options[:pretend] || behavior == :revoke
+      return unless plan.writes.any? { |write| write.target.to_s.start_with?(COMMUNITY_MODULES_DIR) }
+
+      importmap = "config/importmap.rb"
+      unless File.exist?(File.join(destination_root, importmap))
+        say_status :note, "no #{importmap} - serve app/javascript/community from your bundler as community/*",
+                   :yellow
+        return
+      end
+      return if File.read(File.join(destination_root, importmap)).include?(COMMUNITY_PIN)
+
+      append_to_file importmap, "#{COMMUNITY_PIN}\n"
+      say_status :importmap, "pinned app/javascript/community as community/* - the item's module loads by that name",
+                 :green
     end
 
     # The install plan for remote addresses through the registry client.

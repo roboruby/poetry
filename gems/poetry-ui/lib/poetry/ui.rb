@@ -177,7 +177,7 @@ module Poetry
       def skill_files(host_registry: nil)
         Poetry::Core::SkillText.new(
           registry: registry, families: SKILL_FAMILIES, charts_registry: charts_registry,
-          motion_registry: motion_registry,
+          motion_registry: motion_registry, island_registry: island_registry,
           host_registry: host_registry
         ).files
       end
@@ -230,6 +230,17 @@ module Poetry
         nil
       end
 
+      # Tolerant on islands, like motion: absent, the skill drops the islands reference.
+      def island_registry
+        # archspec:disable-next-line constants.forbid -- a defined? probe, never a dependency
+        return nil unless defined?(Poetry::Island::Engine)
+
+        # archspec:disable-next-line constants.forbid -- guarded by the defined? probe above
+        Poetry::Island.registry
+      rescue StandardError
+        nil
+      end
+
       # The MCP server's runtime skill map (get_skill): the SAME
       # files `rails g poetry:skill` writes, for hosts that cannot write
       # files. Boot-free by construction - the usage skill regenerates from
@@ -268,7 +279,8 @@ module Poetry
         Poetry::Core::SkillText.new(
           registry: Poetry::Core::Registry.committed(root),
           families: SKILL_FAMILIES, charts_registry: committed_charts_registry,
-          motion_registry: committed_motion_registry, host_registry: host
+          motion_registry: committed_motion_registry, island_registry: committed_island_registry,
+          host_registry: host
         ).files
       end
 
@@ -289,6 +301,16 @@ module Poetry
         require "poetry/motion"
         # archspec:disable-next-line constants.forbid -- a defined? probe, never a dependency
         Poetry::Core::Registry.committed(Poetry::Motion.root)
+      rescue LoadError, StandardError
+        nil
+      end
+
+      # The islands reference rides along whenever the island gem is
+      # present, from its committed registry, boot-free.
+      def committed_island_registry
+        require "poetry/island"
+        # archspec:disable-next-line constants.forbid -- a defined? probe, never a dependency
+        Poetry::Core::Registry.committed(Poetry::Island.root)
       rescue LoadError, StandardError
         nil
       end

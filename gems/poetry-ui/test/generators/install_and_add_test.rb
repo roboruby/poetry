@@ -249,6 +249,48 @@ module Poetry
       end
     end
 
+    def test_island_registration_and_the_islands_pin_land_once_when_poetry_island_is_bundled
+      index = File.join(destination_root, "app/javascript/controllers/index.js")
+      importmap = File.join(destination_root, "config/importmap.rb")
+      FileUtils.mkdir_p(File.dirname(index))
+      FileUtils.mkdir_p(File.dirname(importmap))
+      File.write(index, "import { application } from \"controllers/application\"\n")
+      File.write(importmap, %(pin "application"\n))
+
+      with_island_engine do
+        run_generator
+        run_generator
+      end
+
+      content = File.read(index)
+
+      assert_equal 1, content.scan("registerPoetryIslandControllers(application)").size
+      assert_includes content, %(import { registerPoetryIslandControllers } from "@poetry/island")
+      assert_equal 1, File.read(importmap).scan(%(pin_all_from "app/javascript/islands", under: "islands")).size
+      assert_file "app/javascript/islands/.keep"
+    end
+
+    def test_nothing_island_lands_without_the_gem
+      index = File.join(destination_root, "app/javascript/controllers/index.js")
+      FileUtils.mkdir_p(File.dirname(index))
+      File.write(index, "import { application } from \"controllers/application\"\n")
+
+      run_generator
+
+      refute_includes File.read(index), "@poetry/island"
+      assert_no_file "app/javascript/islands/.keep"
+    end
+
+    # The availability probe reads Poetry::Island::Engine; the ui gem's test
+    # host loads no poetry-island, so the constant stands in for it.
+    def with_island_engine
+      island = Module.new { const_set(:Engine, Class.new) }
+      Poetry.const_set(:Island, island)
+      yield
+    ensure
+      Poetry.send(:remove_const, :Island) if Poetry.const_defined?(:Island, false)
+    end
+
     def test_agent_runtime_registers_beside_the_controllers_when_poetry_agent_is_bundled
       index = File.join(destination_root, "app/javascript/controllers/index.js")
       FileUtils.mkdir_p(File.dirname(index))

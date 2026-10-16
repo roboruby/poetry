@@ -157,6 +157,36 @@ module Poetry
       end
     end
 
+    MODULE_ITEM = {
+      "name" => "mesh-island", "type" => "registry:component", "meta" => { "community" => true },
+      "files" => [{ "path" => "app/javascript/community/islands/mesh.js",
+                    "content" => "export function mount() {}\n" }]
+    }.freeze
+
+    def test_an_item_with_a_module_under_community_pins_the_directory_once
+      write_fixture("mesh-island", MODULE_ITEM)
+      importmap = File.join(destination_root, "config/importmap.rb")
+      FileUtils.mkdir_p(File.dirname(importmap))
+      File.write(importmap, %(pin "application"\n))
+
+      run_generator %w[./items/mesh-island.json]
+      run_generator %w[./items/mesh-island.json]
+
+      assert_file "app/javascript/community/islands/mesh.js", /mount/
+      assert_equal 1, File.read(importmap).scan(%(pin_all_from "app/javascript/community", under: "community")).size
+    end
+
+    def test_an_item_without_a_community_module_leaves_the_importmap_alone
+      prepare_remote_fixtures
+      importmap = File.join(destination_root, "config/importmap.rb")
+      FileUtils.mkdir_p(File.dirname(importmap))
+      File.write(importmap, %(pin "application"\n))
+
+      run_generator %w[./items/fancy-widget.json]
+
+      assert_equal %(pin "application"\n), File.read(importmap)
+    end
+
     def test_an_item_without_a_controller_leaves_the_controllers_manifest_alone
       prepare_remote_fixtures
       run_generator %w[./items/fancy-widget.json]
