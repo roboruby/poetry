@@ -91,6 +91,16 @@ export default class FileDropController extends Controller {
   }
 
   /**
+   * Drops one file from the selection: the component beside this
+   * controller calls it from a row's remove button.
+   *
+   * @param {File} file
+   */
+  removeFile(file) {
+    this.#drop?.remove(file)
+  }
+
+  /**
    * The native input: the target when declared, else the first file
    * input below.
    *

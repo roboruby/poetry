@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { Application } from "@hotwired/stimulus"
 import { registerPoetryControllers } from "@poetry/controllers"
-import { acceptMatcher, carriesFiles, formatFileSize } from "@poetry/controllers/behaviors/file_drop"
+import { acceptMatcher, carriesFiles } from "@poetry/controllers/behaviors/file_drop"
+import { formatFileSize } from "@poetry/controllers/helpers/file_size"
 import { hasScope } from "@poetry/controllers/helpers/scope"
 
 // poetry--core--file-drop JS-unit: the intake behavior over a native

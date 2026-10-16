@@ -77,6 +77,22 @@ module Poetry
         def test_shimmer_rides_the_dictionary
           assert_includes Style.css(:title), "group-data-[upload-state=uploading]/attachment:shimmer"
         end
+
+        def test_the_progress_slot_is_a_slim_progress_under_the_title
+          html = render_inline(Component.new(state: :uploading)) do |attachment|
+            attachment.with_title { "photo.png" }
+            attachment.with_progress(value: 42, label: "Uploading photo.png")
+          end
+          bar = html.at_css("[data-slot=attachment-progress]")
+
+          assert bar, "the slot renders inside the content column"
+          assert_equal "progressbar", bar["role"]
+          assert_equal "42", bar["aria-valuenow"]
+          assert_equal "Uploading photo.png", bar["aria-label"]
+          assert_nil bar.at_css("[data-slot=progress-value]"), "no percent readout in a chip"
+          assert_includes bar["class"], "[&_[data-slot=progress-label]]:sr-only"
+          assert_predicate bar.ancestors("[data-slot=attachment-content]"), :any?
+        end
       end
     end
   end

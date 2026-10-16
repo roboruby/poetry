@@ -468,6 +468,13 @@ components:
       many: false
       description: Muted metadata under the title (size, type); in the error state,
         the failure explanation.
+    - name: progress
+      many: false
+      description: 'An upload''s progress under the title: the Progress component,
+        slim, its caption for screen readers only. The uploader moves it; render it
+        with the value you know.'
+      setter_args:
+        progress: 0
     - name: actions
       many: true
       description: Trailing icon actions - each renders a Button (ghost, icon-xs defaults)
@@ -493,9 +500,10 @@ components:
     - title
     - description
     - actions
+    - progress
     - trigger
     - group
-    capsule: 5391289a07dd
+    capsule: 7fd41d909f91
     agent_rules:
     - 'State is server-owned: render data-upload-state and flip it by Turbo Stream
       replace - never toggle it in JS.'
@@ -547,6 +555,9 @@ components:
       description: The file name line (title slot; user content, never html_safe)
     - name: attachment-description
       description: Muted metadata / failure copy under the title
+    - name: attachment-progress
+      description: 'The upload''s progress bar under the title (the progress slot:
+        a slim Progress whose caption is read, not shown)'
     - name: attachment-actions
       description: Row of with_action poetry Buttons
     - name: attachment-trigger
@@ -5572,6 +5583,15 @@ components:
     - name: described_by
       type: string
       description: Ids for the native input's aria-describedby (Field wires this).
+    - name: direct_upload
+      type: boolean
+      default: false
+      description: 'Uploads go straight to the storage service through Active Storage''s
+        direct uploads endpoint, as Rails'' file_field direct_upload: true.'
+    - name: direct_upload_url
+      type: string
+      description: 'A direct uploads endpoint other than Rails'' own (an authenticated
+        subclass''s route); implies direct_upload: true.'
     - name: directory
       type: boolean
       default: false
@@ -5619,9 +5639,23 @@ components:
       type: boolean
       default: false
       description: Files pasted over the dropzone land in it (a chat composer, a screenshot).
+    - name: preview
+      type: boolean
+      default: false
+      description: Image files show a thumbnail in their chip, from an object URL
+        released when the chip goes.
     - name: prompt
       type: string
       description: The dropzone's instruction line - overrides the translated default.
+    - name: upload
+      type: symbol
+      variants:
+      - on_submit
+      - immediate
+      default: on_submit
+      description: 'When direct uploads run: :on_submit, Rails'' own flow at form
+        submit, or :immediate, each file as it lands with progress, cancel, retry
+        and remove, the form posting signed ids.'
     slots: []
     helper: poetry_file_input
     description: A control for selecting, previewing, and removing files to upload.
@@ -5631,12 +5665,12 @@ components:
     - icon
     - prompt
     - hint
-    - list
+    - items
     - errors
     - clear
     - overlay
     - overlay_prompt
-    capsule: a0459a0eaa85
+    capsule: 13cbbbd00bdd
     controllers:
     - identifier: poetry--core--file-drop
       targets:
@@ -5655,6 +5689,7 @@ components:
       actions:
       - clear
       - open
+      - removeFile
       events:
       - poetry:file-drop:drag
       - poetry:file-drop:files
@@ -5663,14 +5698,23 @@ components:
       - clear
       - errors
       - input
-      - list
+      - items
+      - template
       values:
+      - messages
       - multiple
+      - name
+      - preview
+      - upload
+      - url
       actions:
       - clear
       - files
+      - remove
+      - retry
       events:
       - poetry:file-input:change
+      - poetry:file-input:upload
     agent_rules:
     - 'Client-side accept, size and count limits are advisory: validate the attachment
       on the model as well.'
@@ -5678,9 +5722,9 @@ components:
       when dragging is expected (uploads as the page''s point) - never a hand-rolled
       drop div.'
     - 'The native input is the form value: set name: (multiple: true wants a name
-      ending in [] for Rails params); ActiveStorage direct upload attaches to it as
-      usual.'
-    - 'The dropzone''s selected-file list, rejections and clear button are controller-rendered
+      ending in [] for Rails params); direct_upload: true runs Active Storage''s direct
+      uploads at submit, upload: :immediate as files land.'
+    - 'The dropzone''s chips, rejections and clear button are controller-rendered
       - compose prompt:/hint: copy instead of adding your own list markup.'
     - 'Limits are options, never prose alone: accept:, max_size: and max_files: reject
       the file at intake; the hint: tells people the same limits in words.'
@@ -5689,8 +5733,8 @@ components:
     identity: false
     parts:
     - name: file-input
-      description: The dropzone root - the drop target, wrapping the zone, the selection
-        list, the rejections and clear
+      description: The dropzone root - the drop target, wrapping the zone, the chips,
+        the rejections and clear
       states:
       - attr: data-variant
         condition: always on the dropzone root (the input variant renders the Input
@@ -5712,13 +5756,21 @@ components:
     - name: file-input-control
       description: The native <input type=file> - visually hidden in the dropzone,
         THE form value in both variants
+      states:
+      - attr: data-direct-upload-url
+        condition: 'direct_upload: true or direct_upload_url: with the default upload:
+          :on_submit - Rails'' own submit-time upload handler reads it'
     - name: file-input-prompt
       description: 'The zone''s instruction line (prompt: overrides the default)'
     - name: file-input-hint
       description: 'Muted constraints copy under the prompt (hint: - formats, size)'
-    - name: file-input-list
-      description: The selected-file <ul> the controller fills (name + size per item;
-        items are controller-built, not server parts)
+    - name: file-input-items
+      description: The chips' container the controller fills - one Attachment per
+        selected file, cloned from the template (chips are controller-built, not server
+        parts)
+    - name: file-input-item-template
+      description: 'The <template> holding one Attachment chip the controller clones
+        per file: media, title, description, progress, retry and remove'
     - name: file-input-errors
       description: The rejections <ul> (role=alert) the controller fills - one line
         per file the accept, size or count checks refused; hidden when empty
@@ -5747,6 +5799,11 @@ components:
         registers: true
         values:
         - name: multiple
+        - name: upload
+        - name: name
+        - name: url
+        - name: preview
+        - name: messages
         actions:
         - method: files
           'on': poetry:file-drop:files
@@ -5758,11 +5815,16 @@ components:
       - identifier: poetry--core--file-input
         targets:
         - name: input
-    - element: list
+    - element: items
       controllers:
       - identifier: poetry--core--file-input
         targets:
-        - name: list
+        - name: items
+    - element: template
+      controllers:
+      - identifier: poetry--core--file-input
+        targets:
+        - name: template
     - element: errors
       controllers:
       - identifier: poetry--core--file-input
@@ -5775,6 +5837,18 @@ components:
         - name: clear
         actions:
         - method: clear
+          'on': click
+    - element: item_remove
+      controllers:
+      - identifier: poetry--core--file-input
+        actions:
+        - method: remove
+          'on': click
+    - element: item_retry
+      controllers:
+      - identifier: poetry--core--file-input
+        actions:
+        - method: retry
           'on': click
     behaviors:
     - name: file_drop

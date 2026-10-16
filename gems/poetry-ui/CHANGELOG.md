@@ -8,6 +8,8 @@
 - The generated usage skill carries the motion effects' reference when poetry-motion is in the bundle.
 - `poetry:install --motion` wires poetry-motion like `--charts` wires poetry-charts: it fails before any file lands when the gem is not bundled, copies and imports the motion tokens stylesheet, and registers the motion controllers, which installs the motion policy. A plain re-run keeps refreshing the stylesheet once it is vendored.
 - FileInput's dropzone wires the `file_drop` behavior: `accept:` rejects at intake, with `max_size:`, `min_size:` and `max_files:` (bytes and a count), `paste:` for pasted files, `overlay:` for the whole page as the drop target behind a fixed drop surface, `directory:` for folders, and `camera:` for the native capture attribute on mobile. Rejections fill a `role=alert` list under the zone, translated under `poetry.file_input.rejected`.
+- FileInput uploads: `direct_upload: true` puts Rails' direct uploads endpoint on the input (or `direct_upload_url:` names another), `upload: :on_submit` (the default) lets Rails upload at submit while the chips follow its events, and `upload: :immediate` uploads each file as it lands with progress, cancel, retry and remove, the form posting signed ids from hidden inputs. `preview: true` shows image thumbnails. Every selected file is an Attachment chip cloned from a server-rendered template, so the chip's own states and announcements carry the look.
+- Attachment gains a `with_progress` slot: a slim Progress under the title whose caption is read, not shown.
 
 ### Changed
 

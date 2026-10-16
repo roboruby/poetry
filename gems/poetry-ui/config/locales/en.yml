@@ -32,6 +32,13 @@ en:
       prompt: "Drag and drop or click to browse"
       clear: "Clear selection"
       overlay: "Drop files to add them"
+      uploading: "Uploading"
+      remove: "Remove"
+      retry: "Retry"
+      upload:
+        unavailable: "Uploads are unavailable: the page could not load Active Storage"
+        failed: "{name} could not be uploaded"
+        busy: "Wait for the uploads to finish"
       # The {name}, {size}, {count} and {reason} tokens are the file-drop
       # controller's to fill; they are not I18n interpolations.
       rejected:

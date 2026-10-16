@@ -764,7 +764,8 @@
       "clear",
       "connect",
       "disconnect",
-      "open"
+      "open",
+      "removeFile"
     ],
     "events": [
       "poetry:file-drop:drag",
@@ -774,37 +775,71 @@
       "clear": "Empties the selection.",
       "connect": "Binds the intake for this connect.",
       "disconnect": "Unbinds everything the connect bound.",
-      "open": "Opens the native picker: the action for a trigger that is not the label (a button beside the zone)."
+      "open": "Opens the native picker: the action for a trigger that is not the label (a button beside the zone).",
+      "removeFile": "Drops one file from the selection: the component beside this controller calls it from a row's remove button."
     }
   },
   "poetry--core--file-input": {
-    "doc": "The FileInput dropzone's reflection: the component renders a <label> wrapping a visually-hidden native <input type=file>, so click-to-browse and keyboard access are the PLATFORM's, and the file-drop controller beside this one takes drops, pastes and picker selections through the accept, size and count checks. This controller only shows the result: the selected-file list, the rejections, the populated state and the clear affordance. The native input stays the single source of truth (its FileList is the form value; ActiveStorage direct upload rides it untouched).",
+    "doc": "The FileInput dropzone's reflection: the component renders a <label> wrapping a visually-hidden native <input type=file>, so click-to-browse and keyboard access are the PLATFORM's, and the file-drop controller beside this one takes drops, pastes and picker selections through the accept, size and count checks. This controller shows the result: one Attachment chip per file, cloned from the server's template, with the rejections, the populated state and the clear affordance; and it runs the uploads the component asked for. With upload \"immediate\" every file goes to Active Storage as it lands, with progress, cancel, retry and remove, and the form posts the signed ids the queue leaves as hidden inputs; with \"on_submit\" Rails uploads at submit time and the chips follow its events; with \"none\" the native input posts the bytes.",
     "targets": [
       "clear",
       "errors",
       "input",
-      "list"
+      "items",
+      "template"
     ],
     "values": {
       "multiple": {
         "type": "Boolean",
         "default": false,
         "doc": "Whether more than one file may be chosen; the file-drop controller enforces it."
+      },
+      "upload": {
+        "type": "String",
+        "default": "none",
+        "doc": "none, on_submit (Rails uploads at submit) or immediate (the queue uploads as files land)."
+      },
+      "name": {
+        "type": "String",
+        "default": "",
+        "doc": "The field name the hidden signed-id inputs carry in immediate mode."
+      },
+      "url": {
+        "type": "String",
+        "default": "",
+        "doc": "The direct uploads endpoint, in immediate mode."
+      },
+      "preview": {
+        "type": "Boolean",
+        "default": false,
+        "doc": "Whether image files show a thumbnail in their chip."
+      },
+      "messages": {
+        "type": "Object",
+        "default": {},
+        "doc": "The upload messages: unavailable, failed and busy, with a {name} token."
       }
     },
     "classes": [],
     "methods": [
       "clear",
       "connect",
-      "files"
+      "disconnect",
+      "files",
+      "remove",
+      "retry"
     ],
     "events": [
-      "poetry:file-input:change"
+      "poetry:file-input:change",
+      "poetry:file-input:upload"
     ],
     "method_docs": {
-      "clear": "The clear button's click action: empties the input and dispatches a real change, which the file-drop controller hears as a cleared selection.",
-      "connect": "Reflects the input's current FileList (list, clear, data-populated).",
-      "files": "The file-drop controller's files action (drop, paste and picker land here): reflects the selection, shows the rejections and reports the file names."
+      "clear": "The clear button's click action: cancels every upload, empties the input and dispatches a real change, which the file-drop controller hears as a cleared selection.",
+      "connect": "Wires the upload mode and reflects the input's current selection.",
+      "disconnect": "Unbinds the queue and the listeners; the chips' object URLs are released.",
+      "files": "The file-drop controller's files action (drop, paste, picker and a removal land here): reflects the selection as chips, shows the rejections, starts the uploads in immediate mode and reports the file names.",
+      "remove": "A chip's remove action: the upload is cancelled or its signed id dropped, and the file leaves the selection through the file-drop controller, which reports back into files.",
+      "retry": "A chip's retry action: a failed upload goes back into the queue."
     }
   },
   "poetry--core--focus-scope": {

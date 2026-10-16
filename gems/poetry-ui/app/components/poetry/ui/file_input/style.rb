@@ -25,11 +25,8 @@ module Poetry
         element :icon, "size-5 text-muted-foreground"
         element :prompt, "text-sm font-medium"
         element :hint, "text-xs text-muted-foreground"
-        element :list, "flex flex-col gap-1 text-sm empty:hidden " \
-                       "[&>li]:flex [&>li]:items-baseline [&>li]:justify-between [&>li]:gap-4 " \
-                       "[&>li]:rounded-md [&>li]:border [&>li]:px-3 [&>li]:py-1.5 " \
-                       "[&_[data-slot=file-input-item-size]]:text-xs " \
-                       "[&_[data-slot=file-input-item-size]]:text-muted-foreground"
+        # The chips: one Attachment per file, full width, stacked.
+        element :items, "flex flex-col gap-1.5 empty:hidden *:data-[slot=attachment]:w-full"
         element :errors, "flex flex-col gap-1 text-sm text-destructive empty:hidden"
         element :clear, "self-start text-sm font-medium text-muted-foreground underline-offset-4 " \
                         "hover:text-foreground hover:underline"

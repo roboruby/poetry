@@ -32,6 +32,16 @@ module Poetry
           end
         end
 
+        # The progress slot under the title, as an uploader draws it.
+        def uploading_with_progress
+          render_component(state: :uploading, size: :sm) do |attachment|
+            attachment.with_media { icon(:file) }
+            attachment.with_title { "photo.png" }
+            attachment.with_description { "2.4 MB" }
+            attachment.with_progress(value: 42, label: "Uploading photo.png")
+          end
+        end
+
         def error
           render_component(state: :error) do |attachment|
             attachment.with_media { icon(:"circle-alert") }

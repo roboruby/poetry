@@ -14,8 +14,6 @@
 import { formatFileSize } from "@poetry/controllers/helpers/file_size"
 import { scopeOf } from "@poetry/controllers/helpers/scope"
 
-export { formatFileSize }
-
 /**
  * The rejection codes, react-dropzone's spelling, so a port's rulebook
  * maps them one to one.
@@ -29,7 +27,7 @@ export const REJECTIONS = Object.freeze({
 })
 
 // The English fallbacks; a component passes its translations as `messages`.
-const DEFAULT_MESSAGES = Object.freeze({
+const REJECTION_MESSAGES = Object.freeze({
   [REJECTIONS.type]: "{name} is not an accepted file type",
   [REJECTIONS.large]: "{name} is larger than {size}",
   [REJECTIONS.small]: "{name} is smaller than {size}",
@@ -153,7 +151,7 @@ const sameFile = (a, b) => a.name === b.name && a.size === b.size && a.lastModif
  * @typedef {Object} FileDropReport
  * @property {File[]} accepted - the files that passed, in arrival order
  * @property {FileRejection[]} rejected - the files that did not
- * @property {"drop" | "paste" | "picker" | "clear"} source - how they arrived
+ * @property {"drop" | "paste" | "picker" | "clear" | "remove"} source - how they arrived, or that one left
  * @property {File[]} files - the whole selection the input now holds
  */
 
@@ -182,7 +180,8 @@ const sameFile = (a, b) => a.name === b.name && a.size === b.size && a.lastModif
  * @param {Object<string, string>} [options.messages] - rejection messages by code, with {name}, {size}, {count} and {reason} tokens
  * @param {(report: FileDropReport) => void} [options.onFiles] - hears every change to the selection
  * @param {(verdict: "none" | "accept" | "reject" | "unknown") => void} [options.onDrag] - hears the drag state as the pointer moves
- * @returns {{ open: () => void, clear: () => void, take: (files: File[], source: string) => void, files: () => File[], dragging: () => boolean }}
+ * @returns {{ open: () => void, clear: () => void, take: (files: File[], source: string) => void,
+ *   remove: (file: File) => void, files: () => File[], dragging: () => boolean }}
  */
 export function useFileDrop(controller, {
   zone = controller.element,
@@ -215,7 +214,7 @@ export function useFileDrop(controller, {
   const disabled = () => Boolean(input?.disabled)
 
   const message = (code, file, extra = {}) => {
-    const template = messages[code] ?? DEFAULT_MESSAGES[code] ?? code
+    const template = messages[code] ?? REJECTION_MESSAGES[code] ?? code
     const tokens = { name: file.name, size: formatFileSize(code === REJECTIONS.small ? minSize : maxSize),
       count: String(limit), ...extra }
 
@@ -454,6 +453,17 @@ export function useFileDrop(controller, {
       report([], [], "clear")
     },
     take: (files, source = "drop") => take(Array.from(files), source),
+    /**
+     * Drops one file from the selection and reports it.
+     *
+     * @param {File} file
+     */
+    remove: (file) => {
+      if (!held.includes(file)) return
+
+      mirror(held.filter((kept) => kept !== file))
+      report([], [], "remove")
+    },
     files: () => held.slice(),
     dragging: () => depth > 0
   }

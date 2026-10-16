@@ -157,9 +157,12 @@ attachment:
     list:
     - attachment-group
   poetry_slots:
-    reason: attachment-status is poetry's upload-state readout.
+    reason: attachment-status is poetry's upload-state readout; attachment-progress
+      is the progress slot the FileInput uploader fills (a slim Progress under the
+      title).
     list:
     - attachment-status
+    - attachment-progress
   slots:
     attachment:
       reason: 'State vocabulary: poetry names the attribute differently (documented

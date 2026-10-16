@@ -8,9 +8,19 @@
       <span data-slot="file-input-prompt" class="<%= css(:prompt) %>"><%= prompt_text %></span>
       <% if hint.present? %><span data-slot="file-input-hint" class="<%= css(:hint) %>"><%= hint %></span><% end %>
     <% end %>
-    <%= element_tag(:ul, "", list_attributes) %>
+    <%= element_tag(:div, "", items_attributes) %>
     <%= element_tag(:ul, "", errors_attributes) %>
     <%= element_tag(:button, t("poetry.file_input.clear"), clear_attributes) %>
+    <%= element_tag(:template, template_attributes) do %>
+      <%= render item_template_component do |chip| %>
+        <% chip.with_media { render Poetry::Ui::Icon::Component.new(name: :file) } %>
+        <% chip.with_title { "" } %>
+        <% chip.with_description { "" } %>
+        <% chip.with_progress(value: 0, label: t("poetry.file_input.uploading"), hidden: true) %>
+        <% chip.with_action(label: t("poetry.file_input.retry"), hidden: true, data: item_action_data(:item_retry, "retry")) { render Poetry::Ui::Icon::Component.new(name: :"rotate-cw") } %>
+        <% chip.with_action(label: t("poetry.file_input.remove"), data: item_action_data(:item_remove, "remove")) { render Poetry::Ui::Icon::Component.new(name: :x) } %>
+      <% end %>
+    <% end %>
     <% if overlay %>
       <div data-slot="file-input-overlay" class="<%= css(:overlay) %>" aria-hidden="true">
         <span class="<%= css(:overlay_prompt) %>"><%= t("poetry.file_input.overlay") %></span>

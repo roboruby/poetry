@@ -33,6 +33,22 @@ module Poetry
                            hint: "Up to four images or PDFs, 1 KB to 5 MB each")
         end
 
+        # Rails' own direct uploads at submit: the chips follow the
+        # direct-upload events while the form submits.
+        def dropzone_direct_upload
+          render_component(variant: :dropzone, name: "documents[]", multiple: true,
+                           direct_upload_url: "/rails/active_storage/direct_uploads",
+                           hint: "Files upload when the form is submitted")
+        end
+
+        # Each file uploads as it lands, with progress, retry and remove; the
+        # form posts the signed ids. Images show a thumbnail.
+        def dropzone_immediate
+          render_component(variant: :dropzone, name: "photos[]", multiple: true, accept: "image/*", preview: true,
+                           direct_upload_url: "/rails/active_storage/direct_uploads", upload: :immediate,
+                           max_size: 10 * 1024 * 1024, hint: "Each photo uploads as it lands, up to 10 MB")
+        end
+
         # The whole page as the drop target: the overlay shows while files
         # are dragged over the window, and a paste lands here too.
         def dropzone_overlay
