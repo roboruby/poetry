@@ -1756,11 +1756,37 @@ module Poetry
             pin "application"
             pin "@rails/activestorage", to: "activestorage.esm.js"
             pin_all_from "app/javascript/controllers", under: "controllers"
+            pin_all_from Engine.root.join("app/javascript/islands"),
+                         under: "poetry_docs/islands", to: "poetry_docs/islands", preload: false
+            pin_all_from "app/javascript/kernels"
+            pin "@poetry/island"
           RUBY
 
-          assert_equal %w[application @rails/activestorage controllers], Check.importmap_pins(root)
+          assert_equal %w[application @rails/activestorage @poetry/island controllers poetry_docs/islands],
+                       Check.importmap_pins(root)
+
+          # An engine's importmap joins the host's; an interpolated name is
+          # unknowable and dropped.
+          Dir.mktmpdir do |engine|
+            FileUtils.mkdir_p(File.join(engine, "config"))
+            File.write(File.join(engine, "config/importmap.rb"), <<~RUBY)
+              pin "@poetry/motion", to: "poetry/motion/index.js"
+              pin "@poetry/motion/\#{file.delete_suffix(".js")}", to: "x", preload: false
+              pin_all_from File.join(motion, "behaviors"), under: "@poetry/motion/behaviors", to: "y",
+                                                           preload: false
+            RUBY
+            pins = Check.importmap_pins(root, engine_roots: [engine, File.join(engine, "nowhere")])
+
+            assert_includes pins, "@poetry/motion"
+            assert_includes pins, "@poetry/motion/behaviors"
+            assert_includes pins, "controllers"
+            refute(pins.any? { |pin| pin.include?("delete_suffix") })
+          end
         end
-        Dir.mktmpdir { |root| assert_nil Check.importmap_pins(root) }
+
+        Dir.mktmpdir do |root|
+          assert_nil Check.importmap_pins(root)
+        end
       end
 
       # --- internal constants (the family's @api private namespaces) ---

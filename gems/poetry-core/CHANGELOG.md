@@ -4,7 +4,7 @@
 
 ### Added
 
-- `poetry check` warns on a `poetry_island` whose `import:` the host's importmap does not pin, exactly or as a `pin_all_from` prefix (`island-import-unpinned`); the skill carries `references/islands.md` when poetry-island is bundled.
+- `poetry check` warns on a `poetry_island` whose `import:` the host's importmap does not pin, exactly or as a `pin_all_from` prefix (`island-import-unpinned`), and reads a `pin_all_from` whose `under:` wraps onto the next line; the skill carries `references/islands.md` when poetry-island is bundled.
 
 - `RegistryClient` takes a `community:` URL template that `@poetry` names the gems do not ship resolve from, and a namespace template that is a path reads local files, a mirror of a registry's build output. Items may carry `meta.community` and, for a port, `meta.source` naming its origin in full (registry, item, url, repository, license, copyright, and the license text as `notice`); the install plan reports each item's provenance.
 - The usage skill gains a `references/motion.md` of the motion effects' contracts whenever a motion registry is passed.

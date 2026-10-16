@@ -1883,13 +1883,23 @@ module Poetry
           end
         end
 
-        # The host's importmap pins, read once per root (nil without a root
+        # The host's importmap pins plus the bundled gems' (their engines
+        # add their pins at boot), read once per root (nil without a root
         # or an importmap, so the pin rules stand down).
         def importmap_pins(root)
           return nil unless root
 
           @importmap_pins ||= {}
-          @importmap_pins.fetch(root.to_s) { @importmap_pins[root.to_s] = Check.importmap_pins(root) }
+          @importmap_pins.fetch(root.to_s) do
+            @importmap_pins[root.to_s] = Check.importmap_pins(root, engine_roots: engine_roots)
+          end
+        end
+
+        # The bundled gems' roots, or none outside a bundle.
+        def engine_roots
+          Registry.gem_roots(registry: false)
+        rescue StandardError
+          []
         end
 
         # One file's findings; a file that cannot be read or decoded is one
@@ -1981,17 +1991,32 @@ module Poetry
       end
 
       # The names a host's config/importmap.rb pins (`pin "name"` and the
-      # `under:` of a pin_all_from), or nil when the root has none.
+      # `under:` of a pin_all_from), plus those of the engines' importmaps
+      # handed in (a bundled poetry gem adds its own pins at boot), or nil
+      # when the host has none.
       #
       # @param root [String, Pathname] the app root
+      # @param engine_roots [Array<String, Pathname>] gem roots whose config/importmap.rb joins the host's
       # @return [Array<String>, nil]
-      def importmap_pins(root)
+      def importmap_pins(root, engine_roots: [])
         path = Pathname.new(root).join("config/importmap.rb")
         return nil unless path.file?
 
-        source = path.read
-        source.scan(/^\s*pin\s+["']([^"']+)["']/).flatten +
-          source.scan(/^\s*pin_all_from\b[^\n]*under:\s*["']([^"']+)["']/).flatten
+        engines = engine_roots.map { |engine| Pathname.new(engine).join("config/importmap.rb") }.select(&:file?)
+        ([path] + engines).flat_map { |file| pins_in(file.read) }.uniq
+      end
+
+      # The pin names in one importmap's source: `pin "name"` and the
+      # `under:` of a pin_all_from, which often wraps onto the next line
+      # (the tempered scan reads on until it, never into the next pin). An
+      # interpolated name is unknowable here and dropped.
+      #
+      # @param source [String] the importmap's Ruby
+      # @return [Array<String>]
+      def pins_in(source)
+        names = source.scan(/^\s*pin\s+["']([^"']+)["']/).flatten +
+                source.scan(/^\s*pin_all_from\b(?:(?!\n\s*pin\b).)*?under:\s*["']([^"']+)["']/m).flatten
+        names.reject { |name| name.include?("\#{") }
       end
 
       # The findings as pretty JSON.
