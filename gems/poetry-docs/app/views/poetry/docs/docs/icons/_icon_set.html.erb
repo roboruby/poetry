@@ -119,6 +119,32 @@
     <% end %>
   </section>
 
+  <% if set.module.const_defined?(:ATTRIBUTION) %>
+    <section class="flex flex-col gap-4">
+      <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+        <h2 id="attribution">Attribution</h2>
+        <p>
+          These icons are licensed <%= link_to "CC BY 4.0", "https://creativecommons.org/licenses/by/4.0/" %>,
+          which asks every copy to credit the creator, link the source and
+          the license, and say what changed. The gem does it for you: every
+          icon renders with an invisible HTML comment inside its
+          <code>svg</code> carrying that credit, so any page that serves the
+          icon carries it too. Keep HTML comments in place for these icons.
+        </p>
+        <p>
+          For a visible credits or about page, which Creative Commons
+          recommends on top of the minimum, <code>Poetry::<%= set.namespace %>.credit</code>
+          returns one line:
+        </p>
+        <p><%= set.module.credit %></p>
+        <p>
+          CC BY 4.0 has no ShareAlike term, so your app and the rest of Poetry
+          keep their own licenses.
+        </p>
+      <% end %>
+    </section>
+  <% end %>
+
   <section class="flex flex-col gap-4">
     <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
       <h2 id="porting">Porting from React</h2>

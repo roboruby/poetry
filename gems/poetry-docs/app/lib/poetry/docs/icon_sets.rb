@@ -80,6 +80,29 @@ module Poetry
           blurb: "Brand logos, each with its brand's name and colour. Simple Icons dedicates the SVG data to " \
                  "the public domain; the marks stay their owners' trademarks, and the gem ships the " \
                  "project's disclaimer."
+        ),
+        IconSet.new(
+          slug: "solar", title: "Solar", gem: "poetry-solar", namespace: :Solar,
+          homepage: "https://www.figma.com/community/file/1166831539721848736", repository: "saoudi-h/solar-icons",
+          license: "CC BY 4.0", license_file: "LICENSE-SOLAR.txt",
+          styles: { solar: "linear", solar_bold: "bold", solar_bold_duotone: "bold duotone", solar_broken: "broken",
+                    solar_line_duotone: "line duotone", solar_outline: "outline" },
+          samples: %w[home magnifier settings user bell heart star trash-bin-trash],
+          react: "`HomeIcon` from `@solar-icons/react/linear` is `name: :home, library: :solar`; `/bold` is " \
+                 "`:solar_bold`, `/bold-duotone` `:solar_bold_duotone`, `/broken` `:solar_broken`, " \
+                 "`/line-duotone` `:solar_line_duotone` and `/outline` `:solar_outline`.",
+          blurb: "The Solar Icon Set by 480 Design in all six styles. The icons are CC BY 4.0, and every one " \
+                 "carries its credit inside the svg, so a page that serves them complies without extra work."
+        ),
+        IconSet.new(
+          slug: "blode", title: "Blode Icons", gem: "poetry-blode", namespace: :Blode,
+          homepage: "https://blode.co", repository: "mblode/blode-icons",
+          license: "MIT", license_file: "LICENSE-BLODE.txt",
+          styles: { blode: "outline, 2px stroke", blode_filled: "filled" },
+          samples: %w[home magnifying-glass settings-gear-1 bell heart calendar-days folder-delete bookmark],
+          react: "`ChevronDownIcon` from `blode-icons-react` is `name: :\"chevron-down\", library: :blode`; the " \
+                 "filled twin is `library: :blode_filled`.",
+          blurb: "Matthew Blode's icons in matched outline and filled pairs on a 24-unit grid."
         )
       ].freeze
 

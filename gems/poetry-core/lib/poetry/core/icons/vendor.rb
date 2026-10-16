@@ -14,7 +14,8 @@ module Poetry
       # every `on*` handler, drops clip paths that clip nothing (a rect over
       # the whole canvas, which also repeats element ids on a page), and with
       # `current_color: true` turns every hardcoded fill and stroke colour
-      # into `currentColor` so the icon takes the text colour.
+      # into `currentColor` so the icon takes the text colour (masks and
+      # clip paths keep theirs: there white and black mean shown and hidden).
       module Vendor
         # Elements removed with their content.
         REMOVED = %w[script foreignObject title desc metadata].freeze
@@ -134,10 +135,13 @@ module Poetry
           end
         end
 
-        # Every hardcoded fill and stroke colour becomes currentColor.
+        # Every hardcoded fill and stroke colour becomes currentColor, except
+        # inside a <mask> or <clipPath>, where white and black mean shown and
+        # hidden, not colour.
         def repaint(root)
           root.traverse do |node|
             next unless node.element?
+            next if node.ancestors.any? { |ancestor| %w[mask clipPath].include?(ancestor.name) }
 
             %w[fill stroke].each do |attribute|
               value = node[attribute]

@@ -10,8 +10,13 @@ tests and gates; read the gem's file before working in it.
 - `gems/poetry-core`, `poetry-lucide`, `poetry-charts`, `poetry-extract`,
   `poetry-ui`, `poetry-agent`, `poetry-simple_form`, `poetry-jumpstart_pro`,
   and the icon sets `poetry-tabler`, `poetry-hugeicons`, `poetry-phosphor`,
-  `poetry-heroicons`, `poetry-simple_icons` — one directory per gem;
+  `poetry-heroicons`, `poetry-simple_icons`, `poetry-solar`, `poetry-blode`
+  — one directory per gem;
   siblings resolve by relative path (`../poetry-core`) inside the tree.
+- `gems/poetry-solar` — the one CC BY 4.0 member: 480 Design's icons, credited
+  in every rendered svg (`Poetry::Solar::ATTRIBUTION`), `NOTICE` and
+  `LICENSE-SOLAR.txt`; the gem's AGENTS.md has the rules. CC BY 4.0 has no
+  ShareAlike term, so nothing else in the family changes license.
 - `gems/poetry-docs` — the poetryui.com documentation as a mountable engine
   on the family from the tree, with its dummy host under `test/dummy`
   (`bin/dev` serves it on 4110). Versioned with the family, never published:

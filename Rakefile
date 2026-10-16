@@ -21,7 +21,7 @@ task default: %i[test rubocop yard:verify yard:coverage yard:coverage:all yard:l
 # gem. Each gem stays
 # its own bundle, so nothing here loads a sibling into this process.
 FAMILY = %w[poetry-core poetry-lucide poetry-tabler poetry-hugeicons poetry-phosphor poetry-heroicons
-            poetry-simple_icons poetry-charts poetry-extract poetry-ui poetry-agent poetry-simple_form
+            poetry-simple_icons poetry-solar poetry-blode poetry-charts poetry-extract poetry-ui poetry-agent poetry-simple_form
             poetry-docs].freeze
 
 def run_in(dir, *cmd)

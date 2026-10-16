@@ -371,7 +371,12 @@ module Poetry
           Entry.new(slug: "heroicons", title: "Heroicons", section: "icons",
                     description: "poetry-heroicons: outline, solid, mini and micro, each at its own size."),
           Entry.new(slug: "simple-icons", title: "Simple Icons", section: "icons",
-                    description: "poetry-simple_icons: brand logos with their brand names and colours.")
+                    description: "poetry-simple_icons: brand logos with their brand names and colours."),
+          Entry.new(slug: "solar", title: "Solar", section: "icons",
+                    description: "poetry-solar: the Solar Icon Set by 480 Design in six styles, CC BY 4.0 " \
+                                 "with the credit inside every svg."),
+          Entry.new(slug: "blode", title: "Blode Icons", section: "icons",
+                    description: "poetry-blode: outline and filled pairs as :blode and :blode_filled.")
         ].freeze
 
         def icons = ICONS

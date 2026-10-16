@@ -46,6 +46,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = [ "lib" ]
 
   spec.add_dependency "poetry-agent", "= #{Poetry::Docs::VERSION}"
+  spec.add_dependency "poetry-blode", "= #{Poetry::Docs::VERSION}"
   spec.add_dependency "poetry-charts", "= #{Poetry::Docs::VERSION}"
   spec.add_dependency "poetry-core", "= #{Poetry::Docs::VERSION}"
   spec.add_dependency "poetry-heroicons", "= #{Poetry::Docs::VERSION}"
@@ -54,6 +55,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "poetry-motion", "= #{Poetry::Docs::VERSION}"
   spec.add_dependency "poetry-phosphor", "= #{Poetry::Docs::VERSION}"
   spec.add_dependency "poetry-simple_icons", "= #{Poetry::Docs::VERSION}"
+  spec.add_dependency "poetry-solar", "= #{Poetry::Docs::VERSION}"
   spec.add_dependency "poetry-tabler", "= #{Poetry::Docs::VERSION}"
   spec.add_dependency "poetry-ui", "= #{Poetry::Docs::VERSION}"
   # The host's asset and JavaScript pipeline the layouts assume.

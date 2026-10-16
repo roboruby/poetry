@@ -105,6 +105,29 @@ module Poetry
         end
       end
 
+      def test_a_set_carries_its_attribution_and_refuses_one_that_breaks_a_comment
+        Dir.mktmpdir("icons") do |dir|
+          credit = "Solar Icon Set by 480 Design, CC BY 4.0"
+
+          assert_equal credit, Icons::FileSet.new(dir: dir, attribution: " #{credit} ").attribution
+          assert_nil Icons::FileSet.new(dir: dir).attribution
+          assert_raises(ArgumentError) { Icons::FileSet.new(dir: dir, attribution: "a --> <script>") }
+          assert_raises(ArgumentError) { Icons::PackedSet.new(path: File.join(dir, "x.tsv"), attribution: "a--b") }
+        end
+      end
+
+      def test_vendor_repaint_leaves_masks_and_clip_paths_alone
+        svg = <<~SVG
+          <svg viewBox="0 0 24 24"><mask id="m"><rect width="20" height="20" fill="white"/><path d="M1" fill="black"/></mask>
+          <path d="M2" stroke="#1C274C" mask="url(#m)"/></svg>
+        SVG
+        markup = Icons::Vendor.inner_markup(svg, current_color: true)
+
+        assert_includes markup, %(fill="white")
+        assert_includes markup, %(fill="black")
+        assert_includes markup, %(<path d="M2" stroke="currentColor" mask="url(#m)"/>)
+      end
+
       def test_vendor_keeps_only_safe_inner_markup
         svg = <<~SVG
           <!-- a comment -->

@@ -45,6 +45,8 @@ jobs:
           - { name: poetry-phosphor, dir: gems/poetry-phosphor }
           - { name: poetry-heroicons, dir: gems/poetry-heroicons }
           - { name: poetry-simple_icons, dir: gems/poetry-simple_icons }
+          - { name: poetry-solar, dir: gems/poetry-solar }
+          - { name: poetry-blode, dir: gems/poetry-blode }
           - { name: poetry-charts, dir: gems/poetry-charts, npm: gems/poetry-charts }
           - { name: poetry-extract, dir: gems/poetry-extract }
           - { name: poetry-ui, dir: gems/poetry-ui, npm: gems/poetry-core }
@@ -257,6 +259,8 @@ jobs:
           - { name: poetry-phosphor, dir: gems/poetry-phosphor }
           - { name: poetry-heroicons, dir: gems/poetry-heroicons }
           - { name: poetry-simple_icons, dir: gems/poetry-simple_icons }
+          - { name: poetry-solar, dir: gems/poetry-solar }
+          - { name: poetry-blode, dir: gems/poetry-blode }
           - { name: poetry-charts, dir: gems/poetry-charts }
           - { name: poetry-extract, dir: gems/poetry-extract }
           - { name: poetry-ui, dir: gems/poetry-ui }

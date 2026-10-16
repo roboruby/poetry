@@ -7840,5 +7840,71 @@
     "page": "Simple Icons",
     "section": "icons",
     "path": "/icons/simple-icons#pin"
+  },
+  {
+    "title": "Solar",
+    "page": "Solar",
+    "section": "icons",
+    "path": "/icons/solar"
+  },
+  {
+    "title": "Install",
+    "page": "Solar",
+    "section": "icons",
+    "path": "/icons/solar#install"
+  },
+  {
+    "title": "Usage",
+    "page": "Solar",
+    "section": "icons",
+    "path": "/icons/solar#usage"
+  },
+  {
+    "title": "Attribution",
+    "page": "Solar",
+    "section": "icons",
+    "path": "/icons/solar#attribution"
+  },
+  {
+    "title": "Porting from React",
+    "page": "Solar",
+    "section": "icons",
+    "path": "/icons/solar#porting"
+  },
+  {
+    "title": "The pin",
+    "page": "Solar",
+    "section": "icons",
+    "path": "/icons/solar#pin"
+  },
+  {
+    "title": "Blode Icons",
+    "page": "Blode Icons",
+    "section": "icons",
+    "path": "/icons/blode"
+  },
+  {
+    "title": "Install",
+    "page": "Blode Icons",
+    "section": "icons",
+    "path": "/icons/blode#install"
+  },
+  {
+    "title": "Usage",
+    "page": "Blode Icons",
+    "section": "icons",
+    "path": "/icons/blode#usage"
+  },
+  {
+    "title": "Porting from React",
+    "page": "Blode Icons",
+    "section": "icons",
+    "path": "/icons/blode#porting"
+  },
+  {
+    "title": "The pin",
+    "page": "Blode Icons",
+    "section": "icons",
+    "path": "/icons/blode#pin"
   }
 ]

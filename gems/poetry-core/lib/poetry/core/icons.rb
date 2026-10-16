@@ -60,6 +60,13 @@ module Poetry
         # @return [Hash{String => String}]
         attr_reader :aliases
 
+        # The credit a set's license requires on every copy, or nil. The Icon
+        # component renders it as an HTML comment inside each svg, so a host
+        # serving the icons carries it without doing anything.
+        #
+        # @return [String, nil]
+        attr_reader :attribution
+
         # A set over one directory of sanitized SVG files, one file per
         # icon name (`circle-alert.svg`); each icon is read once and cached.
         #
@@ -68,8 +75,11 @@ module Poetry
         #   drawing attributes (viewBox, fill, stroke)
         # @param aliases [Hash{String => String}] old name => current name;
         #   an old name still renders, and `poetry check` warns with the rename
-        def initialize(dir:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {})
+        # @param attribution [String, nil] the credit the icons' license
+        #   requires, rendered as a comment inside every svg
+        def initialize(dir:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {}, attribution: nil)
           @dir = Pathname.new(dir)
+          @attribution = Icons.comment_safe(attribution)
           @svg_attributes = svg_attributes.freeze
           @aliases = aliases.to_h { |old, current| [old.to_s, current.to_s] }.freeze
           @cache = {}
@@ -149,14 +159,24 @@ module Poetry
         # @return [Hash{String => String}]
         attr_reader :aliases
 
+        # The credit a set's license requires on every copy, or nil. The Icon
+        # component renders it as an HTML comment inside each svg, so a host
+        # serving the icons carries it without doing anything.
+        #
+        # @return [String, nil]
+        attr_reader :attribution
+
         # A set over one packed file of sanitized inner markup.
         #
         # @param path [String, Pathname] the packed file
         # @param svg_attributes [Hash{String => String}] the <svg> wrapper's
         #   drawing attributes (viewBox, fill, stroke)
         # @param aliases [Hash{String => String}] old name => current name
-        def initialize(path:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {})
+        # @param attribution [String, nil] the credit the icons' license
+        #   requires, rendered as a comment inside every svg
+        def initialize(path:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {}, attribution: nil)
           @path = Pathname.new(path)
+          @attribution = Icons.comment_safe(attribution)
           @svg_attributes = svg_attributes.freeze
           @aliases = aliases.to_h { |old, current| [old.to_s, current.to_s] }.freeze
           @cache = {}
@@ -224,6 +244,19 @@ module Poetry
       end
 
       class << self
+        # An attribution as HTML-comment text: nil stays nil; text that
+        # could end or break a comment is refused.
+        #
+        # @param text [String, nil] the attribution
+        # @return [String, nil]
+        # @raise [ArgumentError] for text containing --, < or >
+        def comment_safe(text)
+          return nil if text.nil? || text.strip.empty?
+          raise ArgumentError, "attribution cannot contain --, < or >: #{text.inspect}" if text.match?(/--|[<>]/)
+
+          text.strip.freeze
+        end
+
         # The error for a well-formed name a set does not have, with a
         # did-you-mean when one is close.
         #

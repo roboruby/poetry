@@ -154,6 +154,23 @@ module Poetry
           assert_includes html, 'data-component="icon"'
         end
 
+        def test_a_set_with_an_attribution_carries_it_inside_every_svg
+          Dir.mktmpdir("icons") do |dir|
+            path = File.join(dir, "credited.tsv")
+            File.write(path, Poetry::Core::Icons::Vendor.packed("house" => %(<path d="M1 1"/>)))
+            Poetry::Core::Icons.register(:credited_test, Poetry::Core::Icons::PackedSet.new(
+                                                           path: path, attribution: "Set by Someone, CC BY 4.0"
+                                                         ))
+
+            html = render_inline(Component.new(name: :house, library: :credited_test)).to_html
+
+            assert_includes html, %(<!-- Set by Someone, CC BY 4.0 --><path d="M1 1"></path>)
+            refute_includes render_inline(Component.new(name: :plus)).to_html, "<!--"
+          ensure
+            Poetry::Core::Icons.registry.delete(:credited_test)
+          end
+        end
+
         def test_a_set_draws_with_its_own_svg_attributes
           Dir.mktmpdir("icons") do |dir|
             path = File.join(dir, "filled.tsv")

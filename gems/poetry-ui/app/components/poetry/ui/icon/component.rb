@@ -42,10 +42,18 @@ module Poetry
         def call
           # Vendored + sanitized at vendor time (the fetch pipeline) - the
           # inner markup is trusted by construction; render never parses.
-          content_tag(:svg, resolved_markup.html_safe, **svg_attributes.to_attributes)
+          content_tag(:svg, "#{attribution_comment}#{resolved_markup}".html_safe, **svg_attributes.to_attributes)
         end
 
         private
+
+        # The credit the set's license requires (Solar's CC BY 4.0), as an
+        # HTML comment inside the svg: every page that serves the icon carries
+        # it. The set refuses text that could break out of a comment.
+        def attribution_comment
+          text = icon_set.attribution if icon_set.respond_to?(:attribution)
+          text ? "<!-- #{text} -->" : ""
+        end
 
         # The icon set the name resolves in.
         def icon_set

@@ -6664,7 +6664,7 @@
           "scope": "class",
           "group": null,
           "signature": "from_registries(roots, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [], icon_aliases: nil)",
-          "docstring": "Several registry roots as one catalog (Registry.merged: later\nroots win a path collision, block templates resolve to absolute\npaths): the gems' published registries and, when the app\ncommitted its own with `bin/rails poetry:registry`, the app's -\nits components then describe, check and compose like a gem's.",
+          "docstring": "Several registry roots as one catalog (Registry.merged: later\nroots win a path collision, block templates resolve to absolute\npaths): the gems' published registries and, when the app\ncommitted its own with `bin/rails poetry:registry`, the app's -\nits components then describe, check and compose like a gem's.\n\nrubocop:disable Metrics/ParameterLists",
           "params": [
             {
               "name": "roots",
@@ -6723,14 +6723,14 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 235
+          "line": 238
         },
         {
           "name": "from_registry",
           "scope": "class",
           "group": null,
           "signature": "from_registry(root, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [], icon_aliases: nil)",
-          "docstring": "skills: skill name => a zero-arg callable returning the skill's\n{relative path => content} file map (the get_skill tool).\nLazy because the usage skill is generated from the registry on\nfirst fetch - server boot stays instant.",
+          "docstring": "skills: skill name => a zero-arg callable returning the skill's\n{relative path => content} file map (the get_skill tool).\nLazy because the usage skill is generated from the registry on\nfirst fetch - server boot stays instant.\n\nrubocop:disable Metrics/ParameterLists",
           "params": [
             {
               "name": "root",
@@ -6790,7 +6790,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 213
+          "line": 214
         },
         {
           "name": "mapped_helpers",
@@ -6810,7 +6810,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 269
+          "line": 273
         },
         {
           "name": "handle",
@@ -6836,7 +6836,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 325
+          "line": 329
         },
         {
           "name": "initialize",
@@ -6905,7 +6905,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 288
+          "line": 292
         },
         {
           "name": "serve",
@@ -6932,7 +6932,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/agent/mcp/server.rb",
-          "line": 343
+          "line": 347
         }
       ],
       "constants": [

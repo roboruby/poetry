@@ -11,6 +11,7 @@
 - The registry gains a `behaviors` section per component, and a component's agent rules lead with the rules of the behaviors it uses. llms.txt and the skills print one `BEHAVIOR` line per behavior.
 - Icon sets beyond one directory of SVG files: `Icons::PackedSet` serves a whole vendored style from one packed file (a line per icon, read by offset and cached); every set carries its own `svg_attributes` (viewBox, fill, stroke) and optional `aliases` (an old name renders as its current one). `Icons::Vendor` is the vendor-time sanitizer the icon gems use and a host can use for its own set: inner markup only, scripts, foreignObject, titles, handlers and external references removed, no-op clips dropped, hardcoded colours optionally turned into currentColor.
 - `poetry check` checks a literal icon name against the library the call names (`library: :tabler`), reports an unknown library as `unknown-icon-library`, and warns on a renamed icon as `renamed-icon`, suggesting its current name.
+- Icon sets take an `attribution:`, the credit an icon license requires on every copy (CC BY 4.0's, for Solar); text that could break an HTML comment is refused.
 
 ### Changed
 
@@ -19,6 +20,7 @@
 ### Fixed
 
 - `poetry:check` no longer crashes on an attribute whose name is ERB, and a positional argument stands it down on required options as on content blocks (`poetry_typewriter("Hello")` sets `text:`).
+- `Icons::Vendor` leaves colours inside a mask or clip path alone when it repaints to currentColor: there white and black mean shown and hidden.
 
 ## [0.1.13] - 2026-10-13
 

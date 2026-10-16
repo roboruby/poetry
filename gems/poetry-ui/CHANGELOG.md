@@ -13,6 +13,7 @@
 - Tabs, toggle group, radio group, tag group, menubar and accordion use the `roving_focus` behavior; checkbox and switch use `checked`; nine anchored overlays use `popper`; the overlays use the `focus_scope` and `dismissable` runtime behaviors. The rendered HTML is unchanged, and the registry lists each component's behaviors.
 - The component skill shows how to use a behavior before declaring a controller by hand.
 - The Icon component draws each icon with its set's own drawing attributes instead of Lucide's stroke for every set, so filled sets, a 256-unit grid and 16 or 20 pixel styles render right. `poetry check` reads every registered set and its aliases.
+- An icon from a set with an attribution renders that credit as an HTML comment inside its svg, so every page that serves the icon carries it.
 
 ## [0.1.13] - 2026-10-13
 

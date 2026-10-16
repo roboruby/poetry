@@ -5282,6 +5282,33 @@
       "file": "lib/poetry/core/icons.rb",
       "methods": [
         {
+          "name": "comment_safe",
+          "scope": "class",
+          "group": null,
+          "signature": "comment_safe(text)",
+          "docstring": "An attribution as HTML-comment text: nil stays nil; text that\ncould end or break a comment is refused.",
+          "params": [
+            {
+              "name": "text",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the attribution"
+            }
+          ],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 253
+        },
+        {
           "name": "not_found",
           "scope": "class",
           "group": null,
@@ -5312,7 +5339,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 233
+          "line": 266
         },
         {
           "name": "register",
@@ -5350,7 +5377,7 @@
             }
           ],
           "file": "lib/poetry/core/icons.rb",
-          "line": 283
+          "line": 316
         },
         {
           "name": "registry",
@@ -5367,7 +5394,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 261
+          "line": 294
         },
         {
           "name": "set",
@@ -5394,7 +5421,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 294
+          "line": 327
         },
         {
           "name": "suggest",
@@ -5428,7 +5455,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 247
+          "line": 280
         }
       ],
       "constants": [
@@ -5468,6 +5495,24 @@
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
           "line": 61
+        },
+        {
+          "name": "attribution",
+          "scope": "instance",
+          "group": null,
+          "signature": "attribution",
+          "docstring": "The credit a set's license requires on every copy, or nil. The Icon\ncomponent renders it as an HTML comment inside each svg, so a host\nserving the icons carries it without doing anything.",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 68
         },
         {
           "name": "dir",
@@ -5510,7 +5555,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 95
+          "line": 105
         },
         {
           "name": "include?",
@@ -5536,13 +5581,13 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 84
+          "line": 94
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(dir:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {})",
+          "signature": "initialize(dir:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {}, attribution: nil)",
           "docstring": "A set over one directory of sanitized SVG files, one file per\nicon name (`circle-alert.svg`); each icon is read once and cached.",
           "params": [
             {
@@ -5566,6 +5611,14 @@
                 "Hash{String => String}"
               ],
               "text": "old name => current name;\nan old name still renders, and `poetry check` warns with the rename"
+            },
+            {
+              "name": "attribution",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the credit the icons' license\nrequires, rendered as a comment inside every svg"
             }
           ],
           "return": {
@@ -5576,7 +5629,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 71
+          "line": 80
         },
         {
           "name": "names",
@@ -5593,7 +5646,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 109
+          "line": 119
         },
         {
           "name": "svg_attributes",
@@ -5644,7 +5697,25 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 150
+          "line": 160
+        },
+        {
+          "name": "attribution",
+          "scope": "instance",
+          "group": null,
+          "signature": "attribution",
+          "docstring": "The credit a set's license requires on every copy, or nil. The Icon\ncomponent renders it as an HTML comment inside each svg, so a host\nserving the icons carries it without doing anything.",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 167
         },
         {
           "name": "fetch",
@@ -5670,7 +5741,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 179
+          "line": 199
         },
         {
           "name": "include?",
@@ -5696,13 +5767,13 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 170
+          "line": 190
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(path:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {})",
+          "signature": "initialize(path:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {}, attribution: nil)",
           "docstring": "A set over one packed file of sanitized inner markup.",
           "params": [
             {
@@ -5726,6 +5797,14 @@
                 "Hash{String => String}"
               ],
               "text": "old name => current name"
+            },
+            {
+              "name": "attribution",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the credit the icons' license\nrequires, rendered as a comment inside every svg"
             }
           ],
           "return": {
@@ -5736,7 +5815,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 158
+          "line": 177
         },
         {
           "name": "names",
@@ -5753,7 +5832,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 197
+          "line": 217
         },
         {
           "name": "path",
@@ -5770,7 +5849,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 140
+          "line": 150
         },
         {
           "name": "svg_attributes",
@@ -5787,7 +5866,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 145
+          "line": 155
         }
       ],
       "constants": []
@@ -5796,7 +5875,7 @@
       "path": "Poetry::Core::Icons::Vendor",
       "type": "module",
       "superclass": null,
-      "docstring": "The vendor-time pipeline that makes an upstream SVG safe to render\n`html_safe`: the icon gems' fetch scripts run every file through it,\nand a host vendoring its own set should too (see the SECURITY note on\n{Icons}). Render time never parses; this runs once, at vendor time.\n\nIt keeps only the <svg>'s inner markup (the Icon component owns the\nwrapper), removes <script>, <foreignObject>, <title>, <desc> and\ncomments, removes <use>/<image> pointing outside the document, strips\nevery `on*` handler, drops clip paths that clip nothing (a rect over\nthe whole canvas, which also repeats element ids on a page), and with\n`current_color: true` turns every hardcoded fill and stroke colour\ninto `currentColor` so the icon takes the text colour.",
+      "docstring": "The vendor-time pipeline that makes an upstream SVG safe to render\n`html_safe`: the icon gems' fetch scripts run every file through it,\nand a host vendoring its own set should too (see the SECURITY note on\n{Icons}). Render time never parses; this runs once, at vendor time.\n\nIt keeps only the <svg>'s inner markup (the Icon component owns the\nwrapper), removes <script>, <foreignObject>, <title>, <desc> and\ncomments, removes <use>/<image> pointing outside the document, strips\nevery `on*` handler, drops clip paths that clip nothing (a rect over\nthe whole canvas, which also repeats element ids on a page), and with\n`current_color: true` turns every hardcoded fill and stroke colour\ninto `currentColor` so the icon takes the text colour (masks and\nclip paths keep theirs: there white and black mean shown and hidden).",
       "examples": [],
       "file": "lib/poetry/core/icons/vendor.rb",
       "methods": [
@@ -5837,7 +5916,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons/vendor.rb",
-          "line": 60
+          "line": 61
         },
         {
           "name": "inner_markup",
@@ -5869,7 +5948,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons/vendor.rb",
-          "line": 35
+          "line": 36
         },
         {
           "name": "packed",
@@ -5894,7 +5973,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons/vendor.rb",
-          "line": 86
+          "line": 87
         }
       ],
       "constants": [
