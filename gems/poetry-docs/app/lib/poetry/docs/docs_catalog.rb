@@ -359,7 +359,19 @@ module Poetry
         ICONS = [
           Entry.new(slug: "lucide", title: "Lucide", section: "icons",
                     description: "The vendored icon set: 1,745 icons served from the gem, rendered " \
-                                 "through poetry_icon with literal-name validation.")
+                                 "through poetry_icon with literal-name validation."),
+          Entry.new(slug: "tabler", title: "Tabler Icons", section: "icons",
+                    description: "poetry-tabler: Tabler's outline and filled icons on Lucide's grid and " \
+                                 "stroke, as :tabler and :tabler_filled."),
+          Entry.new(slug: "hugeicons", title: "Hugeicons", section: "icons",
+                    description: "poetry-hugeicons: Hugeicons' free stroke-rounded set as :hugeicons, " \
+                                 "repainted to currentColor."),
+          Entry.new(slug: "phosphor", title: "Phosphor", section: "icons",
+                    description: "poetry-phosphor: all six Phosphor weights, one library key each."),
+          Entry.new(slug: "heroicons", title: "Heroicons", section: "icons",
+                    description: "poetry-heroicons: outline, solid, mini and micro, each at its own size."),
+          Entry.new(slug: "simple-icons", title: "Simple Icons", section: "icons",
+                    description: "poetry-simple_icons: brand logos with their brand names and colours.")
         ].freeze
 
         def icons = ICONS

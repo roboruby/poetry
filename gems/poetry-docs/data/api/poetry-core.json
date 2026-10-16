@@ -159,6 +159,32 @@
       "file": "lib/poetry/core.rb",
       "methods": [
         {
+          "name": "javascript_path",
+          "scope": "class",
+          "group": null,
+          "signature": "javascript_path(gem_root)",
+          "docstring": "The JavaScript tree a family gem serves through Propshaft and the\nimportmap: the minified copy a released gem carries in\ndist/javascript (built by the release, a source map beside each\nfile), else the source in app/javascript. Both trees hold the same\nfiles under the same names, so the pins never change.",
+          "params": [
+            {
+              "name": "gem_root",
+              "types": [
+                "Pathname",
+                "String"
+              ],
+              "text": "the gem's root directory"
+            }
+          ],
+          "return": {
+            "types": [
+              "Pathname"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core.rb",
+          "line": 38
+        },
+        {
           "name": "loader",
           "scope": "class",
           "group": null,
@@ -173,7 +199,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core.rb",
-          "line": 33
+          "line": 46
         },
         {
           "name": "root",
@@ -5256,6 +5282,39 @@
       "file": "lib/poetry/core/icons.rb",
       "methods": [
         {
+          "name": "not_found",
+          "scope": "class",
+          "group": null,
+          "signature": "not_found(name, names)",
+          "docstring": "The error for a well-formed name a set does not have, with a\ndid-you-mean when one is close.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol",
+                "String"
+              ],
+              "text": "the unknown name"
+            },
+            {
+              "name": "names",
+              "types": [
+                "Enumerable"
+              ],
+              "text": "the set's names"
+            }
+          ],
+          "return": {
+            "types": [
+              "Poetry::Core::IconNotFound"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 209
+        },
+        {
           "name": "register",
           "scope": "class",
           "group": null,
@@ -5291,7 +5350,7 @@
             }
           ],
           "file": "lib/poetry/core/icons.rb",
-          "line": 137
+          "line": 259
         },
         {
           "name": "registry",
@@ -5308,7 +5367,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 115
+          "line": 237
         },
         {
           "name": "set",
@@ -5335,7 +5394,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 148
+          "line": 270
         },
         {
           "name": "suggest",
@@ -5369,10 +5428,21 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 101
+          "line": 223
         }
       ],
-      "constants": []
+      "constants": [
+        {
+          "name": "DEFAULT_SVG_ATTRIBUTES",
+          "value": "{\n  \"width\" => \"24\",\n  \"height\" => \"24\",\n  \"viewBox\" => \"0 0 24 24\",\n  \"fill\" => \"none\",\n  \"stroke\" => \"currentColor\",\n  \"stroke-width\" => \"2\",\n  \"stroke-linecap\" => \"round\",\n  \"stroke-linejoin\" => \"r",
+          "docstring": "The <svg> wrapper attributes a set draws with when it names none:\nLucide's 24-unit stroke style, the family's default. A set whose\nicons are filled, thinner or on another grid passes its own\n`svg_attributes:`; the Icon component lays them under the caller's."
+        },
+        {
+          "name": "NAME_FORMAT",
+          "value": "/\\A[a-z0-9][a-z0-9-]*\\z/",
+          "docstring": "The kebab-case shape every icon name must match before it touches\nthe filesystem."
+        }
+      ]
     },
     {
       "path": "Poetry::Core::Icons::FileSet",
@@ -5387,12 +5457,17 @@
           "scope": "instance",
           "group": null,
           "signature": "dir",
-          "docstring": "Returns the value of attribute dir.",
+          "docstring": "The directory the set reads from.",
           "params": [],
-          "return": null,
+          "return": {
+            "types": [
+              "Pathname"
+            ],
+            "text": ""
+          },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 29
+          "line": 51
         },
         {
           "name": "fetch",
@@ -5418,7 +5493,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 57
+          "line": 87
         },
         {
           "name": "include?",
@@ -5444,13 +5519,13 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 46
+          "line": 76
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(dir:)",
+          "signature": "initialize(dir:, svg_attributes: DEFAULT_SVG_ATTRIBUTES)",
           "docstring": "A set over one directory of sanitized SVG files, one file per\nicon name (`circle-alert.svg`); each icon is read once and cached.",
           "params": [
             {
@@ -5460,6 +5535,13 @@
                 "Pathname"
               ],
               "text": "the directory holding the SVGs"
+            },
+            {
+              "name": "svg_attributes",
+              "types": [
+                "Hash{String => String}"
+              ],
+              "text": "the <svg> wrapper's\ndrawing attributes (viewBox, fill, stroke)"
             }
           ],
           "return": {
@@ -5470,7 +5552,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 35
+          "line": 64
         },
         {
           "name": "names",
@@ -5487,14 +5569,301 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 75
+          "line": 99
+        },
+        {
+          "name": "svg_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "svg_attributes",
+          "docstring": "The attributes the <svg> wrapper draws this set with.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => String}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 56
         }
       ],
       "constants": [
         {
           "name": "NAME_FORMAT",
-          "value": "/\\A[a-z0-9][a-z0-9-]*\\z/",
-          "docstring": "The kebab-case shape every icon name must match before it touches\nthe filesystem."
+          "value": "Icons::NAME_FORMAT",
+          "docstring": "The kebab-case shape every icon name must match (kept here too:\n`poetry check` reads it as FileSet::NAME_FORMAT)."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Core::Icons::PackedSet",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "One file holding a whole vendored set, one icon per line:\n`<name>\\t<inner markup>\\n`, sorted by name. A large set ships as a\nhandful of files instead of thousands. The first read indexes the\nnames and their byte offsets; each icon's markup is read once, by\noffset, and cached. Same contract and errors as {FileSet}.",
+      "examples": [],
+      "file": "lib/poetry/core/icons.rb",
+      "methods": [
+        {
+          "name": "fetch",
+          "scope": "instance",
+          "group": null,
+          "signature": "fetch(name)",
+          "docstring": "The inner SVG markup of one icon, read once and cached.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol",
+                "String"
+              ],
+              "text": "the icon name"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the icon's inner SVG markup"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 157
+        },
+        {
+          "name": "include?",
+          "scope": "instance",
+          "group": null,
+          "signature": "include?(name)",
+          "docstring": "Whether the set has an icon of this name.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol",
+                "String"
+              ],
+              "text": "the icon name"
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 148
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(path:, svg_attributes: DEFAULT_SVG_ATTRIBUTES)",
+          "docstring": "A set over one packed file of sanitized inner markup.",
+          "params": [
+            {
+              "name": "path",
+              "types": [
+                "String",
+                "Pathname"
+              ],
+              "text": "the packed file"
+            },
+            {
+              "name": "svg_attributes",
+              "types": [
+                "Hash{String => String}"
+              ],
+              "text": "the <svg> wrapper's\ndrawing attributes (viewBox, fill, stroke)"
+            }
+          ],
+          "return": {
+            "types": [
+              "PackedSet"
+            ],
+            "text": "a new instance of PackedSet"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 137
+        },
+        {
+          "name": "names",
+          "scope": "instance",
+          "group": null,
+          "signature": "names",
+          "docstring": "Every icon name in the set, sorted.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Symbol>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 174
+        },
+        {
+          "name": "path",
+          "scope": "instance",
+          "group": null,
+          "signature": "path",
+          "docstring": "The packed file the set reads from.",
+          "params": [],
+          "return": {
+            "types": [
+              "Pathname"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 125
+        },
+        {
+          "name": "svg_attributes",
+          "scope": "instance",
+          "group": null,
+          "signature": "svg_attributes",
+          "docstring": "The attributes the <svg> wrapper draws this set with.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => String}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 130
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Core::Icons::Vendor",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The vendor-time pipeline that makes an upstream SVG safe to render\n`html_safe`: the icon gems' fetch scripts run every file through it,\nand a host vendoring its own set should too (see the SECURITY note on\n{Icons}). Render time never parses; this runs once, at vendor time.\n\nIt keeps only the <svg>'s inner markup (the Icon component owns the\nwrapper), removes <script>, <foreignObject>, <title>, <desc> and\ncomments, removes <use>/<image> pointing outside the document, strips\nevery `on*` handler, drops clip paths that clip nothing (a rect over\nthe whole canvas, which also repeats element ids on a page), and with\n`current_color: true` turns every hardcoded fill and stroke colour\ninto `currentColor` so the icon takes the text colour.",
+      "examples": [],
+      "file": "lib/poetry/core/icons/vendor.rb",
+      "methods": [
+        {
+          "name": "github_files",
+          "scope": "class",
+          "group": null,
+          "signature": "github_files(repository, commit, pattern)",
+          "docstring": "The files of a GitHub repository at one commit whose paths match,\nread from its tarball. Pin a commit SHA, never a tag or branch: the\nsame call must return the same bytes forever.",
+          "params": [
+            {
+              "name": "repository",
+              "types": [
+                "String"
+              ],
+              "text": "\"owner/name\""
+            },
+            {
+              "name": "commit",
+              "types": [
+                "String"
+              ],
+              "text": "a full 40-character commit SHA"
+            },
+            {
+              "name": "pattern",
+              "types": [
+                "Regexp"
+              ],
+              "text": "matched against each path inside the repository"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash{String => String}"
+            ],
+            "text": "path => content, for regular files"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons/vendor.rb",
+          "line": 60
+        },
+        {
+          "name": "inner_markup",
+          "scope": "class",
+          "group": null,
+          "signature": "inner_markup(svg_source, current_color: false)",
+          "docstring": "The sanitized inner markup of one SVG, on a single line.",
+          "params": [
+            {
+              "name": "svg_source",
+              "types": [
+                "String"
+              ],
+              "text": "a whole upstream SVG file"
+            },
+            {
+              "name": "current_color",
+              "types": [
+                "Boolean"
+              ],
+              "text": "rewrite hardcoded fill and stroke\ncolours to currentColor"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the inner markup, no newlines or tabs"
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons/vendor.rb",
+          "line": 35
+        },
+        {
+          "name": "packed",
+          "scope": "class",
+          "group": null,
+          "signature": "packed(icons)",
+          "docstring": "A packed set file's text: one `name\\tmarkup` line per icon, sorted.",
+          "params": [
+            {
+              "name": "icons",
+              "types": [
+                "Hash{String => String}"
+              ],
+              "text": "name => inner markup"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons/vendor.rb",
+          "line": 86
+        }
+      ],
+      "constants": [
+        {
+          "name": "HREF_ELEMENTS",
+          "value": "%w[use image].freeze",
+          "docstring": "Elements that may reference another document."
+        },
+        {
+          "name": "KEPT_PAINT",
+          "value": "%w[none currentColor transparent inherit].freeze",
+          "docstring": "Paint values left as they are by `current_color: true`."
+        },
+        {
+          "name": "REMOVED",
+          "value": "%w[script foreignObject title desc metadata].freeze",
+          "docstring": "Elements removed with their content."
         }
       ]
     },

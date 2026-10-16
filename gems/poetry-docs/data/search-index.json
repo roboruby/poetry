@@ -7690,5 +7690,155 @@
     "page": "Lucide",
     "section": "icons",
     "path": "/icons/lucide#pin"
+  },
+  {
+    "title": "Tabler Icons",
+    "page": "Tabler Icons",
+    "section": "icons",
+    "path": "/icons/tabler"
+  },
+  {
+    "title": "Install",
+    "page": "Tabler Icons",
+    "section": "icons",
+    "path": "/icons/tabler#install"
+  },
+  {
+    "title": "Usage",
+    "page": "Tabler Icons",
+    "section": "icons",
+    "path": "/icons/tabler#usage"
+  },
+  {
+    "title": "Porting from React",
+    "page": "Tabler Icons",
+    "section": "icons",
+    "path": "/icons/tabler#porting"
+  },
+  {
+    "title": "The pin",
+    "page": "Tabler Icons",
+    "section": "icons",
+    "path": "/icons/tabler#pin"
+  },
+  {
+    "title": "Hugeicons",
+    "page": "Hugeicons",
+    "section": "icons",
+    "path": "/icons/hugeicons"
+  },
+  {
+    "title": "Install",
+    "page": "Hugeicons",
+    "section": "icons",
+    "path": "/icons/hugeicons#install"
+  },
+  {
+    "title": "Usage",
+    "page": "Hugeicons",
+    "section": "icons",
+    "path": "/icons/hugeicons#usage"
+  },
+  {
+    "title": "Porting from React",
+    "page": "Hugeicons",
+    "section": "icons",
+    "path": "/icons/hugeicons#porting"
+  },
+  {
+    "title": "The pin",
+    "page": "Hugeicons",
+    "section": "icons",
+    "path": "/icons/hugeicons#pin"
+  },
+  {
+    "title": "Phosphor",
+    "page": "Phosphor",
+    "section": "icons",
+    "path": "/icons/phosphor"
+  },
+  {
+    "title": "Install",
+    "page": "Phosphor",
+    "section": "icons",
+    "path": "/icons/phosphor#install"
+  },
+  {
+    "title": "Usage",
+    "page": "Phosphor",
+    "section": "icons",
+    "path": "/icons/phosphor#usage"
+  },
+  {
+    "title": "Porting from React",
+    "page": "Phosphor",
+    "section": "icons",
+    "path": "/icons/phosphor#porting"
+  },
+  {
+    "title": "The pin",
+    "page": "Phosphor",
+    "section": "icons",
+    "path": "/icons/phosphor#pin"
+  },
+  {
+    "title": "Heroicons",
+    "page": "Heroicons",
+    "section": "icons",
+    "path": "/icons/heroicons"
+  },
+  {
+    "title": "Install",
+    "page": "Heroicons",
+    "section": "icons",
+    "path": "/icons/heroicons#install"
+  },
+  {
+    "title": "Usage",
+    "page": "Heroicons",
+    "section": "icons",
+    "path": "/icons/heroicons#usage"
+  },
+  {
+    "title": "Porting from React",
+    "page": "Heroicons",
+    "section": "icons",
+    "path": "/icons/heroicons#porting"
+  },
+  {
+    "title": "The pin",
+    "page": "Heroicons",
+    "section": "icons",
+    "path": "/icons/heroicons#pin"
+  },
+  {
+    "title": "Simple Icons",
+    "page": "Simple Icons",
+    "section": "icons",
+    "path": "/icons/simple-icons"
+  },
+  {
+    "title": "Install",
+    "page": "Simple Icons",
+    "section": "icons",
+    "path": "/icons/simple-icons#install"
+  },
+  {
+    "title": "Usage",
+    "page": "Simple Icons",
+    "section": "icons",
+    "path": "/icons/simple-icons#usage"
+  },
+  {
+    "title": "Porting from React",
+    "page": "Simple Icons",
+    "section": "icons",
+    "path": "/icons/simple-icons#porting"
+  },
+  {
+    "title": "The pin",
+    "page": "Simple Icons",
+    "section": "icons",
+    "path": "/icons/simple-icons#pin"
   }
 ]

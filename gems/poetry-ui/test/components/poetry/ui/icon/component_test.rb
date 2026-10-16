@@ -148,6 +148,30 @@ module Poetry
 
           assert_includes html, 'data-component="icon"'
         end
+
+        def test_a_set_draws_with_its_own_svg_attributes
+          Dir.mktmpdir("icons") do |dir|
+            path = File.join(dir, "filled.tsv")
+            File.write(path, Poetry::Core::Icons::Vendor.packed("house" => %(<path d="M1 1"/>)))
+            Poetry::Core::Icons.register(
+              :filled_test, Poetry::Core::Icons::PackedSet.new(path: path, svg_attributes: {
+                                                                 "width" => "16", "height" => "16",
+                                                                 "viewBox" => "0 0 256 256", "fill" => "currentColor"
+                                                               })
+            )
+
+            svg = render_inline(Component.new(name: :house, library: :filled_test, class: "size-4")).at_css("svg")
+
+            assert_equal "0 0 256 256", svg["viewBox"]
+            assert_equal "currentColor", svg["fill"]
+            assert_equal "16", svg["width"]
+            assert_nil svg["stroke"]
+            assert_equal "icon", svg["data-slot"]
+            assert_equal "true", svg["aria-hidden"]
+          ensure
+            Poetry::Core::Icons.registry.delete(:filled_test)
+          end
+        end
       end
     end
   end

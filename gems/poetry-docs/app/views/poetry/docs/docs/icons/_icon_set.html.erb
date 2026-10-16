@@ -1,0 +1,154 @@
+<%# One icon-set gem's page: Poetry::Docs::IconSets carries the record; the
+    styles, counts and pin are read live from the gem. %>
+<% content_for :title, set.title %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item(set.title) %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
+  # this scriptlet early, so the samples interpolate it as #{e}; a literal opener would nest an ERB tag under Herb, so they interpolate it as #{o}.
+  e = "%" + ">"
+  o = "<" + "%"
+  rows = set.rows
+  first = rows.first[:key]
+  gemfile_source = <<~CODE
+    gem "#{set.gem}"
+  CODE
+  usage_source = <<~CODE
+    #{o}= poetry_icon(name: :#{set.samples.first.include?("-") ? %("#{set.samples.first}") : set.samples.first}, library: :#{first}) #{e}
+    #{o}= poetry_icon(name: :#{set.samples[1].include?("-") ? %("#{set.samples[1]}") : set.samples[1]}, library: :#{rows.last[:key]}, label: "#{set.samples[1].sub(/-\d+\z/, "").tr("-", " ").capitalize}") #{e}
+  CODE
+  config_source = <<~CODE
+    # config/initializers/poetry.rb: make the set the default library
+    Poetry::Core::Config.current.icon_library = :#{first}
+  CODE
+  pin_source = <<~CODE
+    Poetry::#{set.namespace}.vendored_commit  # #{set.vendored_commit}
+  CODE
+  brand_source = <<~CODE
+    #{o}= poetry_icon(name: :github, library: :simple_icons, label: "GitHub",
+                    style: "color: #\#{Poetry::SimpleIcons.brand(:github)[:hex]}") #{e}
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight"><%= set.title %></h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      <%= set.gem %> brings <%= number_with_delimiter(set.total) %> <%= link_to set.title, set.homepage %>
+      icons to Poetry, vendored into the gem at a pinned upstream commit and
+      sanitized at vendor time. <%= set.blurb %>
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="install">Install</h2>
+      <p>
+        Requiring the gem is the setup: it registers
+        <%= rows.size == 1 ? "the set" : "each style" %> with the icon registry
+        under <%= rows.size == 1 ? "its own library key" : "its own library key, so one call names one style" %>.
+        The <%= link_to "Icon component", component_path("icon") %> draws each
+        style with the set's own viewBox, fill and stroke.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: gemfile_source, language: "ruby", label: "Gemfile") %>
+    <%= poetry_table do %>
+      <%= poetry_table_header do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_head { "Library" } %>
+          <%= poetry_table_head { "Style" } %>
+          <%= poetry_table_head { "Icons" } %>
+          <%= poetry_table_head { "Sample" } %>
+        <% end %>
+      <% end %>
+      <%= poetry_table_body do %>
+        <% rows.each do |row| %>
+          <%= poetry_table_row(key: row[:key]) do %>
+            <%= poetry_table_cell(key: "#{row[:key]}-library") { tag.code(":#{row[:key]}", class: "text-xs") } %>
+            <%= poetry_table_cell(key: "#{row[:key]}-style") { row[:style] } %>
+            <%= poetry_table_cell(key: "#{row[:key]}-count") { number_with_delimiter(row[:count]) } %>
+            <%= poetry_table_cell(key: "#{row[:key]}-sample") do %>
+              <span class="flex items-center gap-3">
+                <% set.samples.each do |name| %>
+                  <%= poetry_icon(name: name.to_sym, library: row[:key], class: "size-5", label: name.sub(/-\d+\z/, "").tr("-", " ")) %>
+                <% end %>
+              </span>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="usage">Usage</h2>
+      <p>
+        Name the library on each icon, or make one style the default. An icon
+        is decorative by default (<code>aria-hidden</code>); pass
+        <code>label:</code> when it stands alone and it renders as
+        <code>role="img"</code> with that accessible name. Every style draws
+        in <code>currentColor</code>, so icons take the surrounding text
+        colour. <code>poetry check</code> validates a literal name against the
+        library the call names, so a misspelled name is caught before it
+        reaches a render.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: usage_source, language: "erb", label: "Usage") %>
+    <%= poetry_code_block(code: config_source, language: "ruby", label: "Configuration") %>
+    <% if set.slug == "simple-icons" %>
+      <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+        <p>
+          <code>Poetry::SimpleIcons.brand(:github)</code> returns the brand's
+          name and colour from Simple Icons' data, for a logo drawn in its
+          own colour:
+        </p>
+      <% end %>
+      <%= poetry_code_block(code: brand_source, language: "erb", label: "Brand colour") %>
+      <span class="flex items-center gap-3">
+        <% set.samples.each do |name| %>
+          <%= poetry_icon(name: name.to_sym, library: :simple_icons, class: "size-6",
+                          label: Poetry::SimpleIcons.brand(name)[:title],
+                          style: "color: ##{Poetry::SimpleIcons.brand(name)[:hex]}") %>
+        <% end %>
+      </span>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="porting">Porting from React</h2>
+      <p><%= api_inline(set.react) %></p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="pin">The pin</h2>
+      <p>
+        The icons vendor from a single commit of
+        <%= link_to set.repository, "https://github.com/#{set.repository}" %>,
+        never a mutable tag, and the SHA ships in the gem:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: pin_source, language: "ruby", label: "Introspection") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Each style is one packed file in the gem, a line per icon holding its
+        sanitized inner markup; the Icon component owns the <code>svg</code>
+        wrapper and the ARIA contract. The vendored icons remain under
+        <%= set.title %>'s <%= set.license %> license;
+        <code><%= set.license_file %></code> ships in the gem beside them.
+        <% if set.slug == "simple-icons" %>
+          The logos are their owners' trademarks; read
+          <code>DISCLAIMER-SIMPLE-ICONS.md</code>, which ships in the gem,
+          before using one.
+        <% end %>
+      </p>
+    <% end %>
+  </section>
+</div>

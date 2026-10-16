@@ -99,24 +99,20 @@ module Poetry
           html_attributes.merge_if_not_set(default_svg_attributes.merge(aria_attributes))
         end
 
-        # The default svg attributes: namespace, intrinsic box and stroke settings.
+        # The default svg attributes: the namespace, then the set's own
+        # drawing attributes (Lucide's 24-unit stroke unless the set names
+        # its own: a filled set, a 256 grid, a 16px micro set).
         def default_svg_attributes
-          {
-            "xmlns" => "http://www.w3.org/2000/svg",
-            # Lucide's intrinsic box. Without it a standalone icon fills its
-            # container (a standalone icon once rendered 352px wide);
-            # inside components the [&_svg]:size-4 rules still win
-            # (CSS beats presentation attributes).
-            "width" => "24",
-            "height" => "24",
-            "viewBox" => "0 0 24 24",
-            "fill" => "none",
-            "stroke" => "currentColor",
-            "stroke-width" => "2",
-            "stroke-linecap" => "round",
-            "stroke-linejoin" => "round",
-            "data-slot" => "icon"
-          }.merge(component_data_attributes)
+          # The intrinsic width and height matter: without them a standalone
+          # icon fills its container (one once rendered 352px wide); inside
+          # components the [&_svg]:size-4 rules still win (CSS beats
+          # presentation attributes).
+          drawing = if icon_set.respond_to?(:svg_attributes)
+                      icon_set.svg_attributes
+                    else
+                      Poetry::Core::Icons::DEFAULT_SVG_ATTRIBUTES
+                    end
+          { "xmlns" => "http://www.w3.org/2000/svg", **drawing, "data-slot" => "icon", **component_data_attributes }
         end
 
         # The aria attributes: an image role with its label, else hidden.

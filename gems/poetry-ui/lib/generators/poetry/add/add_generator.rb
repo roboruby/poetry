@@ -62,8 +62,8 @@ module Poetry
     private
 
     # Bare names resolve against the installed gems, an unknown one a hard
-    # error. @poetry names do too when the gems ship them; any other
-    # @poetry name is a community item and fetches.
+    # error. Names under @poetry do too when the gems ship them; any other
+    # name under @poetry is a community item and fetches.
     def local?(address)
       return true if address.kind == :bare
       return false unless address.kind == :namespace && address.namespace == "@poetry"

@@ -20,7 +20,8 @@ task default: %i[test rubocop yard:verify yard:coverage yard:coverage:all yard:l
 # in publish order (the docs engine last; it is not published), then this
 # gem. Each gem stays
 # its own bundle, so nothing here loads a sibling into this process.
-FAMILY = %w[poetry-core poetry-lucide poetry-charts poetry-extract poetry-ui poetry-agent poetry-simple_form
+FAMILY = %w[poetry-core poetry-lucide poetry-tabler poetry-hugeicons poetry-phosphor poetry-heroicons
+            poetry-simple_icons poetry-charts poetry-extract poetry-ui poetry-agent poetry-simple_form
             poetry-docs].freeze
 
 def run_in(dir, *cmd)

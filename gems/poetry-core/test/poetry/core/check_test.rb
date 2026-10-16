@@ -523,6 +523,27 @@ module Poetry
                         "unknown-icon"
       end
 
+      def test_a_named_library_checks_the_name_against_that_set
+        entry = { "options" => ICON_ENTRY["options"] + [{ "name" => "library", "type" => "symbol" }] }
+        catalog = Check::Catalog.new({ "poetry/ui/icon" => entry }, icon_names: %w[circle-alert],
+                                                                    icon_libraries: { lucide: %w[circle-alert],
+                                                                                      tabler: %w[brand-github] })
+        lint = ->(source) { Check.lint(source, catalog: catalog) }
+
+        assert_empty lint.call(%(<%= poetry_icon(name: :"brand-github", library: :tabler) %>))
+        assert_equal ["unknown-icon"], lint.call(%(<%= poetry_icon(name: :"brand-github") %>)).map(&:rule)
+
+        missing = lint.call(%(<%= poetry_icon(name: :"brand-githb", library: :tabler) %>)).first
+
+        assert_equal "brand-github", missing.suggestion
+        assert_includes missing.message, "the tabler icon set"
+
+        unknown = lint.call(%(<%= poetry_icon(name: :home, library: :tabeler) %>)).first
+
+        assert_equal "unknown-icon-library", unknown.rule
+        assert_equal "tabler", unknown.suggestion
+      end
+
       def test_a_reversed_compound_icon_gets_the_rename_suggestion
         # Lucide v1 swapped modifier and noun (alert-circle -> circle-alert);
         # edit distance never bridges the reversal.

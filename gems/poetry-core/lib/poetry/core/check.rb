@@ -85,7 +85,8 @@ module Poetry
         # host_registry: the app's own components (HostComponents.registry),
         # merged in beside the gem registries - their declared helpers join
         # the valid set and their contracts are checked like any other.
-        def self.from_registries(roots, helpers: nil, icon_names: nil, host_registry: nil, host_helpers: nil)
+        def self.from_registries(roots, helpers: nil, icon_names: nil, host_registry: nil, host_helpers: nil,
+                                 icon_libraries: nil)
           payloads = roots.map do |root|
             YAML.load_file(Pathname.new(root).join(Registry::RELATIVE_PATH), aliases: true)
           end
@@ -106,7 +107,8 @@ module Poetry
               icon_names: icon_names,
               helper_args: helper_args,
               host_helpers: host_helpers,
-              internals: internals.uniq.sort)
+              internals: internals.uniq.sort,
+              icon_libraries: icon_libraries)
         end
 
         # helpers: the FULL set of valid poetry_* helper method names (from
@@ -119,16 +121,19 @@ module Poetry
         # also carries the value contracts runtime-enforced inside wrapper
         # helpers (poetry_input_group_addon align: et al). icon_names: the
         # active icon set's valid names - when given, icon-formatted option
-        # values are checked for membership, not just shape.
+        # values are checked for membership, not just shape. icon_libraries:
+        # every registered set's names by library key, so a call naming its
+        # set (`library: :tabler`) is checked against that set.
         # rubocop:disable Metrics/ParameterLists
         def initialize(components, helpers: nil, helper_entries: nil, icon_names: nil, helper_args: nil,
-                       host_helpers: nil, internals: [])
+                       host_helpers: nil, internals: [], icon_libraries: nil)
           # rubocop:enable Metrics/ParameterLists
           @components = components
           @internals = internals
           @helper_entries = helper_entries || {}
           @helper_args = helper_args || {}
           @icon_names = icon_names&.to_set(&:to_s)
+          @icon_libraries = icon_libraries&.to_h { |key, names| [key.to_s, names.to_set(&:to_s)] }
           # The app's own poetry_* helper METHODS (HostComponents.helper_methods:
           # a pagination adapter, a wrapper of the host's own) - valid by
           # name, contracts their own.
@@ -154,6 +159,9 @@ module Poetry
 
         # The active icon set's names, or nil when membership is not checked.
         attr_reader :icon_names
+
+        # Every registered set's names by library key, or nil when unknown.
+        attr_reader :icon_libraries
 
         # The family's `@api private` namespaces (the registries' "internals"
         # sections), top-most only.
@@ -517,8 +525,9 @@ module Poetry
 
           record_binding(call, path, bindings, line)
           pairs = keyword_pairs(call)
+          library = icon_library(pairs)
           findings = pairs.flat_map do |key, value, kw_line|
-            option_findings(path, key, value, base_line + kw_line - 1)
+            option_findings(path, key, value, base_line + kw_line - 1, library: library)
           end
           findings + webmcp_findings(path, pairs, line) + motion_findings(path, call, base_line) +
             missing_option_findings(path, helper_of(path), call, pairs, line) +
@@ -582,7 +591,7 @@ module Poetry
         end
 
         # The findings for one keyword on a helper call: reserved, unknown, or an off-contract value.
-        def option_findings(path, key, value, line)
+        def option_findings(path, key, value, line, library: nil)
           findings = []
           known = @catalog.option_names(path)
           entry = @catalog.option_entry(path, key)
@@ -603,13 +612,13 @@ module Poetry
             end
           end
 
-          findings + (entry ? value_findings(entry, helper_of(path), key, value, line) : [])
+          findings + (entry ? value_findings(entry, helper_of(path), key, value, line, library: library) : [])
         end
 
         # The value-contract tier: the call shapes that raise or misrender
         # at render time - enumerated values on any declared attribute, literal nil
         # against required options, and icon-name format/membership.
-        def value_findings(entry, owner, key, value, line)
+        def value_findings(entry, owner, key, value, line, library: nil)
           if value.equal?(NIL_LITERAL)
             return [] unless entry["required"]
 
@@ -626,30 +635,50 @@ module Poetry
                                 line: line, suggestion: suggest(value, variants))]
           end
 
-          entry["format"] == "icon-name" ? icon_findings(key, value, line) : []
+          entry["format"] == "icon-name" ? icon_findings(key, value, line, library) : []
         end
 
-        # Icon names are kebab-case names from the active icon set. Shape is
-        # always checkable (a snake_case `:folder_plus` never renders); membership only when
-        # the catalog carries the set's names.
-        def icon_findings(key, value, line)
+        # The literal `library:` a call names, or nil (the active set).
+        def icon_library(pairs)
+          value = pairs.find { |key, _value, _line| key == "library" }&.dig(1)
+          value.is_a?(String) ? value : nil
+        end
+
+        # Icon names are kebab-case names from the active icon set, or from the
+        # set a literal `library:` names. Shape is always checkable (a snake_case
+        # `:folder_plus` never renders); membership only when the catalog carries
+        # the set's names.
+        def icon_findings(key, value, line, library = nil)
+          return [unknown_library_finding(library, line)] if library && @catalog.icon_libraries &&
+                                                             !@catalog.icon_libraries.key?(library)
+
+          names = library && @catalog.icon_libraries ? @catalog.icon_libraries[library] : @catalog.icon_names
           unless value.match?(Icons::FileSet::NAME_FORMAT)
             kebab = value.tr("_", "-")
-            suggestion = kebab if kebab.match?(Icons::FileSet::NAME_FORMAT) &&
-                                  (@catalog.icon_names.nil? || @catalog.icon_names.include?(kebab))
+            suggestion = kebab if kebab.match?(Icons::FileSet::NAME_FORMAT) && (names.nil? || names.include?(kebab))
             return [Finding.new(rule: "unknown-icon", severity: :error,
                                 message: "#{key}: #{value.inspect} is not an icon name " \
                                          "(icon names are kebab-case, like :\"circle-alert\")",
                                 line: line, suggestion: suggestion)]
           end
-          return [] if @catalog.icon_names.nil? || @catalog.icon_names.include?(value)
+          return [] if names.nil? || names.include?(value)
 
           # Icons.suggest, not the generic checker: it catches the Lucide v1
           # reversed-compound renames (alert-circle -> circle-alert) that
           # edit distance misses every time.
+          set = library ? "the #{library} icon set" : "the icon set"
           [Finding.new(rule: "unknown-icon", severity: :error,
-                       message: "#{key}: #{value.inspect} is not in the icon set", line: line,
-                       suggestion: Icons.suggest(value, @catalog.icon_names))]
+                       message: "#{key}: #{value.inspect} is not in #{set}", line: line,
+                       suggestion: Icons.suggest(value, names))]
+        end
+
+        # A `library:` no registered set answers to: the render raises.
+        def unknown_library_finding(library, line)
+          known = @catalog.icon_libraries.keys.sort
+          Finding.new(rule: "unknown-icon-library", severity: :error,
+                      message: "library: #{library.to_sym.inspect} is not a registered icon set " \
+                               "(require the gem that provides it; registered: #{known.join(", ")})",
+                      line: line, suggestion: suggest(library, known))
         end
 
         # Required-with-no-default options that a literal call omits (a
@@ -788,8 +817,9 @@ module Poetry
         # props at all), the content-block requirement and the any-of groups.
         def typed_slot_findings(call, component, slot_name, base_line, line)
           pairs = keyword_pairs(call)
+          library = icon_library(pairs)
           findings = pairs.flat_map do |key, value, kw_line|
-            option_findings(component, key, value, base_line + kw_line - 1)
+            option_findings(component, key, value, base_line + kw_line - 1, library: library)
           end
           unless splatted?(call)
             findings += (@catalog.required_options(component) - pairs.map(&:first)).map do |key|

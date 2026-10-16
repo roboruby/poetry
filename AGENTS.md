@@ -8,8 +8,9 @@ tests and gates; read the gem's file before working in it.
 ## Layout
 
 - `gems/poetry-core`, `poetry-lucide`, `poetry-charts`, `poetry-extract`,
-  `poetry-ui`, `poetry-agent`, `poetry-simple_form`, `poetry-jumpstart_pro`
-  — one directory per gem;
+  `poetry-ui`, `poetry-agent`, `poetry-simple_form`, `poetry-jumpstart_pro`,
+  and the icon sets `poetry-tabler`, `poetry-hugeicons`, `poetry-phosphor`,
+  `poetry-heroicons`, `poetry-simple_icons` — one directory per gem;
   siblings resolve by relative path (`../poetry-core`) inside the tree.
 - `gems/poetry-docs` — the poetryui.com documentation as a mountable engine
   on the family from the tree, with its dummy host under `test/dummy`
@@ -30,7 +31,7 @@ tests and gates; read the gem's file before working in it.
   minified files and a checkout serves source. `rake minify:write` and
   `minify:clean` in `tools/releaser` produce and remove the trees locally.
 - The root: the umbrella gem (`poetry.gemspec`, `lib/`, `test/`) plus
-  `VERSION`, the single source of truth for all nine gems. One
+  `VERSION`, the single source of truth for every gem in the family. One
   `gem "poetry"` installs core, ui and lucide as hard runtime dependencies,
   required outright in `lib/poetry.rb`; charts, agent, extract,
   simple_form and jumpstart_pro are opt-in gems a host adds itself.
@@ -66,7 +67,7 @@ tests and gates; read the gem's file before working in it.
 - The train tags `vX` (annotated) and opens a draft GitHub release with
   notes assembled from the ten changelogs; the docs engine is in the
   family for versions and notes and out of the publish list. Publishing that release is the
-  word: `release.yml` builds all nine reproducibly from the tag's commit
+  word: `release.yml` builds every published gem reproducibly from the tag's commit
   time with their JavaScript minified, signs each with sigstore, verifies, then exchanges one trusted
   publishing credential and pushes in order, idempotently (a version already
   on RubyGems with the same checksum is skipped, a different checksum stops

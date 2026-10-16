@@ -48,8 +48,12 @@ namespace :poetry do
     # poetry:pagination copies in, a wrapper the host wrote) are valid
     # names with contracts of their own - the wiring rules still apply.
     host_helpers = Poetry::Core::HostComponents.helper_methods(root: Rails.root)
+    # Every registered set by key: a call naming its set (library: :tabler)
+    # is checked against that set rather than the active one.
+    icon_libraries = Poetry::Core::Icons.registry.transform_values(&:names)
     catalog = Poetry::Core::Check::Catalog.from_registries(roots, icon_names: icon_names, host_registry: host,
-                                                                  host_helpers: host_helpers)
+                                                                  host_helpers: host_helpers,
+                                                                  icon_libraries: icon_libraries)
     # The compile tier: Rails checks an app's views (`bin/rails
     # herb:check` walks the view paths), which leaves the templates that
     # sit beside their components unchecked - the app's own and the ones

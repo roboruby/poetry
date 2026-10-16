@@ -353,6 +353,30 @@ Removing it: delete the installed views and the helper, revert the stylesheet, i
           MD
         end
 
+        # The icon-set gems' mirrors, one per set, from the record the page
+        # renders (Poetry::Docs::IconSets).
+        IconSets::ALL.each do |set|
+          define_method(:"icons_#{set.slug.tr("-", "_")}") do |entry|
+            styles = set.rows.map { |row| "- `:#{row[:key]}`: #{row[:style]}, #{row[:count]} icons" }.join("\n")
+            sample = set.samples.first.include?("-") ? %(:"#{set.samples.first}") : ":#{set.samples.first}"
+            <<~MD
+              #{header(entry)}
+
+              #{set.gem} brings #{set.total} #{set.title} icons to Poetry, vendored at a pinned commit of #{set.repository} (`Poetry::#{set.namespace}.vendored_commit`) and sanitized at vendor time. #{set.blurb}
+
+              Add `gem "#{set.gem}"`; requiring it registers each style under its own library key:
+
+              #{styles}
+
+              `poetry_icon(name: #{sample}, library: :#{set.rows.first[:key]})` renders one, and `config.icon_library = :#{set.rows.first[:key]}` makes the style the default. `poetry check` validates a literal name against the library the call names.
+
+              Porting from React: #{set.react}
+
+              The icons remain under #{set.title}'s #{set.license} license; `#{set.license_file}` ships in the gem beside them.
+            MD
+          end
+        end
+
         # The root llms.txt: the whole site, indexed for agents - every docs
         # page with its one-liner, plus the machine-readable resources.
         def site_index

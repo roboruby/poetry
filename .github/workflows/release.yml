@@ -2,7 +2,7 @@ name: Release
 
 # Publishing the GitHub release is the word. The tagged, CI-green commit is
 # built, signed and verified, and only then pushed to RubyGems with one trusted
-# publishing credential for all nine gems. A manual dispatch on a v* tag is
+# publishing credential for every gem. A manual dispatch on a v* tag is
 # always a dry run: it builds, signs and verifies exactly as a release does,
 # and never exchanges a credential or pushes, whatever its inputs. A release
 # interrupted between pushes is resumed by re-running this run; the push is
@@ -53,7 +53,7 @@ jobs:
       - name: Install the minifier (esbuild, pinned by its lockfile, no install scripts)
         working-directory: tools/minifier
         run: npm ci --ignore-scripts
-      - name: Build all nine gems from the tag's commit time, their JavaScript minified
+      - name: Build every gem from the tag's commit time, their JavaScript minified
         run: bundle exec rake build checksums
       - name: Build again and compare, byte for byte
         run: bundle exec rake reproducible
@@ -66,6 +66,6 @@ jobs:
       - name: Configure RubyGems credentials (trusted publishing)
         if: github.event_name == 'release'
         uses: rubygems/configure-rubygems-credentials@dc5a8d8553e6ee01fc26761a49e99e733d17954a # v2.1.0
-      - name: Push all nine, then wait until every one installs
+      - name: Push every gem, then wait until each one installs
         if: github.event_name == 'release'
         run: bundle exec rake push

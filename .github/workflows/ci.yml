@@ -40,6 +40,11 @@ jobs:
         gem:
           - { name: poetry-core, dir: gems/poetry-core }
           - { name: poetry-lucide, dir: gems/poetry-lucide }
+          - { name: poetry-tabler, dir: gems/poetry-tabler }
+          - { name: poetry-hugeicons, dir: gems/poetry-hugeicons }
+          - { name: poetry-phosphor, dir: gems/poetry-phosphor }
+          - { name: poetry-heroicons, dir: gems/poetry-heroicons }
+          - { name: poetry-simple_icons, dir: gems/poetry-simple_icons }
           - { name: poetry-charts, dir: gems/poetry-charts, npm: gems/poetry-charts }
           - { name: poetry-extract, dir: gems/poetry-extract }
           - { name: poetry-ui, dir: gems/poetry-ui, npm: gems/poetry-core }
@@ -247,6 +252,11 @@ jobs:
         gem:
           - { name: poetry-core, dir: gems/poetry-core }
           - { name: poetry-lucide, dir: gems/poetry-lucide }
+          - { name: poetry-tabler, dir: gems/poetry-tabler }
+          - { name: poetry-hugeicons, dir: gems/poetry-hugeicons }
+          - { name: poetry-phosphor, dir: gems/poetry-phosphor }
+          - { name: poetry-heroicons, dir: gems/poetry-heroicons }
+          - { name: poetry-simple_icons, dir: gems/poetry-simple_icons }
           - { name: poetry-charts, dir: gems/poetry-charts }
           - { name: poetry-extract, dir: gems/poetry-extract }
           - { name: poetry-ui, dir: gems/poetry-ui }
@@ -332,7 +342,7 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Releaser tests
         run: bundle exec rake test
-      - name: Build all nine gems
+      - name: Build every published gem
         run: bundle exec rake build checksums
 
   # One status for branch rules: green only when every job above is.

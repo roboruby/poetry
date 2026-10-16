@@ -12,6 +12,11 @@ sibling = lambda do |name|
 end
 gem "poetry-core", **sibling.call("poetry-core")
 gem "poetry-lucide", **sibling.call("poetry-lucide")
+gem "poetry-tabler", **sibling.call("poetry-tabler")
+gem "poetry-hugeicons", **sibling.call("poetry-hugeicons")
+gem "poetry-phosphor", **sibling.call("poetry-phosphor")
+gem "poetry-heroicons", **sibling.call("poetry-heroicons")
+gem "poetry-simple_icons", **sibling.call("poetry-simple_icons")
 gem "poetry-ui", **sibling.call("poetry-ui")
 gem "poetry-charts", **sibling.call("poetry-charts")
 gem "poetry-motion", **sibling.call("poetry-motion")
