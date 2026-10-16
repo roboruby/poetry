@@ -1,0 +1,36 @@
+{
+  "poetry--island--island": {
+    "doc": "Island: a bounded client mount inside server-rendered HTML. The server renders the shell, the element's content before and without the module; on connect the controller imports the island's module through the importmap and mounts it in a root beside the shell, which steps aside while the island is up. A morph refresh leaves the island alone and hands it the server's new props; a cached snapshot's dead root is cleared on connect; a preview shows the shell; a failed import or mount leaves the shell in place and says so.\n\nA module exports mount(element, props) and returns { unmount, update? }. The props are the island's JSON script, plus input (the hidden input rendered with name:, or null) and focus (true when the shell had focus).",
+    "targets": [
+      "input",
+      "shell"
+    ],
+    "values": {
+      "import": {
+        "type": "String",
+        "doc": "The importmap specifier of the module."
+      },
+      "mode": {
+        "type": "String",
+        "default": "fill",
+        "doc": "fill paints the shell's box; flow takes the shell's place."
+      }
+    },
+    "methods": [
+      "connect",
+      "disconnect",
+      "mount",
+      "unmount"
+    ],
+    "events": [
+      "error",
+      "mount"
+    ],
+    "method_docs": {
+      "connect": "Clears what a cached snapshot kept, guards against a morph and mounts.",
+      "disconnect": "Unmounts the island and drops the morph guard.",
+      "mount": "Imports the module and mounts it beside the shell. A Turbo preview, a failed import and a failed mount all leave the shell. @returns {Promise<void>} settles once the island is up or the shell stays",
+      "unmount": "Unmounts the island, removes its root and shows the shell again."
+    }
+  }
+}

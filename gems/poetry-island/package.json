@@ -1,0 +1,33 @@
+{
+  "name": "@poetry/island",
+  "version": "0.1.13",
+  "private": true,
+  "description": "poetry-island's controller. Importmap-first (the engine pins this tree); the same tree is the npm channel for bundler hosts.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./app/javascript/poetry/island/index.js",
+    "./*": "./app/javascript/poetry/island/*.js"
+  },
+  "files": [
+    "app/javascript"
+  ],
+  "peerDependencies": {
+    "@hotwired/stimulus": ">= 3.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@hotwired/stimulus": "^3.2.2",
+    "eslint": "^9.39.5",
+    "eslint-plugin-jsdoc": "^63.0.0",
+    "espree": "^10.4.0",
+    "globals": "^16.0.0",
+    "jsdom": "^30.0.1",
+    "vitest": "^4.1.11"
+  },
+  "scripts": {
+    "test": "eslint app/javascript && vitest run",
+    "lint": "eslint app/javascript",
+    "manifest": "MANIFEST_WRITE=1 vitest run test/javascript/controllers_manifest.test.js"
+  }
+}
