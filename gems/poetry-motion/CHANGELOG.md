@@ -18,7 +18,7 @@
 
 ### Changed
 
-- The effect controllers load lazily: only the entry, the policy and the engine loader preload, and `registerPoetryMotionControllers` imports each controller the first time its identifier appears on the page.
+- The effect controllers register eagerly, as poetry-core's do: `registerPoetryMotionControllers` imports all nineteen (about 6 KB gzipped together) and registers them at once. A lazily imported controller lost the presses that dispatched while its module was in flight (five of eight first clicks on the marquee's pause and the confetti over a slow connection, measured on the docs host); the engine and the kernels still load on demand.
 - An animation that finishes on its own now leaves the element its own style, as a teardown does; springs keep their value until teardown.
 - Reduced motion stills page and layout view transitions too.
 - The gentle and snappy spring tokens are critically damped (120 22 1 and 400 40 1), so they settle without passing their target; bouncy keeps its bounce.

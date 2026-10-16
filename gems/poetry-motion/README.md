@@ -10,7 +10,9 @@ enhancement on top.
 - **The engine loads on demand.** The framework-free `motion` API (MIT) is
   vendored as one file of about 28 KB gzipped and pinned without preload. A
   page with no motion element never fetches it; the first behavior that
-  needs it calls `loadEngine()`.
+  needs it calls `loadEngine()`. The effect controllers themselves register
+  eagerly, about 6 KB gzipped together, so a press on an effect in the first
+  moments after paint reaches a live controller.
 - **One motion policy.** `@poetry/motion/policy` decides reduced motion
   once (the user's setting, or `data-motion="reduce"` or `"full"` on
   `<html>`), reads the motion tokens, returns animated elements to their

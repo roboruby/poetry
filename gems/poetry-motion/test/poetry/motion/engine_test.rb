@@ -24,11 +24,16 @@ module Poetry
         assert packages.fetch("@poetry/motion").preload
       end
 
-      def test_only_the_entry_the_policy_and_the_loader_preload
+      # The controllers register eagerly from the entry, so the whole tree
+      # preloads with the page; only the engine and the kernels wait.
+      def test_everything_but_the_engine_and_the_kernels_preloads
         pinned = Rails.application.importmap.preloaded_module_paths(resolver: PathResolver.new, cache_key: :motion)
                       .select { |pin| pin.include?("/poetry/motion") }
+        javascript = Poetry::Motion.root.join("app/javascript")
+        tree = Dir.glob("poetry/motion/**/*.js", base: javascript).map { |file| "/#{file}" }
 
-        assert_equal %w[/poetry/motion/index.js /poetry/motion/load_engine.js /poetry/motion/policy.js], pinned.sort
+        assert_equal tree.sort, pinned.sort
+        assert_empty pinned.grep(%r{/poetry/motion-kernel/})
       end
 
       def test_every_shipped_file_has_a_pin

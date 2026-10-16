@@ -2,12 +2,34 @@
 // one source shipped over two channels: importmap-first (the engine pins
 // this tree) and this same tree as the npm package for bundler hosts.
 //
-// The controllers register lazily: registerPoetryMotionControllers watches
-// the page for a poetry--motion--* identifier and imports that one
-// controller the first time it appears, so a page without an effect loads
-// none of them, and a page with one loads only its own.
+// The controllers register eagerly, as poetry-core's do: the entry imports
+// all of them (about 6 KB gzipped together) and registers them at once, so
+// a press on an effect in the first moments after paint reaches a live
+// controller. A lazily imported controller lost those presses: a click
+// that dispatched while its module was still in flight found nothing to
+// handle it. The animation engine and the kernels stay on demand through
+// loadEngine(), loadConfetti() and loadGlobe().
 
 import { installPolicy } from "@poetry/motion/policy"
+import AnimatedListController from "@poetry/motion/animated_list_controller"
+import ConfettiController from "@poetry/motion/confetti_controller"
+import DockController from "@poetry/motion/dock_controller"
+import DraggableController from "@poetry/motion/draggable_controller"
+import GlobeController from "@poetry/motion/globe_controller"
+import LayoutGroupController from "@poetry/motion/layout_group_controller"
+import MagneticController from "@poetry/motion/magnetic_controller"
+import MarqueeController from "@poetry/motion/marquee_controller"
+import NumberTickerController from "@poetry/motion/number_ticker_controller"
+import ParallaxController from "@poetry/motion/parallax_controller"
+import ParticlesController from "@poetry/motion/particles_controller"
+import ScrambleController from "@poetry/motion/scramble_controller"
+import ScrollProgressController from "@poetry/motion/scroll_progress_controller"
+import SpotlightCardController from "@poetry/motion/spotlight_card_controller"
+import SwipeCardsController from "@poetry/motion/swipe_cards_controller"
+import TextRevealController from "@poetry/motion/text_reveal_controller"
+import TiltCardController from "@poetry/motion/tilt_card_controller"
+import TypewriterController from "@poetry/motion/typewriter_controller"
+import WordRotateController from "@poetry/motion/word_rotate_controller"
 
 export {
   prefersReducedMotion, onReducedMotionChange, track, flush, release, entranceAllowed, canAnimateView, visitInFlight,
@@ -16,72 +38,42 @@ export {
 export { loadEngine } from "@poetry/motion/load_engine"
 
 /**
- * Each effect's identifier and the import that loads its controller, the
- * map registerPoetryMotionControllers loads from.
+ * Each effect's identifier and its controller class, the map
+ * registerPoetryMotionControllers registers.
  *
  * @type {Object<string, Function>}
  */
 export const CONTROLLERS = {
-  "poetry--motion--animated-list": () => import("@poetry/motion/animated_list_controller"),
-  "poetry--motion--confetti": () => import("@poetry/motion/confetti_controller"),
-  "poetry--motion--dock": () => import("@poetry/motion/dock_controller"),
-  "poetry--motion--draggable": () => import("@poetry/motion/draggable_controller"),
-  "poetry--motion--globe": () => import("@poetry/motion/globe_controller"),
-  "poetry--motion--layout-group": () => import("@poetry/motion/layout_group_controller"),
-  "poetry--motion--magnetic": () => import("@poetry/motion/magnetic_controller"),
-  "poetry--motion--marquee": () => import("@poetry/motion/marquee_controller"),
-  "poetry--motion--number-ticker": () => import("@poetry/motion/number_ticker_controller"),
-  "poetry--motion--parallax": () => import("@poetry/motion/parallax_controller"),
-  "poetry--motion--particles": () => import("@poetry/motion/particles_controller"),
-  "poetry--motion--scramble": () => import("@poetry/motion/scramble_controller"),
-  "poetry--motion--scroll-progress": () => import("@poetry/motion/scroll_progress_controller"),
-  "poetry--motion--spotlight-card": () => import("@poetry/motion/spotlight_card_controller"),
-  "poetry--motion--swipe-cards": () => import("@poetry/motion/swipe_cards_controller"),
-  "poetry--motion--text-reveal": () => import("@poetry/motion/text_reveal_controller"),
-  "poetry--motion--tilt-card": () => import("@poetry/motion/tilt_card_controller"),
-  "poetry--motion--typewriter": () => import("@poetry/motion/typewriter_controller"),
-  "poetry--motion--word-rotate": () => import("@poetry/motion/word_rotate_controller"),
+  "poetry--motion--animated-list": AnimatedListController,
+  "poetry--motion--confetti": ConfettiController,
+  "poetry--motion--dock": DockController,
+  "poetry--motion--draggable": DraggableController,
+  "poetry--motion--globe": GlobeController,
+  "poetry--motion--layout-group": LayoutGroupController,
+  "poetry--motion--magnetic": MagneticController,
+  "poetry--motion--marquee": MarqueeController,
+  "poetry--motion--number-ticker": NumberTickerController,
+  "poetry--motion--parallax": ParallaxController,
+  "poetry--motion--particles": ParticlesController,
+  "poetry--motion--scramble": ScrambleController,
+  "poetry--motion--scroll-progress": ScrollProgressController,
+  "poetry--motion--spotlight-card": SpotlightCardController,
+  "poetry--motion--swipe-cards": SwipeCardsController,
+  "poetry--motion--text-reveal": TextRevealController,
+  "poetry--motion--tilt-card": TiltCardController,
+  "poetry--motion--typewriter": TypewriterController,
+  "poetry--motion--word-rotate": WordRotateController,
 }
 
-const PREFIX = "poetry--motion--"
-
 /**
- * The host one-liner: installs the motion policy and registers each
- * effect controller on the host's Stimulus application the first time its
- * identifier appears in the page, now or after any later render.
+ * The host one-liner: installs the motion policy and registers every
+ * effect controller on the host's Stimulus application.
  *
  * @param {import("@hotwired/stimulus").Application} application
- * @returns {Promise<void>} settles once the controllers already on the page are registered
+ * @returns {Promise<void>} settled: the controllers are registered when it returns
  */
 export function registerPoetryMotionControllers(application) {
   installPolicy()
-  const requested = new Map()
-
-  const load = (identifier) => {
-    if (requested.has(identifier) || !CONTROLLERS[identifier]) return requested.get(identifier)
-    const loading = CONTROLLERS[identifier]().then((module) => application.register(identifier, module.default))
-    requested.set(identifier, loading)
-    return loading
-  }
-  const scan = (root) => {
-    const found = []
-    const elements = root.querySelectorAll ? [root, ...root.querySelectorAll(`[data-controller*="${PREFIX}"]`)] : []
-    for (const element of elements) {
-      for (const identifier of (element.getAttribute?.("data-controller") ?? "").split(/\s+/)) {
-        if (identifier.startsWith(PREFIX)) found.push(load(identifier))
-      }
-    }
-    return found
-  }
-
-  new MutationObserver((records) => {
-    for (const record of records) {
-      if (record.type === "attributes") scan(record.target)
-      else for (const node of record.addedNodes) if (node.nodeType === 1) scan(node)
-    }
-  }).observe(document.documentElement, {
-    childList: true, subtree: true, attributes: true, attributeFilter: ["data-controller"]
-  })
-
-  return Promise.all(scan(document.documentElement)).then(() => {})
+  for (const [identifier, controller] of Object.entries(CONTROLLERS)) application.register(identifier, controller)
+  return Promise.resolve()
 }
