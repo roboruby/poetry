@@ -145,22 +145,24 @@ module Poetry
       record_in_manifest(plan.manifest)
     end
 
-    # Each port's origin, license and copyright in the host's notices, with
-    # the license text, once per item: the notice MIT asks to travel with
-    # the copy, kept even after the host edits the files.
+    # Each port's origins, licenses and copyrights in the host's notices,
+    # with the license texts, once per item: the notice MIT asks to travel
+    # with the copy, kept even after the host edits the files. A bundle
+    # credits every library inside it.
     def credit_origins(plan)
-      plan.provenance.select(&:origin).each do |record|
-        origin = record.origin
+      plan.provenance.select { |record| record.origins.any? }.each do |record|
         marker = "<!-- poetry:add #{record.name} -->"
         path = File.join(destination_root, NOTICES)
         next if File.exist?(path) && File.read(path).include?(marker)
 
         create_file NOTICES, "# Third-party notices\n", skip: true unless File.exist?(path)
-        entry = ["", marker, "## #{record.name}", "",
-                 "Adapted from #{origin["registry"]}/#{origin["item"]} (#{origin["url"]}), " \
-                 "#{origin["repository"]}.",
-                 "License: #{origin["license"]}. #{origin["copyright"]}", ""]
-        entry += ["```", origin["notice"].strip, "```", ""] if origin["notice"]
+        entry = ["", marker, "## #{record.name}", ""]
+        record.origins.each do |origin|
+          entry += ["Adapted from #{origin["registry"]}/#{origin["item"]} (#{origin["url"]}), " \
+                    "#{origin["repository"]}.",
+                    "License: #{origin["license"]}. #{origin["copyright"]}", ""]
+          entry += ["```", origin["notice"].strip, "```", ""] if origin["notice"]
+        end
         append_to_file NOTICES, entry.join("\n")
       end
     end
@@ -240,8 +242,8 @@ module Poetry
       end
       plan.docs.each { |docs| say_status :docs, docs, :blue }
       plan.provenance.select(&:community).each do |record|
-        origin = record.origin && " - adapted from #{record.origin["registry"]}/#{record.origin["item"]} " \
-                                  "(#{record.origin["license"]})"
+        credits = record.origins.map { |origin| "#{origin["registry"]}/#{origin["item"]} (#{origin["license"]})" }
+        origin = credits.any? ? " - adapted from #{credits.join(", ")}" : ""
         say_status :community, "#{record.name}: a community item, reviewed and checked in CI, not audited#{origin}",
                    :cyan
       end

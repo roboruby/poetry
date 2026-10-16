@@ -157,6 +157,50 @@ module Poetry
       end
     end
 
+    # A bundle credits every library inside it: several origins, each with
+    # its own notice.
+    BUNDLE_ITEM = {
+      "name" => "editor-island", "type" => "registry:component",
+      "meta" => {
+        "community" => true,
+        "source" => { "registry" => "@tiptap", "item" => "react", "url" => "https://www.npmjs.com/package/@tiptap/react",
+                      "repository" => "https://github.com/ueberdosis/tiptap", "license" => "MIT",
+                      "copyright" => "Copyright (c) 2025, Tiptap GmbH", "notice" => "MIT License (Tiptap)" },
+        "sources" => [
+          { "registry" => "@tiptap", "item" => "react", "url" => "https://www.npmjs.com/package/@tiptap/react",
+            "repository" => "https://github.com/ueberdosis/tiptap", "license" => "MIT",
+            "copyright" => "Copyright (c) 2025, Tiptap GmbH", "notice" => "MIT License (Tiptap)" },
+          { "registry" => "@react", "item" => "react", "url" => "https://www.npmjs.com/package/react",
+            "repository" => "https://github.com/facebook/react", "license" => "MIT",
+            "copyright" => "Copyright (c) Meta Platforms, Inc. and affiliates.", "notice" => "MIT License (React)" }
+        ]
+      },
+      "files" => [{ "path" => "app/javascript/community/islands/editor.js",
+                    "content" => "export function mount() {}\n" }]
+    }.freeze
+
+    def test_a_bundle_credits_every_origin_in_the_notices_and_lists_them_in_the_manifest
+      prepare_community
+      write_fixture("editor-island", BUNDLE_ITEM)
+
+      output = run_generator %w[@poetry/editor-island]
+
+      assert_match(%r{adapted from @tiptap/react \(MIT\), @react/react \(MIT\)}, output)
+      assert_file "THIRD_PARTY_NOTICES.md" do |notices|
+        assert_equal 1, notices.scan("<!-- poetry:add editor-island -->").size
+        assert_includes notices, "Adapted from @tiptap/react"
+        assert_includes notices, "Adapted from @react/react"
+        assert_includes notices, "MIT License (React)"
+      end
+      assert_file "config/poetry_components.yml" do |manifest|
+        entry = YAML.safe_load(manifest, permitted_classes: [Date]).dig("components", "editor-island")
+
+        assert_nil entry["origin"]
+        assert_equal(%w[@tiptap @react], entry["origins"].map { |origin| origin["registry"] })
+        assert(entry["origins"].none? { |origin| origin.key?("notice") })
+      end
+    end
+
     MODULE_ITEM = {
       "name" => "mesh-island", "type" => "registry:component", "meta" => { "community" => true },
       "files" => [{ "path" => "app/javascript/community/islands/mesh.js",

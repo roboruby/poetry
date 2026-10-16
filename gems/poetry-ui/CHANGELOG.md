@@ -4,7 +4,8 @@
 
 ### Added
 
-- `poetry:install` registers the island controller and pins `app/javascript/islands/` as `islands/*` when poetry-island is bundled, once each; `poetry:add` pins `app/javascript/community/` as `community/*` once when an item brings a module there (an island's bundle, a kernel).
+- `poetry:install` registers the island controller and pins `app/javascript/islands/` as `islands/*` when poetry-island is bundled, once each; `poetry:add` pins `app/javascript/community/` as `community/*` once when an item brings a module there (an island's bundle, a kernel), and credits every origin of an item that names several in `THIRD_PARTY_NOTICES.md`, each with its license text.
+- The Attachment preview's whole-chip trigger carries its text for screen readers only, as `poetry_attachment_for` does; the chip is the visible control.
 
 - `poetry:add @poetry/<name>` installs a community item from poetryui.com when the gems ship no item of that name (`community:` in `config/poetry_components.yml` points it elsewhere). A port records its origin in the manifest and adds its license to the host's `THIRD_PARTY_NOTICES.md`, once. An unknown bare name points at the `@poetry/` address.
 - The generated usage skill carries the motion effects' reference when poetry-motion is in the bundle.

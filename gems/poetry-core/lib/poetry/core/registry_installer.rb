@@ -29,8 +29,13 @@ module Poetry
       Plan = Struct.new(:writes, :css_writes, :entry_lines, :gem_satisfied, :block_installs,
                         :gem_deps, :docs, :manifest, :provenance, keyword_init: true)
       # Where an item came from: its address, whether it is a community
-      # item, and the origin a port credits (meta.source), if any.
-      Provenance = Struct.new(:name, :address, :community, :origin, keyword_init: true)
+      # item, and the origins a port credits (meta.sources, or the one
+      # meta.source), if any.
+      Provenance = Struct.new(:name, :address, :community, :origins, keyword_init: true) do
+        # The first origin, for a one-origin port's readers.
+        # @return [Hash, nil]
+        def origin = origins&.first
+      end
       # One file write of the plan.
       Write = Struct.new(:target, :content, :item, keyword_init: true)
 
@@ -145,20 +150,26 @@ module Poetry
       end
 
       # The manifest record: the address, and for a community item or a
-      # port, that and the origin it credits.
+      # port, that and the origin it credits (`origins`, a list, when a
+      # bundle credits several).
       def manifest_entry(state, name)
         record = provenance(state, name)
         entry = { "source" => record.address }
         entry["community"] = true if record.community
-        entry["origin"] = record.origin.except("notice") if record.origin
+        origins = record.origins.map { |origin| origin.except("notice") }
+        entry["origin"] = origins.first if origins.one?
+        entry["origins"] = origins if origins.size > 1
         entry
       end
 
-      # The item's provenance.
+      # The item's provenance: meta.sources (several origins, an island's
+      # bundle) or meta.source (one).
       def provenance(state, name)
         meta = state[:items][name]["meta"] || {}
+        sources = meta["sources"]
+        origins = sources.is_a?(Array) && sources.any? ? sources : [meta["source"]].compact
         Provenance.new(name: name, address: state[:sources][name], community: meta["community"] == true,
-                       origin: meta["source"])
+                       origins: origins)
       end
 
       # Kahn: an item writes only after every remote item it depends on has
