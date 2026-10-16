@@ -101,8 +101,15 @@ module Poetry
         assert_empty channel.sent
       end
 
-      def test_the_rendering_controller_is_the_app_s_when_it_has_one
-        assert_equal ApplicationController, AttachmentBroadcasts.rendering_controller
+      # The chips render through a controller defined inside the host, so a
+      # representation's URL resolves; ActionController::Base has no routes.
+      def test_the_rendering_controller_carries_the_app_s_routes
+        controller = AttachmentBroadcasts.rendering_controller
+
+        assert_operator controller, :<, ActionController::Base
+        assert_includes controller.ancestors, Rails.application.routes.url_helpers
+        assert_same controller, AttachmentBroadcasts.rendering_controller
+        assert_equal "Poetry::Ui::AttachmentBroadcasts::Renderer", controller.name
       end
 
       def test_the_hooks_install_once

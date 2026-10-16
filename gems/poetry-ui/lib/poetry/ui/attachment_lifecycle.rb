@@ -27,6 +27,8 @@ module Poetry
 
       attr_reader :attachment, :blob, :variant
 
+      # The lifecycle of one attachment, read from whatever the view holds.
+      #
       # @param given [Object] an Attached::One, an Attachment or a Blob
       # @param variant [Symbol, Hash, nil] the named variant or transformations to show as the media
       def initialize(given, variant: nil)

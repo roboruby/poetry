@@ -28,6 +28,9 @@ module Poetry
       # [record, :attachments]) and the variant to show.
       Registration = Struct.new(:stream, :variant, keyword_init: true) do
         # The stream the record's chips broadcast on.
+        #
+        # @param record [Object] the model instance the attachments belong to
+        # @return [Object] what the stream callable returns, else [record, :attachments]
         def stream_for(record)
           stream ? stream.call(record) : [record, :attachments]
         end
@@ -56,9 +59,9 @@ module Poetry
 
         # How a chip is rendered for the stream: a callable of the
         # attachment and the variant returning HTML. The default renders
-        # `poetry_attachment_for` through the app's controller renderer
-        # (ApplicationController carries the app's route helpers, which a
-        # representation's URL needs; ActionController::Base does not); a
+        # `poetry_attachment_for` through the renderer of a controller
+        # defined inside the host (it carries the app's route helpers, which
+        # a representation's URL needs; ActionController::Base does not); a
         # test swaps it.
         # @return [Proc]
         def renderer
@@ -72,11 +75,16 @@ module Poetry
 
         attr_writer :renderer
 
-        # The controller whose renderer draws the chips: the app's, with
-        # its route helpers, when it has one.
+        # The controller whose renderer draws the chips: a controller
+        # defined inside the host, once the app is up, so it carries the
+        # app's route helpers (a representation's URL needs them) and its
+        # view helpers, which ActionController::Base itself does not. Named
+        # under this module, so its template prefixes resolve.
         # @return [Class]
         def rendering_controller
-          defined?(::ApplicationController) ? ::ApplicationController : ::ActionController::Base
+          return const_get(:Renderer, false) if const_defined?(:Renderer, false)
+
+          const_set(:Renderer, Class.new(::ActionController::Base))
         end
 
         # The Turbo Streams channel, or nil without turbo-rails.
@@ -101,7 +109,7 @@ module Poetry
         # The registration an attribute of a record falls under, through the
         # record's ancestors.
         #
-        # @param record [Object] the attachment's record
+        # @param record [Object] the model instance whose class, or a superclass, opted the attribute in
         # @param name [Symbol, String] the attachment attribute
         # @return [Registration, nil]
         def registration_for(record, name)

@@ -603,12 +603,12 @@ module Poetry
       defined?(Poetry::Island::Engine) ? true : false
     end
 
-    # Whether the agent gem is bundled.
     # Whether Active Storage is in the app (its engine loaded).
     def active_storage_available?
       defined?(::ActiveStorage::Engine) ? true : false
     end
 
+    # Whether the agent gem is bundled.
     def agent_available?
       defined?(Poetry::Agent::Engine) ? true : false
     end
