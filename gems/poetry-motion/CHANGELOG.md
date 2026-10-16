@@ -2,6 +2,8 @@
 
 ## [0.1.14]
 
+- The released gem serves its JavaScript minified, as poetry-core does, from `dist/javascript` with a source map beside each file. The vendored kernels ship as they were built.
+
 - Six more effects. Layout: `poetry_animated_list` (Turbo Stream changes run as layout transitions), `poetry_layout_group` (elements sharing a `data-layout-id` move between places, the active-tab indicator pattern) and `poetry_shared_element` (a morph across a Turbo visit). Pointer: `poetry_spotlight_card`, `poetry_magnetic` and `poetry_dock`.
 
 - Three text effects: `poetry_typewriter`, `poetry_scramble` and `poetry_word_rotate`. Each renders the finished text for readers and the eye and animates an aria-hidden copy; the word rotate pauses on hover and focus and stops after its rounds on the first word.

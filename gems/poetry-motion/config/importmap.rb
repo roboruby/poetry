@@ -10,7 +10,7 @@
 # Pins are explicit because a pin_all_from directory overrides any pin of
 # the same name; the engine test proves every shipped file has one.
 
-motion = File.expand_path("../app/javascript/poetry/motion", __dir__)
+motion = Poetry::Core.javascript_path(File.expand_path("..", __dir__)).join("poetry/motion")
 
 pin "@poetry/motion", to: "poetry/motion/index.js"
 pin "@poetry/motion/policy", to: "poetry/motion/policy.js"

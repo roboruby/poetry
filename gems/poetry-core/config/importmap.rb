@@ -7,5 +7,5 @@
 # bundler hosts via the npm package's exports map - one source, two channels.
 
 pin "@poetry/controllers", to: "poetry/core/index.js"
-pin_all_from File.expand_path("../app/javascript/poetry/core", __dir__),
+pin_all_from Poetry::Core.javascript_path(File.expand_path("..", __dir__)).join("poetry/core"),
              under: "@poetry/controllers", to: "poetry/core"

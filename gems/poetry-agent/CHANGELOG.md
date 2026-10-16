@@ -6,6 +6,10 @@
 
 - `describe_component` prints one line per behavior the component uses.
 
+### Changed
+
+- The released gem serves its JavaScript minified, as poetry-core does, from `dist/javascript` with a source map beside each file.
+
 ## [0.1.13] - 2026-10-13
 
 ### Changed

@@ -7,6 +7,12 @@ updates:
       interval: weekly
   # The release bundle: a sigstore or json bump arrives as a PR that the
   # releaser's tests gate before it can touch a release.
+  # The minifier the release runs: an esbuild bump arrives as a PR that the
+  # releaser job gates (its tests minify, then it builds all nine).
+  - package-ecosystem: npm
+    directory: /tools/minifier
+    schedule:
+      interval: weekly
   - package-ecosystem: bundler
     directory: /tools/releaser
     schedule:

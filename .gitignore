@@ -9,3 +9,4 @@
 .env
 .DS_Store
 /Gemfile.lock
+/gems/*/dist/

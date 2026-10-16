@@ -27,6 +27,24 @@ module Poetry
         assert_path_exists JS_ROOT.join("poetry/core")
       end
 
+      def test_a_gem_serves_its_minified_tree_when_it_carries_one
+        Dir.mktmpdir do |gem_root|
+          gem_root = Pathname.new(gem_root)
+
+          assert_equal gem_root.join("app/javascript"), Poetry::Core.javascript_path(gem_root)
+
+          gem_root.join("dist/javascript").mkpath
+
+          assert_equal gem_root.join("dist/javascript"), Poetry::Core.javascript_path(gem_root.to_s)
+        end
+      end
+
+      def test_the_repository_serves_source
+        # dist/ exists only while the release builds a gem; a stray one would
+        # put every dev and test host on minified code.
+        assert_equal JS_ROOT, Poetry::Core.javascript_path(Poetry::Core.root)
+      end
+
       def test_internal_imports_use_the_dual_channel_specifier
         # Relative imports break under Propshaft digests; bare
         # "@poetry/controllers/..." specifiers resolve under BOTH channels

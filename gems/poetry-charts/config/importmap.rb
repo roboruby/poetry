@@ -6,5 +6,5 @@
 # source, two channels.
 
 pin "@poetry/charts", to: "poetry/charts/index.js"
-pin_all_from File.expand_path("../app/javascript/poetry/charts", __dir__),
+pin_all_from Poetry::Core.javascript_path(File.expand_path("..", __dir__)).join("poetry/charts"),
              under: "@poetry/charts", to: "poetry/charts"

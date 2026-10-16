@@ -22,6 +22,13 @@ tests and gates; read the gem's file before working in it.
   comments into the tree (the gem's AGENTS.md has the rule).
 - `tools/releaser/` — versions, changelog dates, notes, build, sign, verify,
   push; its own small bundle and tests.
+- `tools/minifier/` — the release's JavaScript minifier (esbuild, pinned).
+  The build turns each published gem's `app/javascript` into
+  `dist/javascript`, one minified file and source map per source file, packs
+  it, then deletes `dist/` (gitignored). `Poetry::Core.javascript_path`
+  serves `dist/javascript` when a gem carries it, so released gems serve
+  minified files and a checkout serves source. `rake minify:write` and
+  `minify:clean` in `tools/releaser` produce and remove the trees locally.
 - The root: the umbrella gem (`poetry.gemspec`, `lib/`, `test/`) plus
   `VERSION`, the single source of truth for all nine gems. One
   `gem "poetry"` installs core, ui and lucide as hard runtime dependencies,
@@ -60,7 +67,7 @@ tests and gates; read the gem's file before working in it.
   notes assembled from the ten changelogs; the docs engine is in the
   family for versions and notes and out of the publish list. Publishing that release is the
   word: `release.yml` builds all nine reproducibly from the tag's commit
-  time, signs each with sigstore, verifies, then exchanges one trusted
+  time with their JavaScript minified, signs each with sigstore, verifies, then exchanges one trusted
   publishing credential and pushes in order, idempotently (a version already
   on RubyGems with the same checksum is skipped, a different checksum stops
   the run). A manual dispatch of `release.yml` is always a dry run.

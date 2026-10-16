@@ -42,7 +42,7 @@ module Poetry
 
       initializer "poetry_motion.assets" do |app|
         if app.config.respond_to?(:assets)
-          app.config.assets.paths << Poetry::Motion.root.join("app/javascript").to_s
+          app.config.assets.paths << Poetry::Core.javascript_path(Poetry::Motion.root).to_s
           app.config.assets.paths << Poetry::Motion.root.join("app/assets/stylesheets").to_s
         end
       end
@@ -50,7 +50,7 @@ module Poetry
       initializer "poetry_motion.importmap", before: "importmap" do |app|
         if app.config.respond_to?(:importmap)
           app.config.importmap.paths << Poetry::Motion.root.join("config/importmap.rb")
-          app.config.importmap.cache_sweepers << Poetry::Motion.root.join("app/javascript")
+          app.config.importmap.cache_sweepers << Poetry::Core.javascript_path(Poetry::Motion.root)
         end
       end
     end

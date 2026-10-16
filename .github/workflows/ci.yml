@@ -323,6 +323,13 @@ jobs:
           ruby-version: "4.0"
           bundler-cache: true
           working-directory: tools/releaser
+      - name: Set up Node (the minifier)
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - name: Install the minifier (esbuild, pinned by its lockfile, no install scripts)
+        working-directory: tools/minifier
+        run: npm ci --ignore-scripts
       - name: Releaser tests
         run: bundle exec rake test
       - name: Build all nine gems

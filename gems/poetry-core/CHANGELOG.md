@@ -10,6 +10,10 @@
 - `poetry check` warns on two poetry-motion mistakes: `motion-autoplay-pause` for a marquee rendered with `pausable: false` (WCAG 2.2.2), and `motion-overlay-in-transform` for a component with the `popper` behavior inside a tilt card, whose tilted layer would become the containing block for the panel.
 - The registry gains a `behaviors` section per component, and a component's agent rules lead with the rules of the behaviors it uses. llms.txt and the skills print one `BEHAVIOR` line per behavior.
 
+### Changed
+
+- The released gem serves its JavaScript minified. The release writes a minified copy of `app/javascript` into `dist/javascript`, file for file with a source map beside each, and the engine serves that tree through Propshaft and the importmap whenever the gem carries it; a checkout or a path gem serves source. The pins, the specifiers and the npm package are unchanged. On the docs site a cold page fetches about 105 KB of poetry-core JavaScript gzipped instead of 258 KB, and first paint on a throttled mobile profile comes about 0.8 s sooner.
+
 ### Fixed
 
 - `poetry:check` no longer crashes on an attribute whose name is ERB, and a positional argument stands it down on required options as on content blocks (`poetry_typewriter("Hello")` sets `text:`).

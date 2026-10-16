@@ -21,7 +21,9 @@ module Poetry
       end
 
       initializer "poetry_agent.assets" do |app|
-        app.config.assets.paths << Poetry::Agent.root.join("app/javascript").to_s if app.config.respond_to?(:assets)
+        if app.config.respond_to?(:assets)
+          app.config.assets.paths << Poetry::Core.javascript_path(Poetry::Agent.root).to_s
+        end
       end
 
       # The importmap-first JS channel (the poetry-core shape); bundler
@@ -29,7 +31,7 @@ module Poetry
       initializer "poetry_agent.importmap", before: "importmap" do |app|
         if app.config.respond_to?(:importmap)
           app.config.importmap.paths << Poetry::Agent.root.join("config/importmap.rb")
-          app.config.importmap.cache_sweepers << Poetry::Agent.root.join("app/javascript")
+          app.config.importmap.cache_sweepers << Poetry::Core.javascript_path(Poetry::Agent.root)
         end
       end
     end
