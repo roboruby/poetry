@@ -73,9 +73,9 @@ module Poetry
         # rgb(...)) - a url(#fragment) is not a color.
         STYLE_COLOR = /(?<!url\()#\h{3,8}\b|\b(?:#{COLOR_FUNCTIONS.join("|")})\([^)]*\)/i
 
-        # A catalog over one registry root.
-        def self.from_registry(root, helpers: nil, icon_names: nil, host_helpers: nil)
-          from_registries([root], helpers: helpers, icon_names: icon_names, host_helpers: host_helpers)
+        # A catalog over one registry root; the options are from_registries'.
+        def self.from_registry(root, **)
+          from_registries([root], **)
         end
 
         # A host catalog spans every installed poetry gem (ui + charts): a
@@ -85,8 +85,10 @@ module Poetry
         # host_registry: the app's own components (HostComponents.registry),
         # merged in beside the gem registries - their declared helpers join
         # the valid set and their contracts are checked like any other.
+        # rubocop:disable Metrics/ParameterLists
         def self.from_registries(roots, helpers: nil, icon_names: nil, host_registry: nil, host_helpers: nil,
-                                 icon_libraries: nil)
+                                 icon_libraries: nil, icon_aliases: nil, icon_library_aliases: nil)
+          # rubocop:enable Metrics/ParameterLists
           payloads = roots.map do |root|
             YAML.load_file(Pathname.new(root).join(Registry::RELATIVE_PATH), aliases: true)
           end
@@ -108,7 +110,9 @@ module Poetry
               helper_args: helper_args,
               host_helpers: host_helpers,
               internals: internals.uniq.sort,
-              icon_libraries: icon_libraries)
+              icon_libraries: icon_libraries,
+              icon_aliases: icon_aliases,
+              icon_library_aliases: icon_library_aliases)
         end
 
         # helpers: the FULL set of valid poetry_* helper method names (from
@@ -123,10 +127,14 @@ module Poetry
         # active icon set's valid names - when given, icon-formatted option
         # values are checked for membership, not just shape. icon_libraries:
         # every registered set's names by library key, so a call naming its
-        # set (`library: :tabler`) is checked against that set.
+        # set (`library: :tabler`) is checked against that set. icon_aliases:
+        # the active set's old names => current names (an old name renders,
+        # and check warns with the rename); icon_library_aliases: the same by
+        # library key.
         # rubocop:disable Metrics/ParameterLists
         def initialize(components, helpers: nil, helper_entries: nil, icon_names: nil, helper_args: nil,
-                       host_helpers: nil, internals: [], icon_libraries: nil)
+                       host_helpers: nil, internals: [], icon_libraries: nil, icon_aliases: nil,
+                       icon_library_aliases: nil)
           # rubocop:enable Metrics/ParameterLists
           @components = components
           @internals = internals
@@ -134,6 +142,10 @@ module Poetry
           @helper_args = helper_args || {}
           @icon_names = icon_names&.to_set(&:to_s)
           @icon_libraries = icon_libraries&.to_h { |key, names| [key.to_s, names.to_set(&:to_s)] }
+          @icon_aliases = (icon_aliases || {}).to_h { |old, current| [old.to_s, current.to_s] }
+          @icon_library_aliases = (icon_library_aliases || {}).to_h do |key, map|
+            [key.to_s, map.to_h { |old, current| [old.to_s, current.to_s] }]
+          end
           # The app's own poetry_* helper METHODS (HostComponents.helper_methods:
           # a pagination adapter, a wrapper of the host's own) - valid by
           # name, contracts their own.
@@ -162,6 +174,9 @@ module Poetry
 
         # Every registered set's names by library key, or nil when unknown.
         attr_reader :icon_libraries
+
+        # The renamed-icon map for a library (nil: the active set).
+        def icon_aliases_for(library = nil) = library ? @icon_library_aliases.fetch(library, {}) : @icon_aliases
 
         # The family's `@api private` namespaces (the registries' "internals"
         # sections), top-most only.
@@ -663,6 +678,9 @@ module Poetry
           end
           return [] if names.nil? || names.include?(value)
 
+          current = @catalog.icon_aliases_for(library)[value]
+          return [renamed_icon_finding(key, value, current, line)] if current
+
           # Icons.suggest, not the generic checker: it catches the Lucide v1
           # reversed-compound renames (alert-circle -> circle-alert) that
           # edit distance misses every time.
@@ -670,6 +688,15 @@ module Poetry
           [Finding.new(rule: "unknown-icon", severity: :error,
                        message: "#{key}: #{value.inspect} is not in #{set}", line: line,
                        suggestion: Icons.suggest(value, names))]
+        end
+
+        # An old name the set still renders through an alias: a warning
+        # that carries the rename.
+        def renamed_icon_finding(key, value, current, line)
+          Finding.new(rule: "renamed-icon", severity: :warning,
+                      message: "#{key}: #{value.inspect} was renamed #{current.to_sym.inspect} upstream; " \
+                               "the old name still renders through an alias",
+                      line: line, suggestion: current)
         end
 
         # A `library:` no registered set answers to: the render raises.
@@ -1683,6 +1710,11 @@ module Poetry
                                              "icon names are kebab-case (#{kebab.to_sym.inspect} " \
                                              "is what renders)",
                                     line: line, suggestion: kebab)
+          elsif (current = @catalog.icon_aliases_for[kebab])
+            findings << Finding.new(rule: "renamed-icon", severity: :warning,
+                                    message: "#{owner}: #{raw.inspect} was renamed #{current.to_sym.inspect} " \
+                                             "upstream; the old name still renders through an alias",
+                                    line: line, suggestion: current)
           else
             findings << Finding.new(rule: "icon-declaration", severity: :warning,
                                     message: "#{owner}: #{raw.inspect} looks like an icon name " \

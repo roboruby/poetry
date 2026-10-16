@@ -32,7 +32,7 @@ Beyond components it carries nine complete visual themes, a model-bound form bui
 
 ### [poetry-lucide](https://github.com/roboruby/poetry/tree/main/gems/poetry-lucide) — the default icon set
 
-Lucide's 1,745 icons, vendored at a pinned upstream commit and sanitized at vendor time, so rendering an icon never parses SVG, never sanitizes, and never touches the network. The set registers with poetry-core's icon registry, which is what `poetry_icon(:"circle-check")` and every icon-bearing component resolve against. A wrong name raises in development with a did-you-mean suggestion, `bin/rails poetry:check` catches literal names before that, and in production a configured fallback glyph renders instead of a 500.
+Lucide's 1,890 icons, with its 264 renamed names kept as aliases, vendored at a pinned upstream commit and sanitized at vendor time, so rendering an icon never parses SVG, never sanitizes, and never touches the network. The set registers with poetry-core's icon registry, which is what `poetry_icon(:"circle-check")` and every icon-bearing component resolve against. A wrong name raises in development with a did-you-mean suggestion, `bin/rails poetry:check` catches literal names before that, and in production a configured fallback glyph renders instead of a 500.
 
 ## Installation
 

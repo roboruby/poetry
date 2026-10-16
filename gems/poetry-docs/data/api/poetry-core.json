@@ -5301,7 +5301,7 @@
               "types": [
                 "Enumerable"
               ],
-              "text": "the set's names"
+              "text": "every name the set serves, to suggest from"
             }
           ],
           "return": {
@@ -5312,7 +5312,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 209
+          "line": 233
         },
         {
           "name": "register",
@@ -5350,7 +5350,7 @@
             }
           ],
           "file": "lib/poetry/core/icons.rb",
-          "line": 259
+          "line": 283
         },
         {
           "name": "registry",
@@ -5367,7 +5367,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 237
+          "line": 261
         },
         {
           "name": "set",
@@ -5394,7 +5394,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 270
+          "line": 294
         },
         {
           "name": "suggest",
@@ -5428,7 +5428,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 223
+          "line": 247
         }
       ],
       "constants": [
@@ -5452,6 +5452,23 @@
       "examples": [],
       "file": "lib/poetry/core/icons.rb",
       "methods": [
+        {
+          "name": "aliases",
+          "scope": "instance",
+          "group": null,
+          "signature": "aliases",
+          "docstring": "Old names the upstream renamed, each to the name it renders as.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => String}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 61
+        },
         {
           "name": "dir",
           "scope": "instance",
@@ -5493,14 +5510,14 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 87
+          "line": 95
         },
         {
           "name": "include?",
           "scope": "instance",
           "group": null,
           "signature": "include?(name)",
-          "docstring": "Whether the set has an icon of this name: the name must be\nwell-formed and its SVG present on disk.",
+          "docstring": "Whether the set has an icon of this name, or an alias for one: the\nname must be well-formed and its SVG present on disk.",
           "params": [
             {
               "name": "name",
@@ -5519,13 +5536,13 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 76
+          "line": 84
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(dir:, svg_attributes: DEFAULT_SVG_ATTRIBUTES)",
+          "signature": "initialize(dir:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {})",
           "docstring": "A set over one directory of sanitized SVG files, one file per\nicon name (`circle-alert.svg`); each icon is read once and cached.",
           "params": [
             {
@@ -5542,6 +5559,13 @@
                 "Hash{String => String}"
               ],
               "text": "the <svg> wrapper's\ndrawing attributes (viewBox, fill, stroke)"
+            },
+            {
+              "name": "aliases",
+              "types": [
+                "Hash{String => String}"
+              ],
+              "text": "old name => current name;\nan old name still renders, and `poetry check` warns with the rename"
             }
           ],
           "return": {
@@ -5552,14 +5576,14 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 64
+          "line": 71
         },
         {
           "name": "names",
           "scope": "instance",
           "group": null,
           "signature": "names",
-          "docstring": "Every icon name in the set, sorted.",
+          "docstring": "Every current icon name in the set, sorted (aliases are not names).",
           "params": [],
           "return": {
             "types": [
@@ -5569,7 +5593,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 99
+          "line": 109
         },
         {
           "name": "svg_attributes",
@@ -5606,6 +5630,23 @@
       "file": "lib/poetry/core/icons.rb",
       "methods": [
         {
+          "name": "aliases",
+          "scope": "instance",
+          "group": null,
+          "signature": "aliases",
+          "docstring": "Old names the upstream renamed, each to the name it renders as.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => String}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/core/icons.rb",
+          "line": 150
+        },
+        {
           "name": "fetch",
           "scope": "instance",
           "group": null,
@@ -5629,14 +5670,14 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 157
+          "line": 179
         },
         {
           "name": "include?",
           "scope": "instance",
           "group": null,
           "signature": "include?(name)",
-          "docstring": "Whether the set has an icon of this name.",
+          "docstring": "Whether the set has an icon of this name, or an alias for one.",
           "params": [
             {
               "name": "name",
@@ -5655,13 +5696,13 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 148
+          "line": 170
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(path:, svg_attributes: DEFAULT_SVG_ATTRIBUTES)",
+          "signature": "initialize(path:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {})",
           "docstring": "A set over one packed file of sanitized inner markup.",
           "params": [
             {
@@ -5678,6 +5719,13 @@
                 "Hash{String => String}"
               ],
               "text": "the <svg> wrapper's\ndrawing attributes (viewBox, fill, stroke)"
+            },
+            {
+              "name": "aliases",
+              "types": [
+                "Hash{String => String}"
+              ],
+              "text": "old name => current name"
             }
           ],
           "return": {
@@ -5688,7 +5736,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 137
+          "line": 158
         },
         {
           "name": "names",
@@ -5705,7 +5753,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 174
+          "line": 197
         },
         {
           "name": "path",
@@ -5722,7 +5770,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 125
+          "line": 140
         },
         {
           "name": "svg_attributes",
@@ -5739,7 +5787,7 @@
           },
           "examples": [],
           "file": "lib/poetry/core/icons.rb",
-          "line": 130
+          "line": 145
         }
       ],
       "constants": []

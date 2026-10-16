@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "json"
 require "poetry/core"
 require_relative "lucide/version"
 
@@ -21,7 +22,15 @@ module Poetry
       #
       # @return [Poetry::Core::Icons::FileSet]
       def set
-        @set ||= Poetry::Core::Icons::FileSet.new(dir: root.join("icons"))
+        @set ||= Poetry::Core::Icons::FileSet.new(dir: root.join("icons"), aliases: aliases)
+      end
+
+      # The names Lucide renamed, each to the current name it renders as
+      # (icons/aliases.json, from the icons' own metadata).
+      #
+      # @return [Hash{String => String}]
+      def aliases
+        @aliases ||= JSON.parse(root.join("icons/aliases.json").read).freeze
       end
 
       # The upstream lucide-icons/lucide commit the icons/ tree was

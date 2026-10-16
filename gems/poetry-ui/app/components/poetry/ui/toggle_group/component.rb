@@ -19,8 +19,8 @@ module Poetry
       #
       # @example A text-alignment switcher
       #   render Poetry::Ui::ToggleGroup::Component.new(value: "left", label: "Text alignment") do |group|
-      #     group.with_item(value: "left", label: "Align left") { icon(:"align-left") }
-      #     group.with_item(value: "center", label: "Align center") { icon(:"align-center") }
+      #     group.with_item(value: "left", label: "Align left") { icon(:"text-align-start") }
+      #     group.with_item(value: "center", label: "Align center") { icon(:"text-align-center") }
       #   end
       class Component < Poetry::Core::Component
         # The closed vocabulary for the type axis.

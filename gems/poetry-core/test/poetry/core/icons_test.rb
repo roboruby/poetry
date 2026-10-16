@@ -88,6 +88,23 @@ module Poetry
         end
       end
 
+      def test_an_alias_renders_its_current_icon_in_either_kind_of_set
+        Dir.mktmpdir("icons") do |dir|
+          File.write(File.join(dir, "trash.svg"), %(<path d="M3 6h18"/>))
+          packed = File.join(dir, "set.tsv")
+          File.write(packed, Icons::Vendor.packed("trash" => %(<path d="M3 6h18"/>)))
+          sets = [Icons::FileSet.new(dir: dir, aliases: { "trash-2" => "trash" }),
+                  Icons::PackedSet.new(path: packed, aliases: { "trash-2": :trash })]
+
+          sets.each do |set|
+            assert_equal set.fetch(:trash), set.fetch(:"trash-2")
+            assert_includes set, "trash-2"
+            assert_equal [:trash], set.names, "aliases are not names"
+            assert_equal({ "trash-2" => "trash" }, set.aliases)
+          end
+        end
+      end
+
       def test_vendor_keeps_only_safe_inner_markup
         svg = <<~SVG
           <!-- a comment -->

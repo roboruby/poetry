@@ -53,8 +53,13 @@ module Poetry
           refute_predicate Component.new(name: :"definitely-not-an-icon"), :valid?
         end
 
+        def test_a_renamed_icon_renders_its_current_name
+          assert_equal render_inline(Component.new(name: :trash)).to_html.sub("trash", ""),
+                       render_inline(Component.new(name: :"trash-2")).to_html.sub("trash-2", "")
+        end
+
         def test_the_invalid_message_names_the_closest_icon
-          component = Component.new(name: :"alert-circle")
+          component = Component.new(name: :"circle-alrt")
 
           refute_predicate component, :valid?
           assert_includes component.errors[:name].first, %(did you mean :"circle-alert"?)

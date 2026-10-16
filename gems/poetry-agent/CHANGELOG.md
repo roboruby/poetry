@@ -9,6 +9,7 @@
 ### Changed
 
 - The released gem serves its JavaScript minified, as poetry-core does, from `dist/javascript` with a source map beside each file.
+- The MCP check tool warns on a renamed Lucide icon with its current name instead of rejecting it.
 
 ## [0.1.13] - 2026-10-13
 

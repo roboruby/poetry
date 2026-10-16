@@ -1432,8 +1432,8 @@ module Poetry
       #
       # @example A text-alignment switcher
       #     poetry_toggle_group(value: "left", label: "Text alignment") do |group|
-      #       group.with_item(value: "left", label: "Align left") { icon(:"align-left") }
-      #       group.with_item(value: "center", label: "Align center") { icon(:"align-center") }
+      #       group.with_item(value: "left", label: "Align left") { icon(:"text-align-start") }
+      #       group.with_item(value: "center", label: "Align center") { icon(:"text-align-center") }
       #     end
       # @see Poetry::Ui::ToggleGroup::Component
       def poetry_toggle_group(**, &)

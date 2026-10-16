@@ -597,6 +597,21 @@ module Poetry
         assert_includes finding.message, "kebab-case"
       end
 
+      def test_a_renamed_icon_warns_with_its_current_name
+        catalog = Check::Catalog.new({ "poetry/ui/icon" => ICON_ENTRY }, icon_names: %w[trash],
+                                                                         icon_aliases: { "trash-2" => "trash" })
+        call = Check.lint(%(<%= poetry_icon(name: :"trash-2") %>), catalog: catalog).first
+        declared = Check::IconDeclarations.new(catalog).lint(%(ACTION_ICONS = { delete: :"trash-2" }.freeze)).first
+
+        [call, declared].each do |finding|
+          assert_equal "renamed-icon", finding.rule
+          assert_equal :warning, finding.severity
+          assert_equal "trash", finding.suggestion
+          assert_includes finding.message, "renamed :trash"
+        end
+        assert_empty Check.lint(%(<%= poetry_icon(name: :trash) %>), catalog: catalog)
+      end
+
       def test_valid_declarations_and_non_name_values_stay_silent
         assert_empty declaration_findings(<<~RUBY)
           FLASH_ICONS = { success: :"circle-alert", notice: :"triangle-alert" }.freeze

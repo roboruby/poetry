@@ -43,7 +43,7 @@ module Poetry
           # ride along when the gem is loaded, for a registry that predates
           # the sections.
           Server.from_registries(roots, icon_names: icon_names, helpers: helpers, skills: skills,
-                                        app_root: app_root, recipes: recipes)
+                                        app_root: app_root, recipes: recipes, icon_aliases: icon_aliases)
         end
 
         # The lucide names, or nil for a host without poetry-lucide (check
@@ -52,6 +52,16 @@ module Poetry
           return nil unless soft_require("poetry/lucide")
 
           Poetry::Core::Icons.set(:lucide).names
+        rescue Poetry::Core::Error
+          nil
+        end
+
+        # Lucide's renamed names => current names, or nil without poetry-lucide.
+        def icon_aliases
+          return nil unless soft_require("poetry/lucide")
+
+          set = Poetry::Core::Icons.set(:lucide)
+          set.respond_to?(:aliases) ? set.aliases : nil
         rescue Poetry::Core::Error
           nil
         end

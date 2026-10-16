@@ -22,6 +22,27 @@ class PoetryLucideTest < Minitest::Test
     assert_match(/\A[0-9a-f]{40}\z/, Poetry::Lucide.vendored_commit)
   end
 
+  def test_the_readme_count_and_the_pin_match_the_vendored_tree
+    readme = File.read(File.expand_path("../README.md", __dir__))
+    count = Poetry::Lucide.set.names.size.to_s.reverse.scan(/\d{1,3}/).join(",").reverse
+
+    assert_includes readme, "#{count} icons"
+    assert_equal PoetryLucide::Fetcher::PINNED_COMMIT, Poetry::Lucide.vendored_commit
+  end
+
+  # Lucide renamed icons upstream; the old names render through aliases.
+  def test_renamed_icons_render_through_their_aliases
+    aliases = Poetry::Lucide.aliases
+
+    assert_equal "trash", aliases["trash-2"]
+    assert_equal "face-slightly-smiling", aliases["smile"]
+    assert_equal Poetry::Lucide.set.fetch(:trash), Poetry::Lucide.set.fetch(:"trash-2")
+    assert_empty aliases.values.reject { |current| Poetry::Lucide.set.names.include?(current.to_sym) },
+                 "every alias names a vendored icon"
+    assert_empty aliases.keys.select { |old| Poetry::Lucide.set.names.include?(old.to_sym) },
+                 "no alias shadows a current name"
+  end
+
   def test_icon_names_are_traversal_safe
     assert_raises(Poetry::Core::IconNotFound) { Poetry::Lucide.set.fetch("../secrets") }
     refute_includes Poetry::Lucide.set, "../secrets"

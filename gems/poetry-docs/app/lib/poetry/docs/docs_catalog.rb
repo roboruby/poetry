@@ -358,7 +358,7 @@ module Poetry
         # The icon-set pages at /icons/<slug> - one per icon library.
         ICONS = [
           Entry.new(slug: "lucide", title: "Lucide", section: "icons",
-                    description: "The vendored icon set: 1,745 icons served from the gem, rendered " \
+                    description: "The vendored icon set: 1,890 icons served from the gem, rendered " \
                                  "through poetry_icon with literal-name validation."),
           Entry.new(slug: "tabler", title: "Tabler Icons", section: "icons",
                     description: "poetry-tabler: Tabler's outline and filled icons on Lucide's grid and " \

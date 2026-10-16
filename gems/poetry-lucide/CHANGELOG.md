@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.14]
+
+### Changed
+
+- Lucide 1.57.0, from 1.23.0: 1,890 icons, with 160 new, 96 redrawn and 15 renamed. The renamed names, `trash-2` among them, render through aliases.
+
+### Added
+
+- `icons/aliases.json` and `Poetry::Lucide.aliases`: the 264 names Lucide has renamed, each mapped to its current name, read from the icons' own metadata at vendor time. An old name keeps rendering after an update, and `poetry check` warns with the new one. The fetch now also removes icons the upstream dropped.
+
 ## [0.1.13] - 2026-10-13
 
 ### Changed

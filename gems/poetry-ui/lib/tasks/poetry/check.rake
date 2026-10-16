@@ -51,9 +51,16 @@ namespace :poetry do
     # Every registered set by key: a call naming its set (library: :tabler)
     # is checked against that set rather than the active one.
     icon_libraries = Poetry::Core::Icons.registry.transform_values(&:names)
+    # Renamed names render through a set's aliases; check warns with the rename.
+    icon_library_aliases = Poetry::Core::Icons.registry.transform_values do |set|
+      set.respond_to?(:aliases) ? set.aliases : {}
+    end
+    icon_aliases = icon_library_aliases.fetch(Poetry::Core::Config.current.icon_library.to_sym, {})
     catalog = Poetry::Core::Check::Catalog.from_registries(roots, icon_names: icon_names, host_registry: host,
                                                                   host_helpers: host_helpers,
-                                                                  icon_libraries: icon_libraries)
+                                                                  icon_libraries: icon_libraries,
+                                                                  icon_aliases: icon_aliases,
+                                                                  icon_library_aliases: icon_library_aliases)
     # The compile tier: Rails checks an app's views (`bin/rails
     # herb:check` walks the view paths), which leaves the templates that
     # sit beside their components unchecked - the app's own and the ones

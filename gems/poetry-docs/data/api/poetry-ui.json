@@ -8072,7 +8072,7 @@
           "examples": [
             {
               "title": "A text-alignment switcher",
-              "text": "poetry_toggle_group(value: \"left\", label: \"Text alignment\") do |group|\n  group.with_item(value: \"left\", label: \"Align left\") { icon(:\"align-left\") }\n  group.with_item(value: \"center\", label: \"Align center\") { icon(:\"align-center\") }\nend"
+              "text": "poetry_toggle_group(value: \"left\", label: \"Text alignment\") do |group|\n  group.with_item(value: \"left\", label: \"Align left\") { icon(:\"text-align-start\") }\n  group.with_item(value: \"center\", label: \"Align center\") { icon(:\"text-align-center\") }\nend"
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
@@ -22111,7 +22111,7 @@
       "examples": [
         {
           "title": "A text-alignment switcher",
-          "text": "render Poetry::Ui::ToggleGroup::Component.new(value: \"left\", label: \"Text alignment\") do |group|\n  group.with_item(value: \"left\", label: \"Align left\") { icon(:\"align-left\") }\n  group.with_item(value: \"center\", label: \"Align center\") { icon(:\"align-center\") }\nend"
+          "text": "render Poetry::Ui::ToggleGroup::Component.new(value: \"left\", label: \"Text alignment\") do |group|\n  group.with_item(value: \"left\", label: \"Align left\") { icon(:\"text-align-start\") }\n  group.with_item(value: \"center\", label: \"Align center\") { icon(:\"text-align-center\") }\nend"
         }
       ],
       "file": "app/components/poetry/ui/toggle_group/component.rb",

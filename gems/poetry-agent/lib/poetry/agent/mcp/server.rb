@@ -204,13 +204,18 @@ module Poetry
         # @param helpers [Array<String>, nil] the full set of valid poetry_* helper names;
         #   nil derives it from the registries
         # @param icon_names [Array<String>, nil] the active icon set's names, for icon-value checks
+        # @param icon_aliases [Hash{String => String}, nil] the active set's old names => current
+        #   names, so check warns on a renamed icon instead of rejecting it
         # @param skills [Hash{String => #call}] skill name => a zero-arg callable returning
         #   the skill's file map (see above)
         # @param app_root [String, nil] the host app directory (Dir.pwd for the exe)
         # @param recipes [Array<Hash>] registry-item summaries from the owning gem
-        def self.from_registry(root, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [])
+        # rubocop:disable Metrics/ParameterLists
+        def self.from_registry(root, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [],
+                               icon_aliases: nil)
+          # rubocop:enable Metrics/ParameterLists
           from_registries([root], helpers: helpers, icon_names: icon_names, skills: skills,
-                                  app_root: app_root, recipes: recipes)
+                                  app_root: app_root, recipes: recipes, icon_aliases: icon_aliases)
         end
 
         # Several registry roots as one catalog (Registry.merged: later
@@ -223,11 +228,16 @@ module Poetry
         # @param helpers [Array<String>, nil] the full set of valid poetry_* helper names;
         #   nil derives it from the registries
         # @param icon_names [Array<String>, nil] the active icon set's names, for icon-value checks
+        # @param icon_aliases [Hash{String => String}, nil] the active set's old names => current
+        #   names, so check warns on a renamed icon instead of rejecting it
         # @param skills [Hash{String => #call}] skill name => a zero-arg callable returning
         #   the skill's file map (see above)
         # @param app_root [String, nil] the host app directory (Dir.pwd for the exe)
         # @param recipes [Array<Hash>] registry-item summaries from the owning gem
-        def self.from_registries(roots, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [])
+        # rubocop:disable Metrics/ParameterLists
+        def self.from_registries(roots, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [],
+                                 icon_aliases: nil)
+          # rubocop:enable Metrics/ParameterLists
           committed = Poetry::Core::Registry.merged(roots, source_root: roots.first)
           # The app's own components declare their helpers in source
           # (`helper :name`); a boot-free scan of app_root's component files
@@ -248,6 +258,7 @@ module Poetry
           catalog = Poetry::Core::Check::Catalog.new(committed.entries, helpers: helpers,
                                                                         helper_entries: helper_entries,
                                                                         icon_names: icon_names,
+                                                                        icon_aliases: icon_aliases,
                                                                         helper_args: committed.helper_args,
                                                                         host_helpers: host_helpers)
           new(entries: committed.entries, catalog: catalog, blocks: committed.blocks || {},

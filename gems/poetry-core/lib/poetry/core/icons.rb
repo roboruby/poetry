@@ -55,26 +55,34 @@ module Poetry
         # @return [Hash{String => String}]
         attr_reader :svg_attributes
 
+        # Old names the upstream renamed, each to the name it renders as.
+        #
+        # @return [Hash{String => String}]
+        attr_reader :aliases
+
         # A set over one directory of sanitized SVG files, one file per
         # icon name (`circle-alert.svg`); each icon is read once and cached.
         #
         # @param dir [String, Pathname] the directory holding the SVGs
         # @param svg_attributes [Hash{String => String}] the <svg> wrapper's
         #   drawing attributes (viewBox, fill, stroke)
-        def initialize(dir:, svg_attributes: DEFAULT_SVG_ATTRIBUTES)
+        # @param aliases [Hash{String => String}] old name => current name;
+        #   an old name still renders, and `poetry check` warns with the rename
+        def initialize(dir:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {})
           @dir = Pathname.new(dir)
           @svg_attributes = svg_attributes.freeze
+          @aliases = aliases.to_h { |old, current| [old.to_s, current.to_s] }.freeze
           @cache = {}
           @mutex = Mutex.new
         end
 
-        # Whether the set has an icon of this name: the name must be
-        # well-formed and its SVG present on disk.
+        # Whether the set has an icon of this name, or an alias for one: the
+        # name must be well-formed and its SVG present on disk.
         #
         # @param name [Symbol, String] the icon name
         # @return [Boolean]
         def include?(name)
-          valid_name?(name) && path_for(name).exist?
+          valid_name?(name) && path_for(resolve(name)).exist?
         end
 
         # The inner SVG markup of one icon, read once and cached.
@@ -86,14 +94,16 @@ module Poetry
         #   one exists; the error's #name and #suggestion carry the parts)
         def fetch(name)
           raise IconNotFound.new("invalid icon name #{name.inspect}", name: name) unless valid_name?(name)
-          raise Icons.not_found(name, names) unless path_for(name).exist?
+
+          current = resolve(name)
+          raise Icons.not_found(name, names) unless path_for(current).exist?
 
           @mutex.synchronize do
-            @cache[name.to_sym] ||= path_for(name).read.strip
+            @cache[current.to_sym] ||= path_for(current).read.strip
           end
         end
 
-        # Every icon name in the set, sorted.
+        # Every current icon name in the set, sorted (aliases are not names).
         #
         # @return [Array<Symbol>]
         def names
@@ -101,6 +111,11 @@ module Poetry
         end
 
         private
+
+        # The name an alias renders as, else the name itself.
+        def resolve(name)
+          @aliases.fetch(name.to_s, name.to_s)
+        end
 
         # Whether the name has the icon-file shape.
         def valid_name?(name)
@@ -129,24 +144,31 @@ module Poetry
         # @return [Hash{String => String}]
         attr_reader :svg_attributes
 
+        # Old names the upstream renamed, each to the name it renders as.
+        #
+        # @return [Hash{String => String}]
+        attr_reader :aliases
+
         # A set over one packed file of sanitized inner markup.
         #
         # @param path [String, Pathname] the packed file
         # @param svg_attributes [Hash{String => String}] the <svg> wrapper's
         #   drawing attributes (viewBox, fill, stroke)
-        def initialize(path:, svg_attributes: DEFAULT_SVG_ATTRIBUTES)
+        # @param aliases [Hash{String => String}] old name => current name
+        def initialize(path:, svg_attributes: DEFAULT_SVG_ATTRIBUTES, aliases: {})
           @path = Pathname.new(path)
           @svg_attributes = svg_attributes.freeze
+          @aliases = aliases.to_h { |old, current| [old.to_s, current.to_s] }.freeze
           @cache = {}
           @mutex = Mutex.new
         end
 
-        # Whether the set has an icon of this name.
+        # Whether the set has an icon of this name, or an alias for one.
         #
         # @param name [Symbol, String] the icon name
         # @return [Boolean]
         def include?(name)
-          name.to_s.match?(NAME_FORMAT) && index.key?(name.to_s)
+          name.to_s.match?(NAME_FORMAT) && index.key?(@aliases.fetch(name.to_s, name.to_s))
         end
 
         # The inner SVG markup of one icon, read once and cached.
@@ -157,11 +179,12 @@ module Poetry
         def fetch(name)
           raise IconNotFound.new("invalid icon name #{name.inspect}", name: name) unless name.to_s.match?(NAME_FORMAT)
 
-          offset, length = index[name.to_s]
+          current = @aliases.fetch(name.to_s, name.to_s)
+          offset, length = index[current]
           raise Icons.not_found(name, names) unless offset
 
           @mutex.synchronize do
-            @cache[name.to_sym] ||= File.open(@path, "rb") do |file|
+            @cache[current.to_sym] ||= File.open(@path, "rb") do |file|
               file.seek(offset)
               file.read(length).force_encoding(Encoding::UTF_8)
             end
