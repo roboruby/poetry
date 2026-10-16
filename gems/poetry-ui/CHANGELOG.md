@@ -13,6 +13,7 @@
 - `poetry_attachment_for` and `poetry_attachments_for` render Active Storage attachments as Attachment chips through their lifecycle: processing until the blob is analyzed and the variant processed, done with the representation as the media or an icon by content type, error when an image was analyzed without dimensions, which is what an unprocessable file leaves behind with Hot Cell and without it. `Poetry::Ui::AttachmentLifecycle` is the mapping, over public Active Storage API only.
 - `Poetry::Ui::AttachmentBroadcasts`: a model opts its attachments in with `broadcasts_attachment_updates_for :photos, variant: :thumb`, and the chips are replaced over Turbo Streams when the attachment is created, when its blob's analysis lands and when a variant record is written; the page subscribes with `turbo_stream_from record, :attachments`.
 - `form.file_input` reads active_storage_validations' content type, size and limit validators on the attribute as `accept:`, `max_size:`, `min_size:` and `max_files:` when the gem is loaded and the call passes none of its own.
+- `poetry:install` wires Active Storage when its engine is in the app: the `@rails/activestorage` pin in `config/importmap.rb` and `ActiveStorage.start()` in `application.js`, once each, so FileInput's direct uploads find the class.
 
 ### Changed
 

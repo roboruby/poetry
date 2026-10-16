@@ -408,10 +408,14 @@ module Poetry
         #   and no tokens (mail clients drop var()), so a color literal is
         #   the only paint there is and the raw-color rule stays quiet;
         #   every other rule runs as on a page.
-        def lint(source, mail: false)
+        # @param [Object, nil] importmap_pins
+        def lint(source, mail: false, importmap_pins: nil)
           require "herb"
           require "prism"
           @mail = mail
+          # The host's importmap pins, when the runner read them (nil: no
+          # importmap, so the pin rules stand down).
+          @importmap_pins = importmap_pins
           # Every block-param binding this lint opens, in document order -
           # each accumulates the setters actually called on it so the
           # required-slot accounting can run once the whole template has
@@ -545,6 +549,7 @@ module Poetry
             option_findings(path, key, value, base_line + kw_line - 1, library: library)
           end
           findings + webmcp_findings(path, pairs, line) + motion_findings(path, call, base_line) +
+            upload_findings(path, call, pairs, line) +
             missing_option_findings(path, helper_of(path), call, pairs, line) +
             helper_arity_findings(helper, call, line) +
             content_findings(path, helper, call, line, content_fed) +
@@ -1120,6 +1125,16 @@ module Poetry
           node.unescaped if node.is_a?(Prism::SymbolNode) || node.is_a?(Prism::StringNode)
         end
 
+        # The value node of one keyword on a call, for the rules that read
+        # a literal literal_value leaves out (true, false, a number).
+        def keyword_node(call, name)
+          hash = call.arguments&.arguments&.find { |argument| argument.is_a?(Prism::KeywordHashNode) }
+          pair = hash&.elements&.find do |element|
+            element.is_a?(Prism::AssocNode) && element.key.respond_to?(:unescaped) && element.key.unescaped == name
+          end
+          pair&.value
+        end
+
         # --- Markup rules (Stimulus wiring / the style exits) ---
 
         def attribute_findings(node)
@@ -1360,6 +1375,36 @@ module Poetry
             else []
             end
           end
+        end
+
+        # --- Upload rules (FileInput's direct uploads) ---
+
+        # upload: :immediate with nowhere to upload to, and a direct upload
+        # (either mode) in a host whose importmap does not pin
+        # @rails/activestorage: the dynamic import fails one upload with a
+        # message, never the module graph, but every upload.
+        def upload_findings(path, call, pairs, line)
+          return [] unless path == "poetry/ui/file_input"
+
+          options = pairs.to_h { |key, value, _kw_line| [key, value] }
+          immediate = options["upload"] == "immediate"
+          direct = keyword_node(call, "direct_upload").is_a?(Prism::TrueNode) || options.key?("direct_upload_url")
+          findings = []
+          if immediate && !direct
+            findings << Finding.new(rule: "upload-immediate-without-direct-upload", severity: :error,
+                                    message: "poetry_file_input with upload: :immediate has no endpoint - pass " \
+                                             "direct_upload: true (Rails' route) or direct_upload_url:",
+                                    line: line)
+          end
+          if (immediate || direct) && @importmap_pins && !@importmap_pins.include?("@rails/activestorage")
+            findings << Finding.new(rule: "direct-upload-unpinned", severity: :warning,
+                                    message: "direct uploads load @rails/activestorage through the importmap and " \
+                                             "config/importmap.rb does not pin it - add " \
+                                             "pin \"@rails/activestorage\", to: \"activestorage.esm.js\" " \
+                                             "(poetry:install adds it when Active Storage is in the app)",
+                                    line: line)
+          end
+          findings
         end
 
         # --- Motion rules (poetry-motion's effects) ---
@@ -1817,6 +1862,15 @@ module Poetry
           end
         end
 
+        # The host's importmap pins, read once per root (nil without a root
+        # or an importmap, so the pin rules stand down).
+        def importmap_pins(root)
+          return nil unless root
+
+          @importmap_pins ||= {}
+          @importmap_pins.fetch(root.to_s) { @importmap_pins[root.to_s] = Check.importmap_pins(root) }
+        end
+
         # One file's findings; a file that cannot be read or decoded is one
         # warning naming it, never the end of the sweep.
         def run_one(path, root)
@@ -1829,7 +1883,8 @@ module Poetry
             return @declarations.lint(source) + @internals.lint(source) + @renderable.lint(source)
           end
 
-          findings = @linter.lint(source, mail: Check.mail_template?(path, root: root))
+          findings = @linter.lint(source, mail: Check.mail_template?(path, root: root),
+                                          importmap_pins: importmap_pins(root))
           # The StableId heuristics ride every ERB pass (warnings only -
           # they never flip the exit code); the element rule rides a
           # component's template, and so does the compile tier when the
@@ -1899,8 +1954,23 @@ module Poetry
       # @param catalog [Catalog] the component catalog to validate against
       # @param mail [Boolean] a mailer template (the raw-color rule stays quiet)
       # @return [Array<Finding>]
-      def lint(source, catalog:, mail: false)
-        Linter.new(catalog).lint(source, mail: mail)
+      # @param [Object, nil] importmap_pins
+      def lint(source, catalog:, mail: false, importmap_pins: nil)
+        Linter.new(catalog).lint(source, mail: mail, importmap_pins: importmap_pins)
+      end
+
+      # The names a host's config/importmap.rb pins (`pin "name"` and the
+      # `under:` of a pin_all_from), or nil when the root has none.
+      #
+      # @param root [String, Pathname] the app root
+      # @return [Array<String>, nil]
+      def importmap_pins(root)
+        path = Pathname.new(root).join("config/importmap.rb")
+        return nil unless path.file?
+
+        source = path.read
+        source.scan(/^\s*pin\s+["']([^"']+)["']/).flatten +
+          source.scan(/^\s*pin_all_from\b[^\n]*under:\s*["']([^"']+)["']/).flatten
       end
 
       # The findings as pretty JSON.

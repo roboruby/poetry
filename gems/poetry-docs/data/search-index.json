@@ -372,6 +372,54 @@
     "path": "/forms#layout"
   },
   {
+    "title": "Uploads",
+    "page": "Uploads",
+    "section": "docs",
+    "path": "/uploads"
+  },
+  {
+    "title": "Three modes",
+    "page": "Uploads",
+    "section": "docs",
+    "path": "/uploads#modes"
+  },
+  {
+    "title": "Setup",
+    "page": "Uploads",
+    "section": "docs",
+    "path": "/uploads#setup"
+  },
+  {
+    "title": "Limits and intake",
+    "page": "Uploads",
+    "section": "docs",
+    "path": "/uploads#limits"
+  },
+  {
+    "title": "Rendering attachments",
+    "page": "Uploads",
+    "section": "docs",
+    "path": "/uploads#attachments"
+  },
+  {
+    "title": "Processing with Hot Cell",
+    "page": "Uploads",
+    "section": "docs",
+    "path": "/uploads#hot-cell"
+  },
+  {
+    "title": "Turbo broadcasts",
+    "page": "Uploads",
+    "section": "docs",
+    "path": "/uploads#broadcasts"
+  },
+  {
+    "title": "Security, Turbo and native apps",
+    "page": "Uploads",
+    "section": "docs",
+    "path": "/uploads#security"
+  },
+  {
     "title": "Pagination",
     "page": "Pagination",
     "section": "docs",
@@ -1510,6 +1558,12 @@
     "page": "Attachment",
     "section": "components",
     "path": "/components/attachment#idle-dropzone"
+  },
+  {
+    "title": "Progress",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment#progress"
   },
   {
     "title": "Sizes",
@@ -3208,6 +3262,24 @@
     "page": "File Input",
     "section": "components",
     "path": "/components/file-input#dropzone"
+  },
+  {
+    "title": "Limits",
+    "page": "File Input",
+    "section": "components",
+    "path": "/components/file-input#limits"
+  },
+  {
+    "title": "Previews",
+    "page": "File Input",
+    "section": "components",
+    "path": "/components/file-input#previews"
+  },
+  {
+    "title": "Behaviors",
+    "page": "File Input",
+    "section": "components",
+    "path": "/components/file-input#behaviors"
   },
   {
     "title": "Wiring",

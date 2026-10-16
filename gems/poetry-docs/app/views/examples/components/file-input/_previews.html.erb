@@ -1,0 +1,7 @@
+<%# Every selected file is an Attachment chip cloned from the component's
+    template; preview: true gives image files a thumbnail from an object
+    URL the browser releases when the chip goes, and paste: true takes a
+    pasted screenshot. Drop or paste images here to see the chips. %>
+<%= poetry_file_input(variant: :dropzone, name: "photos[]", multiple: true, accept: "image/*", preview: true,
+                      paste: true, prompt: "Drop, paste or pick images", hint: "Each image shows a thumbnail",
+                      class: "w-full max-w-md") %>

@@ -1,0 +1,9 @@
+<%# The progress slot: a slim Progress under the title whose caption is
+    read, not shown. FileInput's uploader moves it; a server render passes
+    the value it knows. %>
+<%= poetry_attachment(state: :uploading, size: :sm, class: "w-80") do |attachment| %>
+  <% attachment.with_media { poetry_icon(name: :file) } %>
+  <% attachment.with_title { "photo.png" } %>
+  <% attachment.with_description { "2.4 MB" } %>
+  <% attachment.with_progress(value: 42, label: "Uploading photo.png") %>
+<% end %>

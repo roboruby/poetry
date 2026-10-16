@@ -1683,6 +1683,61 @@ module Poetry
         assert_includes findings.first.message, "poetry_popover sits inside poetry_tilt_card"
       end
 
+      # --- upload rules (FileInput's direct uploads) ---
+
+      UPLOAD_CATALOG = Check::Catalog.new({
+                                            "poetry/ui/file_input" => {
+                                              "options" => [{ "name" => "name" }, { "name" => "upload" },
+                                                            { "name" => "direct_upload" },
+                                                            { "name" => "direct_upload_url" }],
+                                              "slots" => []
+                                            }
+                                          })
+
+      def test_immediate_uploads_need_an_endpoint
+        findings = Check.lint(<<~ERB, catalog: UPLOAD_CATALOG)
+          <%= poetry_file_input(name: "a", upload: :immediate) %>
+          <%= poetry_file_input(name: "b", upload: :immediate, direct_upload: true) %>
+          <%= poetry_file_input(name: "c", upload: :immediate, direct_upload_url: "/uploads") %>
+          <%= poetry_file_input(name: "d", upload: :on_submit) %>
+        ERB
+
+        assert_equal([["upload-immediate-without-direct-upload", 1]], findings.map { |f| [f.rule, f.line] })
+        assert_equal :error, findings.first.severity
+        assert_includes findings.first.message, "direct_upload: true"
+      end
+
+      def test_direct_uploads_warn_when_the_importmap_lacks_the_pin
+        source = <<~ERB
+          <%= poetry_file_input(name: "a", direct_upload: true) %>
+          <%= poetry_file_input(name: "b", direct_upload_url: "/uploads", upload: :immediate) %>
+          <%= poetry_file_input(name: "c") %>
+        ERB
+        unpinned = Check.lint(source, catalog: UPLOAD_CATALOG, importmap_pins: %w[application @hotwired/turbo-rails])
+
+        assert_equal([["direct-upload-unpinned", 1], ["direct-upload-unpinned", 2]], unpinned.map do |f|
+          [f.rule, f.line]
+        end)
+        assert_equal :warning, unpinned.first.severity
+        assert_includes unpinned.first.message, %(pin "@rails/activestorage")
+        assert_empty Check.lint(source, catalog: UPLOAD_CATALOG, importmap_pins: %w[application @rails/activestorage])
+        assert_empty Check.lint(source, catalog: UPLOAD_CATALOG), "no importmap known: the pin rule stands down"
+      end
+
+      def test_importmap_pins_read_pin_and_pin_all_from
+        Dir.mktmpdir do |root|
+          FileUtils.mkdir_p(File.join(root, "config"))
+          File.write(File.join(root, "config/importmap.rb"), <<~RUBY)
+            pin "application"
+            pin "@rails/activestorage", to: "activestorage.esm.js"
+            pin_all_from "app/javascript/controllers", under: "controllers"
+          RUBY
+
+          assert_equal %w[application @rails/activestorage controllers], Check.importmap_pins(root)
+        end
+        Dir.mktmpdir { |root| assert_nil Check.importmap_pins(root) }
+      end
+
       # --- internal constants (the family's @api private namespaces) ---
 
       INTERNALS_CATALOG = Check::Catalog.new({}, internals: %w[Poetry::Core::Check Poetry::Core::HostComponents])

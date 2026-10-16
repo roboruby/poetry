@@ -327,6 +327,29 @@ module Poetry
       register_agent_runtime(index)
     end
 
+    # Direct uploads: FileInput's upload modes load @rails/activestorage
+    # through the importmap, and Rails' own submit-time flow needs
+    # ActiveStorage.start() - the two lines Active Storage's install leaves
+    # to the app. Only when Active Storage is in the app; idempotent.
+    # @api private
+    def wire_active_storage
+      return unless active_storage_available?
+
+      importmap = "config/importmap.rb"
+      if File.exist?(File.join(destination_root, importmap))
+        pinned = File.read(File.join(destination_root, importmap)).match?(%r{pin\s+["']@rails/activestorage["']})
+        append_to_file importmap, %(pin "@rails/activestorage", to: "activestorage.esm.js"\n) unless pinned
+      else
+        say_status :note, "no #{importmap} - serve @rails/activestorage from your bundler for FileInput's " \
+                          "direct uploads", :yellow
+      end
+      entry = "app/javascript/application.js"
+      return unless File.exist?(File.join(destination_root, entry))
+      return if File.read(File.join(destination_root, entry)).include?("@rails/activestorage")
+
+      append_to_file entry, %(import * as ActiveStorage from "@rails/activestorage"\nActiveStorage.start()\n)
+    end
+
     # --charts: the two host-side wires the charts engine cannot do itself.
     # The motion stylesheet is COPIED (tailwindcss-rails compiles standalone;
     # a gem-path @import would not resolve) - vendored artifact, force like
@@ -548,6 +571,11 @@ module Poetry
     end
 
     # Whether the agent gem is bundled.
+    # Whether Active Storage is in the app (its engine loaded).
+    def active_storage_available?
+      defined?(::ActiveStorage::Engine) ? true : false
+    end
+
     def agent_available?
       defined?(Poetry::Agent::Engine) ? true : false
     end

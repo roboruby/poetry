@@ -38,6 +38,9 @@ module Poetry
       def caching
       end
 
+      def uploads
+      end
+
       def engines
       end
 
@@ -187,6 +190,7 @@ module Poetry
         when "stimulus" then DocsMarkdown.stimulus(guide_entry("stimulus"))
         when "accessibility" then DocsMarkdown.accessibility(guide_entry("accessibility"))
         when "caching" then DocsMarkdown.caching(guide_entry("caching"))
+        when "uploads" then DocsMarkdown.uploads(guide_entry("uploads"))
         when "engines" then DocsMarkdown.engines(guide_entry("engines"))
         when "herb" then DocsMarkdown.herb(guide_entry("herb"))
         when "stable_ids" then DocsMarkdown.stable_ids(guide_entry("stable-ids"))

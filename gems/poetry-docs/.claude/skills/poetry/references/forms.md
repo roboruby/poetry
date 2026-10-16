@@ -369,30 +369,50 @@ A control for selecting, previewing, and removing files to upload.
 
 Class: Poetry::Ui::FileInput::Component - BEM block `poetry-ui-file_input`.
 - `variant:` (symbol) - one of input|dropzone, default "input" - :input is the compact native control; :dropzone the drag-and-drop surface.
-- `accept:` (string) - The native accept filter (e.g. "image/*,.pdf").
+- `accept:` (string) - The native accept filter (e.g. "image/*,.pdf"); the dropzone rejects a file outside it at intake.
+- `camera:` (symbol) - one of user|environment - Opens a camera on mobile, as the native capture attribute: :user (front) or :environment (back); needs an image, audio or video accept:.
 - `described_by:` (string) - Ids for the native input's aria-describedby (Field wires this).
+- `direct_upload:` (boolean) - default false - Uploads go straight to the storage service through Active Storage's direct uploads endpoint, as Rails' file_field direct_upload: true.
+- `direct_upload_url:` (string) - A direct uploads endpoint other than Rails' own (an authenticated subclass's route); implies direct_upload: true.
+- `directory:` (boolean) - default false - Dropped folders are walked for their files, and the picker selects folders.
 - `disabled:` (boolean) - default false - Disables the native input and dims the dropzone.
 - `hint:` (string) - Muted constraints copy under the prompt (formats, size limits).
 - `id:` (string) - The native input's id (Field/FormBuilder wire it to the label).
 - `invalid:` (boolean) - default false - Marks the control aria-invalid (set by Field/FormBuilder from model errors).
+- `max_files:` (integer) - The most files the dropzone holds (multiple: true); the surplus is rejected file by file.
+- `max_size:` (integer) - The largest file the dropzone takes, in bytes (10.megabytes).
+- `min_size:` (integer) - The smallest file the dropzone takes, in bytes.
 - `multiple:` (boolean) - default false - Allows selecting several files; forwarded to the native input.
 - `name:` (string) - The native input's name - the submitted param (multiple: true wants a name ending in [] for Rails params).
+- `overlay:` (boolean) - default false - The whole page is the drop target: a fixed overlay shows while files are dragged over the window.
+- `paste:` (boolean) - default false - Files pasted over the dropzone land in it (a chat composer, a screenshot).
+- `preview:` (boolean) - default false - Image files show a thumbnail in their chip, from an object URL released when the chip goes.
 - `prompt:` (string) - The dropzone's instruction line - overrides the translated default.
-- PART `file-input` - The dropzone root - wraps the zone, the selection list, and clear | states: data-variant=dropzone (always on the dropzone root (the input variant renders the Input component instead)); data-dragging (a file drag is over the zone (controller-written, enter/leave counted)); data-populated (the native input holds at least one file (controller-written))
+- `upload:` (symbol) - one of on_submit|immediate, default "on_submit" - When direct uploads run: :on_submit, Rails' own flow at form submit, or :immediate, each file as it lands with progress, cancel, retry and remove, the form posting signed ids.
+- PART `file-input` - The dropzone root - the drop target, wrapping the zone, the chips, the rejections and clear | states: data-variant=dropzone (always on the dropzone root (the input variant renders the Input component instead)); data-dragging (a file drag is over the zone (controller-written, enter/leave counted)); data-drag-reject (the drag carries only files the accept filter or the count would reject (controller-written, best effort mid-drag)); data-drag-global (overlay: true and files are dragged anywhere over the window (controller-written)); data-populated (the native input holds at least one file (controller-written))
 - PART `file-input-dropzone` - The <label> drop surface - dashed, platform click-to-browse; its text is the control's accessible name
-- PART `file-input-control` - The native <input type=file> - visually hidden in the dropzone, THE form value in both variants
+- PART `file-input-control` - The native <input type=file> - visually hidden in the dropzone, THE form value in both variants | states: data-direct-upload-url (direct_upload: true or direct_upload_url: with the default upload: :on_submit - Rails' own submit-time upload handler reads it)
 - PART `file-input-prompt` - The zone's instruction line (prompt: overrides the default)
 - PART `file-input-hint` - Muted constraints copy under the prompt (hint: - formats, size)
-- PART `file-input-list` - The selected-file <ul> the controller fills (name + size per item; items are controller-built, not server parts)
+- PART `file-input-items` - The chips' container the controller fills - one Attachment per selected file, cloned from the template (chips are controller-built, not server parts)
+- PART `file-input-item-template` - The <template> holding one Attachment chip the controller clones per file: media, title, description, progress, retry and remove
+- PART `file-input-errors` - The rejections <ul> (role=alert) the controller fills - one line per file the accept, size or count checks refused; hidden when empty
+- PART `file-input-overlay` - The fixed full-window drop surface (overlay: true) - decorative, shown while data-drag-global is on the root
 - PART `file-input-clear` - The clear affordance - hidden until populated; never re-opens the picker
-- WIRING root: `poetry--core--file-input` registers; values multiple
-- WIRING dropzone: `poetry--core--file-input` actions dragenter on dragenter, dragover on dragover, dragleave on dragleave, drop on drop
-- WIRING control: `poetry--core--file-input` actions changed on change; targets input
-- WIRING list: `poetry--core--file-input` targets list
+- WIRING root: `poetry--core--file-drop` registers; values accept, multiple, max_files, max_size, min_size, paste, overlay, directory, messages | `poetry--core--file-input` registers; values multiple, upload, name, url, preview, messages; actions files on poetry:file-drop:files
+- WIRING control: `poetry--core--file-drop` targets input | `poetry--core--file-input` targets input
+- WIRING items: `poetry--core--file-input` targets items
+- WIRING template: `poetry--core--file-input` targets template
+- WIRING errors: `poetry--core--file-input` targets errors
 - WIRING clear: `poetry--core--file-input` actions clear on click; targets clear
+- WIRING item_remove: `poetry--core--file-input` actions remove on click
+- WIRING item_retry: `poetry--core--file-input` actions retry on click
+- BEHAVIOR file_drop (on root) - Files arrive by drop, picker or paste and are checked against accept, size and count before they land in the native input.
+- RULE: Client-side accept, size and count limits are advisory: validate the attachment on the model as well.
 - RULE: File selection is a FileInput: variant: :input for compact forms, :dropzone when dragging is expected (uploads as the page's point) - never a hand-rolled drop div.
-- RULE: The native input is the form value: set name: (multiple: true wants a name ending in [] for Rails params); ActiveStorage direct upload attaches to it as usual.
-- RULE: The dropzone's selected-file list and clear button are controller-rendered - compose prompt:/hint: copy instead of adding your own list markup.
+- RULE: The native input is the form value: set name: (multiple: true wants a name ending in [] for Rails params); direct_upload: true runs Active Storage's direct uploads at submit, upload: :immediate as files land.
+- RULE: The dropzone's chips, rejections and clear button are controller-rendered - compose prompt:/hint: copy instead of adding your own list markup.
+- RULE: Limits are options, never prose alone: accept:, max_size: and max_files: reject the file at intake; the hint: tells people the same limits in words.
 - RULE: In a Field, prefer form.file_input (the builder wires id/label/errors); the bare component suits standalone dropzones.
 
 ## input (`poetry_input`)

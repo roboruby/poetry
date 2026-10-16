@@ -125,6 +125,22 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_select "p#reactive-templates a[href=?]", herb_guide_path(anchor: "reactive-templates")
   end
 
+  test "the uploads guide renders its sections, a live dropzone and its markdown mirror" do
+    get uploads_path
+
+    assert_response :success
+    %w[modes setup limits attachments hot-cell broadcasts security].each { |id| assert_select "h2##{id}" }
+    assert_select "[data-slot=file-input][data-poetry--core--file-drop-max-files-value]"
+    assert_select "[data-slot=code-block-code]", text: /upload: :immediate/
+    assert_select "[data-slot=code-block-code]", text: /broadcasts_attachment_updates_for/
+
+    get "/uploads.md"
+
+    assert_response :success
+    assert_match "poetry_attachment_for", response.body
+    assert_match "Hot Cell", response.body
+  end
+
   test "the landing badge links the launch essay" do
     get root_url
 

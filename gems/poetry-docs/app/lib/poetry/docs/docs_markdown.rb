@@ -105,6 +105,23 @@ module Poetry
           MD
         end
 
+        # The Uploads guide's mirror.
+        def uploads(entry)
+          <<~MD
+            #{header(entry)}
+
+            FileInput's dropzone (`variant: :dropzone`) takes files by drop, the native picker and, with `paste: true`, a paste; `overlay: true` makes the whole page the target behind a fixed drop surface, `directory: true` walks dropped folders, `camera: :environment` opens a camera on mobile. Limits are options the zone enforces at intake, with react-dropzone's rejection codes and translated messages under a `role=alert` list: `accept:`, `max_size:`, `min_size:` (bytes) and `max_files:`; with active_storage_validations loaded, `form.file_input` reads the attribute's validators for them. Every selected file is an Attachment chip cloned from a server-rendered template, with `preview: true` showing image thumbnails.
+
+            Direct uploads: `direct_upload: true` puts Rails' endpoint on the input (`direct_upload_url:` names another, an authenticated subclass's route). The default `upload: :on_submit` is Rails' own flow - `@rails/activestorage` uploads at submit and the chips follow its `direct-upload:*` events; `upload: :immediate` uploads each file as it lands through the `direct_upload` behavior, with real progress, cancel, retry and remove, the form posting the signed ids the uploads leave as hidden inputs and holding its submit while anything is in flight. Both load `@rails/activestorage` through the importmap: `poetry:install` adds the pin and `ActiveStorage.start()` when Active Storage is in the app, and `poetry:check` warns (`direct-upload-unpinned`) when the pin is missing and errors (`upload-immediate-without-direct-upload`) on an immediate zone with no endpoint.
+
+            Rendering attachments: `poetry_attachment_for(attachment, variant: :thumb, download: true)` and `poetry_attachments_for(record.photos)` render Active Storage attachments as chips through their lifecycle, reading only public API - `processing` until the blob is analyzed and the variant processed (`processed?`, public from Rails 8.2; earlier Rails processes lazily on request), `done` with the representation as the media or an icon by content type, `error` when an image was analyzed without dimensions, which is what an unprocessable file leaves behind, with Hot Cell and without it. `Poetry::Ui::AttachmentBroadcasts` opts a model in (`broadcasts_attachment_updates_for :photos, variant: :thumb`) and replaces a chip over Turbo Streams when the attachment is created, its blob's analysis lands or a variant record is written; the page subscribes with `turbo_stream_from record, :attachments`.
+
+            Hot Cell: Basecamp's sidecar runs Active Storage's analyzers, transformers and previewers outside the app (Rails 8.2, `config.active_storage.variant_processor` as a class). Nothing in Poetry processes a byte, so the chips need no change; the cell's permanent failure records an analysis without dimensions, which the chip shows as the error state, and its transient failures retry while the chip shows processing. Render variants through `process: :later` (8.2) or `preprocessed: true` so the cell's round trip never sits inside a request, and map the cell's failure classes in `config.action_dispatch.rescue_responses` for lazily processed representation requests.
+
+            Security: a direct-upload blob keeps the client's content type until it is attached, so `accept` and the size limits are advisory; validate on the model (active_storage_validations, with `spoofing_protection` for byte-level checks), keep Rails' direct uploads route off with `config.active_storage.draw_direct_upload_route = false` (Rails 8.2) unless a form needs it, authenticate a `DirectUploadsController` subclass and point `direct_upload_url:` at it, and purge unattached blobs on a schedule. Turbo: the queue aborts in-flight uploads when its controller disconnects; Hotwire Native presents the native picker and has no drag and drop, so `camera:` is the mobile affordance.
+          MD
+        end
+
         # The Herb and ReActionView guide's mirror.
         def herb(entry)
           <<~MD

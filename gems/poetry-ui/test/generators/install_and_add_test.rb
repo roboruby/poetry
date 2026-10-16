@@ -200,6 +200,55 @@ module Poetry
       assert_includes content, %(import { registerPoetryControllers } from "@poetry/controllers")
     end
 
+    def test_active_storage_pin_and_start_land_once_when_the_engine_is_in_the_app
+      importmap = File.join(destination_root, "config/importmap.rb")
+      entry = File.join(destination_root, "app/javascript/application.js")
+      FileUtils.mkdir_p(File.dirname(importmap))
+      FileUtils.mkdir_p(File.dirname(entry))
+      File.write(importmap, %(pin "application"\n))
+      File.write(entry, %(import "@hotwired/turbo-rails"\n))
+
+      with_active_storage_engine do
+        run_generator
+        run_generator
+      end
+
+      assert_equal 1, File.read(importmap).scan(%(pin "@rails/activestorage", to: "activestorage.esm.js")).size
+      assert_equal 1, File.read(entry).scan("ActiveStorage.start()").size
+      assert_includes File.read(entry), %(import * as ActiveStorage from "@rails/activestorage")
+    end
+
+    def test_an_existing_active_storage_pin_is_left_alone_and_nothing_lands_without_the_engine
+      importmap = File.join(destination_root, "config/importmap.rb")
+      FileUtils.mkdir_p(File.dirname(importmap))
+      File.write(importmap, %(pin "@rails/activestorage", to: "activestorage.esm.js", preload: true\n))
+
+      with_active_storage_engine { run_generator }
+
+      assert_equal 1, File.read(importmap).scan("@rails/activestorage").size, "the host's own pin stands"
+
+      File.write(importmap, %(pin "application"\n))
+      run_generator
+
+      refute_includes File.read(importmap), "@rails/activestorage", "no pin without Active Storage in the app"
+    end
+
+    # The availability probe reads ActiveStorage::Engine; the ui gem's
+    # test host loads no Active Storage, so the constant stands in for it.
+    def with_active_storage_engine
+      defined_here = !defined?(::ActiveStorage::Engine)
+      if defined_here
+        Object.const_set(:ActiveStorage, Module.new) unless defined?(::ActiveStorage)
+        ::ActiveStorage.const_set(:Engine, Class.new)
+      end
+      yield
+    ensure
+      if defined_here
+        ::ActiveStorage.send(:remove_const, :Engine)
+        Object.send(:remove_const, :ActiveStorage) if ::ActiveStorage.constants.empty?
+      end
+    end
+
     def test_agent_runtime_registers_beside_the_controllers_when_poetry_agent_is_bundled
       index = File.join(destination_root, "app/javascript/controllers/index.js")
       FileUtils.mkdir_p(File.dirname(index))

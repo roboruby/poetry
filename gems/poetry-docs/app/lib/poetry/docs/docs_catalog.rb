@@ -55,6 +55,12 @@ module Poetry
                                "fields - label, value, errors, aria, and validation attributes all derived " \
                                "from the object; type inference into Poetry's vocabulary, f.association, " \
                                "and the poetry_form -> simple_form i18n chain."),
+        Entry.new(slug: "uploads", title: "Uploads", section: "docs", icon: :upload,
+                  description: "File drop with Active Storage: FileInput's dropzone takes files by drop, " \
+                               "picker and paste within accept, size and count limits; direct uploads run " \
+                               "at submit (Rails' flow) or as files land, with progress, retry and remove; " \
+                               "poetry_attachment_for renders an attachment through analysis and variants, " \
+                               "with Hot Cell's failures as states, and Turbo broadcasts move the chips."),
         Entry.new(slug: "pagination", title: "Pagination", section: "docs", icon: :"chevrons-left-right",
                   description: "Pagination through the gem you already use: bin/rails g " \
                                "poetry:pagination installs a host-owned adapter for kaminari, pagy " \
@@ -224,7 +230,8 @@ module Poetry
         # order; Agent stays last in AI Native while it is experimental.
         DOC_SECTIONS = {
           "Get Started" => %w[installation theming typography testing i18n stimulus editors api],
-          "Advanced" => %w[accessibility forms pagination data-table deferred optimistic-forms caching stable-ids engines
+          "Advanced" => %w[accessibility forms uploads pagination data-table deferred optimistic-forms caching stable-ids
+                           engines
                            herb],
           "AI Native" => %w[mcp-server webmcp agent-skills recipes ag-ui a2ui page-agent]
         }.freeze
