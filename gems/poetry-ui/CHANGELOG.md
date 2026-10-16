@@ -26,6 +26,10 @@
 - The Icon component draws each icon with its set's own drawing attributes instead of Lucide's stroke for every set, so filled sets, a 256-unit grid and 16 or 20 pixel styles render right. `poetry check` reads every registered set and its aliases.
 - An icon from a set with an attribution renders that credit as an HTML comment inside its svg, so every page that serves the icon carries it.
 
+### Fixed
+
+- The sidebar inset no longer grows to its content's width: `min-w-0` on the inset keeps a page wider than the space beside the column (a table with several columns, a chart, a `pre` of long lines) inside the window, scrolling in its own container instead of clipping its right edge. The app-shell block's stat cards carry `min-w-0` for the same reason inside their grid, and its header separator centers (`data-vertical:self-center`, since the component's own `data-vertical:self-stretch` pins a fixed-height one to the top).
+
 ## [0.1.13] - 2026-10-13
 
 ### Added

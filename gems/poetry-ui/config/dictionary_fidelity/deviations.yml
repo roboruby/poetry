@@ -1180,6 +1180,12 @@ sidebar:
       - outline-hidden
       - shrink-0
       - transition-[margin,opacity]
+    sidebar-inset:
+      reason: 'A flex item''s minimum width is its content''s: without min-w-0 a wide
+        table, chart or pre in the page widens the inset past the window and clips
+        its right edge instead of scrolling.'
+      added:
+      - min-w-0
     sidebar-menu-action:
       reason: 'Classic mechanics poetry keeps inline: the styled source''s rules do
         not carry them (its element relies on a composed child or a primitive default),

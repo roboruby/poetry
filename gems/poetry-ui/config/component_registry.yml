@@ -10105,7 +10105,7 @@ components:
     - menu_sub
     - menu_sub_item
     - menu_sub_button
-    capsule: 1d7dc103b48b
+    capsule: ffd3127a9d2c
     controllers:
     - identifier: poetry--core--sidebar
       targets:

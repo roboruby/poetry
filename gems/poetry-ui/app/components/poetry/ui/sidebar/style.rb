@@ -58,7 +58,10 @@ module Poetry
 
         element :inner, "cn-sidebar-inner flex size-full flex-col"
 
-        element :inset, "cn-sidebar-inset relative flex w-full flex-1 flex-col"
+        # min-w-0: a flex item's minimum width is its content's, so without
+        # it a wide table, chart or pre in the page widens the inset past
+        # the window and clips its right edge instead of scrolling.
+        element :inset, "cn-sidebar-inset relative flex w-full min-w-0 flex-1 flex-col"
 
         # The rail (desktop-only click strip).
         element :rail,
