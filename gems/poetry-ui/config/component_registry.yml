@@ -12418,7 +12418,9 @@ components:
         app-owned typeset.css; not-typeset (class or data attribute) opts a subtree
         out
 helpers:
+  poetry_attachment_for: {}
   poetry_attachment_group: {}
+  poetry_attachments_for: {}
   poetry_avatar_group: {}
   poetry_avatar_group_count: {}
   poetry_bubble_group: {}
@@ -12675,7 +12677,9 @@ helper_args:
   poetry_alert_dialog: 0
   poetry_aspect_ratio: 0
   poetry_attachment: 0
+  poetry_attachment_for: 1
   poetry_attachment_group: 0
+  poetry_attachments_for: 1
   poetry_autocomplete: 0
   poetry_avatar: 0
   poetry_avatar_group: 0

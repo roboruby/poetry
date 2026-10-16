@@ -98,6 +98,8 @@ en:
     context_menu:
       menu_label_fallback: "Context menu"
     attachment:
+      download: "Download"
+      unprocessable: "This file could not be processed"
       state:
         uploading: "Uploading attachment"
         processing: "Processing attachment"

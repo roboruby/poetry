@@ -1497,6 +1497,51 @@ module Poetry
         poetry_chat_group(Poetry::Ui::Attachment::Style, "attachment-group", **attrs, &)
       end
 
+      # One Active Storage attachment as a chip through its lifecycle:
+      # processing until the blob is analyzed and the variant processed,
+      # done with the representation as the media (or an icon by type),
+      # error when an image was analyzed without dimensions. Takes an
+      # Attached::One, an Attachment or a Blob; renders nothing when
+      # nothing is attached. The chip's id is the broadcasts' target.
+      #
+      # @example A thumbnail with a download link
+      #   <%= poetry_attachment_for @post.cover, variant: :thumb, download: true %>
+      # @example Extra actions
+      #   <%= poetry_attachment_for photo, variant: :thumb do |chip| %>
+      #     <% chip.with_action(label: "Remove", href: remove_path, tag: :a) { poetry_icon(name: :x) } %>
+      #   <% end %>
+      # @see Poetry::Ui::AttachmentLifecycle
+      def poetry_attachment_for(attachment, variant: nil, download: false, **options, &block)
+        lifecycle = Poetry::Ui::AttachmentLifecycle.new(attachment, variant: variant)
+        return "".html_safe unless lifecycle.present?
+
+        attrs = { state: lifecycle.state }
+        attrs[:id] = lifecycle.dom_id if lifecycle.dom_id && !options.key?(:id)
+        render(Poetry::Ui::Attachment::Component.new(**attrs, **options)) do |chip|
+          if lifecycle.image_ready?
+            chip.with_media(variant: :image) { image_tag(lifecycle.representation, alt: "") }
+          else
+            chip.with_media { poetry_icon(name: lifecycle.icon) }
+          end
+          chip.with_title { lifecycle.filename }
+          chip.with_description { lifecycle.description(self) }
+          if download && (href = lifecycle.download_path(self))
+            chip.with_trigger(tag: :a, href: href) { t("poetry.attachment.download") }
+          end
+          block&.call(chip, lifecycle)
+        end
+      end
+
+      # Every attachment of a has_many_attached as chips, each through
+      # poetry_attachment_for.
+      #
+      # @example
+      #   <%= poetry_attachments_for @post.photos, variant: :thumb %>
+      # @see Poetry::Ui::AttachmentLifecycle
+      def poetry_attachments_for(attachments, **, &)
+        safe_join(Array(attachments).map { |attachment| poetry_attachment_for(attachment, **, &) })
+      end
+
       # A streaming-aware transcript that keeps the latest message in view.
       #
       # @example A chat transcript

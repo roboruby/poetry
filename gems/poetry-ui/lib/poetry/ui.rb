@@ -9,6 +9,8 @@ require_relative "ui/recipes"
 require_relative "ui/chat"
 require_relative "ui/webmcp"
 require_relative "ui/reset_floor"
+require_relative "ui/attachment_lifecycle"
+require_relative "ui/attachment_broadcasts"
 
 # poetry-ui is Tailwind-native: its templates and theme layer are
 # utilities, so its components render in :tailwind whatever a host sets

@@ -995,6 +995,56 @@ module Poetry
         assert_equal "Go", buttons.last.text.strip
       end
 
+      # active_storage_validations is not in the bundle: the validator
+      # classes the builder looks for by name stand in here, with the
+      # option shapes the gem documents.
+      unless defined?(::ActiveStorageValidations)
+        module ::ActiveStorageValidations
+          class ContentTypeValidator < ActiveModel::EachValidator
+            def validate_each(*) = nil
+          end
+
+          class SizeValidator < ActiveModel::EachValidator
+            def validate_each(*) = nil
+          end
+
+          class LimitValidator < ActiveModel::EachValidator
+            def validate_each(*) = nil
+          end
+        end
+      end
+
+      class Dossier
+        include ActiveModel::Model
+
+        attr_accessor :scans, :notes
+
+        validates_with ActiveStorageValidations::ContentTypeValidator, attributes: [:scans],
+                                                                       with: ["image/png", :pdf, %r{\Aimage/.*\z}]
+        validates_with ActiveStorageValidations::SizeValidator, attributes: [:scans],
+                                                                less_than: 5 * 1024 * 1024,
+                                                                greater_than_or_equal_to: 1024
+        validates_with ActiveStorageValidations::LimitValidator, attributes: [:scans], max: 4
+        validates_with ActiveStorageValidations::SizeValidator, attributes: [:notes], between: 10..100
+      end
+
+      def test_file_input_reads_the_attachment_validators_as_limits
+        html = render_snippet("<%= form.file_input(:scans, variant: :dropzone, multiple: true) %>", model: Dossier.new)
+        root = Nokogiri::HTML5.fragment(html).at_css("[data-slot=file-input]")
+
+        assert_equal "image/png,application/pdf,image/*", root["data-poetry--core--file-drop-accept-value"]
+        assert_equal ((5 * 1024 * 1024) - 1).to_s, root["data-poetry--core--file-drop-max-size-value"]
+        assert_equal "1024", root["data-poetry--core--file-drop-min-size-value"]
+        assert_equal "4", root["data-poetry--core--file-drop-max-files-value"]
+
+        notes = render_snippet("<%= form.file_input(:notes, variant: :dropzone, max_size: 50) %>", model: Dossier.new)
+        notes_root = Nokogiri::HTML5.fragment(notes).at_css("[data-slot=file-input]")
+
+        assert_equal "50", notes_root["data-poetry--core--file-drop-max-size-value"], "the call's own limit wins"
+        assert_equal "10", notes_root["data-poetry--core--file-drop-min-size-value"]
+        assert_nil notes_root["data-poetry--core--file-drop-accept-value"]
+      end
+
       def test_file_input_flips_the_form_to_multipart_and_seats_the_preview_block
         html = render_snippet("<%= form.file_input(:avatar) do %><img alt=\"current\"><% end %>")
         doc = Nokogiri::HTML5.fragment(html)
