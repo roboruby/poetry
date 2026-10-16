@@ -64,6 +64,20 @@ module Poetry
         assert_equal ["gallery", "Poetry::Ui::AttachmentBroadcastsTest::Album"], channel.sent.first.first
       end
 
+      # A model opts in one attribute per call: the second call adds to the
+      # first (the walk found photos silently dropped by a later documents
+      # call), each attribute keeping its own variant.
+      def test_later_opt_ins_add_to_a_model_s_registrations
+        Post.broadcasts_attachment_updates_for :photos, variant: :thumb
+        Post.broadcasts_attachment_updates_for :documents
+        channel = Channel.new
+        post = Post.new
+
+        assert AttachmentBroadcasts.broadcast(Attachment.new(id: 5, name: "photos", record: post), channel: channel)
+        assert AttachmentBroadcasts.broadcast(Attachment.new(id: 6, name: "documents", record: post), channel: channel)
+        assert_equal ["<div>photos:thumb</div>", "<div>documents:</div>"], channel.sent.map(&:last)
+      end
+
       def test_a_blob_broadcasts_every_attachment_it_has
         Post.broadcasts_attachment_updates_for :photos
         channel = Channel.new
@@ -73,6 +87,22 @@ module Poetry
         AttachmentBroadcasts.broadcast_blob(blob, channel: channel)
 
         assert_equal(%w[poetry_attachment_1 poetry_attachment_2], channel.sent.map { |entry| entry[1] })
+      end
+
+      # The hooks run inside Active Storage's commits and jobs: a chip that
+      # cannot render must not fail an analysis.
+      def test_a_failing_render_is_logged_never_raised
+        Post.broadcasts_attachment_updates_for :photos
+        AttachmentBroadcasts.renderer = ->(*) { raise ArgumentError, "no route" }
+        channel = Channel.new
+
+        assert_nil AttachmentBroadcasts.broadcast(Attachment.new(id: 7, name: "photos", record: Post.new),
+                                                  channel: channel)
+        assert_empty channel.sent
+      end
+
+      def test_the_rendering_controller_is_the_app_s_when_it_has_one
+        assert_equal ApplicationController, AttachmentBroadcasts.rendering_controller
       end
 
       def test_the_hooks_install_once

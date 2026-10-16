@@ -24,9 +24,9 @@ module Poetry
     module AttachmentBroadcasts
       extend ActiveSupport::Concern
 
-      # One model's opt-in: the attribute names, the stream (a callable of
-      # the record, else [record, :attachments]) and the variant to show.
-      Registration = Struct.new(:names, :stream, :variant, keyword_init: true) do
+      # One attribute's opt-in: the stream (a callable of the record, else
+      # [record, :attachments]) and the variant to show.
+      Registration = Struct.new(:stream, :variant, keyword_init: true) do
         # The stream the record's chips broadcast on.
         def stream_for(record)
           stream ? stream.call(record) : [record, :attachments]
@@ -46,20 +46,24 @@ module Poetry
       end
 
       class << self
-        # The registrations by model name.
-        # @return [Hash{String => Registration}]
+        # The registrations by model name, then attribute name: a model opts
+        # its attributes in one call at a time, and each call adds to what
+        # the model already has.
+        # @return [Hash{String => Hash{Symbol => Registration}}]
         def registrations
           @registrations ||= {}
         end
 
         # How a chip is rendered for the stream: a callable of the
         # attachment and the variant returning HTML. The default renders
-        # `poetry_attachment_for` through ActionController's renderer; a
+        # `poetry_attachment_for` through the app's controller renderer
+        # (ApplicationController carries the app's route helpers, which a
+        # representation's URL needs; ActionController::Base does not); a
         # test swaps it.
         # @return [Proc]
         def renderer
           @renderer ||= lambda do |attachment, variant|
-            ActionController::Base.renderer.render(
+            rendering_controller.renderer.render(
               inline: "<%= poetry_attachment_for(attachment, variant: variant) %>",
               locals: { attachment: attachment, variant: variant }
             )
@@ -67,6 +71,13 @@ module Poetry
         end
 
         attr_writer :renderer
+
+        # The controller whose renderer draws the chips: the app's, with
+        # its route helpers, when it has one.
+        # @return [Class]
+        def rendering_controller
+          defined?(::ApplicationController) ? ::ApplicationController : ::ActionController::Base
+        end
 
         # The Turbo Streams channel, or nil without turbo-rails.
         def channel
@@ -82,21 +93,30 @@ module Poetry
         # @return [Registration]
         def register(klass, names, stream: nil, variant: nil)
           install!
-          registrations[klass.name] = Registration.new(names: names, stream: stream, variant: variant)
+          registration = Registration.new(stream: stream, variant: variant)
+          names.each { |name| (registrations[klass.name] ||= {})[name.to_sym] = registration }
+          registration
         end
 
-        # The registration a record falls under, through its ancestors.
+        # The registration an attribute of a record falls under, through the
+        # record's ancestors.
+        #
+        # @param record [Object] the attachment's record
+        # @param name [Symbol, String] the attachment attribute
         # @return [Registration, nil]
-        def registration_for(record)
+        def registration_for(record, name)
           record.class.ancestors.each do |ancestor|
-            registration = ancestor.name && registrations[ancestor.name]
+            registration = ancestor.name && registrations.dig(ancestor.name, name.to_sym)
             return registration if registration
           end
           nil
         end
 
         # Replaces one attachment's chip on its record's stream, when the
-        # record opted that attribute in.
+        # record opted that attribute in. A failure to render or send is
+        # logged, never raised: the hooks run inside Active Storage's
+        # commits and jobs, and a page's chip is never worth a failed
+        # analysis.
         #
         # @param attachment [ActiveStorage::Attachment]
         # @param channel [#broadcast_replace_to] the Turbo Streams channel
@@ -104,14 +124,24 @@ module Poetry
         def broadcast(attachment, channel: self.channel)
           return unless channel && attachment.respond_to?(:record) && attachment.record
 
-          registration = registration_for(attachment.record)
-          return unless registration&.names&.include?(attachment.name.to_sym)
+          registration = registration_for(attachment.record, attachment.name)
+          return unless registration
 
           channel.broadcast_replace_to(
             registration.stream_for(attachment.record),
             target: "poetry_attachment_#{attachment.id}",
             html: renderer.call(attachment, registration.variant)
           )
+        rescue StandardError => e
+          logger&.error("poetry: attachment broadcast for #{attachment.class}##{attachment.id} failed - " \
+                        "#{e.class}: #{e.message}")
+          nil
+        end
+
+        # Where a failed broadcast is reported.
+        # @return [Logger, nil]
+        def logger
+          Rails.logger if defined?(Rails) && Rails.respond_to?(:logger)
         end
 
         # Replaces the chips of every attachment of a blob (its analysis

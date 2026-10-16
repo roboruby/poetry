@@ -90,6 +90,38 @@ module Poetry
         assert_equal "t:poetry.attachment.unprocessable", lifecycle.description(View.new)
       end
 
+      # Active Storage's analyzer list decides whether missing dimensions
+      # mean a failure: an app with no analyzer that takes images never
+      # writes them. The dummy host loads no Active Storage, so a stand-in
+      # module carries the list for the test.
+      def test_missing_dimensions_are_an_error_only_when_an_analyzer_takes_images
+        blob = image_blob(metadata: { "identified" => true })
+        analyzer = Class.new do
+          def self.accept?(_blob) = true
+        end
+        none = Class.new do
+          def self.accept?(_blob) = false
+        end
+
+        with_active_storage_analyzers([none]) do
+          assert_equal :done, AttachmentLifecycle.new(blob, variant: :thumb).state,
+                       "no image analyzer: the image is fine"
+        end
+        with_active_storage_analyzers([none, analyzer]) do
+          assert_equal :error, AttachmentLifecycle.new(blob, variant: :thumb).state
+        end
+      end
+
+      def with_active_storage_analyzers(analyzers)
+        defined_here = !defined?(::ActiveStorage)
+        Object.const_set(:ActiveStorage, Module.new) if defined_here
+        ::ActiveStorage.define_singleton_method(:analyzers) { analyzers }
+        yield
+      ensure
+        ::ActiveStorage.singleton_class.remove_method(:analyzers)
+        Object.send(:remove_const, :ActiveStorage) if defined_here
+      end
+
       def test_without_a_variant_an_image_is_done_with_its_icon
         lifecycle = AttachmentLifecycle.new(image_blob)
 

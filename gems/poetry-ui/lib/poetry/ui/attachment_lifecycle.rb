@@ -69,14 +69,23 @@ module Poetry
         blob.respond_to?(:analyzed?) && !blob.analyzed?
       end
 
-      # An image analyzed without dimensions: the file could not be read
-      # by the analyzer, the permanent failure Hot Cell records and never
-      # retries, or an image type no analyzer takes.
+      # An image analyzed without dimensions by an analyzer that takes
+      # images: the file could not be read, or the permanent failure Hot
+      # Cell records and never retries. An app with no image analyzer
+      # configured never analyzes dimensions, so its images are done.
       def unprocessable?
-        return false unless image? && !pending_analysis? && blob.respond_to?(:metadata)
+        return false unless image? && !pending_analysis? && blob.respond_to?(:metadata) && analyzer_accepts?
 
         metadata = blob.metadata || {}
         metadata["width"].blank? && metadata[:width].blank?
+      end
+
+      # Whether a configured analyzer takes this blob; true outside Active
+      # Storage, where a stand-in's metadata is the whole story.
+      def analyzer_accepts?
+        return true unless defined?(::ActiveStorage) && ::ActiveStorage.respond_to?(:analyzers)
+
+        ::ActiveStorage.analyzers.any? { |analyzer| analyzer.accept?(blob) }
       end
 
       # Whether a variant was asked for and the blob can represent it.

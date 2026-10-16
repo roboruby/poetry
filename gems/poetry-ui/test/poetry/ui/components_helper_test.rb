@@ -236,6 +236,21 @@ module Poetry
         assert_includes html, 'data-size="xs"'
       end
 
+      def test_poetry_attachment_for_download_is_a_stretched_link_named_for_screen_readers
+        blob = StubBlob.new(id: 8, filename: "deck.pdf", content_type: "application/pdf", byte_size: 1, analyzed: true,
+                            metadata: {})
+        view = ApplicationController.renderer
+        html = view.render(inline: <<~ERB, locals: { given: blob }, layout: false)
+          <% def rails_blob_path(blob, disposition:) = "/blobs/\#{blob.id}?disposition=\#{disposition}" %>
+          <%= poetry_attachment_for(given, download: true) %>
+        ERB
+        trigger = Nokogiri::HTML5.fragment(html).at_css("[data-slot=attachment-trigger]")
+
+        assert_equal "a", trigger.name
+        assert_equal "/blobs/8?disposition=attachment", trigger["href"]
+        assert_equal "Download deck.pdf", trigger.at_css("span.sr-only").text
+      end
+
       def test_poetry_attachments_for_joins_the_chips
         blobs = [StubBlob.new(id: 1, filename: "a.txt", content_type: "text/plain", byte_size: 1, analyzed: true,
                               metadata: {}),

@@ -1526,7 +1526,11 @@ module Poetry
           chip.with_title { lifecycle.filename }
           chip.with_description { lifecycle.description(self) }
           if download && (href = lifecycle.download_path(self))
-            chip.with_trigger(tag: :a, href: href) { t("poetry.attachment.download") }
+            # The stretched trigger's text is for screen readers: the chip
+            # itself is what people see.
+            chip.with_trigger(tag: :a, href: href) do
+              tag.span(t("poetry.attachment.download_file", name: lifecycle.filename), class: "sr-only")
+            end
           end
           block&.call(chip, lifecycle)
         end
