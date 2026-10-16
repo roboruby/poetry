@@ -51,6 +51,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "poetry-core", "= #{Poetry::Docs::VERSION}"
   spec.add_dependency "poetry-heroicons", "= #{Poetry::Docs::VERSION}"
   spec.add_dependency "poetry-hugeicons", "= #{Poetry::Docs::VERSION}"
+  spec.add_dependency "poetry-island", "= #{Poetry::Docs::VERSION}"
   spec.add_dependency "poetry-lucide", "= #{Poetry::Docs::VERSION}"
   spec.add_dependency "poetry-motion", "= #{Poetry::Docs::VERSION}"
   spec.add_dependency "poetry-phosphor", "= #{Poetry::Docs::VERSION}"

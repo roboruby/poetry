@@ -7266,6 +7266,18 @@
     "path": "/api/poetry-motion-controllers"
   },
   {
+    "title": "poetry-island",
+    "page": "poetry-island",
+    "section": "api",
+    "path": "/api/poetry-island"
+  },
+  {
+    "title": "@poetry/island",
+    "page": "@poetry/island",
+    "section": "api",
+    "path": "/api/poetry-island-controllers"
+  },
+  {
     "title": "poetry-agent",
     "page": "poetry-agent",
     "section": "api",
@@ -7564,6 +7576,60 @@
     "page": "Motion",
     "section": "libraries",
     "path": "/libraries/motion#this-is-css"
+  },
+  {
+    "title": "Islands",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island"
+  },
+  {
+    "title": "What it is",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island#what-it-is"
+  },
+  {
+    "title": "Install",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island#install"
+  },
+  {
+    "title": "The module",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island#contract"
+  },
+  {
+    "title": "Fill and flow",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island#modes"
+  },
+  {
+    "title": "State leaves through the form",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island#form"
+  },
+  {
+    "title": "The Turbo lifecycle, handled once",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island#lifecycle"
+  },
+  {
+    "title": "The check",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island#check"
+  },
+  {
+    "title": "When not to",
+    "page": "Islands",
+    "section": "libraries",
+    "path": "/libraries/island#when-not"
   },
   {
     "title": "Agent",

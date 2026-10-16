@@ -263,6 +263,14 @@ module Poetry
           MD
         end
 
+        def library_island(entry)
+          <<~MD
+            #{header(entry)}
+
+            poetry-island is the declared exception to "state lives on the server and the URL": `poetry_island` renders a bounded client mount inside server-rendered HTML for a widget whose state changes many times a second (an editor, a canvas, a map, a 3D scene); everything else stays a component with a Stimulus behavior. The block is the shell, what the page shows before the module mounts and whenever it cannot. `import:` names an importmap specifier whose module exports `mount(element, props)` and returns `{ unmount, update? }`; `props:` serializes to a JSON script the module mounts with, plus `input` (the hidden input `name:` renders inside the island) and `focus` (true when the shell had focus); `mode: :fill` paints the shell's box and `mode: :flow` takes its place. One Stimulus controller handles the Turbo lifecycle for every island: mount on connect, unmount on disconnect, a morph refresh keeps the island and hands it the server's new props through `update`, a cached snapshot's dead root is cleared, a preview shows the shell, and a failed import or mount leaves the shell and dispatches `poetry--island--island:error`. No framework and no bundler ship with the gem: a plain module, a vendored kernel or a bundle built once all mount the same way, and `poetry check` warns (`island-import-unpinned`) when `config/importmap.rb` does not pin the import. Install with `gem "poetry-island"` plus `bin/rails g poetry:install`, which registers the controller and pins `app/javascript/islands/` as `islands/*`.
+          MD
+        end
+
         # The recipes guide's mirror: the live projection, so the mirror lists
         # exactly what /r/ serves.
         def recipes(entry)

@@ -32,6 +32,16 @@
           "docstring": "Where @poetry names the gems do not ship come from."
         },
         {
+          "name": "COMMUNITY_MODULES_DIR",
+          "value": "\"app/javascript/community/\"",
+          "docstring": "Where an item's other JavaScript lands (an island's module, a\nkernel); a write here pins the directory in the host's importmap once."
+        },
+        {
+          "name": "COMMUNITY_PIN",
+          "value": "%(pin_all_from \"app/javascript/community\", under: \"community\")",
+          "docstring": "The pin that serves app/javascript/community as community/*."
+        },
+        {
           "name": "CONTROLLERS_DIR",
           "value": "\"app/javascript/controllers/\"",
           "docstring": "Where an item's Stimulus controllers land; a write here refreshes the\napp's controllers manifest."
@@ -387,7 +397,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 244
+          "line": 257
         },
         {
           "name": "block_components",
@@ -414,7 +424,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 360
+          "line": 384
         },
         {
           "name": "charts_registry",
@@ -426,7 +436,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 210
+          "line": 212
         },
         {
           "name": "committed_charts_registry",
@@ -438,7 +448,19 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 276
+          "line": 290
+        },
+        {
+          "name": "committed_island_registry",
+          "scope": "class",
+          "group": null,
+          "signature": "committed_island_registry",
+          "docstring": "The islands reference rides along whenever the island gem is\npresent, from its committed registry, boot-free.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/ui.rb",
+          "line": 310
         },
         {
           "name": "committed_motion_registry",
@@ -450,7 +472,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 286
+          "line": 300
         },
         {
           "name": "helper_names",
@@ -462,7 +484,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 106
+          "line": 108
         },
         {
           "name": "host_registry",
@@ -474,7 +496,19 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 200
+          "line": 202
+        },
+        {
+          "name": "island_registry",
+          "scope": "class",
+          "group": null,
+          "signature": "island_registry",
+          "docstring": "Tolerant on islands, like motion: absent, the skill drops the islands reference.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/ui.rb",
+          "line": 234
         },
         {
           "name": "motion_registry",
@@ -486,7 +520,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 221
+          "line": 223
         },
         {
           "name": "recipe_items",
@@ -498,7 +532,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 158
+          "line": 160
         },
         {
           "name": "registry",
@@ -510,7 +544,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 119
+          "line": 121
         },
         {
           "name": "registry_blocks",
@@ -530,7 +564,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 334
+          "line": 358
         },
         {
           "name": "registry_descriptions",
@@ -542,7 +576,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 136
+          "line": 138
         },
         {
           "name": "registry_helpers",
@@ -562,7 +596,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 318
+          "line": 342
         },
         {
           "name": "registry_items",
@@ -574,7 +608,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 146
+          "line": 148
         },
         {
           "name": "root",
@@ -586,7 +620,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 90
+          "line": 92
         },
         {
           "name": "skill_files",
@@ -607,7 +641,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 175
+          "line": 177
         },
         {
           "name": "template_classes",
@@ -624,7 +658,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 96
+          "line": 98
         },
         {
           "name": "theme_owned_names",
@@ -649,7 +683,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui.rb",
-          "line": 192
+          "line": 194
         }
       ],
       "constants": [
@@ -1424,7 +1458,7 @@
       "path": "Poetry::Ui::Attachment::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "A file or image chip showing an upload's name, metadata, and\nlifecycle state. The server owns the state: render state:\n(idle/uploading/processing/error/done) and update it by\nre-rendering or a Turbo Stream replace - the component ships no\nupload JavaScript of its own.\n\nIn-flight and error states carry a translated screen-reader\nstatus announcement; the visual lifecycle is pure CSS.\n\n**Anatomy** (`data-slot` parts):\n\n- `attachment` - The chip root - the server-owned upload lifecycle rides here (flip data-upload-state by re-render / Turbo Stream replace)\n- `attachment-media` - The media slot's box - the icon tile or the caller's <img>\n- `attachment-content` - Text column wrapping title/description - renders when either slot is set\n- `attachment-title` - The file name line (title slot; user content, never html_safe)\n- `attachment-description` - Muted metadata / failure copy under the title\n- `attachment-actions` - Row of with_action poetry Buttons\n- `attachment-trigger` - The whole-chip control (with_trigger: a button or tag: :a anchor) - wraps the picker/download affordance\n- `attachment-status` - sr-only role=status announcement for the in-flight and error states (uploading/processing/error)",
+      "docstring": "A file or image chip showing an upload's name, metadata, and\nlifecycle state. The server owns the state: render state:\n(idle/uploading/processing/error/done) and update it by\nre-rendering or a Turbo Stream replace - the component ships no\nupload JavaScript of its own.\n\nIn-flight and error states carry a translated screen-reader\nstatus announcement; the visual lifecycle is pure CSS.\n\n**Anatomy** (`data-slot` parts):\n\n- `attachment` - The chip root - the server-owned upload lifecycle rides here (flip data-upload-state by re-render / Turbo Stream replace)\n- `attachment-media` - The media slot's box - the icon tile or the caller's <img>\n- `attachment-content` - Text column wrapping title/description - renders when either slot is set\n- `attachment-title` - The file name line (title slot; user content, never html_safe)\n- `attachment-description` - Muted metadata / failure copy under the title\n- `attachment-progress` - The upload's progress bar under the title (the progress slot: a slim Progress whose caption is read, not shown)\n- `attachment-actions` - Row of with_action poetry Buttons\n- `attachment-trigger` - The whole-chip control (with_trigger: a button or tag: :a anchor) - wraps the picker/download affordance\n- `attachment-status` - sr-only role=status announcement for the in-flight and error states (uploading/processing/error)",
       "examples": [
         {
           "title": "A finished upload",
@@ -1448,7 +1482,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
-          "line": 61
+          "line": 69
         },
         {
           "name": "description",
@@ -1499,7 +1533,24 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
-          "line": 85
+          "line": 93
+        },
+        {
+          "name": "progress",
+          "scope": "instance",
+          "group": "Slots",
+          "signature": "",
+          "docstring": "An upload's progress under the title: the Progress component, slim, its caption for screen readers only. The uploader moves it; render it with the value you know.\n\nSlot: the rendered `progress` content.",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/attachment/component.rb",
+          "line": 61
         },
         {
           "name": "root_attributes",
@@ -1511,7 +1562,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
-          "line": 126
+          "line": 136
         },
         {
           "name": "size",
@@ -1528,7 +1579,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
-          "line": 84
+          "line": 92
         },
         {
           "name": "state",
@@ -1545,7 +1596,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
-          "line": 88
+          "line": 96
         },
         {
           "name": "title",
@@ -1579,7 +1630,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
-          "line": 72
+          "line": 80
         },
         {
           "name": "with_action",
@@ -1596,7 +1647,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
-          "line": 61
+          "line": 69
         },
         {
           "name": "with_description",
@@ -1633,6 +1684,23 @@
           "line": 45
         },
         {
+          "name": "with_progress",
+          "scope": "instance",
+          "group": "Slots",
+          "signature": "",
+          "docstring": "An upload's progress under the title: the Progress component, slim, its caption for screen readers only. The uploader moves it; render it with the value you know.\n\nSlot writer for the `progress` slot.",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/attachment/component.rb",
+          "line": 61
+        },
+        {
           "name": "with_title",
           "scope": "instance",
           "group": "Slots",
@@ -1664,7 +1732,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/attachment/component.rb",
-          "line": 72
+          "line": 80
         }
       ],
       "constants": [
@@ -1709,6 +1777,775 @@
       "file": "app/components/poetry/ui/attachment/style.rb",
       "methods": [],
       "constants": []
+    },
+    {
+      "path": "Poetry::Ui::AttachmentBroadcasts",
+      "type": "module",
+      "superclass": null,
+      "docstring": "Turbo Stream broadcasts that move an attachment's chip through its\nlifecycle without a reload: a model opts in per attribute, and the\nchip is replaced when the attachment is created, when its blob's\nanalysis lands, and when a variant record is written, in the app or\nin a cell. The page subscribes to the stream and renders the chips\nwith `poetry_attachment_for`, whose DOM ids are the targets.\n\n  class Post < ApplicationRecord\n    include Poetry::Ui::AttachmentBroadcasts\n    has_many_attached :photos\n    broadcasts_attachment_updates_for :photos, variant: :thumb\n  end\n\n  <%= turbo_stream_from @post, :attachments %>\n  <%= poetry_attachments_for @post.photos, variant: :thumb %>\n\nThe hooks land on Active Storage's models the first time a model opts\nin, through their load hooks, so a host that never opts in carries\nnone. Broadcasts need turbo-rails; without it they are no-ops.",
+      "examples": [],
+      "file": "lib/poetry/ui/attachment_broadcasts.rb",
+      "methods": [
+        {
+          "name": "broadcast",
+          "scope": "class",
+          "group": null,
+          "signature": "broadcast(attachment, channel: self.channel)",
+          "docstring": "Replaces one attachment's chip on its record's stream, when the\nrecord opted that attribute in. A failure to render or send is\nlogged, never raised: the hooks run inside Active Storage's\ncommits and jobs, and a page's chip is never worth a failed\nanalysis.",
+          "params": [
+            {
+              "name": "attachment",
+              "types": [
+                "ActiveStorage::Attachment"
+              ],
+              "text": ""
+            },
+            {
+              "name": "channel",
+              "types": [
+                "#broadcast_replace_to"
+              ],
+              "text": "the Turbo Streams channel"
+            }
+          ],
+          "return": {
+            "types": [
+              "Object",
+              "nil"
+            ],
+            "text": "the channel's answer, nil when nothing went out"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_broadcasts.rb",
+          "line": 124
+        },
+        {
+          "name": "broadcast_blob",
+          "scope": "class",
+          "group": null,
+          "signature": "broadcast_blob(blob, channel: self.channel)",
+          "docstring": "Replaces the chips of every attachment of a blob (its analysis\nlanded, or a variant was written).",
+          "params": [
+            {
+              "name": "blob",
+              "types": [
+                "ActiveStorage::Blob"
+              ],
+              "text": ""
+            },
+            {
+              "name": "channel",
+              "types": [
+                "#broadcast_replace_to"
+              ],
+              "text": "the Turbo Streams channel"
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_broadcasts.rb",
+          "line": 153
+        },
+        {
+          "name": "broadcasts_attachment_updates_for",
+          "scope": "class",
+          "group": null,
+          "signature": "broadcasts_attachment_updates_for(*names, to: nil, variant: nil)",
+          "docstring": "Opts the model's attachments into the broadcasts.",
+          "params": [
+            {
+              "name": "names",
+              "types": [
+                "Array<Symbol>"
+              ],
+              "text": "the attachment attributes"
+            },
+            {
+              "name": "to",
+              "types": [
+                "Proc",
+                "nil"
+              ],
+              "text": "the stream for a record; [record, :attachments] by default"
+            },
+            {
+              "name": "variant",
+              "types": [
+                "Symbol",
+                "Hash",
+                "nil"
+              ],
+              "text": "the variant the chips show"
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_broadcasts.rb",
+          "line": 43
+        },
+        {
+          "name": "channel",
+          "scope": "class",
+          "group": null,
+          "signature": "channel",
+          "docstring": "The Turbo Streams channel, or nil without turbo-rails.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_broadcasts.rb",
+          "line": 83
+        },
+        {
+          "name": "logger",
+          "scope": "class",
+          "group": null,
+          "signature": "logger",
+          "docstring": "Where a failed broadcast is reported.",
+          "params": [],
+          "return": {
+            "types": [
+              "Logger",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_broadcasts.rb",
+          "line": 143
+        },
+        {
+          "name": "register",
+          "scope": "class",
+          "group": null,
+          "signature": "register(klass, names, stream: nil, variant: nil)",
+          "docstring": "Records a model's opt-in and installs the Active Storage hooks once.",
+          "params": [
+            {
+              "name": "klass",
+              "types": [
+                "Class"
+              ],
+              "text": "the model"
+            },
+            {
+              "name": "names",
+              "types": [
+                "Array<Symbol>"
+              ],
+              "text": "the attachment attributes"
+            },
+            {
+              "name": "stream",
+              "types": [
+                "Proc",
+                "nil"
+              ],
+              "text": "the stream for a record"
+            },
+            {
+              "name": "variant",
+              "types": [
+                "Symbol",
+                "Hash",
+                "nil"
+              ],
+              "text": "the variant the chips show"
+            }
+          ],
+          "return": {
+            "types": [
+              "Registration"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_broadcasts.rb",
+          "line": 94
+        },
+        {
+          "name": "registration_for",
+          "scope": "class",
+          "group": null,
+          "signature": "registration_for(record, name)",
+          "docstring": "The registration an attribute of a record falls under, through the\nrecord's ancestors.",
+          "params": [
+            {
+              "name": "record",
+              "types": [
+                "Object"
+              ],
+              "text": "the attachment's record"
+            },
+            {
+              "name": "name",
+              "types": [
+                "Symbol",
+                "String"
+              ],
+              "text": "the attachment attribute"
+            }
+          ],
+          "return": {
+            "types": [
+              "Registration",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_broadcasts.rb",
+          "line": 107
+        },
+        {
+          "name": "registrations",
+          "scope": "class",
+          "group": null,
+          "signature": "registrations",
+          "docstring": "The registrations by model name, then attribute name: a model opts\nits attributes in one call at a time, and each call adds to what\nthe model already has.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{String => Hash{Symbol => Registration}}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_broadcasts.rb",
+          "line": 53
+        },
+        {
+          "name": "renderer",
+          "scope": "class",
+          "group": null,
+          "signature": "renderer",
+          "docstring": "How a chip is rendered for the stream: a callable of the\nattachment and the variant returning HTML. The default renders\n`poetry_attachment_for` through the app's controller renderer\n(ApplicationController carries the app's route helpers, which a\nrepresentation's URL needs; ActionController::Base does not); a\ntest swaps it.",
+          "params": [],
+          "return": {
+            "types": [
+              "Proc"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_broadcasts.rb",
+          "line": 64
+        },
+        {
+          "name": "renderer=",
+          "scope": "class",
+          "group": null,
+          "signature": "renderer=(value)",
+          "docstring": "Sets the attribute renderer",
+          "params": [
+            {
+              "name": "value",
+              "types": [],
+              "text": "the value to set the attribute renderer to."
+            }
+          ],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_broadcasts.rb",
+          "line": 73
+        },
+        {
+          "name": "rendering_controller",
+          "scope": "class",
+          "group": null,
+          "signature": "rendering_controller",
+          "docstring": "The controller whose renderer draws the chips: the app's, with\nits route helpers, when it has one.",
+          "params": [],
+          "return": {
+            "types": [
+              "Class"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_broadcasts.rb",
+          "line": 78
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Ui::AttachmentBroadcasts::Registration",
+      "type": "class",
+      "superclass": "Struct",
+      "docstring": "One attribute's opt-in: the stream (a callable of the record, else\n[record, :attachments]) and the variant to show.",
+      "examples": [],
+      "file": "lib/poetry/ui/attachment_broadcasts.rb",
+      "methods": [
+        {
+          "name": "stream",
+          "scope": "instance",
+          "group": null,
+          "signature": "stream",
+          "docstring": "Returns the value of attribute stream",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of stream"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_broadcasts.rb",
+          "line": 29
+        },
+        {
+          "name": "stream=",
+          "scope": "instance",
+          "group": null,
+          "signature": "stream=(value)",
+          "docstring": "Sets the attribute stream",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute stream to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_broadcasts.rb",
+          "line": 29
+        },
+        {
+          "name": "stream_for",
+          "scope": "instance",
+          "group": null,
+          "signature": "stream_for(record)",
+          "docstring": "The stream the record's chips broadcast on.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_broadcasts.rb",
+          "line": 31
+        },
+        {
+          "name": "variant",
+          "scope": "instance",
+          "group": null,
+          "signature": "variant",
+          "docstring": "Returns the value of attribute variant",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of variant"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_broadcasts.rb",
+          "line": 29
+        },
+        {
+          "name": "variant=",
+          "scope": "instance",
+          "group": null,
+          "signature": "variant=(value)",
+          "docstring": "Sets the attribute variant",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute variant to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_broadcasts.rb",
+          "line": 29
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Ui::AttachmentLifecycle",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "One Active Storage attachment as the Attachment chip shows it: the\nblob's analyze and variant lifecycle read as the chip's states.\n\n- `processing` until the blob is analyzed, and until the requested\n  variant or preview is processed where Active Storage can say so\n  (`processed?`, public from Rails 8.2; earlier Rails processes lazily\n  on request and the image renders straight away);\n- `error` when an image blob finished analysis with no dimensions,\n  which is what an unprocessable file leaves behind, with a cell\n  (Hot Cell's permanent failure records an empty analysis and never\n  retries) and without one;\n- `done` otherwise, with the representation as the media when there\n  is one, else an icon by content type.\n\nOnly public Active Storage API is read, through duck typing: an\n`ActiveStorage::Attached::One`, an `ActiveStorage::Attachment` or a\nbare `ActiveStorage::Blob` all resolve. Nothing here processes a\nbyte; the representation URL does, in the app or in the cell.",
+      "examples": [],
+      "file": "lib/poetry/ui/attachment_lifecycle.rb",
+      "methods": [
+        {
+          "name": "analyzer_accepts?",
+          "scope": "instance",
+          "group": null,
+          "signature": "analyzer_accepts?",
+          "docstring": "Whether a configured analyzer takes this blob; true outside Active\nStorage, where a stand-in's metadata is the whole story.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 85
+        },
+        {
+          "name": "attachment",
+          "scope": "instance",
+          "group": null,
+          "signature": "attachment",
+          "docstring": "Returns the value of attribute attachment.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 28
+        },
+        {
+          "name": "blob",
+          "scope": "instance",
+          "group": null,
+          "signature": "blob",
+          "docstring": "Returns the value of attribute blob.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 28
+        },
+        {
+          "name": "content_type",
+          "scope": "instance",
+          "group": null,
+          "signature": "content_type",
+          "docstring": "The blob's content type, or an empty string.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 57
+        },
+        {
+          "name": "description",
+          "scope": "instance",
+          "group": null,
+          "signature": "description(view)",
+          "docstring": "The metadata line: the size and the file type, or what went wrong.",
+          "params": [
+            {
+              "name": "view",
+              "types": [
+                "ActionView::Base"
+              ],
+              "text": "for number_to_human_size and the translations"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 135
+        },
+        {
+          "name": "dom_id",
+          "scope": "instance",
+          "group": null,
+          "signature": "dom_id",
+          "docstring": "The chip's DOM id, the one the broadcasts replace.",
+          "params": [],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 147
+        },
+        {
+          "name": "download_path",
+          "scope": "instance",
+          "group": null,
+          "signature": "download_path(view)",
+          "docstring": "The download URL, as an attachment disposition.",
+          "params": [
+            {
+              "name": "view",
+              "types": [
+                "ActionView::Base"
+              ],
+              "text": "with Active Storage's route helpers"
+            }
+          ],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 159
+        },
+        {
+          "name": "filename",
+          "scope": "instance",
+          "group": null,
+          "signature": "filename",
+          "docstring": "The file name, user content.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 52
+        },
+        {
+          "name": "icon",
+          "scope": "instance",
+          "group": null,
+          "signature": "icon",
+          "docstring": "The Lucide icon for the content type family.",
+          "params": [],
+          "return": {
+            "types": [
+              "Symbol"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 120
+        },
+        {
+          "name": "image?",
+          "scope": "instance",
+          "group": null,
+          "signature": "image?",
+          "docstring": "Whether the blob is an image.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 62
+        },
+        {
+          "name": "image_ready?",
+          "scope": "instance",
+          "group": null,
+          "signature": "image_ready?",
+          "docstring": "Whether the media is the representation itself: representable,\nprocessed, and the blob in a state to show it.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 114
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(given, variant: nil)",
+          "docstring": "",
+          "params": [
+            {
+              "name": "given",
+              "types": [
+                "Object"
+              ],
+              "text": "an Attached::One, an Attachment or a Blob"
+            },
+            {
+              "name": "variant",
+              "types": [
+                "Symbol",
+                "Hash",
+                "nil"
+              ],
+              "text": "the named variant or transformations to show as the media"
+            }
+          ],
+          "return": {
+            "types": [
+              "AttachmentLifecycle"
+            ],
+            "text": "a new instance of AttachmentLifecycle"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 32
+        },
+        {
+          "name": "pending_analysis?",
+          "scope": "instance",
+          "group": null,
+          "signature": "pending_analysis?",
+          "docstring": "Whether analysis is still to come (the analyze job, in the app or\nthe cell, has not written metadata yet).",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 68
+        },
+        {
+          "name": "pending_representation?",
+          "scope": "instance",
+          "group": null,
+          "signature": "pending_representation?",
+          "docstring": "Whether the representation is still to be processed, where Active\nStorage can say (`processed?`); a lazily processed one is never\npending here, its URL does the work.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 106
+        },
+        {
+          "name": "present?",
+          "scope": "instance",
+          "group": null,
+          "signature": "present?",
+          "docstring": "Whether there is a blob to show.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 38
+        },
+        {
+          "name": "representable?",
+          "scope": "instance",
+          "group": null,
+          "signature": "representable?",
+          "docstring": "Whether a variant was asked for and the blob can represent it.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 92
+        },
+        {
+          "name": "representation",
+          "scope": "instance",
+          "group": null,
+          "signature": "representation",
+          "docstring": "The representation (variant or preview) of the requested variant.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 99
+        },
+        {
+          "name": "state",
+          "scope": "instance",
+          "group": null,
+          "signature": "state",
+          "docstring": "The chip's state for this moment of the lifecycle.",
+          "params": [],
+          "return": {
+            "types": [
+              "Symbol"
+            ],
+            "text": ":processing, :error or :done"
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 44
+        },
+        {
+          "name": "unprocessable?",
+          "scope": "instance",
+          "group": null,
+          "signature": "unprocessable?",
+          "docstring": "An image analyzed without dimensions by an analyzer that takes\nimages: the file could not be read, or the permanent failure Hot\nCell records and never retries. An app with no image analyzer\nconfigured never analyzes dimensions, so its images are done.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 76
+        },
+        {
+          "name": "variant",
+          "scope": "instance",
+          "group": null,
+          "signature": "variant",
+          "docstring": "Returns the value of attribute variant.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/ui/attachment_lifecycle.rb",
+          "line": 28
+        }
+      ],
+      "constants": [
+        {
+          "name": "ARCHIVE_TYPES",
+          "value": "%w[application/zip application/x-zip-compressed application/x-7z-compressed application/x-tar\napplication/gzip application/x-gzip application/x-rar-compressed application/vnd.rar].freeze",
+          "docstring": "Content types that read as archives."
+        }
+      ]
     },
     {
       "path": "Poetry::Ui::Autocomplete",
@@ -6104,7 +6941,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1585
+          "line": 1634
         },
         {
           "name": "poetry_alert",
@@ -6175,6 +7012,27 @@
           "line": 1485
         },
         {
+          "name": "poetry_attachment_for",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_attachment_for(attachment, variant: nil, download: false, **options, &block)",
+          "docstring": "One Active Storage attachment as a chip through its lifecycle:\nprocessing until the blob is analyzed and the variant processed,\ndone with the representation as the media (or an icon by type),\nerror when an image was analyzed without dimensions. Takes an\nAttached::One, an Attachment or a Blob; renders nothing when\nnothing is attached. The chip's id is the broadcasts' target.",
+          "params": [],
+          "return": null,
+          "examples": [
+            {
+              "title": "A thumbnail with a download link",
+              "text": "<%= poetry_attachment_for @post.cover, variant: :thumb, download: true %>"
+            },
+            {
+              "title": "Extra actions",
+              "text": "<%= poetry_attachment_for photo, variant: :thumb do |chip| %>\n  <% chip.with_action(label: \"Remove\", href: remove_path, tag: :a) { poetry_icon(name: :x) } %>\n<% end %>"
+            }
+          ],
+          "file": "app/helpers/poetry/ui/components_helper.rb",
+          "line": 1514
+        },
+        {
           "name": "poetry_attachment_group",
           "scope": "instance",
           "group": null,
@@ -6190,6 +7048,23 @@
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
           "line": 1496
+        },
+        {
+          "name": "poetry_attachments_for",
+          "scope": "instance",
+          "group": null,
+          "signature": "poetry_attachments_for(attachments, **, &)",
+          "docstring": "Every attachment of a has_many_attached as chips, each through\npoetry_attachment_for.",
+          "params": [],
+          "return": null,
+          "examples": [
+            {
+              "title": "",
+              "text": "<%= poetry_attachments_for @post.photos, variant: :thumb %>"
+            }
+          ],
+          "file": "app/helpers/poetry/ui/components_helper.rb",
+          "line": 1545
         },
         {
           "name": "poetry_autocomplete",
@@ -6529,7 +7404,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1572
+          "line": 1621
         },
         {
           "name": "poetry_color_scheme_script",
@@ -6546,7 +7421,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1781
+          "line": 1830
         },
         {
           "name": "poetry_combobox",
@@ -6563,7 +7438,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1689
+          "line": 1738
         },
         {
           "name": "poetry_command",
@@ -6580,7 +7455,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1715
+          "line": 1764
         },
         {
           "name": "poetry_command_dialog",
@@ -6597,7 +7472,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1728
+          "line": 1777
         },
         {
           "name": "poetry_context_menu",
@@ -6614,7 +7489,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1702
+          "line": 1751
         },
         {
           "name": "poetry_data_table",
@@ -6750,7 +7625,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1659
+          "line": 1708
         },
         {
           "name": "poetry_empty",
@@ -6869,7 +7744,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1646
+          "line": 1695
         },
         {
           "name": "poetry_icon",
@@ -6903,7 +7778,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1760
+          "line": 1809
         },
         {
           "name": "poetry_input",
@@ -7175,7 +8050,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1744
+          "line": 1793
         },
         {
           "name": "poetry_message",
@@ -7226,7 +8101,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1507
+          "line": 1556
         },
         {
           "name": "poetry_message_scroller_item",
@@ -7243,7 +8118,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1521
+          "line": 1570
         },
         {
           "name": "poetry_metadata_list",
@@ -7430,7 +8305,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1598
+          "line": 1647
         },
         {
           "name": "poetry_progress",
@@ -7549,7 +8424,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1674
+          "line": 1723
         },
         {
           "name": "poetry_sensitive_input",
@@ -8008,7 +8883,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1543
+          "line": 1592
         },
         {
           "name": "poetry_toast_trigger",
@@ -8042,7 +8917,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1559
+          "line": 1608
         },
         {
           "name": "poetry_toggle",
@@ -8110,7 +8985,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1612
+          "line": 1661
         },
         {
           "name": "poetry_tooltip_provider",
@@ -8127,7 +9002,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/components_helper.rb",
-          "line": 1627
+          "line": 1676
         },
         {
           "name": "poetry_tree",
@@ -11378,11 +12253,11 @@
       "path": "Poetry::Ui::FileInput::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "The FileInput - file\nselection in two shapes. variant: :input is the plain styled native\ncontrol (the Input component with type=file - zero JS, the browser\nshows the selection). variant: :dropzone is the drag-and-drop\nsurface: a <label> wrapping a visually-hidden native input - so\nclick-to-browse and keyboard access are the PLATFORM's - with JS\nadding only what HTML cannot\n(drop, the selection list, clear). The native input is always the\nform value; ActiveStorage direct upload rides it untouched\n(data: { direct_upload_url: ... } passes straight through).\n\n**Anatomy** (`data-slot` parts):\n\n- `file-input` - The dropzone root - wraps the zone, the selection list, and clear\n- `file-input-dropzone` - The <label> drop surface - dashed, platform click-to-browse; its text is the control's accessible name\n- `file-input-control` - The native <input type=file> - visually hidden in the dropzone, THE form value in both variants\n- `file-input-prompt` - The zone's instruction line (prompt: overrides the default)\n- `file-input-hint` - Muted constraints copy under the prompt (hint: - formats, size)\n- `file-input-list` - The selected-file <ul> the controller fills (name + size per item; items are controller-built, not server parts)\n- `file-input-clear` - The clear affordance - hidden until populated; never re-opens the picker",
+      "docstring": "The FileInput - file\nselection in two shapes. variant: :input is the plain styled native\ncontrol (the Input component with type=file - zero JS, the browser\nshows the selection). variant: :dropzone is the drag-and-drop\nsurface: a <label> wrapping a visually-hidden native input - so\nclick-to-browse and keyboard access are the PLATFORM's - with the\nfile_drop behavior adding what HTML cannot: drop, paste, folders, the\naccept, size and count checks, and the whole page as the target with\noverlay:. Every selected file is an Attachment chip under the zone.\n\nThe native input is always the form value. With direct_upload: true\nActive Storage's direct uploads run at submit, Rails' own flow, and\nthe chips show their progress; with upload: :immediate each file\nuploads as it lands, with progress, cancel, retry and remove, and\nthe form posts the signed ids the uploads leave as hidden inputs.\n\n**Anatomy** (`data-slot` parts):\n\n- `file-input` - The dropzone root - the drop target, wrapping the zone, the chips, the rejections and clear\n- `file-input-dropzone` - The <label> drop surface - dashed, platform click-to-browse; its text is the control's accessible name\n- `file-input-control` - The native <input type=file> - visually hidden in the dropzone, THE form value in both variants\n- `file-input-prompt` - The zone's instruction line (prompt: overrides the default)\n- `file-input-hint` - Muted constraints copy under the prompt (hint: - formats, size)\n- `file-input-items` - The chips' container the controller fills - one Attachment per selected file, cloned from the template (chips are controller-built, not server parts)\n- `file-input-item-template` - The <template> holding one Attachment chip the controller clones per file: media, title, description, progress, retry and remove\n- `file-input-errors` - The rejections <ul> (role=alert) the controller fills - one line per file the accept, size or count checks refused; hidden when empty\n- `file-input-overlay` - The fixed full-window drop surface (overlay: true) - decorative, shown while data-drag-global is on the root\n- `file-input-clear` - The clear affordance - hidden until populated; never re-opens the picker",
       "examples": [
         {
           "title": "Drag-and-drop upload surface",
-          "text": "render Poetry::Ui::FileInput::Component.new(\n  variant: :dropzone, name: \"attachments[]\", multiple: true,\n  hint: \"PDF or PNG, up to 10 MB\"\n)"
+          "text": "render Poetry::Ui::FileInput::Component.new(\n  variant: :dropzone, name: \"attachments[]\", multiple: true,\n  accept: \"application/pdf,image/*\", max_size: 10.megabytes, max_files: 5,\n  direct_upload: true, upload: :immediate, preview: true,\n  hint: \"PDF or PNG, up to 10 MB\"\n)"
         }
       ],
       "file": "app/components/poetry/ui/file_input/component.rb",
@@ -11392,7 +12267,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The native accept filter (e.g. \"image/*,.pdf\").\n\nConstructor option `accept:`.",
+          "docstring": "The native accept filter (e.g. \"image/*,.pdf\"); the dropzone rejects a file outside it at intake.\n\nConstructor option `accept:`.",
           "params": [],
           "return": {
             "types": [
@@ -11402,7 +12277,24 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 77
+          "line": 111
+        },
+        {
+          "name": "camera",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Opens a camera on mobile, as the native capture attribute: :user (front) or :environment (back); needs an image, audio or video accept:.\n\nConstructor option `camera:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Symbol"
+            ],
+            "text": "one of: `user, environment`;"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/file_input/component.rb",
+          "line": 134
         },
         {
           "name": "described_by",
@@ -11419,7 +12311,58 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 81
+          "line": 139
+        },
+        {
+          "name": "direct_upload",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Uploads go straight to the storage service through Active Storage's direct uploads endpoint, as Rails' file_field direct_upload: true.\n\nConstructor option `direct_upload:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "defaults to `false`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/file_input/component.rb",
+          "line": 117
+        },
+        {
+          "name": "direct_upload_url",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "A direct uploads endpoint other than Rails' own (an authenticated subclass's route); implies direct_upload: true.\n\nConstructor option `direct_upload_url:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/file_input/component.rb",
+          "line": 120
+        },
+        {
+          "name": "directory",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Dropped folders are walked for their files, and the picker selects folders.\n\nConstructor option `directory:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "defaults to `false`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/file_input/component.rb",
+          "line": 132
         },
         {
           "name": "disabled",
@@ -11436,7 +12379,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 78
+          "line": 136
         },
         {
           "name": "hint",
@@ -11453,7 +12396,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 83
+          "line": 141
         },
         {
           "name": "id",
@@ -11470,7 +12413,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 74
+          "line": 108
         },
         {
           "name": "invalid",
@@ -11487,7 +12430,58 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 79
+          "line": 137
+        },
+        {
+          "name": "max_files",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The most files the dropzone holds (multiple: true); the surplus is rejected file by file.\n\nConstructor option `max_files:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/file_input/component.rb",
+          "line": 115
+        },
+        {
+          "name": "max_size",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The largest file the dropzone takes, in bytes (10.megabytes).\n\nConstructor option `max_size:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/file_input/component.rb",
+          "line": 113
+        },
+        {
+          "name": "min_size",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The smallest file the dropzone takes, in bytes.\n\nConstructor option `min_size:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/file_input/component.rb",
+          "line": 114
         },
         {
           "name": "multiple",
@@ -11504,7 +12498,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 75
+          "line": 109
         },
         {
           "name": "name",
@@ -11521,7 +12515,58 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 71
+          "line": 105
+        },
+        {
+          "name": "overlay",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "The whole page is the drop target: a fixed overlay shows while files are dragged over the window.\n\nConstructor option `overlay:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "defaults to `false`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/file_input/component.rb",
+          "line": 130
+        },
+        {
+          "name": "paste",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Files pasted over the dropzone land in it (a chat composer, a screenshot).\n\nConstructor option `paste:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "defaults to `false`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/file_input/component.rb",
+          "line": 128
+        },
+        {
+          "name": "preview",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Image files show a thumbnail in their chip, from an object URL released when the chip goes.\n\nConstructor option `preview:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": "defaults to `false`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/file_input/component.rb",
+          "line": 126
         },
         {
           "name": "prompt",
@@ -11538,7 +12583,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 82
+          "line": 140
         },
         {
           "name": "root_attributes",
@@ -11550,7 +12595,24 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 151
+          "line": 283
+        },
+        {
+          "name": "upload",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "When direct uploads run: :on_submit, Rails' own flow at form submit, or :immediate, each file as it lands with progress, cancel, retry and remove, the form posting signed ids.\n\nConstructor option `upload:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Symbol"
+            ],
+            "text": "one of: `on_submit, immediate`; defaults to `:on_submit`"
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/file_input/component.rb",
+          "line": 122
         },
         {
           "name": "variant",
@@ -11567,7 +12629,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/file_input/component.rb",
-          "line": 68
+          "line": 102
         }
       ],
       "constants": [
@@ -11575,6 +12637,26 @@
           "name": "AGENT_RULES",
           "value": "[\n  \"File selection is a FileInput: variant: :input for compact forms, :dropzone when \" \\\n  \"dragging is expected (uploads as the page's point) - never a hand-rolled drop div.\",\n  \"The native input is",
           "docstring": "Projected into the registry, llms.txt, and the agent surface."
+        },
+        {
+          "name": "CAMERAS",
+          "value": "%i[user environment].freeze",
+          "docstring": "The closed vocabulary for camera: (the native capture attribute's values)."
+        },
+        {
+          "name": "REJECTION_CODES",
+          "value": "{\n  type: \"file-invalid-type\", large: \"file-too-large\", small: \"file-too-small\",\n  count: \"too-many-files\", invalid: \"file-invalid\"\n}.freeze",
+          "docstring": "The rejection codes the file_drop behavior reports, by the\ntranslation key of their message."
+        },
+        {
+          "name": "UPLOAD_MESSAGES",
+          "value": "%i[unavailable failed busy].freeze",
+          "docstring": "The upload messages the file-input controller shows, by translation key."
+        },
+        {
+          "name": "UPLOAD_MODES",
+          "value": "%i[on_submit immediate].freeze",
+          "docstring": "The closed vocabulary for upload: (when direct uploads run)."
         }
       ]
     },
@@ -11582,7 +12664,7 @@
       "path": "Poetry::Ui::FileInput::Style",
       "type": "class",
       "superclass": "Poetry::Core::Style",
-      "docstring": "Utility-only (the Separator/Spinner rule): the input variant wears\nthe Input component's own chrome; the dropzone is structural\nutilities on semantic tokens, with the controller's data-dragging /\ndata-populated (on the ROOT) driving the zone's states through\ngroup-data variants. data-slot selectors are the restyle seam.",
+      "docstring": "Utility-only (the Separator/Spinner rule): the input variant wears\nthe Input component's own chrome; the dropzone is structural\nutilities on semantic tokens, with the controllers' data-dragging /\ndata-drag-reject / data-drag-global / data-populated (on the ROOT)\ndriving the zone's states through group-data variants. data-slot\nselectors are the restyle seam.",
       "examples": [],
       "file": "app/components/poetry/ui/file_input/style.rb",
       "methods": [],
@@ -11618,7 +12700,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 436
+          "line": 440
         },
         {
           "name": "autocomplete",
@@ -11630,7 +12712,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 547
+          "line": 551
         },
         {
           "name": "button",
@@ -11642,7 +12724,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 723
+          "line": 727
         },
         {
           "name": "calendar",
@@ -11654,7 +12736,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 659
+          "line": 663
         },
         {
           "name": "check_box",
@@ -11678,7 +12760,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 1055
+          "line": 1118
         },
         {
           "name": "checkbox_group",
@@ -11690,7 +12772,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 621
+          "line": 625
         },
         {
           "name": "collection_check_boxes",
@@ -11702,7 +12784,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 702
+          "line": 706
         },
         {
           "name": "collection_checkboxes",
@@ -11714,7 +12796,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 1060
+          "line": 1123
         },
         {
           "name": "collection_radio_buttons",
@@ -11726,7 +12808,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 695
+          "line": 699
         },
         {
           "name": "collection_select",
@@ -11738,7 +12820,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 685
+          "line": 689
         },
         {
           "name": "date_field",
@@ -11762,7 +12844,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 645
+          "line": 649
         },
         {
           "name": "datetime_field",
@@ -11819,7 +12901,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 479
+          "line": 483
         },
         {
           "name": "field",
@@ -11843,19 +12925,19 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 733
+          "line": 737
         },
         {
           "name": "file_input",
           "scope": "instance",
           "group": null,
           "signature": "file_input(method, hint: nil, **options, &block)",
-          "docstring": "form.file_input(:document) / form.file_input(:photos, variant: :dropzone,\nmultiple: true) - a Field wrapping a FileInput; the native\ninput is the form value, so ActiveStorage attaches as usual, and\nthe form flips to multipart (Rails' own file_field line). A block\nrenders beside the control inside the Field - the seat for the\ncurrent attachment's preview.",
+          "docstring": "form.file_input(:document) / form.file_input(:photos, variant: :dropzone,\nmultiple: true) - a Field wrapping a FileInput; the native\ninput is the form value, so ActiveStorage attaches as usual, and\nthe form flips to multipart (Rails' own file_field line). A block\nrenders beside the control inside the Field - the seat for the\ncurrent attachments (poetry_attachments_for). With\nactive_storage_validations loaded, the attribute's content type,\nsize and limit validators set accept:, max_size:, min_size: and\nmax_files: unless the call passes its own.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 264
+          "line": 267
         },
         {
           "name": "group",
@@ -11867,7 +12949,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 742
+          "line": 746
         },
         {
           "name": "input",
@@ -11936,7 +13018,7 @@
             }
           ],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 402
+          "line": 406
         },
         {
           "name": "native_select",
@@ -11948,7 +13030,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 570
+          "line": 574
         },
         {
           "name": "number_field",
@@ -11984,7 +13066,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 491
+          "line": 495
         },
         {
           "name": "phone_field",
@@ -12001,7 +13083,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 486
+          "line": 490
         },
         {
           "name": "poetry_combobox",
@@ -12013,7 +13095,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 336
+          "line": 340
         },
         {
           "name": "poetry_select",
@@ -12025,7 +13107,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 294
+          "line": 298
         },
         {
           "name": "radio_group",
@@ -12049,7 +13131,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 503
+          "line": 507
         },
         {
           "name": "search_field",
@@ -12061,7 +13143,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 509
+          "line": 513
         },
         {
           "name": "select",
@@ -12073,7 +13155,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 677
+          "line": 681
         },
         {
           "name": "sensitive_input",
@@ -12085,7 +13167,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 527
+          "line": 531
         },
         {
           "name": "slider",
@@ -12109,7 +13191,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 714
+          "line": 718
         },
         {
           "name": "switch",
@@ -12133,7 +13215,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 591
+          "line": 595
         },
         {
           "name": "telephone_field",
@@ -12150,7 +13232,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 479
+          "line": 483
         },
         {
           "name": "text_area",
@@ -12162,7 +13244,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 497
+          "line": 501
         },
         {
           "name": "text_field",
@@ -12179,7 +13261,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 479
+          "line": 483
         },
         {
           "name": "textarea",
@@ -12191,7 +13273,7 @@
           "return": null,
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 1052
+          "line": 1115
         },
         {
           "name": "time_field",
@@ -12220,7 +13302,7 @@
           },
           "examples": [],
           "file": "app/helpers/poetry/ui/form_builder.rb",
-          "line": 479
+          "line": 483
         }
       ],
       "constants": [

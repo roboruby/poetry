@@ -12,6 +12,7 @@ require "poetry/solar"
 require "poetry/blode"
 require "poetry/charts"
 require "poetry/motion"
+require "poetry/island"
 require "poetry/agent"
 # The pagination guide pages one array through the three paginators the
 # gemspec names, so the engine loads them rather than each host. Only their

@@ -721,6 +721,27 @@
       "constants": []
     },
     {
+      "path": "Poetry::Core::Behaviors::FileDrop",
+      "type": "module",
+      "superclass": null,
+      "docstring": "Files arriving by drop, picker or paste (the file-drop controller):\nthe element is the drop target, the native file input inside it is\nthe form value, and every file is checked against accept, size and\ncount before it lands there. The controller reports each change\nthrough its files event, with the accepted files and the rejected\nones by code, and the drag verdict through its drag event. Each\nvalue is set only when the component passes it: `:option` reads\nthe component's own option, a Hash passes from:, anything else is\na literal.",
+      "examples": [
+        {
+          "title": "FileInput: the root takes drops for the input it wraps",
+          "text": "on(:root) { behavior :file_drop, accept: :option, multiple: :option, max_files: :option }"
+        }
+      ],
+      "file": "app/components/poetry/core/behaviors/file_drop.rb",
+      "methods": [],
+      "constants": [
+        {
+          "name": "VALUES",
+          "value": "%i[accept multiple max_files max_size min_size paste overlay directory prevent_document_drop\nmessages].freeze",
+          "docstring": "The values a component may set, in the order they declare."
+        }
+      ]
+    },
+    {
       "path": "Poetry::Core::Behaviors::FocusScope",
       "type": "module",
       "superclass": null,
@@ -1654,6 +1675,11 @@
           "name": "POSITIONAL_KINDS",
           "value": "%i[req opt].freeze",
           "docstring": "The parameter kinds counted toward positional arity."
+        },
+        {
+          "name": "RESERVED_OPTION_NAMES",
+          "value": "%i[capture content render helpers view_context output_buffer controller\nrequest].freeze",
+          "docstring": "Option names that would shadow a method the rendering itself\ncalls: an option named `capture` once blanked every block a\ntemplate captured. Declaring one raises at class load."
         },
         {
           "name": "STATE_ATTRIBUTE",
@@ -2805,7 +2831,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 141
+          "line": 151
         },
         {
           "name": "option",
@@ -2866,7 +2892,7 @@
             }
           ],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 87
+          "line": 93
         },
         {
           "name": "option_attributes",
@@ -2883,7 +2909,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 125
+          "line": 135
         },
         {
           "name": "option_attributes_with_defaults",
@@ -2900,7 +2926,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 103
+          "line": 113
         },
         {
           "name": "option_attributes_with_proc_defaults",
@@ -2917,7 +2943,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 118
+          "line": 128
         },
         {
           "name": "option_attributes_with_static_defaults",
@@ -2934,7 +2960,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 110
+          "line": 120
         },
         {
           "name": "option_docs",
@@ -2951,7 +2977,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 133
+          "line": 143
         },
         {
           "name": "option_format",
@@ -2978,7 +3004,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 160
+          "line": 170
         },
         {
           "name": "option_type",
@@ -3005,7 +3031,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 149
+          "line": 159
         },
         {
           "name": "initialized_option_attributes",
@@ -3022,7 +3048,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 244
+          "line": 254
         },
         {
           "name": "option_attribute?",
@@ -3048,7 +3074,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 230
+          "line": 240
         },
         {
           "name": "option_attribute_initialized?",
@@ -3074,7 +3100,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 252
+          "line": 262
         },
         {
           "name": "option_attributes",
@@ -3091,7 +3117,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 237
+          "line": 247
         },
         {
           "name": "option_attributes_status",
@@ -3108,7 +3134,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 259
+          "line": 269
         },
         {
           "name": "options",
@@ -3125,7 +3151,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 268
+          "line": 278
         }
       ],
       "constants": [
@@ -3133,6 +3159,11 @@
           "name": "BASE_COMPONENT_CLASS",
           "value": "Poetry::Core::Component",
           "docstring": "Where ancestor walks stop: declarations above the base component\nclass are nobody's."
+        },
+        {
+          "name": "RESERVED_OPTION_NAMES",
+          "value": "%i[capture content render helpers view_context output_buffer controller\nrequest].freeze",
+          "docstring": "Option names that would shadow a method the rendering itself\ncalls: an option named `capture` once blanked every block a\ntemplate captured. Declaring one raises at class load."
         }
       ]
     },

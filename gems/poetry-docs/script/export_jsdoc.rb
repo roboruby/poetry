@@ -45,6 +45,11 @@ CONFIGS = {
     prefix: "poetry--motion--", skip: [],
     superclasses: {}
   },
+  "poetry-island" => {
+    subpath: "poetry/island", package: "@poetry/island",
+    prefix: "poetry--island--", skip: [],
+    superclasses: {}
+  },
   "poetry-agent" => {
     subpath: "poetry/agent", package: "@poetry/agent",
     prefix: "poetry--agent--", skip: [],
@@ -91,6 +96,8 @@ def parse_jsdoc(block)
       extra << "Raises `#{Regexp.last_match(1)}` - #{tidy(Regexp.last_match(2).to_s)}"
     when /\A@type\b/
       nil # constants carry the declaration itself
+    when /\A@(typedef|property)\b/
+      nil # a type definition and its members: a shape, not a symbol
     else
       @errors << "unknown JSDoc tag: #{tag[0, 60]}"
     end
@@ -98,7 +105,8 @@ def parse_jsdoc(block)
 
   docstring = tidy(description.join("\n").strip)
   docstring = [ docstring, *extra ].reject(&:empty?).join("\n\n")
-  { "docstring" => docstring, "params" => params, "return" => ret }
+  { "docstring" => docstring, "params" => params, "return" => ret,
+    "typedef" => tags.any? { |tag| tag.start_with?("@typedef") } }
 end
 
 # {@link X} has no cross-page target here - render as code.
@@ -162,6 +170,10 @@ def scan(path)
       i += 1 while lines[i].to_s.strip.empty?
       decl = lines[i]
       parsed = parse_jsdoc(block)
+      # A @typedef block declares a shape, not a symbol: whatever follows it
+      # (the next block, most often) is read on its own.
+      next if parsed["typedef"]
+
       # The block above the controller class is the controller's purpose
       # (the convention since the manifest harvest); it opens the class.
       if (klass_match = decl.match(/\Aexport default class(?:\s+(\w+))?\s+extends\s+(\w+)/))
@@ -222,6 +234,23 @@ def handle_decl(result, klass, parsed, decl, lines, index, indent, file)
     else
       @errors << "#{file}:#{line_number}: documented method #{name} outside a known class"
     end
+  when /\A  static (\w+)\s*=/
+    # A documented static field (a seam a test replaces, say): a class
+    # member like a method, under its own name.
+    name = Regexp.last_match(1)
+    entry = method_entry(parsed, name, "static #{name}", "static", file, line_number)
+    if klass&.dig(:controller)
+      result[:controller_methods] << entry
+    elsif result[:classes].any?
+      result[:classes].last[:methods] << entry
+    else
+      @errors << "#{file}:#{line_number}: documented static #{name} outside a known class"
+    end
+  when /\A\s*(?:static\s+)?(?:get\s+|set\s+)?#\w+\s*\(/, /\A(?:async\s+)?function\*?\s+\w+/, /\A\s{3,}\S/,
+       /\A\s*(?:const|let|var)\s+\w+/
+    # Documented but not surface: a private member, a module-private
+    # function or variable, or a declaration nested inside a function body.
+    nil
   else
     @errors << "#{file}:#{line_number}: JSDoc above unrecognized declaration: #{decl.to_s[0, 60]}"
   end

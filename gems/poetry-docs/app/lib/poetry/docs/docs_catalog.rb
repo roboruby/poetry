@@ -344,6 +344,11 @@ module Poetry
                     description: "Animated effects whose finished state the server renders: an engine that " \
                                "loads only when an element asks, one motion policy for reduced motion and " \
                                "the Turbo cache, and ten behaviors to compose into your own controllers."),
+          Entry.new(slug: "island", title: "Islands", section: "libraries", icon: :"tree-palm",
+                    description: "The declared exception for client-owned state: poetry_island mounts a " \
+                               "module from the importmap over a server-rendered shell, handles the Turbo " \
+                               "lifecycle once, and hands the state back through a form field. No " \
+                               "framework, no bundler."),
           Entry.new(slug: "agent", title: "Agent", section: "libraries", icon: :"radio-tower",
                     description: "The agent-interop gem: the boot-free poetry-agent MCP server for " \
                                "coding agents, and the WebMCP runtime that registers rendered " \

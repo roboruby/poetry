@@ -1,0 +1,191 @@
+<% content_for :title, "Islands" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Islands") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag; ERB delimiters are assembled by
+  # interpolation so none appear literally inside a heredoc.
+  o = "<" + "%"
+  eo = "<" + "%="
+  ce = "%" + ">"
+  install_source = <<~CODE
+    bundle add poetry-island
+    bin/rails g poetry:install
+  CODE
+  usage_source = <<~CODE
+    #{eo} poetry_island(import: "islands/map", props: { center: [lat, lng], zoom: 12 }, class: "h-80") do #{ce}
+      #{eo} image_tag "office-map.png", alt: "The office, on a map" #{ce}
+    #{o} end #{ce}
+  CODE
+  module_source = <<~CODE
+    // app/javascript/islands/map.js - any module that exports mount(element, props)
+    import maplibregl from "maplibre-gl"   // pinned in config/importmap.rb, or built once into this file
+
+    export function mount(element, props) {
+      const map = new maplibregl.Map({ container: element, center: props.center, zoom: props.zoom })
+      return {
+        unmount: () => map.remove(),
+        update: (next) => map.setCenter(next.center)   // a morph refresh hands the island the server's new props
+      }
+    }
+  CODE
+  form_source = <<~CODE
+    #{eo} form_with(model: @post) do |form| #{ce}
+      #{eo} poetry_island(import: "islands/editor", mode: :flow, name: "post[body]", value: @post.body) do #{ce}
+        #{eo} sanitize(@post.body) #{ce}
+      #{o} end #{ce}
+      #{eo} form.submit #{ce}
+    #{o} end #{ce}
+  CODE
+  editor_source = <<~CODE
+    // app/javascript/islands/editor.js - the island writes where the form reads
+    export function mount(element, props) {
+      const editor = createEditor(element, { content: props.input.value, autofocus: props.focus })
+      editor.on("change", () => { props.input.value = editor.html() })
+      return { unmount: () => editor.destroy() }
+    }
+  CODE
+  check_source = <<~CODE
+    # config/importmap.rb - poetry:install adds the islands line; a library the module imports needs its own pin
+    pin_all_from "app/javascript/islands", under: "islands"
+    pin "maplibre-gl", to: "https://cdn.jsdelivr.net/npm/maplibre-gl@5.9.0/dist/maplibre-gl.js"
+
+    $ bin/rails poetry:check
+    app/views/posts/show.html.erb:12: [warning] island-import-unpinned: poetry_island loads "islands/scene" through the importmap and config/importmap.rb does not pin it
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Islands</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      poetry-island is the one place in a Poetry page where the client owns the
+      state: a bounded mount for the rare widget that changes it many times a
+      second, inside HTML the server still renders.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="what-it-is">What it is</h2>
+      <p>
+        Poetry's state lives on the server and the URL, and Stimulus behaviors
+        handle what is local. An editor, a canvas, a map or a 3D scene breaks
+        that: a large client-owned state mapped onto many nodes, changing within
+        a frame. <code>poetry_island</code> is the declared exception. The server
+        renders a shell, the block; a module from the importmap mounts beside it
+        when the island connects and takes over; and the markup says so, so a
+        reader, a test and an agent all know where the boundary is.
+      </p>
+      <h2 id="install">Install</h2>
+    <% end %>
+    <%= poetry_code_block(code: install_source, language: "shell", label: "Install") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        The installer registers the island controller beside Poetry's and pins
+        <code>app/javascript/islands/</code> as <code>islands/*</code>, so
+        <code>app/javascript/islands/map.js</code> is <code>import: "islands/map"</code>.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: usage_source, language: "erb", label: "Usage") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="contract">The module</h2>
+      <p>
+        A module is any file the importmap serves that exports
+        <code>mount(element, props)</code> and returns <code>{ unmount, update? }</code>.
+        A plain script, a vendored kernel or a bundle built once with React inside
+        all mount the same way; the gem ships no framework and no bundler, and the
+        page loads a module only when its island connects. The props are the
+        island's <code>props:</code> as JSON, plus <code>input</code> (the hidden
+        input below, or <code>null</code>) and <code>focus</code> (true when the
+        shell had focus, so the island can take it).
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: module_source, language: "javascript", label: "A map island") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="modes">Fill and flow</h2>
+      <p>
+        <code>mode: :fill</code>, the default, paints the shell's box: the shell
+        keeps its size and goes invisible once the island is up, and the root sits
+        over it. A canvas, a map, a scene. <code>mode: :flow</code> takes the
+        shell's place in the page: the shell hides and the root flows where it
+        was. An editor, a builder. The shell mirrors the island's markup, so the
+        handoff shifts nothing.
+      </p>
+    <% end %>
+    <div class="flex flex-wrap gap-6">
+      <%= poetry_island(import: "poetry_docs/islands/clock", props: { seconds: true },
+                        class: "h-48 w-full max-w-xs overflow-hidden rounded-xl border bg-card text-foreground") do %>
+        <p class="p-4 text-sm text-muted-foreground">
+          A clock, drawn on a canvas once the island mounts. Until then, and in
+          print, the time is <time><%= Time.current.strftime("%H:%M") %></time>.
+        </p>
+      <% end %>
+      <%= poetry_island(import: "poetry_docs/islands/counter", mode: :flow, props: { count: 3 }, name: "count", value: "3",
+                        class: "w-full max-w-sm rounded-xl border bg-card p-4") do %>
+        <p class="text-sm text-muted-foreground">A count of 3, with buttons once the island mounts.</p>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="form">State leaves through the form</h2>
+      <p>
+        Inside the island the state changes sixty times a second; across the
+        boundary it moves at the pace of a form. <code>name:</code> renders a
+        hidden input inside the island, where a morph refresh leaves it alone, and
+        the module writes to <code>props.input</code>; a submit carries it, the
+        server validates and renders it back into the shell. The counter above
+        does exactly this.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: form_source, language: "erb", label: "The form") %>
+    <%= poetry_code_block(code: editor_source, language: "javascript", label: "The island") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="lifecycle">The Turbo lifecycle, handled once</h2>
+      <ul>
+        <li><strong>Mount on connect, unmount on disconnect.</strong> A visit away tears the island down and releases what it held; a visit back mounts it again.</li>
+        <li><strong>A morph refresh keeps the island.</strong> The controller cancels the morph of its element and hands the module the server's new props through <code>update</code>; focus and client state stay. Anything outside the island morphs as usual.</li>
+        <li><strong>The cache shows the shell.</strong> A cached snapshot's dead root is cleared when the island reconnects, and a Turbo preview mounts nothing.</li>
+        <li><strong>A failure leaves the shell.</strong> A module that does not load or throws on mount keeps the shell in place, logs, and dispatches <code>poetry--island--island:error</code>.</li>
+      </ul>
+      <h2 id="check">The check</h2>
+      <p>
+        <code>import:</code> is an importmap specifier the host pins, and
+        <code>poetry check</code> warns when <code>config/importmap.rb</code> does
+        not. A library the module imports needs its own pin, or the module is built
+        once with the library inside, the way a community island arrives.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: check_source, language: "shell", label: "Pins and the check") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="when-not">When not to</h2>
+      <p>
+        An island is not a way to write a component in another framework. A
+        form, a table, a menu, a dialog, a chart and a dashboard that moves a few
+        times a second are components; their state is the server's and the URL's,
+        and a Stimulus behavior handles what is local. Reach for an island when the
+        state is the client's, changes within a frame, and is derived on the
+        client: a document in an editor, pixels on a canvas, tiles on a map. Then
+        say so in the markup, give the shell what a reader needs, and let the form
+        carry what must last.
+      </p>
+    <% end %>
+  </section>
+</div>

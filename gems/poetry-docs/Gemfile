@@ -22,6 +22,7 @@ gem "poetry-blode", **sibling.call("poetry-blode")
 gem "poetry-ui", **sibling.call("poetry-ui")
 gem "poetry-charts", **sibling.call("poetry-charts")
 gem "poetry-motion", **sibling.call("poetry-motion")
+gem "poetry-island", **sibling.call("poetry-island")
 gem "poetry-agent", **sibling.call("poetry-agent")
 
 if ENV["POETRY_RAILS"] == "main"
