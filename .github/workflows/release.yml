@@ -39,7 +39,7 @@ jobs:
           fetch-depth: 0 # verify_tag needs main
           persist-credentials: false
       - name: Set up Ruby (the releaser's own bundle)
-        uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1
+        uses: ruby/setup-ruby@26e5b7d197ebf60545ee9667bcbace0be11ccaec # v1
         with:
           ruby-version: "4.0"
           bundler-cache: true
