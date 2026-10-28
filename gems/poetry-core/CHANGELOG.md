@@ -37,6 +37,8 @@
 - The vendored shadcn utilities (`vendor/shadcn-tailwind/tailwind.css`, the host's `poetry/utilities.css`) move to shadcn@4.23.0, where the shimmer's reduced-motion kill rides its variants: a shimmer applied through a variant, as Attachment's uploading and processing titles do, now stops for users who ask for reduced motion. Re-run `poetry:install` to take it.
 - `poetry:check` no longer crashes on an attribute whose name is ERB, and a positional argument stands it down on required options as on content blocks (`poetry_typewriter("Hello")` sets `text:`).
 - `Icons::Vendor` leaves colours inside a mask or clip path alone when it repaints to currentColor: there white and black mean shown and hidden.
+- A MessageScroller following the bottom no longer lets go when a layout pulls its scroll position back without the reader (a full-page screenshot lays the page out one pixel tall, which clamps the scroll to the top): following releases only on a move up from the last position that stops short of the bottom.
+- MessageScroller catches up with shadcn's hook since the port. Both resize observers share one frame, so resizing the tail spacer inside the observed content no longer fires "ResizeObserver loop completed with undelivered notifications" while a reply streams. A new `anchor: true` turn stays at the reading line under `auto_scroll` while its reply streams, and following takes over once the reply fills the viewport. The root's `data-scrollable` leaves `end` off while following, so the jump button stays hidden as chunks land.
 
 ## [0.1.13] - 2026-10-13
 
