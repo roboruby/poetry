@@ -82,7 +82,10 @@ module Poetry
                                           "defaults to \"<id>-messages\"."
         option :auto_scroll, :boolean, default: true,
                                        doc: "Follows the newest message while the reader sits at the bottom; " \
-                                            "scrolling up releases the follow."
+                                            "scrolling up releases the follow. Composes with anchor: true " \
+                                            "turns - a new anchored turn holds at the reading line while its " \
+                                            "reply streams, and following takes over once the reply fills " \
+                                            "the viewport."
         option :default_scroll_position, :symbol, default: :end,
                                                   doc: "Where the viewport lands on connect: the newest message " \
                                                        "(:end), the oldest (:start), or the last anchor: true row " \
@@ -106,7 +109,9 @@ module Poetry
                                 values: %w[following-bottom free-scrolling
                                            anchored-to-message settling-jump] },
                "data-scrollable" => "overflow exists - carries which edges have room " \
-                                    "(start, end, or both as a space-separated pair)",
+                                    "(start, end, or both as a space-separated pair); end " \
+                                    "stays off while following the bottom, which is already " \
+                                    "closing the gap",
                "data-autoscrolling" => "a programmatic scroll is settling - the " \
                                        "follow-bottom release is suppressed while set",
                "data-pending-scroll" => "the opening-position hold - rendered for " \

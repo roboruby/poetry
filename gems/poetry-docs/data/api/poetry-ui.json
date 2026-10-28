@@ -15681,7 +15681,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Follows the newest message while the reader sits at the bottom; scrolling up releases the follow.\n\nConstructor option `auto_scroll:`.",
+          "docstring": "Follows the newest message while the reader sits at the bottom; scrolling up releases the follow. Composes with anchor: true turns - a new anchored turn holds at the reading line while its reply streams, and following takes over once the reply fills the viewport.\n\nConstructor option `auto_scroll:`.",
           "params": [],
           "return": {
             "types": [
@@ -15725,7 +15725,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/message_scroller/component.rb",
-          "line": 86
+          "line": 89
         },
         {
           "name": "id",
@@ -15759,7 +15759,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/message_scroller/component.rb",
-          "line": 96
+          "line": 99
         },
         {
           "name": "preserve_scroll_on_prepend",
@@ -15776,7 +15776,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/message_scroller/component.rb",
-          "line": 90
+          "line": 93
         },
         {
           "name": "root_attributes",
@@ -15788,7 +15788,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/message_scroller/component.rb",
-          "line": 140
+          "line": 145
         },
         {
           "name": "track_visibility",
@@ -15805,7 +15805,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/message_scroller/component.rb",
-          "line": 93
+          "line": 96
         }
       ],
       "constants": [

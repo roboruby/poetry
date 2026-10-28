@@ -281,33 +281,65 @@ describe("poetry--core--message-scroller", () => {
       expect(events).toHaveLength(1)
     })
 
-    it("a layout that briefly loses its overflow never releases - the browser's clamp is not a scroll away", async () => {
+    // A transient layout (a full-page capture, a print pass) drops the
+    // overflow: the browser clamps scrollTop to 0 while the last row still
+    // measures below the fold (what Chrome reports mid-capture).
+    function collapse({ rowElements, metrics }) {
+      Object.assign(metrics, { scrollHeight: 200, scrollTop: 0 })
+      setRect(rowElements[1], { top: 100, height: 500 })
+    }
+
+    // The layout comes back with the content below; scrollTop stays clamped.
+    function restore({ rowElements, metrics }) {
+      metrics.scrollHeight = 600
+      setRect(rowElements[1], { top: 100, height: 500 })
+    }
+
+    it("a clamp seen by a commit inside the collapsed layout never releases", async () => {
       const mounted = await mount({
         rows: [{ id: "m1", top: 0, height: 100 }, { id: "m2", top: 100, height: 100 }]
       })
-      const { root, viewport, rowElements, metrics } = mounted
+      const { root, viewport, metrics } = mounted
       const [viewportResizeObserver] = ResizeObserverStub.instances
       settleAtEnd(mounted)
       const events = recordEvents(root, "unpinned")
 
-      // A transient layout (a full-page capture, a print pass) drops the
-      // overflow: the browser clamps scrollTop to 0 and the viewport resizes,
-      // while the last row still measures below the fold (what Chrome reports
-      // mid-capture). The clamp's commit sees a move up with content below.
-      Object.assign(metrics, { scrollHeight: 200, scrollTop: 0 })
-      setRect(rowElements[1], { top: 100, height: 500 })
-      viewportResizeObserver.callback()
+      // A commit runs inside the collapsed layout: a move up with content
+      // below, but the viewport sits at the end of its own scroll range.
+      collapse(mounted)
+      viewport.dispatchEvent(new Event("scroll"))
+      expect(root.dataset.mode).toBe("following-bottom")
 
-      // The layout comes back with the content below; the clamp's scroll
-      // event arrives before the resize.
-      metrics.scrollHeight = 600
-      setRect(rowElements[1], { top: 100, height: 500 })
+      restore(mounted)
+      viewport.dispatchEvent(new Event("scroll"))
+      viewportResizeObserver.callback()
+      runFrame()
+
+      expect(events).toHaveLength(0)
+      expect(metrics.scrollTop).toBe(400)
+    })
+
+    it("the clamp's scroll event after the layout returns never releases", async () => {
+      const mounted = await mount({
+        rows: [{ id: "m1", top: 0, height: 100 }, { id: "m2", top: 100, height: 100 }]
+      })
+      const { root, viewport, metrics } = mounted
+      const [viewportResizeObserver] = ResizeObserverStub.instances
+      settleAtEnd(mounted)
+      const events = recordEvents(root, "unpinned")
+
+      // The observer delivers right after the collapsed layout and defers its
+      // pass to the next frame; the clamp's scroll event comes first, with the
+      // layout already back and the range open again.
+      collapse(mounted)
+      viewportResizeObserver.callback()
+      restore(mounted)
       viewport.dispatchEvent(new Event("scroll"))
 
       expect(root.dataset.mode).toBe("following-bottom")
       expect(events).toHaveLength(0)
 
-      viewportResizeObserver.callback()
+      runFrame()
       expect(metrics.scrollTop).toBe(400)
     })
 
@@ -352,18 +384,40 @@ describe("poetry--core--message-scroller", () => {
       const mounted = await mount({
         rows: [{ id: "m1", top: 0, height: 100 }, { id: "m2", top: 100, height: 100 }]
       })
-      const { root, viewport, rowElements, metrics } = mounted
+      const { root, viewport, button, rowElements, metrics } = mounted
       settleAtEnd(mounted)
 
       // A streamed chunk grows the last row past the live edge; a scroll event
-      // commits before the resize handler has followed.
+      // commits before the frame-coalesced resize pass has followed. The
+      // reader did not move: no release, and the gap is not published (that
+      // would strobe the scroll button once per chunk).
       metrics.scrollHeight = 760
       setRect(rowElements[1], { top: -300, height: 660 })
       viewport.dispatchEvent(new Event("scroll"))
       expect(root.dataset.mode).toBe("following-bottom")
+      expect(root.getAttribute("data-scrollable") ?? "").not.toContain("end")
+      expect(button.dataset.active).toBe("false")
 
       ResizeObserverStub.instances[1].callback()
+      runFrame()
       expect(metrics.scrollTop).toBe(560)
+      expect(root.getAttribute("data-scrollable") ?? "").not.toContain("end")
+    })
+
+    it("a release still publishes the gap it released over", async () => {
+      const mounted = await mount({
+        rows: [{ id: "m1", top: 0, height: 100 }, { id: "m2", top: 100, height: 100 }]
+      })
+      const { root, button } = mounted
+      settleAtEnd(mounted)
+      const events = recordEvents(root, "scrollable")
+
+      dragUp(mounted)
+
+      expect(root.dataset.mode).toBe("free-scrolling")
+      expect(root.getAttribute("data-scrollable")).toContain("end")
+      expect(button.dataset.active).toBe("true")
+      expect(events.at(-1).detail.end).toBe(true)
     })
   })
 
@@ -556,7 +610,9 @@ describe("poetry--core--message-scroller", () => {
 
       const viewportResizeObserver = ResizeObserverStub.instances[0]
       viewportResizeObserver.callback()
+      expect(metrics.scrollTop).toBe(0) // coalesced: nothing moves until the frame
 
+      runFrame()
       expect(metrics.scrollTop).toBe(400)
     })
 
@@ -579,10 +635,110 @@ describe("poetry--core--message-scroller", () => {
       setRect(anchor, { top: 100 - 36, height: 300 }) // grew; client top shifted by the scroll
       const contentResizeObserver = ResizeObserverStub.instances[1]
       contentResizeObserver.callback()
+      runFrame()
 
       // Re-placed: elementTop (64 + 36) - peek 64 = 36 -> holds the line.
       expect(root.dataset.mode).toBe("anchored-to-message")
       expect(metrics.scrollTop).toBe(36)
+    })
+
+    it("coalesces both observers onto one frame, and disconnect cancels a pending pass", async () => {
+      const { root, viewport, metrics } = await mount({
+        rows: [{ id: "m1", top: 0, height: 100 }]
+      })
+      const moves = []
+      const scrollTo = viewport.scrollTo
+      viewport.scrollTo = (options) => { moves.push(options); scrollTo(options) }
+      const [viewportResizeObserver, contentResizeObserver] = ResizeObserverStub.instances
+
+      metrics.scrollHeight = 600
+      viewportResizeObserver.callback()
+      contentResizeObserver.callback()
+      expect(metrics.scrollTop).toBe(0)
+
+      runFrame()
+      expect(metrics.scrollTop).toBe(400)
+      expect(moves).toHaveLength(1)
+
+      metrics.scrollHeight = 800
+      viewportResizeObserver.callback()
+      root.remove()
+      await nextFrame()
+
+      expect(rafCallbacks.size).toBe(0)
+      runFrame()
+      expect(metrics.scrollTop).toBe(400)
+    })
+
+    it("hands off from the anchor hold to following once the streamed reply fills the viewport", async () => {
+      const { root, content, spacer, rowElements, metrics } = await mount({
+        rows: [{ id: "m1", top: 0, height: 100 }]
+      })
+      const [, contentResizeObserver] = ResizeObserverStub.instances
+      metrics.scrollHeight = 600 // after mount, so the opening scrollToEnd stayed at 0
+
+      // The submitted turn anchors at the reading line with tail spacer room
+      // below for the reply to stream into.
+      const anchor = makeRow({ id: "m2", anchor: true, top: 100, height: 50 })
+      content.insertBefore(anchor, spacer)
+      await flushMutations()
+      expect(metrics.scrollTop).toBe(36)
+      expect(spacer.style.height).toBe("86px")
+      setRect(rowElements[0], { top: -36, height: 100 })
+      setRect(anchor, { top: 64, height: 50 })
+
+      // The spacer makes the turn read as "at the end"; the pending commit
+      // must not re-arm following over the hold.
+      runFrame()
+      expect(root.dataset.mode).toBe("anchored-to-message")
+
+      // While the reply still fits in the spacer room the anchor holds.
+      setRect(anchor, { top: 64, height: 100 })
+      contentResizeObserver.callback()
+      runFrame()
+      expect(metrics.scrollTop).toBe(36)
+      expect(spacer.style.height).toBe("36px")
+      expect(root.dataset.mode).toBe("anchored-to-message")
+
+      // Growth past the spacer: the reply has filled the viewport and the
+      // reader is at the live edge, so autoScroll takes over from the anchor.
+      setRect(anchor, { top: 64, height: 300 })
+      metrics.scrollHeight = 400
+      contentResizeObserver.callback()
+      runFrame()
+      expect(metrics.scrollTop).toBe(200)
+      expect(root.dataset.mode).toBe("following-bottom")
+
+      // Following stays engaged for the rest of the stream.
+      setRect(anchor, { top: -100, height: 400 })
+      metrics.scrollHeight = 500
+      contentResizeObserver.callback()
+      runFrame()
+      expect(metrics.scrollTop).toBe(300)
+      expect(root.getAttribute("data-scrollable") ?? "").not.toContain("end")
+    })
+
+    it("a turn taller than the viewport, placed with no spacer, stays held as it grows", async () => {
+      const { root, content, spacer, rowElements, metrics } = await mount({
+        rows: [{ id: "m1", top: 0, height: 100 }]
+      })
+      const [, contentResizeObserver] = ResizeObserverStub.instances
+      metrics.scrollHeight = 600
+
+      const anchor = makeRow({ id: "m2", anchor: true, top: 100, height: 300 })
+      content.insertBefore(anchor, spacer)
+      await flushMutations()
+      expect(metrics.scrollTop).toBe(36)
+      expect(spacer.hidden).toBe(true)
+      setRect(rowElements[0], { top: -36, height: 100 })
+      setRect(anchor, { top: 64, height: 300 })
+
+      setRect(anchor, { top: 64, height: 500 })
+      contentResizeObserver.callback()
+      runFrame()
+
+      expect(metrics.scrollTop).toBe(36)
+      expect(root.dataset.mode).toBe("anchored-to-message")
     })
   })
 

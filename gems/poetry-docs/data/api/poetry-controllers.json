@@ -7030,7 +7030,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 208
+          "line": 216
         },
         {
           "name": "defaultScrollPositionValueChanged",
@@ -7042,7 +7042,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 255
+          "line": 268
         },
         {
           "name": "autoScrollValueChanged",
@@ -7054,7 +7054,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 263
+          "line": 276
         },
         {
           "name": "syncAfterScroll",
@@ -7066,7 +7066,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 280
+          "line": 293
         },
         {
           "name": "userScrollIntent",
@@ -7078,7 +7078,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 291
+          "line": 304
         },
         {
           "name": "keydownIntent",
@@ -7098,7 +7098,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 308
+          "line": 321
         },
         {
           "name": "jump",
@@ -7118,7 +7118,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 320
+          "line": 333
         },
         {
           "name": "scrollToEnd",
@@ -7143,7 +7143,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 340
+          "line": 353
         },
         {
           "name": "scrollToStart",
@@ -7168,7 +7168,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 350
+          "line": 363
         },
         {
           "name": "scrollToMessage",
@@ -7200,7 +7200,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/message_scroller_controller.js",
-          "line": 364
+          "line": 377
         }
       ],
       "constants": []

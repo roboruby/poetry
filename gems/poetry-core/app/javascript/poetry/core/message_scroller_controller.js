@@ -175,12 +175,18 @@ export default class extends Controller {
       this.contentObserver.observe(content, { childList: true })
     }
 
+    // Both observers coalesce onto one frame: the resize handler resizes the
+    // tail spacer inside the observed content, and resizing an observed
+    // element during delivery fires "ResizeObserver loop completed with
+    // undelivered notifications".
+    this.resizeFrame = null
+
     if (typeof ResizeObserver !== "undefined") {
-      this.viewportResizeObserver = new ResizeObserver(() => this.#handleResize())
+      this.viewportResizeObserver = new ResizeObserver(() => this.#scheduleResize())
       this.viewportResizeObserver.observe(viewport)
 
       if (content) {
-        this.contentResizeObserver = new ResizeObserver(() => this.#handleResize())
+        this.contentResizeObserver = new ResizeObserver(() => this.#scheduleResize())
         this.contentResizeObserver.observe(content)
       }
     }
@@ -222,6 +228,11 @@ export default class extends Controller {
     if (this.visibilityFrame !== null) {
       window.cancelAnimationFrame(this.visibilityFrame)
       this.visibilityFrame = null
+    }
+
+    if (this.resizeFrame !== null) {
+      window.cancelAnimationFrame(this.resizeFrame)
+      this.resizeFrame = null
     }
 
     if (this.autoscrollingTimeout !== null) {
@@ -412,11 +423,15 @@ export default class extends Controller {
   // Owns the one follow-bottom transition: ARM at the bottom (however you got
   // there), RELEASE on a scroll away (including a scrollbar drag) -
   // suppressed while autoscrolling so a programmatic scroll cannot release
-  // itself, and never arming over an in-flight settling-jump. Only a move UP
-  // is a scroll away: content growing past the live edge also reads as "not
-  // at the end", and the reader did not move. Nor is a move up that leaves
-  // the viewport at the end of its own scroll range: that is the range
-  // shrinking under it (a layout that briefly loses its overflow - a
+  // itself, and never arming over an in-flight settling-jump. Arming also
+  // skips the anchored-to-message hold: the tail spacer makes a freshly
+  // anchored turn read as "at the end", and re-arming there would let the
+  // first streamed chunk yank the reader off the anchor (the hold hands back
+  // to following in #handleResize, once the reply consumes the tail spacer).
+  // Only a move UP is a scroll away: content growing past the live edge also
+  // reads as "not at the end", and the reader did not move. Nor is a move up
+  // that leaves the viewport at the end of its own scroll range: that is the
+  // range shrinking under it (a layout that briefly loses its overflow - a
   // full-page capture, a print pass - clamps scrollTop while the rows can
   // still measure below the fold). The resize handler re-pins either way.
   #reconcileFollowMode(scrollable) {
@@ -429,7 +444,12 @@ export default class extends Controller {
 
     this.lastScrollTop = scrollTop
 
-    if (this.autoScrollValue && !scrollable.end && this.mode !== "settling-jump") {
+    if (
+      this.autoScrollValue &&
+      !scrollable.end &&
+      this.mode !== "settling-jump" &&
+      this.mode !== "anchored-to-message"
+    ) {
       this.#setMode("following-bottom")
     } else if (this.mode === "following-bottom" && scrollable.end && scrolledUp && !this.autoscrolling) {
       this.#setMode("free-scrolling", { reason: "scroll-away" })
@@ -445,11 +465,19 @@ export default class extends Controller {
     })
 
     this.#reconcileFollowMode(nextState)
-    this.#writeStateAttributes(nextState)
 
-    if (!areScrollStatesEqual(this.scrollableState, nextState)) {
-      this.scrollableState = nextState
-      this.dispatch("scrollable", { prefix: EVENT_PREFIX, detail: { ...nextState } })
+    // While follow-bottom is engaged the scroller is already closing any gap
+    // a streamed chunk just opened, so publishing it as scrollable toward the
+    // end would strobe the scroll button once per chunk. Reconcile runs on
+    // the raw geometry first, so a commit that releases follow still
+    // publishes the gap it released over.
+    const publishedState = this.mode === "following-bottom" ? { ...nextState, end: false } : nextState
+
+    this.#writeStateAttributes(publishedState)
+
+    if (!areScrollStatesEqual(this.scrollableState, publishedState)) {
+      this.scrollableState = publishedState
+      this.dispatch("scrollable", { prefix: EVENT_PREFIX, detail: { ...publishedState } })
     }
   }
 
@@ -689,10 +717,43 @@ export default class extends Controller {
     // Hold the anchored turn in place as content below it resizes (a reply
     // streaming in) - otherwise the shrinking content lets the browser clamp
     // scrollTop and the turn drops.
-    if (this.#reanchorToAnchoredMessage()) return
+    const previousSpacerHeight = this.spacerHeight
+
+    if (this.#reanchorToAnchoredMessage()) {
+      // The reply streaming below the anchor consumes the tail spacer as it
+      // grows. Once the last of it is gone the reply has filled the viewport
+      // and the reader is at the live edge, so autoScroll hands off from the
+      // anchor hold to following the bottom. Requiring the >0 -> 0 transition
+      // keeps a turn taller than the viewport (placed with no spacer) held
+      // instead of yanked to the end.
+      if (this.autoScrollValue && previousSpacerHeight > 0 && this.spacerHeight === 0) {
+        this.#scrollToEnd({ behavior: "auto" })
+      }
+
+      return
+    }
 
     this.#scheduleStateCommit()
     this.#scheduleVisibilitySync()
+  }
+
+  /**
+   * Schedules one resize pass per frame, however many observers fired (see
+   * connect). The observers deliver right after the layout that resized, so
+   * the position read here is the one that layout left (a clamp, a scroll
+   * anchor): it becomes the baseline a release is measured from, since the
+   * browser moved it, not the reader. A reader's own drag dispatches its
+   * scroll event earlier in the frame, so its commit still sees the move.
+   */
+  #scheduleResize() {
+    this.lastScrollTop = this.#viewport()?.scrollTop ?? this.lastScrollTop
+
+    if (this.resizeFrame !== null) window.cancelAnimationFrame(this.resizeFrame)
+
+    this.resizeFrame = window.requestAnimationFrame(() => {
+      this.resizeFrame = null
+      this.#handleResize()
+    })
   }
 
   #applyDefaultScrollPosition() {

@@ -7494,8 +7494,10 @@ components:
     - name: auto_scroll
       type: boolean
       default: true
-      description: Follows the newest message while the reader sits at the bottom;
-        scrolling up releases the follow.
+      description: 'Follows the newest message while the reader sits at the bottom;
+        scrolling up releases the follow. Composes with anchor: true turns - a new
+        anchored turn holds at the reading line while its reply streams, and following
+        takes over once the reply fills the viewport.'
     - name: content_id
       type: string
       default: dynamic
@@ -7597,7 +7599,8 @@ components:
         - settling-jump
       - attr: data-scrollable
         condition: overflow exists - carries which edges have room (start, end, or
-          both as a space-separated pair)
+          both as a space-separated pair); end stays off while following the bottom,
+          which is already closing the gap
       - attr: data-autoscrolling
         condition: a programmatic scroll is settling - the follow-bottom release is
           suppressed while set
