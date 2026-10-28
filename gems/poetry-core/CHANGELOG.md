@@ -26,6 +26,7 @@
 
 ### Fixed
 
+- Drawer and snap-point sheet flicks read the release velocity the way Base UI does (#5658): one stationary move just before the release (some Android devices send one) no longer zeroes a real flick, a release more than 80ms after the last move carries no flick, and samples closer than 4ms apart no longer spike the velocity.
 - A Slider drag ends on `pointercancel` as it does on `pointerup` (Base UI #5639): a drag the browser or OS cancelled used to leave the thumb following the next pointer anywhere on the page, committing wherever the next release landed.
 - A typeahead search no longer outlives the list it was typed in (Base UI #5816): opening a Select drops a search typed on the closed trigger, and closing a submenu drops the search typed inside it, so the first Space after either commits or opens instead of being taken as part of the search.
 - Roving focus (Tabs, Toolbar, ToggleGroup, RadioGroup, TagGroup, the menus, Select) leaves Ctrl, Alt and Meta + arrow to the platform and assistive tech, as Base UI's composites do, and an arrow with nowhere to go (a clamped edge, a lone enabled item) no longer re-enters the focused item, so a radio group no longer checks an item on an arrow that could not move (Base UI #5643).

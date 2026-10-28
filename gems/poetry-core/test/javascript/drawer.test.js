@@ -126,6 +126,30 @@ describe("poetry--core--drawer", () => {
     expect(el("dialog").hasAttribute("data-closed")).toBe(true)
   })
 
+  it("one trailing stationary move keeps the flick (Base UI #5658, some Android devices)", async () => {
+    await dragFromHandle([[140, 20], [180, 40], [180, 48]])
+    pointer("pointerup", el("dialog"), { y: 180, time: 50 })
+    await nextFrame()
+
+    expect(el("dialog").hasAttribute("data-closed")).toBe(true)
+  })
+
+  it("two stationary moves are a hold: the flick is gone", async () => {
+    await dragFromHandle([[140, 20], [180, 40], [180, 48], [180, 56]])
+    pointer("pointerup", el("dialog"), { y: 180, time: 58 })
+    await nextFrame()
+
+    expect(el("dialog").hasAttribute("data-open")).toBe(true)
+  })
+
+  it("a release long after the last move carries no flick", async () => {
+    await dragFromHandle([[140, 20], [180, 40]])
+    pointer("pointerup", el("dialog"), { y: 180, time: 240 }) // held still, no move events
+    await nextFrame()
+
+    expect(el("dialog").hasAttribute("data-open")).toBe(true)
+  })
+
   it("a short slow drag snaps back instead of dismissing", async () => {
     await dragFromHandle([[120, 300], [160, 900]])
     pointer("pointerup", el("dialog"), { y: 160, time: 1500 })
