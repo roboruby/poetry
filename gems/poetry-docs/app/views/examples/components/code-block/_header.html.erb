@@ -1,0 +1,14 @@
+<%# with_title opens a header: it names the scroll region, and the copy
+    button moves into it, always visible. An icon in the title sizes itself. %>
+<% output = <<~TEXT
+  $ bundle add poetry
+  Fetching gem metadata from https://rubygems.org/
+  Installing poetry 0.2.0
+  Bundle complete! 24 Gemfile dependencies, 118 gems now installed.
+TEXT
+%>
+<div class="w-full max-w-md">
+  <%= poetry_code_block(code: output, language: "shell") do |block| %>
+    <% block.with_title do %><%= poetry_icon(name: :terminal) %>Terminal<% end %>
+  <% end %>
+</div>

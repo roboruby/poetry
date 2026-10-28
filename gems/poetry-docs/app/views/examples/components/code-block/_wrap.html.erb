@@ -1,0 +1,10 @@
+<%# wrap: true wraps long lines instead of scrolling sideways. %>
+<% log = <<~TEXT
+  Started POST "/chats/42/messages" for 127.0.0.1 at 2026-10-28 09:14:03 -0400
+  Processing by MessagesController#create as TURBO_STREAM
+    Parameters: {"message" => {"body" => "Summarize the overdue invoices and draft a reminder for each customer"}}
+TEXT
+%>
+<div class="w-full max-w-md">
+  <%= poetry_code_block(code: log, wrap: true, label: "Request log") %>
+</div>

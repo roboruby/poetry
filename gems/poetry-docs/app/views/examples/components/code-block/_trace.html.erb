@@ -1,0 +1,13 @@
+<%# A small CodeBlock is a Trace step's detail: the tool call's output. %>
+<% output = <<~TEXT
+  ActiveRecord::PendingMigrationError
+  Migrations are pending. To resolve this issue, run: bin/rails db:migrate
+TEXT
+%>
+<div class="w-full max-w-md">
+  <%= poetry_trace do |trace| %>
+    <% trace.with_step("Failed to run bin/rails test", icon: :terminal, status: :error, open: true) do %>
+      <%= poetry_code_block(code: output, variant: :destructive, size: :sm, wrap: true, copy: false, label: "Error") %>
+    <% end %>
+  <% end %>
+</div>

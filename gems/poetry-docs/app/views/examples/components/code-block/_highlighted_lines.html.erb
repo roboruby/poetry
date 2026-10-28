@@ -1,0 +1,12 @@
+<%# highlight_lines: tints lines by their position in the block. %>
+<% code = <<~RUBY
+  class Invoice < ApplicationRecord
+    belongs_to :customer
+
+    scope :overdue, -> { where(due_on: ...Date.current) }
+  end
+RUBY
+%>
+<div class="w-full max-w-md">
+  <%= poetry_code_block(code: code, language: "ruby", highlight_lines: [4], label: "Invoice model") %>
+</div>

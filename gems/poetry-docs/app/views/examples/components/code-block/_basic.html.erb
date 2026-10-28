@@ -1,0 +1,10 @@
+<%# Plain output with nothing around it: copy: false drops the copy button. %>
+<% output = <<~TEXT
+  $ bin/rails assets:precompile
+  Writing app/assets/builds/application.css
+  Compiled all assets in 2.41s
+TEXT
+%>
+<div class="w-full max-w-md">
+  <%= poetry_code_block(code: output, copy: false, label: "Build output") %>
+</div>

@@ -1,0 +1,12 @@
+<%# line_numbers: true numbers each line with a CSS counter - the numbers are
+    never part of copied text, and screen readers skip them. %>
+<% code = <<~RUBY
+  Rails.application.routes.draw do
+    resources :chats, only: %i[index show create]
+    root "chats#index"
+  end
+RUBY
+%>
+<div class="w-full max-w-md">
+  <%= poetry_code_block(code: code, language: "ruby", line_numbers: true, label: "Routes") %>
+</div>

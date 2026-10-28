@@ -1,0 +1,12 @@
+<%# Without a header the copy button floats in the corner: it shows on hover
+    or keyboard focus, and always on a touch screen. %>
+<% output = <<~TEXT
+  $ bin/rails test
+  Running 418 tests in parallel using 8 processes
+  Finished in 6.21s
+  418 runs, 1630 assertions, 0 failures, 0 errors, 0 skips
+TEXT
+%>
+<div class="w-full max-w-md">
+  <%= poetry_code_block(code: output, label: "Test output") %>
+</div>

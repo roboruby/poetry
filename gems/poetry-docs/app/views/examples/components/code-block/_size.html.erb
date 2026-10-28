@@ -1,0 +1,12 @@
+<%# size: :sm tightens the padding and the type - for tool output inside a
+    Trace or a chat message. %>
+<% output = <<~TEXT
+   M app/models/invoice.rb
+  ?? db/migrate/20261028_add_due_on_to_invoices.rb
+TEXT
+%>
+<div class="w-full max-w-md">
+  <%= poetry_code_block(code: output, size: :sm, label: "git status") do |block| %>
+    <% block.with_title { "git status --short" } %>
+  <% end %>
+</div>

@@ -2262,6 +2262,18 @@
     "path": "/components/code-block#default"
   },
   {
+    "title": "Actions",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#actions"
+  },
+  {
+    "title": "Basic",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#basic"
+  },
+  {
     "title": "Destructive",
     "page": "Code Block",
     "section": "components",
@@ -2274,16 +2286,52 @@
     "path": "/components/code-block#diff"
   },
   {
-    "title": "Numbered and highlighted",
+    "title": "Floating actions",
     "page": "Code Block",
     "section": "components",
-    "path": "/components/code-block#numbered-and-highlighted"
+    "path": "/components/code-block#floating-actions"
   },
   {
-    "title": "With header",
+    "title": "Header",
     "page": "Code Block",
     "section": "components",
-    "path": "/components/code-block#with-header"
+    "path": "/components/code-block#header"
+  },
+  {
+    "title": "Highlighted lines",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#highlighted-lines"
+  },
+  {
+    "title": "Line numbers",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#line-numbers"
+  },
+  {
+    "title": "Size",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#size"
+  },
+  {
+    "title": "Start line",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#start-line"
+  },
+  {
+    "title": "Trace",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#trace"
+  },
+  {
+    "title": "Wrap",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#wrap"
   },
   {
     "title": "Wiring",
