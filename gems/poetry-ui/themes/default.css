@@ -440,19 +440,71 @@
   @apply [&>svg]:size-3.5;
 }
 
-/* MARK: CodeBlock */
-/* The syntax palette: seven vars the dictionary's token map reads
- * (GitHub light/dark is the shared v1 baseline - a theme restyles code by
- * redefining the vars); .hll is highlight_lines:, .line::before the CSS
- * counters (out of copied text by construction). */
+/* MARK: Code Block */
+/* No classic CodeBlock exists upstream: vega's values in the classic
+ * vocabulary (the 3px ring written ring-[3px]). */
 .cn-code-block {
-  @apply bg-muted/30 rounded-lg border text-foreground [--syntax-keyword:#a40e26] [--syntax-constant:#0550ae] [--syntax-string:#0a3069] [--syntax-entity:#7f3400] [--syntax-markup:#116329] [--syntax-function:#6639ba] [--syntax-comment:#57606a] dark:[--syntax-keyword:#ff7b72] dark:[--syntax-constant:#79c0ff] dark:[--syntax-string:#a5d6ff] dark:[--syntax-entity:#ffa657] dark:[--syntax-markup:#7ee787] dark:[--syntax-function:#d2a8ff] dark:[--syntax-comment:#8b949e];
+  @apply rounded-lg text-sm data-[size=sm]:text-xs has-[>[data-slot=code-block-content]:focus-visible]:ring-[3px] has-[>[data-slot=code-block-content]:focus-visible]:ring-ring/50;
 }
-.cn-code-block .hll {
-  @apply bg-primary/10 -mx-4 w-[calc(100%+2rem)] px-4;
+
+.cn-code-block-variant-default {
+  @apply border border-input text-foreground dark:bg-input/30 has-[>[data-slot=code-block-content]:focus-visible]:border-ring;
 }
-.cn-code-block[data-line-numbers] .line::before {
-  @apply text-muted-foreground me-4 inline-block w-6 text-right content-[counter(line)] [counter-increment:line];
+
+.cn-code-block-variant-destructive {
+  @apply border border-destructive/30 text-destructive dark:border-destructive/40;
+}
+
+.cn-code-block-header {
+  @apply gap-2 px-4 pt-4 text-muted-foreground group-data-[variant=destructive]/code-block:text-destructive group-data-[size=sm]/code-block:px-3 group-data-[size=sm]/code-block:pt-3;
+}
+
+.cn-code-block-footer {
+  @apply gap-2 px-4 pb-4 text-muted-foreground group-data-[size=sm]/code-block:px-3 group-data-[size=sm]/code-block:pb-3;
+}
+
+.cn-code-block-title {
+  @apply font-sans text-sm font-medium text-foreground group-data-[variant=destructive]/code-block:text-destructive *:[svg]:me-1.5 [&_svg:not([class*='size-'])]:size-4 group-data-[size=sm]/code-block:text-xs group-data-[size=sm]/code-block:[&_svg:not([class*='size-'])]:size-3.5;
+}
+
+.cn-code-block-actions {
+  @apply -my-1 -me-1.5 gap-1 [[data-slot=code-block]>&]:m-0 [[data-slot=code-block]>&]:top-3 [[data-slot=code-block]>&]:end-3 group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:top-2 group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:end-2 [[data-slot=code-block]>&]:*:[button]:bg-background [[data-slot=code-block]>&]:*:[button]:ring-1 [[data-slot=code-block]>&]:*:[button]:ring-foreground/10;
+}
+
+.cn-code-block-copy-button {
+}
+
+/* The classic ghost hover, restated so the copy button's hook has a rule in
+ * this theme (rhea and luma retune it; the other ports leave it unstyled). */
+.cn-code-block-copy-button {
+  @apply hover:bg-accent dark:hover:bg-accent/50;
+}
+
+.cn-code-block-content {
+  @apply px-4 py-4 leading-relaxed group-has-data-[slot=code-block-header]/code-block:pt-2 group-has-data-[slot=code-block-footer]/code-block:pb-2 group-data-[size=sm]/code-block:px-3 group-data-[size=sm]/code-block:py-3 group-data-[size=sm]/code-block:group-has-data-[slot=code-block-header]/code-block:pt-1.5;
+}
+
+.cn-code-block-line {
+  @apply -mx-4 px-4 in-data-numbered:gap-x-3 before:min-w-6 before:text-end before:text-muted-foreground after:start-1 after:text-muted-foreground group-data-[size=sm]/code-block:-mx-3 group-data-[size=sm]/code-block:px-3;
+}
+
+.cn-code-block-line-variant-highlighted {
+  @apply bg-muted;
+}
+
+.cn-code-block-line-variant-added {
+  @apply bg-muted after:content-['+'];
+}
+
+.cn-code-block-line-variant-removed {
+  @apply bg-destructive/10 after:text-destructive after:content-['−'];
+}
+
+/* The syntax palette (poetry): seven vars the code element's token map
+ * reads, GitHub light/dark as the shared baseline - a theme restyles code
+ * by redefining them. Upstream colors tokens inline from its highlighter. */
+.cn-code-block-code {
+  @apply [--syntax-keyword:#a40e26] [--syntax-constant:#0550ae] [--syntax-string:#0a3069] [--syntax-entity:#7f3400] [--syntax-markup:#116329] [--syntax-function:#6639ba] [--syntax-comment:#57606a] dark:[--syntax-keyword:#ff7b72] dark:[--syntax-constant:#79c0ff] dark:[--syntax-string:#a5d6ff] dark:[--syntax-entity:#ffa657] dark:[--syntax-markup:#7ee787] dark:[--syntax-function:#d2a8ff] dark:[--syntax-comment:#8b949e];
 }
 
 /* MARK: Command */

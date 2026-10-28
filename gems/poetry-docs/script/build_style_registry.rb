@@ -9,7 +9,7 @@
 #     poetry/style-charts.css) from the sibling gems, byte-verbatim - the
 #     same bytes `bin/rails g poetry:install` would write, kept in sync so
 #     a future installer re-run is a no-op; and
-#   - writes app/assets/tailwind/styles/style-<name>.css for ALL NINE
+#   - writes tailwind/styles/style-<name>.css for ALL NINE
 #     themes (default included), each fragment nested inside a
 #     .style-<name> { ... } block - the upstream shadcn mechanism at
 #     7c9eaba1, the shadcn@4.21.0 release (apps/v4/app/style-registry.css imports wrapped style
@@ -27,11 +27,11 @@
 # Idempotent. Run after bumping the gems. Do not hand-edit outputs.
 
 ROOT = File.expand_path("..", __dir__)
-UI_THEMES = File.expand_path("../gems/poetry-ui/themes", ROOT)
-CHARTS_THEMES = File.expand_path("../gems/poetry-charts/themes", ROOT)
-OUT_DIR = File.join(ROOT, "app/assets/tailwind/styles")
-SLOT_UI = File.join(ROOT, "app/assets/tailwind/poetry/style-default.css")
-SLOT_CHARTS = File.join(ROOT, "app/assets/tailwind/poetry/style-charts.css")
+UI_THEMES = File.expand_path("../poetry-ui/themes", ROOT)
+CHARTS_THEMES = File.expand_path("../poetry-charts/themes", ROOT)
+OUT_DIR = File.join(ROOT, "tailwind/styles")
+SLOT_UI = File.join(ROOT, "tailwind/poetry/style-default.css")
+SLOT_CHARTS = File.join(ROOT, "tailwind/poetry/style-charts.css")
 THEMES = %w[default vega nova mira rhea maia luma lyra sera].freeze
 
 def fragment(dir, name)

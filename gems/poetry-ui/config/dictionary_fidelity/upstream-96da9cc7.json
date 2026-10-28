@@ -1,5 +1,5 @@
 {
-  "pin": "7c9eaba1",
+  "pin": "96da9cc7",
   "components": {
     "accordion": {
       "accordion": {
@@ -1431,6 +1431,130 @@
           "text-current",
           "transition-none"
         ]
+      }
+    },
+    "code-block": {
+      "code-block": {
+        "tag": "div",
+        "styled": [
+          "flex",
+          "flex-col",
+          "group/code-block",
+          "min-w-0",
+          "overflow-hidden",
+          "relative",
+          "w-full"
+        ],
+        "classic": []
+      },
+      "code-block-header": {
+        "tag": "div",
+        "styled": [
+          "*:has-[>[data-slot=code-block-title]]:min-w-0",
+          "flex",
+          "items-center",
+          "min-w-0",
+          "shrink-0"
+        ],
+        "classic": []
+      },
+      "code-block-title": {
+        "tag": "div",
+        "styled": [
+          "[&_svg]:align-middle",
+          "[&_svg]:inline-block",
+          "[&_svg]:pointer-events-none",
+          "min-w-0",
+          "truncate"
+        ],
+        "classic": []
+      },
+      "code-block-actions": {
+        "tag": "div",
+        "styled": [
+          "[[data-slot=code-block]>&]:absolute",
+          "[[data-slot=code-block]>&]:group-focus-within/code-block:opacity-100",
+          "[[data-slot=code-block]>&]:group-hover/code-block:opacity-100",
+          "[[data-slot=code-block]>&]:opacity-0",
+          "[[data-slot=code-block]>&]:pointer-coarse:opacity-100",
+          "[[data-slot=code-block]>&]:transition-opacity",
+          "[[data-slot=code-block]>&]:z-10",
+          "flex",
+          "items-center",
+          "ms-auto",
+          "shrink-0"
+        ],
+        "classic": []
+      },
+      "code-block-copy-button": {
+        "tag": null,
+        "styled": [],
+        "classic": []
+      },
+      "code-block-content": {
+        "tag": "pre",
+        "styled": [
+          "data-wrap:scroll-fade-y",
+          "data-wrap:whitespace-pre-wrap",
+          "data-wrap:wrap-break-word",
+          "font-mono",
+          "min-h-0",
+          "min-w-0",
+          "outline-none",
+          "overflow-auto",
+          "scroll-fade-x",
+          "scrollbar-thin",
+          "text-start"
+        ],
+        "classic": []
+      },
+      "code-block-code": {
+        "tag": "code",
+        "styled": [
+          "content-start",
+          "grid",
+          "in-data-numbered:grid-cols-[auto_1fr]",
+          "in-data-wrap:min-w-0",
+          "min-h-lh",
+          "min-w-max"
+        ],
+        "classic": []
+      },
+      "code-block-line": {
+        "tag": "span",
+        "styled": [
+          "after:absolute",
+          "after:select-none",
+          "after:top-0",
+          "block",
+          "in-data-numbered:[counter-increment:line]",
+          "in-data-numbered:before:content-[counter(line)]",
+          "in-data-numbered:before:select-none",
+          "in-data-numbered:col-span-2",
+          "in-data-numbered:grid",
+          "in-data-numbered:grid-cols-subgrid",
+          "in-data-numbered:supports-[content:counter(line)_/_'']:before:content-[counter(line)_/_'']",
+          "min-h-lh",
+          "relative"
+        ],
+        "classic": []
+      },
+      "code-block-line-content": {
+        "tag": "span",
+        "styled": [
+          "min-w-0"
+        ],
+        "classic": []
+      },
+      "code-block-footer": {
+        "tag": "div",
+        "styled": [
+          "flex",
+          "items-center",
+          "min-w-0",
+          "shrink-0"
+        ],
+        "classic": []
       }
     },
     "collapsible": {
@@ -6979,6 +7103,122 @@
           "z-50",
           "zoom-in-95"
         ]
+      }
+    },
+    "trace": {
+      "trace": {
+        "tag": "div",
+        "styled": [
+          "*:has-[>[data-slot=trace-line]]:flex",
+          "*:has-[>[data-slot=trace-line]]:max-w-full",
+          "*:has-[>[data-slot=trace-line]]:min-w-0",
+          "*:has-[>[data-slot=trace-line]]:outline-none",
+          "*:has-[>[data-slot=trace-line]]:text-left",
+          "*:has-[>[data-slot=trace-line]]:w-fit",
+          "flex",
+          "flex-col",
+          "min-w-0",
+          "w-full"
+        ],
+        "classic": []
+      },
+      "trace-line": {
+        "tag": "span",
+        "styled": [
+          "data-[status=error]:in-[a:hover,button:hover]:text-destructive",
+          "data-[status=error]:text-destructive",
+          "data-[status=pending]:opacity-60",
+          "data-[status=running]:*:data-[slot=trace-title]:shimmer",
+          "flex",
+          "in-[a,button]:cursor-pointer",
+          "in-[a:hover,button:hover]:text-foreground",
+          "items-center",
+          "max-w-full",
+          "min-w-0",
+          "text-muted-foreground",
+          "transition-colors",
+          "w-fit"
+        ],
+        "classic": []
+      },
+      "trace-icon": {
+        "tag": "span",
+        "styled": [
+          "[&_svg]:pointer-events-none",
+          "flex",
+          "items-center",
+          "justify-center",
+          "shrink-0"
+        ],
+        "classic": []
+      },
+      "trace-title": {
+        "tag": "span",
+        "styled": [
+          "min-w-0",
+          "motion-reduce:shimmer-none",
+          "truncate"
+        ],
+        "classic": []
+      },
+      "trace-description": {
+        "tag": "span",
+        "styled": [
+          "shrink-0",
+          "tabular-nums",
+          "text-muted-foreground/70"
+        ],
+        "classic": []
+      },
+      "trace-collapsible": {
+        "tag": null,
+        "styled": [
+          "flex",
+          "flex-col",
+          "min-w-0",
+          "w-full"
+        ],
+        "classic": []
+      },
+      "trace-collapsible-trigger": {
+        "tag": null,
+        "styled": [
+          "cursor-pointer",
+          "flex",
+          "group/trace-collapsible-trigger",
+          "has-[[data-status=error]]:text-destructive",
+          "hover:text-foreground",
+          "items-center",
+          "max-w-full",
+          "min-w-0",
+          "outline-none",
+          "text-left",
+          "text-muted-foreground",
+          "transition-colors",
+          "w-fit"
+        ],
+        "classic": []
+      },
+      "trace-collapsible-content": {
+        "tag": null,
+        "styled": [
+          "data-ending-style:h-0",
+          "data-starting-style:h-0",
+          "h-(--collapsible-panel-height)",
+          "min-w-0",
+          "overflow-hidden",
+          "transition-[height]"
+        ],
+        "classic": []
+      },
+      "trace-collapsible-content-inner": {
+        "tag": "div",
+        "styled": [
+          "min-w-0",
+          "text-muted-foreground",
+          "wrap-break-word"
+        ],
+        "classic": []
       }
     }
   }

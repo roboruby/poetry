@@ -1,0 +1,15 @@
+<%# A title opens the header and names the scroll region; the copy button
+    moves into the header row. %>
+<% code = <<~RUBY
+  class Invoice < ApplicationRecord
+    belongs_to :customer
+
+    scope :settled, -> { where(status: "settled") }
+  end
+RUBY
+%>
+<div class="w-full max-w-xl">
+  <%= poetry_code_block(code: code, language: "ruby") do |block| %>
+    <% block.with_title { "app/models/invoice.rb" } %>
+  <% end %>
+</div>

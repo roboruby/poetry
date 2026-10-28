@@ -23,6 +23,7 @@
 
 ### Changed
 
+- `tokens/aliases.css` drops its two CodeBlock rules (the zero line-height that hid rouge's newline boxes and the copy button's painted surface): the new code-block anatomy needs neither.
 - The released gem serves its JavaScript minified. The release writes a minified copy of `app/javascript` into `dist/javascript`, file for file with a source map beside each, and the engine serves that tree through Propshaft and the importmap whenever the gem carries it; a checkout or a path gem serves source. The pins, the specifiers and the npm package are unchanged. On the docs site a cold page fetches about 105 KB of poetry-core JavaScript gzipped instead of 258 KB, and first paint on a throttled mobile profile comes about 0.8 s sooner.
 
 ### Fixed

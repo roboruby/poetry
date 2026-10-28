@@ -1,7 +1,7 @@
-<%# The pre/code nesting stays on one line - literal template whitespace
-    inside <pre> would render. %>
-<%= element_tag(:div, **root_attributes) do %>
-  <%= element_tag(:pre, element_tag(:code, highlighted || code, **code_attributes), **pre_attributes) %>
+<%# Literal template whitespace inside <pre> would render: the pre/code
+    nesting stays on one line, and the lines come from code_markup. %>
+<% actions_markup = capture do %>
+  <%= actions %>
   <% if copy %>
     <%= render copy_button do %>
       <span class="<%= css(:icon_stack) %>">
@@ -9,5 +9,19 @@
         <%= render Poetry::Ui::Icon::Component.new(name: :check, class: css(:icon_check)) %>
       </span>
     <% end %>
+  <% end %>
+<% end %>
+<%= element_tag(:div, **root_attributes) do %>
+  <% if header? %>
+    <div data-slot="code-block-header" class="<%= css(:header) %>">
+      <div id="<%= title_id %>" data-slot="code-block-title" class="<%= css(:title) %>"><%= title %></div>
+      <% if actions_any? %><div data-slot="code-block-actions" class="<%= css(:actions) %>"><%= actions_markup %></div><% end %>
+    </div>
+  <% elsif actions_any? %>
+    <div data-slot="code-block-actions" class="<%= css(:actions) %>"><%= actions_markup %></div>
+  <% end %>
+  <%= element_tag(:pre, element_tag(:code, code_markup, **code_attributes), **content_attributes) %>
+  <% if footer? %>
+    <div data-slot="code-block-footer" class="<%= css(:footer) %>"><%= footer %></div>
   <% end %>
 <% end %>

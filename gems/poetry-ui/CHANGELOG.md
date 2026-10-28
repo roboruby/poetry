@@ -4,6 +4,7 @@
 
 ### Added
 
+- CodeBlock gains `variant:` (`:destructive`), `size:` (`:sm`), `wrap:`, `start_line:`, `diff:` (a unified diff: `+` / `-` lines render added and removed, the theme draws the marker, copy keeps it) and the `with_title` (opens a header that names the scroll region and takes the copy button), `with_actions` and `with_footer` slots; `poetry_code_block` passes its block through. Lines render `dir="ltr"` on RTL pages, line numbers stay out of copied text and out of what screen readers read, and empty lines keep their height.
 - Collapsible takes `content_class:` for its panel, and its part contract documents the size vars and the `data-starting-style` / `data-ending-style` pair: `content_class: "h-(--collapsible-panel-height) overflow-hidden transition-[height] data-starting-style:h-0 data-ending-style:h-0"` animates the panel's height (new `animated` preview and docs example).
 - `poetry:install` registers the island controller and pins `app/javascript/islands/` as `islands/*` when poetry-island is bundled, once each; `poetry:add` pins `app/javascript/community/` as `community/*` once when an item brings a module there (an island's bundle, a kernel), and credits every origin of an item that names several in `THIRD_PARTY_NOTICES.md`, each with its license text.
 - The Attachment preview's whole-chip trigger carries its text for screen readers only, as `poetry_attachment_for` does; the chip is the visible control.
@@ -21,6 +22,7 @@
 
 ### Changed
 
+- CodeBlock moves to shadcn@4.23.0's code-block anatomy, with per-theme rules in all nine themes (the eight ports transcribe upstream; the default theme takes vega's values in the classic vocabulary). The Ruby options stay. BREAKING for host CSS aimed at the old parts: the scroll container is `code-block-content` (was `code-block-pre`) and carries `data-numbered` (was `data-line-numbers` on the root); every source line is a `code-block-line` with a `data-variant` (rouge's `.line` / `.hll` spans are gone); the copy button is `code-block-copy-button` (was `clipboard-text-copy`) and, without a header, floats in the corner, shown on hover or focus (always on a coarse pointer). The syntax palette's seven `--syntax-*` vars move to the theme's `.cn-code-block-code` rule.
 - Typeset keeps embedded components out of the prose cascade, as shadcn@4.23.0's typeset does: the element rules skip anything carrying `data-slot` (every poetry component root), and a component placed directly in the flow takes a paragraph's space above it. `not-typeset` stays for plain-HTML subtrees. `typeset.css` is app-owned, so existing apps take the change by hand: `bin/rails g poetry:diff` shows it.
 - FileInput writes `data-dragging`, `data-drag-reject` and `data-drag-global` on its root through the file-drop controller; the dropzone label carries no actions of its own.
 - Tabs, toggle group, radio group, tag group, menubar and accordion use the `roving_focus` behavior; checkbox and switch use `checked`; nine anchored overlays use `popper`; the overlays use the `focus_scope` and `dismissable` runtime behaviors. The rendered HTML is unchanged, and the registry lists each component's behaviors.

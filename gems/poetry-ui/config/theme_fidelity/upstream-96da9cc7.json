@@ -1,5 +1,5 @@
 {
-  "pin": "7c9eaba1",
+  "pin": "96da9cc7",
   "themes": {
     "vega": {
       ".cn-accordion-item": {
@@ -4344,6 +4344,188 @@
         "apply": [
           "gap-2",
           "sm:min-h-9"
+        ],
+        "raw": []
+      },
+      ".cn-trace": {
+        "apply": [
+          "*:has-[>[data-slot=trace-line]]:focus-visible:ring-3",
+          "*:has-[>[data-slot=trace-line]]:focus-visible:ring-ring/50",
+          "*:has-[>[data-slot=trace-line]]:rounded-md",
+          "gap-2"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-trigger": {
+        "apply": [
+          "focus-visible:ring-3",
+          "focus-visible:ring-ring/50",
+          "gap-1",
+          "rounded-md"
+        ],
+        "raw": []
+      },
+      ".cn-trace-line": {
+        "apply": [
+          "gap-2",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-trace-icon": {
+        "apply": [
+          "[&_svg:not([class*='size-'])]:size-4",
+          "[[data-slot=trace-title]~&]:-ml-1",
+          "size-4"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-content": {
+        "apply": [
+          "duration-200"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-content-inner": {
+        "apply": [
+          "border-l",
+          "leading-relaxed",
+          "mb-1",
+          "ml-[calc(--spacing(2)-1px)]",
+          "mt-2",
+          "pl-4",
+          "pr-1"
+        ],
+        "raw": []
+      },
+      ".cn-code-block": {
+        "apply": [
+          "data-[size=sm]:text-xs",
+          "has-[>[data-slot=code-block-content]:focus-visible]:ring-3",
+          "has-[>[data-slot=code-block-content]:focus-visible]:ring-ring/50",
+          "rounded-lg",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-variant-default": {
+        "apply": [
+          "border",
+          "border-input",
+          "dark:bg-input/30",
+          "has-[>[data-slot=code-block-content]:focus-visible]:border-ring",
+          "text-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-variant-destructive": {
+        "apply": [
+          "border",
+          "border-destructive/30",
+          "dark:border-destructive/40",
+          "text-destructive"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-header": {
+        "apply": [
+          "gap-2",
+          "group-data-[size=sm]/code-block:pt-3",
+          "group-data-[size=sm]/code-block:px-3",
+          "group-data-[variant=destructive]/code-block:text-destructive",
+          "pt-4",
+          "px-4",
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-footer": {
+        "apply": [
+          "gap-2",
+          "group-data-[size=sm]/code-block:pb-3",
+          "group-data-[size=sm]/code-block:px-3",
+          "pb-4",
+          "px-4",
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-title": {
+        "apply": [
+          "*:[svg]:me-1.5",
+          "[&_svg:not([class*='size-'])]:size-4",
+          "font-medium",
+          "font-sans",
+          "group-data-[size=sm]/code-block:[&_svg:not([class*='size-'])]:size-3.5",
+          "group-data-[size=sm]/code-block:text-xs",
+          "group-data-[variant=destructive]/code-block:text-destructive",
+          "text-foreground",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-actions": {
+        "apply": [
+          "-me-1.5",
+          "-my-1",
+          "[[data-slot=code-block]>&]:*:[button]:bg-background",
+          "[[data-slot=code-block]>&]:*:[button]:ring-1",
+          "[[data-slot=code-block]>&]:*:[button]:ring-foreground/10",
+          "[[data-slot=code-block]>&]:end-3",
+          "[[data-slot=code-block]>&]:m-0",
+          "[[data-slot=code-block]>&]:top-3",
+          "gap-1",
+          "group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:end-2",
+          "group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:top-2"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-content": {
+        "apply": [
+          "group-data-[size=sm]/code-block:group-has-data-[slot=code-block-header]/code-block:pt-1.5",
+          "group-data-[size=sm]/code-block:px-3",
+          "group-data-[size=sm]/code-block:py-3",
+          "group-has-data-[slot=code-block-footer]/code-block:pb-2",
+          "group-has-data-[slot=code-block-header]/code-block:pt-2",
+          "leading-relaxed",
+          "px-4",
+          "py-4"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line": {
+        "apply": [
+          "-mx-4",
+          "after:start-1",
+          "after:text-muted-foreground",
+          "before:min-w-6",
+          "before:text-end",
+          "before:text-muted-foreground",
+          "group-data-[size=sm]/code-block:-mx-3",
+          "group-data-[size=sm]/code-block:px-3",
+          "in-data-numbered:gap-x-3",
+          "px-4"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-highlighted": {
+        "apply": [
+          "bg-muted"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-added": {
+        "apply": [
+          "after:content-['+']",
+          "bg-muted"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-removed": {
+        "apply": [
+          "after:content-['−']",
+          "after:text-destructive",
+          "bg-destructive/10"
         ],
         "raw": []
       },
@@ -9044,6 +9226,187 @@
         ],
         "raw": []
       },
+      ".cn-trace": {
+        "apply": [
+          "*:has-[>[data-slot=trace-line]]:focus-visible:ring-3",
+          "*:has-[>[data-slot=trace-line]]:focus-visible:ring-ring/50",
+          "*:has-[>[data-slot=trace-line]]:rounded-md",
+          "gap-2"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-trigger": {
+        "apply": [
+          "focus-visible:ring-3",
+          "focus-visible:ring-ring/50",
+          "gap-1",
+          "rounded-md"
+        ],
+        "raw": []
+      },
+      ".cn-trace-line": {
+        "apply": [
+          "gap-2",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-trace-icon": {
+        "apply": [
+          "[&_svg:not([class*='size-'])]:size-4",
+          "[[data-slot=trace-title]~&]:-ml-1",
+          "size-4"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-content": {
+        "apply": [
+          "duration-200"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-content-inner": {
+        "apply": [
+          "border-l",
+          "leading-relaxed",
+          "mb-1",
+          "ml-[calc(--spacing(2)-1px)]",
+          "mt-2",
+          "pl-4",
+          "pr-1"
+        ],
+        "raw": []
+      },
+      ".cn-code-block": {
+        "apply": [
+          "data-[size=sm]:text-xs",
+          "has-[>[data-slot=code-block-content]:focus-visible]:ring-3",
+          "has-[>[data-slot=code-block-content]:focus-visible]:ring-ring/50",
+          "rounded-lg",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-variant-default": {
+        "apply": [
+          "border",
+          "border-input",
+          "dark:bg-input/30",
+          "has-[>[data-slot=code-block-content]:focus-visible]:border-ring",
+          "text-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-variant-destructive": {
+        "apply": [
+          "border",
+          "border-destructive/30",
+          "dark:border-destructive/40",
+          "text-destructive"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-header": {
+        "apply": [
+          "gap-2",
+          "group-data-[size=sm]/code-block:pt-2.5",
+          "group-data-[size=sm]/code-block:px-2.5",
+          "group-data-[variant=destructive]/code-block:text-destructive",
+          "pt-3",
+          "px-3",
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-footer": {
+        "apply": [
+          "gap-2",
+          "group-data-[size=sm]/code-block:pb-2.5",
+          "group-data-[size=sm]/code-block:px-2.5",
+          "pb-3",
+          "px-3",
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-title": {
+        "apply": [
+          "*:[svg]:me-1.5",
+          "[&_svg:not([class*='size-'])]:size-3.5",
+          "font-medium",
+          "font-sans",
+          "group-data-[size=sm]/code-block:text-xs",
+          "group-data-[variant=destructive]/code-block:text-destructive",
+          "text-foreground",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-actions": {
+        "apply": [
+          "-me-1.5",
+          "-my-1",
+          "[[data-slot=code-block]>&]:*:[button]:bg-background",
+          "[[data-slot=code-block]>&]:*:[button]:ring-1",
+          "[[data-slot=code-block]>&]:*:[button]:ring-foreground/10",
+          "[[data-slot=code-block]>&]:end-2",
+          "[[data-slot=code-block]>&]:m-0",
+          "[[data-slot=code-block]>&]:top-2",
+          "gap-1",
+          "group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:end-1.5",
+          "group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:top-1.5"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-content": {
+        "apply": [
+          "group-data-[size=sm]/code-block:group-has-data-[slot=code-block-header]/code-block:pt-1.5",
+          "group-data-[size=sm]/code-block:px-2.5",
+          "group-data-[size=sm]/code-block:py-2.5",
+          "group-has-data-[slot=code-block-footer]/code-block:pb-2",
+          "group-has-data-[slot=code-block-header]/code-block:pt-2",
+          "leading-relaxed",
+          "px-3",
+          "py-3"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line": {
+        "apply": [
+          "-mx-3",
+          "after:start-1",
+          "after:text-muted-foreground",
+          "before:min-w-6",
+          "before:text-end",
+          "before:text-muted-foreground",
+          "group-data-[size=sm]/code-block:-mx-2.5",
+          "group-data-[size=sm]/code-block:px-2.5",
+          "in-data-numbered:gap-x-3",
+          "px-3"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-highlighted": {
+        "apply": [
+          "bg-muted"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-added": {
+        "apply": [
+          "after:content-['+']",
+          "bg-muted"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-removed": {
+        "apply": [
+          "after:content-['−']",
+          "after:text-destructive",
+          "bg-destructive/10"
+        ],
+        "raw": []
+      },
       ".cn-message-scroller-content": {
         "apply": [
           "gap-6"
@@ -13721,6 +14084,185 @@
         "apply": [
           "gap-1.5",
           "sm:min-h-7"
+        ],
+        "raw": []
+      },
+      ".cn-trace": {
+        "apply": [
+          "*:has-[>[data-slot=trace-line]]:focus-visible:ring-2",
+          "*:has-[>[data-slot=trace-line]]:focus-visible:ring-ring/30",
+          "*:has-[>[data-slot=trace-line]]:rounded-sm",
+          "gap-1.5"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-trigger": {
+        "apply": [
+          "focus-visible:ring-2",
+          "focus-visible:ring-ring/30",
+          "gap-1",
+          "rounded-sm"
+        ],
+        "raw": []
+      },
+      ".cn-trace-line": {
+        "apply": [
+          "gap-2",
+          "text-xs/relaxed"
+        ],
+        "raw": []
+      },
+      ".cn-trace-icon": {
+        "apply": [
+          "[&_svg:not([class*='size-'])]:size-3.5",
+          "[[data-slot=trace-title]~&]:-ml-1",
+          "size-3.5"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-content": {
+        "apply": [
+          "duration-200"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-content-inner": {
+        "apply": [
+          "border-l",
+          "mb-1",
+          "ml-[calc(--spacing(1.75)-1px)]",
+          "mt-1.5",
+          "pl-3.75",
+          "pr-1"
+        ],
+        "raw": []
+      },
+      ".cn-code-block": {
+        "apply": [
+          "data-[size=sm]:text-xs",
+          "has-[>[data-slot=code-block-content]:focus-visible]:ring-2",
+          "has-[>[data-slot=code-block-content]:focus-visible]:ring-ring/30",
+          "rounded-md",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-variant-default": {
+        "apply": [
+          "border",
+          "border-input",
+          "dark:bg-input/30",
+          "has-[>[data-slot=code-block-content]:focus-visible]:border-ring",
+          "text-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-variant-destructive": {
+        "apply": [
+          "border",
+          "border-destructive/30",
+          "dark:border-destructive/40",
+          "text-destructive"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-header": {
+        "apply": [
+          "gap-2",
+          "group-data-[size=sm]/code-block:pt-2",
+          "group-data-[size=sm]/code-block:px-2",
+          "group-data-[variant=destructive]/code-block:text-destructive",
+          "pt-3",
+          "px-3",
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-footer": {
+        "apply": [
+          "gap-2",
+          "group-data-[size=sm]/code-block:pb-2",
+          "group-data-[size=sm]/code-block:px-2",
+          "pb-3",
+          "px-3",
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-title": {
+        "apply": [
+          "*:[svg]:me-1.5",
+          "[&_svg:not([class*='size-'])]:size-3.5",
+          "font-medium",
+          "font-sans",
+          "group-data-[variant=destructive]/code-block:text-destructive",
+          "text-foreground",
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-actions": {
+        "apply": [
+          "-me-1.5",
+          "-my-1",
+          "[[data-slot=code-block]>&]:*:[button]:bg-background",
+          "[[data-slot=code-block]>&]:*:[button]:ring-1",
+          "[[data-slot=code-block]>&]:*:[button]:ring-foreground/10",
+          "[[data-slot=code-block]>&]:end-2",
+          "[[data-slot=code-block]>&]:m-0",
+          "[[data-slot=code-block]>&]:top-2",
+          "gap-1",
+          "group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:end-1.5",
+          "group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:top-1.5"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-content": {
+        "apply": [
+          "group-data-[size=sm]/code-block:group-has-data-[slot=code-block-header]/code-block:pt-1.5",
+          "group-data-[size=sm]/code-block:px-2",
+          "group-data-[size=sm]/code-block:py-2",
+          "group-has-data-[slot=code-block-footer]/code-block:pb-2",
+          "group-has-data-[slot=code-block-header]/code-block:pt-2",
+          "leading-relaxed",
+          "px-3",
+          "py-3"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line": {
+        "apply": [
+          "-mx-3",
+          "after:start-1",
+          "after:text-muted-foreground",
+          "before:min-w-6",
+          "before:text-end",
+          "before:text-muted-foreground",
+          "group-data-[size=sm]/code-block:-mx-2",
+          "group-data-[size=sm]/code-block:px-2",
+          "in-data-numbered:gap-x-3",
+          "px-3"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-highlighted": {
+        "apply": [
+          "bg-muted"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-added": {
+        "apply": [
+          "after:content-['+']",
+          "bg-muted"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-removed": {
+        "apply": [
+          "after:content-['−']",
+          "after:text-destructive",
+          "bg-destructive/10"
         ],
         "raw": []
       },
@@ -18419,6 +18961,200 @@
         ],
         "raw": []
       },
+      ".cn-trace": {
+        "apply": [
+          "*:has-[>[data-slot=trace-line]]:focus-visible:ring-3",
+          "*:has-[>[data-slot=trace-line]]:focus-visible:ring-ring/30",
+          "*:has-[>[data-slot=trace-line]]:rounded-lg",
+          "gap-2"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-trigger": {
+        "apply": [
+          "focus-visible:ring-3",
+          "focus-visible:ring-ring/30",
+          "gap-1",
+          "rounded-lg"
+        ],
+        "raw": []
+      },
+      ".cn-trace-line": {
+        "apply": [
+          "gap-2",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-trace-icon": {
+        "apply": [
+          "[&_svg:not([class*='size-'])]:size-4",
+          "[[data-slot=trace-title]~&]:-ml-1",
+          "size-4"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-content": {
+        "apply": [
+          "duration-200"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-content-inner": {
+        "apply": [
+          "border-l",
+          "leading-relaxed",
+          "mb-1",
+          "ml-[calc(--spacing(2)-1px)]",
+          "mt-2",
+          "pl-4",
+          "pr-1"
+        ],
+        "raw": []
+      },
+      ".cn-code-block": {
+        "apply": [
+          "data-[size=sm]:rounded-xl",
+          "data-[size=sm]:text-xs",
+          "has-[>[data-slot=code-block-content]:focus-visible]:ring-3",
+          "has-[>[data-slot=code-block-content]:focus-visible]:ring-ring/30",
+          "rounded-2xl",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-variant-default": {
+        "apply": [
+          "bg-muted",
+          "dark:ring-foreground/10",
+          "ring-1",
+          "ring-foreground/5",
+          "text-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-variant-destructive": {
+        "apply": [
+          "bg-destructive/5",
+          "dark:bg-destructive/10",
+          "dark:ring-destructive/20",
+          "ring-1",
+          "ring-destructive/15",
+          "text-destructive"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-header": {
+        "apply": [
+          "gap-2",
+          "group-data-[size=sm]/code-block:pt-3",
+          "group-data-[size=sm]/code-block:px-3",
+          "group-data-[variant=destructive]/code-block:text-destructive",
+          "pt-4",
+          "px-4",
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-footer": {
+        "apply": [
+          "gap-2",
+          "group-data-[size=sm]/code-block:pb-3",
+          "group-data-[size=sm]/code-block:px-3",
+          "pb-4",
+          "px-4",
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-title": {
+        "apply": [
+          "*:[svg]:me-1.5",
+          "[&_svg:not([class*='size-'])]:size-4",
+          "font-medium",
+          "font-sans",
+          "group-data-[size=sm]/code-block:[&_svg:not([class*='size-'])]:size-3.5",
+          "group-data-[size=sm]/code-block:text-xs",
+          "group-data-[variant=destructive]/code-block:text-destructive",
+          "text-foreground",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-actions": {
+        "apply": [
+          "*:data-[slot=button]:hover:bg-foreground/5",
+          "-me-1.5",
+          "-my-1",
+          "[[data-slot=code-block]>&]:*:[button]:bg-background",
+          "[[data-slot=code-block]>&]:*:[button]:ring-1",
+          "[[data-slot=code-block]>&]:*:[button]:ring-foreground/10",
+          "[[data-slot=code-block]>&]:end-3",
+          "[[data-slot=code-block]>&]:m-0",
+          "[[data-slot=code-block]>&]:top-3",
+          "dark:*:data-[slot=button]:hover:bg-foreground/10",
+          "gap-1",
+          "group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:end-2",
+          "group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:top-2"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-copy-button": {
+        "apply": [
+          "dark:hover:bg-foreground/10",
+          "hover:bg-foreground/5"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-content": {
+        "apply": [
+          "group-data-[size=sm]/code-block:group-has-data-[slot=code-block-header]/code-block:pt-1.5",
+          "group-data-[size=sm]/code-block:px-3",
+          "group-data-[size=sm]/code-block:py-3",
+          "group-has-data-[slot=code-block-footer]/code-block:pb-2",
+          "group-has-data-[slot=code-block-header]/code-block:pt-2",
+          "leading-relaxed",
+          "px-4",
+          "py-4"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line": {
+        "apply": [
+          "-mx-4",
+          "after:start-1",
+          "after:text-muted-foreground",
+          "before:min-w-6",
+          "before:text-end",
+          "before:text-muted-foreground",
+          "group-data-[size=sm]/code-block:-mx-3",
+          "group-data-[size=sm]/code-block:px-3",
+          "in-data-numbered:gap-x-3",
+          "px-4"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-highlighted": {
+        "apply": [
+          "bg-foreground/5"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-added": {
+        "apply": [
+          "after:content-['+']",
+          "bg-foreground/5"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-removed": {
+        "apply": [
+          "after:content-['−']",
+          "after:text-destructive",
+          "bg-destructive/10"
+        ],
+        "raw": []
+      },
       ".cn-message-scroller-content": {
         "apply": [
           "gap-8"
@@ -23068,6 +23804,189 @@
         "apply": [
           "gap-2",
           "sm:min-h-9"
+        ],
+        "raw": []
+      },
+      ".cn-trace": {
+        "apply": [
+          "*:has-[>[data-slot=trace-line]]:focus-visible:ring-[3px]",
+          "*:has-[>[data-slot=trace-line]]:focus-visible:ring-ring/50",
+          "*:has-[>[data-slot=trace-line]]:rounded-lg",
+          "gap-3"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-trigger": {
+        "apply": [
+          "focus-visible:ring-[3px]",
+          "focus-visible:ring-ring/50",
+          "gap-1",
+          "rounded-lg"
+        ],
+        "raw": []
+      },
+      ".cn-trace-line": {
+        "apply": [
+          "gap-2",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-trace-icon": {
+        "apply": [
+          "[&_svg:not([class*='size-'])]:size-4",
+          "[[data-slot=trace-title]~&]:-ml-1",
+          "size-4"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-content": {
+        "apply": [
+          "duration-200"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-content-inner": {
+        "apply": [
+          "border-l",
+          "leading-relaxed",
+          "mb-1",
+          "ml-[calc(--spacing(2)-1px)]",
+          "mt-2.5",
+          "pl-4",
+          "pr-1"
+        ],
+        "raw": []
+      },
+      ".cn-code-block": {
+        "apply": [
+          "data-[size=sm]:rounded-lg",
+          "data-[size=sm]:text-xs",
+          "has-[>[data-slot=code-block-content]:focus-visible]:ring-[3px]",
+          "has-[>[data-slot=code-block-content]:focus-visible]:ring-ring/50",
+          "rounded-xl",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-variant-default": {
+        "apply": [
+          "border",
+          "border-input",
+          "dark:bg-input/30",
+          "has-[>[data-slot=code-block-content]:focus-visible]:border-ring",
+          "text-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-variant-destructive": {
+        "apply": [
+          "border",
+          "border-destructive/30",
+          "dark:border-destructive/40",
+          "text-destructive"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-header": {
+        "apply": [
+          "gap-2",
+          "group-data-[size=sm]/code-block:pt-3",
+          "group-data-[size=sm]/code-block:px-3",
+          "group-data-[variant=destructive]/code-block:text-destructive",
+          "pt-4",
+          "px-4",
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-footer": {
+        "apply": [
+          "gap-2",
+          "group-data-[size=sm]/code-block:pb-3",
+          "group-data-[size=sm]/code-block:px-3",
+          "pb-4",
+          "px-4",
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-title": {
+        "apply": [
+          "*:[svg]:me-1.5",
+          "[&_svg:not([class*='size-'])]:size-4",
+          "font-medium",
+          "font-sans",
+          "group-data-[size=sm]/code-block:[&_svg:not([class*='size-'])]:size-3.5",
+          "group-data-[size=sm]/code-block:text-xs",
+          "group-data-[variant=destructive]/code-block:text-destructive",
+          "text-foreground",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-actions": {
+        "apply": [
+          "-me-1.5",
+          "-my-1",
+          "[[data-slot=code-block]>&]:*:[button]:bg-background",
+          "[[data-slot=code-block]>&]:*:[button]:ring-1",
+          "[[data-slot=code-block]>&]:*:[button]:ring-foreground/10",
+          "[[data-slot=code-block]>&]:end-3",
+          "[[data-slot=code-block]>&]:m-0",
+          "[[data-slot=code-block]>&]:top-3",
+          "gap-1",
+          "group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:end-2",
+          "group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:top-2"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-content": {
+        "apply": [
+          "group-data-[size=sm]/code-block:group-has-data-[slot=code-block-header]/code-block:pt-1.5",
+          "group-data-[size=sm]/code-block:px-3",
+          "group-data-[size=sm]/code-block:py-3",
+          "group-has-data-[slot=code-block-footer]/code-block:pb-2",
+          "group-has-data-[slot=code-block-header]/code-block:pt-2",
+          "leading-relaxed",
+          "px-4",
+          "py-4"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line": {
+        "apply": [
+          "-mx-4",
+          "after:start-1",
+          "after:text-muted-foreground",
+          "before:min-w-6",
+          "before:text-end",
+          "before:text-muted-foreground",
+          "group-data-[size=sm]/code-block:-mx-3",
+          "group-data-[size=sm]/code-block:px-3",
+          "in-data-numbered:gap-x-3",
+          "px-4"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-highlighted": {
+        "apply": [
+          "bg-muted"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-added": {
+        "apply": [
+          "after:content-['+']",
+          "bg-muted"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-removed": {
+        "apply": [
+          "after:content-['−']",
+          "after:text-destructive",
+          "bg-destructive/10"
         ],
         "raw": []
       },
@@ -27757,6 +28676,200 @@
         ],
         "raw": []
       },
+      ".cn-trace": {
+        "apply": [
+          "*:has-[>[data-slot=trace-line]]:focus-visible:ring-3",
+          "*:has-[>[data-slot=trace-line]]:focus-visible:ring-ring/30",
+          "*:has-[>[data-slot=trace-line]]:rounded-lg",
+          "gap-3"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-trigger": {
+        "apply": [
+          "focus-visible:ring-3",
+          "focus-visible:ring-ring/30",
+          "gap-1",
+          "rounded-lg"
+        ],
+        "raw": []
+      },
+      ".cn-trace-line": {
+        "apply": [
+          "gap-2",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-trace-icon": {
+        "apply": [
+          "[&_svg:not([class*='size-'])]:size-4",
+          "[[data-slot=trace-title]~&]:-ml-1",
+          "size-4"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-content": {
+        "apply": [
+          "duration-200"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-content-inner": {
+        "apply": [
+          "border-l",
+          "leading-relaxed",
+          "mb-1",
+          "ml-[calc(--spacing(2)-1px)]",
+          "mt-2.5",
+          "pl-4",
+          "pr-1"
+        ],
+        "raw": []
+      },
+      ".cn-code-block": {
+        "apply": [
+          "data-[size=sm]:rounded-xl",
+          "data-[size=sm]:text-xs",
+          "has-[>[data-slot=code-block-content]:focus-visible]:ring-3",
+          "has-[>[data-slot=code-block-content]:focus-visible]:ring-ring/30",
+          "rounded-2xl",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-variant-default": {
+        "apply": [
+          "bg-muted",
+          "dark:ring-foreground/10",
+          "ring-1",
+          "ring-foreground/5",
+          "text-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-variant-destructive": {
+        "apply": [
+          "bg-destructive/5",
+          "dark:bg-destructive/10",
+          "dark:ring-destructive/20",
+          "ring-1",
+          "ring-destructive/15",
+          "text-destructive"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-header": {
+        "apply": [
+          "gap-2",
+          "group-data-[size=sm]/code-block:pt-3",
+          "group-data-[size=sm]/code-block:px-3",
+          "group-data-[variant=destructive]/code-block:text-destructive",
+          "pt-5",
+          "px-5",
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-footer": {
+        "apply": [
+          "gap-2",
+          "group-data-[size=sm]/code-block:pb-3",
+          "group-data-[size=sm]/code-block:px-3",
+          "pb-5",
+          "px-5",
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-title": {
+        "apply": [
+          "*:[svg]:me-1.5",
+          "[&_svg:not([class*='size-'])]:size-4",
+          "font-medium",
+          "font-sans",
+          "group-data-[size=sm]/code-block:[&_svg:not([class*='size-'])]:size-3.5",
+          "group-data-[size=sm]/code-block:text-xs",
+          "group-data-[variant=destructive]/code-block:text-destructive",
+          "text-foreground",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-actions": {
+        "apply": [
+          "*:data-[slot=button]:hover:bg-foreground/5",
+          "-me-1.5",
+          "-my-1",
+          "[[data-slot=code-block]>&]:*:[button]:bg-background",
+          "[[data-slot=code-block]>&]:*:[button]:ring-1",
+          "[[data-slot=code-block]>&]:*:[button]:ring-foreground/10",
+          "[[data-slot=code-block]>&]:end-4",
+          "[[data-slot=code-block]>&]:m-0",
+          "[[data-slot=code-block]>&]:top-4",
+          "dark:*:data-[slot=button]:hover:bg-foreground/10",
+          "gap-1",
+          "group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:end-2",
+          "group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:top-2"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-copy-button": {
+        "apply": [
+          "dark:hover:bg-foreground/10",
+          "hover:bg-foreground/5"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-content": {
+        "apply": [
+          "group-data-[size=sm]/code-block:group-has-data-[slot=code-block-header]/code-block:pt-1.5",
+          "group-data-[size=sm]/code-block:px-3",
+          "group-data-[size=sm]/code-block:py-3",
+          "group-has-data-[slot=code-block-footer]/code-block:pb-2",
+          "group-has-data-[slot=code-block-header]/code-block:pt-2",
+          "leading-relaxed",
+          "px-5",
+          "py-5"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line": {
+        "apply": [
+          "-mx-5",
+          "after:start-1",
+          "after:text-muted-foreground",
+          "before:min-w-6",
+          "before:text-end",
+          "before:text-muted-foreground",
+          "group-data-[size=sm]/code-block:-mx-3",
+          "group-data-[size=sm]/code-block:px-3",
+          "in-data-numbered:gap-x-3",
+          "px-5"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-highlighted": {
+        "apply": [
+          "bg-foreground/5"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-added": {
+        "apply": [
+          "after:content-['+']",
+          "bg-foreground/5"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-removed": {
+        "apply": [
+          "after:content-['−']",
+          "after:text-destructive",
+          "bg-destructive/10"
+        ],
+        "raw": []
+      },
       ".cn-message-scroller-content": {
         "apply": [
           "gap-8"
@@ -32356,6 +33469,186 @@
         "apply": [
           "gap-1.5",
           "sm:min-h-8"
+        ],
+        "raw": []
+      },
+      ".cn-trace": {
+        "apply": [
+          "*:has-[>[data-slot=trace-line]]:focus-visible:ring-1",
+          "*:has-[>[data-slot=trace-line]]:focus-visible:ring-ring/50",
+          "*:has-[>[data-slot=trace-line]]:rounded-none",
+          "gap-2"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-trigger": {
+        "apply": [
+          "focus-visible:ring-1",
+          "focus-visible:ring-ring/50",
+          "gap-1",
+          "rounded-none"
+        ],
+        "raw": []
+      },
+      ".cn-trace-line": {
+        "apply": [
+          "gap-2",
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-trace-icon": {
+        "apply": [
+          "[&_svg:not([class*='size-'])]:size-3.5",
+          "[[data-slot=trace-title]~&]:-ml-1",
+          "size-3.5"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-content": {
+        "apply": [
+          "duration-200"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-content-inner": {
+        "apply": [
+          "border-l",
+          "leading-relaxed",
+          "mb-1",
+          "ml-[calc(--spacing(1.75)-1px)]",
+          "mt-2",
+          "pl-3.75",
+          "pr-1"
+        ],
+        "raw": []
+      },
+      ".cn-code-block": {
+        "apply": [
+          "data-[size=sm]:text-xs",
+          "has-[>[data-slot=code-block-content]:focus-visible]:ring-1",
+          "has-[>[data-slot=code-block-content]:focus-visible]:ring-ring/50",
+          "rounded-none",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-variant-default": {
+        "apply": [
+          "border",
+          "border-input",
+          "dark:bg-input/30",
+          "has-[>[data-slot=code-block-content]:focus-visible]:border-ring",
+          "text-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-variant-destructive": {
+        "apply": [
+          "border",
+          "border-destructive/30",
+          "dark:border-destructive/40",
+          "text-destructive"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-header": {
+        "apply": [
+          "gap-2",
+          "group-data-[size=sm]/code-block:pt-2",
+          "group-data-[size=sm]/code-block:px-2",
+          "group-data-[variant=destructive]/code-block:text-destructive",
+          "pt-3",
+          "px-3",
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-footer": {
+        "apply": [
+          "gap-2",
+          "group-data-[size=sm]/code-block:pb-2",
+          "group-data-[size=sm]/code-block:px-2",
+          "pb-3",
+          "px-3",
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-title": {
+        "apply": [
+          "*:[svg]:me-1.5",
+          "[&_svg:not([class*='size-'])]:size-3.5",
+          "font-medium",
+          "font-sans",
+          "group-data-[variant=destructive]/code-block:text-destructive",
+          "text-foreground",
+          "text-xs"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-actions": {
+        "apply": [
+          "-me-1.5",
+          "-my-1",
+          "[[data-slot=code-block]>&]:*:[button]:bg-background",
+          "[[data-slot=code-block]>&]:*:[button]:ring-1",
+          "[[data-slot=code-block]>&]:*:[button]:ring-foreground/10",
+          "[[data-slot=code-block]>&]:end-2",
+          "[[data-slot=code-block]>&]:m-0",
+          "[[data-slot=code-block]>&]:top-2",
+          "gap-1",
+          "group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:end-1.5",
+          "group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:top-1.5"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-content": {
+        "apply": [
+          "group-data-[size=sm]/code-block:group-has-data-[slot=code-block-header]/code-block:pt-1.5",
+          "group-data-[size=sm]/code-block:px-2",
+          "group-data-[size=sm]/code-block:py-2",
+          "group-has-data-[slot=code-block-footer]/code-block:pb-2",
+          "group-has-data-[slot=code-block-header]/code-block:pt-2",
+          "leading-relaxed",
+          "px-3",
+          "py-3"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line": {
+        "apply": [
+          "-mx-3",
+          "after:start-1",
+          "after:text-muted-foreground",
+          "before:min-w-6",
+          "before:text-end",
+          "before:text-muted-foreground",
+          "group-data-[size=sm]/code-block:-mx-2",
+          "group-data-[size=sm]/code-block:px-2",
+          "in-data-numbered:gap-x-3",
+          "px-3"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-highlighted": {
+        "apply": [
+          "bg-muted"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-added": {
+        "apply": [
+          "after:content-['+']",
+          "bg-muted"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-removed": {
+        "apply": [
+          "after:content-['−']",
+          "after:text-destructive",
+          "bg-destructive/10"
         ],
         "raw": []
       },
@@ -37052,6 +38345,188 @@
         "apply": [
           "gap-2",
           "sm:min-h-10"
+        ],
+        "raw": []
+      },
+      ".cn-trace": {
+        "apply": [
+          "*:has-[>[data-slot=trace-line]]:focus-visible:ring-2",
+          "*:has-[>[data-slot=trace-line]]:focus-visible:ring-ring/30",
+          "*:has-[>[data-slot=trace-line]]:rounded-none",
+          "gap-3"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-trigger": {
+        "apply": [
+          "focus-visible:ring-2",
+          "focus-visible:ring-ring/30",
+          "gap-1",
+          "rounded-none"
+        ],
+        "raw": []
+      },
+      ".cn-trace-line": {
+        "apply": [
+          "gap-2",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-trace-icon": {
+        "apply": [
+          "[&_svg:not([class*='size-'])]:size-4",
+          "[[data-slot=trace-title]~&]:-ml-1",
+          "size-4"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-content": {
+        "apply": [
+          "duration-200"
+        ],
+        "raw": []
+      },
+      ".cn-trace-collapsible-content-inner": {
+        "apply": [
+          "border-l",
+          "leading-relaxed",
+          "mb-1",
+          "ml-[calc(--spacing(2)-1px)]",
+          "mt-3",
+          "pl-4",
+          "pr-1"
+        ],
+        "raw": []
+      },
+      ".cn-code-block": {
+        "apply": [
+          "data-[size=sm]:text-xs",
+          "has-[>[data-slot=code-block-content]:focus-visible]:ring-2",
+          "has-[>[data-slot=code-block-content]:focus-visible]:ring-ring/30",
+          "rounded-none",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-variant-default": {
+        "apply": [
+          "border",
+          "border-input",
+          "dark:bg-input/30",
+          "has-[>[data-slot=code-block-content]:focus-visible]:border-ring",
+          "text-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-variant-destructive": {
+        "apply": [
+          "border",
+          "border-destructive/30",
+          "dark:border-destructive/40",
+          "text-destructive"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-header": {
+        "apply": [
+          "gap-2",
+          "group-data-[size=sm]/code-block:pt-3",
+          "group-data-[size=sm]/code-block:px-3",
+          "group-data-[variant=destructive]/code-block:text-destructive",
+          "pt-4",
+          "px-4",
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-footer": {
+        "apply": [
+          "gap-2",
+          "group-data-[size=sm]/code-block:pb-3",
+          "group-data-[size=sm]/code-block:px-3",
+          "pb-4",
+          "px-4",
+          "text-muted-foreground"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-title": {
+        "apply": [
+          "*:[svg]:me-1.5",
+          "[&_svg:not([class*='size-'])]:size-4",
+          "font-medium",
+          "font-sans",
+          "group-data-[size=sm]/code-block:[&_svg:not([class*='size-'])]:size-3.5",
+          "group-data-[size=sm]/code-block:text-xs",
+          "group-data-[variant=destructive]/code-block:text-destructive",
+          "text-foreground",
+          "text-sm"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-actions": {
+        "apply": [
+          "-me-1.5",
+          "-my-1",
+          "[[data-slot=code-block]>&]:*:[button]:bg-background",
+          "[[data-slot=code-block]>&]:*:[button]:ring-1",
+          "[[data-slot=code-block]>&]:*:[button]:ring-foreground/10",
+          "[[data-slot=code-block]>&]:end-3",
+          "[[data-slot=code-block]>&]:m-0",
+          "[[data-slot=code-block]>&]:top-3",
+          "gap-1",
+          "group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:end-2",
+          "group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:top-2"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-content": {
+        "apply": [
+          "group-data-[size=sm]/code-block:group-has-data-[slot=code-block-header]/code-block:pt-1.5",
+          "group-data-[size=sm]/code-block:px-3",
+          "group-data-[size=sm]/code-block:py-3",
+          "group-has-data-[slot=code-block-footer]/code-block:pb-2",
+          "group-has-data-[slot=code-block-header]/code-block:pt-2",
+          "leading-relaxed",
+          "px-4",
+          "py-4"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line": {
+        "apply": [
+          "-mx-4",
+          "after:start-1",
+          "after:text-muted-foreground",
+          "before:min-w-6",
+          "before:text-end",
+          "before:text-muted-foreground",
+          "group-data-[size=sm]/code-block:-mx-3",
+          "group-data-[size=sm]/code-block:px-3",
+          "in-data-numbered:gap-x-3",
+          "px-4"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-highlighted": {
+        "apply": [
+          "bg-muted"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-added": {
+        "apply": [
+          "after:content-['+']",
+          "bg-muted"
+        ],
+        "raw": []
+      },
+      ".cn-code-block-line-variant-removed": {
+        "apply": [
+          "after:content-['−']",
+          "after:text-destructive",
+          "bg-destructive/10"
         ],
         "raw": []
       },

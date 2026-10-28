@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "erb"
+
 module Poetry
   module Ui
     # The CodeBlock's rouge seam: highlighting is a SOFT capability -
@@ -23,41 +25,48 @@ module Poetry
         end
       end
 
-      # -> html_safe highlighted markup - every line wrapped in .line (the
-      # counter hook), the requested ones also .hll (the theme's tint hook) -
-      # or nil when rouge is absent. Unknown languages lex as plain text.
+      # The source's lines as they render: one entry per line, the final
+      # newline not starting an extra one ("a\nb\n" is two lines). An empty
+      # source is one empty line.
       #
-      # @param code [String] the source to highlight
-      # @param language [String, Symbol, nil] the rouge lexer name; unknown or nil lexes as plain text
-      # @param highlight_lines [Array<Integer>] 1-based line numbers to tint
-      def highlight(code, language:, highlight_lines: [])
-        return nil unless available?
-
-        lexer = Rouge::Lexer.find(language.to_s) || Rouge::Lexers::PlainText.new
-        formatter.new(highlight_lines: Array(highlight_lines).map(&:to_i))
-                 .format(lexer.lex(code)).html_safe
+      # @param code [String] the source
+      # @return [Array<String>]
+      def source_lines(code)
+        code.to_s.chomp.split("\n", -1).then { |lines| lines.empty? ? [""] : lines }
       end
 
-      # Rouge 5 asserts a PLAIN HTML delegate inside its line-wise wrappers
-      # (HTMLLinewise cannot wrap HTMLLineHighlighter), so poetry carries its
-      # own line formatter over the stable token_lines API.
-      def formatter
-        @formatter ||= Class.new(Rouge::Formatters::HTML) do
-          def initialize(highlight_lines: [])
-            super()
-            @highlight_lines = highlight_lines
-          end
+      # -> one html_safe fragment per source line: rouge's token spans when
+      # rouge is present (unknown languages lex as plain text), the escaped
+      # text otherwise. The count always matches {source_lines}, so a line's
+      # position is its number.
+      #
+      # @param lines [Array<String>] the source lines (see {source_lines})
+      # @param language [String, Symbol, nil] the rouge lexer name
+      # @return [Array<ActiveSupport::SafeBuffer>]
+      def highlight_lines(lines, language:)
+        fragments = available? ? rouge_lines(lines.join("\n"), language) : lines.map { |line| ERB::Util.html_escape(line) }
+        fragments.fill("".html_safe, fragments.length...lines.length).first(lines.length).map(&:html_safe)
+      end
 
-          def stream(tokens)
-            token_lines(tokens).each.with_index(1) do |line_tokens, lineno|
-              classes = ["line"]
-              classes << "hll" if @highlight_lines.include?(lineno)
-              yield %(<span class="#{classes.join(" ")}">)
-              line_tokens.each { |token, value| yield span(token, value) }
-              yield "</span>\n"
-            end
-          end
-        end
+      # Rouge's tokens grouped per line, each line its joined token spans.
+      #
+      # @param code [String]
+      # @param language [String, Symbol, nil]
+      # @return [Array<String>]
+      # @api private
+      def rouge_lines(code, language)
+        lexer = Rouge::Lexer.find(language.to_s) || Rouge::Lexers::PlainText.new
+        line_formatter.lines(lexer.lex(code))
+      end
+
+      # Rouge's HTML formatter, reading its (protected) line grouping.
+      #
+      # @return [Rouge::Formatters::HTML]
+      # @api private
+      def line_formatter
+        @line_formatter ||= Class.new(Rouge::Formatters::HTML) do
+          def lines(tokens) = token_lines(tokens).map { |line| line.map { |token, value| span(token, value) }.join }
+        end.new
       end
     end
   end

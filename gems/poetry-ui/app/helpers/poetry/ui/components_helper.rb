@@ -1313,17 +1313,21 @@ module Poetry
       end
 
       # Server-rendered highlighted code panel (rouge, soft dependency):
-      # language:, CSS-counter line_numbers:, highlight_lines:, and a
-      # copy affordance reading the rendered code. Inline code stays
-      # plain <code> typography.
+      # language:, CSS-counter line_numbers:, highlight_lines:, diff:,
+      # wrap:, and a copy affordance; the block sets the title, actions
+      # and footer slots. Inline code stays plain <code> typography.
       #
       # @example
       #     poetry_code_block(
       #       code: "puts \"hello\"", language: "ruby"
       #     )
+      # @example A header
+      #     poetry_code_block(code: source, language: "ruby") do |block|
+      #       block.with_title { "app/models/user.rb" }
+      #     end
       # @see Poetry::Ui::CodeBlock::Component
-      def poetry_code_block(**)
-        render(Poetry::Ui::CodeBlock::Component.new(**))
+      def poetry_code_block(**, &)
+        render(Poetry::Ui::CodeBlock::Component.new(**), &)
       end
 
       # Secret shown-on-demand (API keys, tokens): masked container is the

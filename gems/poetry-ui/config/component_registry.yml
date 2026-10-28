@@ -1903,7 +1903,15 @@ components:
     class_name: Poetry::Ui::CodeBlock::Component
     identifier: poetry--ui--code_block
     bem_block: poetry-ui-code_block
-    styles: []
+    styles:
+    - name: variant
+      type: symbol
+      variants:
+      - default
+      - destructive
+      default: default
+      required: true
+      description: The intent axis; :destructive frames an error's output.
     options:
     - name: code
       type: string
@@ -1912,14 +1920,20 @@ components:
     - name: copy
       type: boolean
       default: true
-      description: Renders the copy button in the panel's corner.
+      description: Renders the copy button.
+    - name: diff
+      type: boolean
+      default: false
+      description: 'Reads the code as a unified diff: + and - lines render added and
+        removed, their marker drawn by the theme; copy keeps the markers.'
     - name: highlight_lines
       type:
-      description: 1-based line numbers to tint via the theme's highlight hook.
+      description: 1-based line positions to tint via the theme's highlighted line.
     - name: label
       type: string
-      description: The scroll region's accessible name; defaults to the localized
-        "Code" (a focusable scrollable region must be named - axe).
+      description: The scroll region's accessible name; defaults to the title when
+        there is one, else the localized "Code" (a focusable scrollable region must
+        be named - axe).
     - name: language
       type: string
       default: text
@@ -1930,18 +1944,53 @@ components:
       default: false
       description: Renders CSS-counter line numbers - never part of selection or copied
         text.
-    slots: []
+    - name: size
+      type: symbol
+      variants:
+      - default
+      - sm
+      default: default
+      description: The density axis; :sm tightens the padding and the type.
+    - name: start_line
+      type: integer
+      default: 1
+      description: 'The first line''s number when line_numbers: is on.'
+    - name: wrap
+      type: boolean
+      default: false
+      description: Wraps long lines instead of scrolling sideways.
+    slots:
+    - name: title
+      many: false
+      description: The header's title - a file name or a label; opens the header,
+        and the copy button moves into it.
+    - name: actions
+      many: false
+      description: More actions beside the copy button (in the header, or floating
+        in the corner).
+    - name: footer
+      many: false
+      description: A row below the code - a caption, a status, a link.
     helper: poetry_code_block
     description: A syntax-highlighted code panel with a copy button and optional line
       numbers.
     elements:
-    - pre
+    - header
+    - title
+    - actions
+    - content
     - code
-    - copy
+    - line
+    - line_default
+    - line_added
+    - line_removed
+    - line_highlighted
+    - line_content
+    - footer
     - icon_stack
     - icon_copy
     - icon_check
-    capsule: '049533fbf644'
+    capsule: 3bca2fb395e8
     controllers:
     - identifier: poetry--core--clipboard-text
       targets:
@@ -1960,26 +2009,66 @@ components:
       ride it.
     - Highlighting needs `gem "rouge"` in the host Gemfile - without it the block
       renders plain (same markup, no colors). Inline code stays plain <code> typography.
-    - 'highlight_lines: takes 1-based line numbers; line numbers are CSS counters
+    - 'highlight_lines: takes 1-based line positions; line numbers are CSS counters
       and never pollute copied text.'
-    identity: false
+    - 'diff: true reads a unified diff: a leading + or - marks the line added or removed
+      (the theme draws the marker), and the rest of the line highlights in language:.'
+    - with_title { "path/to/file.rb" } opens a header; the copy button moves into
+      it.
     parts:
     - name: code-block
-      description: Root - the syntax-palette surface (cn-code-block)
+      description: Root - the panel (cn-code-block plus its variant)
       states:
+      - attr: data-variant
+        condition: always - the resolved variant
+        values:
+        - default
+        - destructive
+      - attr: data-size
+        condition: always - the resolved size
+        values:
+        - default
+        - sm
       - attr: data-language
         condition: always - the lexer name, a styling/tooling hook
-      - attr: data-line-numbers
-        condition: 'line_numbers: - turns on the ::before CSS counters'
       - attr: data-copied
         condition: 'copy: only - stamped for a beat after a successful copy (the clipboard-text
           engine)'
-    - name: code-block-pre
-      description: The scroll container - tabindex 0 + role region + label (a scrollable
-        region must be keyboard-reachable and named)
+    - name: code-block-header
+      description: The header row - the title, then the actions (rendered with a title)
+    - name: code-block-title
+      description: The header's title (with_title)
+    - name: code-block-actions
+      description: The actions - in the header row, or floating in the corner without
+        one
+    - name: code-block-copy-button
+      description: The copy button (copy:) - a ghost Button over the clipboard-text
+        engine
+    - name: code-block-content
+      description: The scroll container (a pre) - tabindex 0 + role region + its name
+        (a scrollable region must be keyboard-reachable and named)
+      states:
+      - attr: data-wrap
+        condition: 'wrap: - long lines wrap instead of scrolling'
+      - attr: data-numbered
+        condition: 'line_numbers: - each line shows its CSS-counter number'
     - name: code-block-code
-      description: The code element - rouge's .line/.hll spans and the seven --syntax-*
-        token maps live under it; the copy affordance reads ITS textContent
+      description: The code element - the token map reads the theme's seven --syntax-*
+        vars; the copy affordance reads ITS textContent
+    - name: code-block-line
+      description: One source line - the numbered row and the tint
+      states:
+      - attr: data-variant
+        condition: always - the line's variant
+        values:
+        - default
+        - added
+        - removed
+        - highlighted
+    - name: code-block-line-content
+      description: The line's text
+    - name: code-block-footer
+      description: The row below the code (with_footer)
     stimulus:
     - element: root
       conditional: if copy
@@ -1988,6 +2077,7 @@ components:
         registers: true
         values:
         - name: message
+        - name: text
     - element: source
       conditional: if copy
       controllers:

@@ -35,7 +35,6 @@ poetry_components:
   list:
   - autocomplete
   - clipboard-text
-  - code-block
   - data-table
   - date-field
   - date-picker
@@ -352,6 +351,38 @@ checkbox:
         it only while checked).
       added:
       - data-unchecked:invisible
+code-block:
+  slots:
+    code-block-code:
+      reason: Poetry highlights on the server - rouge's token classes colored through
+        the theme's seven --syntax-* vars (the source colors tokens inline from its client
+        highlighter).
+      added:
+      - "[&_:is(.c,.ch,.cd,.cm,.cp,.cpf,.c1,.cs)]:text-(--syntax-comment)"
+      - "[&_:is(.k,.kd,.kn,.kp,.kr,.kt,.kv)]:text-(--syntax-keyword)"
+      - "[&_:is(.kc,.l,.ld,.m,.mb,.mf,.mh,.mi,.il,.mo,.mx)]:text-(--syntax-constant)"
+      - "[&_:is(.na,.nt,.sr)]:text-(--syntax-markup)"
+      - "[&_:is(.nb,.nc,.no,.nn)]:text-(--syntax-entity)"
+      - "[&_:is(.nd,.nf,.fm)]:text-(--syntax-function)"
+      - "[&_:is(.s,.sa,.sc,.dl,.sd,.s2,.se,.sh,.sx,.s1,.ss)]:text-(--syntax-string)"
+      - "[&_:is(.sb,.bp,.ne,.nl,.py,.nv,.vc,.vg,.vi,.vm,.o,.ow)]:text-(--syntax-constant)"
+    code-block-content:
+      reason: The source writes counter-reset inline on every block; poetry carries the
+        default in the class and writes the inline style only for start_line:, so a block
+        that starts at 1 needs no style attribute.
+      added:
+      - "[counter-reset:line]"
+    code-block-copy-button:
+      reason: The copy button is a composed poetry Button, so its root carries Button's
+        own structural classes (the source's Button carries the same; only the hook
+        is the copy button's).
+      added:
+      - "[&_svg]:pointer-events-none"
+      - items-center
+      - justify-center
+      - outline-none
+      - shrink-0
+      - transition-all
 combobox:
   missing_slots:
     reason: combobox-collection is Base UI's virtualization wrapper; the source clears
