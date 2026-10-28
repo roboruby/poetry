@@ -12406,8 +12406,8 @@ components:
       never app chrome; poetry components style themselves.
     - 'preset: "docs" appends typeset-docs - a preset is a tiny class in the app''s
       own CSS setting --typeset-size/-leading/-flow (and font vars).'
-    - 'Opt an embedded component OUT of the prose styling with class: "not-typeset"
-      - it covers the whole subtree.'
+    - 'Embedded poetry components keep their own styles - the prose rules skip anything
+      with data-slot. Opt a plain-HTML subtree OUT with class: "not-typeset".'
     - Wrap a wide table (or any wide block) in a typeset-scroll div inside the prose
       to scroll horizontally instead of compressing.
     requires_content: the rendered prose HTML
@@ -12415,8 +12415,8 @@ components:
     parts:
     - name: typeset
       description: The prose container - every bare element inside is styled by the
-        app-owned typeset.css; not-typeset (class or data attribute) opts a subtree
-        out
+        app-owned typeset.css; components (data-slot) keep their own styles, and not-typeset
+        (class or data attribute) opts a subtree out
 helpers:
   poetry_attachment_for: {}
   poetry_attachment_group: {}

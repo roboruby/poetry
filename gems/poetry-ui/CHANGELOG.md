@@ -20,6 +20,7 @@
 
 ### Changed
 
+- Typeset keeps embedded components out of the prose cascade, as shadcn@4.23.0's typeset does: the element rules skip anything carrying `data-slot` (every poetry component root), and a component placed directly in the flow takes a paragraph's space above it. `not-typeset` stays for plain-HTML subtrees. `typeset.css` is app-owned, so existing apps take the change by hand: `bin/rails g poetry:diff` shows it.
 - FileInput writes `data-dragging`, `data-drag-reject` and `data-drag-global` on its root through the file-drop controller; the dropzone label carries no actions of its own.
 - Tabs, toggle group, radio group, tag group, menubar and accordion use the `roving_focus` behavior; checkbox and switch use `checked`; nine anchored overlays use `popper`; the overlays use the `focus_scope` and `dismissable` runtime behaviors. The rendered HTML is unchanged, and the registry lists each component's behaviors.
 - The component skill shows how to use a behavior before declaring a controller by hand.
