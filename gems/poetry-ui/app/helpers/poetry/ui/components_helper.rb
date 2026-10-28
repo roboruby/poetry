@@ -1330,6 +1330,19 @@ module Poetry
         render(Poetry::Ui::CodeBlock::Component.new(**), &)
       end
 
+      # The steps an agent takes, one line each: icon, title, description,
+      # a status (:running shimmers, :error, :pending); a step's block is
+      # detail it discloses.
+      #
+      # @example
+      #     poetry_trace do |trace|
+      #       trace.with_step("Ran the tests", icon: :"flask-conical", description: "2.1s")
+      #     end
+      # @see Poetry::Ui::Trace::Component
+      def poetry_trace(**, &)
+        render(Poetry::Ui::Trace::Component.new(**), &)
+      end
+
       # Secret shown-on-demand (API keys, tokens): masked container is the
       # reveal button, blur/Escape/eye re-mask, copy: copies without
       # revealing. Plain passwords being SET (not shown) can stay a

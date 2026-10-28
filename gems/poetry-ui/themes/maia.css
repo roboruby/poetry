@@ -1666,6 +1666,31 @@
   @apply size-2.5 rounded-[2px] in-data-[side=left]:translate-x-[-1.5px] in-data-[side=right]:translate-x-[1.5px];
 }
 
+/* MARK: Trace */
+.cn-trace {
+  @apply gap-3 *:has-[>[data-slot=trace-line]]:rounded-lg *:has-[>[data-slot=trace-line]]:focus-visible:ring-[3px] *:has-[>[data-slot=trace-line]]:focus-visible:ring-ring/50;
+}
+
+.cn-trace-collapsible-trigger {
+  @apply gap-1 rounded-lg focus-visible:ring-[3px] focus-visible:ring-ring/50;
+}
+
+.cn-trace-line {
+  @apply gap-2 text-sm;
+}
+
+.cn-trace-icon {
+  @apply size-4 [&_svg:not([class*='size-'])]:size-4 [[data-slot=trace-title]~&]:-ml-1;
+}
+
+.cn-trace-collapsible-content {
+  @apply duration-200;
+}
+
+.cn-trace-collapsible-content-inner {
+  @apply mt-2.5 mb-1 ml-[calc(--spacing(2)-1px)] border-l pr-1 pl-4 leading-relaxed;
+}
+
 /* MARK: Consumer utilities
  * Standalone cn-* classes templates and consumers apply directly (they
  * ride the css:verify_theme allowlist - no dictionary emits cn-rtl-flip).

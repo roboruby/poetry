@@ -1,0 +1,9 @@
+<%# The steps an agent took, one line each: an icon, the words, a muted
+    note. status: tints a line; the title carries what it says. %>
+<div class="w-full max-w-md">
+  <%= poetry_trace do |trace| %>
+    <% trace.with_step("Searched the docs for \"turbo frames\"", icon: :search, description: "3 results") %>
+    <% trace.with_step("Read app/models/invoice.rb", icon: :"file-text") %>
+    <% trace.with_step("Running the test suite", icon: :"flask-conical", status: :running) %>
+  <% end %>
+</div>

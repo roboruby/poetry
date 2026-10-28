@@ -1,0 +1,13 @@
+<%# A tool call's state maps to status: and to the title's words - the
+    title is what assistive tech reads. Running shimmers (off under
+    reduced motion), a failure turns destructive, a waiting step dims. %>
+<div class="w-full max-w-md">
+  <%= poetry_trace do |trace| %>
+    <% trace.with_step("Running bin/rails test", icon: :terminal, status: :running) %>
+    <% trace.with_step("Failed to run bin/rails db:migrate", icon: :terminal, status: :error) do %>
+      <%= poetry_code_block(code: "ActiveRecord::PendingMigrationError", variant: :destructive, size: :sm, copy: false, label: "Error") %>
+    <% end %>
+    <% trace.with_step("Deploy to staging", icon: :rocket, status: :pending, description: "waiting for approval") %>
+    <% trace.with_step("Ran bin/rails assets:precompile", icon: :terminal, description: "41s") %>
+  <% end %>
+</div>

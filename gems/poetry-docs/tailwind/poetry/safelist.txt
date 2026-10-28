@@ -12,6 +12,12 @@
 *:focus-visible:relative
 *:focus-visible:z-10
 *:has-[>[data-slot=code-block-title]]:min-w-0
+*:has-[>[data-slot=trace-line]]:flex
+*:has-[>[data-slot=trace-line]]:max-w-full
+*:has-[>[data-slot=trace-line]]:min-w-0
+*:has-[>[data-slot=trace-line]]:outline-none
+*:has-[>[data-slot=trace-line]]:text-left
+*:has-[>[data-slot=trace-line]]:w-fit
 -bottom-12
 -left-12
 -ml-4
@@ -660,6 +666,12 @@ cn-toggle-variant-default
 cn-toggle-variant-outline
 cn-tooltip-arrow
 cn-tooltip-content
+cn-trace
+cn-trace-collapsible-content
+cn-trace-collapsible-content-inner
+cn-trace-collapsible-trigger
+cn-trace-icon
+cn-trace-line
 col-start-1
 col-start-2
 col-start-3
@@ -743,6 +755,10 @@ data-[side=right]:right-0
 data-[side=top]:-top-4.5
 data-[side]:visible
 data-[spacing=0]:shadow-none
+data-[status=error]:in-[a:hover,button:hover]:text-destructive
+data-[status=error]:text-destructive
+data-[status=pending]:opacity-60
+data-[status=running]:*:data-[slot=trace-title]:shimmer
 data-[upload-state=error]:border-destructive/30
 data-[upload-state=idle]:border-dashed
 data-[variant=image]:*:[img]:aspect-square
@@ -764,6 +780,7 @@ data-disabled:pointer-events-none
 data-dragging:cursor-grabbing
 data-ending-style:absolute
 data-ending-style:duration-[calc(var(--drawer-swipe-strength,1)*400ms)]
+data-ending-style:h-0
 data-ending-style:left-0
 data-ending-style:opacity-0
 data-ending-style:top-0
@@ -784,6 +801,7 @@ data-popup-open:bg-accent
 data-popup-open:text-accent-foreground
 data-snap-points:h-dvh
 data-snap-points:max-h-none
+data-starting-style:h-0
 data-starting-style:opacity-0
 data-starting-style:transform-(--closed-transform)
 data-swiping:backdrop:transition-none
@@ -869,6 +887,7 @@ grid-cols-[minmax(0,1fr)_auto_auto]
 grid-rows-[auto_1fr]
 grid-rows-[auto_auto_1fr]
 group
+group-aria-expanded/trace-collapsible-trigger:rotate-90
 group-data-[align=end]/bubble:self-end
 group-data-[align=end]/message:*:data-slot:self-end
 group-data-[align=end]/message:justify-end
@@ -1017,10 +1036,12 @@ group/timeline-item
 group/toaster
 group/toggle
 group/toggle-group
+group/trace-collapsible-trigger
 group/tree-item
 grow
 grow-0
 h-(--cell-size)
+h-(--collapsible-panel-height)
 h-(--popup-height)
 h-(--positioner-height)
 h-1
@@ -1045,6 +1066,7 @@ has-[>[data-slot=field]]:flex-col
 has-[>[data-slot=field]]:w-full
 has-[>a,>button]:hover:bg-muted/50
 has-[>textarea]:h-auto
+has-[[data-status=error]]:text-destructive
 has-[select:disabled]:opacity-50
 has-[select:focus-visible]:ring-[3px]
 has-[select:focus-visible]:ring-ring/50
@@ -1069,6 +1091,8 @@ hover:opacity-100
 hover:text-accent-foreground
 hover:text-foreground
 hover:underline
+in-[a,button]:cursor-pointer
+in-[a:hover,button:hover]:text-foreground
 in-data-[slot=card-content]:bg-transparent
 in-data-[slot=popover-content]:bg-transparent
 in-data-numbered:[counter-increment:line]
@@ -1162,6 +1186,7 @@ min-w-[var(--radix-select-trigger-width)]
 min-w-max
 ml-(--drawer-inset,0px)
 ml-auto
+motion-reduce:shimmer-none
 mr-(--drawer-inset,0px)
 mr-auto
 ms-auto
@@ -1330,6 +1355,7 @@ text-foreground/60
 text-left
 text-lg
 text-muted-foreground
+text-muted-foreground/70
 text-popover-foreground
 text-pretty
 text-primary

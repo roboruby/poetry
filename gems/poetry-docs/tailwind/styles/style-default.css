@@ -1701,6 +1701,33 @@
   @apply size-2.5 rounded-[2px];
 }
 
+/* MARK: Trace */
+/* No classic Trace exists upstream: vega's values in the classic
+ * vocabulary (the 3px ring written ring-[3px]). */
+.cn-trace {
+  @apply gap-2 *:has-[>[data-slot=trace-line]]:rounded-md *:has-[>[data-slot=trace-line]]:focus-visible:ring-[3px] *:has-[>[data-slot=trace-line]]:focus-visible:ring-ring/50;
+}
+
+.cn-trace-collapsible-trigger {
+  @apply gap-1 rounded-md focus-visible:ring-[3px] focus-visible:ring-ring/50;
+}
+
+.cn-trace-line {
+  @apply gap-2 text-sm;
+}
+
+.cn-trace-icon {
+  @apply size-4 [&_svg:not([class*='size-'])]:size-4 [[data-slot=trace-title]~&]:-ml-1;
+}
+
+.cn-trace-collapsible-content {
+  @apply duration-200;
+}
+
+.cn-trace-collapsible-content-inner {
+  @apply mt-2 mb-1 ml-[calc(--spacing(2)-1px)] border-l pr-1 pl-4 leading-relaxed;
+}
+
 /* MARK: Consumer utilities
  * Standalone cn-* classes templates and consumers apply directly (they
  * ride the css:verify_theme allowlist - no dictionary emits cn-rtl-flip).

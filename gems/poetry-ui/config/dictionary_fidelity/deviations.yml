@@ -1478,3 +1478,12 @@ radio-group:
     - radio-group-card-content
     - radio-group-card-description
     - radio-group-card-title
+trace:
+  slots:
+    trace-icon:
+      reason: The disclosure's chevron is a trace icon too. The source passes its turn as
+        a className where TraceCollapsibleTrigger renders it; poetry carries the turn on
+        its own dictionary element, so the slot's classes include it.
+      added:
+      - group-aria-expanded/trace-collapsible-trigger:rotate-90
+      - transition-transform

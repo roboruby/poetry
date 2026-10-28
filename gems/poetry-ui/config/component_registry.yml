@@ -12398,6 +12398,118 @@ components:
         viewport.
       elements:
       - root
+  poetry/ui/trace:
+    class_name: Poetry::Ui::Trace::Component
+    identifier: poetry--ui--trace
+    bem_block: poetry-ui-trace
+    styles: []
+    options: []
+    slots:
+    - name: steps
+      many: true
+      description: 'One step: the title (positional), optional icon:, description:,
+        status: (:running, :error, :pending), href: (a link), and open: for a step
+        with detail - the detail is the block, which makes the step a disclosure.'
+      setter_args:
+        step: 1
+      yieldless:
+      - step
+    helper: poetry_trace
+    elements:
+    - line
+    - icon
+    - title
+    - description
+    - collapsible
+    - collapsible_trigger
+    - chevron
+    - collapsible_content
+    - collapsible_content_inner
+    capsule: c81ffa507456
+    controllers:
+    - identifier: poetry--core--state
+      targets:
+      - content
+      - trigger
+      values:
+      - state
+      actions:
+      - close
+      - open
+      - toggle
+      events: []
+    agent_rules:
+    - The steps an agent takes (reasoning, tool calls, searches, a plan) are a Trace
+      - never a hand-rolled column of muted rows.
+    - 'with_step(title, icon:, description:, status:) is one line; a block makes it
+      a disclosure that reveals the detail (tool output in a poetry_code_block size:
+      :sm, a reasoning summary).'
+    - 'Map a tool call''s state to status: and to the title''s words: running -> status:
+      :running, "Running ..."; failed -> status: :error, "Failed to run ..."; waiting
+      -> status: :pending; done -> no status, "Ran ...". The title is what assistive
+      tech reads.'
+    - 'href: makes a step a link (a source, a file the agent changed).'
+    required_slots:
+      step: at least one step (with_step(title, ...))
+    parts:
+    - name: trace
+      description: The column of steps
+    - name: trace-line
+      description: One step's row - its icon, title and description
+      states:
+      - attr: data-status
+        condition: 'status: - the step''s state (absent when done)'
+        values:
+        - running
+        - error
+        - pending
+    - name: trace-icon
+      description: The step's glyph, and the disclosure's chevron (aria-hidden)
+    - name: trace-title
+      description: The step's words - shimmers while running
+    - name: trace-description
+      description: The muted trailing note - a duration, a count
+    - name: trace-collapsible
+      description: A step with detail - the state controller's root
+      states:
+      - attr: data-open
+        condition: the detail is shown (server-rendered from open:; the controller
+          flips the pair)
+      - attr: data-closed
+        condition: the detail is hidden
+    - name: trace-collapsible-trigger
+      description: The disclosure button around the step's line - mirrors aria-expanded
+    - name: trace-collapsible-content
+      description: The detail panel - its height animates over the measured --collapsible-panel-height
+      states:
+      - attr: data-open
+        condition: the detail is open or entering
+      - attr: data-closed
+        condition: the detail is closed or animating out (hidden lands after the exit)
+      - attr: data-starting-style
+        condition: the first painted frame of an entry (controller-written)
+      - attr: data-ending-style
+        condition: the whole exit, until hidden lands (controller-written)
+    - name: trace-collapsible-content-inner
+      description: The detail itself - indented on the theme's rail
+    stimulus:
+    - element: collapsible
+      controllers:
+      - identifier: poetry--core--state
+        registers: true
+    - element: collapsible_trigger
+      controllers:
+      - identifier: poetry--core--state
+        targets:
+        - name: trigger
+        actions:
+        - method: toggle
+          'on': click
+    - element: collapsible_content
+      controllers:
+      - identifier: poetry--core--state
+        targets:
+        - name: content
   poetry/ui/tree:
     class_name: Poetry::Ui::Tree::Component
     identifier: poetry--ui--tree
@@ -12922,6 +13034,7 @@ helper_args:
   poetry_toolbar: 0
   poetry_tooltip: 0
   poetry_tooltip_provider: 0
+  poetry_trace: 0
   poetry_tree: 0
   poetry_typeset: 0
   poetry_webmcp_form: 0
