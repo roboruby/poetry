@@ -743,11 +743,15 @@ export default class MenuController extends Controller {
     this.#lastPress = event.pointerType || "mouse"
   }
 
-  // A click on a sub-trigger. A touch, pen or assistive-tech activation
-  // (a click with no press before it) toggles an open sub closed: those
-  // users have no hover-out, so a second tap is their only way to close
-  // just this level. A mouse press keeps a hover-opened sub open
-  // (Base UI #5824).
+  /**
+   * A click on a sub-trigger. A touch, pen or assistive-tech activation
+   * (a click with no press before it) toggles an open sub closed: those
+   * users have no hover-out, so a second tap is their only way to close
+   * just this level. A mouse press keeps a hover-opened sub open
+   * (Base UI #5824).
+   *
+   * @param {Element} subTrigger
+   */
   #pressSubTrigger(subTrigger) {
     const pointer = this.#lastPress
 
