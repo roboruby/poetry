@@ -229,6 +229,27 @@ module Poetry
             })
           ]
         },
+        "agent_steps" => {
+          "description" => "An agent's steps: a search with its result count, a running test step, a " \
+                           "failed tool call that reveals its error output, and a link to a file it changed",
+          "gates" => [
+            Gate.new(:steps_described, :cross_arm, lambda { |doc, _html|
+              doc.text.include?("3 results") && doc.text.include?("Running bin/rails test")
+            }),
+            Gate.new(:disclosure_is_a_wired_button, :cross_arm, lambda { |doc, _html|
+              doc.xpath(".//*[@onclick]").empty? &&
+                doc.css("button[aria-expanded]").any? do |button|
+                  button.text.include?("Failed to run") && doc.at_css("##{button["aria-controls"]}")
+                end
+            }),
+            Gate.new(:error_output_is_code, :cross_arm, lambda { |doc, _html|
+              doc.css("pre, code").any? { |node| node.text.include?("PendingMigrationError") }
+            }),
+            Gate.new(:decorative_icons_hidden, :cross_arm, lambda { |doc, _html|
+              doc.css("svg").all? { |svg| svg["aria-hidden"] == "true" }
+            })
+          ]
+        },
         "chat_transcript" => {
           "description" => "A chat transcript: date divider, assistant message with an attachment " \
                            "and a quick reply, and a live 'thinking' status",

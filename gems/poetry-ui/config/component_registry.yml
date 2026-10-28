@@ -2044,6 +2044,11 @@ components:
     - name: code-block-copy-button
       description: The copy button (copy:) - a ghost Button over the clipboard-text
         engine
+      states:
+      - attr: data-variant
+        condition: always - the composed Button's variant axis
+      - attr: data-size
+        condition: always - the composed Button's size axis
     - name: code-block-content
       description: The scroll container (a pre) - tabindex 0 + role region + its name
         (a scrollable region must be keyboard-reachable and named)

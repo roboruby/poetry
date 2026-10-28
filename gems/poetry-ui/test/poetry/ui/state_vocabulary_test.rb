@@ -32,6 +32,9 @@ module Poetry
         "placeholder" => "select trigger empty-value marker (server + JS)",
         "active" => "OTP caret cell / tab markers (JS)",
         "variant" => "server-rendered style variant marker",
+        "wrap" => "CodeBlock wrap: marker on the scroll container (server-rendered)",
+        "numbered" => "CodeBlock line_numbers: marker on the scroll container (server-rendered)",
+        "status" => "Trace step status: on the line - running/error/pending (server-rendered)",
         "inset" => "menu item inset marker (server-rendered)",
         "enhanced" => "date/time field progressive-enhancement marker " \
                       "(poetry--core--date-field via setAttribute)",

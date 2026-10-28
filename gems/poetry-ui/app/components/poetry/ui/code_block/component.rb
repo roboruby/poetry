@@ -99,7 +99,11 @@ module Poetry
         part "code-block-header", "The header row - the title, then the actions (rendered with a title)"
         part "code-block-title", "The header's title (with_title)"
         part "code-block-actions", "The actions - in the header row, or floating in the corner without one"
-        part "code-block-copy-button", "The copy button (copy:) - a ghost Button over the clipboard-text engine"
+        part "code-block-copy-button", "The copy button (copy:) - a ghost Button over the clipboard-text engine",
+             states: {
+               "data-variant" => "always - the composed Button's variant axis",
+               "data-size" => "always - the composed Button's size axis"
+             }
         part "code-block-content", "The scroll container (a pre) - tabindex 0 + role region + its name " \
                                    "(a scrollable region must be keyboard-reachable and named)",
              states: {
