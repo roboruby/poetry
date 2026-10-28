@@ -1,21 +1,27 @@
-<%# What follows a finished run: the interrupt's decision (run 2), the
-    handoff note while the browser runs the tool (run 1), or the replay
-    link. State is the URL, so every point is shareable. %>
+<%# What follows a finished run: the interrupt's decision (run 2) as an
+    approval prompt, the handoff note while the browser runs the tool
+    (run 1), or the replay link. State is the URL, so every point is
+    shareable. %>
 <% link = ->(q) { "#{page}?#{q.merge(instant: params[:instant].presence).compact.to_query}" } %>
 <% finished = index >= 4 || (index == 3 && decision == false) %>
-<div id="agui-relay-next" class="flex flex-wrap items-center gap-2 px-4 pb-4 text-xs text-muted-foreground">
+<div id="agui-relay-next" class="px-4 pb-4">
   <% if transcript.interrupted? %>
-    <span><%= transcript.interrupts.first["message"] %></span>
-    <%= poetry_button(size: :sm, href: link.call(s: 3, d: 1)) { "Approve" } %>
-    <%= poetry_button(size: :sm, variant: :outline, href: link.call(s: 3, d: 0)) { "Deny" } %>
-  <% elsif transcript.pending_client_tools.any? %>
-    <span>The browser is running <code><%= transcript.pending_client_tools.first[:name] %></code> through the registrar…</span>
-  <% elsif finished %>
-    <%= poetry_button(size: :sm, variant: :outline, href: link.call(s: 1)) { "Replay from the top" } %>
-  <% elsif index == 3 %>
-    <span>The trial card above is an A2UI surface the agent painted mid-stream; its form posts back into the run.</span>
-    <%= poetry_button(size: :sm, variant: :outline, href: link.call(s: 1)) { "Replay from the top" } %>
+    <%= render "poetry/docs/agent_activity/approval", icon: :"calendar-check",
+               title: transcript.interrupts.first["message"],
+               description: "The trial is free for 30 days; nothing is billed until it ends.",
+               approve: link.call(s: 3, d: 1), deny: link.call(s: 3, d: 0) %>
   <% else %>
-    <span>streaming…</span>
+    <div class="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+      <% if transcript.pending_client_tools.any? %>
+        <span>The browser is running <code><%= transcript.pending_client_tools.first[:name] %></code> through the registrar…</span>
+      <% elsif finished %>
+        <%= poetry_button(size: :sm, variant: :outline, href: link.call(s: 1)) { "Replay from the top" } %>
+      <% elsif index == 3 %>
+        <span>The trial card above is an A2UI surface the agent painted mid-stream; its form posts back into the run.</span>
+        <%= poetry_button(size: :sm, variant: :outline, href: link.call(s: 1)) { "Replay from the top" } %>
+      <% else %>
+        <span>streaming…</span>
+      <% end %>
+    </div>
   <% end %>
 </div>

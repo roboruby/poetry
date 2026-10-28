@@ -11,6 +11,7 @@ class ChatReplayTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, "What&#39;s the weather looking like in Tokyo"
     assert_includes response.body, 'id="row-chat-msg-2" data-version="0"'
+    assert_includes response.body, "Thinking", "the row waits as a running Thinking line"
     assert_includes response.body, "turbo-stream-source"
     assert_includes response.body, "/demos/chat-replay/stream?"
   end
@@ -26,12 +27,18 @@ class ChatReplayTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'action="vreplace" target="row-chat-msg-2"'
     assert_includes response.body, 'action="remove" target="chat-replay-source"'
     assert_includes response.body, "Send:"
+    assert_includes response.body, 'data-slot="trace"'
+    assert_includes response.body, "Thought"
+    assert_includes response.body, "Getting the weather for Tokyo"
+    assert_includes response.body, "Got the weather for Tokyo"
+    assert_includes response.body, "Saturday: clear, 21°C", "a finished call discloses its output"
   end
 
   test "the approval turn pauses and offers the decision" do
     get "/demos/chat-replay/stream?s=3"
 
-    assert_includes response.body, "awaiting approval"
+    assert_includes response.body, "Book the rooftop for Saturday?", "the paused tool asks as an approval prompt"
+    assert_includes response.body, 'data-slot="item"'
     assert_includes response.body, "Approve"
     assert_includes response.body, "/demos/chat-replay?a=1&amp;s=3"
     refute_includes response.body, "RT-204", "the continuation must not leak into the paused stream"
@@ -41,11 +48,12 @@ class ChatReplayTest < ActionDispatch::IntegrationTest
     get "/demos/chat-replay/stream?s=3&a=1"
 
     assert_includes response.body, "RT-204"
+    assert_includes response.body, "Booked the rooftop for Saturday"
     assert_includes response.body, "Replay from the top"
 
     get "/demos/chat-replay/stream?s=3&a=0"
 
-    assert_includes response.body, "denied"
+    assert_includes response.body, "Denied booking the rooftop for Saturday"
     refute_includes response.body, "RT-204"
   end
 
@@ -71,6 +79,7 @@ class ChatReplayTest < ActionDispatch::IntegrationTest
     get "/examples/demos/chat-replay/default?s=3&a=1"
 
     assert_response :success
-    assert_includes response.body, "awaiting approval"
+    assert_includes response.body, "Reserving the rooftop", "the continuation starts from the paused row"
+    refute_includes response.body, "Book the rooftop for Saturday?", "the decision is made, so nothing asks"
   end
 end

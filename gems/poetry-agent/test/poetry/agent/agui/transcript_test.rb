@@ -138,6 +138,28 @@ module Poetry
           assert_equal "ok", tool[:output]
           assert_equal :done, tool[:state]
           assert_equal :reasoning, transcript.message("r1").parts.first[:kind]
+          assert_equal :done, transcript.message("r1").parts.first[:state], "a snapshot's parts arrive whole"
+          assert_equal :done, transcript.message("a1").parts.first[:state]
+        end
+
+        def test_text_and_reasoning_parts_stream_until_they_close
+          transcript = Transcript.new
+          transcript.apply({ "type" => "REASONING_MESSAGE_START", "messageId" => "m1" })
+          transcript.apply({ "type" => "REASONING_MESSAGE_CONTENT", "messageId" => "m1", "delta" => "Think." })
+
+          assert_equal :streaming, transcript.message("m1").parts[0][:state]
+          assert_equal ["m1"], transcript.apply({ "type" => "REASONING_MESSAGE_END", "messageId" => "m1" }),
+                       "closing a part re-renders its row"
+          assert_equal :done, transcript.message("m1").parts[0][:state]
+          assert_empty transcript.apply({ "type" => "REASONING_MESSAGE_END", "messageId" => "m1" }),
+                       "a second END closes nothing"
+
+          transcript.apply({ "type" => "TEXT_MESSAGE_CHUNK", "messageId" => "m1", "delta" => "Hi" })
+
+          assert_equal :streaming, transcript.message("m1").parts[1][:state]
+          assert_equal ["m1"], transcript.apply({ "type" => "RUN_FINISHED", "threadId" => "t1", "runId" => "r1" }),
+                       "the run's end closes a chunked part that never saw an END"
+          assert_equal :done, transcript.message("m1").parts[1][:state]
         end
       end
     end

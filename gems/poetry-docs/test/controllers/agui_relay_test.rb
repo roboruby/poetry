@@ -26,7 +26,13 @@ class AguiRelayTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'action="append" target="agui-relay-scroller-messages"'
     assert_includes response.body, 'data-message-id="item-m1"'
     assert_includes response.body, 'action="vreplace" target="row-m1"'
-    assert_includes response.body, "lookup_plans"
+    assert_includes response.body, 'data-slot="trace"'
+    assert_includes response.body, "Thinking", "the reasoning shimmers while it streams"
+    assert_includes response.body, "Thought"
+    assert_includes response.body, "Looking up plans for 10 seats"
+    assert_includes response.body, "Looked up plans for 10 seats"
+    assert_includes response.body, "Team: $12 a seat, 5+ seats", "a finished call discloses its output"
+    assert_includes response.body, 'data-status="pending"'
     assert_includes response.body, "in the browser"
     assert_includes response.body, 'data-controller="poetry--agent--agui-client-tool"'
     assert_includes response.body, "poetry.sections.set_value"
@@ -41,7 +47,7 @@ class AguiRelayTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "text/vnd.turbo-stream.html", response.media_type
     assert_includes response.body, 'action="vreplace" target="row-m1"'
-    assert_includes response.body, "done"
+    assert_includes response.body, "Switched to the pricing tab"
     assert_includes response.body, "/demos/agui-relay/stream?"
     assert_includes response.body, "s=2"
   end
@@ -50,12 +56,14 @@ class AguiRelayTest < ActionDispatch::IntegrationTest
     get "/demos/agui-relay/stream?s=2"
 
     assert_includes response.body, "Start a 30-day Team trial"
+    assert_includes response.body, 'data-slot="item"', "the interrupt asks as an approval prompt"
     assert_includes response.body, "Approve"
     refute_includes response.body, "TR-3041", "the continuation must not leak into the paused stream"
 
     get "/demos/agui-relay/stream?s=3&d=1"
 
     assert_includes response.body, "TR-3041"
+    assert_includes response.body, "Started a 30-day Team trial"
     assert_includes response.body, "Replay from the top"
     assert_includes response.body, 'action="vreplace" target="row-m3" method="morph"'
     assert_includes response.body, 'id="a2ui-trial"'

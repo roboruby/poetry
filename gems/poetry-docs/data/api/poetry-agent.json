@@ -5538,7 +5538,7 @@
       "path": "Poetry::Agent::AGUI::Transcript",
       "type": "class",
       "superclass": "Object",
-      "docstring": "Folds an AG-UI event stream into what a chat page renders: the\nmessages in order, each assistant message as Chat-shaped parts\n(`{kind: :text, text:}`, `{kind: :reasoning, text:}`,\n`{kind: :tool, name:, input:, output:, state:, tool_call_id:}`),\nthe shared state (snapshots and JSON Patch deltas), activities,\nthe run's status, its interrupts, and the tool calls the browser\nmust execute before the next run.\n\nEvery change bumps {#version}, and {#apply} answers the ids of the\nmessages it touched, so a relay re-renders exactly those rows with\na monotonic version the page's versioned replace honors.",
+      "docstring": "Folds an AG-UI event stream into what a chat page renders: the\nmessages in order, each assistant message as Chat-shaped parts\n(`{kind: :text, text:, state:}`, `{kind: :reasoning, text:, state:}`,\n`{kind: :tool, name:, input:, output:, state:, tool_call_id:}`),\nthe shared state (snapshots and JSON Patch deltas), activities,\nthe run's status, its interrupts, and the tool calls the browser\nmust execute before the next run. A text or reasoning part is\n`state: :streaming` until its END event (or the run's end) closes\nit, then `:done` - the difference between \"Thinking\" and \"Thought\".\n\nEvery change bumps {#version}, and {#apply} answers the ids of the\nmessages it touched, so a relay re-renders exactly those rows with\na monotonic version the page's versioned replace honors.",
       "examples": [],
       "file": "lib/poetry/agent/agui/transcript.rb",
       "methods": [
@@ -5557,7 +5557,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 37
+          "line": 39
         },
         {
           "name": "apply",
@@ -5582,7 +5582,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 94
+          "line": 96
         },
         {
           "name": "apply_all",
@@ -5607,7 +5607,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 109
+          "line": 111
         },
         {
           "name": "client_tools",
@@ -5624,7 +5624,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 48
+          "line": 50
         },
         {
           "name": "custom_events",
@@ -5641,7 +5641,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 59
+          "line": 61
         },
         {
           "name": "ended?",
@@ -5658,7 +5658,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 132
+          "line": 134
         },
         {
           "name": "error",
@@ -5676,7 +5676,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 152
+          "line": 154
         },
         {
           "name": "frame",
@@ -5701,7 +5701,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 125
+          "line": 127
         },
         {
           "name": "initialize",
@@ -5726,7 +5726,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 73
+          "line": 75
         },
         {
           "name": "interrupted?",
@@ -5743,7 +5743,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 138
+          "line": 140
         },
         {
           "name": "interrupts",
@@ -5760,7 +5760,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 145
+          "line": 147
         },
         {
           "name": "message",
@@ -5786,7 +5786,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 117
+          "line": 119
         },
         {
           "name": "messages",
@@ -5803,7 +5803,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 27
+          "line": 29
         },
         {
           "name": "messages_for_input",
@@ -5820,7 +5820,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 163
+          "line": 165
         },
         {
           "name": "pending_client_tools",
@@ -5837,7 +5837,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 54
+          "line": 56
         },
         {
           "name": "resolve_client_tool",
@@ -5878,7 +5878,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 180
+          "line": 182
         },
         {
           "name": "run",
@@ -5895,7 +5895,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 43
+          "line": 45
         },
         {
           "name": "state",
@@ -5912,7 +5912,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 32
+          "line": 34
         },
         {
           "name": "unknown_events",
@@ -5929,7 +5929,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 64
+          "line": 66
         },
         {
           "name": "version",
@@ -5946,7 +5946,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 69
+          "line": 71
         }
       ],
       "constants": []
@@ -5974,7 +5974,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 22
+          "line": 24
         },
         {
           "name": "id=",
@@ -5999,7 +5999,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 22
+          "line": 24
         },
         {
           "name": "parts",
@@ -6016,7 +6016,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 22
+          "line": 24
         },
         {
           "name": "parts=",
@@ -6041,7 +6041,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 22
+          "line": 24
         },
         {
           "name": "role",
@@ -6058,7 +6058,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 22
+          "line": 24
         },
         {
           "name": "role=",
@@ -6083,7 +6083,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 22
+          "line": 24
         },
         {
           "name": "version",
@@ -6100,7 +6100,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 22
+          "line": 24
         },
         {
           "name": "version=",
@@ -6125,7 +6125,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 22
+          "line": 24
         }
       ],
       "constants": []

@@ -44,6 +44,18 @@ module Poetry
         assert_equal 500, tool_frames[1].sleep_ms
       end
 
+      test "text and reasoning parts stream until their last chunk's frame" do
+        turn = Chat.script do
+          assistant do |w|
+            w.reasoning "The weather tool has the weekend forecast."
+            w.text "Clear on Saturday."
+          end
+        end.segments.first.frames
+
+        assert_equal(%i[streaming streaming done done], turn.map { |f| f.parts[0][:state] })
+        assert_equal :done, turn.last.parts[1][:state]
+      end
+
       test "identical scripts compile identical timelines" do
         a = script.segments[1].frames.map { |f| [f.version, f.sleep_ms, f.parts] }
         b = script.segments[1].frames.map { |f| [f.version, f.sleep_ms, f.parts] }

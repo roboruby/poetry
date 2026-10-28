@@ -12,6 +12,14 @@
 - A page for each new icon set (Tabler, Hugeicons, Phosphor, Heroicons, Simple Icons) under /icons, with a live sample of every style, and the Lucide page updated for 1.57.0 and its aliases. The examples use `trash`, Lucide's current name for `trash-2`.
 - Pages for poetry-solar and poetry-blode under /icons; an icon set with an attribution gets an Attribution section with its visible credit line.
 
+### Changed
+
+- The AG-UI Relay and Chat Replay demos render agent activity on Trace and CodeBlock, after shadcn's Trace chat example. Each run of reasoning and tool calls is one Trace: reasoning reads "Thinking", open, while it streams and "Thought" after; a tool call's words and status follow its state ("Looking up plans", "Looked up plans", waiting in the browser, failed); a finished call discloses its input and output in small CodeBlocks. An approval is an Item prompt with Deny and Approve, and a Chat Replay turn waits as a running "Thinking" line. The AG-UI Relay page's partial samples show the same mapping.
+
+### Fixed
+
+- The AG-UI Relay demo's controls (the approval prompt, the replay link) follow the run's reply instead of sitting above it: each streamed message used to append after them.
+
 ## [0.1.13] - 2026-10-13
 
 ### Added

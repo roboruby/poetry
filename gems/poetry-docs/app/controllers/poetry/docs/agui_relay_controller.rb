@@ -14,6 +14,10 @@ module Poetry
       SOURCE_ID = "agui-relay-source"
       # The scroller's content element (MessageScroller renders "<id>-messages").
       SCROLLER_ID = "agui-relay-scroller-messages"
+      # The controls under the transcript. A run appends its rows to the
+      # scroller's content, so a stream removes the controls first and its
+      # closing streams append fresh ones after the rows; the stream source
+      # lives in the content beside them, never inside them.
       NEXT_ID = "agui-relay-next"
 
       # GET: the current run's events as Turbo Streams over SSE.
@@ -30,6 +34,7 @@ module Poetry
         relay = build_relay(transcript)
         relay.mark_seen(transcript.messages.map(&:id))
 
+        write_stream(Poetry::Agent::AGUI::TurboStream.remove(NEXT_ID))
         AguiReplay.events(index, decision: decision, email: email).each do |event|
           pause(event["_sleep"])
           relay.apply(event.except("_sleep")).each { |html| write_stream(html) }
@@ -51,7 +56,7 @@ module Poetry
         streams = [
           relay.stream_for(resolved.id),
           Poetry::Agent::AGUI::TurboStream.remove(SOURCE_ID),
-          Poetry::Agent::AGUI::TurboStream.append(NEXT_ID, source_tag(index + 1, tool_result: body["content"]))
+          Poetry::Agent::AGUI::TurboStream.append(SCROLLER_ID, source_tag(index + 1, tool_result: body["content"]))
         ].compact
         render body: streams.join, content_type: "text/vnd.turbo-stream.html"
       end
@@ -72,7 +77,7 @@ module Poetry
         if action&.valid?
           email = action.to_h.dig("action", "context", "email")
           streams = [ Poetry::Agent::AGUI::TurboStream.remove(SOURCE_ID),
-                      Poetry::Agent::AGUI::TurboStream.append(NEXT_ID, source_tag(4, email: email)) ]
+                      Poetry::Agent::AGUI::TurboStream.append(SCROLLER_ID, source_tag(4, email: email)) ]
           render body: streams.join, content_type: "text/vnd.turbo-stream.html"
         else
           html = render_row(row, row.version, surface_errors: action&.errors || {})
@@ -101,14 +106,15 @@ module Poetry
       end
 
       # After the last event: the client-tool bridge (run 1), the interrupt's
-      # decision (run 2), or the replay link - and the stream source removed
-      # so SSE does not reconnect and replay the run.
+      # decision (run 2), or the replay link, appended after the run's rows -
+      # and the stream source removed so SSE does not reconnect and replay
+      # the run.
       def closing_streams(relay, index, decision)
         streams = [ Poetry::Agent::AGUI::TurboStream.remove(SOURCE_ID) ]
         streams.concat(relay.client_tool_streams(continue_url: agui_relay_continue_path(s: index, page: page_path)))
         controls = render_to_string(partial: "poetry/docs/agui_relay/controls",
                                     locals: { transcript: relay.transcript, index: index, decision: decision, page: page_path })
-        streams << Poetry::Agent::AGUI::TurboStream.replace(NEXT_ID, controls)
+        streams << Poetry::Agent::AGUI::TurboStream.append(SCROLLER_ID, controls)
       end
 
       def source_tag(index, tool_result: nil, email: nil)

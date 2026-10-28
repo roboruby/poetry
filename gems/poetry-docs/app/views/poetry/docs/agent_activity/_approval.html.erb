@@ -1,0 +1,12 @@
+<%# A pending approval is a prompt, not activity, so it is an Item (after
+    shadcn@4.23.0's Trace chat example): the ask, what it does, and the two
+    answers. Both are plain GETs, since a relay's state is its URL. %>
+<%= poetry_item(variant: :outline, size: :sm, media_variant: :icon, class: "w-full") do |item| %>
+  <% item.with_media { poetry_icon(name: icon) } %>
+  <% item.with_title { title } %>
+  <% item.with_description { description } if description %>
+  <% item.with_actions do %>
+    <%= poetry_button(size: :sm, variant: :outline, href: deny) { "Deny" } %>
+    <%= poetry_button(size: :sm, href: approve) { "Approve" } %>
+  <% end %>
+<% end %>

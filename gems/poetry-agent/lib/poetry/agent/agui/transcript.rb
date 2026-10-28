@@ -7,11 +7,13 @@ module Poetry
     module AGUI
       # Folds an AG-UI event stream into what a chat page renders: the
       # messages in order, each assistant message as Chat-shaped parts
-      # (`{kind: :text, text:}`, `{kind: :reasoning, text:}`,
+      # (`{kind: :text, text:, state:}`, `{kind: :reasoning, text:, state:}`,
       # `{kind: :tool, name:, input:, output:, state:, tool_call_id:}`),
       # the shared state (snapshots and JSON Patch deltas), activities,
       # the run's status, its interrupts, and the tool calls the browser
-      # must execute before the next run.
+      # must execute before the next run. A text or reasoning part is
+      # `state: :streaming` until its END event (or the run's end) closes
+      # it, then `:done` - the difference between "Thinking" and "Thought".
       #
       # Every change bumps {#version}, and {#apply} answers the ids of the
       # messages it touched, so a relay re-renders exactly those rows with
@@ -297,7 +299,7 @@ module Poetry
           return [] unless id
 
           message = ensure_message(id, role)
-          part = { kind: kind, text: +"" }
+          part = { kind: kind, text: +"", state: :streaming }
           message.parts << part
           @open_text[[id, kind]] = part
           @current_message_id = id
@@ -312,7 +314,7 @@ module Poetry
           part = @open_text[[id, kind]]
           unless part
             ensure_message(id, "assistant")
-            part = { kind: kind, text: +"" }
+            part = { kind: kind, text: +"", state: :streaming }
             message(id).parts << part
             @open_text[[id, kind]] = part
           end
@@ -320,15 +322,23 @@ module Poetry
           [touch(id)]
         end
 
-        # Closes a message's open part.
+        # Closes a message's open part: it is done, and its row re-renders.
         def end_part(id, kind)
-          @open_text.delete([id || @current_message_id, kind])
-          []
+          id ||= @current_message_id
+          part = @open_text.delete([id, kind])
+          return [] unless part
+
+          part[:state] = :done
+          [touch(id)]
         end
 
         # A run's end closes streaming text and settles chunked tool calls
-        # that never saw an END event.
+        # that never saw an END event; the messages it closed re-render.
         def close_open_texts
+          closed = @open_text.map do |(id, _kind), part|
+            part[:state] = :done
+            id
+          end
           @open_text.clear
           @tool_args.each_key do |tool_call_id|
             part = @tool_parts[tool_call_id]
@@ -336,7 +346,7 @@ module Poetry
 
             part[:input] = parse_json(@tool_args[tool_call_id].to_s)
           end
-          []
+          closed.uniq.map { |id| touch(id) }
         end
 
         # --- tool calls ---
@@ -443,23 +453,25 @@ module Poetry
           id = wire["id"].to_s
           case wire["role"].to_s
           when "user", "system", "developer"
-            Message.new(id: id, role: wire["role"].to_s, parts: [{ kind: :text, text: wire["content"].to_s }],
-                        version: 0)
+            Message.new(id: id, role: wire["role"].to_s,
+                        parts: [{ kind: :text, text: wire["content"].to_s, state: :done }], version: 0)
           when "assistant" then snapshot_assistant(wire)
           when "tool" then snapshot_tool_result(wire)
           when "activity"
             part = { kind: :activity, activity_type: wire["activityType"], content: wire["content"] }
             Message.new(id: id, role: "activity", parts: [part], version: 0)
           when "reasoning"
-            Message.new(id: id, role: "assistant", parts: [{ kind: :reasoning, text: wire["content"].to_s }],
-                        version: 0)
+            Message.new(id: id, role: "assistant",
+                        parts: [{ kind: :reasoning, text: wire["content"].to_s, state: :done }], version: 0)
           end
         end
 
         # An assistant message rebuilt from its wire form, with its tool calls.
         def snapshot_assistant(wire)
           parts = []
-          parts << { kind: :text, text: wire["content"] } if wire["content"].is_a?(String) && !wire["content"].empty?
+          if wire["content"].is_a?(String) && !wire["content"].empty?
+            parts << { kind: :text, text: wire["content"], state: :done }
+          end
           Array(wire["toolCalls"]).each do |call|
             function = call["function"] || {}
             part = { kind: :tool, name: function["name"].to_s, input: parse_json(function["arguments"]),

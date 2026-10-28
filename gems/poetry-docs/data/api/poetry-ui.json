@@ -4443,7 +4443,7 @@
           "scope": "instance",
           "group": null,
           "signature": "stream_text(part)",
-          "docstring": "Streams a text or reasoning part a few words at a time, one frame per chunk.",
+          "docstring": "Streams a text or reasoning part a few words at a time, one frame\nper chunk. The part is state: :streaming until its last chunk's\nframe, which carries it :done.",
           "params": [
             {
               "name": "part",
@@ -4456,7 +4456,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 237
+          "line": 239
         },
         {
           "name": "stream_tool",
@@ -4476,7 +4476,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 251
+          "line": 255
         }
       ],
       "constants": []
@@ -4947,7 +4947,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 290
+          "line": 294
         },
         {
           "name": "reasoning",
@@ -4980,7 +4980,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 311
+          "line": 315
         },
         {
           "name": "text",
@@ -5013,7 +5013,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 300
+          "line": 304
         },
         {
           "name": "tool",
@@ -5074,7 +5074,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/chat.rb",
-          "line": 328
+          "line": 332
         }
       ],
       "constants": []

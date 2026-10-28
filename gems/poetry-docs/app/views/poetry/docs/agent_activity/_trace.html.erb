@@ -1,0 +1,37 @@
+<%# One run of reasoning and tool parts as a Trace (Poetry::Docs::AgentActivity
+    maps each part to a step). A step's detail is the reasoning text, the
+    tool's input and output in small CodeBlocks, or its error in a
+    destructive one. The ids (the trace's, and each block's off it) keep
+    the disclosures and their names stable across the row's re-renders,
+    and a replay byte-identical. %>
+<%= poetry_trace(id: id) do |trace| %>
+  <% parts.each_with_index do |part, position| %>
+    <% step = Poetry::Docs::AgentActivity.step(part) %>
+    <% options = { icon: step.icon, status: step.status, description: step.description, open: step.open || false } %>
+    <% if step.detail.nil? %>
+      <% trace.with_step(step.title, **options) %>
+    <% else %>
+      <% trace.with_step(step.title, **options) do %>
+        <% detail = step.detail %>
+        <% case detail[:kind] %>
+        <% when :reasoning %>
+          <p class="whitespace-pre-wrap"><%= detail[:text] %></p>
+        <% when :error %>
+          <%= poetry_code_block(code: detail[:text], variant: :destructive, size: :sm, wrap: true, copy: false,
+                                content_class: "max-h-64", label: "Error", id: "#{id}-#{position}-error") %>
+        <% else %>
+          <div class="flex flex-col gap-2">
+            <%= poetry_code_block(code: detail[:input], language: "json", size: :sm, wrap: true, copy: false,
+                                  content_class: "max-h-64", id: "#{id}-#{position}-input") do |block| %>
+              <% block.with_title { "Input" } %>
+            <% end %>
+            <%= poetry_code_block(code: detail[:output], language: detail[:output_language], size: :sm, wrap: true,
+                                  copy: false, content_class: "max-h-64", id: "#{id}-#{position}-output") do |block| %>
+              <% block.with_title { "Output" } %>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

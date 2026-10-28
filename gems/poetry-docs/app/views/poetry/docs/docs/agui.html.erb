@@ -85,23 +85,48 @@
     #{o} end #{e}
 
     #{o}# app/views/assistant/_row.html.erb - every later change replaces this element #{e}
+    #{o} steps = ->(part) { %i[reasoning tool].include?(part[:kind]) } #{e}
     <div id="row-#{o}= message.id #{e}" data-version="#{o}= version #{e}">
       #{o}= poetry_message(align: message.role == "user" ? :end : :start) do #{e}
-        #{o} message.parts.each do |part| #{e}
-          #{o} case part[:kind] #{e}
-          #{o} when :text #{e}
-            #{o}= poetry_bubble { part[:text] } #{e}
-          #{o} when :reasoning #{e}
-            <p class="text-xs italic text-muted-foreground">#{o}= part[:text] #{e}</p>
-          #{o} when :tool #{e}
-            <code>#{o}= part[:name] #{e}</code>
-            #{o}= poetry_badge { part[:state] } #{e}   #{o}# :loading, :awaiting_client, :done, :error #{e}
-          #{o} when :activity #{e}
-            #{o}= render "assistant/activity", part: part #{e}
+        #{o} message.parts.chunk_while { |a, b| steps.(a) && steps.(b) }.each_with_index do |run, index| #{e}
+          #{o} if steps.(run.first) #{e}
+            #{o}= render "assistant/trace", parts: run, id: "trace-\#{message.id}-\#{index}" #{e}
+          #{o} elsif run.first[:kind] == :text #{e}
+            #{o}= poetry_bubble { run.first[:text] } #{e}
+          #{o} else #{e}
+            #{o}= render "assistant/activity", part: run.first #{e}
           #{o} end #{e}
         #{o} end #{e}
       #{o} end #{e}
     </div>
+
+    #{o}# app/views/assistant/_trace.html.erb - reasoning and tool calls are one Trace's steps #{e}
+    #{o}= poetry_trace(id: id) do |trace| #{e}
+      #{o} parts.each do |part| #{e}
+        #{o} if part[:kind] == :reasoning #{e}
+          #{o} thinking = part[:state] == :streaming #{e}   #{o}# :streaming until it closes, then :done #{e}
+          #{o} trace.with_step(thinking ? "Thinking" : "Thought", icon: :brain, status: (:running if thinking), open: thinking) do #{e}
+            <p class="whitespace-pre-wrap">#{o}= part[:text] #{e}</p>
+          #{o} end #{e}
+        #{o} else #{e}
+          #{o}# :loading, :awaiting_client, :done, :error #{e}
+          #{o} case part[:state] #{e}
+          #{o} when :loading #{e}
+            #{o} trace.with_step("Running \#{part[:name]}", icon: :wrench, status: :running) #{e}
+          #{o} when :awaiting_client #{e}
+            #{o} trace.with_step("Running \#{part[:name]}", icon: :wrench, status: :pending, description: "in the browser") #{e}
+          #{o} when :error #{e}
+            #{o} trace.with_step("Failed to run \#{part[:name]}", icon: :wrench, status: :error) do #{e}
+              #{o}= poetry_code_block(code: part[:output]["error"].to_s, variant: :destructive, size: :sm, wrap: true, copy: false) #{e}
+            #{o} end #{e}
+          #{o} else #{e}
+            #{o} trace.with_step("Ran \#{part[:name]}", icon: :wrench) do #{e}
+              #{o}= poetry_code_block(code: part[:output].to_json, language: "json", size: :sm, wrap: true, copy: false) { |block| block.with_title { "Output" } } #{e}
+            #{o} end #{e}
+          #{o} end #{e}
+        #{o} end #{e}
+      #{o} end #{e}
+    #{o} end #{e}
   CODE
   continue_source = <<~CODE
     # POST /assistant/continue - the bridge's { toolCallId, name, content, error } JSON
@@ -220,7 +245,10 @@
         above. Two partials do the rendering: the item wraps a row in a scroller
         item on its first appearance, and the row is what every later change
         replaces. A row reads <code>message.parts</code> and renders each kind with
-        the chat components.
+        the chat components: text in a bubble, and each run of reasoning and tool
+        calls as one Trace, a step per part, its detail in a small CodeBlock.
+        The trace's <code>id:</code> keeps its disclosures stable across the
+        row's re-renders.
       </p>
     <% end %>
     <%= poetry_code_block(code: view_source, language: "erb", label: "The page") %>
@@ -231,7 +259,11 @@
         <code>:awaiting_client</code> when the browser must execute the call,
         <code>:done</code> with the <code>output</code>, <code>:error</code>
         when the agent reported one. Chunked argument deltas parse into
-        <code>input</code> once complete. Shared state folds into
+        <code>input</code> once complete. Text and reasoning parts carry
+        <code>:streaming</code> until their end event (or the run's end) closes
+        them, then <code>:done</code>: a reasoning step reads "Thinking", open
+        and shimmering, while it streams, and "Thought" once it closes. Shared
+        state folds into
         <code>transcript.state</code> through <code>STATE_SNAPSHOT</code> and
         <code>STATE_DELTA</code> patches, so a sidebar can render from it beside
         the messages.

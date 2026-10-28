@@ -5,6 +5,7 @@
 ### Added
 
 - `describe_component` prints one line per behavior the component uses.
+- The AG-UI `Transcript`'s text and reasoning parts carry `state:`: `:streaming` until their END event (or the run's end) closes them, then `:done`; a `MESSAGES_SNAPSHOT`'s parts arrive `:done`. Closing a part re-renders its row through the relay, so a reasoning step reads "Thinking" while it streams and "Thought" once it closes.
 
 ### Changed
 
