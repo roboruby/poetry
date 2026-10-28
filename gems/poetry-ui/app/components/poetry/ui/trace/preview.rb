@@ -15,17 +15,11 @@ module Poetry
           end
         end
 
-        # Steps with detail: one open over its tool output, one closed.
+        # Steps with detail: one open over its tool output, one closed. A
+        # per-example template (a nested component inside a block needs a
+        # view context - see Item's group note).
         def with_detail
-          render_component do |trace|
-            trace.with_step("Ran git status --short", icon: :terminal, description: "0.4s", open: true) do
-              render Poetry::Ui::CodeBlock::Component.new(code: " M app/models/invoice.rb\n?? db/migrate/\n",
-                                                          size: :sm, wrap: true, copy: false, label: "Output")
-            end
-            trace.with_step("Thought for 12 seconds", icon: :brain) do
-              tag.p("The overdue scope needs a due date, so the migration comes first.")
-            end
-          end
+          render_with_template(template: "poetry/ui/trace/with_detail_preview")
         end
       end
     end
