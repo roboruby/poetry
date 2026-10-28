@@ -34,8 +34,9 @@ module Poetry
           "with_title { \"path/to/file.rb\" } opens a header; the copy button moves into it."
         ].freeze
 
-        # The closed vocabularies.
+        # The closed vocabulary for the variant axis.
         VARIANTS = %i[default destructive].freeze
+        # The closed vocabulary for the size axis.
         SIZES = %i[default sm].freeze
 
         # The per-line variants (the theme's line tints).
@@ -207,6 +208,7 @@ module Poetry
           diff ? raw.map { |line| line[1..].to_s } : raw
         end
 
+        # The variant of the line at index: a diff marker first, then highlight_lines:.
         def line_variant(index)
           if diff
             marker = CodeBlockHighlighter.source_lines(code)[index].to_s[0]
@@ -216,10 +218,12 @@ module Poetry
           highlighted_positions.include?(index + 1) ? :highlighted : :default
         end
 
+        # The 1-based positions highlight_lines: names.
         def highlighted_positions
           @highlighted_positions ||= Array(highlight_lines).map(&:to_i)
         end
 
+        # The scroll region's name: label:, else the title, else the localized "Code".
         def region_name
           return { "aria-label" => label } if label.present?
           return { "aria-labelledby" => title_id } if title?
@@ -232,6 +236,7 @@ module Poetry
         # the code element.
         def copy_text = diff ? code.to_s : ""
 
+        # The localized announcement after a copy.
         def copied_message_text = t("poetry.clipboard_text.copied")
 
         private :content_attributes, :code_attributes, :lines, :code_markup, :line_class, :header?,

@@ -38,6 +38,8 @@ module Poetry
           "href: makes a step a link (a source, a file the agent changed)."
         ].freeze
 
+        # The required slots, stated statically so static checks can flag
+        # a missing step without rendering.
         REQUIRED_SLOTS = { step: "at least one step (with_step(title, ...))" }.freeze
 
         # The closed vocabulary for a step's status.
@@ -106,6 +108,7 @@ module Poetry
 
         private
 
+        # One step's markup: a line, a line in a link, or a disclosure over its detail.
         def step_markup(title, icon:, description:, status:, href:, open:, detail:)
           if status && !STATUSES.include?(status.to_sym)
             raise ArgumentError,
@@ -118,6 +121,7 @@ module Poetry
           href ? content_tag(:a, line, href:) : line
         end
 
+        # The step's row: the icon, the title and the description.
         def line_markup(title, icon:, description:, status:)
           parts = []
           parts << icon_markup(icon) if icon
@@ -126,12 +130,14 @@ module Poetry
           content_tag(:span, safe_join(parts), **element_attributes(:line, { "data-status" => status&.to_s }.compact))
         end
 
+        # A trace icon around a poetry Icon (aria-hidden), with extra classes for the chevron.
         def icon_markup(name, extra = nil)
           attrs = { "aria-hidden" => "true" }
           attrs["class"] = [css(:icon), extra].compact.join(" ") if extra
           content_tag(:span, render(Icon::Component.new(name:)), **element_attributes(:icon, attrs))
         end
 
+        # A step with detail on the Collapsible contract: the trigger around the line, then the panel.
         def collapsible_markup(line, open:, detail:)
           state = open ? "open" : "closed"
           content_id = "#{poetry_instance_id("poetry-trace")}-step-#{step_counter}-content"
@@ -147,6 +153,7 @@ module Poetry
           content_tag(:div, trigger + panel, **element_attributes(:collapsible, { "data-#{state}" => "" }))
         end
 
+        # Numbers the disclosures within this trace, for their panel ids.
         def step_counter
           @step_counter = (@step_counter || 0) + 1
         end
