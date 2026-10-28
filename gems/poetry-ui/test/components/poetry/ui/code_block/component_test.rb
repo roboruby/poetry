@@ -143,6 +143,14 @@ module Poetry
           assert_includes root["class"], "cn-code-block-variant-destructive"
         end
 
+        def test_content_class_lands_on_the_scroll_container
+          fragment = render_block(content_class: "max-h-64", class: "w-80")
+
+          assert_includes fragment.at_css("pre")["class"].split, "max-h-64"
+          assert_includes fragment.at_css("pre")["class"].split, "cn-code-block-content"
+          refute_includes fragment.at_css('[data-slot="code-block"]')["class"].split, "max-h-64"
+        end
+
         def test_rejects_an_unknown_size
           assert_raises(ArgumentError) { render_block(size: :lg) }
         end

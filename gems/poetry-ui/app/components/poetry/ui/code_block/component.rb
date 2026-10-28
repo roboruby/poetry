@@ -85,6 +85,9 @@ module Poetry
                                      "their marker drawn by the theme; copy keeps the markers."
         option :wrap, :boolean, default: false, doc: "Wraps long lines instead of scrolling sideways."
         option :copy, :boolean, default: true, doc: "Renders the copy button."
+        option :content_class, :string,
+               doc: "Class merge seam for the scroll container - e.g. content_class: \"max-h-64\" caps the " \
+                    "height so long output scrolls inside the block. Root-level class: styles the panel."
 
         validates :size, inclusion: { in: SIZES }
         validates :start_line, numericality: { only_integer: true, greater_than_or_equal_to: 1 }
@@ -134,6 +137,7 @@ module Poetry
           attrs["data-wrap"] = "" if wrap
           attrs["data-numbered"] = "" if line_numbers
           attrs["style"] = "counter-reset: line #{start_line - 1}" if line_numbers && start_line != 1
+          attrs["class"] = css(:content, class: content_class) if content_class.present?
           element_attributes(:content, attrs)
         end
 
