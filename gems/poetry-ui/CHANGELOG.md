@@ -4,6 +4,7 @@
 
 ### Added
 
+- Collapsible takes `content_class:` for its panel, and its part contract documents the size vars and the `data-starting-style` / `data-ending-style` pair: `content_class: "h-(--collapsible-panel-height) overflow-hidden transition-[height] data-starting-style:h-0 data-ending-style:h-0"` animates the panel's height (new `animated` preview and docs example).
 - `poetry:install` registers the island controller and pins `app/javascript/islands/` as `islands/*` when poetry-island is bundled, once each; `poetry:add` pins `app/javascript/community/` as `community/*` once when an item brings a module there (an island's bundle, a kernel), and credits every origin of an item that names several in `THIRD_PARTY_NOTICES.md`, each with its license text.
 - The Attachment preview's whole-chip trigger carries its text for screen readers only, as `poetry_attachment_for` does; the chip is the visible control.
 

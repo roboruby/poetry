@@ -1927,7 +1927,7 @@
     }
   },
   "poetry--core--state": {
-    "doc": "The controllable-state controller: seeds the data-open/ data-closed pair from a Value default when no other layer owns it, and exposes toggle/open/close actions. \"Controlled vs uncontrolled\" is just which layer wrote the attribute - a server re-render, the URL, an Outlet, or this default - the controller code is identical either way.\n\nOptional reflection targets (the Collapsible contract): a trigger target mirrors aria-expanded; a content target rides the presence helper (the pair flip deferred through animationend, hidden applied only after the exit animation finishes).",
+    "doc": "The controllable-state controller: seeds the data-open/ data-closed pair from a Value default when no other layer owns it, and exposes toggle/open/close actions. \"Controlled vs uncontrolled\" is just which layer wrote the attribute - a server re-render, the URL, an Outlet, or this default - the controller code is identical either way.\n\nOptional reflection targets (the Collapsible contract): a trigger target mirrors aria-expanded; a content target rides the presence helper (the pair flip deferred through animationend, hidden applied only after the exit animation finishes) and carries the measured --collapsible-panel-height / --collapsible-panel-width while it opens or closes (auto at rest), so a height transition can animate it.",
     "targets": [
       "content",
       "trigger"
@@ -1949,10 +1949,10 @@
     ],
     "events": [],
     "method_docs": {
-      "close": "Closes: flips the pair and holds the content target through its exit animation before hiding it (the presence contract).",
+      "close": "Closes: flips the pair and holds the content target through its exit animation before hiding it (the presence contract), the exit starting from the measured size.",
       "connect": "Seeds the pair from the Value default when no other layer wrote it, then reflects the current state onto the optional targets.",
       "disconnect": "Abandons any exit animation still holding the content.",
-      "open": "Opens: flips the pair, unhides the content target (when present) and runs its entry presence, mirrors aria-expanded onto the trigger.",
+      "open": "Opens: flips the pair, unhides the content target (when present), measures it into the size vars and runs its entry presence, then returns the vars to auto once the entry settles; mirrors aria-expanded onto the trigger.",
       "toggle": "The toggle action: open when closed, close when open."
     }
   },

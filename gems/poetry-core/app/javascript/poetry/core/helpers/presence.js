@@ -183,6 +183,23 @@ export function exitPresence(element, { onRemove, measure = false, property } = 
   }
 }
 
+/**
+ * How long the element's declared motion runs (ms): the longer of its
+ * animation and transition, delays included, plus the end-event grace;
+ * 0 when it declares none.
+ *
+ * @param {HTMLElement} element
+ * @returns {number} the wait before the motion has surely finished
+ */
+export function presenceMotionMs(element) {
+  const style = getComputedStyle(element)
+  const total = Math.max(
+    maxTimeMs(style.animationDuration) + maxTimeMs(style.animationDelay),
+    maxTimeMs(style.transitionDuration) + maxTimeMs(style.transitionDelay)
+  )
+  return total > 0 ? total + EXIT_TIMEOUT_GRACE : 0
+}
+
 // jsdom (and a bare node) report animationName as "" - treat it as "none".
 function hasExitAnimation(element) {
   const style = getComputedStyle(element)

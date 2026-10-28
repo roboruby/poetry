@@ -4,6 +4,7 @@
 
 ### Added
 
+- The state controller's content target (the Collapsible contract) carries Base UI's `--collapsible-panel-height` and `--collapsible-panel-width`: measured while the panel opens or closes, `auto` at rest, so a height transition can animate the panel both ways and content that grows after the open is never clipped. The entry's starting style goes on while the panel is still hidden, and an open that interrupts a close runs on from where the panel is. The presence helper exports `presenceMotionMs`.
 - `poetry check` warns on a `poetry_island` whose `import:` the host's importmap does not pin, exactly or as a `pin_all_from` prefix (`island-import-unpinned`), and reads a `pin_all_from` whose `under:` wraps onto the next line; the skill carries `references/islands.md` when poetry-island is bundled.
 - A registry item credits several origins: `meta.sources` (a bundle with its libraries inside) beside the one `meta.source`; the install plan's provenance carries every origin, and the manifest records them as `origins`.
 

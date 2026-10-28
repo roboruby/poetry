@@ -2006,6 +2006,10 @@ components:
     bem_block: poetry-ui-collapsible
     styles: []
     options:
+    - name: content_class
+      type: string
+      description: 'Class merge seam for the panel - e.g. the height animation over
+        --collapsible-panel-height. Root-level class: styles the root, not the panel.'
     - name: open
       type: boolean
       default: false
@@ -2048,6 +2052,10 @@ components:
       it.
     - 'For URL-controlled disclosure without JS, render open: from params - the same
       markup serves both.'
+    - 'To animate the panel''s height, pass content_class: "h-(--collapsible-panel-height)
+      overflow-hidden transition-[height] data-starting-style:h-0 data-ending-style:h-0"
+      - the controller measures the panel into --collapsible-panel-height while it
+      opens or closes and sets it back to auto at rest.'
     requires_content: the disclosed panel body
     required_slots:
       trigger: the disclosure control
@@ -2071,13 +2079,24 @@ components:
         condition: always - the composed Button's size axis
     - name: collapsible-content
       description: The disclosure panel - stays in the DOM when closed (hidden) and
-        rides the presence helper on exit
+        rides the presence helper on entry and exit
       states:
       - attr: data-open
         condition: content is open or entering
       - attr: data-closed
         condition: content is closed or animating out (hidden lands after the exit
           finishes)
+      - attr: data-starting-style
+        condition: the first painted frame of an entry (controller-written)
+      - attr: data-ending-style
+        condition: the whole exit, until hidden lands (controller-written)
+      vars:
+      - name: "--collapsible-panel-height"
+        description: the measured panel height while it opens or closes, auto at rest
+          (controller-written)
+      - name: "--collapsible-panel-width"
+        description: the measured panel width while it opens or closes, auto at rest
+          (controller-written)
     stimulus:
     - element: root
       controllers:

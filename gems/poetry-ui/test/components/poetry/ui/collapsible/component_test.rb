@@ -45,6 +45,16 @@ module Poetry
           refute_match(/<div[^>]*data-slot="collapsible-content"[^>]*hidden/, html)
         end
 
+        def test_content_class_lands_on_the_panel_not_the_root
+          animated = "h-(--collapsible-panel-height) overflow-hidden transition-[height]"
+          fragment = Nokogiri::HTML5.fragment(render_collapsible(content_class: animated, class: "w-full"))
+          panel = fragment.at_css('[data-slot="collapsible-content"]')
+
+          assert_equal animated, panel["class"]
+          assert_equal "poetry--core--state", panel.ancestors("[data-slot=collapsible]").first["data-controller"]
+          refute_includes fragment.at_css('[data-slot="collapsible"]')["class"].to_s, "transition-[height]"
+        end
+
         def test_trigger_is_required
           assert_raises(ArgumentError) { render_inline(Component.new) { "content only" } }
         end
