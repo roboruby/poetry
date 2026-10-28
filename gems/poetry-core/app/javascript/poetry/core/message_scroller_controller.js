@@ -138,6 +138,8 @@ export default class extends Controller {
     // Layout is known once a resize observation has run (or right away
     // where there is no observer to wait for).
     this.layoutObserved = typeof ResizeObserver === "undefined"
+    // The scrollTop the last state commit saw: a release needs a move up from it.
+    this.lastScrollTop = 0
     this.spacerHeight = 0
     this.spacerGap = getFlexGap(this.#spacer()?.parentElement ?? null)
     this.handledScrollAnchors = new WeakSet()
@@ -408,13 +410,28 @@ export default class extends Controller {
   }
 
   // Owns the one follow-bottom transition: ARM at the bottom (however you got
-  // there), RELEASE on any scroll away (including a scrollbar drag) -
+  // there), RELEASE on a scroll away (including a scrollbar drag) -
   // suppressed while autoscrolling so a programmatic scroll cannot release
-  // itself, and never arming over an in-flight settling-jump.
+  // itself, and never arming over an in-flight settling-jump. Only a move UP
+  // is a scroll away: content growing past the live edge also reads as "not
+  // at the end", and the reader did not move. Nor is a move up that leaves
+  // the viewport at the end of its own scroll range: that is the range
+  // shrinking under it (a layout that briefly loses its overflow - a
+  // full-page capture, a print pass - clamps scrollTop while the rows can
+  // still measure below the fold). The resize handler re-pins either way.
   #reconcileFollowMode(scrollable) {
+    const viewport = this.#viewport()
+    const scrollTop = viewport?.scrollTop ?? 0
+    const scrolledUp =
+      Boolean(viewport) &&
+      scrollTop < this.lastScrollTop - SCROLL_POSITION_EPSILON &&
+      scrollTop < getMaxScrollTop(viewport) - SCROLL_POSITION_EPSILON
+
+    this.lastScrollTop = scrollTop
+
     if (this.autoScrollValue && !scrollable.end && this.mode !== "settling-jump") {
       this.#setMode("following-bottom")
-    } else if (this.mode === "following-bottom" && scrollable.end && !this.autoscrolling) {
+    } else if (this.mode === "following-bottom" && scrollable.end && scrolledUp && !this.autoscrolling) {
       this.#setMode("free-scrolling", { reason: "scroll-away" })
     }
   }

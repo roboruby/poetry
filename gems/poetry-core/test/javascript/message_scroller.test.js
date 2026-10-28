@@ -232,15 +232,30 @@ describe("poetry--core--message-scroller", () => {
   })
 
   describe("follow-bottom arm / release (reconcile)", () => {
+    // Settled at the end of a long transcript (the last commit saw scrollTop 400).
+    function settleAtEnd({ viewport, rowElements, metrics }) {
+      Object.assign(metrics, { scrollHeight: 600, scrollTop: 400 })
+      setRect(rowElements[1], { top: -300, height: 500 })
+      viewport.dispatchEvent(new Event("scroll"))
+    }
+
+    // A scrollbar drag up: scrollTop drops, the row (content y 100..600) moves
+    // down with it, and only a scroll event fires (no wheel, touch or key).
+    function dragUp({ viewport, rowElements, metrics }, to = 100) {
+      metrics.scrollTop = to
+      setRect(rowElements[1], { top: 100 - to, height: 500 })
+      viewport.dispatchEvent(new Event("scroll"))
+    }
+
     it("releases to free-scrolling on scroll away, with an unpinned scroll-away reason", async () => {
-      const { root, viewport, rowElements } = await mount({
+      const mounted = await mount({
         rows: [{ id: "m1", top: 0, height: 100 }, { id: "m2", top: 100, height: 100 }]
       })
+      const { root } = mounted
+      settleAtEnd(mounted)
       const events = recordEvents(root, "mode", "unpinned")
 
-      // Overflow appears below the viewport (a scrollbar drag away from the end).
-      setRect(rowElements[1], { top: 100, height: 400 })
-      viewport.dispatchEvent(new Event("scroll"))
+      dragUp(mounted)
 
       expect(root.dataset.mode).toBe("free-scrolling")
       expect(events).toContainEqual({
@@ -251,45 +266,104 @@ describe("poetry--core--message-scroller", () => {
     })
 
     it("re-arms (pinned) when the viewport reaches the bottom again, however it got there", async () => {
-      const { root, viewport, rowElements } = await mount({
+      const mounted = await mount({
         rows: [{ id: "m1", top: 0, height: 100 }, { id: "m2", top: 100, height: 100 }]
       })
-
-      setRect(rowElements[1], { top: 100, height: 400 })
-      viewport.dispatchEvent(new Event("scroll"))
+      const { root } = mounted
+      settleAtEnd(mounted)
+      dragUp(mounted)
       expect(root.dataset.mode).toBe("free-scrolling")
 
       const events = recordEvents(root, "pinned")
-      setRect(rowElements[1], { top: 100, height: 100 })
-      viewport.dispatchEvent(new Event("scroll"))
+      dragUp(mounted, 400)
 
       expect(root.dataset.mode).toBe("following-bottom")
       expect(events).toHaveLength(1)
     })
 
-    it("suppresses the release while autoscrolling, then releases after the 180ms clear", async () => {
-      const { root, viewport, rowElements, metrics, controller } = await mount({
+    it("a layout that briefly loses its overflow never releases - the browser's clamp is not a scroll away", async () => {
+      const mounted = await mount({
         rows: [{ id: "m1", top: 0, height: 100 }, { id: "m2", top: 100, height: 100 }]
       })
+      const { root, viewport, rowElements, metrics } = mounted
+      const [viewportResizeObserver] = ResizeObserverStub.instances
+      settleAtEnd(mounted)
+      const events = recordEvents(root, "unpinned")
+
+      // A transient layout (a full-page capture, a print pass) drops the
+      // overflow: the browser clamps scrollTop to 0 and the viewport resizes,
+      // while the last row still measures below the fold (what Chrome reports
+      // mid-capture). The clamp's commit sees a move up with content below.
+      Object.assign(metrics, { scrollHeight: 200, scrollTop: 0 })
+      setRect(rowElements[1], { top: 100, height: 500 })
+      viewportResizeObserver.callback()
+
+      // The layout comes back with the content below; the clamp's scroll
+      // event arrives before the resize.
+      metrics.scrollHeight = 600
+      setRect(rowElements[1], { top: 100, height: 500 })
+      viewport.dispatchEvent(new Event("scroll"))
+
+      expect(root.dataset.mode).toBe("following-bottom")
+      expect(events).toHaveLength(0)
+
+      viewportResizeObserver.callback()
+      expect(metrics.scrollTop).toBe(400)
+    })
+
+    it("suppresses the release while autoscrolling; the 180ms clear alone never releases", async () => {
+      const mounted = await mount({
+        rows: [{ id: "m1", top: 0, height: 100 }, { id: "m2", top: 100, height: 100 }]
+      })
+      const { root, viewport, rowElements, metrics, controller } = mounted
+      settleAtEnd(mounted)
       const events = recordEvents(root, "unpinned")
 
       // Content grows; a programmatic follow move starts (sets the flag).
-      setRect(rowElements[1], { top: 100, height: 400 })
-      metrics.scrollHeight = 600
+      metrics.scrollHeight = 800
+      setRect(rowElements[1], { top: -300, height: 700 })
       controller.scrollToEnd()
 
       expect(root.hasAttribute("data-autoscrolling")).toBe(true)
 
-      // Mid-animation the geometry still reads scrolled-away: no release.
+      // Mid-animation a frame reads scrollTop up and the content still below
+      // (the content shifting under the move): not the reader's, no release.
+      metrics.scrollTop = 300
+      setRect(rowElements[1], { top: -200, height: 700 })
       viewport.dispatchEvent(new Event("scroll"))
       expect(root.dataset.mode).toBe("following-bottom")
       expect(events).toHaveLength(0)
 
-      // 180ms after the move the flag clears; the clear's own commit releases.
+      // 180ms after the move the flag clears. The reader has not moved since,
+      // so the clear's own commit keeps following.
       await new Promise((resolve) => setTimeout(resolve, 250))
-      expect(root.dataset.mode).toBe("free-scrolling")
       expect(root.hasAttribute("data-autoscrolling")).toBe(false)
+      expect(root.dataset.mode).toBe("following-bottom")
+
+      // A drag up after the clear releases.
+      metrics.scrollTop = 100
+      setRect(rowElements[1], { top: 0, height: 700 })
+      viewport.dispatchEvent(new Event("scroll"))
+      expect(root.dataset.mode).toBe("free-scrolling")
       expect(events).toEqual([{ name: "unpinned", detail: { reason: "scroll-away" } }])
+    })
+
+    it("content growth a commit sees before the resize handler keeps following", async () => {
+      const mounted = await mount({
+        rows: [{ id: "m1", top: 0, height: 100 }, { id: "m2", top: 100, height: 100 }]
+      })
+      const { root, viewport, rowElements, metrics } = mounted
+      settleAtEnd(mounted)
+
+      // A streamed chunk grows the last row past the live edge; a scroll event
+      // commits before the resize handler has followed.
+      metrics.scrollHeight = 760
+      setRect(rowElements[1], { top: -300, height: 660 })
+      viewport.dispatchEvent(new Event("scroll"))
+      expect(root.dataset.mode).toBe("following-bottom")
+
+      ResizeObserverStub.instances[1].callback()
+      expect(metrics.scrollTop).toBe(560)
     })
   })
 
