@@ -26,6 +26,7 @@
 
 ### Fixed
 
+- A Slider drag ends on `pointercancel` as it does on `pointerup` (Base UI #5639): a drag the browser or OS cancelled used to leave the thumb following the next pointer anywhere on the page, committing wherever the next release landed.
 - A typeahead search no longer outlives the list it was typed in (Base UI #5816): opening a Select drops a search typed on the closed trigger, and closing a submenu drops the search typed inside it, so the first Space after either commits or opens instead of being taken as part of the search.
 - Roving focus (Tabs, Toolbar, ToggleGroup, RadioGroup, TagGroup, the menus, Select) leaves Ctrl, Alt and Meta + arrow to the platform and assistive tech, as Base UI's composites do, and an arrow with nowhere to go (a clamped edge, a lone enabled item) no longer re-enters the focused item, so a radio group no longer checks an item on an arrow that could not move (Base UI #5643).
 - The vendored shadcn utilities (`vendor/shadcn-tailwind/tailwind.css`, the host's `poetry/utilities.css`) move to shadcn@4.23.0, where the shimmer's reduced-motion kill rides its variants: a shimmer applied through a variant, as Attachment's uploading and processing titles do, now stops for users who ask for reduced motion. Re-run `poetry:install` to take it.

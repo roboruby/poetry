@@ -279,6 +279,24 @@ describe("poetry--core--slider", () => {
       expect(nativeChanges).toEqual(["45"])
     })
 
+    it("pointercancel ends the drag and commits: a later pointer no longer steers the thumb (Base UI #5639)", () => {
+      const commits = []
+      el("slider").addEventListener("poetry:slider:commit", (event) => commits.push(event.detail))
+
+      pointer(el("slider"), "pointerdown", { x: 30 })
+      pointer(window, "pointermove", { x: 40 })
+      pointer(window, "pointercancel", {})
+
+      expect(commits).toEqual([{ value: [40] }])
+      expect(el("slider").hasAttribute("data-dragging")).toBe(false)
+
+      pointer(window, "pointermove", { x: 90 }) // a hover after the cancel
+      pointer(window, "pointerup", {})
+
+      expect(inputs()).toEqual(["40"])
+      expect(commits).toEqual([{ value: [40] }])
+    })
+
     it("keyboard commits per keydown (Radix-exact) and syncs the input", () => {
       const commits = []
       el("slider").addEventListener("poetry:slider:commit", (event) => commits.push(event.detail))
