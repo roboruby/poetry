@@ -102,7 +102,7 @@ poetry:
     4xl: calc(var(--radius) * 2.6)
   typography_pairing: 'system mono (upstream: JetBrains Mono, radius none)'
   treatment: the lyra treatment (flat, mono-biased), ported from the source style-lyra.css
-    at pin shadcn@4.21.0 (7c9eaba1)
+    at pin shadcn@4.23.0 (96da9cc7)
   components_count: 89
   components_pointer: "/poetry/llms.txt"
   contrast_policy:
@@ -126,7 +126,7 @@ poetry lyra - semantic role tokens (shared across every poetry theme) under the 
 ## Overview
 
 - design system: poetry - server-rendered Rails components (ViewComponent + Stimulus + Tailwind v4)
-- theme: lyra - the lyra treatment (flat, mono-biased), ported from the source style-lyra.css at pin shadcn@4.21.0 (7c9eaba1)
+- theme: lyra - the lyra treatment (flat, mono-biased), ported from the source style-lyra.css at pin shadcn@4.23.0 (96da9cc7)
 - token source: one DTCG file shared by every poetry theme (`tokens/tokens.dtcg.json`);
   themes are component-treatment layers, not palettes
 - dark mode: the `.dark` class - both modes ship in this file

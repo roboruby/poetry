@@ -22609,7 +22609,7 @@
         },
         {
           "name": "PORTED",
-          "value": "\"ported from the source style-%s.css at pin shadcn@4.21.0 (7c9eaba1)\"",
+          "value": "\"ported from the source style-%s.css at pin shadcn@4.23.0 (96da9cc7)\"",
           "docstring": "The provenance line template for ported treatments,\nformat-interpolated with the upstream style name."
         },
         {
