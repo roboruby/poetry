@@ -40,8 +40,11 @@ module Poetry
         #   item); defaults to `render`
         # @param morph [Boolean] update a row by morphing it (the stream's
         #   `method="morph"`) instead of replacing the element
+        # @param remove_targets [#call, nil] `(id) -> String` a CSS selector for what a
+        #   message the transcript dropped (a snapshot renamed or left it out) takes
+        #   off the page - the list wrapper around its row; defaults to the row itself
         def initialize(transcript:, render:, container: nil, target: ->(message) { "row-#{message.id}" }, # rubocop:disable Metrics/ParameterLists
-                       action: "vreplace", append_render: nil, morph: false)
+                       action: "vreplace", append_render: nil, morph: false, remove_targets: nil)
           @transcript = transcript
           @render = render
           @append_render = append_render || render
@@ -49,6 +52,7 @@ module Poetry
           @target = target
           @action = action
           @morph = morph
+          @remove_targets = remove_targets
           @seen = {}
         end
 
@@ -72,13 +76,14 @@ module Poetry
           self
         end
 
-        # The stream for one message id (nil when the message is unknown).
+        # The stream for one message id: an append or an update, a removal when
+        # the transcript dropped a message the page shows, nil when it is unknown.
         #
         # @param id [String]
         # @return [String, nil]
         def stream_for(id)
           message = @transcript.message(id)
-          return nil unless message
+          return removal(id) unless message
 
           first = !@seen[id]
           @seen[id] = true
@@ -102,6 +107,17 @@ module Poetry
                       "data-#{CLIENT_TOOL_CONTROLLER}-url-value=\"#{TurboStream.escape(continue_url)}\"></div>"
             TurboStream.append(container, element)
           end
+        end
+
+        private
+
+        # The stream that takes a dropped message's row off the page, once.
+        def removal(id)
+          return nil unless @seen.delete(id)
+
+          return TurboStream.remove_all(@remove_targets.call(id)) if @remove_targets
+
+          TurboStream.remove(@target.call(Transcript::Message.new(id: id)))
         end
       end
     end

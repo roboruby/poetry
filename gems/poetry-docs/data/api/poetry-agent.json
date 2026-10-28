@@ -5011,7 +5011,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/relay.rb",
-          "line": 61
+          "line": 65
         },
         {
           "name": "client_tool_streams",
@@ -5043,13 +5043,13 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/relay.rb",
-          "line": 96
+          "line": 101
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(transcript:, render:, container: nil, target: ->(message) { \"row-#{message.id}\" }, # rubocop:disable Metrics/ParameterLists action: \"vreplace\", append_render: nil, morph: false)",
+          "signature": "initialize(transcript:, render:, container: nil, target: ->(message) { \"row-#{message.id}\" }, # rubocop:disable Metrics/ParameterLists action: \"vreplace\", append_render: nil, morph: false, remove_targets: nil)",
           "docstring": "A relay over a transcript, with the row renderer, container, target and stream action.",
           "params": [
             {
@@ -5102,6 +5102,14 @@
                 "Boolean"
               ],
               "text": "update a row by morphing it (the stream's\n`method=\"morph\"`) instead of replacing the element"
+            },
+            {
+              "name": "remove_targets",
+              "types": [
+                "#call",
+                "nil"
+              ],
+              "text": "`(id) -> String` a CSS selector for what a\nmessage the transcript dropped (a snapshot renamed or left it out) takes\noff the page - the list wrapper around its row; defaults to the row itself"
             }
           ],
           "return": {
@@ -5112,7 +5120,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/relay.rb",
-          "line": 43
+          "line": 46
         },
         {
           "name": "mark_seen",
@@ -5137,14 +5145,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/relay.rb",
-          "line": 70
+          "line": 74
         },
         {
           "name": "stream_for",
           "scope": "instance",
           "group": null,
           "signature": "stream_for(id)",
-          "docstring": "The stream for one message id (nil when the message is unknown).",
+          "docstring": "The stream for one message id: an append or an update, a removal when\nthe transcript dropped a message the page shows, nil when it is unknown.",
           "params": [
             {
               "name": "id",
@@ -5163,7 +5171,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/relay.rb",
-          "line": 79
+          "line": 84
         },
         {
           "name": "transcript",
@@ -5591,6 +5599,36 @@
           "line": 42
         },
         {
+          "name": "add_message",
+          "scope": "instance",
+          "group": null,
+          "signature": "add_message(wire)",
+          "docstring": "Records a message the host itself sends - its user turn, a tool\nresult, a system prompt - so {#messages_for_input} carries the whole\nconversation (no event ever echoes it) and a relay can render it. A\ntool message lands on the call it answers.",
+          "params": [
+            {
+              "name": "wire",
+              "types": [
+                "Hash"
+              ],
+              "text": "a protocol message ({RunInput.user_message}, {RunInput.tool_message}, ...)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": "the ids of the messages that changed"
+          },
+          "examples": [
+            {
+              "title": "The user's turn, before the run that answers it",
+              "text": "user = RunInput.user_message(params[:q])\ntranscript.add_message(user)\nRunInput.build(thread_id: thread, messages: transcript.messages_for_input)"
+            }
+          ],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 199
+        },
+        {
           "name": "apply",
           "scope": "instance",
           "group": null,
@@ -5909,7 +5947,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 195
+          "line": 223
         },
         {
           "name": "run",
@@ -6292,6 +6330,31 @@
           "line": 55
         },
         {
+          "name": "remove_all",
+          "scope": "class",
+          "group": null,
+          "signature": "remove_all(selector)",
+          "docstring": "A remove stream for every element a CSS selector matches (Turbo's `targets`).",
+          "params": [
+            {
+              "name": "selector",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/turbo_stream.rb",
+          "line": 60
+        },
+        {
           "name": "replace",
           "scope": "class",
           "group": null,
@@ -6346,7 +6409,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/turbo_stream.rb",
-          "line": 62
+          "line": 67
         },
         {
           "name": "vreplace",

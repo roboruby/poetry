@@ -6,8 +6,9 @@
 <% finished = index >= 4 || (index == 3 && decision == false) %>
 <div id="agui-relay-next" class="px-4 pb-4">
   <% if transcript.interrupted? %>
+    <% interrupt = transcript.interrupts.first %>
     <%= render "poetry/docs/agent_activity/approval", icon: :"calendar-check",
-               title: transcript.interrupts.first["message"],
+               title: interrupt["message"].presence || "The agent is waiting for an answer (#{interrupt["reason"]})",
                description: "The trial is free for 30 days; nothing is billed until it ends.",
                approve: link.call(s: 3, d: 1), deny: link.call(s: 3, d: 0) %>
   <% else %>

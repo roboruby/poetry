@@ -92,7 +92,8 @@ module Poetry
         Poetry::Agent::AGUI::Relay.new(
           transcript: transcript, container: SCROLLER_ID, morph: true,
           render: ->(message, version) { render_row(message, version) },
-          append_render: ->(message, version) { render_item(message, version) }
+          append_render: ->(message, version) { render_item(message, version) },
+          remove_targets: ->(id) { %([data-message-id="item-#{id}"]) }
         )
       end
 

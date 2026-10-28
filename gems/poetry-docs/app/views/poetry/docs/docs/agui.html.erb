@@ -35,11 +35,13 @@
         relay = Poetry::Agent::AGUI::Relay.new(
           transcript: transcript, container: SCROLLER, morph: true,
           render: ->(message, version) { render_to_string(partial: "assistant/row", locals: { message:, version: }) },
-          append_render: ->(message, version) { render_to_string(partial: "assistant/item", locals: { message:, version: }) }
+          append_render: ->(message, version) { render_to_string(partial: "assistant/item", locals: { message:, version: }) },
+          remove_targets: ->(id) { %([data-message-id="item-\#{id}"]) }   # a row a snapshot drops comes off the page
         )
+        # The user's turn joins the transcript, so this run and every later one carries the whole conversation.
+        transcript.add_message(Poetry::Agent::AGUI::RunInput.user_message(params[:q]))
         input = Poetry::Agent::AGUI::RunInput.build(
-          thread_id: params[:thread], tools: frontend_tools,
-          messages: [Poetry::Agent::AGUI::RunInput.user_message(params[:q])]
+          thread_id: params[:thread], tools: frontend_tools, messages: transcript.messages_for_input
         )
         client = Poetry::Agent::AGUI::Client.new(url: ENV.fetch("AGENT_URL"),
                                                  headers: { "Authorization" => "Bearer \#{ENV.fetch("AGENT_TOKEN")}" })
@@ -147,7 +149,7 @@
   interrupt_source = <<~CODE
     # The run ended on an interrupt: RUN_FINISHED with outcome.type == "interrupt"
     if transcript.interrupted?
-      interrupt = transcript.interrupts.first   # { "id", "reason", "message", "toolCallId", ... }
+      interrupt = transcript.interrupts.first   # { "id", "reason", ... } - "message", "toolCallId" and "metadata" are optional
       # render a decision form; on submit, resume - "resolved" carries the answer, "cancelled" abandons it:
       answer = Poetry::Agent::AGUI::RunInput.resume_entry(interrupt["id"], status: "resolved",
                                                           payload: { "approved" => params[:approved] == "1" })
@@ -222,7 +224,11 @@
         event stream, builds the run input from the user's message and the tools
         the page offers, runs the client, and writes each stream the relay
         returns. When the run ends with a tool call the browser must execute, the
-        relay's closing streams hand it over.
+        relay's closing streams hand it over. Record the user's turn with
+        <code>transcript.add_message</code> before the run: no event ever echoes it
+        back, and <code>messages_for_input</code> is the whole conversation each run
+        sends, so a turn the transcript never saw is a turn the agent never sees
+        again.
       </p>
     <% end %>
     <%= poetry_code_block(code: stream_source, language: "ruby", label: "The stream action") %>
@@ -233,7 +239,10 @@
         survives the row re-rendering around it. The relay needs to know which rows
         the page already holds: after rendering history server-side, call
         <code>relay.mark_seen(transcript.messages.map(&amp;:id))</code> so those rows
-        replace instead of appending twice.
+        replace instead of appending twice. A <code>MESSAGES_SNAPSHOT</code> can rename
+        or drop a message the page shows; the relay then sends a remove, and
+        <code>remove_targets:</code> names what it removes (the scroller item around the
+        row, here).
       </p>
     <% end %>
   </section>
@@ -311,7 +320,12 @@
         A run can end on an interrupt: an approval the agent needs before it
         continues. The transcript exposes it, you render the decision as a form
         or a pair of links, and the next run carries a resume entry answering it.
-        AG-UI 1.0 has two statuses: <code>resolved</code>, with the answer in the
+        Only <code>id</code> and <code>reason</code> are certain: real agents often leave
+        <code>message</code> out and put what they are asking in <code>metadata</code>,
+        so build the prompt from those. Some integrations still signal an interrupt
+        the pre-1.0 way, as a <code>CUSTOM</code> event beside a plain finish; configure
+        them to end the run with the interrupt outcome, or the transcript reports a
+        finished run. AG-UI 1.0 has two statuses: <code>resolved</code>, with the answer in the
         payload, and <code>cancelled</code>, which abandons the interrupt.
         <code>RunInput.resume_entry</code> refuses anything else, because an agent
         must reject it.

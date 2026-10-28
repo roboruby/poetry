@@ -123,6 +123,7 @@ module Poetry
         # @return [Poetry::Agent::AGUI::Transcript]
         def transcript_before(index, decision: nil, tool_result: nil, email: nil)
           transcript = Poetry::Agent::AGUI::Transcript.new(client_tools: [ CLIENT_TOOL ])
+          transcript.add_message(user_message)
           (1...index).each do |run|
             transcript.apply_all(events(run, decision: decision, email: email).map { |event| event.except("_sleep") })
             transcript.resolve_client_tool("c-tab", tool_result || '{"value":"pricing","changed":true}') if run == 1

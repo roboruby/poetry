@@ -185,6 +185,34 @@ module Poetry
           end
         end
 
+        # Records a message the host itself sends - its user turn, a tool
+        # result, a system prompt - so {#messages_for_input} carries the whole
+        # conversation (no event ever echoes it) and a relay can render it. A
+        # tool message lands on the call it answers.
+        #
+        # @param wire [Hash] a protocol message ({RunInput.user_message}, {RunInput.tool_message}, ...)
+        # @return [Array<String>] the ids of the messages that changed
+        # @example The user's turn, before the run that answers it
+        #   user = RunInput.user_message(params[:q])
+        #   transcript.add_message(user)
+        #   RunInput.build(thread_id: thread, messages: transcript.messages_for_input)
+        def add_message(wire)
+          wire = stringify(wire)
+          if wire["role"].to_s == "tool"
+            snapshot_tool_result(wire)
+            part = @tool_parts[wire["toolCallId"].to_s]
+            @pending_client_tools.reject! { |pending| pending[:tool_call_id] == wire["toolCallId"].to_s }
+            return part ? [touch(part[:message_id])] : []
+          end
+
+          added = snapshot_message(wire)
+          return [] unless added
+
+          index = @messages.index { |message| message.id == added.id }
+          index ? @messages[index] = added : @messages << added
+          [touch(added.id)]
+        end
+
         # Marks a client tool call as executed and records its result, so
         # the next run's input carries the tool message.
         #
@@ -448,11 +476,15 @@ module Poetry
                                      message_id: part[:message_id] }
         end
 
-        # Handles a chunked tool call, starting it and appending its delta as needed.
+        # Handles a chunked tool call, starting it (or reopening a closed call
+        # with that id, one a snapshot restated, say) and appending its delta.
         def tool_chunk(event)
           tool_call_id = f(event, "toolCallId")
           changed = []
-          changed |= tool_start(event) if tool_call_id && !@tool_parts.key?(tool_call_id.to_s)
+          if tool_call_id && !@tool_args.key?(tool_call_id.to_s)
+            existing = @tool_parts[tool_call_id.to_s]
+            changed |= existing ? reopen_tool(existing) : tool_start(event)
+          end
           delta = f(event, "delta")
           id = (tool_call_id || @tool_parts.keys.last).to_s
           changed |= tool_args({ "toolCallId" => id, "delta" => delta }) if delta
@@ -499,20 +531,48 @@ module Poetry
           []
         end
 
-        # Replaces the messages with a snapshot; the activities and tool
-        # calls follow the messages the snapshot kept.
+        # Reconciles the messages with a snapshot, as AG-UI 1.0 specifies: a
+        # message it carries replaces the copy with the same id in place, one
+        # never seen is appended in snapshot order, and one it leaves out is
+        # dropped - except activity and reasoning messages, which a snapshot
+        # carrying none of that role leaves alone. Answers the ids it
+        # changed, dropped ones included.
         def messages_snapshot(event)
-          @tool_parts = {}
-          rebuilt = Array(f(event, "messages")).filter_map { |message| snapshot_message(stringify(message)) }
-          @messages = rebuilt
+          wires = Array(f(event, "messages")).map { |message| stringify(message) }
+          carried = wires.map { |wire| wire["role"].to_s }
+          @tool_parts = @tool_parts.reject { |_, part| wires.any? { |wire| wire["id"].to_s == part[:message_id] } }
+          rebuilt = wires.filter_map { |wire| snapshot_message(wire) }
+          fresh = rebuilt.to_h { |message| [message.id, message] }
+          kept_roles = %w[activity reasoning] - carried
+          survivors = @messages.filter_map do |message|
+            fresh.delete(message.id) || (message if kept_roles.include?(message.role))
+          end
+          dropped = @messages.map(&:id) - survivors.map(&:id)
+          @messages = survivors + fresh.values
+          @tool_parts.select! { |_, part| message(part[:message_id]) }
+          follow_pending_calls
           @activities = @messages.select { |message| message.role == "activity" }.to_h do |message|
             part = message.parts.first
             [message.id, { "type" => part[:activity_type], "content" => part[:content] }]
           end
           @open_text.clear
           @version += 1
-          @messages.each { |message| message.version = @version }
-          @messages.map(&:id)
+          rebuilt.each { |message| message.version = @version }
+          rebuilt.map(&:id) | dropped
+        end
+
+        # After a snapshot, the client tools still waiting point at the
+        # message that now carries their call; a call the snapshot answered
+        # no longer waits.
+        def follow_pending_calls
+          @pending_client_tools.select! do |pending|
+            part = @tool_parts[pending[:tool_call_id]]
+            next true unless part
+            next false if answered?(part)
+
+            pending[:message_id] = part[:message_id]
+            true
+          end
         end
 
         # One snapshot message as a Message - or nil for a tool result, which
@@ -557,9 +617,10 @@ module Poetry
           Array(wire["toolCalls"]).each do |call|
             function = call["function"] || {}
             arguments = function["arguments"].to_s
+            waiting = @pending_client_tools.any? { |pending| pending[:tool_call_id] == call["id"].to_s }
             part = { kind: :tool, name: function["name"].to_s, input: parse_arguments(arguments), output: nil,
-                     state: :loading, tool_call_id: call["id"].to_s, message_id: wire["id"].to_s,
-                     arguments: arguments }
+                     state: waiting ? :awaiting_client : :loading, tool_call_id: call["id"].to_s,
+                     message_id: wire["id"].to_s, arguments: arguments }
             parts << part
             @tool_parts[part[:tool_call_id]] = part
           end

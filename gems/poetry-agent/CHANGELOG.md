@@ -9,6 +9,8 @@
 
 - The AG-UI run input declares the protocol version it speaks, `protocolVersion: "1.0"` (`Poetry::Agent::AGUI::PROTOCOL_VERSION`), as AG-UI 1.0 requires; `RunInput.build(protocol_version: nil)` omits it for an agent known to predate the field.
 - `Transcript#runs` keeps every run on the stream, so a first run's failure survives a second run.
+- `Transcript#add_message` records a message the host sends (the user's turn, a tool result, a system prompt), so `messages_for_input` carries the whole conversation: no event echoes the user's own turn, and a stateless agent never saw it again.
+- `Relay` takes a row a snapshot renamed or dropped off the page (a remove stream; `remove_targets:` names what to remove, such as the scroller item around the row), so a message no longer shows twice. `TurboStream.remove_all(selector)` builds the stream.
 - User and tool messages carry content parts (text, image, audio, video, document) end to end: `RunInput.user_message` and `tool_message` take a list of parts, a snapshot's parts arrive as text and `:media` parts, and `messages_for_input` sends them back as parts.
 
 ### Changed
@@ -18,15 +20,17 @@
 - BREAKING: `RunInput.resume_entry` requires `status:` and takes only AG-UI 1.0's two, `"resolved"` (the answer in the payload) and `"cancelled"`, raising `ArgumentError` otherwise. The former `"approved"` / `"rejected"` are rejected by 1.0 agents.
 - A reasoning message is a message of its own (role `reasoning`), as in AG-UI 1.0, and travels back in `messages_for_input`, as do system and developer messages; only activity messages stay behind.
 - A tool call without a `parentMessageId` gets an assistant message of its own under the call's id, as the reference client does, instead of joining whichever message came last.
+- A `MESSAGES_SNAPSHOT` reconciles by id, as AG-UI 1.0 specifies, instead of replacing everything: a message it carries replaces the copy with the same id in place, one never seen is appended, and one it leaves out is dropped, except activity and reasoning messages, which a snapshot carrying none of that role keeps. Streamed reasoning used to vanish at a closing snapshot.
 - A run that finishes with the cancelled outcome reads `:cancelled`, neither success nor failure; `ended?` counts it.
 - A tool call's arguments go back to the agent exactly as they streamed (an argument-less call sends `""`), and a tool result's message keeps the result's own `messageId` and its content parts.
 
 ### Fixed
 
-- An `ACTIVITY_DELTA` after a `MESSAGES_SNAPSHOT` that left its activity out no longer raises `NoMethodError`: the snapshot drops the activity, and the delta is skipped and recorded in `unknown_events`.
+- An `ACTIVITY_DELTA` after a `MESSAGES_SNAPSHOT` no longer raises `NoMethodError`: a snapshot carrying no activity keeps the activities, so the delta applies; one naming an activity no message holds is skipped and recorded in `unknown_events`.
 - A frontend tool called through `TOOL_CALL_CHUNK` events waits on the browser once the run ends; it used to stay loading and never reach the bridge.
 - A snapshot's multimodal user content is kept as parts instead of becoming a Ruby `inspect` string.
-- A `null` state snapshot applies (state may be any JSON value), and a closed tool call reopened with the same id appends its arguments instead of minting a second call. Arguments arriving for a closed call are ignored instead of raising.
+- A `null` state snapshot applies (state may be any JSON value), and a closed tool call reopened with the same id appends its arguments instead of minting a second call. Arguments arriving for a closed call are ignored instead of raising, and a `TOOL_CALL_CHUNK` continuing a call a snapshot restated reopens it.
+- A client tool waiting on the browser keeps waiting through a `MESSAGES_SNAPSHOT` (it showed loading again), and follows its call when the snapshot renames the message.
 
 ## [0.1.13] - 2026-10-13
 

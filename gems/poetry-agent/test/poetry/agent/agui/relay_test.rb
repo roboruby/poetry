@@ -42,6 +42,25 @@ module Poetry
           assert_includes second.first, %(<template><div id="row-m1")
         end
 
+        def test_a_row_a_snapshot_drops_comes_off_the_page_once
+          relay = relay()
+          relay.apply({ "type" => "TEXT_MESSAGE_START", "messageId" => "streamed", "role" => "assistant" })
+          streams = relay.apply({ "type" => "MESSAGES_SNAPSHOT",
+                                  "messages" => [{ "id" => "renamed", "role" => "assistant", "content" => "hi" }] })
+
+          assert_match(/\A<turbo-stream action="append" target="chat"><template><div id="row-renamed"/, streams.first)
+          assert_equal %(<turbo-stream action="remove" target="row-streamed"></turbo-stream>), streams.last
+          assert_empty relay.apply({ "type" => "MESSAGES_SNAPSHOT", "messages" => [] }).grep(/row-streamed/)
+
+          wrapped = Relay.new(transcript: Transcript.new, container: "chat", render: ->(*) { "" },
+                              remove_targets: ->(id) { %([data-message-id="item-#{id}"]) })
+          wrapped.apply({ "type" => "TEXT_MESSAGE_START", "messageId" => "m1", "role" => "assistant" })
+
+          removal = %(<turbo-stream action="remove" targets="[data-message-id=&quot;item-m1&quot;]"></turbo-stream>)
+
+          assert_equal [removal], wrapped.apply({ "type" => "MESSAGES_SNAPSHOT", "messages" => [] })
+        end
+
         def test_marked_messages_update_instead_of_appending
           relay = relay()
           relay.mark_seen("m1")

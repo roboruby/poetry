@@ -273,16 +273,100 @@ module Poetry
           assert_equal(%i[text media], transcript.message("u1").parts.map { |part| part[:kind] })
         end
 
-        def test_an_activity_delta_after_a_snapshot_dropped_the_activity_is_skipped
+        def activity(id, content)
+          { "type" => "ACTIVITY_SNAPSHOT", "messageId" => id, "activityType" => "x", "content" => content }
+        end
+
+        def test_a_snapshot_without_activities_keeps_them_and_one_with_activities_replaces_the_set
           transcript = Transcript.new
-          transcript.apply({ "type" => "ACTIVITY_SNAPSHOT", "messageId" => "a1", "activityType" => "x",
-                             "content" => { "n" => 1 } })
+          transcript.apply(activity("a1", { "n" => 1 }))
           transcript.apply({ "type" => "MESSAGES_SNAPSHOT", "messages" => [] })
 
+          delta = { "type" => "ACTIVITY_DELTA", "messageId" => "a1", "activityType" => "x",
+                    "patch" => [{ "op" => "replace", "path" => "/n", "value" => 2 }] }
+
+          assert_equal ["a1"], transcript.apply(delta), "a snapshot carrying no activity says nothing about them"
+          assert_equal({ "n" => 2 }, transcript.activities["a1"]["content"])
+
+          transcript.apply({ "type" => "MESSAGES_SNAPSHOT", "messages" => [
+                             { "id" => "a2", "role" => "activity", "activityType" => "x", "content" => {} }
+                           ] })
+
+          assert_equal ["a2"], transcript.activities.keys, "one that carries an activity declares the whole set"
           assert_empty transcript.apply({ "type" => "ACTIVITY_DELTA", "messageId" => "a1", "activityType" => "x",
-                                          "patch" => [{ "op" => "replace", "path" => "/n", "value" => 2 }] })
-          assert_empty transcript.activities
+                                          "patch" => [{ "op" => "replace", "path" => "/n", "value" => 3 }] })
           assert_equal ["ACTIVITY_DELTA(no activity a1)"], transcript.unknown_events
+        end
+
+        def test_a_snapshot_reconciles_by_id_in_place_and_drops_what_it_leaves_out
+          transcript = replay([
+                                { "type" => "TEXT_MESSAGE_START", "messageId" => "streamed" },
+                                { "type" => "TEXT_MESSAGE_END", "messageId" => "streamed" },
+                                { "type" => "REASONING_MESSAGE_START", "messageId" => "r1", "role" => "reasoning" },
+                                { "type" => "REASONING_MESSAGE_END", "messageId" => "r1" },
+                                { "type" => "TEXT_MESSAGE_START", "messageId" => "m1" },
+                                { "type" => "TEXT_MESSAGE_CONTENT", "messageId" => "m1", "delta" => "draft" },
+                                { "type" => "TEXT_MESSAGE_END", "messageId" => "m1" }
+                              ])
+          changed = transcript.apply({ "type" => "MESSAGES_SNAPSHOT", "messages" => [
+                                       { "id" => "new", "role" => "assistant", "content" => "appended" },
+                                       { "id" => "m1", "role" => "assistant", "content" => "final" }
+                                     ] })
+
+          assert_equal %w[r1 m1 new], transcript.messages.map(&:id),
+                       "m1 keeps its place, new is appended, streamed is dropped, the reasoning stays"
+          assert_equal "final", transcript.message("m1").parts.first[:text]
+          assert_equal %w[new m1 streamed], changed, "the dropped id is reported so a relay can remove its row"
+
+          transcript.apply({ "type" => "MESSAGES_SNAPSHOT", "messages" => [
+                             { "id" => "r2", "role" => "reasoning", "content" => "restated" }
+                           ] })
+
+          assert_equal %w[r2], transcript.messages.map(&:id), "a snapshot carrying reasoning declares that set too"
+        end
+
+        def test_a_waiting_client_tool_keeps_waiting_through_a_snapshot
+          start = { "type" => "TOOL_CALL_START", "toolCallId" => "c1", "toolCallName" => "poetry.tabs.set",
+                    "parentMessageId" => "streamed" }
+          transcript = replay([start, { "type" => "TOOL_CALL_END", "toolCallId" => "c1" }],
+                              client_tools: ["poetry.tabs.set"])
+          transcript.apply({ "type" => "MESSAGES_SNAPSHOT", "messages" => [
+                             { "id" => "renamed", "role" => "assistant",
+                               "toolCalls" => [{ "id" => "c1", "type" => "function",
+                                                 "function" => { "name" => "poetry.tabs.set", "arguments" => "{}" } }] }
+                           ] })
+
+          assert_equal :awaiting_client, transcript.message("renamed").parts.first[:state]
+          assert_equal "renamed", transcript.pending_client_tools.first[:message_id]
+        end
+
+        def test_a_chunk_continuing_a_call_from_a_snapshot_reopens_it
+          transcript = Transcript.new
+          transcript.apply({ "type" => "MESSAGES_SNAPSHOT", "messages" => [
+                             { "id" => "a1", "role" => "assistant",
+                               "toolCalls" => [{ "id" => "c1", "type" => "function",
+                                                 "function" => { "name" => "f", "arguments" => "{\"a\":" } }] }
+                           ] })
+          transcript.apply({ "type" => "TOOL_CALL_CHUNK", "toolCallId" => "c1", "toolCallName" => "f",
+                             "delta" => "1}" })
+          transcript.apply({ "type" => "RUN_FINISHED", "threadId" => "t", "runId" => "r" })
+
+          assert_equal({ "a" => 1 }, transcript.message("a1").parts.first[:input])
+        end
+
+        def test_the_hosts_own_messages_join_the_conversation
+          transcript = Transcript.new(client_tools: ["poetry.tabs.set"])
+          transcript.add_message(RunInput.user_message("My name is Ada.", id: "u1"))
+          start = { "type" => "TOOL_CALL_START", "toolCallId" => "c1", "toolCallName" => "poetry.tabs.set",
+                    "parentMessageId" => "a1" }
+          transcript.apply_all([{ "type" => "RUN_STARTED", "threadId" => "t", "runId" => "r" }, start,
+                                { "type" => "TOOL_CALL_END", "toolCallId" => "c1" },
+                                { "type" => "RUN_FINISHED", "threadId" => "t", "runId" => "r" }])
+
+          assert_equal ["a1"], transcript.add_message(RunInput.tool_message("c1", "done", id: "t1"))
+          assert_empty transcript.pending_client_tools
+          assert_equal([%w[u1 user], %w[a1 assistant], %w[t1 tool]],
+                       transcript.messages_for_input.map { |message| message.values_at("id", "role") })
         end
 
         def test_a_null_state_snapshot_applies
