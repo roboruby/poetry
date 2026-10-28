@@ -5,8 +5,13 @@
 ### Added
 
 - `describe_component` prints one line per behavior the component uses.
-- The AG-UI `Transcript`'s text and reasoning parts carry `state:`: `:streaming` until their END event (or the run's end) closes them, then `:done`; a `MESSAGES_SNAPSHOT`'s parts arrive `:done`. Closing a part re-renders its row through the relay, so a reasoning step reads "Thinking" while it streams and "Thought" once it closes.
-
+- The AG-UI `Transcript`'s text and reasoning parts carry `state:`: `:streaming` until their END event (or a `RUN_ERROR` ending the run mid-message) closes them, then `:done`; a `MESSAGES_SNAPSHOT`'s parts arrive `:done`. Closing a part re-renders its row through the relay, so a reasoning step reads "Thinking" while it streams and "Thought" once it closes.
+- `Poetry::Agent::AGUI::Pipeline`, AG-UI 1.0's processing model in the order the protocol fixes: the compatibility boundary (retired `THINKING_*` events become `REASONING_*`, a `null` in a whole optional field reads as absent, legacy `binary` content parts become media parts, each with a warning), your `middleware:`, enforcement against a contract table generated from the 1.0 schema (anything the protocol does not describe is stripped with a warning; a malformed known field fails the run), chunk expansion (`*_CHUNK` events become their start, content and end form, per subagent lane), and verification (the run lifecycle and every message, tool call, reasoning span, step and subagent opened before it continues and closed before `RUN_FINISHED`). It passes AG-UI's 388 reference vectors, 62 of the 67 receiver conformance streams a third-party client is scored on (the five left need metadata and subagent attribution on messages), all six era streams, and 60 captures from real producers with no rejection and no warning.
+- `ProtocolError` (`stage`, `kind`, and the `events` the failing push delivered before it) and `ProtocolWarning` (`kind`, `message`). Warnings are never silent: `Pipeline.new(on_warning:)` receives each, and `pipeline.warnings` keeps them.
+- `Pipeline.new(mode: :lenient)` for developing against an agent that is not conformant yet: it drops the offending event with a warning instead of failing, admits a well-formed run boundary over what the run left open, reads snake_case keys as their camelCase fields with a warning, and never runs a damaged call (a tool call that lost an event never finishes, so a frontend tool never sees half its arguments).
+- `Pipeline.new(max_protocol_version:)` for an agent known to speak an older version: "0.0.57" strips subagent material both ways and "0.0.39" also sends content as plain text, each loss named in a warning, and the input leaves out `protocolVersion` for an agent that predates it. `Pipeline#outgoing(input)` prepares a run input for the agent and enforces it, so a malformed field fails before anything is sent.
+- `RunInput.build(interrupts:)` holds a resume list to AG-UI 1.0's rules before anything is sent: every open interrupt needs an entry (omission is not cancellation), and one whose `expiresAt` has passed can only be cancelled; either mistake raises `ProtocolError`. `RunInput.expired?` reads an interrupt's expiry.
+- The pipeline names an interrupt signalled the pre-1.0 way, a `CUSTOM` `on_interrupt` event on a run that then finishes without the interrupt outcome, with the setting that fixes it.
 - The AG-UI run input declares the protocol version it speaks, `protocolVersion: "1.0"` (`Poetry::Agent::AGUI::PROTOCOL_VERSION`), as AG-UI 1.0 requires; `RunInput.build(protocol_version: nil)` omits it for an agent known to predate the field.
 - `Transcript#runs` keeps every run on the stream, so a first run's failure survives a second run.
 - `Transcript#add_message` records a message the host sends (the user's turn, a tool result, a system prompt), so `messages_for_input` carries the whole conversation: no event echoes the user's own turn, and a stateless agent never saw it again.
@@ -23,14 +28,19 @@
 - A `MESSAGES_SNAPSHOT` reconciles by id, as AG-UI 1.0 specifies, instead of replacing everything: a message it carries replaces the copy with the same id in place, one never seen is appended, and one it leaves out is dropped, except activity and reasoning messages, which a snapshot carrying none of that role keeps. Streamed reasoning used to vanish at a closing snapshot.
 - A run that finishes with the cancelled outcome reads `:cancelled`, neither success nor failure; `ended?` counts it.
 - A tool call's arguments go back to the agent exactly as they streamed (an argument-less call sends `""`), and a tool result's message keeps the result's own `messageId` and its content parts.
+- BREAKING: `Transcript#apply` takes only the verified events a pipeline delivers and raises `ArgumentError`, naming the pipeline, for a chunk, a retired `THINKING_*` event or an unknown type. It no longer reads snake_case keys. `unknown_events` is gone: a patch that does not apply, or an activity delta naming no activity, is a `ProtocolWarning` in `Transcript#warnings` (and `Transcript.new(on_warning:)`), as AG-UI 1.0 requires a failed patch to be surfaced.
+- BREAKING: `Client#run(input, pipeline:)` yields verified events and returns the pipeline (`warnings`, `truncated?`) instead of the SSE parser. A frame that is not a JSON object fails the run with `ProtocolError` (stage `:transport`) instead of being listed and skipped, and the input is enforced before it is sent.
+- `Relay#apply` runs raw events through a strict pipeline of its own; `Relay.new(pipeline: nil)` takes events `Client#run` already verified, and `Relay#finish` closes the stream. When a push fails, the client and the relay hand on what it delivered before the failure, then raise.
 
 ### Fixed
 
-- An `ACTIVITY_DELTA` after a `MESSAGES_SNAPSHOT` no longer raises `NoMethodError`: a snapshot carrying no activity keeps the activities, so the delta applies; one naming an activity no message holds is skipped and recorded in `unknown_events`.
+- An `ACTIVITY_DELTA` after a `MESSAGES_SNAPSHOT` no longer raises `NoMethodError`: a snapshot carrying no activity keeps the activities, so the delta applies; one naming an activity no message holds is skipped with a warning.
 - A frontend tool called through `TOOL_CALL_CHUNK` events waits on the browser once the run ends; it used to stay loading and never reach the bridge.
 - A snapshot's multimodal user content is kept as parts instead of becoming a Ruby `inspect` string.
 - A `null` state snapshot applies (state may be any JSON value), and a closed tool call reopened with the same id appends its arguments instead of minting a second call. Arguments arriving for a closed call are ignored instead of raising, and a `TOOL_CALL_CHUNK` continuing a call a snapshot restated reopens it.
 - A client tool waiting on the browser keeps waiting through a `MESSAGES_SNAPSHOT` (it showed loading again), and follows its call when the snapshot renames the message.
+- A `RUN_ERROR` in the middle of a frontend tool call no longer hands the call to the browser with half its arguments: a call whose arguments never closed is abandoned, never run.
+- Arguments that stream after a `MESSAGES_SNAPSHOT` restated a call still open reach the call the page shows; they used to land on a copy the snapshot had replaced.
 
 ## [0.1.13] - 2026-10-13
 

@@ -13,7 +13,13 @@ module Poetry
               p[:text] || p[:name]
             end.join("|")}</div>)
           }
-          Relay.new(transcript: transcript, render: render, container: container)
+          Relay.new(transcript: transcript, render: render, container: container).tap { |relay| open_run(relay) }
+        end
+
+        # A conformant stream begins with RUN_STARTED.
+        def open_run(relay)
+          relay.apply({ "type" => "RUN_STARTED", "threadId" => "t", "runId" => "r" })
+          relay
         end
 
         def test_first_appearance_appends_then_versioned_replaces
@@ -23,10 +29,10 @@ module Poetry
           none = relay.apply({ "type" => "STATE_SNAPSHOT", "snapshot" => {} })
 
           assert_equal 1, first.size
-          assert_match(/\A<turbo-stream action="append" target="chat"><template><div id="row-m1" data-version="1">/,
+          assert_match(/\A<turbo-stream action="append" target="chat"><template><div id="row-m1" data-version="2">/,
                        first.first)
           assert_match(/\A<turbo-stream action="vreplace" target="row-m1"><template>/, second.first)
-          assert_includes second.first, %(<div id="row-m1" data-version="2">hi</div>)
+          assert_includes second.first, %(<div id="row-m1" data-version="3">hi</div>)
           assert_empty none
         end
 
@@ -35,11 +41,31 @@ module Poetry
           row = ->(message, version) { %(<div id="row-#{message.id}" data-version="#{version}"></div>) }
           item = ->(message, version) { %(<li id="item-#{message.id}">#{row.call(message, version)}</li>) }
           relay = Relay.new(transcript: transcript, container: "chat", render: row, append_render: item)
+          open_run(relay)
           first = relay.apply({ "type" => "TEXT_MESSAGE_START", "messageId" => "m1", "role" => "assistant" })
           second = relay.apply({ "type" => "TEXT_MESSAGE_CONTENT", "messageId" => "m1", "delta" => "x" })
 
           assert_includes first.first, %(<template><li id="item-m1">)
           assert_includes second.first, %(<template><div id="row-m1")
+        end
+
+        def test_a_rejected_push_still_applies_what_preceded_the_failure
+          transcript = Transcript.new
+          relay = open_run(Relay.new(transcript: transcript, render: ->(*) { "" }))
+          relay.apply({ "type" => "TEXT_MESSAGE_CHUNK", "messageId" => "m", "delta" => "a" })
+          assert_raises(ProtocolError) { relay.apply({ "type" => "RUN_STARTED", "threadId" => "t", "runId" => "r2" }) }
+
+          assert_equal :done, transcript.message("m").parts.first[:state]
+          assert_raises(ProtocolError) { relay.apply({ "type" => "RUN_FINISHED", "threadId" => "t", "runId" => "r" }) }
+          assert_equal 1, transcript.message("m").parts.size
+        end
+
+        def test_without_a_pipeline_the_relay_takes_events_as_verified
+          relay = Relay.new(transcript: Transcript.new, render: ->(*) { "" }, pipeline: nil)
+
+          assert_nil relay.pipeline
+          assert_empty relay.finish
+          assert_raises(ArgumentError) { relay.apply({ "type" => "TEXT_MESSAGE_CHUNK", "messageId" => "m" }) }
         end
 
         def test_a_row_a_snapshot_drops_comes_off_the_page_once
@@ -54,6 +80,7 @@ module Poetry
 
           wrapped = Relay.new(transcript: Transcript.new, container: "chat", render: ->(*) { "" },
                               remove_targets: ->(id) { %([data-message-id="item-#{id}"]) })
+          open_run(wrapped)
           wrapped.apply({ "type" => "TEXT_MESSAGE_START", "messageId" => "m1", "role" => "assistant" })
 
           removal = %(<turbo-stream action="remove" targets="[data-message-id=&quot;item-m1&quot;]"></turbo-stream>)

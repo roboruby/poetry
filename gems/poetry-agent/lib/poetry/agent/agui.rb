@@ -2,6 +2,13 @@
 
 require_relative "agui/json_patch"
 require_relative "agui/sse"
+require_relative "agui/protocol_error"
+require_relative "agui/enforcement"
+require_relative "agui/compatibility"
+require_relative "agui/shims"
+require_relative "agui/chunk_expansion"
+require_relative "agui/verification"
+require_relative "agui/pipeline"
 require_relative "agui/run_input"
 require_relative "agui/client"
 require_relative "agui/transcript"
@@ -38,8 +45,9 @@ module Poetry
       # run input (`RunAgentInput.protocolVersion`).
       PROTOCOL_VERSION = "1.0"
 
-      # The AG-UI event types this transcript understands (the wire
-      # strings; deprecated THINKING_* aliases included).
+      # The AG-UI event types a stream may carry (the wire strings, the
+      # retired THINKING_* shapes included). A {Pipeline} reads them all;
+      # what it delivers to a {Transcript} is never a chunk or a retired shape.
       EVENT_TYPES = %w[
         RUN_STARTED RUN_FINISHED RUN_ERROR STEP_STARTED STEP_FINISHED
         TEXT_MESSAGE_START TEXT_MESSAGE_CONTENT TEXT_MESSAGE_END TEXT_MESSAGE_CHUNK

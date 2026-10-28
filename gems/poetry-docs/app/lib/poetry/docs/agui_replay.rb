@@ -125,7 +125,12 @@ module Poetry
           transcript = Poetry::Agent::AGUI::Transcript.new(client_tools: [ CLIENT_TOOL ])
           transcript.add_message(user_message)
           (1...index).each do |run|
-            transcript.apply_all(events(run, decision: decision, email: email).map { |event| event.except("_sleep") })
+            # Each run through its own pipeline, as the stream action does: the
+            # transcript reduces verified events.
+            pipeline = Poetry::Agent::AGUI::Pipeline.new
+            events(run, decision: decision, email: email).each do |event|
+              pipeline.push(event.except("_sleep")).each { |verified| transcript.apply(verified) }
+            end
             transcript.resolve_client_tool("c-tab", tool_result || '{"value":"pricing","changed":true}') if run == 1
           end
           transcript

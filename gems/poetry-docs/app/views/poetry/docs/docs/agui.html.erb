@@ -36,7 +36,8 @@
           transcript: transcript, container: SCROLLER, morph: true,
           render: ->(message, version) { render_to_string(partial: "assistant/row", locals: { message:, version: }) },
           append_render: ->(message, version) { render_to_string(partial: "assistant/item", locals: { message:, version: }) },
-          remove_targets: ->(id) { %([data-message-id="item-\#{id}"]) }   # a row a snapshot drops comes off the page
+          remove_targets: ->(id) { %([data-message-id="item-\#{id}"]) },  # a row a snapshot drops comes off the page
+          pipeline: nil                                                   # the client hands it verified events
         )
         # The user's turn joins the transcript, so this run and every later one carries the whole conversation.
         transcript.add_message(Poetry::Agent::AGUI::RunInput.user_message(params[:q]))
@@ -45,7 +46,8 @@
         )
         client = Poetry::Agent::AGUI::Client.new(url: ENV.fetch("AGENT_URL"),
                                                  headers: { "Authorization" => "Bearer \#{ENV.fetch("AGENT_TOKEN")}" })
-        client.run(input) do |event|
+        pipeline = Poetry::Agent::AGUI::Pipeline.new(on_warning: ->(warning) { Rails.logger.warn(warning.message) })
+        client.run(input, pipeline: pipeline) do |event|
           relay.apply(event).each { |html| write(html) }
         end
         relay.client_tool_streams(continue_url: assistant_continue_path(thread: params[:thread])).each { |html| write(html) }
@@ -130,6 +132,20 @@
       #{o} end #{e}
     #{o} end #{e}
   CODE
+  pipeline_source = <<~CODE
+    pipeline = Poetry::Agent::AGUI::Pipeline.new(
+      on_warning: ->(warning) { Rails.logger.warn("[AG-UI \#{warning.kind}] \#{warning.message}") },
+      mode: Rails.env.development? ? :lenient : :strict, # lenient drops and warns
+      max_protocol_version: nil                          # "0.0.57" for an older agent
+    )
+    begin
+      client.run(input, pipeline: pipeline) { |event| relay.apply(event).each { |html| write(html) } }
+    rescue Poetry::Agent::AGUI::ProtocolError => error
+      # error.stage: :transport, :enforcement, :expansion or :verification
+      write(Poetry::Agent::AGUI::TurboStream.append(SCROLLER, render_to_string(partial: "assistant/failed")))
+    end
+    pipeline.truncated? # broke off without RUN_FINISHED, which is never invented
+  CODE
   continue_source = <<~CODE
     # POST /assistant/continue - the bridge's { toolCallId, name, content, error } JSON
     def continue
@@ -154,7 +170,8 @@
       answer = Poetry::Agent::AGUI::RunInput.resume_entry(interrupt["id"], status: "resolved",
                                                           payload: { "approved" => params[:approved] == "1" })
       input = Poetry::Agent::AGUI::RunInput.build(
-        thread_id: thread, messages: transcript.messages_for_input, resume: [answer]
+        thread_id: thread, messages: transcript.messages_for_input,
+        interrupts: transcript.interrupts, resume: [answer]   # every open interrupt answered, or it raises
       )
     end
   CODE
@@ -209,7 +226,7 @@
         <code>Poetry::Agent::AGUI</code> is that client, in three pieces:
       </p>
       <ul>
-        <li><code>Client</code> runs an agent endpoint over Net::HTTP and yields each event as it arrives. <code>RunInput</code> builds what it sends: the AG-UI version it speaks (<code>protocolVersion: "1.0"</code>), the messages, and the tools the page offers. A user or tool message takes plain text or a list of content parts: text, image, audio, video and document parts with a <code>data</code>, <code>url</code> or provider <code>file</code> source.</li>
+        <li><code>Client</code> runs an agent endpoint over Net::HTTP and yields each event as it arrives, once a <code>Pipeline</code> has checked it against AG-UI 1.0. <code>RunInput</code> builds what it sends: the AG-UI version it speaks (<code>protocolVersion: "1.0"</code>), the messages, and the tools the page offers. A user or tool message takes plain text or a list of content parts: text, image, audio, video and document parts with a <code>data</code>, <code>url</code> or provider <code>file</code> source.</li>
         <li><code>Transcript</code> folds events into chat-shaped messages. Each message's <code>parts</code> are text, reasoning, tool calls carrying their state, media parts, or activities; it keeps every run on the stream in <code>runs</code>, a cancelled one marked <code>:cancelled</code>; the transcript also holds the shared <code>state</code>, the <code>interrupts</code>, the tool calls waiting on the browser, and <code>messages_for_input</code> for the next run.</li>
         <li><code>Relay</code> turns each change into a Turbo Stream through your own partials: an append into the scroller when a message first appears, a versioned replace after. Every frame carries <code>data-version</code> and the runtime applies only strictly newer frames, so an out-of-order delivery never paints an older state over a newer one.</li>
       </ul>
@@ -249,6 +266,54 @@
 
   <section class="flex flex-col gap-4">
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="pipeline">What the client checks</h2>
+      <p>
+        AG-UI 1.0 asks a client to check a stream before application code sees
+        it, and <code>Poetry::Agent::AGUI::Pipeline</code> does that in the order
+        the protocol fixes. Retired shapes from older agents are converted, with
+        a warning. Your middleware runs next. Then anything the protocol does not
+        describe is stripped, with a warning; a malformed known field fails the run.
+        Chunk events become their start, content and end form. Last, the run
+        lifecycle is verified: a message, tool call or step that never opened, one
+        still open at <code>RUN_FINISHED</code>, a run inside a run. What comes out
+        is what the transcript reduces, so a page never renders a stream the
+        protocol rejects.
+      </p>
+      <p>
+        <code>Client#run</code> holds one pipeline per run (strict unless you pass
+        one) and also checks the input on the way out, so a malformed field fails
+        before anything is sent. A frame that is not JSON fails the run too. A
+        relay fed by the client takes its events as they come
+        (<code>pipeline: nil</code>); a relay fed from anywhere else, a recorded
+        run or your own transport, keeps the strict pipeline it holds by default.
+      </p>
+      <p>
+        A rejection raises <code>ProtocolError</code>, naming its
+        <code>stage</code> and carrying the <code>events</code> the same push
+        delivered before it; the client and the relay hand those on before
+        raising, so the transcript holds everything that arrived. Each warning is
+        a <code>ProtocolWarning</code> (<code>kind</code>, <code>message</code>), and
+        none is silent: log them through <code>on_warning:</code>, or read
+        <code>pipeline.warnings</code> after the run. A state patch that does not
+        apply leaves the state as it was and lands in <code>transcript.warnings</code>.
+      </p>
+      <p>
+        <code>mode: :lenient</code> is for developing against an agent that is not
+        conformant yet. Instead of failing it drops the offending event with a
+        warning, admits a well-formed run boundary over what the run left open,
+        and reads snake_case keys as their camelCase fields. It never runs a
+        damaged call: a tool call that lost an event never finishes, so its
+        arguments never reach a frontend tool. For an agent known to speak an
+        older version, <code>max_protocol_version:</code> installs that era's
+        conversions both ways: a 0.0.39 agent gets plain-text content, a 0.0.57
+        one no subagent material, each loss named in a warning.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: pipeline_source, language: "ruby", label: "Modes, warnings and failures") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
       <h2 id="render">Render the transcript</h2>
       <p>
         The page holds a MessageScroller and a stream source pointing at the action
@@ -274,8 +339,8 @@
         (role <code>reasoning</code>, its own id), so it renders as its own row,
         and it travels back in <code>messages_for_input</code> with the rest of
         the conversation; only activity messages stay behind. Text and reasoning parts carry
-        <code>:streaming</code> until their end event (or the run's end) closes
-        them, then <code>:done</code>: a reasoning step reads "Thinking", open
+        <code>:streaming</code> until their end event (or a <code>RUN_ERROR</code>
+        ending the run mid-message) closes them, then <code>:done</code>: a reasoning step reads "Thinking", open
         and shimmering, while it streams, and "Thought" once it closes. Shared
         state folds into
         <code>transcript.state</code> through <code>STATE_SNAPSHOT</code> and
@@ -323,12 +388,20 @@
         Only <code>id</code> and <code>reason</code> are certain: real agents often leave
         <code>message</code> out and put what they are asking in <code>metadata</code>,
         so build the prompt from those. Some integrations still signal an interrupt
-        the pre-1.0 way, as a <code>CUSTOM</code> event beside a plain finish; configure
-        them to end the run with the interrupt outcome, or the transcript reports a
+        the pre-1.0 way, as a <code>CUSTOM</code> event beside a plain finish; the
+        pipeline warns when a run does that, and the fix is to configure the agent
+        to end the run with the interrupt outcome, or the transcript reports a
         finished run. AG-UI 1.0 has two statuses: <code>resolved</code>, with the answer in the
         payload, and <code>cancelled</code>, which abandons the interrupt.
         <code>RunInput.resume_entry</code> refuses anything else, because an agent
         must reject it.
+      </p>
+      <p>
+        Pass the open interrupts as <code>interrupts:</code> and
+        <code>RunInput.build</code> holds the resume list to the protocol's rules
+        before anything is sent: every open interrupt needs an entry (leaving one
+        out is not cancelling it), and one whose <code>expiresAt</code> has passed
+        can only be cancelled. Either mistake raises <code>ProtocolError</code>.
       </p>
     <% end %>
     <%= poetry_code_block(code: interrupt_source, language: "ruby", label: "Pause and resume") %>
@@ -360,10 +433,12 @@
         Script the agent while you build. The demo's replay is a plain Ruby module
         returning event arrays per run, so every stream replays byte-identical and
         the integration tests assert on real Turbo Streams with no model and no key.
-        <code>Transcript#apply_all</code> folds a recorded run in tests, and a
-        recorded run is also the fastest way to shape the row partial before an
-        agent exists. Events may arrive camel-cased or snake-cased; the transcript
-        reads both.
+        A recorded run is also the fastest way to shape the row partial before an
+        agent exists: push it through a <code>Pipeline</code> and hand what comes
+        out to <code>Transcript#apply</code>, which takes only checked events and
+        names the pipeline when given a raw one. The wire is camelCase; a script
+        that writes snake_case keys runs in lenient mode, which reads them with a
+        warning.
       </p>
     <% end %>
   </section>

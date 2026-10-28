@@ -1,0 +1,3544 @@
+{
+  "source": "chunks/__tests__/chunk-lanes.test.ts",
+  "vectors": [
+    {
+      "name": "transformChunks lanes: concurrent subagents > keeps both subagents' text messages open when their chunks interleave",
+      "line": 61,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m2",
+          "role": "assistant",
+          "delta": "B",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "C",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m2",
+            "role": "assistant",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m2",
+            "delta": "B",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "C",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m2",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#nesting-and-parallelism: one invocation's entities MUST NOT be closed because another invocation ended",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). Attribution-only producer (no SUBAGENT_* lifecycle), which a consumer MUST accept."
+    },
+    {
+      "name": "transformChunks lanes: concurrent subagents > keeps three subagents' messages independent",
+      "line": 84,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m2",
+          "role": "assistant",
+          "delta": "2",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m3",
+          "role": "assistant",
+          "delta": "3",
+          "subagentRunId": "s3"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "1b",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "3b",
+          "subagentRunId": "s3"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "2b",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m2",
+            "role": "assistant",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m2",
+            "delta": "2",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m3",
+            "role": "assistant",
+            "subagentRunId": "s3"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m3",
+            "delta": "3",
+            "subagentRunId": "s3"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "1b",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m3",
+            "delta": "3b",
+            "subagentRunId": "s3"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m2",
+            "delta": "2b",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m2",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m3",
+            "subagentRunId": "s3"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#nesting-and-parallelism: one invocation's entities MUST NOT be closed because another invocation ended",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). The synthesized ENDs at RUN_FINISHED come in lane-opening order (m1, m2, m3)."
+    },
+    {
+      "name": "transformChunks lanes: concurrent subagents > does not let one subagent's tool chunk close another's text message",
+      "line": 107,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "c1",
+          "toolCallName": "fn",
+          "delta": "{",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "B",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "c1",
+            "toolCallName": "fn",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "c1",
+            "delta": "{",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "B",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "c1",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#nesting-and-parallelism: one invocation's entities MUST NOT be closed because another invocation ended",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks lanes: concurrent subagents > keeps the parent's own stream separate from a subagent's",
+      "line": 129,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "p1",
+          "role": "assistant",
+          "delta": "P"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "Q"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "p1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "p1",
+            "delta": "P"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "p1",
+            "delta": "Q"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "p1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: an untagged, id-less continuation continues the parent's open stream of its kind, else the sole open stream of its kind; several candidates is ambiguous and MUST be rejected",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). The untagged id-less 'Q' continues the parent's p1."
+    },
+    {
+      "name": "transformChunks lanes: concurrent subagents > keeps two subagents' tool calls independent",
+      "line": 145,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "c1",
+          "toolCallName": "fn",
+          "delta": "{\"a",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "c2",
+          "toolCallName": "fn",
+          "delta": "{\"b",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "delta": "\":1}",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "c1",
+            "toolCallName": "fn",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "c1",
+            "delta": "{\"a",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "c2",
+            "toolCallName": "fn",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "c2",
+            "delta": "{\"b",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "c1",
+            "delta": "\":1}",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "c1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "c2",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#nesting-and-parallelism: one invocation's entities MUST NOT be closed because another invocation ended",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks lanes: concurrent subagents > keeps two subagents' reasoning messages independent",
+      "line": 160,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "m2",
+          "delta": "B",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "delta": "C",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "REASONING_MESSAGE_START",
+            "messageId": "m1",
+            "role": "reasoning",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "REASONING_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "REASONING_MESSAGE_START",
+            "messageId": "m2",
+            "role": "reasoning",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "REASONING_MESSAGE_CONTENT",
+            "messageId": "m2",
+            "delta": "B",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "REASONING_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "C",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "REASONING_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "REASONING_MESSAGE_END",
+            "messageId": "m2",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#nesting-and-parallelism: one invocation's entities MUST NOT be closed because another invocation ended",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). Synthesized REASONING_MESSAGE_START carries role 'reasoning'."
+    },
+    {
+      "name": "transformChunks lanes: resolving which lane a chunk belongs to > continues the sole open stream when a chunk carries neither id nor tag",
+      "line": 177,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "B"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "B",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: an untagged, id-less continuation continues the parent's open stream of its kind, else the sole open stream of its kind; several candidates is ambiguous and MUST be rejected",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). The continuation carries no tag, and its synthesized CONTENT carries the opener's owner s1."
+    },
+    {
+      "name": "transformChunks lanes: resolving which lane a chunk belongs to > rejects an untagged, unnamed continuation when more than one lane could own it",
+      "line": 187,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m2",
+          "role": "assistant",
+          "delta": "B",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "C"
+        }
+      ],
+      "expect": {
+        "error": "Ambiguous TEXT_MESSAGE_CHUNK"
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: an untagged, id-less continuation continues the parent's open stream of its kind, else the sole open stream of its kind; several candidates is ambiguous and MUST be rejected",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). TS regex: /Ambiguous TEXT_MESSAGE_CHUNK.*2 lanes have an open text message/; the second literal, '2 lanes have an open text message', is also in the message."
+    },
+    {
+      "name": "transformChunks lanes: resolving which lane a chunk belongs to > rejects an ambiguous unnamed tool chunk",
+      "line": 195,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "c1",
+          "toolCallName": "fn",
+          "delta": "a",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "c2",
+          "toolCallName": "fn",
+          "delta": "b",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "delta": "c"
+        }
+      ],
+      "expect": {
+        "error": "Ambiguous TOOL_CALL_CHUNK"
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: an untagged, id-less continuation continues the parent's open stream of its kind, else the sole open stream of its kind; several candidates is ambiguous and MUST be rejected",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). TS regex: /Ambiguous TOOL_CALL_CHUNK.*neither a toolCallId/; 'neither a toolCallId' is also in the message."
+    },
+    {
+      "name": "transformChunks lanes: resolving which lane a chunk belongs to > rejects an ambiguous unnamed reasoning chunk",
+      "line": 201,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "a",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "m2",
+          "delta": "b",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "delta": "c"
+        }
+      ],
+      "expect": {
+        "error": "Ambiguous REASONING_MESSAGE_CHUNK"
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: an untagged, id-less continuation continues the parent's open stream of its kind, else the sole open stream of its kind; several candidates is ambiguous and MUST be rejected",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). TS regex: /Ambiguous REASONING_MESSAGE_CHUNK.*2 lanes have an open reasoning message/."
+    },
+    {
+      "name": "transformChunks lanes: resolving which lane a chunk belongs to > prefers the parent's stream over a subagent's for an untagged continuation",
+      "line": 207,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "p1",
+          "role": "assistant",
+          "delta": "P"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "Q"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "p1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "p1",
+            "delta": "P"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "p1",
+            "delta": "Q"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "p1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: an untagged, id-less continuation continues the parent's open stream of its kind, else the sole open stream of its kind; several candidates is ambiguous and MUST be rejected",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks lanes: resolving which lane a chunk belongs to > continues a named message from an untagged chunk, since the id is unambiguous",
+      "line": 224,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m2",
+          "role": "assistant",
+          "delta": "B",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "C"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m2",
+            "role": "assistant",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m2",
+            "delta": "B",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "C",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m2",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#continuation-chunks: a named id continues the stream holding it; an absent tag never disagrees",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). 'C' repeats messageId m1 and role 'assistant' with no tag; its CONTENT inherits owner s1."
+    },
+    {
+      "name": "transformChunks lanes: resolving which lane a chunk belongs to > routes a tagged, unnamed continuation to its own lane even while others are open",
+      "line": 240,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "p1",
+          "role": "assistant",
+          "delta": "P"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "B",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "p1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "p1",
+            "delta": "P"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "B",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "p1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: lanes are per owner (parent or subagent); a continuation resolves to its own lane",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks lanes: resolving which lane a chunk belongs to > continues the sole open text stream when the parent's open stream is a DIFFERENT kind",
+      "line": 255,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "c1",
+          "toolCallName": "fn",
+          "delta": "{"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "B"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "c1",
+            "toolCallName": "fn"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "c1",
+            "delta": "{"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "B",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "c1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: an untagged, id-less continuation continues the parent's open stream of its kind, else the sole open stream of its kind; several candidates is ambiguous and MUST be rejected",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). The parent lane holds a tool call; the id-less untagged text chunk falls back to the sole open TEXT stream (s1's m1)."
+    },
+    {
+      "name": "transformChunks lanes: resolving which lane a chunk belongs to > still requires an id for the first chunk in a lane",
+      "line": 280,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "B",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "First TEXT_MESSAGE_CHUNK must have a messageId"
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#the-first-chunk: a first chunk missing its id is a protocol violation",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). s2's lane has nothing open, so the tagged id-less chunk has no referent."
+    },
+    {
+      "name": "transformChunks lanes: resolving which lane a chunk belongs to > closes the previous stream when a new id opens in the SAME lane",
+      "line": 288,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m2",
+          "role": "assistant",
+          "delta": "B",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m2",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m2",
+            "delta": "B",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m2",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: a chunk opening a different item in the same lane closes the previous one",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks lanes: resolving which lane a chunk belongs to > closes a lane's text stream when the same lane switches to reasoning",
+      "line": 306,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "r1",
+          "delta": "R",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "REASONING_MESSAGE_START",
+            "messageId": "r1",
+            "role": "reasoning",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "REASONING_MESSAGE_CONTENT",
+            "messageId": "r1",
+            "delta": "R",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "REASONING_MESSAGE_END",
+            "messageId": "r1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: a lane assembles one item at a time; a chunk of another family in the same lane closes it",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks lanes: resolving which lane a chunk belongs to > rejects a tag that disagrees with the lane already holding the id",
+      "line": 322,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "B",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match the open stream's subagent 's1'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation whose tag disagrees with its opener MUST be rejected",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks lanes: resolving which lane a chunk belongs to > rejects a disagreeing tag on a tool call",
+      "line": 328,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "c1",
+          "toolCallName": "fn",
+          "delta": "a",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "c1",
+          "toolCallName": "fn",
+          "delta": "b",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match the open stream's subagent 's1'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation whose tag disagrees with its opener MUST be rejected",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). TS regex: /Cannot continue tool call 'c1'.*does not match the open stream's subagent 's1'/; \"Cannot continue tool call 'c1'\" is also in the message."
+    },
+    {
+      "name": "transformChunks lanes: resolving which lane a chunk belongs to > rejects a disagreeing tag on a reasoning message",
+      "line": 334,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "a",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "b",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "Cannot continue reasoning message 'm1'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation whose tag disagrees with its opener MUST be rejected",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks lanes: resolving which lane a chunk belongs to > rejects a subagent-tagged chunk continuing the parent's stream",
+      "line": 340,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "p1",
+          "role": "assistant",
+          "delta": "A"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "p1",
+          "role": "assistant",
+          "delta": "B",
+          "subagentRunId": "s1"
+        }
+      ],
+      "expect": {
+        "error": "does not match the open stream's subagent '(the parent agent)'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation whose tag disagrees with its opener MUST be rejected",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). An untagged opener is owned by the parent, which a tagged continuation disagrees with. '(the parent agent)' is the TS spelling of the parent owner in the message."
+    },
+    {
+      "name": "transformChunks lanes: closing > closes only the finishing subagent's lane",
+      "line": 350,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "a"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m2",
+          "role": "assistant",
+          "delta": "B",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "C",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "SUBAGENT_STARTED",
+            "subagentRunId": "s1",
+            "name": "a"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m2",
+            "role": "assistant",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m2",
+            "delta": "B",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "SUBAGENT_FINISHED",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m2",
+            "delta": "C",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m2",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: a subagent's terminal closes that subagent's lane only (before the terminal)",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). Adapted: SUBAGENT_STARTED s1 inserted after RUN_STARTED so verification accepts the SUBAGENT_FINISHED (the TS test fed the terminal unannounced to transformChunks alone). s2 stays attribution-only."
+    },
+    {
+      "name": "transformChunks lanes: closing > closes only the erroring subagent's lane",
+      "line": 373,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "a"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m2",
+          "role": "assistant",
+          "delta": "B",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "SUBAGENT_ERROR",
+          "subagentRunId": "s1",
+          "message": "boom"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "C",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "SUBAGENT_STARTED",
+            "subagentRunId": "s1",
+            "name": "a"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m2",
+            "role": "assistant",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m2",
+            "delta": "B",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "SUBAGENT_ERROR",
+            "subagentRunId": "s1",
+            "message": "boom"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m2",
+            "delta": "C",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m2",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: a subagent's terminal closes that subagent's lane only (before the terminal)",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). Adapted: SUBAGENT_STARTED s1 inserted after RUN_STARTED so verification accepts the SUBAGENT_ERROR."
+    },
+    {
+      "name": "transformChunks lanes: closing > does not close the parent's lane on a terminal that names no subagent",
+      "line": 391,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "p1",
+          "role": "assistant",
+          "delta": "A"
+        },
+        {
+          "type": "SUBAGENT_FINISHED"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "B"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: SUBAGENT_FINISHED MUST carry the subagentRunId it concerns",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). Rejected by enforcement first on the canonical order (subagentRunId is required on SUBAGENT_FINISHED; zod message, not portable). The TS test drove transformChunks alone and asserted the id-less terminal does not close the parent lane (p1 receives both A and B); that is only observable where expansion runs before enforcement."
+    },
+    {
+      "name": "transformChunks lanes: closing > emits just the terminal when the finishing subagent has nothing open",
+      "line": 406,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "a"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "SUBAGENT_STARTED",
+            "subagentRunId": "s1",
+            "name": "a"
+          },
+          {
+            "type": "SUBAGENT_FINISHED",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). RUN_FINISHED appended. Adapted: SUBAGENT_STARTED s1 inserted so verification accepts the terminal."
+    },
+    {
+      "name": "transformChunks lanes: closing > closes every open lane at RUN_FINISHED, in the order they opened",
+      "line": 411,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m2",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "p1",
+          "role": "assistant",
+          "delta": "B"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "C",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m2",
+            "role": "assistant",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m2",
+            "delta": "A",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "p1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "p1",
+            "delta": "B"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "C",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m2",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "p1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: a run-level event closes every lane",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). The ENDs come in lane-OPENING order (m2, p1, m1), before RUN_FINISHED."
+    },
+    {
+      "name": "transformChunks lanes: closing > closes every open lane at RUN_ERROR",
+      "line": 427,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m2",
+          "role": "assistant",
+          "delta": "B",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "RUN_ERROR",
+          "message": "boom"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m2",
+            "role": "assistant",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m2",
+            "delta": "B",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m2",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "RUN_ERROR",
+            "message": "boom"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: a run-level event closes every lane",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks lanes: closing > closes every open lane at MESSAGES_SNAPSHOT",
+      "line": 438,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m2",
+          "role": "assistant",
+          "delta": "B",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": []
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m2",
+            "role": "assistant",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m2",
+            "delta": "B",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m2",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": []
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: MESSAGES_SNAPSHOT is run-level and closes every lane",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). RUN_FINISHED appended."
+    },
+    {
+      "name": "transformChunks lanes: closing > does not let the parent's explicit message close a subagent's chunk stream",
+      "line": 450,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "p1",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "p1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "B",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "p1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "p1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "B",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: an explicit event closes only the stream in ITS OWN lane",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks lanes: closing > does close a subagent's chunk stream on that subagent's own explicit message",
+      "line": 472,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "x1",
+          "role": "assistant",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "x1",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "subagentRunId": "s1",
+            "messageId": "x1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "subagentRunId": "s1",
+            "messageId": "x1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: a message event in the item's lane closes it",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). Adapted: TEXT_MESSAGE_END x1 (s1) inserted before RUN_FINISHED, since verification rejects RUN_FINISHED with x1 still open."
+    },
+    {
+      "name": "transformChunks lanes: closing > does not let a subagent's step event close the parent's chunk stream",
+      "line": 488,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "p1",
+          "role": "assistant",
+          "delta": "A"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "work",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "B"
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "work",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "p1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "p1",
+            "delta": "A"
+          },
+          {
+            "type": "STEP_STARTED",
+            "subagentRunId": "s1",
+            "stepName": "work"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "p1",
+            "delta": "B"
+          },
+          {
+            "type": "STEP_FINISHED",
+            "subagentRunId": "s1",
+            "stepName": "work"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "p1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: a step event closes only its own lane",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). Adapted: STEP_FINISHED work (s1) inserted before RUN_FINISHED, since verification rejects RUN_FINISHED with a step open."
+    },
+    {
+      "name": "transformChunks lanes: closing > closes every open lane at a second RUN_STARTED, in the order they opened",
+      "line": 502,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m2",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "p1",
+          "role": "assistant",
+          "delta": "B"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "C",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'RUN_STARTED' while a run is still active"
+      },
+      "spec": "/spec/1.0/events/lifecycle#several-runs-on-one-stream: a RUN_STARTED while a run is still active is a violation",
+      "notes": "On the full pipeline verification rejects the nested RUN_STARTED (the first run never finished). The TS test drove transformChunks alone and asserted the second RUN_STARTED first closes every lane in opening order (m2, p1, m1); on a verified stream that lane closing is unobservable, because a legal RUN_STARTED only follows a terminal that has already closed every lane."
+    },
+    {
+      "name": "transformChunks lanes: closing > does not close any lane on SUBAGENT_STARTED",
+      "line": 557,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "p1",
+          "role": "assistant",
+          "delta": "P"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "a"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "B",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "Q"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "p1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "p1",
+            "delta": "P"
+          },
+          {
+            "type": "SUBAGENT_STARTED",
+            "subagentRunId": "s1",
+            "name": "a"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "B",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "p1",
+            "delta": "Q"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "SUBAGENT_FINISHED",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "p1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: RAW, ACTIVITY_SNAPSHOT, ACTIVITY_DELTA, REASONING_ENCRYPTED_VALUE and SUBAGENT_STARTED close nothing",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). Adapted: SUBAGENT_FINISHED s1 inserted before RUN_FINISHED, since verification rejects RUN_FINISHED with s1 active; it closes s1's lane (END m1 lands before it) so the TS assertion that the last three events are END m1, END p1, RUN_FINISHED becomes END m1, SUBAGENT_FINISHED, END p1, RUN_FINISHED. The attributed chunks precede the announcement: the spec says a producer MUST announce first, but the TS consumer does not check it."
+    },
+    {
+      "name": "transformChunks lanes: closing > does not close any lane on REASONING_ENCRYPTED_VALUE",
+      "line": 557,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "p1",
+          "role": "assistant",
+          "delta": "P"
+        },
+        {
+          "type": "REASONING_ENCRYPTED_VALUE",
+          "subtype": "message",
+          "entityId": "m1",
+          "encryptedValue": "opaque",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "B",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "Q"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "p1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "p1",
+            "delta": "P"
+          },
+          {
+            "type": "REASONING_ENCRYPTED_VALUE",
+            "subagentRunId": "s1",
+            "subtype": "message",
+            "entityId": "m1",
+            "encryptedValue": "opaque"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "B",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "p1",
+            "delta": "Q"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "p1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: RAW, ACTIVITY_SNAPSHOT, ACTIVITY_DELTA, REASONING_ENCRYPTED_VALUE and SUBAGENT_STARTED close nothing",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks lanes: closing > does not close any lane on ACTIVITY_SNAPSHOT",
+      "line": 557,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "p1",
+          "role": "assistant",
+          "delta": "P"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "a1",
+          "activityType": "search",
+          "content": {},
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "B",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "Q"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "p1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "p1",
+            "delta": "P"
+          },
+          {
+            "type": "ACTIVITY_SNAPSHOT",
+            "subagentRunId": "s1",
+            "messageId": "a1",
+            "activityType": "search",
+            "content": {}
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "B",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "p1",
+            "delta": "Q"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "p1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: RAW, ACTIVITY_SNAPSHOT, ACTIVITY_DELTA, REASONING_ENCRYPTED_VALUE and SUBAGENT_STARTED close nothing",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks lanes: closing > does not close any lane on ACTIVITY_DELTA",
+      "line": 557,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "p1",
+          "role": "assistant",
+          "delta": "P"
+        },
+        {
+          "type": "ACTIVITY_DELTA",
+          "messageId": "a1",
+          "activityType": "search",
+          "patch": [],
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "B",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "Q"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "p1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "p1",
+            "delta": "P"
+          },
+          {
+            "type": "ACTIVITY_DELTA",
+            "subagentRunId": "s1",
+            "messageId": "a1",
+            "activityType": "search",
+            "patch": []
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "B",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "p1",
+            "delta": "Q"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "p1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: RAW, ACTIVITY_SNAPSHOT, ACTIVITY_DELTA, REASONING_ENCRYPTED_VALUE and SUBAGENT_STARTED close nothing",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). Adapted: the TS row sends ACTIVITY_DELTA as {messageId, delta: [], subagentRunId}, which is malformed under the 1.0 schema (activityType and patch are required; delta is not a field), so enforcement rejects it on the full pipeline. Rewritten as a schema-valid delta with activityType \"search\" and patch []. No snapshot opened a1: verification does not require one."
+    },
+    {
+      "name": "transformChunks lanes: closing > does not close any lane on RAW",
+      "line": 557,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "p1",
+          "role": "assistant",
+          "delta": "P"
+        },
+        {
+          "type": "RAW",
+          "event": {},
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "B",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "Q"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "p1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "p1",
+            "delta": "P"
+          },
+          {
+            "type": "RAW",
+            "subagentRunId": "s1",
+            "event": {}
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "B",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "p1",
+            "delta": "Q"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "p1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: RAW, ACTIVITY_SNAPSHOT, ACTIVITY_DELTA, REASONING_ENCRYPTED_VALUE and SUBAGENT_STARTED close nothing",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks lanes: closing > does not close a subagent's lane on an untagged TOOL_CALL_RESULT",
+      "line": 597,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "tr1",
+          "toolCallId": "c9",
+          "content": "{}",
+          "role": "tool"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "B",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TOOL_CALL_RESULT",
+            "messageId": "tr1",
+            "toolCallId": "c9",
+            "content": "{}",
+            "role": "tool"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "B",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: an untagged event names the parent lane and closes only that",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks lanes: closing > does not close a subagent's lane on an untagged STEP_FINISHED",
+      "line": 597,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "work"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "work"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "B",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "STEP_STARTED",
+            "stepName": "work"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "STEP_FINISHED",
+            "stepName": "work"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "B",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: an untagged event names the parent lane and closes only that",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). Adapted: an untagged STEP_STARTED work inserted after RUN_STARTED, since verification rejects finishing a step never started."
+    },
+    {
+      "name": "transformChunks lanes: unattributed runs are unaffected > behaves exactly as a single pending stream when nothing is attributed",
+      "line": 619,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "B"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "c1",
+          "toolCallName": "fn",
+          "delta": "{"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m2",
+          "role": "assistant",
+          "delta": "C"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "B"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "c1",
+            "toolCallName": "fn"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "c1",
+            "delta": "{"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "c1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m2",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m2",
+            "delta": "C"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m2"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: in one lane, a chunk of another family closes the open stream",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks lanes: the output is a valid stream > accepts interleaved subagents declared with lifecycle events",
+      "line": 656,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "a"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s2",
+          "name": "b"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m2",
+          "role": "assistant",
+          "delta": "B",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "C",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "SUBAGENT_STARTED",
+          "SUBAGENT_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "SUBAGENT_FINISHED",
+          "TEXT_MESSAGE_END",
+          "SUBAGENT_FINISHED",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#nesting-and-parallelism: one invocation's entities MUST NOT be closed because another invocation ended",
+      "notes": "TS test asserts only acceptance (chunks + verify); eventTypes pin the delivered order."
+    },
+    {
+      "name": "transformChunks lanes: the output is a valid stream > accepts interleaved subagents in attribution-only mode",
+      "line": 672,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m2",
+          "role": "assistant",
+          "delta": "B",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "C",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#lifecycle: a consumer MUST accept attribution without lifecycle events",
+      "notes": "TS test asserts only acceptance (chunks + verify)."
+    },
+    {
+      "name": "transformChunks lanes: the output is a valid stream > accepts a parent and a subagent streaming different families at once",
+      "line": 686,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "a"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "p1",
+          "role": "assistant",
+          "delta": "P"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "c1",
+          "toolCallName": "fn",
+          "delta": "{",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "Q"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "SUBAGENT_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TOOL_CALL_START",
+          "TOOL_CALL_ARGS",
+          "TEXT_MESSAGE_CONTENT",
+          "TOOL_CALL_END",
+          "SUBAGENT_FINISHED",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#nesting-and-parallelism: one invocation's entities MUST NOT be closed because another invocation ended",
+      "notes": "TS test asserts only acceptance (chunks + verify)."
+    },
+    {
+      "name": "transformChunks lanes: the output is a valid stream > accepts interleaved subagents' tool calls",
+      "line": 703,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "a"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s2",
+          "name": "b"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "c1",
+          "toolCallName": "fn",
+          "delta": "{\"a",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "c2",
+          "toolCallName": "fn",
+          "delta": "{\"b",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "delta": "\":1}",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "SUBAGENT_STARTED",
+          "SUBAGENT_STARTED",
+          "TOOL_CALL_START",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_START",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_END",
+          "SUBAGENT_FINISHED",
+          "TOOL_CALL_END",
+          "SUBAGENT_FINISHED",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#nesting-and-parallelism: one invocation's entities MUST NOT be closed because another invocation ended",
+      "notes": "TS test asserts only acceptance (chunks + verify)."
+    },
+    {
+      "name": "transformChunks lanes: the output is a valid stream > accepts interleaved subagents' reasoning messages",
+      "line": 719,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "a"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s2",
+          "name": "b"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "r1",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "r2",
+          "delta": "B",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "delta": "C",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "SUBAGENT_STARTED",
+          "SUBAGENT_STARTED",
+          "REASONING_MESSAGE_START",
+          "REASONING_MESSAGE_CONTENT",
+          "REASONING_MESSAGE_START",
+          "REASONING_MESSAGE_CONTENT",
+          "REASONING_MESSAGE_CONTENT",
+          "REASONING_MESSAGE_END",
+          "SUBAGENT_FINISHED",
+          "REASONING_MESSAGE_END",
+          "SUBAGENT_FINISHED",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#nesting-and-parallelism: one invocation's entities MUST NOT be closed because another invocation ended",
+      "notes": "TS test asserts only acceptance (chunks + verify)."
+    },
+    {
+      "name": "transformChunks lanes: the output is a valid stream > accepts a two-run stream whose lanes are reopened in the second run",
+      "line": 735,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "a"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "p1",
+          "role": "assistant",
+          "delta": "P"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "a"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "B",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "p1",
+          "role": "assistant",
+          "delta": "Q"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "SUBAGENT_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "SUBAGENT_FINISHED",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED",
+          "RUN_STARTED",
+          "SUBAGENT_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "SUBAGENT_FINISHED",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: an id MAY reappear in a later run; run-scoped tracking does not cross the run boundary",
+      "notes": "TS test asserts only acceptance (chunks + verify)."
+    }
+  ]
+}

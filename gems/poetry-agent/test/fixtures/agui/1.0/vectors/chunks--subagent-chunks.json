@@ -1,0 +1,896 @@
+{
+  "source": "chunks/__tests__/subagent-chunks.test.ts",
+  "vectors": [
+    {
+      "name": "transformChunks subagentRunId propagation > should propagate subagentRunId from TEXT_MESSAGE_CHUNK to synthesized TEXT_MESSAGE_START",
+      "line": 21,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "hi",
+          "subagentRunId": "sub-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "sub-1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "hi",
+            "subagentRunId": "sub-1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "sub-1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: events a subagent produces carry its subagentRunId; synthesized events carry the chunk's attribution",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks subagentRunId propagation > should propagate subagentRunId from TOOL_CALL_CHUNK to synthesized TOOL_CALL_START",
+      "line": 46,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tc1",
+          "toolCallName": "f",
+          "delta": "{}",
+          "subagentRunId": "sub-2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "tc1",
+            "toolCallName": "f",
+            "subagentRunId": "sub-2"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "tc1",
+            "delta": "{}",
+            "subagentRunId": "sub-2"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "tc1",
+            "subagentRunId": "sub-2"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: events a subagent produces carry its subagentRunId; synthesized events carry the chunk's attribution",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks subagentRunId propagation > should propagate subagentRunId from REASONING_MESSAGE_CHUNK to synthesized REASONING_MESSAGE_START",
+      "line": 71,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "r1",
+          "delta": "thinking",
+          "subagentRunId": "sub-3"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "REASONING_MESSAGE_START",
+            "messageId": "r1",
+            "role": "reasoning",
+            "subagentRunId": "sub-3"
+          },
+          {
+            "type": "REASONING_MESSAGE_CONTENT",
+            "messageId": "r1",
+            "delta": "thinking",
+            "subagentRunId": "sub-3"
+          },
+          {
+            "type": "REASONING_MESSAGE_END",
+            "messageId": "r1",
+            "subagentRunId": "sub-3"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: events a subagent produces carry its subagentRunId; synthesized events carry the chunk's attribution",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). The synthesized REASONING_MESSAGE_START has role 'reasoning'."
+    },
+    {
+      "name": "transformChunks subagentRunId propagation > should pass through SUBAGENT_STARTED events unchanged",
+      "line": 96,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "sub-1",
+          "name": "research-agent"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "SUBAGENT_STARTED",
+            "subagentRunId": "sub-1",
+            "name": "research-agent"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: SUBAGENT_STARTED stands aside from assembly",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). Unterminated: appending RUN_FINISHED would be rejected (sub-1 still active)."
+    },
+    {
+      "name": "transformChunks subagentRunId propagation > should carry the opener's subagentRunId onto the synthesized END",
+      "line": 110,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "hi",
+          "subagentRunId": "sub-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "sub-1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "hi",
+            "subagentRunId": "sub-1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "sub-1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: events a subagent produces carry its subagentRunId; synthesized events carry the chunk's attribution",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks subagentRunId propagation > should carry the incoming chunk's subagentRunId onto synthesized CONTENT",
+      "line": 137,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "sub-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "sub-1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "sub-1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "sub-1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: events a subagent produces carry its subagentRunId; synthesized events carry the chunk's attribution",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks subagentRunId propagation > should treat an explicitly empty reasoning messageId as a new stream",
+      "line": 162,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "r",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "REASONING_MESSAGE_CHUNK",
+          "messageId": "",
+          "delta": "B",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "REASONING_MESSAGE_START",
+            "messageId": "r",
+            "role": "reasoning",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "REASONING_MESSAGE_CONTENT",
+            "messageId": "r",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "REASONING_MESSAGE_START",
+            "messageId": "",
+            "role": "reasoning",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "REASONING_MESSAGE_CONTENT",
+            "messageId": "",
+            "delta": "B",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "REASONING_MESSAGE_END",
+            "messageId": "r",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "REASONING_MESSAGE_END",
+            "messageId": "",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#continuation-chunks: a present id (even the empty string) is an identifier; a different one opens a new item",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). The empty string is a present, legal id, not absence."
+    },
+    {
+      "name": "transformChunks subagentRunId propagation > should reject an owner change on the same chunk stream",
+      "line": 196,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "B",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match the open stream's subagent"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation whose tag disagrees with its opener MUST be rejected",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks subagentRunId propagation > should reject an owner change even when the chunk carries no delta",
+      "line": 220,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "subagentRunId": "s2"
+        }
+      ],
+      "expect": {
+        "error": "does not match the open stream's subagent"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation whose tag disagrees with its opener MUST be rejected",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). The conflicting chunk carries no delta, so nothing would be synthesized: expansion itself must reject it."
+    },
+    {
+      "name": "transformChunks subagentRunId propagation > should allow an untagged continuation chunk on a tagged stream",
+      "line": 241,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "B"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "B",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a continuation carrying no tag is not a disagreement and MUST be accepted",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). The untagged continuation's CONTENT carries the opener's owner s1."
+    },
+    {
+      "name": "transformChunks subagentRunId propagation > should not close another subagent's pending stream on a terminal",
+      "line": 269,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s2",
+          "name": "b"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "A",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "B",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "SUBAGENT_STARTED",
+            "subagentRunId": "s2",
+            "name": "b"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "A",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "SUBAGENT_FINISHED",
+            "subagentRunId": "s2"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "B",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#nesting-and-parallelism: a consumer MUST NOT close one invocation's entities because another invocation ended",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). Adapted: SUBAGENT_STARTED s2 inserted after RUN_STARTED so verification accepts s2's terminal."
+    },
+    {
+      "name": "transformChunks subagentRunId propagation > should close a pending chunk stream before SUBAGENT_FINISHED",
+      "line": 307,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "researcher"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "hi",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "SUBAGENT_FINISHED",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "SUBAGENT_STARTED",
+            "subagentRunId": "s1",
+            "name": "researcher"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "hi",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "SUBAGENT_FINISHED",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: a chunk stream MUST NOT outlive its owner; the synthesized END precedes the subagent's terminal",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks subagentRunId propagation > should close a pending chunk stream before SUBAGENT_ERROR",
+      "line": 346,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "researcher"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "role": "assistant",
+          "delta": "hi",
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "SUBAGENT_ERROR",
+          "subagentRunId": "s1",
+          "message": "boom"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "SUBAGENT_STARTED",
+            "subagentRunId": "s1",
+            "name": "researcher"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "hi",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1",
+            "subagentRunId": "s1"
+          },
+          {
+            "type": "SUBAGENT_ERROR",
+            "subagentRunId": "s1",
+            "message": "boom"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: a chunk stream MUST NOT outlive its owner; the synthesized END precedes the subagent's terminal",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). RUN_FINISHED appended."
+    },
+    {
+      "name": "a runtime null tag reads as the parent lane > null-tagged and untagged parent chunks share one lane",
+      "line": 381,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "a",
+          "subagentRunId": null
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m2",
+          "delta": "b"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "a"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m2",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m2",
+            "delta": "b"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m2"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: an absent subagentRunId means the parent agent and MUST NOT be spelled as null",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). RUN_FINISHED appended. One lane: m2's opener closes m1 first (END m1 precedes START m2). DIVERGES from the isolated-stage assertion that the null rides onto START m1: on the canonical pipeline the compatibility boundary removes the event-level null with a warning before expansion, so START m1 carries no subagentRunId.",
+      "warnings": [
+        "subagentRunId: null"
+      ]
+    },
+    {
+      "name": "a runtime null tag reads as the parent lane > keeps a null tag fatal whichever stage reaches it first",
+      "line": 419,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "a",
+          "subagentRunId": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "a"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: an absent subagentRunId means the parent agent and MUST NOT be spelled as null",
+      "notes": "wrapped: RUN_STARTED prepended (TS test drove transformChunks alone). RUN_FINISHED appended. DIVERGES from the title: on the canonical pipeline the run is NOT fatal. The compatibility boundary reads an event-level subagentRunId: null as absent (a deprecated shape, warned), and verification tolerates it the same way; the TS test only asserts that expansion run alone (the middleware path) keeps the null on a synthesized event.",
+      "warnings": [
+        "subagentRunId: null"
+      ]
+    }
+  ]
+}

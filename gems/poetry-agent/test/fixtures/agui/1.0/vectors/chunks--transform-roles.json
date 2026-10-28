@@ -1,0 +1,370 @@
+{
+  "source": "chunks/__tests__/transform-roles.test.ts",
+  "vectors": [
+    {
+      "name": "transformChunks with roles > should preserve role 'developer' when transforming text message chunks [developer]",
+      "line": 18,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-developer",
+          "role": "developer",
+          "delta": "Hello from developer"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-developer",
+            "role": "developer"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-developer",
+            "delta": "Hello from developer"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-developer"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#the-first-chunk: an explicit role on the first chunk rides on the synthesized START unchanged",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone). it.each row 'developer'; the test asserts length 4 and START role/messageId, CONTENT delta."
+    },
+    {
+      "name": "transformChunks with roles > should preserve role 'system' when transforming text message chunks [system]",
+      "line": 18,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-system",
+          "role": "system",
+          "delta": "Hello from system"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-system",
+            "role": "system"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-system",
+            "delta": "Hello from system"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-system"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#the-first-chunk: an explicit role on the first chunk rides on the synthesized START unchanged",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone). it.each row 'system'; the test asserts length 4 and START role/messageId, CONTENT delta."
+    },
+    {
+      "name": "transformChunks with roles > should preserve role 'assistant' when transforming text message chunks [assistant]",
+      "line": 18,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-assistant",
+          "role": "assistant",
+          "delta": "Hello from assistant"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-assistant",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-assistant",
+            "delta": "Hello from assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-assistant"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#the-first-chunk: an explicit role on the first chunk rides on the synthesized START unchanged",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone). it.each row 'assistant'; the test asserts length 4 and START role/messageId, CONTENT delta."
+    },
+    {
+      "name": "transformChunks with roles > should preserve role 'user' when transforming text message chunks [user]",
+      "line": 18,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-user",
+          "role": "user",
+          "delta": "Hello from user"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-user",
+            "role": "user"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-user",
+            "delta": "Hello from user"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-user"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#the-first-chunk: an explicit role on the first chunk rides on the synthesized START unchanged",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone). it.each row 'user'; the test asserts length 4 and START role/messageId, CONTENT delta."
+    },
+    {
+      "name": "transformChunks with roles > should preserve role 'tool' when transforming text message chunks [tool]",
+      "line": 18,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-tool",
+          "role": "tool",
+          "delta": "Hello from tool"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#what-a-consumer-does-with-unrecognised-material: a text message role outside developer|system|assistant|user is a closed-set value the reference rejects as malformed (an admitted gap: the rule says strip)",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone). CONTRADICTION: the TS test (transformChunks alone) asserts role 'tool' is preserved onto TEXT_MESSAGE_START, but on the full pipeline enforcement rejects the chunk first because the 1.0 TextMessageRole enum is developer|system|assistant|user. Rejected by enforcement first on the canonical order; the TS stage asserted no error (it asserted START.role == 'tool'). The protocol outcome is a rejection (zod message, not portable), hence the empty fragment. Same admitted gap the corpus pins as unknown-enum-value-role-fatal."
+    },
+    {
+      "name": "transformChunks with roles > should default to 'assistant' role when chunk has no role",
+      "line": 59,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-default",
+          "delta": "Hello default"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-default",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-default",
+            "delta": "Hello default"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-default"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#the-first-chunk: an absent role means assistant",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone). The test asserts length 4 and START.role."
+    },
+    {
+      "name": "transformChunks with roles > should handle multiple chunks with different roles",
+      "line": 92,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-user",
+          "role": "user",
+          "delta": "User message"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-system",
+          "role": "system",
+          "delta": "System message"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-user",
+            "role": "user"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-user",
+            "delta": "User message"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-user"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-system",
+            "role": "system"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-system",
+            "delta": "System message"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-system"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#continuation-chunks: a chunk naming a different id opens a new item with its own role; the previous closes first",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone). The test asserts length 7 and both STARTs' messageId/role and CONTENT deltas."
+    }
+  ]
+}

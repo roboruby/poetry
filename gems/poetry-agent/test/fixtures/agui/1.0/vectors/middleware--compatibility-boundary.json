@@ -1,0 +1,605 @@
+{
+  "source": "middleware/__tests__/compatibility-boundary.test.ts",
+  "vectors": [
+    {
+      "name": "the inbound compatibility boundary (thinking events) > produces the same materialised messages as the reasoning equivalents",
+      "line": 73,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "THINKING_START"
+        },
+        {
+          "type": "THINKING_TEXT_MESSAGE_START"
+        },
+        {
+          "type": "THINKING_TEXT_MESSAGE_CONTENT",
+          "delta": "pondering…"
+        },
+        {
+          "type": "THINKING_TEXT_MESSAGE_END"
+        },
+        {
+          "type": "THINKING_END"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t1",
+            "runId": "r1"
+          },
+          {
+            "type": "REASONING_START",
+            "messageId": "$bind:span"
+          },
+          {
+            "type": "REASONING_MESSAGE_START",
+            "messageId": "$bind:message",
+            "role": "reasoning"
+          },
+          {
+            "type": "REASONING_MESSAGE_CONTENT",
+            "messageId": "$bind:message",
+            "delta": "pondering…"
+          },
+          {
+            "type": "REASONING_MESSAGE_END",
+            "messageId": "$bind:message"
+          },
+          {
+            "type": "REASONING_END",
+            "messageId": "$bind:span"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t1",
+            "runId": "r1"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes: a retired shape is translated into its replacement before enforcement, not dropped (DEPRECATIONS.md: THINKING_* -> REASONING_*)",
+      "warnings": [
+        "THINKING_START"
+      ],
+      "notes": "TS asserts the reducer's materialised messages equal those of the same stream spelled in REASONING_* (ids scrubbed); the vector asserts the translated events that produce them. REASONING_START and REASONING_MESSAGE_START ids are minted by the boundary (random UUIDs in TS, and the span and the message get DIFFERENT ids); the vector checks them only for consistency via $bind. THINKING_TEXT_MESSAGE_START translates with role 'reasoning'. TS drives agent.runAgent (boundary installed innermost)."
+    },
+    {
+      "name": "the inbound compatibility boundary (thinking events) > translates exactly once even when a version-gated 0045 is also installed",
+      "line": 111,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "THINKING_START"
+        },
+        {
+          "type": "THINKING_END"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t1",
+            "runId": "r1"
+          },
+          {
+            "type": "REASONING_START",
+            "messageId": "$bind:span"
+          },
+          {
+            "type": "REASONING_END",
+            "messageId": "$bind:span"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t1",
+            "runId": "r1"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes: a retired shape is translated into its replacement before enforcement, not dropped (DEPRECATIONS.md: THINKING_* -> REASONING_*)",
+      "notes": "TS runs against a peer whose maxVersion is 0.0.45, so the version-gated BackwardCompatibility_0_0_45 middleware is installed too; it asserts exactly one REASONING_START and no THINKING_START reaches subscribers. The Ruby pipeline is built with middleware: [], so only the boundary translates; the protocol-level outcome is the same: one translation. REASONING_START and REASONING_MESSAGE_START ids are minted by the boundary (random UUIDs in TS, and the span and the message get DIFFERENT ids); the vector checks them only for consistency via $bind."
+    },
+    {
+      "name": "the inbound compatibility boundary (legacy binary content) > upgrades binary parts inside an inbound messages snapshot",
+      "line": 137,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "u1",
+              "role": "user",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "look:"
+                },
+                {
+                  "type": "binary",
+                  "mimeType": "image/png",
+                  "data": "aGk="
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t1",
+            "runId": "r1"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "u1",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "look:"
+                  },
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "data",
+                      "value": "aGk=",
+                      "mimeType": "image/png"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t1",
+            "runId": "r1"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md: {type: binary} input content part -> media parts with a source, on requests AND response events)",
+      "warnings": [
+        "binary input content"
+      ],
+      "notes": "TS asserts the snapshot's content becomes [text, {type: image, source: {type: data, value, mimeType}}] and that a warning names 'binary input content'."
+    },
+    {
+      "name": "the inbound compatibility boundary (legacy nulls) > converts %s null to absent, end to end [TOOL_CALL_START.parentMessageId]",
+      "line": 209,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc1",
+          "toolCallName": "f",
+          "parentMessageId": null
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t1",
+            "runId": "r1"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "tc1",
+            "toolCallName": "f"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "tc1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t1",
+            "runId": "r1"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "TOOL_CALL_START.parentMessageId: null"
+      ],
+      "notes": "TS asserts the delivered TOOL_CALL_START carries no null parentMessageId and that a warning mentions 'null'."
+    },
+    {
+      "name": "the inbound compatibility boundary (legacy nulls) > converts %s null to absent, end to end [TOOL_CALL_CHUNK.parentMessageId]",
+      "line": 209,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tc1",
+          "toolCallName": "f",
+          "delta": "{}",
+          "parentMessageId": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t1",
+            "runId": "r1"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "tc1",
+            "toolCallName": "f"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "tc1",
+            "delta": "{}"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "tc1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t1",
+            "runId": "r1"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "TOOL_CALL_CHUNK.parentMessageId: null"
+      ],
+      "notes": "TS asserts the delivered TOOL_CALL_CHUNK carries no null parentMessageId and that a warning mentions 'null'. The null must be gone before the chunk is enforced and expanded: the boundary sees the RAW chunk."
+    },
+    {
+      "name": "the inbound compatibility boundary (legacy nulls) > converts %s null to absent, end to end [RUN_FINISHED.outcome]",
+      "line": 209,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1",
+          "outcome": null
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t1",
+            "runId": "r1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t1",
+            "runId": "r1"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation",
+      "warnings": [
+        "RUN_FINISHED.outcome: null"
+      ],
+      "notes": "TS asserts the delivered RUN_FINISHED carries no null outcome and that a warning mentions 'null'."
+    },
+    {
+      "name": "the inbound compatibility boundary (legacy nulls) > a null VALUE under a metadata key is data and survives untouched",
+      "line": 253,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "s",
+          "metadata": {
+            "finishReason": null
+          }
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "s"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t1",
+            "runId": "r1"
+          },
+          {
+            "type": "STEP_STARTED",
+            "metadata": {
+              "finishReason": null
+            },
+            "stepName": "s"
+          },
+          {
+            "type": "STEP_FINISHED",
+            "stepName": "s"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t1",
+            "runId": "r1"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/metadata (DEPRECATIONS.md: a null value under a metadata key is data, never an absence)",
+      "notes": "TS asserts STEP_STARTED.metadata is delivered as {finishReason: null}."
+    },
+    {
+      "name": "the boundary on the connect/subscribe path > translates thinking events arriving through connectAgent",
+      "line": 272,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "THINKING_START"
+        },
+        {
+          "type": "THINKING_END"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t1",
+            "runId": "r1"
+          },
+          {
+            "type": "REASONING_START",
+            "messageId": "$bind:span"
+          },
+          {
+            "type": "REASONING_END",
+            "messageId": "$bind:span"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t1",
+            "runId": "r1"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes: a retired shape is translated into its replacement before enforcement, not dropped (DEPRECATIONS.md: THINKING_* -> REASONING_*); /spec/1.0/basic/processing#where-middleware-sits: the ordering applies on every path, reconnection and replay included",
+      "notes": "TS drives connectAgent (the connect path applies the boundary as a plain operator, no middleware chain); asserts a REASONING_START arrives and no THINKING_START. One pipeline in Ruby, so this collapses to the same stream as the run path. REASONING_START and REASONING_MESSAGE_START ids are minted by the boundary (random UUIDs in TS, and the span and the message get DIFFERENT ids); the vector checks them only for consistency via $bind."
+    },
+    {
+      "name": "the boundary sees raw chunks (before chunk transformation) > converts a null parentMessageId on a continuation chunk too",
+      "line": 300,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tc1",
+          "toolCallName": "f",
+          "delta": "{"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tc1",
+          "delta": "}",
+          "parentMessageId": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t1",
+            "runId": "r1"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "tc1",
+            "toolCallName": "f"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "tc1",
+            "delta": "{"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "tc1",
+            "delta": "}"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "tc1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t1",
+            "runId": "r1"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation; /spec/1.0/basic/processing#where-middleware-sits: the compatibility boundary MUST see the stream first, because a retired shape can be a chunk",
+      "warnings": [
+        "TOOL_CALL_CHUNK.parentMessageId: null"
+      ],
+      "notes": "TS asserts a TOOL_CALL_START is delivered and a warning mentions 'null'. Continuation chunks lose their extra fields in expansion, so the boundary must convert (and announce) the null on the raw chunk before expansion runs."
+    },
+    {
+      "name": "the inbound compatibility boundary (what the translation costs) > says that a THINKING_START title is dropped",
+      "line": 329,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "THINKING_START",
+          "title": "Working"
+        },
+        {
+          "type": "THINKING_END"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t1",
+            "runId": "r1"
+          },
+          {
+            "type": "REASONING_START",
+            "messageId": "$bind:span"
+          },
+          {
+            "type": "REASONING_END",
+            "messageId": "$bind:span"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t1",
+            "runId": "r1"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes: a translation that loses content in the process MUST warn",
+      "warnings": [
+        "THINKING_START.title",
+        "Working"
+      ],
+      "notes": "TS asserts only the warning text (it names THINKING_START.title and the value 'Working'); the delivered REASONING_START carries no title. REASONING_START and REASONING_MESSAGE_START ids are minted by the boundary (random UUIDs in TS, and the span and the message get DIFFERENT ids); the vector checks them only for consistency via $bind."
+    },
+    {
+      "name": "the inbound compatibility boundary (what the translation costs) > says that it minted an id for a continuation with no opener",
+      "line": 343,
+      "stage": "compat",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "THINKING_TEXT_MESSAGE_CONTENT",
+          "delta": "orphan"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "error": "REASONING_MESSAGE_CONTENT"
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: a content event for an identifier that is not open is a violation",
+      "warnings": [
+        "Minting a messageId",
+        "THINKING_TEXT_MESSAGE_CONTENT"
+      ],
+      "notes": "TS asserts rejects.toThrow(/REASONING_MESSAGE_CONTENT/): verification refuses the translated content event because nothing opened the id the boundary had to mint (TS message: \"Cannot send 'REASONING_MESSAGE_CONTENT' event: No active reasoning message found with ID '<minted uuid>'...\"). The id is random, so only the event type is a stable fragment. Warnings: the mint is announced, naming THINKING_TEXT_MESSAGE_CONTENT."
+    }
+  ]
+}

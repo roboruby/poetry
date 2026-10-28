@@ -43,9 +43,14 @@ module Poetry
         # @param remove_targets [#call, nil] `(id) -> String` a CSS selector for what a
         #   message the transcript dropped (a snapshot renamed or left it out) takes
         #   off the page - the list wrapper around its row; defaults to the row itself
+        # @param pipeline [Pipeline, nil] what raw events pass through before the
+        #   transcript (a strict {Pipeline} by default); nil when the events arrive
+        #   verified already, from {Client#run}
         def initialize(transcript:, render:, container: nil, target: ->(message) { "row-#{message.id}" }, # rubocop:disable Metrics/ParameterLists
-                       action: "vreplace", append_render: nil, morph: false, remove_targets: nil)
+                       action: "vreplace", append_render: nil, morph: false, remove_targets: nil,
+                       pipeline: Pipeline.new)
           @transcript = transcript
+          @pipeline = pipeline
           @render = render
           @append_render = append_render || render
           @container = container
@@ -58,13 +63,34 @@ module Poetry
 
         # Applies an event and answers the Turbo Streams it produced: an
         # append for a message's first appearance (when a container is
-        # set), then the update action for every change.
+        # set), the update action for every change, a removal for a row a
+        # snapshot dropped. The event goes through the relay's pipeline first.
         #
-        # @param event [Hash]
+        # @param event [Hash] a raw wire event (a verified one when the relay has no pipeline)
         # @return [Array<String>]
+        # @raise [ProtocolError] for a stream the pipeline rejects
         def apply(event)
-          @transcript.apply(event).filter_map { |id| stream_for(id) }
+          events = @pipeline ? @pipeline.push(event) : [event]
+          events.flat_map { |verified| @transcript.apply(verified) }.uniq.filter_map { |id| stream_for(id) }
+        rescue ProtocolError => e
+          # What preceded the failure was delivered: the transcript holds it,
+          # so a page re-rendered from the transcript shows it.
+          e.events.each { |verified| @transcript.apply(verified) }
+          raise
         end
+
+        # The end of the stream: closes the pipeline, which synthesizes nothing.
+        #
+        # @return [Array<String>] always empty
+        def finish
+          @pipeline&.finish
+          []
+        end
+
+        # The pipeline raw events pass through, nil when they arrive verified.
+        #
+        # @return [Pipeline, nil]
+        attr_reader :pipeline
 
         # Marks message ids the page already renders, so their next change
         # is an update rather than an append (server-rendered history).

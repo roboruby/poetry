@@ -1,0 +1,32 @@
+data: {"type":"RUN_STARTED","threadId":"thread-human_in_the_loop","runId":"1ece5b23-bb8b-40f1-bee9-95313503d536","protocolVersion":"1.0"}
+
+data: {"type":"TOOL_CALL_START","toolCallId":"125af8a0-f420-46c7-a759-17b77d3cd9ef","toolCallName":"generate_task_steps"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"125af8a0-f420-46c7-a759-17b77d3cd9ef","delta":"{\"steps\":["}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"125af8a0-f420-46c7-a759-17b77d3cd9ef","delta":"{\"description\": \"Step 1\", \"status\": \"enabled\"},"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"125af8a0-f420-46c7-a759-17b77d3cd9ef","delta":"{\"description\": \"Step 2\", \"status\": \"enabled\"},"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"125af8a0-f420-46c7-a759-17b77d3cd9ef","delta":"{\"description\": \"Step 3\", \"status\": \"enabled\"},"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"125af8a0-f420-46c7-a759-17b77d3cd9ef","delta":"{\"description\": \"Step 4\", \"status\": \"enabled\"},"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"125af8a0-f420-46c7-a759-17b77d3cd9ef","delta":"{\"description\": \"Step 5\", \"status\": \"enabled\"},"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"125af8a0-f420-46c7-a759-17b77d3cd9ef","delta":"{\"description\": \"Step 6\", \"status\": \"enabled\"},"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"125af8a0-f420-46c7-a759-17b77d3cd9ef","delta":"{\"description\": \"Step 7\", \"status\": \"enabled\"},"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"125af8a0-f420-46c7-a759-17b77d3cd9ef","delta":"{\"description\": \"Step 8\", \"status\": \"enabled\"},"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"125af8a0-f420-46c7-a759-17b77d3cd9ef","delta":"{\"description\": \"Step 9\", \"status\": \"enabled\"},"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"125af8a0-f420-46c7-a759-17b77d3cd9ef","delta":"{\"description\": \"Step 10\", \"status\": \"enabled\"}"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"125af8a0-f420-46c7-a759-17b77d3cd9ef","delta":"]}"}
+
+data: {"type":"TOOL_CALL_END","toolCallId":"125af8a0-f420-46c7-a759-17b77d3cd9ef"}
+
+data: {"type":"RUN_FINISHED","threadId":"thread-human_in_the_loop","runId":"1ece5b23-bb8b-40f1-bee9-95313503d536"}
+

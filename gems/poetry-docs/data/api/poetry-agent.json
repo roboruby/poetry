@@ -4682,7 +4682,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui.rb",
-          "line": 80
+          "line": 88
         },
         {
           "name": "tool_descriptor",
@@ -4719,14 +4719,14 @@
             }
           ],
           "file": "lib/poetry/agent/agui.rb",
-          "line": 66
+          "line": 74
         }
       ],
       "constants": [
         {
           "name": "EVENT_TYPES",
           "value": "%w[\n  RUN_STARTED RUN_FINISHED RUN_ERROR STEP_STARTED STEP_FINISHED\n  TEXT_MESSAGE_START TEXT_MESSAGE_CONTENT TEXT_MESSAGE_END TEXT_MESSAGE_CHUNK\n  REASONING_START REASONING_MESSAGE_START REASONING_ME",
-          "docstring": "The AG-UI event types this transcript understands (the wire\nstrings; deprecated THINKING_* aliases included)."
+          "docstring": "The AG-UI event types a stream may carry (the wire strings, the\nretired THINKING_* shapes included). A {Pipeline} reads them all;\nwhat it delivers to a {Transcript} is never a chunk or a retired shape."
         },
         {
           "name": "PROTOCOL_VERSION",
@@ -4734,6 +4734,551 @@
           "docstring": "The AG-UI protocol version this client speaks, declared on every\nrun input (`RunAgentInput.protocolVersion`)."
         }
       ]
+    },
+    {
+      "path": "Poetry::Agent::AGUI::ChunkExpansion",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "Chunk expansion, a port of the TypeScript client's chunks/transform.ts.\nTEXT_MESSAGE_CHUNK, TOOL_CALL_CHUNK and REASONING_MESSAGE_CHUNK become the\nstart/content/end form, so verification and application only ever see the\ntriad. It runs AFTER enforcement, so every chunk it meets is already\nschema-valid and carries only described properties.\n\n  chunks = ChunkExpansion.new\n  chunks.call(event) # => Array of events (the event itself, or what it expands to)\n  chunks.finish      # => [] (lanes still open are dropped, never closed)\n\nA rejection raises ProtocolError (stage :expansion) BEFORE any state\nchanges, so lenient mode can drop the chunk and carry on.",
+      "examples": [],
+      "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+      "methods": [
+        {
+          "name": "call",
+          "scope": "instance",
+          "group": null,
+          "signature": "call(event)",
+          "docstring": "One event in, the events it stands for out: a chunk becomes its stream's START and CONTENT, an\nevent that closes lanes follows the ENDs it forces, and anything else passes through.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "Hash"
+              ],
+              "text": "an enforced event"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 71
+        },
+        {
+          "name": "finish",
+          "scope": "instance",
+          "group": null,
+          "signature": "finish",
+          "docstring": "End of stream: a lane still open is dropped, never closed. The spec\nforbids synthesizing a terminal for a truncated run, and TS's finalize\ndiscards the END events it builds here for the same reason.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 87
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize",
+          "docstring": "An expander with no lane open.",
+          "params": [],
+          "return": {
+            "types": [
+              "ChunkExpansion"
+            ],
+            "text": "a new instance of ChunkExpansion"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 56
+        },
+        {
+          "name": "open?",
+          "scope": "instance",
+          "group": null,
+          "signature": "open?",
+          "docstring": "Whether any lane is mid-assembly.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 64
+        }
+      ],
+      "constants": [
+        {
+          "name": "CLOSES_ALL_LANES",
+          "value": "Set.new(%w[RUN_STARTED RUN_FINISHED RUN_ERROR MESSAGES_SNAPSHOT]).freeze",
+          "docstring": "Run-level events describe the whole run, so every lane closes."
+        },
+        {
+          "name": "CLOSES_OWN_LANE",
+          "value": "%w[\n  TEXT_MESSAGE_START TEXT_MESSAGE_CONTENT TEXT_MESSAGE_END\n  TOOL_CALL_START TOOL_CALL_ARGS TOOL_CALL_END TOOL_CALL_RESULT\n  STATE_SNAPSHOT STATE_DELTA CUSTOM STEP_STARTED STEP_FINISHED\n  REASONIN",
+          "docstring": "An explicit event closes the pending stream in ITS OWN lane only.\nA subagent's terminal closes that subagent's lane too."
+        },
+        {
+          "name": "FORMS",
+          "value": "{\n  \"TEXT_MESSAGE_CHUNK\" => Form.new(kind: :text, id_field: \"messageId\", entity: \"text message\",\n                                   start: \"TEXT_MESSAGE_START\", content: \"TEXT_MESSAGE_CONTENT\",\n      ",
+          "docstring": "The expansion form for each chunk type."
+        },
+        {
+          "name": "FORM_BY_KIND",
+          "value": "FORMS.values.to_h { |form| [form.kind, form] }.freeze",
+          "docstring": "The same forms keyed by kind (:text, :tool, :reasoning)."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::AGUI::ChunkExpansion::Form",
+      "type": "class",
+      "superclass": "Struct",
+      "docstring": "What each chunk shape expands into.",
+      "examples": [],
+      "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+      "methods": [
+        {
+          "name": "chunk_type",
+          "scope": "instance",
+          "group": null,
+          "signature": "chunk_type",
+          "docstring": "Returns the value of attribute chunk_type",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of chunk_type"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 34
+        },
+        {
+          "name": "chunk_type=",
+          "scope": "instance",
+          "group": null,
+          "signature": "chunk_type=(value)",
+          "docstring": "Sets the attribute chunk_type",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute chunk_type to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 34
+        },
+        {
+          "name": "content",
+          "scope": "instance",
+          "group": null,
+          "signature": "content",
+          "docstring": "Returns the value of attribute content",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of content"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 34
+        },
+        {
+          "name": "content=",
+          "scope": "instance",
+          "group": null,
+          "signature": "content=(value)",
+          "docstring": "Sets the attribute content",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute content to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 34
+        },
+        {
+          "name": "end",
+          "scope": "instance",
+          "group": null,
+          "signature": "end",
+          "docstring": "Returns the value of attribute end",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of end"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 34
+        },
+        {
+          "name": "end=",
+          "scope": "instance",
+          "group": null,
+          "signature": "end=(value)",
+          "docstring": "Sets the attribute end",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute end to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 34
+        },
+        {
+          "name": "entity",
+          "scope": "instance",
+          "group": null,
+          "signature": "entity",
+          "docstring": "Returns the value of attribute entity",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of entity"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 34
+        },
+        {
+          "name": "entity=",
+          "scope": "instance",
+          "group": null,
+          "signature": "entity=(value)",
+          "docstring": "Sets the attribute entity",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute entity to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 34
+        },
+        {
+          "name": "id_field",
+          "scope": "instance",
+          "group": null,
+          "signature": "id_field",
+          "docstring": "Returns the value of attribute id_field",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of id_field"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 34
+        },
+        {
+          "name": "id_field=",
+          "scope": "instance",
+          "group": null,
+          "signature": "id_field=(value)",
+          "docstring": "Sets the attribute id_field",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute id_field to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 34
+        },
+        {
+          "name": "kind",
+          "scope": "instance",
+          "group": null,
+          "signature": "kind",
+          "docstring": "Returns the value of attribute kind",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of kind"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 34
+        },
+        {
+          "name": "kind=",
+          "scope": "instance",
+          "group": null,
+          "signature": "kind=(value)",
+          "docstring": "Sets the attribute kind",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute kind to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 34
+        },
+        {
+          "name": "start",
+          "scope": "instance",
+          "group": null,
+          "signature": "start",
+          "docstring": "Returns the value of attribute start",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of start"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 34
+        },
+        {
+          "name": "start=",
+          "scope": "instance",
+          "group": null,
+          "signature": "start=(value)",
+          "docstring": "Sets the attribute start",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute start to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 34
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::AGUI::ChunkExpansion::Pending",
+      "type": "class",
+      "superclass": "Struct",
+      "docstring": "The stream one lane is assembling. `fields` are what the opener\nestablished (role, name, toolCallName, parentMessageId, subagentRunId),\nkept so a repeat can be judged against them.",
+      "examples": [],
+      "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+      "methods": [
+        {
+          "name": "fields",
+          "scope": "instance",
+          "group": null,
+          "signature": "fields",
+          "docstring": "Returns the value of attribute fields",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of fields"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 53
+        },
+        {
+          "name": "fields=",
+          "scope": "instance",
+          "group": null,
+          "signature": "fields=(value)",
+          "docstring": "Sets the attribute fields",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute fields to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 53
+        },
+        {
+          "name": "form",
+          "scope": "instance",
+          "group": null,
+          "signature": "form",
+          "docstring": "Returns the value of attribute form",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of form"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 53
+        },
+        {
+          "name": "form=",
+          "scope": "instance",
+          "group": null,
+          "signature": "form=(value)",
+          "docstring": "Sets the attribute form",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute form to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 53
+        },
+        {
+          "name": "id",
+          "scope": "instance",
+          "group": null,
+          "signature": "id",
+          "docstring": "Returns the value of attribute id",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of id"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 53
+        },
+        {
+          "name": "id=",
+          "scope": "instance",
+          "group": null,
+          "signature": "id=(value)",
+          "docstring": "Sets the attribute id",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute id to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/chunk_expansion.rb",
+          "line": 53
+        }
+      ],
+      "constants": []
     },
     {
       "path": "Poetry::Agent::AGUI::Client",
@@ -4793,8 +5338,8 @@
           "name": "run",
           "scope": "instance",
           "group": null,
-          "signature": "run(input, &)",
-          "docstring": "Runs the agent and yields every event.",
+          "signature": "run(input, pipeline: Pipeline.new, &block)",
+          "docstring": "Runs the agent and yields every VERIFIED event, as AG-UI 1.0's\nprocessing model requires of a client that hands events to\napplication code. The input is prepared on the way out\n({Pipeline#outgoing}: unrecognised material stripped with a warning,\na malformed known field fatal before anything is sent), and the\nstream goes through the pipeline on the way in.",
           "params": [
             {
               "name": "input",
@@ -4802,13 +5347,20 @@
                 "Hash"
               ],
               "text": "the wire hash ({RunInput.build})"
+            },
+            {
+              "name": "pipeline",
+              "types": [
+                "Pipeline"
+              ],
+              "text": "the consumer pipeline (strict unless given a lenient one)"
             }
           ],
           "return": {
             "types": [
-              "SSE::Parser"
+              "Pipeline"
             ],
-            "text": "the parser (its `errors` list any unreadable lines)"
+            "text": "the pipeline: its `warnings`, and `truncated?` for a run that broke off"
           },
           "examples": [
             {
@@ -4817,7 +5369,7 @@
             }
           ],
           "file": "lib/poetry/agent/agui/client.rb",
-          "line": 51
+          "line": 58
         }
       ],
       "constants": []
@@ -4881,6 +5433,437 @@
         }
       ],
       "constants": []
+    },
+    {
+      "path": "Poetry::Agent::AGUI::Enforcement",
+      "type": "module",
+      "superclass": null,
+      "docstring": "AG-UI 1.0 enforcement: unrecognised material is dropped or stripped\nwith a warning, a malformed known value is fatal. Driven only by the\ncontract table (config/agui/contract-1.0.json, generated from the\nvendored 1.0 schema by `rake agui:contract`), one pass per event. It\nmirrors the reference client's strip stage (what is stripped, where,\nand the reported paths) and the validation that follows it (what is\nfatal). Adapted from an MIT-licensed source (THIRD_PARTY_NOTICES.md).\n\nThe input is never mutated; a value comes back as the same object when\nnothing inside it changed (copy on write).",
+      "examples": [
+        {
+          "title": "",
+          "text": "walker = Poetry::Agent::AGUI::Enforcement::Walker.default\nevent = walker.event(raw) { |warning| warnings << warning } # nil when the event is dropped\ninput = walker.input(raw) { |warning| warnings << warning } # the outgoing RunAgentInput"
+        }
+      ],
+      "file": "lib/poetry/agent/agui/enforcement.rb",
+      "methods": [
+        {
+          "name": "integer?",
+          "scope": "class",
+          "group": null,
+          "signature": "integer?(value)",
+          "docstring": "JSON Schema's integer: any number with a zero fractional part. Ruby parses\n1.0 as a Float, JavaScript as 1; both are the integer one.",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/enforcement.rb",
+          "line": 81
+        },
+        {
+          "name": "kind",
+          "scope": "class",
+          "group": null,
+          "signature": "kind(value)",
+          "docstring": "A value's JSON kind, for messages.",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/enforcement.rb",
+          "line": 64
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::AGUI::Enforcement::ContractMismatch",
+      "type": "class",
+      "superclass": "StandardError",
+      "docstring": "The contract and the walker disagree: unreachable unless the table changes.",
+      "examples": [],
+      "file": "lib/poetry/agent/agui/enforcement.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::AGUI::Enforcement::LimitError",
+      "type": "class",
+      "superclass": "Poetry::Agent::AGUI::ProtocolError",
+      "docstring": "The payload is larger than the enforcement budget.",
+      "examples": [],
+      "file": "lib/poetry/agent/agui/enforcement.rb",
+      "methods": [
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(message)",
+          "docstring": "A budget rejection.",
+          "params": [
+            {
+              "name": "message",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "LimitError"
+            ],
+            "text": "a new instance of LimitError"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/enforcement.rb",
+          "line": 51
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::AGUI::Enforcement::Malformed",
+      "type": "class",
+      "superclass": "Poetry::Agent::AGUI::ProtocolError",
+      "docstring": "A field the protocol describes, holding a value the schema rejects.",
+      "examples": [],
+      "file": "lib/poetry/agent/agui/enforcement.rb",
+      "methods": [
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(keyword, path, detail, label = nil)",
+          "docstring": "A rejection naming the keyword, the path and what was expected.",
+          "params": [
+            {
+              "name": "keyword",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "path",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "detail",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "label",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the event type or definition being walked"
+            }
+          ],
+          "return": {
+            "types": [
+              "Malformed"
+            ],
+            "text": "a new instance of Malformed"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/enforcement.rb",
+          "line": 39
+        },
+        {
+          "name": "keyword",
+          "scope": "instance",
+          "group": null,
+          "signature": "keyword",
+          "docstring": "The schema keyword that failed (type, required, const, enum, ...).",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/enforcement.rb",
+          "line": 28
+        },
+        {
+          "name": "path",
+          "scope": "instance",
+          "group": null,
+          "signature": "path",
+          "docstring": "The JSON Pointer to the value.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/enforcement.rb",
+          "line": 32
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::AGUI::Enforcement::Walker",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The walker over a compiled contract table. It keeps no per-stream\nstate, so one instance serves every stream ({.default}).",
+      "examples": [],
+      "file": "lib/poetry/agent/agui/enforcement.rb",
+      "methods": [
+        {
+          "name": "default",
+          "scope": "class",
+          "group": null,
+          "signature": "default",
+          "docstring": "The shared walker over the shipped table.",
+          "params": [],
+          "return": {
+            "types": [
+              "Walker"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/enforcement.rb",
+          "line": 481
+        },
+        {
+          "name": "load",
+          "scope": "class",
+          "group": null,
+          "signature": "load(path = DEFAULT_CONTRACT, max_entries: DEFAULT_MAX_ENTRIES)",
+          "docstring": "A walker over a contract table file.",
+          "params": [
+            {
+              "name": "path",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "max_entries",
+              "types": [
+                "Integer"
+              ],
+              "text": "the entry budget per walk"
+            }
+          ],
+          "return": {
+            "types": [
+              "Walker"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/enforcement.rb",
+          "line": 475
+        },
+        {
+          "name": "definition",
+          "scope": "instance",
+          "group": null,
+          "signature": "definition(raw, name)",
+          "docstring": "Any definition by anchor: the value and the paths stripped from it.",
+          "params": [
+            {
+              "name": "raw",
+              "types": [
+                "Object"
+              ],
+              "text": ""
+            },
+            {
+              "name": "name",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Array(Object, Array<String>)"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/enforcement.rb",
+          "line": 567
+        },
+        {
+          "name": "event",
+          "scope": "instance",
+          "group": null,
+          "signature": "event(raw, &on_warning)",
+          "docstring": "One incoming event, after middleware: the value to deliver, nil when\nthe event is dropped. Each removal is reported to the block.",
+          "params": [
+            {
+              "name": "raw",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/enforcement.rb",
+          "line": 516
+        },
+        {
+          "name": "event_types",
+          "scope": "instance",
+          "group": null,
+          "signature": "event_types",
+          "docstring": "The event types the contract describes.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/enforcement.rb",
+          "line": 507
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(table, max_entries: DEFAULT_MAX_ENTRIES)",
+          "docstring": "A walker over a parsed table.",
+          "params": [
+            {
+              "name": "table",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            },
+            {
+              "name": "max_entries",
+              "types": [
+                "Integer"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Walker"
+            ],
+            "text": "a new instance of Walker"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/enforcement.rb",
+          "line": 486
+        },
+        {
+          "name": "input",
+          "scope": "instance",
+          "group": null,
+          "signature": "input(raw, omit_optional_nulls: true, &on_warning)",
+          "docstring": "The outgoing RunAgentInput, immediately before transmission. Like\nenforceOutgoingInput, a null in an optional field is first read as\nabsent, silently (every optional field in 1.0 rejects null, so this only\never removes a value that would otherwise be fatal).",
+          "params": [
+            {
+              "name": "raw",
+              "types": [
+                "Hash"
+              ],
+              "text": ""
+            },
+            {
+              "name": "omit_optional_nulls",
+              "types": [
+                "Boolean"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/enforcement.rb",
+          "line": 550
+        },
+        {
+          "name": "table",
+          "scope": "instance",
+          "group": null,
+          "signature": "table",
+          "docstring": "The parsed contract table.",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/enforcement.rb",
+          "line": 469
+        }
+      ],
+      "constants": [
+        {
+          "name": "DEFAULT_CONTRACT",
+          "value": "File.expand_path(\"../../../../config/agui/contract-1.0.json\", __dir__)",
+          "docstring": "The contract table that ships with the gem."
+        },
+        {
+          "name": "DEFAULT_MAX_ENTRIES",
+          "value": "1_000_000",
+          "docstring": "The entry budget: an event with more entries than this is refused."
+        }
+      ]
     },
     {
       "path": "Poetry::Agent::AGUI::JsonPatch",
@@ -4976,6 +5959,426 @@
       "constants": []
     },
     {
+      "path": "Poetry::Agent::AGUI::Pipeline",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "The AG-UI 1.0 processing pipeline, in the order the specification\nfixes:\n\n  compatibility boundary -> middleware -> enforcement -> chunk expansion -> verification -> application\n\nOne instance per stream; {Client#run} and {Relay} each hold one.\nEverything it returns is verified, expanded and camelCase, so the\n{Transcript} is a plain reducer of it. In strict mode (the conformant\ndefault) a rejection raises {ProtocolError}; the opt-in lenient mode,\nfor developing against an agent that is not yet conformant, drops the\noffending event with a warning instead, and reads snake_case keys.",
+      "examples": [
+        {
+          "title": "Feeding a stream by hand",
+          "text": "pipeline = Poetry::Agent::AGUI::Pipeline.new(on_warning: ->(warning) { Rails.logger.report(warning.message) })\nSSE.parse(body) { |raw| pipeline.push(raw).each { |event| transcript.apply(event) } }\npipeline.finish"
+        }
+      ],
+      "file": "lib/poetry/agent/agui/pipeline.rb",
+      "methods": [
+        {
+          "name": "finish",
+          "scope": "instance",
+          "group": null,
+          "signature": "finish",
+          "docstring": "The end of the stream. Nothing is synthesized: a chunk stream still\nopen is dropped rather than closed, and a run without its terminal\nevent stays truncated (the spec forbids inventing RUN_FINISHED).",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": "always empty"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/pipeline.rb",
+          "line": 109
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(mode: :strict, on_warning: nil, middleware: [], max_protocol_version: nil)",
+          "docstring": "A pipeline for one stream.",
+          "params": [
+            {
+              "name": "mode",
+              "types": [
+                "Symbol"
+              ],
+              "text": ":strict (conformant; a rejection raises) or :lenient (drop and warn)"
+            },
+            {
+              "name": "on_warning",
+              "types": [
+                "#call",
+                "nil"
+              ],
+              "text": "receives each {ProtocolWarning} as it happens"
+            },
+            {
+              "name": "middleware",
+              "types": [
+                "Array<#call>"
+              ],
+              "text": "`(event) -> Array<event>`, run after the\ncompatibility boundary and before enforcement, so they see what the producer sent"
+            },
+            {
+              "name": "max_protocol_version",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the agent's protocol version when it is known\nto be older than this client's (\"0.0.57\", say): the era shims for it are installed,\nboth ways. nil treats the agent as current"
+            }
+          ],
+          "return": {
+            "types": [
+              "Pipeline"
+            ],
+            "text": "a new instance of Pipeline"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/pipeline.rb",
+          "line": 62
+        },
+        {
+          "name": "lenient?",
+          "scope": "instance",
+          "group": null,
+          "signature": "lenient?",
+          "docstring": "Whether this pipeline drops and warns instead of rejecting.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/pipeline.rb",
+          "line": 140
+        },
+        {
+          "name": "mode",
+          "scope": "instance",
+          "group": null,
+          "signature": "mode",
+          "docstring": ":strict or :lenient.",
+          "params": [],
+          "return": {
+            "types": [
+              "Symbol"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/pipeline.rb",
+          "line": 45
+        },
+        {
+          "name": "outgoing",
+          "scope": "instance",
+          "group": null,
+          "signature": "outgoing(input)",
+          "docstring": "The run input as it should be sent to this pipeline's agent. Legacy\nbinary content parts become media parts; for an agent pinned to an\nolder version the era shims downgrade it (warning about whatever the\nagent cannot receive) and the `protocolVersion` declaration is left\nout where the agent predates it; then it is enforced - unrecognised\nmaterial stripped with a warning, a null in an optional field read as\nabsent, a malformed known field fatal before anything is sent. The\ninput itself is never changed.",
+          "params": [
+            {
+              "name": "input",
+              "types": [
+                "Hash"
+              ],
+              "text": "a wire hash ({RunInput.build})"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "the input to send"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/pipeline.rb",
+          "line": 128
+        },
+        {
+          "name": "push",
+          "scope": "instance",
+          "group": null,
+          "signature": "push(event)",
+          "docstring": "One raw event in; the verified events application code receives, in\norder (zero or more). In strict mode a rejection raises, carrying the\nevents of this push that preceded it ({ProtocolError#events}: they\nare delivered, so hand them on); the pipeline is then spent and every\nlater push raises the same failure, carrying no events.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "Hash"
+              ],
+              "text": "a parsed wire event"
+            }
+          ],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/pipeline.rb",
+          "line": 90
+        },
+        {
+          "name": "truncated?",
+          "scope": "instance",
+          "group": null,
+          "signature": "truncated?",
+          "docstring": "Whether the stream ended with a run still open, or with no run at all.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/pipeline.rb",
+          "line": 136
+        },
+        {
+          "name": "warnings",
+          "scope": "instance",
+          "group": null,
+          "signature": "warnings",
+          "docstring": "Every warning this stream raised, in order.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<ProtocolWarning>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/pipeline.rb",
+          "line": 50
+        }
+      ],
+      "constants": [
+        {
+          "name": "BOUNDARY_KINDS",
+          "value": "%i[open_at_finish nested_run].freeze",
+          "docstring": "Rejections of a well-formed run boundary caused by what came before it."
+        },
+        {
+          "name": "MODES",
+          "value": "%i[strict lenient].freeze",
+          "docstring": "The two modes: conformant, and tolerant for development."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Agent::AGUI::ProtocolError",
+      "type": "class",
+      "superclass": "Poetry::Core::Error",
+      "docstring": "A stream the client rejects: a protocol violation it detected, kept\napart from a run's own RUN_ERROR (a well-formed event, delivered and\nread as the run's status). AG-UI 1.0 makes a malformed known value, a\nbroken open/close discipline and a broken run lifecycle fatal.",
+      "examples": [
+        {
+          "title": "",
+          "text": "begin\n  client.run(input) { |event| relay.transcript.apply(event) }\nrescue Poetry::Agent::AGUI::ProtocolError => e\n  e.stage # => :verification\n  e.message # => \"Cannot send 'RUN_FINISHED' while tool calls are still active: c1\"\nend"
+        }
+      ],
+      "file": "lib/poetry/agent/agui/protocol_error.rb",
+      "methods": [
+        {
+          "name": "events",
+          "scope": "instance",
+          "group": null,
+          "signature": "events",
+          "docstring": "The verified events of the same push that preceded the rejection:\nthe reference client delivers each one before the error, so a caller\nwanting that incremental contract applies them before handling it.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/protocol_error.rb",
+          "line": 35
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize(message = nil, stage: nil, kind: nil, events: [])",
+          "docstring": "A rejection with what rejected it.",
+          "params": [
+            {
+              "name": "message",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": ""
+            },
+            {
+              "name": "stage",
+              "types": [
+                "Symbol",
+                "nil"
+              ],
+              "text": ""
+            },
+            {
+              "name": "kind",
+              "types": [
+                "Symbol",
+                "nil"
+              ],
+              "text": ""
+            },
+            {
+              "name": "events",
+              "types": [
+                "Array<Hash>"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "ProtocolError"
+            ],
+            "text": "a new instance of ProtocolError"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/protocol_error.rb",
+          "line": 43
+        },
+        {
+          "name": "kind",
+          "scope": "instance",
+          "group": null,
+          "signature": "kind",
+          "docstring": "The two rejections of a well-formed run boundary that lenient mode\nadmits instead of dropping (:open_at_finish, :nested_run); nil otherwise.",
+          "params": [],
+          "return": {
+            "types": [
+              "Symbol",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/protocol_error.rb",
+          "line": 28
+        },
+        {
+          "name": "stage",
+          "scope": "instance",
+          "group": null,
+          "signature": "stage",
+          "docstring": "Who rejected the stream: :enforcement, :expansion, :verification or :transport.",
+          "params": [],
+          "return": {
+            "types": [
+              "Symbol",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/protocol_error.rb",
+          "line": 22
+        },
+        {
+          "name": "with_events",
+          "scope": "instance",
+          "group": null,
+          "signature": "with_events(events)",
+          "docstring": "The same rejection, carrying the events delivered before it.",
+          "params": [
+            {
+              "name": "events",
+              "types": [
+                "Array<Hash>"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "ProtocolError"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/protocol_error.rb",
+          "line": 54
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Agent::AGUI::ProtocolWarning",
+      "type": "class",
+      "superclass": "Data",
+      "docstring": "Something the pipeline, the run input's enforcement or the transcript\nremoved, translated, tolerated or could not apply. AG-UI 1.0 requires\nthese be surfaced, never silenced by default: each goes to the\n`on_warning:` callback and is collected.\n\nKinds: :unrecognised_event, :stripped, :translated, :lossy,\n:producer_version, :lenient_dropped, :lenient_admitted, :key_shim,\n:legacy_interrupt, :patch_failed, :activity_missing.",
+      "examples": [
+        {
+          "title": "",
+          "text": "Poetry::Agent::AGUI::ProtocolWarning.new(kind: :stripped, message: \"Removed ... at '/x' on RUN_STARTED.\")"
+        }
+      ],
+      "file": "lib/poetry/agent/agui/protocol_error.rb",
+      "methods": [
+        {
+          "name": "kind",
+          "scope": "instance",
+          "group": null,
+          "signature": "kind",
+          "docstring": "Returns the value of attribute kind",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of kind"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/protocol_error.rb",
+          "line": 70
+        },
+        {
+          "name": "message",
+          "scope": "instance",
+          "group": null,
+          "signature": "message",
+          "docstring": "Returns the value of attribute message",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of message"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/protocol_error.rb",
+          "line": 70
+        },
+        {
+          "name": "to_s",
+          "scope": "instance",
+          "group": null,
+          "signature": "to_s",
+          "docstring": "The warning's sentence.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/protocol_error.rb",
+          "line": 73
+        }
+      ],
+      "constants": []
+    },
+    {
       "path": "Poetry::Agent::AGUI::Relay",
       "type": "class",
       "superclass": "Object",
@@ -4993,14 +6396,14 @@
           "scope": "instance",
           "group": null,
           "signature": "apply(event)",
-          "docstring": "Applies an event and answers the Turbo Streams it produced: an\nappend for a message's first appearance (when a container is\nset), then the update action for every change.",
+          "docstring": "Applies an event and answers the Turbo Streams it produced: an\nappend for a message's first appearance (when a container is\nset), the update action for every change, a removal for a row a\nsnapshot dropped. The event goes through the relay's pipeline first.",
           "params": [
             {
               "name": "event",
               "types": [
                 "Hash"
               ],
-              "text": ""
+              "text": "a raw wire event (a verified one when the relay has no pipeline)"
             }
           ],
           "return": {
@@ -5011,7 +6414,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/relay.rb",
-          "line": 65
+          "line": 72
         },
         {
           "name": "client_tool_streams",
@@ -5043,13 +6446,30 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/relay.rb",
-          "line": 101
+          "line": 127
+        },
+        {
+          "name": "finish",
+          "scope": "instance",
+          "group": null,
+          "signature": "finish",
+          "docstring": "The end of the stream: closes the pipeline, which synthesizes nothing.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": "always empty"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/relay.rb",
+          "line": 85
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(transcript:, render:, container: nil, target: ->(message) { \"row-#{message.id}\" }, # rubocop:disable Metrics/ParameterLists action: \"vreplace\", append_render: nil, morph: false, remove_targets: nil)",
+          "signature": "initialize(transcript:, render:, container: nil, target: ->(message) { \"row-#{message.id}\" }, # rubocop:disable Metrics/ParameterLists action: \"vreplace\", append_render: nil, morph: false, remove_targets: nil, pipeline: Pipeline.new)",
           "docstring": "A relay over a transcript, with the row renderer, container, target and stream action.",
           "params": [
             {
@@ -5110,6 +6530,14 @@
                 "nil"
               ],
               "text": "`(id) -> String` a CSS selector for what a\nmessage the transcript dropped (a snapshot renamed or left it out) takes\noff the page - the list wrapper around its row; defaults to the row itself"
+            },
+            {
+              "name": "pipeline",
+              "types": [
+                "Pipeline",
+                "nil"
+              ],
+              "text": "what raw events pass through before the\ntranscript (a strict {Pipeline} by default); nil when the events arrive\nverified already, from {Client#run}"
             }
           ],
           "return": {
@@ -5120,7 +6548,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/relay.rb",
-          "line": 46
+          "line": 49
         },
         {
           "name": "mark_seen",
@@ -5145,7 +6573,25 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/relay.rb",
-          "line": 74
+          "line": 100
+        },
+        {
+          "name": "pipeline",
+          "scope": "instance",
+          "group": null,
+          "signature": "pipeline",
+          "docstring": "The pipeline raw events pass through, nil when they arrive verified.",
+          "params": [],
+          "return": {
+            "types": [
+              "Pipeline",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/relay.rb",
+          "line": 93
         },
         {
           "name": "stream_for",
@@ -5171,7 +6617,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/relay.rb",
-          "line": 84
+          "line": 110
         },
         {
           "name": "transcript",
@@ -5211,7 +6657,7 @@
           "name": "build",
           "scope": "class",
           "group": null,
-          "signature": "build( # rubocop:disable Metrics/ParameterLists -- one keyword per RunAgentInput field thread_id:, messages:, run_id: SecureRandom.uuid, tools: [], context: [], state: {}, forwarded_props: {}, parent_run_id: nil, resume: nil, protocol_version: PROTOCOL_VERSION)",
+          "signature": "build( # rubocop:disable Metrics/ParameterLists -- one keyword per RunAgentInput field thread_id:, messages:, run_id: SecureRandom.uuid, tools: [], context: [], state: {}, forwarded_props: {}, parent_run_id: nil, resume: nil, interrupts: [], protocol_version: PROTOCOL_VERSION)",
           "docstring": "A RunAgentInput hash from its fields, with a generated run id by default.",
           "params": [
             {
@@ -5280,6 +6726,13 @@
               "text": "{.resume_entry} answers to the last run's interrupts"
             },
             {
+              "name": "interrupts",
+              "types": [
+                "Array<Hash>"
+              ],
+              "text": "the thread's open interrupts ({Transcript#interrupts}):\nthe resume list must cover every one, and may only cancel an expired one"
+            },
+            {
               "name": "protocol_version",
               "types": [
                 "String",
@@ -5298,10 +6751,46 @@
             {
               "title": "A first run with one client tool",
               "text": "RunInput.build(thread_id: \"t1\", messages: [RunInput.user_message(\"hi\")],\n               tools: [Poetry::Agent::AGUI.tool_descriptor(\"sections\", definition)])"
+            },
+            {
+              "title": "Answering the interrupts the last run ended with",
+              "text": "RunInput.build(thread_id: \"t1\", messages: transcript.messages_for_input,\n               interrupts: transcript.interrupts,\n               resume: [RunInput.resume_entry(id, status: \"resolved\", payload: { \"approved\" => true })])"
             }
           ],
           "file": "lib/poetry/agent/agui/run_input.rb",
-          "line": 37
+          "line": 46
+        },
+        {
+          "name": "expired?",
+          "scope": "class",
+          "group": null,
+          "signature": "expired?(interrupt, now: Time.now)",
+          "docstring": "Whether an interrupt's `expiresAt` has passed. The field's format is\nleft open by the spec; this reads it as ISO 8601, and an interrupt\nwhose value does not parse as one has not expired.",
+          "params": [
+            {
+              "name": "interrupt",
+              "types": [
+                "Hash"
+              ],
+              "text": "an interrupt as {Transcript#interrupts} holds it"
+            },
+            {
+              "name": "now",
+              "types": [
+                "Time"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/run_input.rb",
+          "line": 67
         },
         {
           "name": "resume_entry",
@@ -5346,7 +6835,7 @@
             }
           ],
           "file": "lib/poetry/agent/agui/run_input.rb",
-          "line": 87
+          "line": 134
         },
         {
           "name": "tool_message",
@@ -5395,7 +6884,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/run_input.rb",
-          "line": 71
+          "line": 118
         },
         {
           "name": "user_message",
@@ -5433,7 +6922,7 @@
             }
           ],
           "file": "lib/poetry/agent/agui/run_input.rb",
-          "line": 59
+          "line": 106
         }
       ],
       "constants": [
@@ -5481,7 +6970,7 @@
             }
           ],
           "file": "lib/poetry/agent/agui/sse.rb",
-          "line": 85
+          "line": 97
         }
       ],
       "constants": []
@@ -5499,7 +6988,7 @@
           "scope": "instance",
           "group": null,
           "signature": "errors",
-          "docstring": "Lines that carried data the parser could not read as JSON.",
+          "docstring": "Frames whose data the parser could not read as a JSON object.\nTurning bytes into events is the reader's job, and a frame that maps\nto no event is a decode failure: {Client#run} fails the run on one.",
           "params": [],
           "return": {
             "types": [
@@ -5509,7 +6998,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/sse.rb",
-          "line": 18
+          "line": 23
         },
         {
           "name": "feed",
@@ -5534,7 +7023,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/sse.rb",
-          "line": 32
+          "line": 38
         },
         {
           "name": "finish",
@@ -5551,7 +7040,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/sse.rb",
-          "line": 44
+          "line": 54
         },
         {
           "name": "initialize",
@@ -5568,16 +7057,22 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/sse.rb",
-          "line": 21
+          "line": 26
         }
       ],
-      "constants": []
+      "constants": [
+        {
+          "name": "MAX_FRAME_BYTES",
+          "value": "10 * 1024 * 1024",
+          "docstring": "The largest frame it buffers, as the reference client caps it."
+        }
+      ]
     },
     {
       "path": "Poetry::Agent::AGUI::Transcript",
       "type": "class",
       "superclass": "Object",
-      "docstring": "Folds an AG-UI event stream into what a chat page renders: the\nmessages in order, each as Chat-shaped parts\n(`{kind: :text, text:, state:}`, `{kind: :reasoning, text:, state:}`,\n`{kind: :tool, name:, input:, output:, state:, tool_call_id:}`,\n`{kind: :media, part:}` for a non-text content part), the shared\nstate (snapshots and JSON Patch deltas), activities, every run's\nstatus and interrupts, and the tool calls the browser must execute\nbefore the next run. A text or reasoning part is `state: :streaming`\nuntil its END event (or the run's end) closes it, then `:done` - the\ndifference between \"Thinking\" and \"Thought\". A reasoning message is\na message of its own (role `reasoning`), as in AG-UI 1.0.\n\nEvery change bumps {#version}, and {#apply} answers the ids of the\nmessages it touched, so a relay re-renders exactly those rows with\na monotonic version the page's versioned replace honors.",
+      "docstring": "Folds an AG-UI event stream into what a chat page renders: the\nmessages in order, each as Chat-shaped parts\n(`{kind: :text, text:, state:}`, `{kind: :reasoning, text:, state:}`,\n`{kind: :tool, name:, input:, output:, state:, tool_call_id:}`,\n`{kind: :media, part:}` for a non-text content part), the shared\nstate (snapshots and JSON Patch deltas), activities, every run's\nstatus and interrupts, and the tool calls the browser must execute\nbefore the next run. A text or reasoning part is `state: :streaming`\nuntil its END event (or the run's end) closes it, then `:done` - the\ndifference between \"Thinking\" and \"Thought\". A reasoning message is\na message of its own (role `reasoning`), as in AG-UI 1.0.\n\nIt reduces VERIFIED events: what a {Pipeline} delivers (Client#run and\nRelay route the wire through one), so every chunk is already expanded,\nevery id present, and every open item closed by the stream itself. A\npatch it cannot apply, or an activity delta with nothing to patch, is\na {ProtocolWarning}.\n\nEvery change bumps {#version}, and {#apply} answers the ids of the\nmessages it touched, so a relay re-renders exactly those rows with\na monotonic version the page's versioned replace honors.",
       "examples": [],
       "file": "lib/poetry/agent/agui/transcript.rb",
       "methods": [
@@ -5596,7 +7091,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 42
+          "line": 48
         },
         {
           "name": "add_message",
@@ -5626,32 +7121,32 @@
             }
           ],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 199
+          "line": 207
         },
         {
           "name": "apply",
           "scope": "instance",
           "group": null,
           "signature": "apply(event)",
-          "docstring": "Applies one event.",
+          "docstring": "Applies one verified event.",
           "params": [
             {
               "name": "event",
               "types": [
                 "Hash"
               ],
-              "text": "an AG-UI event (camelCase or snake_case keys)"
+              "text": "an event a {Pipeline} delivered"
             }
           ],
           "return": {
             "types": [
               "Array<String>"
             ],
-            "text": "the ids of the messages this event changed"
+            "text": "the ids of the messages this event changed (dropped ones included)"
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 106
+          "line": 115
         },
         {
           "name": "apply_all",
@@ -5676,7 +7171,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 121
+          "line": 129
         },
         {
           "name": "client_tools",
@@ -5693,7 +7188,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 59
+          "line": 65
         },
         {
           "name": "custom_events",
@@ -5710,7 +7205,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 70
+          "line": 76
         },
         {
           "name": "ended?",
@@ -5727,7 +7222,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 144
+          "line": 152
         },
         {
           "name": "error",
@@ -5745,7 +7240,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 164
+          "line": 172
         },
         {
           "name": "frame",
@@ -5770,13 +7265,13 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 137
+          "line": 145
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
-          "signature": "initialize(client_tools: [])",
+          "signature": "initialize(client_tools: [], on_warning: nil)",
           "docstring": "An empty transcript, with the client-side tool names.",
           "params": [
             {
@@ -5785,6 +7280,14 @@
                 "Array<String>"
               ],
               "text": "names of tools the browser executes"
+            },
+            {
+              "name": "on_warning",
+              "types": [
+                "#call",
+                "nil"
+              ],
+              "text": "receives each {ProtocolWarning} as it happens"
             }
           ],
           "return": {
@@ -5795,7 +7298,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 84
+          "line": 92
         },
         {
           "name": "interrupted?",
@@ -5812,7 +7315,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 150
+          "line": 158
         },
         {
           "name": "interrupts",
@@ -5829,7 +7332,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 157
+          "line": 165
         },
         {
           "name": "message",
@@ -5855,7 +7358,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 129
+          "line": 137
         },
         {
           "name": "messages",
@@ -5872,7 +7375,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 31
+          "line": 37
         },
         {
           "name": "messages_for_input",
@@ -5889,7 +7392,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 176
+          "line": 184
         },
         {
           "name": "pending_client_tools",
@@ -5906,7 +7409,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 65
+          "line": 71
         },
         {
           "name": "resolve_client_tool",
@@ -5947,7 +7450,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 223
+          "line": 231
         },
         {
           "name": "run",
@@ -5964,7 +7467,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 48
+          "line": 54
         },
         {
           "name": "runs",
@@ -5981,7 +7484,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 54
+          "line": 60
         },
         {
           "name": "state",
@@ -5998,24 +7501,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 37
-        },
-        {
-          "name": "unknown_events",
-          "scope": "instance",
-          "group": null,
-          "signature": "unknown_events",
-          "docstring": "Event types this transcript did not understand, and events it skipped.",
-          "params": [],
-          "return": {
-            "types": [
-              "Array<String>"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 75
+          "line": 43
         },
         {
           "name": "version",
@@ -6032,7 +7518,24 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 80
+          "line": 87
+        },
+        {
+          "name": "warnings",
+          "scope": "instance",
+          "group": null,
+          "signature": "warnings",
+          "docstring": "What this transcript could not apply (a failed patch, an activity\ndelta naming no activity), in order.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<ProtocolWarning>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 82
         }
       ],
       "constants": []
@@ -6060,7 +7563,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 26
+          "line": 32
         },
         {
           "name": "id=",
@@ -6085,7 +7588,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 26
+          "line": 32
         },
         {
           "name": "parts",
@@ -6102,7 +7605,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 26
+          "line": 32
         },
         {
           "name": "parts=",
@@ -6127,7 +7630,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 26
+          "line": 32
         },
         {
           "name": "role",
@@ -6144,7 +7647,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 26
+          "line": 32
         },
         {
           "name": "role=",
@@ -6169,7 +7672,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 26
+          "line": 32
         },
         {
           "name": "version",
@@ -6186,7 +7689,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 26
+          "line": 32
         },
         {
           "name": "version=",
@@ -6211,7 +7714,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 26
+          "line": 32
         }
       ],
       "constants": []
@@ -6452,6 +7955,141 @@
         }
       ],
       "constants": []
+    },
+    {
+      "path": "Poetry::Agent::AGUI::Verification",
+      "type": "class",
+      "superclass": "Object",
+      "docstring": "Stream verification, a port of the TypeScript client's verify/verify.ts:\nthe run lifecycle, open/close discipline for every streamed entity,\nownership agreement on `subagentRunId`, and nothing open at RUN_FINISHED.\nIt runs after enforcement and chunk expansion, so it sees schema-valid,\nexpanded events only.\n\n  verify = Verification.new\n  verify.call(event) # => event, or raises ProtocolError (stage :verification)\n\nEvery check runs before any state changes, so a rejected event leaves the\ntracking exactly as it was (lenient mode drops it and carries on).\n\nNot ported, because enforcement already rejects the same events: the\n`subagentRunId: null` tolerance, the lifecycle-optional null checks, the\nSUBAGENT_* \"without a 'subagentRunId' / 'name' / 'message'\" checks, the\noutcome-type and interruptIds checks, and the nested-null checks on\nsnapshot messages and interrupts. verify.ts keeps them for in-process\nproducers that skip enforcement; this pipeline has no such path.",
+      "examples": [],
+      "file": "lib/poetry/agent/agui/verification.rb",
+      "methods": [
+        {
+          "name": "abandon!",
+          "scope": "instance",
+          "group": null,
+          "signature": "abandon!(kind)",
+          "docstring": "Lenient mode only, for the two rejections of a well-formed run boundary\nthat are about what came BEFORE it. What the run left open is treated\nas abandoned, the way RUN_ERROR ends whatever was still open, so the\nboundary can be admitted: :open_at_finish closes nothing and forgets\nthe open entities; :nested_run treats the previous run as closed.",
+          "params": [
+            {
+              "name": "kind",
+              "types": [
+                "Symbol"
+              ],
+              "text": "the rejection being admitted (:open_at_finish or :nested_run)"
+            }
+          ],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/verification.rb",
+          "line": 75
+        },
+        {
+          "name": "call",
+          "scope": "instance",
+          "group": null,
+          "signature": "call(event)",
+          "docstring": "One event checked against the stream so far, and recorded once accepted.",
+          "params": [
+            {
+              "name": "event",
+              "types": [
+                "Hash"
+              ],
+              "text": "an enforced, expanded event"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "the event itself"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/verification.rb",
+          "line": 44
+        },
+        {
+          "name": "initialize",
+          "scope": "instance",
+          "group": null,
+          "signature": "initialize",
+          "docstring": "A verifier awaiting a stream's first event.",
+          "params": [],
+          "return": {
+            "types": [
+              "Verification"
+            ],
+            "text": "a new instance of Verification"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/verification.rb",
+          "line": 29
+        },
+        {
+          "name": "open_tool_calls",
+          "scope": "instance",
+          "group": null,
+          "signature": "open_tool_calls",
+          "docstring": "The tool calls whose arguments are still streaming.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/verification.rb",
+          "line": 64
+        },
+        {
+          "name": "run_open?",
+          "scope": "instance",
+          "group": null,
+          "signature": "run_open?",
+          "docstring": "A run is open: started (or errored first) and not yet closed.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/verification.rb",
+          "line": 38
+        },
+        {
+          "name": "seen?",
+          "scope": "instance",
+          "group": null,
+          "signature": "seen?",
+          "docstring": "Whether any event has been accepted.",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/verification.rb",
+          "line": 60
+        }
+      ],
+      "constants": [
+        {
+          "name": "PARENT",
+          "value": "\"(the parent agent)\"",
+          "docstring": "How rejections name the parent agent as an owner."
+        }
+      ]
     },
     {
       "path": "Poetry::Agent::Config",

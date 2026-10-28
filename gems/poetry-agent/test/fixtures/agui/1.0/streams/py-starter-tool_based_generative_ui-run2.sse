@@ -1,0 +1,6 @@
+data: {"type":"RUN_STARTED","threadId":"thread-tool_based_generative_ui","runId":"afd9b6a7-7993-4c75-ab4b-b3d7b658d608","protocolVersion":"1.0"}
+
+data: {"type":"MESSAGES_SNAPSHOT","messages":[{"id":"d394cee8-d392-4549-8f0e-3fd33c60b221","role":"user","content":"write a haiku"},{"id":"ccf45f88-1e4e-4e8f-b5ae-c0751f07a15a","role":"assistant","content":"","toolCalls":[{"id":"6b300557-775b-4831-96b0-80a706f32652","type":"function","function":{"name":"generate_haiku","arguments":"{\"japanese\":[\"エーアイの\",\"橋つなぐ道\",\"コパキット\"],\"english\":[\"From AI's realm\",\"A bridge-road linking us—\",\"CopilotKit.\"]}"}}]},{"id":"6b300557-775b-4831-96b0-80a706f32652-result","role":"tool","content":"Haiku created","toolCallId":"6b300557-775b-4831-96b0-80a706f32652"},{"id":"bdd9bb2b-4bf7-4950-89a9-e05e250c9475","role":"user","content":"thanks"},{"id":"9331610e-5b6c-4782-92ad-54eb34506e28","role":"assistant","content":"Haiku created"}]}
+
+data: {"type":"RUN_FINISHED","threadId":"thread-tool_based_generative_ui","runId":"afd9b6a7-7993-4c75-ab4b-b3d7b658d608"}
+

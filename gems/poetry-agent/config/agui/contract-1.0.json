@@ -1,0 +1,3109 @@
+{
+  "contract": "agui-1.0",
+  "schema_id": "https://ag-ui.com/spec/1.0/schema.json",
+  "schema_sha256": "4b5c93226838a0e72d88e6c5df20633c686c49fcb75d9be2815c6cbf9e48e71a",
+  "roots": {
+    "event": "Event",
+    "input": "RunAgentInput"
+  },
+  "reachable": [
+    "Event",
+    "EventType",
+    "BaseEvent",
+    "Attributable",
+    "SubagentRunId",
+    "Metadata",
+    "State",
+    "TextMessageRole",
+    "TextMessageStartEvent",
+    "TextMessageContentEvent",
+    "TextMessageEndEvent",
+    "TextMessageChunkEvent",
+    "ToolCallStartEvent",
+    "ToolCallArgsEvent",
+    "ToolCallEndEvent",
+    "ToolCallChunkEvent",
+    "ToolCallResultEvent",
+    "StateSnapshotEvent",
+    "StateDeltaEvent",
+    "MessagesSnapshotEvent",
+    "ActivitySnapshotEvent",
+    "ActivityDeltaEvent",
+    "RawEvent",
+    "CustomEvent",
+    "RunStartedEvent",
+    "RunFinishedEvent",
+    "RunErrorEvent",
+    "StepStartedEvent",
+    "StepFinishedEvent",
+    "ReasoningStartEvent",
+    "ReasoningMessageStartEvent",
+    "ReasoningMessageContentEvent",
+    "ReasoningMessageEndEvent",
+    "ReasoningMessageChunkEvent",
+    "ReasoningEndEvent",
+    "ReasoningEncryptedValueEvent",
+    "ReasoningEncryptedValueSubtype",
+    "SubagentStartedEvent",
+    "SubagentFinishedEvent",
+    "SubagentErrorEvent",
+    "RunFinishedOutcome",
+    "RunFinishedSuccessOutcome",
+    "RunFinishedInterruptOutcome",
+    "RunFinishedCancelledOutcome",
+    "SubagentFinishedOutcome",
+    "SubagentFinishedSuccessOutcome",
+    "SubagentFinishedSuspendedOutcome",
+    "Interrupt",
+    "ResumeEntry",
+    "TokenUsage",
+    "Message",
+    "BaseMessage",
+    "DeveloperMessage",
+    "SystemMessage",
+    "AssistantMessage",
+    "UserMessage",
+    "ToolMessage",
+    "ActivityMessage",
+    "ReasoningMessage",
+    "ToolCall",
+    "FunctionCall",
+    "ContentPart",
+    "TextPart",
+    "ImagePart",
+    "AudioPart",
+    "VideoPart",
+    "DocumentPart",
+    "PartSource",
+    "DataSource",
+    "UrlSource",
+    "FileSource",
+    "Context",
+    "Tool",
+    "RunAgentInput",
+    "JsonPatch",
+    "JsonPatchOperation",
+    "AddOperation",
+    "RemoveOperation",
+    "ReplaceOperation",
+    "MoveOperation",
+    "CopyOperation",
+    "TestOperation",
+    "JsonPointer"
+  ],
+  "unreachable": [
+    "Role",
+    "SubagentInfo",
+    "IdentityCapabilities",
+    "TransportCapabilities",
+    "ToolsCapabilities",
+    "OutputCapabilities",
+    "StateCapabilities",
+    "MultiAgentCapabilities",
+    "ReasoningCapabilities",
+    "MultimodalInputCapabilities",
+    "MultimodalOutputCapabilities",
+    "MultimodalCapabilities",
+    "ExecutionCapabilities",
+    "HumanInTheLoopCapabilities",
+    "AgentCapabilities"
+  ],
+  "cascading": [
+    "ImagePart",
+    "AudioPart",
+    "VideoPart",
+    "DocumentPart"
+  ],
+  "defs": {
+    "Event": {
+      "kind": "union",
+      "discriminator": "type",
+      "members": {
+        "TEXT_MESSAGE_START": "TextMessageStartEvent",
+        "TEXT_MESSAGE_CONTENT": "TextMessageContentEvent",
+        "TEXT_MESSAGE_END": "TextMessageEndEvent",
+        "TEXT_MESSAGE_CHUNK": "TextMessageChunkEvent",
+        "TOOL_CALL_START": "ToolCallStartEvent",
+        "TOOL_CALL_ARGS": "ToolCallArgsEvent",
+        "TOOL_CALL_END": "ToolCallEndEvent",
+        "TOOL_CALL_CHUNK": "ToolCallChunkEvent",
+        "TOOL_CALL_RESULT": "ToolCallResultEvent",
+        "STATE_SNAPSHOT": "StateSnapshotEvent",
+        "STATE_DELTA": "StateDeltaEvent",
+        "MESSAGES_SNAPSHOT": "MessagesSnapshotEvent",
+        "ACTIVITY_SNAPSHOT": "ActivitySnapshotEvent",
+        "ACTIVITY_DELTA": "ActivityDeltaEvent",
+        "RAW": "RawEvent",
+        "CUSTOM": "CustomEvent",
+        "RUN_STARTED": "RunStartedEvent",
+        "RUN_FINISHED": "RunFinishedEvent",
+        "RUN_ERROR": "RunErrorEvent",
+        "STEP_STARTED": "StepStartedEvent",
+        "STEP_FINISHED": "StepFinishedEvent",
+        "REASONING_START": "ReasoningStartEvent",
+        "REASONING_MESSAGE_START": "ReasoningMessageStartEvent",
+        "REASONING_MESSAGE_CONTENT": "ReasoningMessageContentEvent",
+        "REASONING_MESSAGE_END": "ReasoningMessageEndEvent",
+        "REASONING_MESSAGE_CHUNK": "ReasoningMessageChunkEvent",
+        "REASONING_END": "ReasoningEndEvent",
+        "REASONING_ENCRYPTED_VALUE": "ReasoningEncryptedValueEvent",
+        "SUBAGENT_STARTED": "SubagentStartedEvent",
+        "SUBAGENT_FINISHED": "SubagentFinishedEvent",
+        "SUBAGENT_ERROR": "SubagentErrorEvent"
+      }
+    },
+    "EventType": {
+      "kind": "leaf",
+      "type": "string",
+      "enum": [
+        "TEXT_MESSAGE_START",
+        "TEXT_MESSAGE_CONTENT",
+        "TEXT_MESSAGE_END",
+        "TEXT_MESSAGE_CHUNK",
+        "TOOL_CALL_START",
+        "TOOL_CALL_ARGS",
+        "TOOL_CALL_END",
+        "TOOL_CALL_CHUNK",
+        "TOOL_CALL_RESULT",
+        "STATE_SNAPSHOT",
+        "STATE_DELTA",
+        "MESSAGES_SNAPSHOT",
+        "ACTIVITY_SNAPSHOT",
+        "ACTIVITY_DELTA",
+        "RAW",
+        "CUSTOM",
+        "RUN_STARTED",
+        "RUN_FINISHED",
+        "RUN_ERROR",
+        "STEP_STARTED",
+        "STEP_FINISHED",
+        "REASONING_START",
+        "REASONING_MESSAGE_START",
+        "REASONING_MESSAGE_CONTENT",
+        "REASONING_MESSAGE_END",
+        "REASONING_MESSAGE_CHUNK",
+        "REASONING_END",
+        "REASONING_ENCRYPTED_VALUE",
+        "SUBAGENT_STARTED",
+        "SUBAGENT_FINISHED",
+        "SUBAGENT_ERROR"
+      ]
+    },
+    "BaseEvent": {
+      "kind": "object",
+      "closed": false,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "enum": [
+            "TEXT_MESSAGE_START",
+            "TEXT_MESSAGE_CONTENT",
+            "TEXT_MESSAGE_END",
+            "TEXT_MESSAGE_CHUNK",
+            "TOOL_CALL_START",
+            "TOOL_CALL_ARGS",
+            "TOOL_CALL_END",
+            "TOOL_CALL_CHUNK",
+            "TOOL_CALL_RESULT",
+            "STATE_SNAPSHOT",
+            "STATE_DELTA",
+            "MESSAGES_SNAPSHOT",
+            "ACTIVITY_SNAPSHOT",
+            "ACTIVITY_DELTA",
+            "RAW",
+            "CUSTOM",
+            "RUN_STARTED",
+            "RUN_FINISHED",
+            "RUN_ERROR",
+            "STEP_STARTED",
+            "STEP_FINISHED",
+            "REASONING_START",
+            "REASONING_MESSAGE_START",
+            "REASONING_MESSAGE_CONTENT",
+            "REASONING_MESSAGE_END",
+            "REASONING_MESSAGE_CHUNK",
+            "REASONING_END",
+            "REASONING_ENCRYPTED_VALUE",
+            "SUBAGENT_STARTED",
+            "SUBAGENT_FINISHED",
+            "SUBAGENT_ERROR"
+          ]
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "Attributable": {
+      "kind": "object",
+      "closed": false,
+      "props": {
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": []
+    },
+    "SubagentRunId": {
+      "kind": "leaf",
+      "type": "string"
+    },
+    "Metadata": {
+      "kind": "object",
+      "opaque": true
+    },
+    "State": {
+      "kind": "any"
+    },
+    "TextMessageRole": {
+      "kind": "leaf",
+      "type": "string",
+      "enum": [
+        "developer",
+        "system",
+        "assistant",
+        "user"
+      ]
+    },
+    "Role": {
+      "kind": "leaf",
+      "type": "string",
+      "enum": [
+        "developer",
+        "system",
+        "assistant",
+        "user",
+        "tool",
+        "activity",
+        "reasoning"
+      ]
+    },
+    "TextMessageStartEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "TEXT_MESSAGE_START"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "messageId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "role": {
+          "kind": "leaf",
+          "type": "string",
+          "enum": [
+            "developer",
+            "system",
+            "assistant",
+            "user"
+          ],
+          "default": "assistant"
+        },
+        "name": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "messageId"
+      ]
+    },
+    "TextMessageContentEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "TEXT_MESSAGE_CONTENT"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "messageId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "delta": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "messageId",
+        "delta"
+      ]
+    },
+    "TextMessageEndEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "TEXT_MESSAGE_END"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "messageId": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "messageId"
+      ]
+    },
+    "TextMessageChunkEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "TEXT_MESSAGE_CHUNK"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "messageId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "role": {
+          "kind": "leaf",
+          "type": "string",
+          "enum": [
+            "developer",
+            "system",
+            "assistant",
+            "user"
+          ]
+        },
+        "delta": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "name": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "ToolCallStartEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "TOOL_CALL_START"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "toolCallId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "toolCallName": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "parentMessageId": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "toolCallId",
+        "toolCallName"
+      ]
+    },
+    "ToolCallArgsEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "TOOL_CALL_ARGS"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "toolCallId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "delta": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "toolCallId",
+        "delta"
+      ]
+    },
+    "ToolCallEndEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "TOOL_CALL_END"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "toolCallId": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "toolCallId"
+      ]
+    },
+    "ToolCallChunkEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "TOOL_CALL_CHUNK"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "toolCallId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "toolCallName": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "parentMessageId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "delta": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "ToolCallResultEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "TOOL_CALL_RESULT"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "messageId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "toolCallId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "content": {
+          "kind": "oneof",
+          "options": {
+            "string": {
+              "kind": "leaf",
+              "type": "string"
+            },
+            "array": {
+              "kind": "array",
+              "items": {
+                "ref": "ContentPart"
+              }
+            }
+          }
+        },
+        "role": {
+          "kind": "leaf",
+          "const": "tool"
+        }
+      },
+      "required": [
+        "type",
+        "messageId",
+        "toolCallId",
+        "content"
+      ]
+    },
+    "StateSnapshotEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "STATE_SNAPSHOT"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "snapshot": {
+          "kind": "any"
+        }
+      },
+      "required": [
+        "type",
+        "snapshot"
+      ]
+    },
+    "StateDeltaEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "STATE_DELTA"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "delta": {
+          "ref": "JsonPatch"
+        }
+      },
+      "required": [
+        "type",
+        "delta"
+      ]
+    },
+    "MessagesSnapshotEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "MESSAGES_SNAPSHOT"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "messages": {
+          "kind": "array",
+          "items": {
+            "ref": "Message"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "messages"
+      ]
+    },
+    "ActivitySnapshotEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "ACTIVITY_SNAPSHOT"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "messageId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "activityType": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "content": {
+          "kind": "object",
+          "opaque": true
+        },
+        "replace": {
+          "kind": "leaf",
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "type",
+        "messageId",
+        "activityType",
+        "content"
+      ]
+    },
+    "ActivityDeltaEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "ACTIVITY_DELTA"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "messageId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "activityType": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "patch": {
+          "ref": "JsonPatch"
+        }
+      },
+      "required": [
+        "type",
+        "messageId",
+        "activityType",
+        "patch"
+      ]
+    },
+    "RawEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "RAW"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "event": {
+          "kind": "any"
+        },
+        "source": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "event"
+      ]
+    },
+    "CustomEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "CUSTOM"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "name": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "value": {
+          "kind": "any"
+        }
+      },
+      "required": [
+        "type",
+        "name",
+        "value"
+      ]
+    },
+    "RunStartedEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "RUN_STARTED"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "threadId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "runId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "protocolVersion": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "parentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "input": {
+          "ref": "RunAgentInput"
+        }
+      },
+      "required": [
+        "type",
+        "threadId",
+        "runId"
+      ]
+    },
+    "RunFinishedEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "RUN_FINISHED"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "threadId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "runId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "result": {
+          "kind": "any",
+          "not_null": true
+        },
+        "outcome": {
+          "ref": "RunFinishedOutcome"
+        },
+        "usage": {
+          "kind": "array",
+          "items": {
+            "ref": "TokenUsage"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "threadId",
+        "runId"
+      ]
+    },
+    "RunErrorEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "RUN_ERROR"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "message": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "code": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "usage": {
+          "kind": "array",
+          "items": {
+            "ref": "TokenUsage"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "message"
+      ]
+    },
+    "StepStartedEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "STEP_STARTED"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "stepName": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "stepName"
+      ]
+    },
+    "StepFinishedEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "STEP_FINISHED"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "stepName": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "stepName"
+      ]
+    },
+    "ReasoningStartEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "REASONING_START"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "messageId": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "messageId"
+      ]
+    },
+    "ReasoningMessageStartEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "REASONING_MESSAGE_START"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "messageId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "role": {
+          "kind": "leaf",
+          "const": "reasoning"
+        }
+      },
+      "required": [
+        "type",
+        "messageId",
+        "role"
+      ]
+    },
+    "ReasoningMessageContentEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "REASONING_MESSAGE_CONTENT"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "messageId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "delta": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "messageId",
+        "delta"
+      ]
+    },
+    "ReasoningMessageEndEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "REASONING_MESSAGE_END"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "messageId": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "messageId"
+      ]
+    },
+    "ReasoningMessageChunkEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "REASONING_MESSAGE_CHUNK"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "messageId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "delta": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "ReasoningEndEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "REASONING_END"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "messageId": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "messageId"
+      ]
+    },
+    "ReasoningEncryptedValueEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "REASONING_ENCRYPTED_VALUE"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "subtype": {
+          "kind": "leaf",
+          "type": "string",
+          "enum": [
+            "tool-call",
+            "message"
+          ]
+        },
+        "entityId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "encryptedValue": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "subtype",
+        "entityId",
+        "encryptedValue"
+      ]
+    },
+    "ReasoningEncryptedValueSubtype": {
+      "kind": "leaf",
+      "type": "string",
+      "enum": [
+        "tool-call",
+        "message"
+      ]
+    },
+    "SubagentStartedEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "SUBAGENT_STARTED"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "name": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "description": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "parentSubagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "parentToolCallId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "parentMessageId": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "subagentRunId",
+        "name"
+      ]
+    },
+    "SubagentFinishedEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "SUBAGENT_FINISHED"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "result": {
+          "kind": "any",
+          "not_null": true
+        },
+        "outcome": {
+          "ref": "SubagentFinishedOutcome"
+        }
+      },
+      "required": [
+        "type",
+        "subagentRunId"
+      ]
+    },
+    "SubagentErrorEvent": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "SUBAGENT_ERROR"
+        },
+        "timestamp": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "rawEvent": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "message": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "code": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "subagentRunId",
+        "message"
+      ]
+    },
+    "RunFinishedOutcome": {
+      "kind": "union",
+      "discriminator": "type",
+      "members": {
+        "success": "RunFinishedSuccessOutcome",
+        "interrupt": "RunFinishedInterruptOutcome",
+        "cancelled": "RunFinishedCancelledOutcome"
+      }
+    },
+    "RunFinishedSuccessOutcome": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "const": "success"
+        },
+        "pendingToolCallIds": {
+          "kind": "array",
+          "items": {
+            "kind": "leaf",
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "RunFinishedInterruptOutcome": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "const": "interrupt"
+        },
+        "interrupts": {
+          "kind": "array",
+          "items": {
+            "ref": "Interrupt"
+          },
+          "min_items": 1
+        }
+      },
+      "required": [
+        "type",
+        "interrupts"
+      ]
+    },
+    "RunFinishedCancelledOutcome": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "const": "cancelled"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "SubagentFinishedOutcome": {
+      "kind": "union",
+      "discriminator": "type",
+      "members": {
+        "success": "SubagentFinishedSuccessOutcome",
+        "suspended": "SubagentFinishedSuspendedOutcome"
+      }
+    },
+    "SubagentFinishedSuccessOutcome": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "const": "success"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "SubagentFinishedSuspendedOutcome": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "const": "suspended"
+        },
+        "interruptIds": {
+          "kind": "array",
+          "items": {
+            "kind": "leaf",
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "Interrupt": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "id": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "reason": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "message": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "toolCallId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "responseSchema": {
+          "kind": "object",
+          "opaque": true
+        },
+        "expiresAt": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        }
+      },
+      "required": [
+        "id",
+        "reason"
+      ]
+    },
+    "ResumeEntry": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "interruptId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "status": {
+          "kind": "leaf",
+          "type": "string",
+          "enum": [
+            "resolved",
+            "cancelled"
+          ]
+        },
+        "payload": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        }
+      },
+      "required": [
+        "interruptId",
+        "status"
+      ]
+    },
+    "TokenUsage": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "provider": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "model": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "inputTokens": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "outputTokens": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "totalTokens": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "reasoningTokens": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "cachedInputTokens": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "cacheWriteInputTokens": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": []
+    },
+    "Message": {
+      "kind": "union",
+      "discriminator": "role",
+      "members": {
+        "developer": "DeveloperMessage",
+        "system": "SystemMessage",
+        "assistant": "AssistantMessage",
+        "user": "UserMessage",
+        "tool": "ToolMessage",
+        "activity": "ActivityMessage",
+        "reasoning": "ReasoningMessage"
+      }
+    },
+    "BaseMessage": {
+      "kind": "object",
+      "closed": false,
+      "props": {
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "id": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "role": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "name": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "encryptedValue": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        }
+      },
+      "required": [
+        "id",
+        "role"
+      ]
+    },
+    "DeveloperMessage": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "id": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "role": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "developer"
+        },
+        "name": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "encryptedValue": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "content": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "content"
+      ]
+    },
+    "SystemMessage": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "id": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "role": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "system"
+        },
+        "name": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "encryptedValue": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "content": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "content"
+      ]
+    },
+    "AssistantMessage": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "id": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "role": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "assistant"
+        },
+        "name": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "encryptedValue": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "content": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "toolCalls": {
+          "kind": "array",
+          "items": {
+            "ref": "ToolCall"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "role"
+      ]
+    },
+    "UserMessage": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "id": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "role": {
+          "kind": "leaf",
+          "type": "string",
+          "const": "user"
+        },
+        "name": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "encryptedValue": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        },
+        "content": {
+          "kind": "oneof",
+          "options": {
+            "string": {
+              "kind": "leaf",
+              "type": "string"
+            },
+            "array": {
+              "kind": "array",
+              "items": {
+                "ref": "ContentPart"
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "content"
+      ]
+    },
+    "ToolMessage": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "id": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "role": {
+          "kind": "leaf",
+          "const": "tool"
+        },
+        "content": {
+          "kind": "oneof",
+          "options": {
+            "string": {
+              "kind": "leaf",
+              "type": "string"
+            },
+            "array": {
+              "kind": "array",
+              "items": {
+                "ref": "ContentPart"
+              }
+            }
+          }
+        },
+        "toolCallId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "error": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "encryptedValue": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "content",
+        "toolCallId"
+      ]
+    },
+    "ActivityMessage": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "id": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "role": {
+          "kind": "leaf",
+          "const": "activity"
+        },
+        "activityType": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "content": {
+          "kind": "object",
+          "opaque": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "activityType",
+        "content"
+      ]
+    },
+    "ReasoningMessage": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "subagentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "id": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "role": {
+          "kind": "leaf",
+          "const": "reasoning"
+        },
+        "content": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "encryptedValue": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "content"
+      ]
+    },
+    "ToolCall": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "id": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "type": {
+          "kind": "leaf",
+          "const": "function"
+        },
+        "function": {
+          "ref": "FunctionCall"
+        },
+        "encryptedValue": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "function"
+      ]
+    },
+    "FunctionCall": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "name": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "arguments": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ]
+    },
+    "ContentPart": {
+      "kind": "union",
+      "discriminator": "type",
+      "members": {
+        "text": "TextPart",
+        "image": "ImagePart",
+        "audio": "AudioPart",
+        "video": "VideoPart",
+        "document": "DocumentPart"
+      }
+    },
+    "TextPart": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "const": "text"
+        },
+        "id": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "text": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "metadata": {
+          "kind": "any",
+          "not_null": true
+        }
+      },
+      "required": [
+        "type",
+        "text"
+      ]
+    },
+    "ImagePart": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "const": "image"
+        },
+        "id": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "source": {
+          "ref": "PartSource"
+        },
+        "metadata": {
+          "kind": "any",
+          "not_null": true
+        }
+      },
+      "required": [
+        "type",
+        "source"
+      ]
+    },
+    "AudioPart": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "const": "audio"
+        },
+        "id": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "source": {
+          "ref": "PartSource"
+        },
+        "metadata": {
+          "kind": "any",
+          "not_null": true
+        }
+      },
+      "required": [
+        "type",
+        "source"
+      ]
+    },
+    "VideoPart": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "const": "video"
+        },
+        "id": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "source": {
+          "ref": "PartSource"
+        },
+        "metadata": {
+          "kind": "any",
+          "not_null": true
+        }
+      },
+      "required": [
+        "type",
+        "source"
+      ]
+    },
+    "DocumentPart": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "const": "document"
+        },
+        "id": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "source": {
+          "ref": "PartSource"
+        },
+        "metadata": {
+          "kind": "any",
+          "not_null": true
+        }
+      },
+      "required": [
+        "type",
+        "source"
+      ]
+    },
+    "PartSource": {
+      "kind": "union",
+      "discriminator": "type",
+      "members": {
+        "data": "DataSource",
+        "url": "UrlSource",
+        "file": "FileSource"
+      }
+    },
+    "DataSource": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "const": "data"
+        },
+        "value": {
+          "kind": "leaf",
+          "type": "string",
+          "content_encoding": "base64"
+        },
+        "mimeType": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "value",
+        "mimeType"
+      ]
+    },
+    "UrlSource": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "const": "url"
+        },
+        "value": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "mimeType": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "FileSource": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "type": {
+          "kind": "leaf",
+          "const": "file"
+        },
+        "value": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "provider": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "mimeType": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "Context": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "description": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "value": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "description",
+        "value"
+      ]
+    },
+    "Tool": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "name": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "description": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "parameters": {
+          "kind": "any",
+          "not_null": true
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        }
+      },
+      "required": [
+        "name",
+        "description"
+      ]
+    },
+    "RunAgentInput": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "threadId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "runId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "protocolVersion": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "parentRunId": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "state": {
+          "kind": "any",
+          "not_null": true
+        },
+        "messages": {
+          "kind": "array",
+          "items": {
+            "ref": "Message"
+          }
+        },
+        "tools": {
+          "kind": "array",
+          "items": {
+            "ref": "Tool"
+          }
+        },
+        "context": {
+          "kind": "array",
+          "items": {
+            "ref": "Context"
+          }
+        },
+        "forwardedProps": {
+          "kind": "any",
+          "not_null": true
+        },
+        "resume": {
+          "kind": "array",
+          "items": {
+            "ref": "ResumeEntry"
+          }
+        }
+      },
+      "required": [
+        "threadId",
+        "runId",
+        "messages"
+      ]
+    },
+    "SubagentInfo": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "name": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "description": {
+          "kind": "leaf",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "IdentityCapabilities": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "name": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "type": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "description": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "version": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "provider": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "documentationUrl": {
+          "kind": "leaf",
+          "type": "string"
+        },
+        "metadata": {
+          "kind": "object",
+          "opaque": true
+        }
+      },
+      "required": []
+    },
+    "TransportCapabilities": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "streaming": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "websocket": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "httpBinary": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "pushNotifications": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "resumable": {
+          "kind": "leaf",
+          "type": "boolean"
+        }
+      },
+      "required": []
+    },
+    "ToolsCapabilities": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "supported": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "items": {
+          "kind": "array",
+          "items": {
+            "ref": "Tool"
+          }
+        },
+        "parallelCalls": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "clientProvided": {
+          "kind": "leaf",
+          "type": "boolean"
+        }
+      },
+      "required": []
+    },
+    "OutputCapabilities": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "structuredOutput": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "supportedMimeTypes": {
+          "kind": "array",
+          "items": {
+            "kind": "leaf",
+            "type": "string"
+          }
+        }
+      },
+      "required": []
+    },
+    "StateCapabilities": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "snapshots": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "deltas": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "memory": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "persistentState": {
+          "kind": "leaf",
+          "type": "boolean"
+        }
+      },
+      "required": []
+    },
+    "MultiAgentCapabilities": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "supported": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "delegation": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "handoffs": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "subagents": {
+          "kind": "array",
+          "items": {
+            "ref": "SubagentInfo"
+          }
+        }
+      },
+      "required": []
+    },
+    "ReasoningCapabilities": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "supported": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "streaming": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "encrypted": {
+          "kind": "leaf",
+          "type": "boolean"
+        }
+      },
+      "required": []
+    },
+    "MultimodalInputCapabilities": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "image": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "audio": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "video": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "pdf": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "file": {
+          "kind": "leaf",
+          "type": "boolean"
+        }
+      },
+      "required": []
+    },
+    "MultimodalOutputCapabilities": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "image": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "audio": {
+          "kind": "leaf",
+          "type": "boolean"
+        }
+      },
+      "required": []
+    },
+    "MultimodalCapabilities": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "input": {
+          "ref": "MultimodalInputCapabilities"
+        },
+        "output": {
+          "ref": "MultimodalOutputCapabilities"
+        }
+      },
+      "required": []
+    },
+    "ExecutionCapabilities": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "codeExecution": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "sandboxed": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "maxIterations": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "maxExecutionTime": {
+          "kind": "leaf",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": []
+    },
+    "HumanInTheLoopCapabilities": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "supported": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "approvals": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "interventions": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "feedback": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "interrupts": {
+          "kind": "leaf",
+          "type": "boolean"
+        },
+        "approveWithEdits": {
+          "kind": "leaf",
+          "type": "boolean"
+        }
+      },
+      "required": []
+    },
+    "AgentCapabilities": {
+      "kind": "object",
+      "closed": true,
+      "props": {
+        "identity": {
+          "ref": "IdentityCapabilities"
+        },
+        "transport": {
+          "ref": "TransportCapabilities"
+        },
+        "tools": {
+          "ref": "ToolsCapabilities"
+        },
+        "output": {
+          "ref": "OutputCapabilities"
+        },
+        "state": {
+          "ref": "StateCapabilities"
+        },
+        "multiAgent": {
+          "ref": "MultiAgentCapabilities"
+        },
+        "reasoning": {
+          "ref": "ReasoningCapabilities"
+        },
+        "multimodal": {
+          "ref": "MultimodalCapabilities"
+        },
+        "execution": {
+          "ref": "ExecutionCapabilities"
+        },
+        "humanInTheLoop": {
+          "ref": "HumanInTheLoopCapabilities"
+        },
+        "custom": {
+          "kind": "object",
+          "opaque": true
+        }
+      },
+      "required": []
+    },
+    "JsonPatch": {
+      "kind": "array",
+      "items": {
+        "ref": "JsonPatchOperation"
+      }
+    },
+    "JsonPatchOperation": {
+      "kind": "union",
+      "discriminator": "op",
+      "members": {
+        "add": "AddOperation",
+        "remove": "RemoveOperation",
+        "replace": "ReplaceOperation",
+        "move": "MoveOperation",
+        "copy": "CopyOperation",
+        "test": "TestOperation"
+      }
+    },
+    "AddOperation": {
+      "kind": "object",
+      "closed": false,
+      "props": {
+        "op": {
+          "kind": "leaf",
+          "const": "add"
+        },
+        "path": {
+          "kind": "leaf",
+          "type": "string",
+          "pattern": "^(/([^/~]|~[01])*)*$",
+          "ruby_pattern": "\\A(/([^/~]|~[01])*)*\\z"
+        },
+        "value": {
+          "kind": "any"
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "RemoveOperation": {
+      "kind": "object",
+      "closed": false,
+      "props": {
+        "op": {
+          "kind": "leaf",
+          "const": "remove"
+        },
+        "path": {
+          "kind": "leaf",
+          "type": "string",
+          "pattern": "^(/([^/~]|~[01])*)*$",
+          "ruby_pattern": "\\A(/([^/~]|~[01])*)*\\z"
+        }
+      },
+      "required": [
+        "op",
+        "path"
+      ]
+    },
+    "ReplaceOperation": {
+      "kind": "object",
+      "closed": false,
+      "props": {
+        "op": {
+          "kind": "leaf",
+          "const": "replace"
+        },
+        "path": {
+          "kind": "leaf",
+          "type": "string",
+          "pattern": "^(/([^/~]|~[01])*)*$",
+          "ruby_pattern": "\\A(/([^/~]|~[01])*)*\\z"
+        },
+        "value": {
+          "kind": "any"
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "MoveOperation": {
+      "kind": "object",
+      "closed": false,
+      "props": {
+        "op": {
+          "kind": "leaf",
+          "const": "move"
+        },
+        "from": {
+          "kind": "leaf",
+          "type": "string",
+          "pattern": "^(/([^/~]|~[01])*)*$",
+          "ruby_pattern": "\\A(/([^/~]|~[01])*)*\\z"
+        },
+        "path": {
+          "kind": "leaf",
+          "type": "string",
+          "pattern": "^(/([^/~]|~[01])*)*$",
+          "ruby_pattern": "\\A(/([^/~]|~[01])*)*\\z"
+        }
+      },
+      "required": [
+        "op",
+        "from",
+        "path"
+      ]
+    },
+    "CopyOperation": {
+      "kind": "object",
+      "closed": false,
+      "props": {
+        "op": {
+          "kind": "leaf",
+          "const": "copy"
+        },
+        "from": {
+          "kind": "leaf",
+          "type": "string",
+          "pattern": "^(/([^/~]|~[01])*)*$",
+          "ruby_pattern": "\\A(/([^/~]|~[01])*)*\\z"
+        },
+        "path": {
+          "kind": "leaf",
+          "type": "string",
+          "pattern": "^(/([^/~]|~[01])*)*$",
+          "ruby_pattern": "\\A(/([^/~]|~[01])*)*\\z"
+        }
+      },
+      "required": [
+        "op",
+        "from",
+        "path"
+      ]
+    },
+    "TestOperation": {
+      "kind": "object",
+      "closed": false,
+      "props": {
+        "op": {
+          "kind": "leaf",
+          "const": "test"
+        },
+        "path": {
+          "kind": "leaf",
+          "type": "string",
+          "pattern": "^(/([^/~]|~[01])*)*$",
+          "ruby_pattern": "\\A(/([^/~]|~[01])*)*\\z"
+        },
+        "value": {
+          "kind": "any"
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "JsonPointer": {
+      "kind": "leaf",
+      "type": "string",
+      "pattern": "^(/([^/~]|~[01])*)*$",
+      "ruby_pattern": "\\A(/([^/~]|~[01])*)*\\z"
+    }
+  }
+}

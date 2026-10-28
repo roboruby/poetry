@@ -1,0 +1,32 @@
+data: {"type":"RUN_STARTED","threadId":"thread-agentic_chat-backend_tool","runId":"b1343adf-091f-408c-a9a3-59e0701d7690","protocolVersion":"1.0"}
+
+data: {"type":"TEXT_MESSAGE_START","messageId":"465fa905-e384-447b-a8b7-6c85f2fa5f1c","role":"assistant"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"465fa905-e384-447b-a8b7-6c85f2fa5f1c","delta":"counting down: "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"465fa905-e384-447b-a8b7-6c85f2fa5f1c","delta":"10  "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"465fa905-e384-447b-a8b7-6c85f2fa5f1c","delta":"9  "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"465fa905-e384-447b-a8b7-6c85f2fa5f1c","delta":"8  "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"465fa905-e384-447b-a8b7-6c85f2fa5f1c","delta":"7  "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"465fa905-e384-447b-a8b7-6c85f2fa5f1c","delta":"6  "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"465fa905-e384-447b-a8b7-6c85f2fa5f1c","delta":"5  "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"465fa905-e384-447b-a8b7-6c85f2fa5f1c","delta":"4  "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"465fa905-e384-447b-a8b7-6c85f2fa5f1c","delta":"3  "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"465fa905-e384-447b-a8b7-6c85f2fa5f1c","delta":"2  "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"465fa905-e384-447b-a8b7-6c85f2fa5f1c","delta":"1  "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"465fa905-e384-447b-a8b7-6c85f2fa5f1c","delta":"✓"}
+
+data: {"type":"TEXT_MESSAGE_END","messageId":"465fa905-e384-447b-a8b7-6c85f2fa5f1c"}
+
+data: {"type":"RUN_FINISHED","threadId":"thread-agentic_chat-backend_tool","runId":"b1343adf-091f-408c-a9a3-59e0701d7690"}
+

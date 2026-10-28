@@ -1,0 +1,1329 @@
+{
+  "source": "middleware/__tests__/compatibility-boundary-optional-nulls.test.ts",
+  "vectors": [
+    {
+      "name": "recorded producer streams through HttpAgent > completes agentic chat with the nulls gone, rawEvent intact and warnings logged",
+      "line": 127,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1",
+          "parentRunId": null,
+          "input": null
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "subagentRunId": null,
+          "messageId": "chatcmpl-sZwVO-ktzIGDEfy3",
+          "role": "assistant",
+          "name": "AgenticChat",
+          "rawEvent": {
+            "authorName": "AgenticChat",
+            "role": "assistant",
+            "conversationId": null,
+            "additionalProperties": null
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "subagentRunId": null,
+          "messageId": "chatcmpl-sZwVO-ktzIGDEfy3",
+          "delta": "Hello duaa! How can ",
+          "rawEvent": {
+            "authorName": "AgenticChat",
+            "role": "assistant",
+            "conversationId": null,
+            "additionalProperties": null
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "subagentRunId": null,
+          "messageId": "chatcmpl-sZwVO-ktzIGDEfy3",
+          "delta": "I assist you today?",
+          "rawEvent": {
+            "authorName": "AgenticChat",
+            "role": "assistant",
+            "conversationId": null,
+            "additionalProperties": null
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "subagentRunId": null,
+          "messageId": "chatcmpl-sZwVO-ktzIGDEfy3"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1",
+          "result": null,
+          "outcome": {
+            "type": "success",
+            "pendingToolCallIds": null
+          },
+          "usage": [
+            {
+              "provider": null,
+              "model": "gpt-4o",
+              "inputTokens": 4,
+              "outputTokens": 10,
+              "totalTokens": 14,
+              "reasoningTokens": null,
+              "cachedInputTokens": null,
+              "cacheWriteInputTokens": null
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t1",
+            "runId": "r1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "rawEvent": {
+              "authorName": "AgenticChat",
+              "role": "assistant",
+              "conversationId": null,
+              "additionalProperties": null
+            },
+            "messageId": "chatcmpl-sZwVO-ktzIGDEfy3",
+            "role": "assistant",
+            "name": "AgenticChat"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "rawEvent": {
+              "authorName": "AgenticChat",
+              "role": "assistant",
+              "conversationId": null,
+              "additionalProperties": null
+            },
+            "messageId": "chatcmpl-sZwVO-ktzIGDEfy3",
+            "delta": "Hello duaa! How can "
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "rawEvent": {
+              "authorName": "AgenticChat",
+              "role": "assistant",
+              "conversationId": null,
+              "additionalProperties": null
+            },
+            "messageId": "chatcmpl-sZwVO-ktzIGDEfy3",
+            "delta": "I assist you today?"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "chatcmpl-sZwVO-ktzIGDEfy3"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t1",
+            "runId": "r1",
+            "outcome": {
+              "type": "success"
+            },
+            "usage": [
+              {
+                "model": "gpt-4o",
+                "inputTokens": 4,
+                "outputTokens": 10,
+                "totalTokens": 14
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation; nulls inside rawEvent are opaque provider data and survive",
+      "warnings": [
+        "RUN_STARTED.parentRunId: null",
+        "RUN_STARTED.input: null",
+        "subagentRunId: null",
+        "RUN_FINISHED.result: null",
+        "RUN_FINISHED.outcome.pendingToolCallIds: null",
+        "RUN_FINISHED.usage[].provider: null",
+        "RUN_FINISHED.usage[].reasoningTokens: null",
+        "RUN_FINISHED.usage[].cachedInputTokens: null",
+        "RUN_FINISHED.usage[].cacheWriteInputTokens: null"
+      ],
+      "notes": "A recorded producer that writes every unset optional field as null. Every tolerated null is delivered absent (outcome becomes {type: success}, usage entries keep only model/inputTokens/outputTokens/totalTokens); the nulls INSIDE rawEvent survive. TS also asserts the reducer's assistant message reads 'Hello duaa! How can I assist you today?' with no subagentRunId, and that exactly these nine notices fire, once each although four events carry subagentRunId: null. TS asserts warning CADENCE: one optional-null notice per field and location per run, however many events carry it (here a fragment per converted field; the soft check does not count)."
+    },
+    {
+      "name": "recorded producer streams through HttpAgent > completes backend tool rendering, dropping TOOL_CALL_RESULT.role: null",
+      "line": 167,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1",
+          "parentRunId": null,
+          "input": null
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "subagentRunId": null,
+          "toolCallId": "call_get_weather_1",
+          "toolCallName": "get_weather",
+          "parentMessageId": "chatcmpl-0-gVLlBKHQ9dkxwa",
+          "rawEvent": {
+            "authorName": "BackendToolRenderer",
+            "role": "assistant",
+            "conversationId": null,
+            "additionalProperties": null
+          }
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "subagentRunId": null,
+          "toolCallId": "call_get_weather_1",
+          "delta": "{\"location\":\"San Francisco\"}",
+          "rawEvent": {
+            "authorName": "BackendToolRenderer",
+            "role": "assistant",
+            "conversationId": null,
+            "additionalProperties": null
+          }
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "subagentRunId": null,
+          "toolCallId": "call_get_weather_1",
+          "rawEvent": {
+            "authorName": "BackendToolRenderer",
+            "role": "assistant",
+            "conversationId": null,
+            "additionalProperties": null
+          }
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "subagentRunId": null,
+          "messageId": "call_get_weather_1",
+          "toolCallId": "call_get_weather_1",
+          "content": "{\"temperature\":20,\"conditions\":\"sunny\",\"humidity\":50,\"wind_speed\":10,\"feelsLike\":25}",
+          "role": null,
+          "rawEvent": {
+            "authorName": "BackendToolRenderer",
+            "role": "tool",
+            "conversationId": null,
+            "additionalProperties": null
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "subagentRunId": null,
+          "messageId": "chatcmpl-NG0L5yQS-D_biey7",
+          "role": "assistant",
+          "name": "BackendToolRenderer",
+          "rawEvent": {
+            "authorName": "BackendToolRenderer",
+            "role": "assistant",
+            "conversationId": null,
+            "additionalProperties": null
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "subagentRunId": null,
+          "messageId": "chatcmpl-NG0L5yQS-D_biey7",
+          "delta": "Done! I've completed",
+          "rawEvent": {
+            "authorName": "BackendToolRenderer",
+            "role": "assistant",
+            "conversationId": null,
+            "additionalProperties": null
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "subagentRunId": null,
+          "messageId": "chatcmpl-NG0L5yQS-D_biey7",
+          "delta": " that for you.",
+          "rawEvent": {
+            "authorName": "BackendToolRenderer",
+            "role": "assistant",
+            "conversationId": null,
+            "additionalProperties": null
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "subagentRunId": null,
+          "messageId": "chatcmpl-NG0L5yQS-D_biey7"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1",
+          "result": null,
+          "outcome": {
+            "type": "success",
+            "pendingToolCallIds": null
+          },
+          "usage": [
+            {
+              "provider": null,
+              "model": "gpt-4o",
+              "inputTokens": 39,
+              "outputTokens": 19,
+              "totalTokens": 58,
+              "reasoningTokens": null,
+              "cachedInputTokens": null,
+              "cacheWriteInputTokens": null
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t1",
+            "runId": "r1"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "rawEvent": {
+              "authorName": "BackendToolRenderer",
+              "role": "assistant",
+              "conversationId": null,
+              "additionalProperties": null
+            },
+            "toolCallId": "call_get_weather_1",
+            "toolCallName": "get_weather",
+            "parentMessageId": "chatcmpl-0-gVLlBKHQ9dkxwa"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "rawEvent": {
+              "authorName": "BackendToolRenderer",
+              "role": "assistant",
+              "conversationId": null,
+              "additionalProperties": null
+            },
+            "toolCallId": "call_get_weather_1",
+            "delta": "{\"location\":\"San Francisco\"}"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "rawEvent": {
+              "authorName": "BackendToolRenderer",
+              "role": "assistant",
+              "conversationId": null,
+              "additionalProperties": null
+            },
+            "toolCallId": "call_get_weather_1"
+          },
+          {
+            "type": "TOOL_CALL_RESULT",
+            "rawEvent": {
+              "authorName": "BackendToolRenderer",
+              "role": "tool",
+              "conversationId": null,
+              "additionalProperties": null
+            },
+            "messageId": "call_get_weather_1",
+            "toolCallId": "call_get_weather_1",
+            "content": "{\"temperature\":20,\"conditions\":\"sunny\",\"humidity\":50,\"wind_speed\":10,\"feelsLike\":25}"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "rawEvent": {
+              "authorName": "BackendToolRenderer",
+              "role": "assistant",
+              "conversationId": null,
+              "additionalProperties": null
+            },
+            "messageId": "chatcmpl-NG0L5yQS-D_biey7",
+            "role": "assistant",
+            "name": "BackendToolRenderer"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "rawEvent": {
+              "authorName": "BackendToolRenderer",
+              "role": "assistant",
+              "conversationId": null,
+              "additionalProperties": null
+            },
+            "messageId": "chatcmpl-NG0L5yQS-D_biey7",
+            "delta": "Done! I've completed"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "rawEvent": {
+              "authorName": "BackendToolRenderer",
+              "role": "assistant",
+              "conversationId": null,
+              "additionalProperties": null
+            },
+            "messageId": "chatcmpl-NG0L5yQS-D_biey7",
+            "delta": " that for you."
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "chatcmpl-NG0L5yQS-D_biey7"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t1",
+            "runId": "r1",
+            "outcome": {
+              "type": "success"
+            },
+            "usage": [
+              {
+                "model": "gpt-4o",
+                "inputTokens": 39,
+                "outputTokens": 19,
+                "totalTokens": 58
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation; nulls inside rawEvent are opaque provider data and survive",
+      "warnings": [
+        "TOOL_CALL_RESULT.role: null"
+      ],
+      "notes": "TS asserts the run finishes, no tolerated null survives on any delivered event, the TOOL_CALL_RESULT is delivered, and the reducer mints the tool message."
+    },
+    {
+      "name": "recorded producer streams through HttpAgent > surfaces the recorded RUN_ERROR as a run error rather than a validation error",
+      "line": 181,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_ERROR",
+          "message": "An error occurred while streaming the agent response.",
+          "code": "StreamingError",
+          "usage": null
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_ERROR",
+            "message": "An error occurred while streaming the agent response.",
+            "code": "StreamingError"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#the-run: a stream MAY begin with RUN_ERROR, and RUN_ERROR is a well-formed event, not a rejection; plus /spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation; nulls inside rawEvent are opaque provider data and survive",
+      "warnings": [
+        "RUN_ERROR.usage: null"
+      ],
+      "notes": "The whole stream is one RUN_ERROR carrying usage: null. It is delivered (without usage) and is NOT a ProtocolError: TS's runAgent resolves and onRunErrorEvent receives {type, message, code}."
+    },
+    {
+      "name": "recorded producer streams through HttpAgent > gives in-process producers and connectAgent the same tolerance",
+      "line": 203,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1",
+          "parentRunId": null,
+          "input": null
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "subagentRunId": null,
+          "messageId": "chatcmpl-sZwVO-ktzIGDEfy3",
+          "role": "assistant",
+          "name": "AgenticChat",
+          "rawEvent": {
+            "authorName": "AgenticChat",
+            "role": "assistant",
+            "conversationId": null,
+            "additionalProperties": null
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "subagentRunId": null,
+          "messageId": "chatcmpl-sZwVO-ktzIGDEfy3",
+          "delta": "Hello duaa! How can ",
+          "rawEvent": {
+            "authorName": "AgenticChat",
+            "role": "assistant",
+            "conversationId": null,
+            "additionalProperties": null
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "subagentRunId": null,
+          "messageId": "chatcmpl-sZwVO-ktzIGDEfy3",
+          "delta": "I assist you today?",
+          "rawEvent": {
+            "authorName": "AgenticChat",
+            "role": "assistant",
+            "conversationId": null,
+            "additionalProperties": null
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "subagentRunId": null,
+          "messageId": "chatcmpl-sZwVO-ktzIGDEfy3"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1",
+          "result": null,
+          "outcome": {
+            "type": "success",
+            "pendingToolCallIds": null
+          },
+          "usage": [
+            {
+              "provider": null,
+              "model": "gpt-4o",
+              "inputTokens": 4,
+              "outputTokens": 10,
+              "totalTokens": 14,
+              "reasoningTokens": null,
+              "cachedInputTokens": null,
+              "cacheWriteInputTokens": null
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t1",
+            "runId": "r1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "rawEvent": {
+              "authorName": "AgenticChat",
+              "role": "assistant",
+              "conversationId": null,
+              "additionalProperties": null
+            },
+            "messageId": "chatcmpl-sZwVO-ktzIGDEfy3",
+            "role": "assistant",
+            "name": "AgenticChat"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "rawEvent": {
+              "authorName": "AgenticChat",
+              "role": "assistant",
+              "conversationId": null,
+              "additionalProperties": null
+            },
+            "messageId": "chatcmpl-sZwVO-ktzIGDEfy3",
+            "delta": "Hello duaa! How can "
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "rawEvent": {
+              "authorName": "AgenticChat",
+              "role": "assistant",
+              "conversationId": null,
+              "additionalProperties": null
+            },
+            "messageId": "chatcmpl-sZwVO-ktzIGDEfy3",
+            "delta": "I assist you today?"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "chatcmpl-sZwVO-ktzIGDEfy3"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t1",
+            "runId": "r1",
+            "outcome": {
+              "type": "success"
+            },
+            "usage": [
+              {
+                "model": "gpt-4o",
+                "inputTokens": 4,
+                "outputTokens": 10,
+                "totalTokens": 14
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation; nulls inside rawEvent are opaque provider data and survive",
+      "notes": "Same recorded stream as the agentic-chat vector, handed over in-process (MemoryAgent) on both the run and the connect path; TS asserts the run finishes with no tolerated null left. One Ruby pipeline covers both paths."
+    },
+    {
+      "name": "the optional-null tolerance is exactly the listed fields > still rejects another null or invalid value ($field) [name]",
+      "line": 282,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m",
+          "role": "assistant",
+          "name": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal (DEPRECATIONS.md: every optional null not on the list stays invalid)",
+      "notes": "TS asserts a bare rejects.toThrow() (literal SSE, RUN_FINISHED appended by the test). Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError. The null sits in an optional or required field that is NOT on the DEPRECATIONS.md list."
+    },
+    {
+      "name": "the optional-null tolerance is exactly the listed fields > still rejects another null or invalid value ($field) [model]",
+      "line": 282,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1",
+          "usage": [
+            {
+              "model": null,
+              "inputTokens": 1,
+              "outputTokens": 1,
+              "totalTokens": 2
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal (DEPRECATIONS.md: every optional null not on the list stays invalid)",
+      "notes": "TS asserts a bare rejects.toThrow() (literal SSE, RUN_FINISHED appended by the test). Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError. The null sits in an optional or required field that is NOT on the DEPRECATIONS.md list."
+    },
+    {
+      "name": "the optional-null tolerance is exactly the listed fields > still rejects another null or invalid value ($field) [inputTokens]",
+      "line": 282,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1",
+          "usage": [
+            {
+              "model": "gpt-4o",
+              "inputTokens": null,
+              "outputTokens": 1,
+              "totalTokens": 2
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal (DEPRECATIONS.md: every optional null not on the list stays invalid)",
+      "notes": "TS asserts a bare rejects.toThrow() (literal SSE, RUN_FINISHED appended by the test). Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError. The null sits in an optional or required field that is NOT on the DEPRECATIONS.md list."
+    },
+    {
+      "name": "the optional-null tolerance is exactly the listed fields > still rejects another null or invalid value ($field) [code]",
+      "line": 282,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_ERROR",
+          "message": "x",
+          "code": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal (DEPRECATIONS.md: every optional null not on the list stays invalid)",
+      "notes": "TS asserts a bare rejects.toThrow() (literal SSE, RUN_FINISHED appended by the test). Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError. The null sits in an optional or required field that is NOT on the DEPRECATIONS.md list."
+    },
+    {
+      "name": "the optional-null tolerance is exactly the listed fields > still rejects another null or invalid value ($field) [usage]",
+      "line": 282,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1",
+          "usage": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal (DEPRECATIONS.md: every optional null not on the list stays invalid)",
+      "notes": "TS asserts a bare rejects.toThrow() (literal SSE, RUN_FINISHED appended by the test). Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError. The null sits in an optional or required field that is NOT on the DEPRECATIONS.md list."
+    },
+    {
+      "name": "the optional-null tolerance is exactly the listed fields > still rejects another null or invalid value ($field) [description]",
+      "line": 282,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "SUBAGENT_STARTED",
+          "subagentRunId": "s1",
+          "name": "child",
+          "description": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal (DEPRECATIONS.md: every optional null not on the list stays invalid)",
+      "notes": "TS asserts a bare rejects.toThrow() (literal SSE, RUN_FINISHED appended by the test). Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError. The null sits in an optional or required field that is NOT on the DEPRECATIONS.md list."
+    },
+    {
+      "name": "the optional-null tolerance is exactly the listed fields > still rejects another null or invalid value ($field) [subagentRunId]",
+      "line": 282,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m",
+              "role": "assistant",
+              "content": "x",
+              "subagentRunId": null
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal (DEPRECATIONS.md: every optional null not on the list stays invalid)",
+      "notes": "TS asserts a bare rejects.toThrow() (literal SSE, RUN_FINISHED appended by the test). Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError. The null sits in an optional or required field that is NOT on the DEPRECATIONS.md list."
+    },
+    {
+      "name": "the optional-null tolerance is exactly the listed fields > still rejects another null or invalid value ($field) [parentRunId]",
+      "line": 282,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1",
+          "input": {
+            "threadId": "t1",
+            "runId": "r1",
+            "parentRunId": null
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal (DEPRECATIONS.md: every optional null not on the list stays invalid)",
+      "notes": "TS asserts a bare rejects.toThrow() (literal SSE, RUN_FINISHED appended by the test). Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError. The null sits in an optional or required field that is NOT on the DEPRECATIONS.md list."
+    },
+    {
+      "name": "the optional-null tolerance is exactly the listed fields > still rejects another null or invalid value ($field) [role]",
+      "line": 282,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "x",
+          "toolCallId": "x",
+          "content": "x",
+          "role": "user"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/processing#the-rule: a described field carrying a value the schema rejects MUST be fatal (DEPRECATIONS.md: every optional null not on the list stays invalid)",
+      "notes": "TS asserts a bare rejects.toThrow() (literal SSE, RUN_FINISHED appended by the test). Rejected by ENFORCEMENT on the canonical order (a zod message in TS, not portable), so the fragment is empty: any ProtocolError. Not a null: TOOL_CALL_RESULT.role is the constant 'tool', so 'user' is a malformed known value."
+    },
+    {
+      "name": "the optional-null tolerance is exactly the listed fields > keeps real-value nulls: state, metadata, tool arguments, CUSTOM.value",
+      "line": 291,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "STATE_SNAPSHOT",
+          "snapshot": {
+            "subagentRunId": null,
+            "parentRunId": null,
+            "input": null,
+            "role": null,
+            "pendingToolCallIds": null,
+            "provider": null
+          }
+        },
+        {
+          "type": "STATE_DELTA",
+          "delta": [
+            {
+              "op": "replace",
+              "path": "/role",
+              "value": null
+            }
+          ]
+        },
+        {
+          "type": "CUSTOM",
+          "name": "x",
+          "value": null,
+          "metadata": {
+            "subagentRunId": null,
+            "parentRunId": null,
+            "input": null,
+            "role": null,
+            "pendingToolCallIds": null,
+            "provider": null
+          }
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "c",
+          "toolCallName": "tool",
+          "rawEvent": {
+            "subagentRunId": null,
+            "parentRunId": null,
+            "input": null,
+            "role": null,
+            "pendingToolCallIds": null,
+            "provider": null
+          }
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "c",
+          "delta": "{\"subagentRunId\":null,\"parentRunId\":null,\"input\":null,\"role\":null,\"pendingToolCallIds\":null,\"provider\":null}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "c"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1",
+          "result": {
+            "subagentRunId": null,
+            "parentRunId": null,
+            "input": null,
+            "role": null,
+            "pendingToolCallIds": null,
+            "provider": null
+          },
+          "metadata": {
+            "subagentRunId": null,
+            "parentRunId": null,
+            "input": null,
+            "role": null,
+            "pendingToolCallIds": null,
+            "provider": null
+          },
+          "usage": [
+            {
+              "model": "gpt-4o",
+              "inputTokens": 1,
+              "outputTokens": 1,
+              "totalTokens": 2
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t1",
+            "runId": "r1"
+          },
+          {
+            "type": "STATE_SNAPSHOT",
+            "snapshot": {
+              "subagentRunId": null,
+              "parentRunId": null,
+              "input": null,
+              "role": null,
+              "pendingToolCallIds": null,
+              "provider": null
+            }
+          },
+          {
+            "type": "STATE_DELTA",
+            "delta": [
+              {
+                "op": "replace",
+                "path": "/role",
+                "value": null
+              }
+            ]
+          },
+          {
+            "type": "CUSTOM",
+            "metadata": {
+              "subagentRunId": null,
+              "parentRunId": null,
+              "input": null,
+              "role": null,
+              "pendingToolCallIds": null,
+              "provider": null
+            },
+            "name": "x",
+            "value": null
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "rawEvent": {
+              "subagentRunId": null,
+              "parentRunId": null,
+              "input": null,
+              "role": null,
+              "pendingToolCallIds": null,
+              "provider": null
+            },
+            "toolCallId": "c",
+            "toolCallName": "tool"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "c",
+            "delta": "{\"subagentRunId\":null,\"parentRunId\":null,\"input\":null,\"role\":null,\"pendingToolCallIds\":null,\"provider\":null}"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "c"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "metadata": {
+              "subagentRunId": null,
+              "parentRunId": null,
+              "input": null,
+              "role": null,
+              "pendingToolCallIds": null,
+              "provider": null
+            },
+            "threadId": "t1",
+            "runId": "r1",
+            "result": {
+              "subagentRunId": null,
+              "parentRunId": null,
+              "input": null,
+              "role": null,
+              "pendingToolCallIds": null,
+              "provider": null
+            },
+            "usage": [
+              {
+                "model": "gpt-4o",
+                "inputTokens": 1,
+                "outputTokens": 1,
+                "totalTokens": 2
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/processing (DEPRECATIONS.md: only a null in place of a whole optional field is a deviation; nulls inside state, metadata, rawEvent, result and tool arguments are data)",
+      "notes": "Delivered events equal the input exactly, although the data objects reuse the tolerated field NAMES (subagentRunId, parentRunId, input, role, pendingToolCallIds, provider) with null values. TS also asserts NO warning at all; the soft warnings check cannot express absence.",
+      "noWarnings": true
+    },
+    {
+      "name": "one warning per tolerated null field per run > applies to the long-standing nulls too, not only the newer fields",
+      "line": 356,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "a",
+          "toolCallName": "tool",
+          "parentMessageId": null,
+          "rawEvent": null
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "a",
+          "rawEvent": null
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "b",
+          "toolCallName": "tool",
+          "parentMessageId": null,
+          "rawEvent": null
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "b",
+          "rawEvent": null
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "m1",
+              "role": "user",
+              "content": [
+                {
+                  "type": "image",
+                  "source": {
+                    "type": "url",
+                    "value": "https://x.test/i"
+                  },
+                  "metadata": null
+                }
+              ]
+            },
+            {
+              "id": "m2",
+              "role": "user",
+              "content": [
+                {
+                  "type": "image",
+                  "source": {
+                    "type": "url",
+                    "value": "https://x.test/i"
+                  },
+                  "metadata": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1",
+          "rawEvent": null
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t1",
+            "runId": "r1"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "a",
+            "toolCallName": "tool"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "a"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "b",
+            "toolCallName": "tool"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "b"
+          },
+          {
+            "type": "MESSAGES_SNAPSHOT",
+            "messages": [
+              {
+                "id": "m1",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "url",
+                      "value": "https://x.test/i"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "m2",
+                "role": "user",
+                "content": [
+                  {
+                    "type": "image",
+                    "source": {
+                      "type": "url",
+                      "value": "https://x.test/i"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t1",
+            "runId": "r1"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation; nulls inside rawEvent are opaque provider data and survive",
+      "warnings": [
+        "rawEvent: null",
+        "TOOL_CALL_START.parentMessageId: null",
+        "image input content.metadata: null"
+      ],
+      "notes": "TS asserts exactly three notices, one per field and location, although rawEvent: null rides five events, parentMessageId: null two, and image metadata: null two parts. TS asserts warning CADENCE: one optional-null notice per field and location per run, however many events carry it (here a fragment per converted field; the soft check does not count)."
+    },
+    {
+      "name": "one warning per tolerated null field per run > warns again in the next run, on one stream and across runAgent calls [one stream, two runs]",
+      "line": 375,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "a",
+          "toolCallName": "tool",
+          "parentMessageId": null,
+          "rawEvent": null
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "a",
+          "rawEvent": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r2"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "b",
+          "toolCallName": "tool",
+          "parentMessageId": null,
+          "rawEvent": null
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "b",
+          "rawEvent": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r2"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t1",
+            "runId": "r1"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "a",
+            "toolCallName": "tool"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "a"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t1",
+            "runId": "r1"
+          },
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t1",
+            "runId": "r2"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "b",
+            "toolCallName": "tool"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "b"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t1",
+            "runId": "r2"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation; nulls inside rawEvent are opaque provider data and survive",
+      "warnings": [
+        "rawEvent: null"
+      ],
+      "notes": "TS (connectAgent) asserts exactly TWO 'rawEvent: null' notices: the once-per-run memory resets at each RUN_STARTED. TS asserts warning CADENCE: one optional-null notice per field and location per run, however many events carry it (here a fragment per converted field; the soft check does not count)."
+    },
+    {
+      "name": "one warning per tolerated null field per run > warns again in the next run, on one stream and across runAgent calls [a later runAgent call]",
+      "line": 375,
+      "stage": "pipeline",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t1",
+          "runId": "r1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "c",
+          "toolCallName": "tool",
+          "parentMessageId": null,
+          "rawEvent": null
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "c",
+          "rawEvent": null
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t1",
+          "runId": "r1"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t1",
+            "runId": "r1"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "c",
+            "toolCallName": "tool"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "c"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t1",
+            "runId": "r1"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes (DEPRECATIONS.md optional-null table): a whole optional null is read as an absent field, before validation; nulls inside rawEvent are opaque provider data and survive",
+      "warnings": [
+        "rawEvent: null"
+      ],
+      "notes": "TS runs this stream twice on the same agent and asserts one 'rawEvent: null' notice per call (two in all): nothing remembered from an earlier run suppresses a later run's notice. A fresh Ruby pipeline per run makes this the single-run case."
+    }
+  ]
+}

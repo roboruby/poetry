@@ -1,0 +1,145 @@
+{
+  "source": "verify/__tests__/verify.steps.test.ts",
+  "vectors": [
+    {
+      "name": "verifyEvents steps > should ensure step end has the same name as step start",
+      "line": 15,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "test-step"
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "different-name"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'STEP_FINISHED' for step \"different-name\" that was not started"
+      },
+      "spec": "/spec/1.0/events/lifecycle#steps: a producer MUST NOT finish a step that was never opened (matched by stepName)",
+      "notes": "Delivered-before-error counts asserted by the TS test are not part of an error vector."
+    },
+    {
+      "name": "verifyEvents steps > should not allow ending a step that wasn't started",
+      "line": 58,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "test-step"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'STEP_FINISHED' for step \"test-step\" that was not started"
+      },
+      "spec": "/spec/1.0/events/lifecycle#steps: a producer MUST NOT finish a step that was never opened (matched by stepName)",
+      "notes": "Delivered-before-error counts asserted by the TS test are not part of an error vector."
+    },
+    {
+      "name": "verifyEvents steps > should not allow starting a step with a name that's already active",
+      "line": 97,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "test-step"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "test-step"
+        }
+      ],
+      "expect": {
+        "error": "Step \"test-step\" is already active for 'STEP_STARTED'"
+      },
+      "spec": "/spec/1.0/events/lifecycle#steps: a producer MUST NOT open a step whose name is already open",
+      "notes": "Delivered-before-error counts asserted by the TS test are not part of an error vector."
+    },
+    {
+      "name": "verifyEvents steps > should require all steps to be ended before run ends",
+      "line": 138,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "step1"
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "step1"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "step2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'RUN_FINISHED' while steps are still active"
+      },
+      "spec": "/spec/1.0/events/lifecycle#steps: every step a producer opens MUST be closed before the run finishes",
+      "notes": "The full TS message lists the open steps ('...still active: step2'). RUN_FINISHED ids differ from RUN_STARTED's, as in the TS test. Delivered-before-error counts asserted by the TS test are not part of an error vector. Input normalized: the TS test closes the run with a RUN_FINISHED whose threadId/runId differ from its RUN_STARTED (incidental); here they match, so the vector pins neither acceptance nor rejection of mismatched ids."
+    },
+    {
+      "name": "verifyEvents steps > should allow properly nested steps",
+      "line": 189,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "step1"
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "step1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "STEP_STARTED",
+          "STEP_FINISHED",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#steps: STEP_STARTED opens a step and STEP_FINISHED closes it, matched by stepName",
+      "notes": "TS asserts the four delivered types in order."
+    }
+  ]
+}

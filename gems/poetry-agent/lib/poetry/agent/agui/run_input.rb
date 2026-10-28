@@ -2,6 +2,7 @@
 
 require "json"
 require "securerandom"
+require "time"
 
 module Poetry
   module Agent
@@ -28,16 +29,25 @@ module Poetry
         # @param forwarded_props [Hash] integration-specific props
         # @param parent_run_id [String, nil] the run this one branches from
         # @param resume [Array<Hash>, nil] {.resume_entry} answers to the last run's interrupts
+        # @param interrupts [Array<Hash>] the thread's open interrupts ({Transcript#interrupts}):
+        #   the resume list must cover every one, and may only cancel an expired one
         # @param protocol_version [String, nil] the declared version; nil omits it, for an agent
         #   known to predate the field
         # @return [Hash] the wire hash (string keys)
+        # @raise [ProtocolError] for a resume list that leaves an open interrupt uncovered or
+        #   answers an expired one: AG-UI 1.0 has the consumer refuse it before anything is sent
         # @example A first run with one client tool
         #   RunInput.build(thread_id: "t1", messages: [RunInput.user_message("hi")],
         #                  tools: [Poetry::Agent::AGUI.tool_descriptor("sections", definition)])
+        # @example Answering the interrupts the last run ended with
+        #   RunInput.build(thread_id: "t1", messages: transcript.messages_for_input,
+        #                  interrupts: transcript.interrupts,
+        #                  resume: [RunInput.resume_entry(id, status: "resolved", payload: { "approved" => true })])
         def build( # rubocop:disable Metrics/ParameterLists -- one keyword per RunAgentInput field
           thread_id:, messages:, run_id: SecureRandom.uuid, tools: [], context: [], state: {},
-          forwarded_props: {}, parent_run_id: nil, resume: nil, protocol_version: PROTOCOL_VERSION
+          forwarded_props: {}, parent_run_id: nil, resume: nil, interrupts: [], protocol_version: PROTOCOL_VERSION
         )
+          check_resume(interrupts, resume || [])
           input = { "threadId" => thread_id, "runId" => run_id }
           input["protocolVersion"] = protocol_version if protocol_version
           input.merge!("state" => state, "messages" => messages, "tools" => tools, "context" => context,
@@ -46,6 +56,43 @@ module Poetry
           input["resume"] = resume if resume
           input
         end
+
+        # Whether an interrupt's `expiresAt` has passed. The field's format is
+        # left open by the spec; this reads it as ISO 8601, and an interrupt
+        # whose value does not parse as one has not expired.
+        #
+        # @param interrupt [Hash] an interrupt as {Transcript#interrupts} holds it
+        # @param now [Time]
+        # @return [Boolean]
+        def expired?(interrupt, now: Time.now)
+          expires_at = interrupt["expiresAt"]
+          return false unless expires_at.is_a?(String)
+
+          Time.iso8601(expires_at) <= now
+        rescue ArgumentError
+          false
+        end
+
+        # Refuses a resume list that leaves an open interrupt uncovered (omission
+        # is not abandonment) or resolves one that expired (it can still be
+        # cancelled, which is how a thread moves past it).
+        def check_resume(interrupts, resume)
+          answered = resume.to_h { |entry| [entry["interruptId"], entry] }
+          uncovered = interrupts.map { |interrupt| interrupt["id"] }.reject { |id| answered.key?(id) }
+          if uncovered.any?
+            raise ProtocolError.new("The thread has #{uncovered.size} open interrupt(s) the resume list does not " \
+                                    "answer: #{uncovered.join(", ")}", stage: :input, kind: :uncovered_interrupt)
+          end
+
+          interrupts.each do |interrupt|
+            next unless expired?(interrupt) && answered[interrupt["id"]]["status"] != "cancelled"
+
+            raise ProtocolError.new("Interrupt #{interrupt["id"]} expired at #{interrupt["expiresAt"]} and can no " \
+                                    "longer be answered; cancel it to continue the thread",
+                                    stage: :input, kind: :expired_interrupt)
+          end
+        end
+        private_class_method :check_resume
 
         # A user message: text, or a list of content parts.
         #

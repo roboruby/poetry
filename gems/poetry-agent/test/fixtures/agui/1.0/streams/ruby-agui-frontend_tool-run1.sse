@@ -1,0 +1,10 @@
+data: {"type":"RUN_STARTED","threadId":"rb-fe-162943","runId":"5abd3bef-224e-4487-a8bf-a3145402faa0"}
+
+data: {"type":"TOOL_CALL_START","toolCallId":"call_change_background_1","toolCallName":"change_background"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_change_background_1","delta":"{\"background\":\"blue\"}"}
+
+data: {"type":"TOOL_CALL_END","toolCallId":"call_change_background_1"}
+
+data: {"type":"RUN_FINISHED","threadId":"rb-fe-162943","runId":"5abd3bef-224e-4487-a8bf-a3145402faa0"}
+

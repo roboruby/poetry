@@ -1,0 +1,184 @@
+data: {"type":"RUN_STARTED","threadId":"strands-reasoning-162641","runId":"98a1f885-d974-410e-a887-89c27b9f9505","protocolVersion":"1.0"}
+
+data: {"type":"STATE_SNAPSHOT","snapshot":{}}
+
+data: {"type":"MESSAGES_SNAPSHOT","messages":[{"id":"d616cadd-309a-48f7-b49c-bcc1bb03c014","role":"user","content":"What is the best car to buy?"},{"id":"0860a93b-0dbe-44e7-a4d3-715982e472f4","role":"assistant","content":"Based on my analysis, here are the top recommendations:\n\n1. **Toyota Camry** - Best overall value with excellent reliability\n2. **Honda Civic** - Great fuel economy and low maintenance costs\n3. **Mazda3** - Best driving experience in its class\n\nThe Toyota Camry stands out for its combination of reliability, resale value, and comfort."},{"id":"393879b6-f7ab-4eb8-955a-d36f9628a366","role":"user","content":"Please explain step by step"}]}
+
+data: {"type":"REASONING_START","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"The us"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"er wan"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"ts a s"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"tructu"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"red ex"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"planat"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"ion. I"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":" need "}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"to bre"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"ak dow"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"n my r"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"easoni"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"ng pro"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"cess i"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"nto cl"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"ear nu"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"mbered"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":" steps"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":" showi"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"ng how"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":" I arr"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"ived a"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"t my c"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"onclus"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d","delta":"ion."}
+
+data: {"type":"REASONING_END","messageId":"8adab834-8115-47a0-9ab5-efb66aef566d"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","role":"assistant"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"Let me"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":" walk "}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"throug"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"h this"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":" step "}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"by ste"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"p:\n\n**"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"Step 1"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":":** Fi"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"rst, I"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":" ident"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"ified "}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"the ke"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"y crit"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"eria -"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":" relia"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"bility"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":", valu"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"e, and"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":" pract"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"icalit"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"y.\n\n**"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"Step 2"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":":** Th"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"en I c"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"ompare"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"d mode"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"ls acr"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"oss th"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"ese cr"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"iteria"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":".\n\n**S"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"tep 3:"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"** Fin"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"ally, "}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"I weig"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"hted t"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"he fac"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"tors b"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"ased o"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"n typi"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"cal bu"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"yer pr"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"ioriti"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"es.\n\nT"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"his sy"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"stemat"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"ic app"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"roach "}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"ensure"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"s a we"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"ll-rea"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"soned "}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"recomm"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"endati"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","delta":"on."}
+
+data: {"type":"RAW","event":{"type":"modelMetadataEvent","usage":{"inputTokens":0,"outputTokens":0,"totalTokens":0}},"source":"strands"}
+
+data: {"type":"MESSAGES_SNAPSHOT","messages":[{"id":"d616cadd-309a-48f7-b49c-bcc1bb03c014","role":"user","content":"What is the best car to buy?"},{"id":"0860a93b-0dbe-44e7-a4d3-715982e472f4","role":"assistant","content":"Based on my analysis, here are the top recommendations:\n\n1. **Toyota Camry** - Best overall value with excellent reliability\n2. **Honda Civic** - Great fuel economy and low maintenance costs\n3. **Mazda3** - Best driving experience in its class\n\nThe Toyota Camry stands out for its combination of reliability, resale value, and comfort."},{"id":"393879b6-f7ab-4eb8-955a-d36f9628a366","role":"user","content":"Please explain step by step"},{"id":"a40c7366-592c-4567-9bfc-6d5e6ca5c718","role":"assistant","content":"Let me walk through this step by step:\n\n**Step 1:** First, I identified the key criteria - reliability, value, and practicality.\n\n**Step 2:** Then I compared models across these criteria.\n\n**Step 3:** Finally, I weighted the factors based on typical buyer priorities.\n\nThis systematic approach ensures a well-reasoned recommendation."}]}
+
+data: {"type":"STATE_SNAPSHOT","snapshot":{}}
+
+data: {"type":"RUN_FINISHED","threadId":"strands-reasoning-162641","runId":"98a1f885-d974-410e-a887-89c27b9f9505","outcome":{"type":"success"},"usage":[{"provider":"openai","model":"o4-mini","inputTokens":0,"outputTokens":0,"totalTokens":0}]}
+

@@ -1,0 +1,1151 @@
+{
+  "source": "chunks/__tests__/transform.test.ts",
+  "vectors": [
+    {
+      "name": "transformChunks > should transform a single text message chunk into start, content, and end events",
+      "line": 23,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-123",
+          "delta": "Hello, world!"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-123",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-123",
+            "delta": "Hello, world!"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-123"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: a run-level event closes every lane (the synthesized END precedes RUN_FINISHED); an absent role means assistant",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks > should transform multiple text message chunks with the same ID",
+      "line": 63,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-123",
+          "delta": "Hello"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-123",
+          "delta": ", world!"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-123",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-123",
+            "delta": "Hello"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-123",
+            "delta": ", world!"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-123"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#continuation-chunks: a later chunk carrying the same identifier continues the open item (one START, one END)",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks > should transform a single tool call chunk into start, args, and end events",
+      "line": 115,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tool-123",
+          "toolCallName": "testTool",
+          "delta": "{\"arg1\": \"value1\"}"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "tool-123",
+            "toolCallName": "testTool"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "tool-123",
+            "delta": "{\"arg1\": \"value1\"}"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "tool-123"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#the-chunked-form: a TOOL_CALL_CHUNK expands to TOOL_CALL_START + TOOL_CALL_ARGS, and the run terminal synthesizes TOOL_CALL_END",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks > should handle switching from text message to tool call",
+      "line": 156,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-123",
+          "delta": "Hello"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tool-123",
+          "toolCallName": "testTool",
+          "delta": "{\"arg1\": \"value1\"}"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "TOOL_CALL_START",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: a chunk opening a different item in the same lane closes the open one first (a lane holds one stream, whatever its kind)",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone). The test asserts types only."
+    },
+    {
+      "name": "transformChunks > should pass through non-chunk events",
+      "line": 197,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#the-chunked-form: events that are not chunks pass expansion untouched",
+      "notes": "wrapped: RUN_FINISHED appended (the TS test fed a lone RUN_STARTED)."
+    },
+    {
+      "name": "transformChunks > should handle text message chunks with different IDs",
+      "line": 237,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-123",
+          "delta": "Hello"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-456",
+          "delta": "Different message"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-123",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-123",
+            "delta": "Hello"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-123"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-456",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-456",
+            "delta": "Different message"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-456"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#continuation-chunks: a chunk that names a different identifier opens a new item, and the previous one closes first",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone). The test asserts types and messageIds; the vector pins the exact events."
+    },
+    {
+      "name": "transformChunks > should handle errors when first text message chunk has no ID",
+      "line": 287,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "delta": "This will fail"
+        }
+      ],
+      "expect": {
+        "error": "First TEXT_MESSAGE_CHUNK must have a messageId"
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#the-first-chunk: the first TEXT_MESSAGE_CHUNK MUST carry messageId; a consumer MUST NOT invent one",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks > should handle errors when first tool call chunk has no ID",
+      "line": 301,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "delta": "This will fail"
+        }
+      ],
+      "expect": {
+        "error": "First TOOL_CALL_CHUNK must have a toolCallId"
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#the-first-chunk: the first TOOL_CALL_CHUNK MUST carry toolCallId",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks > should handle errors when first tool call chunk has no name",
+      "line": 315,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tool-123",
+          "delta": "This will fail"
+        }
+      ],
+      "expect": {
+        "error": "First TOOL_CALL_CHUNK must have a toolCallName"
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#the-first-chunk: the first TOOL_CALL_CHUNK MUST carry toolCallName",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks > should handle tool call chunks with parentMessageId",
+      "line": 330,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tool-123",
+          "toolCallName": "testTool",
+          "parentMessageId": "parent-msg-123",
+          "delta": "{\"arg1\": \"value1\"}"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "tool-123",
+            "toolCallName": "testTool",
+            "parentMessageId": "parent-msg-123"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "tool-123",
+            "delta": "{\"arg1\": \"value1\"}"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "tool-123"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#the-chunked-form: the opener fields (parentMessageId) ride on the synthesized TOOL_CALL_START only, not on ARGS or END",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks > should pass through RAW events without transformation",
+      "line": 373,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "RAW",
+          "event": {
+            "some": "data"
+          },
+          "source": "test-source"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "RAW",
+            "event": {
+              "some": "data"
+            },
+            "source": "test-source"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/passthrough: RAW passes through untouched",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test fed a lone RAW)."
+    },
+    {
+      "name": "transformChunks > should handle a complex sequence of mixed events",
+      "line": 388,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-123",
+          "delta": "Hello"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tool-123",
+          "toolCallName": "testTool",
+          "delta": "{\"arg1\": \"value1\"}"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-456",
+          "delta": "After tool call"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "TOOL_CALL_START",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_END",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: each chunk of another kind or id closes the lane's open stream before opening its own",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone). The test asserts types only."
+    },
+    {
+      "name": "transformChunks > should handle text message chunks without delta",
+      "line": 445,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-123"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-123",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-123"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#the-first-chunk: an opener chunk with no delta synthesizes the START but no content event",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks > should handle tool call chunks without delta",
+      "line": 481,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tool-123",
+          "toolCallName": "testTool"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "tool-123",
+            "toolCallName": "testTool"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "tool-123"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#the-first-chunk: an opener chunk with no delta synthesizes the START but no ARGS event",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone)."
+    },
+    {
+      "name": "transformChunks > should generate exactly one start and one end event for multiple chunks with same ID",
+      "line": 518,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-123",
+          "delta": "First part"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-123",
+          "delta": "Second part"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-123",
+          "delta": "Third part"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-123",
+          "delta": "Fourth part"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-123",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-123",
+            "delta": "First part"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-123",
+            "delta": "Second part"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-123",
+            "delta": "Third part"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-123",
+            "delta": "Fourth part"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-123"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#continuation-chunks: repeated chunks with the same id continue one item: one START, one CONTENT per chunk, one END",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone). The test asserts type counts, order and the content messageIds; the vector pins the exact events."
+    },
+    {
+      "name": "transformChunks > should pass name from TEXT_MESSAGE_CHUNK to TEXT_MESSAGE_START",
+      "line": 596,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-123",
+          "delta": "Hello",
+          "name": "research-agent"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-123",
+            "role": "assistant",
+            "name": "research-agent"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-123",
+            "delta": "Hello"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-123"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#the-first-chunk: the opener chunk's name rides on the synthesized TEXT_MESSAGE_START",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone). The test asserts only START.name; the vector pins the exact events."
+    },
+    {
+      "name": "transformChunks > should not include name on TEXT_MESSAGE_START when chunk has no name",
+      "line": 619,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-123",
+          "delta": "Hello"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-123",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-123",
+            "delta": "Hello"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-123"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#the-first-chunk: an absent name stays absent on the synthesized START (no key, not null)",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone). The test asserts START.name is undefined; in JSON that is an absent key, which the exact match pins."
+    },
+    {
+      "name": "transformChunks > should handle interleaved chunks with different message and tool call IDs",
+      "line": 641,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-1",
+          "delta": "First message part 1"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tool-1",
+          "toolCallName": "firstTool",
+          "delta": "{\"arg1\": \"value1\"}"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-1",
+          "delta": "First message part 2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "msg-2",
+          "delta": "Second message"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tool-2",
+          "toolCallName": "secondTool",
+          "delta": "{\"arg2\": \"value2\"}"
+        },
+        {
+          "type": "TOOL_CALL_CHUNK",
+          "toolCallId": "tool-1",
+          "toolCallName": "firstTool",
+          "delta": ",\"arg1_more\": \"more data\"}"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "thread-123",
+          "runId": "run-123"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-1",
+            "delta": "First message part 1"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-1"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "tool-1",
+            "toolCallName": "firstTool"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "tool-1",
+            "delta": "{\"arg1\": \"value1\"}"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "tool-1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-1",
+            "delta": "First message part 2"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-1"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "msg-2",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "msg-2",
+            "delta": "Second message"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "msg-2"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "tool-2",
+            "toolCallName": "secondTool"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "tool-2",
+            "delta": "{\"arg2\": \"value2\"}"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "tool-2"
+          },
+          {
+            "type": "TOOL_CALL_START",
+            "toolCallId": "tool-1",
+            "toolCallName": "firstTool"
+          },
+          {
+            "type": "TOOL_CALL_ARGS",
+            "toolCallId": "tool-1",
+            "delta": ",\"arg1_more\": \"more data\"}"
+          },
+          {
+            "type": "TOOL_CALL_END",
+            "toolCallId": "tool-1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "thread-123",
+            "runId": "run-123"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#closing-a-chunk-stream: one lane holds one stream, so interleaving kinds closes and re-opens; a chunk re-naming an id closed earlier opens it again (a fresh START), which verification accepts as a reopen",
+      "notes": "wrapped: RUN_STARTED prepended (the TS test drove transformChunks alone). The test asserts type counts (3 text START/END, 3 tool START/END) and per-messageId START/END counts; the vector pins the exact events. Verification accepts the second TEXT_MESSAGE_START msg-1 and TOOL_CALL_START tool-1 because both were closed first."
+    },
+    {
+      "name": "what a chunk carries into the events it becomes > carries rawEvent onto the content event",
+      "line": 779,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "hi",
+          "rawEvent": {
+            "provider": "openai",
+            "keep": true
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "hi",
+            "rawEvent": {
+              "provider": "openai",
+              "keep": true
+            }
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#the-chunked-form: a chunk's rawEvent rides on the synthesized content event, never on the synthesized opener",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test drove transformChunks alone and never closed the run, so it saw no synthesized END; the appended terminal adds the END(s) before RUN_FINISHED)."
+    },
+    {
+      "name": "what a chunk carries into the events it becomes > carries rawEvent onto a metadata-only continuation",
+      "line": 796,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "hi"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "metadata": {
+            "a": 1
+          },
+          "rawEvent": {
+            "provider": "openai",
+            "seq": 2
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "hi"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "",
+            "metadata": {
+              "a": 1
+            },
+            "rawEvent": {
+              "provider": "openai",
+              "seq": 2
+            }
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#chunk-metadata: a delta-less continuation carrying metadata/rawEvent becomes a zero-delta content event carrying both",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test drove transformChunks alone and never closed the run, so it saw no synthesized END; the appended terminal adds the END(s) before RUN_FINISHED)."
+    },
+    {
+      "name": "what a chunk carries into the events it becomes > fills in the documented default when the role is absent",
+      "line": 822,
+      "stage": "chunks",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "t",
+          "runId": "r"
+        },
+        {
+          "type": "TEXT_MESSAGE_CHUNK",
+          "messageId": "m1",
+          "delta": "hi"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "t",
+          "runId": "r"
+        }
+      ],
+      "expect": {
+        "events": [
+          {
+            "type": "RUN_STARTED",
+            "threadId": "t",
+            "runId": "r"
+          },
+          {
+            "type": "TEXT_MESSAGE_START",
+            "messageId": "m1",
+            "role": "assistant"
+          },
+          {
+            "type": "TEXT_MESSAGE_CONTENT",
+            "messageId": "m1",
+            "delta": "hi"
+          },
+          {
+            "type": "TEXT_MESSAGE_END",
+            "messageId": "m1"
+          },
+          {
+            "type": "RUN_FINISHED",
+            "threadId": "t",
+            "runId": "r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#the-first-chunk: an absent role on the first TEXT_MESSAGE_CHUNK means assistant, materialised on the synthesized START",
+      "notes": "wrapped: RUN_STARTED prepended; RUN_FINISHED appended (the TS test drove transformChunks alone and never closed the run, so it saw no synthesized END; the appended terminal adds the END(s) before RUN_FINISHED). The test asserts only START.role."
+    }
+  ]
+}

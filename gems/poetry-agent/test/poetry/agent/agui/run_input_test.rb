@@ -56,6 +56,40 @@ module Poetry
           assert_equal({ "type" => "object", "properties" => {} },
                        AGUI.tool_descriptor("d", { "name" => "open", "description" => "Open." })["parameters"])
         end
+
+        OPEN = [{ "id" => "i1", "reason" => "approval" }, { "id" => "i2", "reason" => "input" }].freeze
+
+        def test_a_resume_list_covers_every_open_interrupt
+          error = assert_raises(ProtocolError) do
+            RunInput.build(thread_id: "t", messages: [], interrupts: OPEN,
+                           resume: [RunInput.resume_entry("i1", status: "resolved", payload: true)])
+          end
+
+          assert_equal %i[input uncovered_interrupt], [error.stage, error.kind]
+          assert_includes error.message, "i2"
+          assert_raises(ProtocolError) { RunInput.build(thread_id: "t", messages: [], interrupts: OPEN) }
+
+          input = RunInput.build(thread_id: "t", messages: [], interrupts: OPEN,
+                                 resume: [RunInput.resume_entry("i1", status: "resolved", payload: true),
+                                          RunInput.resume_entry("i2", status: "cancelled")])
+
+          assert_equal(%w[i1 i2], input["resume"].map { |entry| entry["interruptId"] })
+        end
+
+        def test_an_expired_interrupt_can_be_cancelled_but_not_answered
+          expired = [{ "id" => "i1", "reason" => "approval", "expiresAt" => "2000-01-01T00:00:00Z" }]
+          error = assert_raises(ProtocolError) do
+            RunInput.build(thread_id: "t", messages: [], interrupts: expired,
+                           resume: [RunInput.resume_entry("i1", status: "resolved", payload: true)])
+          end
+
+          assert_equal :expired_interrupt, error.kind
+          assert RunInput.build(thread_id: "t", messages: [], interrupts: expired,
+                                resume: [RunInput.resume_entry("i1", status: "cancelled")])
+          refute RunInput.expired?({ "expiresAt" => "2999-01-01T00:00:00Z" })
+          refute RunInput.expired?({ "expiresAt" => "next tuesday" }), "a value that is not a date has not expired"
+          refute RunInput.expired?({ "id" => "i1" })
+        end
       end
     end
   end

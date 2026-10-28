@@ -1,0 +1,10 @@
+data: {"type":"RUN_STARTED","threadId":"thread-predictive_state_updates","runId":"a18b4b21-0d4f-4c54-842d-fc96ea60ed83","protocolVersion":"1.0"}
+
+data: {"type":"TEXT_MESSAGE_START","messageId":"8b8ad406-71df-41e1-a698-f0258cfacdfe","role":"assistant"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"8b8ad406-71df-41e1-a698-f0258cfacdfe","delta":"Ok!"}
+
+data: {"type":"TEXT_MESSAGE_END","messageId":"8b8ad406-71df-41e1-a698-f0258cfacdfe"}
+
+data: {"type":"RUN_FINISHED","threadId":"thread-predictive_state_updates","runId":"a18b4b21-0d4f-4c54-842d-fc96ea60ed83"}
+

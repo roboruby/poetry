@@ -1,0 +1,26 @@
+data: {"type":"RUN_STARTED","threadId":"rb-weather-162943","runId":"23e1d12c-3780-40c4-a7cc-c94d4f2945c3"}
+
+data: {"type":"TEXT_MESSAGE_START","role":"assistant","messageId":"45b203c8-8721-4e5a-bbdd-179ee12b867e"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"45b203c8-8721-4e5a-bbdd-179ee12b867e","delta":"Your f"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"45b203c8-8721-4e5a-bbdd-179ee12b867e","delta":"irst q"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"45b203c8-8721-4e5a-bbdd-179ee12b867e","delta":"uestio"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"45b203c8-8721-4e5a-bbdd-179ee12b867e","delta":"n was "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"45b203c8-8721-4e5a-bbdd-179ee12b867e","delta":"about "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"45b203c8-8721-4e5a-bbdd-179ee12b867e","delta":"the ca"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"45b203c8-8721-4e5a-bbdd-179ee12b867e","delta":"pital "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"45b203c8-8721-4e5a-bbdd-179ee12b867e","delta":"of Fra"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"45b203c8-8721-4e5a-bbdd-179ee12b867e","delta":"nce."}
+
+data: {"type":"TEXT_MESSAGE_END","messageId":"45b203c8-8721-4e5a-bbdd-179ee12b867e"}
+
+data: {"type":"RUN_FINISHED","threadId":"rb-weather-162943","runId":"23e1d12c-3780-40c4-a7cc-c94d4f2945c3"}
+

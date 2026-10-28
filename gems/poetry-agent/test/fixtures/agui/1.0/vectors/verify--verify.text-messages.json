@@ -1,0 +1,575 @@
+{
+  "source": "verify/__tests__/verify.text-messages.test.ts",
+  "vectors": [
+    {
+      "name": "verifyEvents text messages > should not allow TEXT_MESSAGE_CONTENT before TEXT_MESSAGE_START",
+      "line": 28,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "1",
+          "delta": "content 1"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'TEXT_MESSAGE_CONTENT' event: No active text message found with ID '1'"
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: a producer MUST NOT send a content event for an identifier that is not open",
+      "notes": "TS also asserts RUN_STARTED was delivered before the rejection, and that the error is an AGUIError (class name TS-only)."
+    },
+    {
+      "name": "verifyEvents text messages > should not allow TEXT_MESSAGE_END before TEXT_MESSAGE_START",
+      "line": 68,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "1"
+        }
+      ],
+      "expect": {
+        "error": "Cannot send 'TEXT_MESSAGE_END' event: No active text message found with ID '1'"
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close: a producer MUST NOT send an end event for an identifier that is not open",
+      "notes": "TS also asserts RUN_STARTED was delivered before the rejection, and that the error is an AGUIError (class name TS-only)."
+    },
+    {
+      "name": "verifyEvents text messages > should allow TEXT_MESSAGE_CONTENT inside a text message",
+      "line": 107,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "1",
+          "delta": "content 1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "1",
+          "delta": "content 2"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close",
+      "notes": "TS asserts only delivered types and count. RUN_FINISHED threadId/runId aligned with RUN_STARTED (the TS test sent 'test'/'test'; verifyEvents does not compare them, and no spec rule asks it to)."
+    },
+    {
+      "name": "verifyEvents text messages > should allow RAW inside a text message",
+      "line": 165,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "1",
+          "delta": "test content"
+        },
+        {
+          "type": "RAW",
+          "event": {
+            "type": "raw_data",
+            "content": "test"
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "RAW",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving",
+      "notes": "A standalone event inside an open text message neither closes nor disturbs it. TS asserts only delivered types and count. RUN_FINISHED threadId/runId aligned with RUN_STARTED (the TS test sent 'test'/'test'; verifyEvents does not compare them, and no spec rule asks it to)."
+    },
+    {
+      "name": "verifyEvents text messages > should allow CUSTOM inside a text message",
+      "line": 222,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "1",
+          "delta": "test content"
+        },
+        {
+          "type": "CUSTOM",
+          "name": "test_event",
+          "value": "test_value"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "CUSTOM",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving",
+      "notes": "A standalone event inside an open text message neither closes nor disturbs it. TS asserts only delivered types and count. RUN_FINISHED threadId/runId aligned with RUN_STARTED (the TS test sent 'test'/'test'; verifyEvents does not compare them, and no spec rule asks it to)."
+    },
+    {
+      "name": "verifyEvents text messages > should allow STATE_SNAPSHOT inside a text message",
+      "line": 277,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "1",
+          "delta": "test content"
+        },
+        {
+          "type": "STATE_SNAPSHOT",
+          "snapshot": {
+            "state": "test_state",
+            "data": {
+              "foo": "bar"
+            }
+          }
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "STATE_SNAPSHOT",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving",
+      "notes": "A standalone event inside an open text message neither closes nor disturbs it. TS asserts only delivered types and count. RUN_FINISHED threadId/runId aligned with RUN_STARTED (the TS test sent 'test'/'test'; verifyEvents does not compare them, and no spec rule asks it to)."
+    },
+    {
+      "name": "verifyEvents text messages > should allow STATE_DELTA inside a text message",
+      "line": 334,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "1",
+          "delta": "test content"
+        },
+        {
+          "type": "STATE_DELTA",
+          "delta": [
+            {
+              "op": "add",
+              "path": "/result",
+              "value": "success"
+            }
+          ]
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "STATE_DELTA",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving",
+      "notes": "A standalone event inside an open text message neither closes nor disturbs it. TS asserts only delivered types and count. RUN_FINISHED threadId/runId aligned with RUN_STARTED (the TS test sent 'test'/'test'; verifyEvents does not compare them, and no spec rule asks it to)."
+    },
+    {
+      "name": "verifyEvents text messages > should allow MESSAGES_SNAPSHOT inside a text message",
+      "line": 388,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "1",
+          "delta": "test content"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "role": "user",
+              "content": "test",
+              "id": "test-id"
+            }
+          ]
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "MESSAGES_SNAPSHOT",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving",
+      "notes": "A standalone event inside an open text message neither closes nor disturbs it. MESSAGES_SNAPSHOT closes chunk lanes only; an explicitly opened message stays open and its TEXT_MESSAGE_END is still legal. TS asserts only delivered types and count. RUN_FINISHED threadId/runId aligned with RUN_STARTED (the TS test sent 'test'/'test'; verifyEvents does not compare them, and no spec rule asks it to)."
+    },
+    {
+      "name": "verifyEvents text messages > should allow lifecycle events during text messages",
+      "line": 442,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "1"
+        },
+        {
+          "type": "STEP_STARTED",
+          "stepName": "test-step"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "1",
+          "delta": "test content"
+        },
+        {
+          "type": "STEP_FINISHED",
+          "stepName": "test-step"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "STEP_STARTED",
+          "TEXT_MESSAGE_CONTENT",
+          "STEP_FINISHED",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/events/lifecycle#steps: steps MAY overlap anything else in the run",
+      "notes": "TS asserts only delivered types and count. RUN_FINISHED threadId/runId aligned with RUN_STARTED (the TS test sent 'test'/'test'; verifyEvents does not compare them, and no spec rule asks it to)."
+    },
+    {
+      "name": "verifyEvents text messages > should allow tool calls to start during text messages",
+      "line": 501,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "1",
+          "delta": "Starting search..."
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool1",
+          "toolCallName": "search"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "{\"query\":\"test\"}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "1",
+          "delta": "Search completed."
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TOOL_CALL_START",
+          "TOOL_CALL_ARGS",
+          "TOOL_CALL_END",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#interleaving: a tool call MAY open while a message is still streaming",
+      "notes": "TS asserts only delivered types and count. RUN_FINISHED threadId/runId aligned with RUN_STARTED (the TS test sent 'test'/'test'; verifyEvents does not compare them, and no spec rule asks it to)."
+    },
+    {
+      "name": "verifyEvents text messages > should allow multiple sequential text messages",
+      "line": 572,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "1",
+          "delta": "content 1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "2"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "2",
+          "delta": "content 2"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close",
+      "notes": "TS asserts only delivered types and count. RUN_FINISHED threadId/runId aligned with RUN_STARTED (the TS test sent 'test'/'test'; verifyEvents does not compare them, and no spec rule asks it to)."
+    },
+    {
+      "name": "verifyEvents text messages > should allow text messages immediately after RUN_STARTED and before RUN_FINISHED",
+      "line": 645,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "1",
+          "delta": "content 1"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test-thread-id",
+          "runId": "test-run-id"
+        }
+      ],
+      "expect": {
+        "eventTypes": [
+          "RUN_STARTED",
+          "TEXT_MESSAGE_START",
+          "TEXT_MESSAGE_CONTENT",
+          "TEXT_MESSAGE_END",
+          "RUN_FINISHED"
+        ]
+      },
+      "spec": "/spec/1.0/basic/patterns/streaming#open-content-close",
+      "notes": "TS asserts only delivered types and count. RUN_FINISHED threadId/runId aligned with RUN_STARTED (the TS test sent 'test'/'test'; verifyEvents does not compare them, and no spec rule asks it to)."
+    },
+    {
+      "name": "verifyEvents text messages > should not allow starting a text message before RUN_STARTED",
+      "line": 698,
+      "stage": "verify",
+      "input": [
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "1"
+        }
+      ],
+      "expect": {
+        "error": "First event must be 'RUN_STARTED'"
+      },
+      "spec": "/spec/1.0/events/lifecycle#the-run: a stream MUST begin with RUN_STARTED or RUN_ERROR",
+      "notes": "TS also asserts nothing was delivered, and that the error is an AGUIError (class name TS-only)."
+    }
+  ]
+}

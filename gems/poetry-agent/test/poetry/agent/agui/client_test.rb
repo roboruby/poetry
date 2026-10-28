@@ -33,21 +33,65 @@ module Poetry
           server&.close if thread.nil?
         end
 
-        def test_posts_the_run_input_and_yields_streamed_events
-          body = "data: {\"type\":\"RUN_STARTED\",\"runId\":\"r\"}\n\ndata: {\"type\":\"RUN_FINISHED\"}\n\n"
-          port, recorded, thread = serve(body: body)
+        STARTED = "data: {\"type\":\"RUN_STARTED\",\"threadId\":\"t\",\"runId\":\"r\"}\n\n"
+        RUN = "#{STARTED}" \
+              ": keep-alive\n\n" \
+              "data: {\"type\":\"TEXT_MESSAGE_CHUNK\",\"messageId\":\"m\",\"delta\":\"hi\"}\n\n" \
+              "data: {\"type\":\"RUN_FINISHED\",\"threadId\":\"t\",\"runId\":\"r\"}\n\n".freeze
+
+        def test_posts_the_run_input_and_yields_verified_events
+          port, recorded, thread = serve(body: RUN)
           seen = []
-          parser = Client.new(url: "http://127.0.0.1:#{port}/run", headers: { "Authorization" => "Bearer x" })
-                         .run(RunInput.build(thread_id: "t", run_id: "r",
-                                             messages: [])) { |event| seen << event["type"] }
+          pipeline = Client.new(url: "http://127.0.0.1:#{port}/run", headers: { "Authorization" => "Bearer x" })
+                           .run(RunInput.build(thread_id: "t", run_id: "r",
+                                               messages: [])) { |event| seen << event["type"] }
           thread.join
 
-          assert_equal %w[RUN_STARTED RUN_FINISHED], seen
-          assert_empty parser.errors
+          assert_equal %w[RUN_STARTED TEXT_MESSAGE_START TEXT_MESSAGE_CONTENT TEXT_MESSAGE_END RUN_FINISHED], seen,
+                       "chunks arrive expanded"
+          assert_empty pipeline.warnings
+          refute_predicate pipeline, :truncated?
+          assert_equal "1.0", JSON.parse(recorded[:body])["protocolVersion"]
           assert_equal "POST /run HTTP/1.1\r\n", recorded[:line]
           assert_equal "text/event-stream", recorded[:headers]["accept"]
           assert_equal "Bearer x", recorded[:headers]["authorization"]
           assert_equal "t", JSON.parse(recorded[:body])["threadId"]
+        end
+
+        def test_an_undecodable_frame_fails_the_run
+          port, _recorded, thread = serve(body: "#{STARTED}data: {not json}\n\n")
+          error = assert_raises(ProtocolError) do
+            Client.new(url: "http://127.0.0.1:#{port}/run").run(RunInput.build(thread_id: "t", messages: [])) { nil }
+          end
+          thread.join
+
+          assert_equal :transport, error.stage
+        end
+
+        def test_the_input_is_enforced_on_the_way_out_and_a_broken_off_run_reads_truncated
+          port, recorded, thread = serve(body: STARTED)
+          input = RunInput.build(thread_id: "t", run_id: "r", messages: []).merge("legacyFlag" => true)
+          pipeline = Client.new(url: "http://127.0.0.1:#{port}/run").run(input) { nil }
+          thread.join
+
+          refute JSON.parse(recorded[:body]).key?("legacyFlag")
+          assert_equal [:stripped], pipeline.warnings.map(&:kind)
+          assert_predicate pipeline, :truncated?, "no RUN_FINISHED arrived, and none is invented"
+        end
+
+        def test_a_rejection_hands_on_what_preceded_it_before_raising
+          body = "#{STARTED}data: {\"type\":\"TEXT_MESSAGE_CHUNK\",\"messageId\":\"m\",\"delta\":\"a\"}\n\n#{STARTED}"
+          port, _recorded, thread = serve(body: body)
+          seen = []
+          error = assert_raises(ProtocolError) do
+            Client.new(url: "http://127.0.0.1:#{port}/run").run(RunInput.build(thread_id: "t", messages: [])) do |event|
+              seen << event["type"]
+            end
+          end
+          thread.join
+
+          assert_equal :verification, error.stage
+          assert_equal %w[RUN_STARTED TEXT_MESSAGE_START TEXT_MESSAGE_CONTENT TEXT_MESSAGE_END], seen
         end
 
         def test_a_failing_status_raises_with_the_code

@@ -1224,6 +1224,12 @@
     "path": "/ag-ui#run"
   },
   {
+    "title": "What the client checks",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#pipeline"
+  },
+  {
     "title": "Render the transcript",
     "page": "AG-UI Relay",
     "section": "docs",

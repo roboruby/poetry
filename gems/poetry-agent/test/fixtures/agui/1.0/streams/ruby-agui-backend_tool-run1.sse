@@ -1,0 +1,26 @@
+data: {"type":"RUN_STARTED","threadId":"rb-weather-162943","runId":"a0bb52ba-1eeb-4134-a09e-edcafbc14cfe"}
+
+data: {"type":"TOOL_CALL_START","toolCallId":"call_get_weather_1","toolCallName":"get_weather"}
+
+data: {"type":"TOOL_CALL_ARGS","toolCallId":"call_get_weather_1","delta":"{\"location\":\"San Francisco\"}"}
+
+data: {"type":"TOOL_CALL_END","toolCallId":"call_get_weather_1"}
+
+data: {"type":"TOOL_CALL_RESULT","messageId":"4963f131-8fcd-4f08-864f-5d8bf23bd122","toolCallId":"call_get_weather_1","content":"{\"location\":\"San Francisco\",\"conditions\":\"sunny\",\"temperature\":20}"}
+
+data: {"type":"TEXT_MESSAGE_START","role":"assistant","messageId":"82693b17-b6e8-48ca-bde8-a55f7064e2ab"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"82693b17-b6e8-48ca-bde8-a55f7064e2ab","delta":"Done: "}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"82693b17-b6e8-48ca-bde8-a55f7064e2ab","delta":"I used"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"82693b17-b6e8-48ca-bde8-a55f7064e2ab","delta":" the t"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"82693b17-b6e8-48ca-bde8-a55f7064e2ab","delta":"ool re"}
+
+data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"82693b17-b6e8-48ca-bde8-a55f7064e2ab","delta":"sult."}
+
+data: {"type":"TEXT_MESSAGE_END","messageId":"82693b17-b6e8-48ca-bde8-a55f7064e2ab"}
+
+data: {"type":"RUN_FINISHED","threadId":"rb-weather-162943","runId":"a0bb52ba-1eeb-4134-a09e-edcafbc14cfe"}
+

@@ -1,0 +1,206 @@
+data: {"type":"RUN_STARTED","threadId":"strands-reasoning-162641","runId":"2f91701e-dbb5-49d6-9631-b8c42076153e","protocolVersion":"1.0"}
+
+data: {"type":"STATE_SNAPSHOT","snapshot":{}}
+
+data: {"type":"MESSAGES_SNAPSHOT","messages":[{"id":"d616cadd-309a-48f7-b49c-bcc1bb03c014","role":"user","content":"What is the best car to buy?"}]}
+
+data: {"type":"REASONING_START","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"The us"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"er wan"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"ts a c"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"ar rec"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"ommend"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"ation."}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":" I sho"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"uld co"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"nsider"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":" relia"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"bility"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":", valu"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"e, fue"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"l econ"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"omy, a"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"nd dri"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"ving e"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"xperie"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"nce. T"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"oyota "}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"Camry "}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"scores"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":" highe"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"st ove"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"rall. "}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"Honda "}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"Civic "}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"is bes"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"t for "}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"fuel e"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"conomy"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":". Mazd"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"a3 for"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":" drivi"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"ng fee"}
+
+data: {"type":"REASONING_MESSAGE_CHUNK","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70","delta":"l."}
+
+data: {"type":"REASONING_END","messageId":"f52108b0-72ae-469e-80fb-026a36e8dc70"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","role":"assistant"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"Based "}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"on my "}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"analys"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"is, he"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"re are"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":" the t"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"op rec"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"ommend"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"ations"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":":\n\n1. "}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"**Toyo"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"ta Cam"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"ry** -"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":" Best "}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"overal"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"l valu"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"e with"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":" excel"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"lent r"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"eliabi"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"lity\n2"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":". **Ho"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"nda Ci"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"vic** "}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"- Grea"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"t fuel"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":" econo"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"my and"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":" low m"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"ainten"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"ance c"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"osts\n3"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":". **Ma"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"zda3**"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":" - Bes"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"t driv"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"ing ex"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"perien"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"ce in "}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"its cl"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"ass\n\nT"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"he Toy"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"ota Ca"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"mry st"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"ands o"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"ut for"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":" its c"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"ombina"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"tion o"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"f reli"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"abilit"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"y, res"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"ale va"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"lue, a"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"nd com"}
+
+data: {"type":"TEXT_MESSAGE_CHUNK","messageId":"0860a93b-0dbe-44e7-a4d3-715982e472f4","delta":"fort."}
+
+data: {"type":"RAW","event":{"type":"modelMetadataEvent","usage":{"inputTokens":0,"outputTokens":0,"totalTokens":0}},"source":"strands"}
+
+data: {"type":"MESSAGES_SNAPSHOT","messages":[{"id":"d616cadd-309a-48f7-b49c-bcc1bb03c014","role":"user","content":"What is the best car to buy?"},{"id":"0860a93b-0dbe-44e7-a4d3-715982e472f4","role":"assistant","content":"Based on my analysis, here are the top recommendations:\n\n1. **Toyota Camry** - Best overall value with excellent reliability\n2. **Honda Civic** - Great fuel economy and low maintenance costs\n3. **Mazda3** - Best driving experience in its class\n\nThe Toyota Camry stands out for its combination of reliability, resale value, and comfort."}]}
+
+data: {"type":"STATE_SNAPSHOT","snapshot":{}}
+
+data: {"type":"RUN_FINISHED","threadId":"strands-reasoning-162641","runId":"2f91701e-dbb5-49d6-9631-b8c42076153e","outcome":{"type":"success"},"usage":[{"provider":"openai","model":"o4-mini","inputTokens":0,"outputTokens":0,"totalTokens":0}]}
+
