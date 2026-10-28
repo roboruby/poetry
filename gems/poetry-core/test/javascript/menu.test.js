@@ -33,6 +33,14 @@ const pointerover = (element, relatedTarget = null) =>
 const pointerout = (element, relatedTarget = null) =>
   element.dispatchEvent(new MouseEvent("pointerout", { bubbles: true, relatedTarget }))
 
+// A pointer event from a finger: jsdom has no PointerEvent, so the type
+// rides a MouseEvent the way the controllers read it (event.pointerType).
+const touch = (type, element, relatedTarget = null) => {
+  const event = new MouseEvent(type, { bubbles: true, cancelable: true, relatedTarget })
+  Object.defineProperty(event, "pointerType", { value: "touch" })
+  element.dispatchEvent(event)
+}
+
 const record = (type, target) => {
   const seen = []
   target.addEventListener(type, (event) => seen.push(event.detail))
@@ -625,6 +633,67 @@ describe("poetry--core--menu", () => {
       expect(el("sub-a-trigger").hasAttribute("data-popup-open")).toBe(false)
       expect(el("sub-a-trigger").getAttribute("aria-expanded")).toBe("false")
       expect(document.activeElement).toBe(el("sub-a-trigger"))
+    })
+
+    describe("repeated activation of an open sub-trigger (Base UI #5824)", () => {
+      const openSubWithKeyboard = async () => {
+        await mount()
+        await openWithKey("ArrowDown")
+        el("sub-a-trigger").focus()
+        press(el("sub-a-trigger"), "ArrowRight")
+        expect(el("sub-a-content").hasAttribute("data-open")).toBe(true)
+      }
+
+      it("a mouse press keeps it open with no closed state in between", async () => {
+        await openSubWithKeyboard()
+
+        pointerdown(el("sub-a-trigger")) // reaches the sub's layer as an outside press first
+        expect(el("sub-a-content").hasAttribute("data-closed")).toBe(false)
+        expect(el("sub-a-trigger").getAttribute("aria-expanded")).toBe("true")
+
+        click(el("sub-a-trigger"))
+        await nextFrame()
+
+        expect(el("sub-a-content").hasAttribute("data-open")).toBe(true)
+      })
+
+      it("a touch tap closes just the sub", async () => {
+        await openSubWithKeyboard()
+
+        touch("pointerdown", el("sub-a-trigger"))
+        click(el("sub-a-trigger"))
+        await nextFrame()
+
+        expect(el("sub-a-content").hasAttribute("data-closed")).toBe(true)
+        expect(el("sub-a-trigger").getAttribute("aria-expanded")).toBe("false")
+        expect(el("content").hasAttribute("data-open")).toBe(true) // the root stays
+      })
+
+      it("an assistive-tech click (no press before it) closes the sub", async () => {
+        await openSubWithKeyboard()
+
+        click(el("sub-a-trigger"))
+        await nextFrame()
+
+        expect(el("sub-a-content").hasAttribute("data-closed")).toBe(true)
+      })
+
+      it("touch never arms hover intent: the tap opens it and the lifted finger leaves it open", async () => {
+        await mount()
+        await openWithPointer()
+        vi.useFakeTimers()
+
+        touch("pointerover", el("sub-a-trigger"), el("item-profile"))
+        await vi.advanceTimersByTimeAsync(150)
+        expect(el("sub-a-content").hasAttribute("data-open")).toBe(false) // no hover timer for a finger
+
+        touch("pointerdown", el("sub-a-trigger"))
+        click(el("sub-a-trigger"))
+        touch("pointerout", el("sub-a-trigger")) // fires as the finger lifts
+        await vi.advanceTimersByTimeAsync(400)
+
+        expect(el("sub-a-content").hasAttribute("data-open")).toBe(true)
+      })
     })
 
     it("closing a sub drops its search: the parent's next Space reopens it (Base UI #5816)", async () => {

@@ -106,6 +106,7 @@ export default class MenuController extends Controller {
   #subOpenTimers = new Map()
   #subCloseTimers = new Map()
   #portaledSubs = new Set()
+  #lastPress = null // the pointerType of the last press inside a level, read by the next click
 
   /**
    * Wires the content listeners (portal-safe) and reconciles: server-open
@@ -125,7 +126,11 @@ export default class MenuController extends Controller {
       activateLayers: (content) => this.#activateLayers(content),
       onOpen: (content, { seed, focus }) => { if (focus) this.#applyInitialFocus(content, seed) },
       beforeHide: (content) => this.#settle(content),
-      onDismissElsewhere: (target, escaped) => this.#dismissSub(target, escaped)
+      onDismissElsewhere: (target, escaped) => this.#dismissSub(target, escaped),
+      // A press on an open sub's own trigger is its toggle, not an outside
+      // press: without the veto pointerdown closes the sub and the click
+      // reopens it.
+      levelTrigger: (node) => (node.matches(SUB_CONTENT_SELECTOR) ? this.#subTriggerFor(node) : null)
     })
     // The sub levels ride the machine's behaviors, so teardown restores
     // them newest first: subs before the root.
@@ -256,7 +261,7 @@ export default class MenuController extends Controller {
 
     if (!item || this.#isDisabled(item)) return
 
-    if (item.matches(SUB_TRIGGER_SELECTOR)) this.#showSub(item, { focusFirst: false })
+    if (item.matches(SUB_TRIGGER_SELECTOR)) this.#pressSubTrigger(item)
     else this.#activate(item)
   }
 
@@ -325,6 +330,8 @@ export default class MenuController extends Controller {
    * @param {PointerEvent} event
    */
   subEnter(event) {
+    if (event.pointerType === "touch") return // a tap toggles; touch has no hover
+
     const subTrigger = this.#subTriggerFrom(event)
 
     if (subTrigger) this.#subPointerEnter(subTrigger)
@@ -337,6 +344,8 @@ export default class MenuController extends Controller {
    * @param {PointerEvent} event
    */
   subLeave(event) {
+    if (event.pointerType === "touch") return // a lifted finger leaves; it did not hover away
+
     const subTrigger = this.#subTriggerFrom(event)
     const related = event.relatedTarget instanceof Element ? event.relatedTarget : null
 
@@ -688,6 +697,7 @@ export default class MenuController extends Controller {
 
   #wireContent(content) {
     useListen(this, content, "keydown", (event) => this.keydown(event))
+    useListen(this, content, "pointerdown", this.#onPointerdown)
     useListen(this, content, "click", this.#onClick)
     useListen(this, content, "pointerover", this.#onPointerover)
     useListen(this, content, "pointerout", this.#onPointerout)
@@ -704,6 +714,7 @@ export default class MenuController extends Controller {
     this.#unwireSub(subContent)
     this.#subListeners.set(subContent, [
       useListen(this, subContent, "keydown", (event) => this.keydown(event)),
+      useListen(this, subContent, "pointerdown", this.#onPointerdown),
       useListen(this, subContent, "click", this.#onClick),
       useListen(this, subContent, "pointerover", this.#onPointerover),
       useListen(this, subContent, "pointerout", this.#onPointerout),
@@ -724,8 +735,30 @@ export default class MenuController extends Controller {
 
     if (!item || this.#isDisabled(item)) return
 
-    if (item.matches(SUB_TRIGGER_SELECTOR)) this.#showSub(item, { focusFirst: false })
+    if (item.matches(SUB_TRIGGER_SELECTOR)) this.#pressSubTrigger(item)
     else this.#activate(item)
+  }
+
+  #onPointerdown = (event) => {
+    this.#lastPress = event.pointerType || "mouse"
+  }
+
+  // A click on a sub-trigger. A touch, pen or assistive-tech activation
+  // (a click with no press before it) toggles an open sub closed: those
+  // users have no hover-out, so a second tap is their only way to close
+  // just this level. A mouse press keeps a hover-opened sub open
+  // (Base UI #5824).
+  #pressSubTrigger(subTrigger) {
+    const pointer = this.#lastPress
+
+    this.#lastPress = null
+
+    if (subTrigger.hasAttribute("data-popup-open") && pointer !== "mouse") {
+      this.#closeSubTree(subTrigger, { focusTrigger: false })
+      return
+    }
+
+    this.#showSub(subTrigger, { focusFirst: false })
   }
 
   // Esc / outside-press arrive as the dismissable layer's dismiss event: the
@@ -747,7 +780,9 @@ export default class MenuController extends Controller {
     const subTrigger = target.closest(SUB_TRIGGER_SELECTOR)
 
     if (subTrigger) {
-      if (!related || !subTrigger.contains(related)) this.#subPointerEnter(subTrigger)
+      const hover = event.pointerType !== "touch" // a tap toggles; touch has no hover
+
+      if (hover && (!related || !subTrigger.contains(related))) this.#subPointerEnter(subTrigger)
 
       this.#pointerHighlight(subTrigger, event)
 
@@ -781,6 +816,9 @@ export default class MenuController extends Controller {
   }
 
   #onPointerout = (event) => {
+    // Touch fires pointerout as the finger lifts: no hover-away to act on.
+    if (event.pointerType === "touch") return
+
     const target = event.target instanceof Element ? event.target : null
 
     if (!target) return
