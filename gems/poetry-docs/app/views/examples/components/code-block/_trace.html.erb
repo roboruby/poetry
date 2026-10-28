@@ -1,13 +1,21 @@
-<%# A small CodeBlock is a Trace step's detail: the tool call's output. %>
+<%# A small CodeBlock is a Trace step's detail: the tool call's output.
+    content_class: "max-h-64" keeps long output scrolling inside the trace. %>
 <% output = <<~TEXT
-  ActiveRecord::PendingMigrationError
-  Migrations are pending. To resolve this issue, run: bin/rails db:migrate
+  $ ruby --version
+  ruby 4.0.5 (2026-10-14 revision 4a1c2e9) +PRISM [arm64-darwin25]
+TEXT
+error = <<~TEXT
+  $ bin/dev
+  Error: Address already in use - bind(2) for "127.0.0.1" port 3000 (Errno::EADDRINUSE)
 TEXT
 %>
 <div class="w-full max-w-md">
   <%= poetry_trace do |trace| %>
-    <% trace.with_step("Failed to run bin/rails test", icon: :terminal, status: :error, open: true) do %>
-      <%= poetry_code_block(code: output, variant: :destructive, size: :sm, wrap: true, copy: false, label: "Error") %>
+    <% trace.with_step("Ran ruby --version", icon: :terminal, open: true) do %>
+      <%= poetry_code_block(code: output, size: :sm, wrap: true, copy: false, content_class: "max-h-64", label: "Output") %>
+    <% end %>
+    <% trace.with_step("Failed to run bin/dev", icon: :terminal, status: :error, open: true) do %>
+      <%= poetry_code_block(code: error, variant: :destructive, size: :sm, wrap: true, copy: false, content_class: "max-h-64", label: "Error") %>
     <% end %>
   <% end %>
 </div>

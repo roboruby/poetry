@@ -139,6 +139,7 @@ A syntax-highlighted code panel with a copy button and optional line numbers.
 Class: Poetry::Ui::CodeBlock::Component - BEM block `poetry-ui-code_block`.
 - `variant:` (symbol) - one of default|destructive, default "default", required - The intent axis; :destructive frames an error's output.
 - `code:` (string) - required - The source text to highlight - required.
+- `content_class:` (string) - Class merge seam for the scroll container - e.g. content_class: "max-h-64" caps the height so long output scrolls inside the block. Root-level class: styles the panel.
 - `copy:` (boolean) - default true - Renders the copy button.
 - `diff:` (boolean) - default false - Reads the code as a unified diff: + and - lines render added and removed, their marker drawn by the theme; copy keeps the markers.
 - `highlight_lines:` () - 1-based line positions to tint via the theme's highlighted line.

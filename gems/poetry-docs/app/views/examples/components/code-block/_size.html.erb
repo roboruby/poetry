@@ -1,12 +1,17 @@
 <%# size: :sm tightens the padding and the type - for tool output inside a
-    Trace or a chat message. %>
+    Trace or a chat message. The default size above, the small one below. %>
 <% output = <<~TEXT
-   M app/models/invoice.rb
-  ?? db/migrate/20261028_add_due_on_to_invoices.rb
+  $ bin/rails db:migrate
+  == 20261028120000 AddDueOnToInvoices: migrating ==============================
+  -- add_column(:invoices, :due_on, :date)
+  == 20261028120000 AddDueOnToInvoices: migrated (0.0031s) =====================
 TEXT
 %>
-<div class="w-full max-w-md">
-  <%= poetry_code_block(code: output, size: :sm, label: "git status") do |block| %>
-    <% block.with_title { "git status --short" } %>
+<div class="flex w-full max-w-md flex-col gap-4">
+  <%= poetry_code_block(code: output, wrap: true) do |block| %>
+    <% block.with_title do %><%= poetry_icon(name: :terminal) %>Terminal<% end %>
+  <% end %>
+  <%= poetry_code_block(code: output, size: :sm, wrap: true) do |block| %>
+    <% block.with_title do %><%= poetry_icon(name: :terminal) %>Terminal<% end %>
   <% end %>
 </div>

@@ -8,7 +8,7 @@
 TEXT
 %>
 <div class="w-full max-w-md">
-  <%= poetry_code_block(code: output, language: "shell") do |block| %>
+  <%= poetry_code_block(code: output) do |block| %>
     <% block.with_title do %><%= poetry_icon(name: :terminal) %>Terminal<% end %>
   <% end %>
 </div>

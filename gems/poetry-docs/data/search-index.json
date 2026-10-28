@@ -2298,6 +2298,12 @@
     "path": "/components/code-block#header"
   },
   {
+    "title": "Height",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#height"
+  },
+  {
     "title": "Highlighted lines",
     "page": "Code Block",
     "section": "components",

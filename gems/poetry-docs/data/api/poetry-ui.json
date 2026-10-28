@@ -5475,6 +5475,23 @@
           "line": 69
         },
         {
+          "name": "content_class",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Class merge seam for the scroll container - e.g. content_class: \"max-h-64\" caps the height so long output scrolls inside the block. Root-level class: styles the panel.\n\nConstructor option `content_class:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/ui/code_block/component.rb",
+          "line": 88
+        },
+        {
           "name": "copy",
           "scope": "instance",
           "group": "Options",

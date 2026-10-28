@@ -1,13 +1,13 @@
-<%# An error's output: variant: :destructive, the small size, wrapped lines,
-    and a footer row. %>
-<% output = <<~TEXT
+<%# variant: :destructive for errors and failed output: the panel, the title
+    and the text all turn destructive. %>
+<% error = <<~TEXT
   NoMethodError: undefined method 'sum' for nil
-    app/models/invoice.rb:8:in 'Invoice#total'
-    app/controllers/invoices_controller.rb:12:in 'InvoicesController#show'
+      from app/models/invoice.rb:8:in 'Invoice#total'
+      from app/controllers/invoices_controller.rb:12:in 'InvoicesController#show'
 TEXT
 %>
-<div class="w-full max-w-xl">
-  <%= poetry_code_block(code: output, variant: :destructive, size: :sm, wrap: true, label: "Error output") do |block| %>
-    <% block.with_footer { "Exited with status 1" } %>
+<div class="w-full max-w-md">
+  <%= poetry_code_block(code: error, variant: :destructive, wrap: true) do |block| %>
+    <% block.with_title { "Error" } %>
   <% end %>
 </div>

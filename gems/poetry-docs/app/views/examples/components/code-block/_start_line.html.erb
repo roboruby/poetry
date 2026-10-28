@@ -6,7 +6,7 @@
 RUBY
 %>
 <div class="w-full max-w-md">
-  <%= poetry_code_block(code: code, language: "ruby", line_numbers: true, start_line: 42) do |block| %>
+  <%= poetry_code_block(code: code, language: "ruby", line_numbers: true, start_line: 42, copy: false) do |block| %>
     <% block.with_title { "app/models/invoice.rb" } %>
   <% end %>
 </div>

@@ -4,9 +4,10 @@
     belongs_to :customer
 
     scope :overdue, -> { where(due_on: ...Date.current) }
+    scope :settled, -> { where(status: :settled) }
   end
 RUBY
 %>
 <div class="w-full max-w-md">
-  <%= poetry_code_block(code: code, language: "ruby", highlight_lines: [4], label: "Invoice model") %>
+  <%= poetry_code_block(code: code, language: "ruby", line_numbers: true, highlight_lines: [4, 5], copy: false, label: "Invoice model") %>
 </div>
