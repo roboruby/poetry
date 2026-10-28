@@ -408,7 +408,8 @@ module Poetry
         #   and no tokens (mail clients drop var()), so a color literal is
         #   the only paint there is and the raw-color rule stays quiet;
         #   every other rule runs as on a page.
-        # @param [Object, nil] importmap_pins
+        # @param importmap_pins [Array<String>, nil] the host's importmap pins
+        #   (Check.importmap_pins); nil skips the rules that read them
         def lint(source, mail: false, importmap_pins: nil)
           require "herb"
           require "prism"
@@ -1985,7 +1986,8 @@ module Poetry
       # @param catalog [Catalog] the component catalog to validate against
       # @param mail [Boolean] a mailer template (the raw-color rule stays quiet)
       # @return [Array<Finding>]
-      # @param [Object, nil] importmap_pins
+      # @param importmap_pins [Array<String>, nil] the host's importmap pins
+      #   (Check.importmap_pins); nil skips the rules that read them
       def lint(source, catalog:, mail: false, importmap_pins: nil)
         Linter.new(catalog).lint(source, mail: mail, importmap_pins: importmap_pins)
       end
