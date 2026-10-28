@@ -7,10 +7,26 @@
 - `describe_component` prints one line per behavior the component uses.
 - The AG-UI `Transcript`'s text and reasoning parts carry `state:`: `:streaming` until their END event (or the run's end) closes them, then `:done`; a `MESSAGES_SNAPSHOT`'s parts arrive `:done`. Closing a part re-renders its row through the relay, so a reasoning step reads "Thinking" while it streams and "Thought" once it closes.
 
+- The AG-UI run input declares the protocol version it speaks, `protocolVersion: "1.0"` (`Poetry::Agent::AGUI::PROTOCOL_VERSION`), as AG-UI 1.0 requires; `RunInput.build(protocol_version: nil)` omits it for an agent known to predate the field.
+- `Transcript#runs` keeps every run on the stream, so a first run's failure survives a second run.
+- User and tool messages carry content parts (text, image, audio, video, document) end to end: `RunInput.user_message` and `tool_message` take a list of parts, a snapshot's parts arrive as text and `:media` parts, and `messages_for_input` sends them back as parts.
+
 ### Changed
 
 - The released gem serves its JavaScript minified, as poetry-core does, from `dist/javascript` with a source map beside each file.
 - The MCP check tool warns on a renamed Lucide icon with its current name instead of rejecting it.
+- BREAKING: `RunInput.resume_entry` requires `status:` and takes only AG-UI 1.0's two, `"resolved"` (the answer in the payload) and `"cancelled"`, raising `ArgumentError` otherwise. The former `"approved"` / `"rejected"` are rejected by 1.0 agents.
+- A reasoning message is a message of its own (role `reasoning`), as in AG-UI 1.0, and travels back in `messages_for_input`, as do system and developer messages; only activity messages stay behind.
+- A tool call without a `parentMessageId` gets an assistant message of its own under the call's id, as the reference client does, instead of joining whichever message came last.
+- A run that finishes with the cancelled outcome reads `:cancelled`, neither success nor failure; `ended?` counts it.
+- A tool call's arguments go back to the agent exactly as they streamed (an argument-less call sends `""`), and a tool result's message keeps the result's own `messageId` and its content parts.
+
+### Fixed
+
+- An `ACTIVITY_DELTA` after a `MESSAGES_SNAPSHOT` that left its activity out no longer raises `NoMethodError`: the snapshot drops the activity, and the delta is skipped and recorded in `unknown_events`.
+- A frontend tool called through `TOOL_CALL_CHUNK` events waits on the browser once the run ends; it used to stay loading and never reach the bridge.
+- A snapshot's multimodal user content is kept as parts instead of becoming a Ruby `inspect` string.
+- A `null` state snapshot applies (state may be any JSON value), and a closed tool call reopened with the same id appends its arguments instead of minting a second call. Arguments arriving for a closed call are ignored instead of raising.
 
 ## [0.1.13] - 2026-10-13
 

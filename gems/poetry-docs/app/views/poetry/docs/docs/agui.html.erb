@@ -148,10 +148,11 @@
     # The run ended on an interrupt: RUN_FINISHED with outcome.type == "interrupt"
     if transcript.interrupted?
       interrupt = transcript.interrupts.first   # { "id", "reason", "message", "toolCallId", ... }
-      # render a decision form; on submit, resume:
+      # render a decision form; on submit, resume - "resolved" carries the answer, "cancelled" abandons it:
+      answer = Poetry::Agent::AGUI::RunInput.resume_entry(interrupt["id"], status: "resolved",
+                                                          payload: { "approved" => params[:approved] == "1" })
       input = Poetry::Agent::AGUI::RunInput.build(
-        thread_id: thread, messages: transcript.messages_for_input,
-        resume: [Poetry::Agent::AGUI::RunInput.resume_entry(interrupt["id"], status: params[:approved] ? "approved" : "rejected")]
+        thread_id: thread, messages: transcript.messages_for_input, resume: [answer]
       )
     end
   CODE
@@ -206,8 +207,8 @@
         <code>Poetry::Agent::AGUI</code> is that client, in three pieces:
       </p>
       <ul>
-        <li><code>Client</code> runs an agent endpoint over Net::HTTP and yields each event as it arrives.</li>
-        <li><code>Transcript</code> folds events into chat-shaped messages. Each message's <code>parts</code> are text, reasoning, tool calls carrying their state, or activities; the transcript also holds the shared <code>state</code>, the <code>interrupts</code>, the tool calls waiting on the browser, and <code>messages_for_input</code> for the next run.</li>
+        <li><code>Client</code> runs an agent endpoint over Net::HTTP and yields each event as it arrives. <code>RunInput</code> builds what it sends: the AG-UI version it speaks (<code>protocolVersion: "1.0"</code>), the messages, and the tools the page offers. A user or tool message takes plain text or a list of content parts: text, image, audio, video and document parts with a <code>data</code>, <code>url</code> or provider <code>file</code> source.</li>
+        <li><code>Transcript</code> folds events into chat-shaped messages. Each message's <code>parts</code> are text, reasoning, tool calls carrying their state, media parts, or activities; it keeps every run on the stream in <code>runs</code>, a cancelled one marked <code>:cancelled</code>; the transcript also holds the shared <code>state</code>, the <code>interrupts</code>, the tool calls waiting on the browser, and <code>messages_for_input</code> for the next run.</li>
         <li><code>Relay</code> turns each change into a Turbo Stream through your own partials: an append into the scroller when a message first appears, a versioned replace after. Every frame carries <code>data-version</code> and the runtime applies only strictly newer frames, so an out-of-order delivery never paints an older state over a newer one.</li>
       </ul>
     <% end %>
@@ -259,7 +260,11 @@
         <code>:awaiting_client</code> when the browser must execute the call,
         <code>:done</code> with the <code>output</code>, <code>:error</code>
         when the agent reported one. Chunked argument deltas parse into
-        <code>input</code> once complete. Text and reasoning parts carry
+        <code>input</code> once complete, and their arguments go back to the agent
+        exactly as they streamed. A reasoning message is a message of its own
+        (role <code>reasoning</code>, its own id), so it renders as its own row,
+        and it travels back in <code>messages_for_input</code> with the rest of
+        the conversation; only activity messages stay behind. Text and reasoning parts carry
         <code>:streaming</code> until their end event (or the run's end) closes
         them, then <code>:done</code>: a reasoning step reads "Thinking", open
         and shimmering, while it streams, and "Thought" once it closes. Shared
@@ -306,6 +311,10 @@
         A run can end on an interrupt: an approval the agent needs before it
         continues. The transcript exposes it, you render the decision as a form
         or a pair of links, and the next run carries a resume entry answering it.
+        AG-UI 1.0 has two statuses: <code>resolved</code>, with the answer in the
+        payload, and <code>cancelled</code>, which abandons the interrupt.
+        <code>RunInput.resume_entry</code> refuses anything else, because an agent
+        must reject it.
       </p>
     <% end %>
     <%= poetry_code_block(code: interrupt_source, language: "ruby", label: "Pause and resume") %>

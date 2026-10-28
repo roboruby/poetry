@@ -15,10 +15,12 @@
 ### Changed
 
 - The AG-UI Relay and Chat Replay demos render agent activity on Trace and CodeBlock, after shadcn's Trace chat example. Each run of reasoning and tool calls is one Trace: reasoning reads "Thinking", open, while it streams and "Thought" after; a tool call's words and status follow its state ("Looking up plans", "Looked up plans", waiting in the browser, failed); a finished call discloses its input and output in small CodeBlocks. An approval is an Item prompt with Deny and Approve, and a Chat Replay turn waits as a running "Thinking" line. The AG-UI Relay page's partial samples show the same mapping.
+- The AG-UI Relay guide and its llms mirror speak AG-UI 1.0: the resume sample answers an interrupt with `status: "resolved"` and the decision in the payload (`cancelled` abandons it), user and tool messages take content parts, a reasoning message renders as its own row and travels back in `messages_for_input`, and `Transcript#runs` keeps every run.
 
 ### Fixed
 
 - The AG-UI Relay demo's controls (the approval prompt, the replay link) follow the run's reply instead of sitting above it: each streamed message used to append after them.
+- The AG-UI Relay demo's scripted agent emits conformant AG-UI 1.0: each `RUN_STARTED` declares `protocolVersion`, `REASONING_MESSAGE_START` carries its required `role: "reasoning"`, and the reasoning message has an id of its own instead of sharing the text message's. A 1.0 client rejected run one outright.
 
 ## [0.1.13] - 2026-10-13
 

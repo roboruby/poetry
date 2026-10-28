@@ -7,6 +7,9 @@
 # components. Deterministic and keyless: the runs are data, the browser
 # executes the client tool for real, and the decision is a URL param.
 #
+# The runs are conformant AG-UI 1.0 producer output: each RUN_STARTED
+# declares the protocol version, and the reasoning is a message of its own.
+#
 # Run 1 answers the user's question and calls the page's tab tool. Run 2
 # (after the browser reports the tool result) continues and pauses on an
 # approval interrupt. Run 3 depends on the decision.
@@ -132,7 +135,7 @@ module Poetry
         def run_one
           [
             run_started("r1"),
-            *reasoning("m1", "The team size points at the Team plan; the plans tool has the current numbers."),
+            *reasoning("m1-thinking", "The team size points at the Team plan; the plans tool has the current numbers."),
             *text("m1", "For a 10-person team the Team plan fits: per-seat pricing with the admin controls included. "),
             tool_start("c-plans", "lookup_plans", "m1"),
             { "type" => "TOOL_CALL_ARGS", "toolCallId" => "c-plans", "delta" => '{"seats":10}', "_sleep" => 250 },
@@ -191,8 +194,10 @@ module Poetry
           ]
         end
 
+        # Declares the protocol version, as a 1.0 producer must.
         def run_started(run_id)
-          { "type" => "RUN_STARTED", "threadId" => THREAD_ID, "runId" => run_id }
+          { "type" => "RUN_STARTED", "threadId" => THREAD_ID, "runId" => run_id,
+            "protocolVersion" => Poetry::Agent::AGUI::PROTOCOL_VERSION }
         end
 
         def run_finished(run_id)
@@ -203,8 +208,9 @@ module Poetry
           { "type" => "TOOL_CALL_START", "toolCallId" => id, "toolCallName" => name, "parentMessageId" => message_id, "_sleep" => 300 }
         end
 
+        # A reasoning message of its own (role reasoning, its own id), streamed word by word.
         def reasoning(message_id, sentence)
-          [ { "type" => "REASONING_MESSAGE_START", "messageId" => message_id } ] +
+          [ { "type" => "REASONING_MESSAGE_START", "messageId" => message_id, "role" => "reasoning" } ] +
             chunks(sentence).map { |chunk| { "type" => "REASONING_MESSAGE_CONTENT", "messageId" => message_id, "delta" => chunk, "_sleep" => 40 } } +
             [ { "type" => "REASONING_MESSAGE_END", "messageId" => message_id } ]
         end

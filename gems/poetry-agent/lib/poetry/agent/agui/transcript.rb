@@ -6,21 +6,23 @@ module Poetry
   module Agent
     module AGUI
       # Folds an AG-UI event stream into what a chat page renders: the
-      # messages in order, each assistant message as Chat-shaped parts
+      # messages in order, each as Chat-shaped parts
       # (`{kind: :text, text:, state:}`, `{kind: :reasoning, text:, state:}`,
-      # `{kind: :tool, name:, input:, output:, state:, tool_call_id:}`),
-      # the shared state (snapshots and JSON Patch deltas), activities,
-      # the run's status, its interrupts, and the tool calls the browser
-      # must execute before the next run. A text or reasoning part is
-      # `state: :streaming` until its END event (or the run's end) closes
-      # it, then `:done` - the difference between "Thinking" and "Thought".
+      # `{kind: :tool, name:, input:, output:, state:, tool_call_id:}`,
+      # `{kind: :media, part:}` for a non-text content part), the shared
+      # state (snapshots and JSON Patch deltas), activities, every run's
+      # status and interrupts, and the tool calls the browser must execute
+      # before the next run. A text or reasoning part is `state: :streaming`
+      # until its END event (or the run's end) closes it, then `:done` - the
+      # difference between "Thinking" and "Thought". A reasoning message is
+      # a message of its own (role `reasoning`), as in AG-UI 1.0.
       #
       # Every change bumps {#version}, and {#apply} answers the ids of the
       # messages it touched, so a relay re-renders exactly those rows with
       # a monotonic version the page's versioned replace honors.
       class Transcript
         # One message. `role` is the protocol's ("user", "assistant",
-        # "tool", "activity", ...); `parts` is the render-ready list.
+        # "reasoning", "tool", "activity", ...); `parts` is the render-ready list.
         Message = Struct.new(:id, :role, :parts, :version, keyword_init: true)
 
         # The messages in arrival order.
@@ -28,9 +30,10 @@ module Poetry
         # @return [Array<Message>]
         attr_reader :messages
 
-        # The shared state after the last snapshot / delta.
+        # The shared state after the last snapshot / delta: any JSON value,
+        # usually a Hash.
         #
-        # @return [Hash]
+        # @return [Object]
         attr_reader :state
 
         # Activities by message id: `{ "type" => ..., "content" => ... }`.
@@ -38,11 +41,17 @@ module Poetry
         # @return [Hash{String => Hash}]
         attr_reader :activities
 
-        # The run: `{ thread_id:, run_id:, status:, interrupts:, error:, result: }`;
-        # status is :idle, :running, :finished, :interrupted, or :error.
+        # The current (latest) run: `{ thread_id:, run_id:, status:, interrupts:, error:, result: }`;
+        # status is :idle, :running, :finished, :interrupted, :cancelled, or :error.
         #
         # @return [Hash]
         attr_reader :run
+
+        # Every run the stream carried, in order (each shaped like {#run}),
+        # so a first run's failure survives a second run on the same stream.
+        #
+        # @return [Array<Hash>]
+        attr_reader :runs
 
         # The frontend-defined tool names the browser executes.
         #
@@ -60,7 +69,7 @@ module Poetry
         # @return [Array<Hash>]
         attr_reader :custom_events
 
-        # Event types this transcript did not understand.
+        # Event types this transcript did not understand, and events it skipped.
         #
         # @return [Array<String>]
         attr_reader :unknown_events
@@ -78,6 +87,7 @@ module Poetry
           @state = {}
           @activities = {}
           @run = { status: :idle, interrupts: [] }
+          @runs = []
           @pending_client_tools = []
           @custom_events = []
           @unknown_events = []
@@ -129,10 +139,10 @@ module Poetry
           found ? { parts: found.parts.map(&:dup), version: found.version } : { parts: [], version: 0 }
         end
 
-        # Whether the run finished, was interrupted, or failed.
-        # @return [Boolean] the run ended (finished, interrupted, or errored)
+        # Whether the run finished, was interrupted, was cancelled, or failed.
+        # @return [Boolean] the run ended; false for a stream that broke off before its terminal event
         def ended?
-          %i[finished interrupted error].include?(@run[:status])
+          %i[finished interrupted cancelled error].include?(@run[:status])
         end
 
         # Whether the run was interrupted.
@@ -148,25 +158,28 @@ module Poetry
           @run[:interrupts]
         end
 
-        # The run error, if any: `{ message:, code: }`.
+        # The current run's error, if any: `{ message:, code: }`.
         #
         # @return [Hash, nil]
         def error
           @run[:error]
         end
 
-        # The messages as the next run's `RunAgentInput.messages`: user
-        # and assistant messages (assistant tool calls in the protocol's
-        # `toolCalls` shape) and a tool message for every finished tool
-        # call; reasoning and activities stay client-side, as the
-        # protocol says.
+        # The messages as the next run's `RunAgentInput.messages`: user,
+        # system and developer messages (content parts kept as parts),
+        # assistant messages with their tool calls (arguments exactly as they
+        # streamed), reasoning messages, and a tool message for every
+        # answered call under the result's own id. Activity messages stay
+        # client-side: the protocol requires stripping them.
         #
         # @return [Array<Hash>]
         def messages_for_input
           @messages.flat_map do |message|
             case message.role
-            when "user" then [{ "id" => message.id, "role" => "user", "content" => text_of(message) }]
+            when "user", "system", "developer"
+              [{ "id" => message.id, "role" => message.role, "content" => content_of(message) }]
             when "assistant" then assistant_wire(message)
+            when "reasoning" then [{ "id" => message.id, "role" => "reasoning", "content" => reasoning_of(message) }]
             else []
             end
           end
@@ -176,7 +189,7 @@ module Poetry
         # the next run's input carries the tool message.
         #
         # @param tool_call_id [String]
-        # @param content [Object] the result (a string, or data serialized as JSON)
+        # @param content [Object] the result (a string, content parts, or data serialized as JSON)
         # @param error [String, nil]
         # @return [String, nil] the id of the message that changed
         def resolve_client_tool(tool_call_id, content, error: nil)
@@ -185,6 +198,8 @@ module Poetry
           return nil unless part
 
           part[:output] = error ? { "error" => error } : parse_json(content)
+          part[:result_content] = error || content
+          part[:error] = error
           part[:state] = error ? :error : :done
           touch(part[:message_id])
         end
@@ -235,33 +250,38 @@ module Poetry
         def run_started(event)
           @run = { thread_id: f(event, "threadId"), run_id: f(event, "runId"), parent_run_id: f(event, "parentRunId"),
                    status: :running, interrupts: [], error: nil, result: nil }
+          @runs << @run
           @version += 1
           []
         end
 
-        # Marks the run finished, or interrupted when the outcome carries interrupts.
+        # Ends the run by its outcome: interrupted when it carries
+        # interrupts, cancelled when it was stopped on purpose, else finished.
         def run_finished(event)
           outcome = f(event, "outcome")
-          interrupts = if outcome.is_a?(Hash) && AGUI.field(outcome,
-                                                            "type").to_s == "interrupt"
-                         Array(AGUI.field(outcome,
-                                          "interrupts"))
-                       else
-                         []
-                       end
+          type = outcome.is_a?(Hash) ? AGUI.field(outcome, "type").to_s : nil
+          interrupts = type == "interrupt" ? Array(AGUI.field(outcome, "interrupts")) : []
           @run[:interrupts] = interrupts.map { |interrupt| stringify(interrupt) }
           @run[:result] = f(event, "result")
-          @run[:status] = interrupts.any? ? :interrupted : :finished
+          @run[:status] = if interrupts.any?
+                            :interrupted
+                          elsif type == "cancelled"
+                            :cancelled
+                          else
+                            :finished
+                          end
           @version += 1
-          close_open_texts
+          close_open_items
         end
 
-        # Marks the run failed with its message and code.
+        # Marks the run failed with its message and code (a RUN_ERROR that
+        # opens the stream is a run of its own).
         def run_error(event)
+          @runs << @run unless @runs.any? { |run| run.equal?(@run) }
           @run[:status] = :error
           @run[:error] = { message: f(event, "message").to_s, code: f(event, "code") }
           @version += 1
-          close_open_texts
+          close_open_items
         end
 
         # --- text and reasoning ---
@@ -271,17 +291,17 @@ module Poetry
         def text_content(event) = append_part(f(event, "messageId"), :text, f(event, "delta"))
         # Closes a message's text part.
         def text_end(event) = end_part(f(event, "messageId"), :text)
-        # Opens a reasoning part on its message.
-        def reasoning_start(event) = start_part(f(event, "messageId"), "assistant", :reasoning)
+        # Opens a reasoning message.
+        def reasoning_start(event) = start_part(f(event, "messageId"), "reasoning", :reasoning)
         # Appends a reasoning delta to its message.
         def reasoning_content(event) = append_part(f(event, "messageId"), :reasoning, f(event, "delta"))
-        # Closes a message's reasoning part.
+        # Closes a reasoning message's part.
         def reasoning_end(event) = end_part(f(event, "messageId"), :reasoning)
 
         # Handles a text chunk, opening the part when it is the first.
         def text_chunk(event) = chunk(event, :text, f(event, "role") || "assistant")
         # Handles a reasoning chunk, opening the part when it is the first.
-        def reasoning_chunk(event) = chunk(event, :reasoning, "assistant")
+        def reasoning_chunk(event) = chunk(event, :reasoning, "reasoning")
 
         # Handles a chunk event: opens the part when needed and appends its delta.
         def chunk(event, kind, role)
@@ -295,10 +315,13 @@ module Poetry
         end
 
         # Opens a text or reasoning part on a message and makes it current.
+        # Text arriving on a reasoning message's id (an older producer
+        # sharing one id) makes it an assistant message.
         def start_part(id, role, kind)
           return [] unless id
 
           message = ensure_message(id, role)
+          message.role = "assistant" if kind == :text && message.role == "reasoning"
           part = { kind: kind, text: +"", state: :streaming }
           message.parts << part
           @open_text[[id, kind]] = part
@@ -313,7 +336,7 @@ module Poetry
 
           part = @open_text[[id, kind]]
           unless part
-            ensure_message(id, "assistant")
+            ensure_message(id, kind == :reasoning ? "reasoning" : "assistant")
             part = { kind: kind, text: +"", state: :streaming }
             message(id).parts << part
             @open_text[[id, kind]] = part
@@ -332,9 +355,11 @@ module Poetry
           [touch(id)]
         end
 
-        # A run's end closes streaming text and settles chunked tool calls
-        # that never saw an END event; the messages it closed re-render.
-        def close_open_texts
+        # A run's end closes streaming text and settles tool calls that never
+        # saw an END event (a chunked call): their arguments parse, and a
+        # client tool among them waits on the browser. The messages it
+        # closed re-render.
+        def close_open_items
           closed = @open_text.map do |(id, _kind), part|
             part[:state] = :done
             id
@@ -342,52 +367,85 @@ module Poetry
           @open_text.clear
           @tool_args.each_key do |tool_call_id|
             part = @tool_parts[tool_call_id]
-            next unless part && part[:input].nil?
+            next unless part
 
-            part[:input] = parse_json(@tool_args[tool_call_id].to_s)
+            settle_tool(part)
+            closed << part[:message_id]
           end
+          @tool_args.clear
           closed.uniq.map { |id| touch(id) }
         end
 
         # --- tool calls ---
 
+        # Opens a tool call on its assistant message, or reopens a closed
+        # call with the same id so further arguments append.
         def tool_start(event)
           tool_call_id = f(event, "toolCallId").to_s
-          name = f(event, "toolCallName").to_s
-          message_id = f(event, "parentMessageId") || @current_message_id || "message-#{tool_call_id}"
+          existing = @tool_parts[tool_call_id]
+          return reopen_tool(existing) if existing && message(existing[:message_id])
+
+          message_id = tool_message_id(f(event, "parentMessageId"), tool_call_id)
           ensure_message(message_id, "assistant")
-          part = { kind: :tool, name: name, input: nil, output: nil, state: :loading,
-                   tool_call_id: tool_call_id, message_id: message_id }
+          part = { kind: :tool, name: f(event, "toolCallName").to_s, input: nil, output: nil, state: :loading,
+                   tool_call_id: tool_call_id, message_id: message_id, arguments: +"" }
           message(message_id).parts << part
           @tool_parts[tool_call_id] = part
-          @tool_args[tool_call_id] = +""
+          @tool_args[tool_call_id] = part[:arguments]
           @current_message_id = message_id
           [touch(message_id)]
+        end
+
+        # A closed call reopened: its arguments stream on from where they stopped.
+        def reopen_tool(part)
+          part[:arguments] = +part[:arguments].to_s
+          part[:input] = nil
+          part[:state] = :loading
+          @pending_client_tools.reject! { |pending| pending[:tool_call_id] == part[:tool_call_id] }
+          @tool_args[part[:tool_call_id]] = part[:arguments]
+          [touch(part[:message_id])]
+        end
+
+        # The assistant message a call belongs to: its parent when that is an
+        # assistant message (or not yet seen), else one minted under the
+        # call's own id, as the reference client does.
+        def tool_message_id(parent_id, tool_call_id)
+          return tool_call_id if parent_id.nil?
+
+          parent = message(parent_id.to_s)
+          parent && parent.role != "assistant" ? tool_call_id : parent_id.to_s
         end
 
         # Appends an arguments delta to a tool call.
         def tool_args(event)
           tool_call_id = f(event, "toolCallId").to_s
           part = @tool_parts[tool_call_id]
-          return [] unless part
+          return [] unless part && @tool_args.key?(tool_call_id)
 
           @tool_args[tool_call_id] << f(event, "delta").to_s
           [touch(part[:message_id])]
         end
 
-        # Settles a tool call's input; a client tool moves to awaiting the client.
+        # Closes a tool call: its arguments settle.
         def tool_end(event)
           tool_call_id = f(event, "toolCallId").to_s
           part = @tool_parts[tool_call_id]
           return [] unless part
 
-          part[:input] = parse_json(@tool_args.delete(tool_call_id).to_s)
-          if @client_tools.include?(part[:name])
-            part[:state] = :awaiting_client
-            @pending_client_tools << { tool_call_id: tool_call_id, name: part[:name], input: part[:input],
-                                       message_id: part[:message_id] }
-          end
+          @tool_args.delete(tool_call_id)
+          settle_tool(part)
           [touch(part[:message_id])]
+        end
+
+        # Settles a call whose arguments are complete: they parse into its
+        # input, and a client tool moves to awaiting the browser.
+        def settle_tool(part)
+          part[:input] = parse_arguments(part[:arguments])
+          return unless @client_tools.include?(part[:name]) && part[:state] == :loading
+
+          part[:state] = :awaiting_client
+          @pending_client_tools << { tool_call_id: part[:tool_call_id], name: part[:name], input: part[:input],
+                                     message_id: part[:message_id] }
         end
 
         # Handles a chunked tool call, starting it and appending its delta as needed.
@@ -406,14 +464,17 @@ module Poetry
           changed
         end
 
-        # Records a tool call's output and marks it done.
+        # Records a tool call's result (text or content parts, under the
+        # result's own message id) and marks it done.
         def tool_result(event)
           tool_call_id = f(event, "toolCallId").to_s
           part = @tool_parts[tool_call_id]
           return [] unless part
 
-          part[:input] ||= parse_json(@tool_args.delete(tool_call_id).to_s) if @tool_args.key?(tool_call_id)
-          part[:output] = parse_json(f(event, "content"))
+          part[:input] = parse_arguments(part[:arguments]) if @tool_args.delete(tool_call_id) || part[:input].nil?
+          part[:result_content] = f(event, "content")
+          part[:result_message_id] = f(event, "messageId")&.to_s
+          part[:output] = parse_json(part[:result_content])
           part[:state] = :done
           @pending_client_tools.reject! { |pending| pending[:tool_call_id] == tool_call_id }
           [touch(part[:message_id])]
@@ -421,8 +482,9 @@ module Poetry
 
         # --- state, messages, activities ---
 
+        # Replaces the state with the snapshot, whatever JSON value it is (null included).
         def state_snapshot(event)
-          @state = JsonPatch.deep_copy(f(event, "snapshot") || {})
+          @state = JsonPatch.deep_copy(f(event, "snapshot"))
           @version += 1
           []
         end
@@ -437,10 +499,16 @@ module Poetry
           []
         end
 
-        # Replaces the messages with a snapshot.
+        # Replaces the messages with a snapshot; the activities and tool
+        # calls follow the messages the snapshot kept.
         def messages_snapshot(event)
+          @tool_parts = {}
           rebuilt = Array(f(event, "messages")).filter_map { |message| snapshot_message(stringify(message)) }
           @messages = rebuilt
+          @activities = @messages.select { |message| message.role == "activity" }.to_h do |message|
+            part = message.parts.first
+            [message.id, { "type" => part[:activity_type], "content" => part[:content] }]
+          end
           @open_text.clear
           @version += 1
           @messages.each { |message| message.version = @version }
@@ -453,16 +521,30 @@ module Poetry
           id = wire["id"].to_s
           case wire["role"].to_s
           when "user", "system", "developer"
-            Message.new(id: id, role: wire["role"].to_s,
-                        parts: [{ kind: :text, text: wire["content"].to_s, state: :done }], version: 0)
+            Message.new(id: id, role: wire["role"].to_s, parts: content_parts(wire["content"]), version: 0)
           when "assistant" then snapshot_assistant(wire)
           when "tool" then snapshot_tool_result(wire)
           when "activity"
             part = { kind: :activity, activity_type: wire["activityType"], content: wire["content"] }
             Message.new(id: id, role: "activity", parts: [part], version: 0)
           when "reasoning"
-            Message.new(id: id, role: "assistant",
+            Message.new(id: id, role: "reasoning",
                         parts: [{ kind: :reasoning, text: wire["content"].to_s, state: :done }], version: 0)
+          end
+        end
+
+        # A message's wire content as parts: a string is one text part; a
+        # list keeps every content part (text readable as text, the rest as
+        # media), each with its wire form for the next run's input.
+        def content_parts(content)
+          return [{ kind: :text, text: content.to_s, state: :done }] unless content.is_a?(Array)
+
+          content.map do |part|
+            if part.is_a?(Hash) && part["type"] == "text"
+              { kind: :text, text: part["text"].to_s, state: :done, part: part }
+            else
+              { kind: :media, part: part }
+            end
           end
         end
 
@@ -474,8 +556,10 @@ module Poetry
           end
           Array(wire["toolCalls"]).each do |call|
             function = call["function"] || {}
-            part = { kind: :tool, name: function["name"].to_s, input: parse_json(function["arguments"]),
-                     output: nil, state: :loading, tool_call_id: call["id"].to_s, message_id: wire["id"].to_s }
+            arguments = function["arguments"].to_s
+            part = { kind: :tool, name: function["name"].to_s, input: parse_arguments(arguments), output: nil,
+                     state: :loading, tool_call_id: call["id"].to_s, message_id: wire["id"].to_s,
+                     arguments: arguments }
             parts << part
             @tool_parts[part[:tool_call_id]] = part
           end
@@ -488,6 +572,9 @@ module Poetry
           return nil unless part
 
           part[:output] = wire["error"] ? { "error" => wire["error"] } : parse_json(wire["content"])
+          part[:result_content] = wire["content"]
+          part[:result_message_id] = wire["id"]&.to_s
+          part[:error] = wire["error"]
           part[:state] = wire["error"] ? :error : :done
           nil
         end
@@ -506,14 +593,19 @@ module Poetry
           [touch(id)]
         end
 
-        # Applies a JSON patch to an activity's content.
+        # Applies a JSON patch to an activity's content; a delta naming no
+        # activity message is skipped and recorded.
         def activity_delta(event)
           id = f(event, "messageId").to_s
           activity = @activities[id]
-          return [] unless activity
+          target = message(id)
+          unless activity && target&.role == "activity"
+            @unknown_events << "ACTIVITY_DELTA(no activity #{id})"
+            return []
+          end
 
           activity["content"] = JsonPatch.apply(activity["content"], f(event, "patch") || [])
-          message(id).parts = [{ kind: :activity, activity_type: activity["type"], content: activity["content"] }]
+          target.parts = [{ kind: :activity, activity_type: activity["type"], content: activity["content"] }]
           [touch(id)]
         rescue JsonPatch::Error => e
           @unknown_events << "ACTIVITY_DELTA(#{e.message})"
@@ -542,27 +634,59 @@ module Poetry
           message.parts.select { |part| part[:kind] == :text }.map { |part| part[:text] }.join
         end
 
-        # An assistant message in its wire form, with its tool calls.
+        # A message's reasoning parts joined.
+        def reasoning_of(message)
+          message.parts.select { |part| part[:kind] == :reasoning }.map { |part| part[:text] }.join
+        end
+
+        # A message's content as the wire carries it: the list of parts when
+        # it arrived as one, the text otherwise.
+        def content_of(message)
+          return text_of(message) unless message.parts.any? { |part| part.key?(:part) }
+
+          message.parts.map { |part| part[:part] || { "type" => "text", "text" => part[:text] } }
+        end
+
+        # An assistant message in its wire form, with its tool calls and
+        # then a tool message for each call that has an answer.
         def assistant_wire(message)
-          wire = { "id" => message.id, "role" => "assistant", "content" => text_of(message) }
+          wire = { "id" => message.id, "role" => "assistant" }
+          wire["content"] = text_of(message) if message.parts.any? { |part| part[:kind] == :text }
           calls = message.parts.select { |part| part[:kind] == :tool }
           if calls.any?
             wire["toolCalls"] = calls.map do |part|
               { "id" => part[:tool_call_id], "type" => "function",
-                "function" => { "name" => part[:name], "arguments" => JSON.generate(part[:input] || {}) } }
+                "function" => { "name" => part[:name], "arguments" => arguments_of(part) } }
             end
           end
-          results = calls.reject { |part| part[:output].nil? }.map do |part|
-            error = part[:output].is_a?(Hash) ? part[:output]["error"] : nil
-            RunInput.tool_message(part[:tool_call_id], error || as_text(part[:output]),
-                                  error: error, id: "#{part[:tool_call_id]}-result")
-          end
-          [wire, *results]
+          [wire, *calls.select { |part| answered?(part) }.map { |part| tool_wire(part) }]
+        end
+
+        # A call's arguments as they streamed, or its input as JSON when none streamed.
+        def arguments_of(part)
+          part[:arguments] || JSON.generate(part[:input] || {})
+        end
+
+        # Whether a call has an answer the next run must carry.
+        def answered?(part)
+          part.key?(:result_content) || !part[:output].nil?
+        end
+
+        # A call's answer as a tool message, under the result's own id.
+        def tool_wire(part)
+          content = part.key?(:result_content) ? part[:result_content] : as_text(part[:output])
+          id = part[:result_message_id] || "#{part[:tool_call_id]}-result"
+          RunInput.tool_message(part[:tool_call_id], part[:error] || content, error: part[:error], id: id)
         end
 
         # A value as text: strings as they are, anything else as JSON.
         def as_text(value)
           value.is_a?(String) ? value : JSON.generate(value)
+        end
+
+        # Complete tool arguments parsed: an empty string is no arguments.
+        def parse_arguments(text)
+          text.to_s.empty? ? {} : parse_json(text)
         end
 
         # Text parsed as JSON when it is; otherwise the value as given.

@@ -34,6 +34,10 @@ module Poetry
     # Nothing here calls a model: the agent is whatever the host points
     # the client at.
     module AGUI
+      # The AG-UI protocol version this client speaks, declared on every
+      # run input (`RunAgentInput.protocolVersion`).
+      PROTOCOL_VERSION = "1.0"
+
       # The AG-UI event types this transcript understands (the wire
       # strings; deprecated THINKING_* aliases included).
       EVENT_TYPES = %w[

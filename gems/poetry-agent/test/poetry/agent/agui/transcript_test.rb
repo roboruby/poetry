@@ -24,7 +24,8 @@ module Poetry
             { "type" => "TOOL_CALL_RESULT", "messageId" => "m1-r", "toolCallId" => "c1", "content" => "{\"count\":3}" },
             { "type" => "STATE_SNAPSHOT", "snapshot" => { "plans" => [] } },
             { "type" => "STATE_DELTA", "delta" => [{ "op" => "add", "path" => "/plans/-", "value" => "team" }] },
-            { "type" => "TOOL_CALL_START", "toolCallId" => "c2", "toolCallName" => "poetry.sections.set_value" },
+            { "type" => "TOOL_CALL_START", "toolCallId" => "c2", "toolCallName" => "poetry.sections.set_value",
+              "parentMessageId" => "m1" },
             { "type" => "TOOL_CALL_ARGS", "toolCallId" => "c2", "delta" => "{\"value\":\"pricing\"}" },
             { "type" => "TOOL_CALL_END", "toolCallId" => "c2" },
             { "type" => "RUN_FINISHED", "threadId" => "t1", "runId" => "r1" }
@@ -36,6 +37,7 @@ module Poetry
           message = transcript.message("m1")
 
           assert_equal(%i[reasoning text tool tool], message.parts.map { |part| part[:kind] })
+          assert_equal "assistant", message.role, "text on a reasoning message's id makes it an assistant message"
           assert_equal "Think.", message.parts[0][:text]
           assert_equal "Hello world", message.parts[1][:text]
           assert_equal({ "q" => "plans" }, message.parts[2][:input])
@@ -92,7 +94,7 @@ module Poetry
           transcript.apply({ "type" => "RUN_STARTED", "threadId" => "t", "runId" => "r" })
           transcript.apply({ "type" => "TEXT_MESSAGE_CHUNK", "messageId" => "m9", "delta" => "chunked" })
           transcript.apply({ "type" => "TOOL_CALL_CHUNK", "toolCallId" => "c9", "toolCallName" => "book",
-                             "delta" => "{\"a\":1}" })
+                             "parentMessageId" => "m9", "delta" => "{\"a\":1}" })
           transcript.apply({ "type" => "ACTIVITY_SNAPSHOT", "messageId" => "act", "activityType" => "PLAN",
                              "content" => { "steps" => [] } })
           transcript.apply({ "type" => "ACTIVITY_DELTA", "messageId" => "act", "activityType" => "PLAN",
@@ -160,6 +162,156 @@ module Poetry
           assert_equal ["m1"], transcript.apply({ "type" => "RUN_FINISHED", "threadId" => "t1", "runId" => "r1" }),
                        "the run's end closes a chunked part that never saw an END"
           assert_equal :done, transcript.message("m1").parts[1][:state]
+        end
+
+        def replay(events, client_tools: [])
+          Transcript.new(client_tools: client_tools).apply_all(
+            [{ "type" => "RUN_STARTED", "threadId" => "t", "runId" => "r" }, *events,
+             { "type" => "RUN_FINISHED", "threadId" => "t", "runId" => "r" }]
+          )
+        end
+
+        def test_a_reasoning_message_is_its_own_message_and_travels_back
+          transcript = replay([
+                                { "type" => "REASONING_MESSAGE_START", "messageId" => "r1", "role" => "reasoning" },
+                                { "type" => "REASONING_MESSAGE_CONTENT", "messageId" => "r1",
+                                  "delta" => "Weighing it." },
+                                { "type" => "REASONING_MESSAGE_END", "messageId" => "r1" },
+                                { "type" => "TEXT_MESSAGE_START", "messageId" => "m1" },
+                                { "type" => "TEXT_MESSAGE_CONTENT", "messageId" => "m1", "delta" => "Done." },
+                                { "type" => "TEXT_MESSAGE_END", "messageId" => "m1" }
+                              ])
+
+          assert_equal %w[reasoning assistant], transcript.messages.map(&:role)
+          assert_equal [{ "id" => "r1", "role" => "reasoning", "content" => "Weighing it." },
+                        { "id" => "m1", "role" => "assistant", "content" => "Done." }], transcript.messages_for_input
+        end
+
+        def test_a_call_without_a_parent_gets_its_own_assistant_message
+          transcript = replay([
+                                { "type" => "TEXT_MESSAGE_START", "messageId" => "m1" },
+                                { "type" => "TEXT_MESSAGE_END", "messageId" => "m1" },
+                                { "type" => "TOOL_CALL_START", "toolCallId" => "c1", "toolCallName" => "now" },
+                                { "type" => "TOOL_CALL_END", "toolCallId" => "c1" }
+                              ])
+
+          assert_equal %w[m1 c1], transcript.messages.map(&:id), "the reference client's rule, not the current message"
+          assert_equal "assistant", transcript.message("c1").role
+        end
+
+        def test_arguments_travel_exactly_as_they_streamed
+          transcript = replay([
+                                { "type" => "TOOL_CALL_START", "toolCallId" => "c1", "toolCallName" => "now",
+                                  "parentMessageId" => "m1" },
+                                { "type" => "TOOL_CALL_END", "toolCallId" => "c1" }
+                              ])
+          call = transcript.messages_for_input.first["toolCalls"].first
+
+          assert_equal "", call["function"]["arguments"], "no arguments streamed, none sent (not a JSON string)"
+          assert_equal({}, transcript.message("m1").parts.first[:input])
+        end
+
+        def test_a_reopened_call_appends_its_arguments
+          transcript = replay([
+                                { "type" => "TOOL_CALL_START", "toolCallId" => "c1", "toolCallName" => "f",
+                                  "parentMessageId" => "m1" },
+                                { "type" => "TOOL_CALL_ARGS", "toolCallId" => "c1", "delta" => "{\"a\":" },
+                                { "type" => "TOOL_CALL_END", "toolCallId" => "c1" },
+                                { "type" => "TOOL_CALL_START", "toolCallId" => "c1", "toolCallName" => "f",
+                                  "parentMessageId" => "m1" },
+                                { "type" => "TOOL_CALL_ARGS", "toolCallId" => "c1", "delta" => "1}" },
+                                { "type" => "TOOL_CALL_END", "toolCallId" => "c1" }
+                              ])
+          parts = transcript.message("m1").parts
+
+          assert_equal 1, parts.size
+          assert_equal({ "a" => 1 }, parts.first[:input])
+          assert_equal "{\"a\":1}", transcript.messages_for_input.first["toolCalls"].first["function"]["arguments"]
+        end
+
+        def test_a_chunked_client_tool_waits_on_the_browser_once_the_run_ends
+          transcript = replay([{ "type" => "TOOL_CALL_CHUNK", "toolCallId" => "c1", "toolCallName" => "poetry.tabs.set",
+                                 "parentMessageId" => "m1", "delta" => "{\"value\":\"b\"}" }],
+                              client_tools: ["poetry.tabs.set"])
+
+          assert_equal :awaiting_client, transcript.message("m1").parts.first[:state]
+          assert_equal [{ tool_call_id: "c1", name: "poetry.tabs.set", input: { "value" => "b" }, message_id: "m1" }],
+                       transcript.pending_client_tools
+        end
+
+        def test_a_tool_result_keeps_its_own_id_and_its_content_parts
+          parts = [{ "type" => "text", "text" => "Invoice attached." },
+                   { "type" => "document", "source" => { "type" => "url", "value" => "https://example.com/i.pdf" } }]
+          transcript = replay([
+                                { "type" => "TOOL_CALL_START", "toolCallId" => "c1", "toolCallName" => "invoice",
+                                  "parentMessageId" => "a1" },
+                                { "type" => "TOOL_CALL_END", "toolCallId" => "c1" },
+                                { "type" => "TOOL_CALL_RESULT", "messageId" => "t1", "toolCallId" => "c1",
+                                  "content" => parts }
+                              ])
+          tool = transcript.messages_for_input.last
+
+          assert_equal({ "id" => "t1", "role" => "tool", "content" => parts, "toolCallId" => "c1" }, tool)
+        end
+
+        def test_a_snapshot_keeps_content_parts_and_every_conversation_role
+          parts = [{ "type" => "text", "text" => "What is this?" },
+                   { "type" => "image",
+                     "source" => { "type" => "data", "value" => "AAAA", "mimeType" => "image/png" } }]
+          transcript = Transcript.new
+          transcript.apply({ "type" => "MESSAGES_SNAPSHOT", "messages" => [
+                             { "id" => "s1", "role" => "system", "content" => "Be brief." },
+                             { "id" => "d1", "role" => "developer", "content" => "Tools first." },
+                             { "id" => "u1", "role" => "user", "content" => parts },
+                             { "id" => "r1", "role" => "reasoning", "content" => "Looking." }
+                           ] })
+
+          assert_equal [{ "id" => "s1", "role" => "system", "content" => "Be brief." },
+                        { "id" => "d1", "role" => "developer", "content" => "Tools first." },
+                        { "id" => "u1", "role" => "user", "content" => parts },
+                        { "id" => "r1", "role" => "reasoning", "content" => "Looking." }], transcript.messages_for_input
+          assert_equal(%i[text media], transcript.message("u1").parts.map { |part| part[:kind] })
+        end
+
+        def test_an_activity_delta_after_a_snapshot_dropped_the_activity_is_skipped
+          transcript = Transcript.new
+          transcript.apply({ "type" => "ACTIVITY_SNAPSHOT", "messageId" => "a1", "activityType" => "x",
+                             "content" => { "n" => 1 } })
+          transcript.apply({ "type" => "MESSAGES_SNAPSHOT", "messages" => [] })
+
+          assert_empty transcript.apply({ "type" => "ACTIVITY_DELTA", "messageId" => "a1", "activityType" => "x",
+                                          "patch" => [{ "op" => "replace", "path" => "/n", "value" => 2 }] })
+          assert_empty transcript.activities
+          assert_equal ["ACTIVITY_DELTA(no activity a1)"], transcript.unknown_events
+        end
+
+        def test_a_null_state_snapshot_applies
+          transcript = Transcript.new
+          transcript.apply({ "type" => "STATE_SNAPSHOT", "snapshot" => { "a" => 1 } })
+          transcript.apply({ "type" => "STATE_SNAPSHOT", "snapshot" => nil })
+
+          assert_nil transcript.state
+        end
+
+        def test_every_run_is_kept_and_a_cancelled_run_is_neither_success_nor_failure
+          transcript = Transcript.new.apply_all([
+                                                  { "type" => "RUN_STARTED", "threadId" => "t", "runId" => "r1" },
+                                                  { "type" => "RUN_ERROR", "message" => "boom" },
+                                                  { "type" => "RUN_STARTED", "threadId" => "t", "runId" => "r2" },
+                                                  { "type" => "RUN_FINISHED", "threadId" => "t", "runId" => "r2",
+                                                    "outcome" => { "type" => "cancelled" } }
+                                                ])
+
+          assert_equal(%i[error cancelled], transcript.runs.map { |run| run[:status] })
+          assert_equal "boom", transcript.runs.first[:error][:message], "the first run's failure survives the second"
+          assert_equal :cancelled, transcript.run[:status]
+          assert_predicate transcript, :ended?
+          assert_nil transcript.error
+
+          opened = Transcript.new
+          opened.apply({ "type" => "RUN_ERROR", "message" => "refused" })
+
+          assert_equal 1, opened.runs.size, "a RUN_ERROR that opens the stream is a run of its own"
         end
       end
     end

@@ -97,6 +97,23 @@ class AguiRelayTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Replay from the top"
   end
 
+  test "the scripted agent is a conformant AG-UI 1.0 producer" do
+    runs = [ [ 1, nil ], [ 2, nil ], [ 3, true ], [ 3, false ], [ 4, nil ] ].map do |index, decision|
+      Poetry::Docs::AguiReplay.events(index, decision: decision, email: "ada@roboruby.com").map { |event| event.except("_sleep") }
+    end
+    events = runs.flatten
+    kinds = events.each_with_object(Hash.new { |hash, key| hash[key] = [] }) do |event, ids|
+      kind = { "TEXT_MESSAGE_START" => :text, "REASONING_MESSAGE_START" => :reasoning,
+               "TOOL_CALL_RESULT" => :tool, "ACTIVITY_SNAPSHOT" => :activity }[event["type"]]
+      ids[event["messageId"]] << kind if kind
+    end
+
+    runs.each { |run| assert_equal "1.0", run.find { |event| event["type"] == "RUN_STARTED" }["protocolVersion"] }
+    events.select { |event| event["type"] == "REASONING_MESSAGE_START" }.each { |event| assert_equal "reasoning", event["role"] }
+    kinds.each { |id, list| assert_equal 1, list.uniq.size, "message id #{id} names #{list.uniq.join(" and ")} messages" }
+    assert_empty events.map { |event| event["type"] } - Poetry::Agent::AGUI::EVENT_TYPES.grep_v(/\ATHINKING_/)
+  end
+
   test "the A2UI catalog is served as JSON" do
     get "/a2ui/catalog.json"
 

@@ -4682,7 +4682,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui.rb",
-          "line": 76
+          "line": 80
         },
         {
           "name": "tool_descriptor",
@@ -4719,7 +4719,7 @@
             }
           ],
           "file": "lib/poetry/agent/agui.rb",
-          "line": 62
+          "line": 66
         }
       ],
       "constants": [
@@ -4727,6 +4727,11 @@
           "name": "EVENT_TYPES",
           "value": "%w[\n  RUN_STARTED RUN_FINISHED RUN_ERROR STEP_STARTED STEP_FINISHED\n  TEXT_MESSAGE_START TEXT_MESSAGE_CONTENT TEXT_MESSAGE_END TEXT_MESSAGE_CHUNK\n  REASONING_START REASONING_MESSAGE_START REASONING_ME",
           "docstring": "The AG-UI event types this transcript understands (the wire\nstrings; deprecated THINKING_* aliases included)."
+        },
+        {
+          "name": "PROTOCOL_VERSION",
+          "value": "\"1.0\"",
+          "docstring": "The AG-UI protocol version this client speaks, declared on every\nrun input (`RunAgentInput.protocolVersion`)."
         }
       ]
     },
@@ -5190,7 +5195,7 @@
       "path": "Poetry::Agent::AGUI::RunInput",
       "type": "module",
       "superclass": null,
-      "docstring": "Builds the `RunAgentInput` wire hash an AG-UI agent accepts:\ncamelCased keys, messages in the protocol's shapes, the\nfrontend-defined tools, context entries, state, forwarded props,\nand the resume entries that answer interrupts.",
+      "docstring": "Builds the `RunAgentInput` wire hash an AG-UI agent accepts:\ncamelCased keys, the protocol version this client speaks, messages\nin the protocol's shapes, the frontend-defined tools, context\nentries, state, forwarded props, and the resume entries that answer\ninterrupts.",
       "examples": [],
       "file": "lib/poetry/agent/agui/run_input.rb",
       "methods": [
@@ -5198,7 +5203,7 @@
           "name": "build",
           "scope": "class",
           "group": null,
-          "signature": "build( # rubocop:disable Metrics/ParameterLists -- one keyword per RunAgentInput field thread_id:, messages:, run_id: SecureRandom.uuid, tools: [], context: [], state: {}, forwarded_props: {}, parent_run_id: nil, resume: nil)",
+          "signature": "build( # rubocop:disable Metrics/ParameterLists -- one keyword per RunAgentInput field thread_id:, messages:, run_id: SecureRandom.uuid, tools: [], context: [], state: {}, forwarded_props: {}, parent_run_id: nil, resume: nil, protocol_version: PROTOCOL_VERSION)",
           "docstring": "A RunAgentInput hash from its fields, with a generated run id by default.",
           "params": [
             {
@@ -5239,7 +5244,7 @@
             {
               "name": "state",
               "types": [
-                "Hash"
+                "Object"
               ],
               "text": "the shared state to send"
             },
@@ -5264,7 +5269,15 @@
                 "Array<Hash>",
                 "nil"
               ],
-              "text": "`{ \"interruptId\", \"status\", \"payload\" }` answers"
+              "text": "{.resume_entry} answers to the last run's interrupts"
+            },
+            {
+              "name": "protocol_version",
+              "types": [
+                "String",
+                "nil"
+              ],
+              "text": "the declared version; nil omits it, for an agent\nknown to predate the field"
             }
           ],
           "return": {
@@ -5280,13 +5293,13 @@
             }
           ],
           "file": "lib/poetry/agent/agui/run_input.rb",
-          "line": 29
+          "line": 37
         },
         {
           "name": "resume_entry",
           "scope": "class",
           "group": null,
-          "signature": "resume_entry(interrupt_id, status: nil, payload: nil)",
+          "signature": "resume_entry(interrupt_id, status:, payload: nil)",
           "docstring": "A resume entry answering an interrupt.",
           "params": [
             {
@@ -5299,10 +5312,9 @@
             {
               "name": "status",
               "types": [
-                "String",
-                "nil"
+                "String"
               ],
-              "text": "e.g. \"approved\", \"rejected\""
+              "text": "\"resolved\" (answered, the answer in the payload) or \"cancelled\" (abandoned)"
             },
             {
               "name": "payload",
@@ -5310,7 +5322,7 @@
                 "Object",
                 "nil"
               ],
-              "text": ""
+              "text": "the answer"
             }
           ],
           "return": {
@@ -5319,9 +5331,14 @@
             ],
             "text": ""
           },
-          "examples": [],
+          "examples": [
+            {
+              "title": "Approving an approval interrupt",
+              "text": "RunInput.resume_entry(interrupt[\"id\"], status: \"resolved\", payload: { \"approved\" => true })"
+            }
+          ],
           "file": "lib/poetry/agent/agui/run_input.rb",
-          "line": 75
+          "line": 87
         },
         {
           "name": "tool_message",
@@ -5340,9 +5357,11 @@
             {
               "name": "content",
               "types": [
-                "String"
+                "String",
+                "Array<Hash>",
+                "Object"
               ],
-              "text": "the result as text (JSON for structured results)"
+              "text": "the result: text, a list of content parts, or\ndata (sent as JSON)"
             },
             {
               "name": "error",
@@ -5368,21 +5387,22 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/run_input.rb",
-          "line": 63
+          "line": 71
         },
         {
           "name": "user_message",
           "scope": "class",
           "group": null,
           "signature": "user_message(content, id: SecureRandom.uuid)",
-          "docstring": "A user message.",
+          "docstring": "A user message: text, or a list of content parts.",
           "params": [
             {
               "name": "content",
               "types": [
-                "String"
+                "String",
+                "Array<Hash>"
               ],
-              "text": ""
+              "text": "the text, or content parts (`{ \"type\" => \"text\", \"text\" => ... }`\nand image, audio, video or document parts with a `source`)"
             },
             {
               "name": "id",
@@ -5398,12 +5418,23 @@
             ],
             "text": ""
           },
-          "examples": [],
+          "examples": [
+            {
+              "title": "An image beside the question",
+              "text": "RunInput.user_message([{ \"type\" => \"text\", \"text\" => \"What is this?\" },\n                       { \"type\" => \"image\", \"source\" => { \"type\" => \"url\", \"value\" => url } }])"
+            }
+          ],
           "file": "lib/poetry/agent/agui/run_input.rb",
-          "line": 52
+          "line": 59
         }
       ],
-      "constants": []
+      "constants": [
+        {
+          "name": "RESUME_STATUSES",
+          "value": "%w[resolved cancelled].freeze",
+          "docstring": "The resume statuses AG-UI 1.0 defines: the interrupt was answered\n(`resolved`, the answer in the payload) or abandoned (`cancelled`)."
+        }
+      ]
     },
     {
       "path": "Poetry::Agent::AGUI::SSE",
@@ -5538,7 +5569,7 @@
       "path": "Poetry::Agent::AGUI::Transcript",
       "type": "class",
       "superclass": "Object",
-      "docstring": "Folds an AG-UI event stream into what a chat page renders: the\nmessages in order, each assistant message as Chat-shaped parts\n(`{kind: :text, text:, state:}`, `{kind: :reasoning, text:, state:}`,\n`{kind: :tool, name:, input:, output:, state:, tool_call_id:}`),\nthe shared state (snapshots and JSON Patch deltas), activities,\nthe run's status, its interrupts, and the tool calls the browser\nmust execute before the next run. A text or reasoning part is\n`state: :streaming` until its END event (or the run's end) closes\nit, then `:done` - the difference between \"Thinking\" and \"Thought\".\n\nEvery change bumps {#version}, and {#apply} answers the ids of the\nmessages it touched, so a relay re-renders exactly those rows with\na monotonic version the page's versioned replace honors.",
+      "docstring": "Folds an AG-UI event stream into what a chat page renders: the\nmessages in order, each as Chat-shaped parts\n(`{kind: :text, text:, state:}`, `{kind: :reasoning, text:, state:}`,\n`{kind: :tool, name:, input:, output:, state:, tool_call_id:}`,\n`{kind: :media, part:}` for a non-text content part), the shared\nstate (snapshots and JSON Patch deltas), activities, every run's\nstatus and interrupts, and the tool calls the browser must execute\nbefore the next run. A text or reasoning part is `state: :streaming`\nuntil its END event (or the run's end) closes it, then `:done` - the\ndifference between \"Thinking\" and \"Thought\". A reasoning message is\na message of its own (role `reasoning`), as in AG-UI 1.0.\n\nEvery change bumps {#version}, and {#apply} answers the ids of the\nmessages it touched, so a relay re-renders exactly those rows with\na monotonic version the page's versioned replace honors.",
       "examples": [],
       "file": "lib/poetry/agent/agui/transcript.rb",
       "methods": [
@@ -5557,7 +5588,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 39
+          "line": 42
         },
         {
           "name": "apply",
@@ -5582,7 +5613,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 96
+          "line": 106
         },
         {
           "name": "apply_all",
@@ -5607,7 +5638,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 111
+          "line": 121
         },
         {
           "name": "client_tools",
@@ -5624,7 +5655,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 50
+          "line": 59
         },
         {
           "name": "custom_events",
@@ -5641,31 +5672,31 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 61
+          "line": 70
         },
         {
           "name": "ended?",
           "scope": "instance",
           "group": null,
           "signature": "ended?",
-          "docstring": "Whether the run finished, was interrupted, or failed.",
+          "docstring": "Whether the run finished, was interrupted, was cancelled, or failed.",
           "params": [],
           "return": {
             "types": [
               "Boolean"
             ],
-            "text": "the run ended (finished, interrupted, or errored)"
+            "text": "the run ended; false for a stream that broke off before its terminal event"
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 134
+          "line": 144
         },
         {
           "name": "error",
           "scope": "instance",
           "group": null,
           "signature": "error",
-          "docstring": "The run error, if any: `{ message:, code: }`.",
+          "docstring": "The current run's error, if any: `{ message:, code: }`.",
           "params": [],
           "return": {
             "types": [
@@ -5676,7 +5707,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 154
+          "line": 164
         },
         {
           "name": "frame",
@@ -5701,7 +5732,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 127
+          "line": 137
         },
         {
           "name": "initialize",
@@ -5726,7 +5757,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 75
+          "line": 84
         },
         {
           "name": "interrupted?",
@@ -5743,7 +5774,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 140
+          "line": 150
         },
         {
           "name": "interrupts",
@@ -5760,7 +5791,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 147
+          "line": 157
         },
         {
           "name": "message",
@@ -5786,7 +5817,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 119
+          "line": 129
         },
         {
           "name": "messages",
@@ -5803,14 +5834,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 29
+          "line": 31
         },
         {
           "name": "messages_for_input",
           "scope": "instance",
           "group": null,
           "signature": "messages_for_input",
-          "docstring": "The messages as the next run's `RunAgentInput.messages`: user\nand assistant messages (assistant tool calls in the protocol's\n`toolCalls` shape) and a tool message for every finished tool\ncall; reasoning and activities stay client-side, as the\nprotocol says.",
+          "docstring": "The messages as the next run's `RunAgentInput.messages`: user,\nsystem and developer messages (content parts kept as parts),\nassistant messages with their tool calls (arguments exactly as they\nstreamed), reasoning messages, and a tool message for every\nanswered call under the result's own id. Activity messages stay\nclient-side: the protocol requires stripping them.",
           "params": [],
           "return": {
             "types": [
@@ -5820,7 +5851,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 165
+          "line": 176
         },
         {
           "name": "pending_client_tools",
@@ -5837,7 +5868,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 56
+          "line": 65
         },
         {
           "name": "resolve_client_tool",
@@ -5858,7 +5889,7 @@
               "types": [
                 "Object"
               ],
-              "text": "the result (a string, or data serialized as JSON)"
+              "text": "the result (a string, content parts, or data serialized as JSON)"
             },
             {
               "name": "error",
@@ -5878,14 +5909,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 182
+          "line": 195
         },
         {
           "name": "run",
           "scope": "instance",
           "group": null,
           "signature": "run",
-          "docstring": "The run: `{ thread_id:, run_id:, status:, interrupts:, error:, result: }`;\nstatus is :idle, :running, :finished, :interrupted, or :error.",
+          "docstring": "The current (latest) run: `{ thread_id:, run_id:, status:, interrupts:, error:, result: }`;\nstatus is :idle, :running, :finished, :interrupted, :cancelled, or :error.",
           "params": [],
           "return": {
             "types": [
@@ -5895,31 +5926,48 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 45
+          "line": 48
+        },
+        {
+          "name": "runs",
+          "scope": "instance",
+          "group": null,
+          "signature": "runs",
+          "docstring": "Every run the stream carried, in order (each shaped like {#run}),\nso a first run's failure survives a second run on the same stream.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 54
         },
         {
           "name": "state",
           "scope": "instance",
           "group": null,
           "signature": "state",
-          "docstring": "The shared state after the last snapshot / delta.",
+          "docstring": "The shared state after the last snapshot / delta: any JSON value,\nusually a Hash.",
           "params": [],
           "return": {
             "types": [
-              "Hash"
+              "Object"
             ],
             "text": ""
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 34
+          "line": 37
         },
         {
           "name": "unknown_events",
           "scope": "instance",
           "group": null,
           "signature": "unknown_events",
-          "docstring": "Event types this transcript did not understand.",
+          "docstring": "Event types this transcript did not understand, and events it skipped.",
           "params": [],
           "return": {
             "types": [
@@ -5929,7 +5977,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 66
+          "line": 75
         },
         {
           "name": "version",
@@ -5946,7 +5994,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 71
+          "line": 80
         }
       ],
       "constants": []
@@ -5955,7 +6003,7 @@
       "path": "Poetry::Agent::AGUI::Transcript::Message",
       "type": "class",
       "superclass": "Struct",
-      "docstring": "One message. `role` is the protocol's (\"user\", \"assistant\",\n\"tool\", \"activity\", ...); `parts` is the render-ready list.",
+      "docstring": "One message. `role` is the protocol's (\"user\", \"assistant\",\n\"reasoning\", \"tool\", \"activity\", ...); `parts` is the render-ready list.",
       "examples": [],
       "file": "lib/poetry/agent/agui/transcript.rb",
       "methods": [
@@ -5974,7 +6022,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 24
+          "line": 26
         },
         {
           "name": "id=",
@@ -5999,7 +6047,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 24
+          "line": 26
         },
         {
           "name": "parts",
@@ -6016,7 +6064,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 24
+          "line": 26
         },
         {
           "name": "parts=",
@@ -6041,7 +6089,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 24
+          "line": 26
         },
         {
           "name": "role",
@@ -6058,7 +6106,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 24
+          "line": 26
         },
         {
           "name": "role=",
@@ -6083,7 +6131,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 24
+          "line": 26
         },
         {
           "name": "version",
@@ -6100,7 +6148,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 24
+          "line": 26
         },
         {
           "name": "version=",
@@ -6125,7 +6173,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 24
+          "line": 26
         }
       ],
       "constants": []
