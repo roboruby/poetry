@@ -1817,7 +1817,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_broadcasts.rb",
-          "line": 124
+          "line": 132
         },
         {
           "name": "broadcast_blob",
@@ -1849,7 +1849,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_broadcasts.rb",
-          "line": 153
+          "line": 161
         },
         {
           "name": "broadcasts_attachment_updates_for",
@@ -1891,7 +1891,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_broadcasts.rb",
-          "line": 43
+          "line": 46
         },
         {
           "name": "channel",
@@ -1903,7 +1903,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui/attachment_broadcasts.rb",
-          "line": 83
+          "line": 91
         },
         {
           "name": "logger",
@@ -1921,7 +1921,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_broadcasts.rb",
-          "line": 143
+          "line": 151
         },
         {
           "name": "register",
@@ -1970,7 +1970,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_broadcasts.rb",
-          "line": 94
+          "line": 102
         },
         {
           "name": "registration_for",
@@ -1984,7 +1984,7 @@
               "types": [
                 "Object"
               ],
-              "text": "the attachment's record"
+              "text": "the model instance whose class, or a superclass, opted the attribute in"
             },
             {
               "name": "name",
@@ -2004,7 +2004,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_broadcasts.rb",
-          "line": 107
+          "line": 115
         },
         {
           "name": "registrations",
@@ -2021,14 +2021,14 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_broadcasts.rb",
-          "line": 53
+          "line": 56
         },
         {
           "name": "renderer",
           "scope": "class",
           "group": null,
           "signature": "renderer",
-          "docstring": "How a chip is rendered for the stream: a callable of the\nattachment and the variant returning HTML. The default renders\n`poetry_attachment_for` through the app's controller renderer\n(ApplicationController carries the app's route helpers, which a\nrepresentation's URL needs; ActionController::Base does not); a\ntest swaps it.",
+          "docstring": "How a chip is rendered for the stream: a callable of the\nattachment and the variant returning HTML. The default renders\n`poetry_attachment_for` through the renderer of a controller\ndefined inside the host (it carries the app's route helpers, which\na representation's URL needs; ActionController::Base does not); a\ntest swaps it.",
           "params": [],
           "return": {
             "types": [
@@ -2038,7 +2038,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_broadcasts.rb",
-          "line": 64
+          "line": 67
         },
         {
           "name": "renderer=",
@@ -2056,14 +2056,14 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui/attachment_broadcasts.rb",
-          "line": 73
+          "line": 76
         },
         {
           "name": "rendering_controller",
           "scope": "class",
           "group": null,
           "signature": "rendering_controller",
-          "docstring": "The controller whose renderer draws the chips: the app's, with\nits route helpers, when it has one.",
+          "docstring": "The controller whose renderer draws the chips: a controller\ndefined inside the host, once the app is up, so it carries the\napp's route helpers (a representation's URL needs them) and its\nview helpers, which ActionController::Base itself does not. Named\nunder this module, so its template prefixes resolve.",
           "params": [],
           "return": {
             "types": [
@@ -2073,7 +2073,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_broadcasts.rb",
-          "line": 78
+          "line": 84
         }
       ],
       "constants": []
@@ -2134,11 +2134,24 @@
           "group": null,
           "signature": "stream_for(record)",
           "docstring": "The stream the record's chips broadcast on.",
-          "params": [],
-          "return": null,
+          "params": [
+            {
+              "name": "record",
+              "types": [
+                "Object"
+              ],
+              "text": "the model instance the attachments belong to"
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "what the stream callable returns, else [record, :attachments]"
+          },
           "examples": [],
           "file": "lib/poetry/ui/attachment_broadcasts.rb",
-          "line": 31
+          "line": 34
         },
         {
           "name": "variant",
@@ -2208,7 +2221,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_lifecycle.rb",
-          "line": 85
+          "line": 87
         },
         {
           "name": "attachment",
@@ -2244,7 +2257,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui/attachment_lifecycle.rb",
-          "line": 57
+          "line": 59
         },
         {
           "name": "description",
@@ -2269,7 +2282,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_lifecycle.rb",
-          "line": 135
+          "line": 137
         },
         {
           "name": "dom_id",
@@ -2287,7 +2300,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_lifecycle.rb",
-          "line": 147
+          "line": 149
         },
         {
           "name": "download_path",
@@ -2313,7 +2326,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_lifecycle.rb",
-          "line": 159
+          "line": 161
         },
         {
           "name": "filename",
@@ -2325,7 +2338,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui/attachment_lifecycle.rb",
-          "line": 52
+          "line": 54
         },
         {
           "name": "icon",
@@ -2342,7 +2355,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_lifecycle.rb",
-          "line": 120
+          "line": 122
         },
         {
           "name": "image?",
@@ -2359,7 +2372,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_lifecycle.rb",
-          "line": 62
+          "line": 64
         },
         {
           "name": "image_ready?",
@@ -2376,14 +2389,14 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_lifecycle.rb",
-          "line": 114
+          "line": 116
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
           "signature": "initialize(given, variant: nil)",
-          "docstring": "",
+          "docstring": "The lifecycle of one attachment, read from whatever the view holds.",
           "params": [
             {
               "name": "given",
@@ -2410,7 +2423,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_lifecycle.rb",
-          "line": 32
+          "line": 34
         },
         {
           "name": "pending_analysis?",
@@ -2427,7 +2440,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_lifecycle.rb",
-          "line": 68
+          "line": 70
         },
         {
           "name": "pending_representation?",
@@ -2444,7 +2457,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_lifecycle.rb",
-          "line": 106
+          "line": 108
         },
         {
           "name": "present?",
@@ -2461,7 +2474,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_lifecycle.rb",
-          "line": 38
+          "line": 40
         },
         {
           "name": "representable?",
@@ -2478,7 +2491,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_lifecycle.rb",
-          "line": 92
+          "line": 94
         },
         {
           "name": "representation",
@@ -2490,7 +2503,7 @@
           "return": null,
           "examples": [],
           "file": "lib/poetry/ui/attachment_lifecycle.rb",
-          "line": 99
+          "line": 101
         },
         {
           "name": "state",
@@ -2507,7 +2520,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_lifecycle.rb",
-          "line": 44
+          "line": 46
         },
         {
           "name": "unprocessable?",
@@ -2524,7 +2537,7 @@
           },
           "examples": [],
           "file": "lib/poetry/ui/attachment_lifecycle.rb",
-          "line": 76
+          "line": 78
         },
         {
           "name": "variant",
@@ -19569,7 +19582,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/ui/sidebar/style.rb",
-          "line": 133
+          "line": 136
         },
         {
           "name": "mobile_side",
@@ -23936,7 +23949,7 @@
       "path": "Poetry::Ui::Typeset::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "The prose container for rendered markdown and other element-soup\nHTML: every bare heading, paragraph, list, and table inside is\nstyled by the app-owned typeset.css the installer copies. Three\nrhythm variables (size / leading / flow) drive the scale -\neverything else derives - and preset: appends a tiny app-defined\nclass that retunes them. Opt an embedded component's subtree out\nwith class: \"not-typeset\"; wrap a wide block in a typeset-scroll\ndiv to scroll horizontally instead of compressing.\n\n**Anatomy** (`data-slot` parts):\n\n- `typeset` - The prose container - every bare element inside is styled by the app-owned typeset.css; not-typeset (class or data attribute) opts a subtree out",
+      "docstring": "The prose container for rendered markdown and other element-soup\nHTML: every bare heading, paragraph, list, and table inside is\nstyled by the app-owned typeset.css the installer copies. Three\nrhythm variables (size / leading / flow) drive the scale -\neverything else derives - and preset: appends a tiny app-defined\nclass that retunes them. Embedded components keep their own styles\n(the prose rules skip anything with data-slot); opt a plain-HTML\nsubtree out with class: \"not-typeset\"; wrap a wide block in a\ntypeset-scroll div to scroll horizontally instead of compressing.\n\n**Anatomy** (`data-slot` parts):\n\n- `typeset` - The prose container - every bare element inside is styled by the app-owned typeset.css; components (data-slot) keep their own styles, and not-typeset (class or data attribute) opts a subtree out",
       "examples": [
         {
           "title": "",
@@ -23960,7 +23973,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/typeset/component.rb",
-          "line": 35
+          "line": 36
         }
       ],
       "constants": [

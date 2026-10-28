@@ -1176,6 +1176,13 @@
               "text": "more elements an outside press must not dismiss from (a chips field)"
             },
             {
+              "name": "[options.levelTrigger]",
+              "types": [
+                "(node: Element) => Element | null"
+              ],
+              "text": "the trigger of a level wired with wireLevel (a submenu's sub-trigger): a press on it is that level's toggle, not an outside press"
+            },
+            {
               "name": "[options.onDismiss]",
               "types": [
                 "(event: Event) => void"
@@ -1198,7 +1205,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/behaviors/overlay.js",
-          "line": 68
+          "line": 71
         }
       ],
       "constants": []
@@ -5313,7 +5320,7 @@
       "path": "poetry--core--command",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Command palette engine - the suite's\nfirst ACTIVEDESCENDANT component (the APG editable-combobox pattern, the\ndeliberate delta vs the menus/Select family's roving focus): real DOM\nfocus stays pinned to the input for the whole session; the highlighted\noption carries data-highlighted + its server-stable id in the input's\naria-activedescendant (the twin-write, activedescendant-flavored).\nOptions never get tabindex; roving-focus is NOT attached; aria-selected\nis NEVER written here (reserved for committed values - Combobox's\ntwin-write; a bare palette has no committed value).\n\nTHE FILTER is the deterministic helpers/filter_rank spec (prefix 4 >\nword-boundary 3 > substring 2 > keyword 1 > hidden 0, diacritic-folded)\nand it is HIDE-ONLY: score-0 items get hidden + data-hidden, matches get\nboth removed, and children are NEVER reordered - DOM order is the\nranking authority within a band; the score's only job is seating the\nauto-highlight. filter:false is the server-driven mode: steps 1-2\n(hiding) are skipped entirely and only\nhighlight/activation/announcement run over whatever the server rendered\n- the Turbo-frame async seam Combobox's recipe plugs into.\n\nACTIVATION IS AN EVENT, NOT AN ACTION: Enter/click dispatches cancelable\npoetry:command:select and this controller does nothing further - no\nnavigation, no close, no value write. The listener (host data-action,\nCombobox's commit pipeline) owns the consequences - the engine-purity\nCombobox's composition depends on (no popper/commit/native-select code\nlives here, fenced by the conformance greps).\n\nThe DOM is the store, filtering included: query in the input, visibility\nas hidden + data-hidden, highlight as data-highlighted +\naria-activedescendant, group visibility derived - a Turbo Stream can\nappend items mid-session and the next keystroke ranks them.\nEach part matches both families' vocabularies: Command's own names and the\ncombobox's (two names for the same parts; the engine rides both).\n\n**Values**:\n- `filter` (Boolean, default: true): false = SERVER-DRIVEN mode: never hide - the host re-renders the list (Turbo frame) and Command only runs highlight/activation/announcement over what is rendered.\n- `loop` (Boolean, default: false): Arrow-key wrap over visible enabled items.\n- `debounce` (Number, default: 0): Filter-pass debounce in ms (0 = synchronous - client filtering is cheap string work; the status announcement is debounced separately).\n\n**Events**: `poetry:command:filter`, `poetry:command:highlight`, `poetry:command:select`",
+      "docstring": "The Command palette engine - the suite's\nfirst ACTIVEDESCENDANT component (the APG editable-combobox pattern, the\ndeliberate delta vs the menus/Select family's roving focus): real DOM\nfocus stays pinned to the input for the whole session; the highlighted\noption carries data-highlighted + its server-stable id in the input's\naria-activedescendant (the twin-write, activedescendant-flavored).\nOptions never get tabindex; roving-focus is NOT attached; aria-selected\nis NEVER written here (reserved for committed values - Combobox's\ntwin-write; a bare palette has no committed value).\n\nTHE FILTER is the deterministic helpers/filter_rank spec (prefix 4 >\nword-boundary 3 > substring 2 > keyword 1 > hidden 0, diacritic-folded)\nand it is HIDE-ONLY: score-0 items get hidden + data-hidden, matches get\nboth removed, and children are NEVER reordered - DOM order is the\nranking authority within a band; the score's only job is seating the\nauto-highlight. filter:false is the server-driven mode: steps 1-2\n(hiding) are skipped entirely and only\nhighlight/activation/announcement run over whatever the server rendered\n- the Turbo-frame async seam Combobox's recipe plugs into.\n\nACTIVATION IS AN EVENT, NOT AN ACTION: Enter/click dispatches cancelable\npoetry:command:select and this controller does nothing further - no\nnavigation, no close, no value write. The listener (host data-action,\nCombobox's commit pipeline) owns the consequences - the engine-purity\nCombobox's composition depends on (no popper/commit/native-select code\nlives here, fenced by the conformance greps).\n\nThe DOM is the store, filtering included: query in the input, visibility\nas hidden + data-hidden, highlight as data-highlighted +\naria-activedescendant, group visibility derived - a Turbo Stream can\nappend items mid-session and the next keystroke ranks them; a refill\nthat sweeps the highlighted item away during a live search re-seats it\nat once (the server-side search answering after the keystroke).\nEach part matches both families' vocabularies: Command's own names and the\ncombobox's (two names for the same parts; the engine rides both).\n\n**Values**:\n- `filter` (Boolean, default: true): false = SERVER-DRIVEN mode: never hide - the host re-renders the list (Turbo frame) and Command only runs highlight/activation/announcement over what is rendered.\n- `loop` (Boolean, default: false): Arrow-key wrap over visible enabled items.\n- `debounce` (Number, default: 0): Filter-pass debounce in ms (0 = synchronous - client filtering is cheap string work; the status announcement is debounced separately).\n\n**Events**: `poetry:command:filter`, `poetry:command:highlight`, `poetry:command:select`",
       "examples": [],
       "file": "app/javascript/poetry/core/command_controller.js",
       "methods": [
@@ -5327,7 +5334,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
-          "line": 82
+          "line": 85
         },
         {
           "name": "disconnect",
@@ -5339,7 +5346,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
-          "line": 111
+          "line": 120
         },
         {
           "name": "filterInput",
@@ -5351,7 +5358,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
-          "line": 152
+          "line": 182
         },
         {
           "name": "keydown",
@@ -5371,7 +5378,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
-          "line": 180
+          "line": 210
         },
         {
           "name": "activate",
@@ -5391,7 +5398,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
-          "line": 236
+          "line": 266
         },
         {
           "name": "pointerHighlight",
@@ -5411,7 +5418,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
-          "line": 254
+          "line": 284
         },
         {
           "name": "highlightItem",
@@ -5445,7 +5452,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
-          "line": 273
+          "line": 303
         },
         {
           "name": "reset",
@@ -5457,7 +5464,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/command_controller.js",
-          "line": 283
+          "line": 313
         }
       ],
       "constants": []
@@ -5928,7 +5935,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 67
+          "line": 70
         },
         {
           "name": "escapeClose",
@@ -5948,7 +5955,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 92
+          "line": 95
         },
         {
           "name": "close",
@@ -5968,7 +5975,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 108
+          "line": 111
         },
         {
           "name": "backdropClose",
@@ -5988,7 +5995,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 131
+          "line": 134
         },
         {
           "name": "swipeStart",
@@ -6008,7 +6015,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 155
+          "line": 158
         },
         {
           "name": "swipeMove",
@@ -6028,7 +6035,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 186
+          "line": 189
         },
         {
           "name": "swipeEnd",
@@ -6053,7 +6060,7 @@
           },
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 223
+          "line": 236
         },
         {
           "name": "swipeCancel",
@@ -6073,7 +6080,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/drawer_controller.js",
-          "line": 252
+          "line": 267
         }
       ],
       "constants": []
@@ -6542,7 +6549,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 114
+          "line": 115
         },
         {
           "name": "disconnect",
@@ -6554,7 +6561,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 150
+          "line": 155
         },
         {
           "name": "openValueChanged",
@@ -6574,7 +6581,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 173
+          "line": 178
         },
         {
           "name": "toggle",
@@ -6586,7 +6593,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 183
+          "line": 188
         },
         {
           "name": "triggerKeydown",
@@ -6606,7 +6613,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 196
+          "line": 201
         },
         {
           "name": "open",
@@ -6647,7 +6654,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 223
+          "line": 228
         },
         {
           "name": "close",
@@ -6681,7 +6688,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 237
+          "line": 242
         },
         {
           "name": "activate",
@@ -6701,7 +6708,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 251
+          "line": 256
         },
         {
           "name": "keydown",
@@ -6721,7 +6728,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 274
+          "line": 279
         },
         {
           "name": "subEnter",
@@ -6741,7 +6748,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 327
+          "line": 332
         },
         {
           "name": "subLeave",
@@ -6761,7 +6768,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 339
+          "line": 346
         },
         {
           "name": "openSub",
@@ -6781,7 +6788,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 352
+          "line": 361
         },
         {
           "name": "closeSub",
@@ -6801,7 +6808,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/menu_controller.js",
-          "line": 365
+          "line": 374
         }
       ],
       "constants": []
@@ -9013,7 +9020,7 @@
       "path": "poetry--core--slider",
       "type": "controller",
       "superclass": null,
-      "docstring": "The Slider machine - the only form control with real math. Three concerns,\nnothing else:\n\n1. THE VALUE MATH (the pure core, unit-tested exhaustively): snap to the\n   step grid with decimal-precision rounding (a 0.1 grid lands on\n   0.3, never 0.30000000000000004), clamp to\n   [min, max], and clamp against neighbor thumbs +- the min gap\n   (minStepsBetweenThumbs * step) so range thumbs can never cross.\n\n2. TWO INPUT PATHS feeding it: the APG keyboard map per thumb (arrows\n   +-step, Shift+Arrow / PageUp / PageDown +-step*10, Home/End to the\n   thumb's EFFECTIVE min/max) with the orientation x RTL x inverted\n   resolution - horizontal RTL swaps Left/Right only, inverted flips the\n   whole axis, both compose (rtl + inverted = ltr math); and pointer\n   capture on the root - pointerdown jumps the NEAREST thumb (ties to\n   the later index, so stacked thumbs stay separable), the track\n   box is read ONCE at pointerdown (no per-frame layout), pointermove\n   projects the value ABSOLUTELY from the pointer position (overshoot\n   past a neighbor clamps, never swaps), pointerup commits.\n\n3. THE DOM PROJECTION: aria-valuemin/max/now per role=slider thumb - the\n   range bounds are DYNAMIC (neighbor-clamped, rewritten on every\n   neighbor move: APG multithumb), the --slider-start/--slider-end\n   geometry vars consumed by the calc() rules, and one hidden native\n   input per thumb. poetry:slider:change fires per mutation; commit\n   (pointerup / each keydown) syncs the\n   hidden inputs + dispatches native input/change so Rails listeners get\n   one event per gesture, not per frame.\n\n**Targets**: `input`, `range`, `thumb`, `track`\n\n**Values**:\n- `min` (Number, default: 0): The lowest value of the track.\n- `max` (Number, default: 100): The highest value of the track.\n- `step` (Number, default: 1): The amount an arrow key changes a thumb by.\n- `value` (Array, default: []): The thumb values, one per thumb, in order.\n- `minStepsBetweenThumbs` (Number, default: 0): The least number of steps two thumbs keep between them.\n- `orientation` (String, default: \"horizontal\"): horizontal runs the track left to right; vertical runs it bottom to top.\n- `inverted` (Boolean, default: false): Whether the track runs in the opposite direction.\n\n**Events**: `poetry:slider:change`, `poetry:slider:commit`",
+      "docstring": "The Slider machine - the only form control with real math. Three concerns,\nnothing else:\n\n1. THE VALUE MATH (the pure core, unit-tested exhaustively): snap to the\n   step grid with decimal-precision rounding (a 0.1 grid lands on\n   0.3, never 0.30000000000000004), clamp to\n   [min, max], and clamp against neighbor thumbs +- the min gap\n   (minStepsBetweenThumbs * step) so range thumbs can never cross.\n\n2. TWO INPUT PATHS feeding it: the APG keyboard map per thumb (arrows\n   +-step, Shift+Arrow / PageUp / PageDown +-step*10, Home/End to the\n   thumb's EFFECTIVE min/max) with the orientation x RTL x inverted\n   resolution - horizontal RTL swaps Left/Right only, inverted flips the\n   whole axis, both compose (rtl + inverted = ltr math); and pointer\n   capture on the root - pointerdown jumps the NEAREST thumb (ties to\n   the later index, so stacked thumbs stay separable), the track\n   box is read ONCE at pointerdown (no per-frame layout), pointermove\n   projects the value ABSOLUTELY from the pointer position (overshoot\n   past a neighbor clamps, never swaps), pointerup or pointercancel commits.\n\n3. THE DOM PROJECTION: aria-valuemin/max/now per role=slider thumb - the\n   range bounds are DYNAMIC (neighbor-clamped, rewritten on every\n   neighbor move: APG multithumb), the --slider-start/--slider-end\n   geometry vars consumed by the calc() rules, and one hidden native\n   input per thumb. poetry:slider:change fires per mutation; commit\n   (pointerup / each keydown) syncs the\n   hidden inputs + dispatches native input/change so Rails listeners get\n   one event per gesture, not per frame.\n\n**Targets**: `input`, `range`, `thumb`, `track`\n\n**Values**:\n- `min` (Number, default: 0): The lowest value of the track.\n- `max` (Number, default: 100): The highest value of the track.\n- `step` (Number, default: 1): The amount an arrow key changes a thumb by.\n- `value` (Array, default: []): The thumb values, one per thumb, in order.\n- `minStepsBetweenThumbs` (Number, default: 0): The least number of steps two thumbs keep between them.\n- `orientation` (String, default: \"horizontal\"): horizontal runs the track left to right; vertical runs it bottom to top.\n- `inverted` (Boolean, default: false): Whether the track runs in the opposite direction.\n\n**Events**: `poetry:slider:change`, `poetry:slider:commit`",
       "examples": [],
       "file": "app/javascript/poetry/core/slider_controller.js",
       "methods": [
@@ -9086,7 +9093,7 @@
           "scope": "instance",
           "group": null,
           "signature": "pointerdown(event)",
-          "docstring": "The root's pointerdown action: jumps the NEAREST thumb to the pointer\n(ties to the later index), reads the track box once, and starts the\nwindow-level drag; pointerup commits.",
+          "docstring": "The root's pointerdown action: jumps the NEAREST thumb to the pointer\n(ties to the later index), reads the track box once, and starts the\nwindow-level drag; pointerup or pointercancel commits.",
           "params": [
             {
               "name": "event",
@@ -9119,7 +9126,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/slider_controller.js",
-          "line": 273
+          "line": 278
         }
       ],
       "constants": []

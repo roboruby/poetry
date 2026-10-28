@@ -146,7 +146,8 @@ Source (adapt freely - the sample content is meant to be replaced):
   <% shell.with_inset do %>
     <header class="flex h-14 shrink-0 items-center gap-2 border-b px-4 transition-[height] group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
       <%= poetry_sidebar_trigger %>
-      <%= poetry_separator(orientation: :vertical, class: "h-4") %>
+      <%# The header centers its items; the separator's own data-vertical:self-stretch would pin a fixed-height one to the top. %>
+      <%= poetry_separator(orientation: :vertical, class: "h-4 data-vertical:self-center") %>
       <%= poetry_breadcrumb do |crumb| %>
         <% crumb.with_item("Meridian", href: "/") %>
         <% crumb.with_item("Dashboard") %>
@@ -163,20 +164,21 @@ Source (adapt freely - the sample content is meant to be replaced):
           Export
         <% end %>
       </div>
+      <%# Grid items are min-width: auto like flex items: min-w-0 keeps a card with wide content (a chart, a table) inside its track. %>
       <div class="grid gap-4 md:grid-cols-3">
-        <%= poetry_card(title_tag: :h2) do |card| %>
+        <%= poetry_card(title_tag: :h2, class: "min-w-0") do |card| %>
           <% card.with_title { "Revenue" } %>
           <% card.with_description { "Last 30 days" } %>
           <div class="text-2xl font-semibold tabular-nums">$48,210</div>
           <p class="text-xs text-muted-foreground">+12.4% from the previous period</p>
         <% end %>
-        <%= poetry_card(title_tag: :h2) do |card| %>
+        <%= poetry_card(title_tag: :h2, class: "min-w-0") do |card| %>
           <% card.with_title { "Open orders" } %>
           <% card.with_description { "Awaiting fulfillment" } %>
           <div class="text-2xl font-semibold tabular-nums">42</div>
           <p class="text-xs text-muted-foreground">12 due before Friday</p>
         <% end %>
-        <%= poetry_card(title_tag: :h2) do |card| %>
+        <%= poetry_card(title_tag: :h2, class: "min-w-0") do |card| %>
           <% card.with_title { "On-time rate" } %>
           <% card.with_description { "Trailing quarter" } %>
           <div class="text-2xl font-semibold tabular-nums">98.2%</div>

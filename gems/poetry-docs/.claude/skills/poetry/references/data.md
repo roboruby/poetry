@@ -420,10 +420,10 @@ Prose styling for long-form and rendered-markdown content.
 Class: Poetry::Ui::Typeset::Component - BEM block `poetry-ui-typeset`.
 Content block REQUIRED (the rendered prose HTML) - a blockless call raises.
 - `preset:` (string) - Appends typeset-<preset> - a tiny class in the app's own CSS retuning the rhythm variables (e.g. "docs").
-- PART `typeset` - The prose container - every bare element inside is styled by the app-owned typeset.css; not-typeset (class or data attribute) opts a subtree out
+- PART `typeset` - The prose container - every bare element inside is styled by the app-owned typeset.css; components (data-slot) keep their own styles, and not-typeset (class or data attribute) opts a subtree out
 - RULE: Wrap RENDERED markdown / prose HTML (headings, paragraphs, lists, tables) - never app chrome; poetry components style themselves.
 - RULE: preset: "docs" appends typeset-docs - a preset is a tiny class in the app's own CSS setting --typeset-size/-leading/-flow (and font vars).
-- RULE: Opt an embedded component OUT of the prose styling with class: "not-typeset" - it covers the whole subtree.
+- RULE: Embedded poetry components keep their own styles - the prose rules skip anything with data-slot. Opt a plain-HTML subtree OUT with class: "not-typeset".
 - RULE: Wrap a wide table (or any wide block) in a typeset-scroll div inside the prose to scroll horizontally instead of compressing.
 
 

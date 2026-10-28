@@ -6,7 +6,7 @@
       "path": "@poetry/motion",
       "type": "module",
       "superclass": null,
-      "docstring": "@poetry/motion - poetry-motion's effects, behaviors and motion policy,\none source shipped over two channels: importmap-first (the engine pins\nthis tree) and this same tree as the npm package for bundler hosts.\n\nThe controllers register lazily: registerPoetryMotionControllers watches\nthe page for a poetry--motion--* identifier and imports that one\ncontroller the first time it appears, so a page without an effect loads\nnone of them, and a page with one loads only its own.",
+      "docstring": "@poetry/motion - poetry-motion's effects, behaviors and motion policy,\none source shipped over two channels: importmap-first (the engine pins\nthis tree) and this same tree as the npm package for bundler hosts.\n\nThe controllers register eagerly, as poetry-core's do: the entry imports\nall of them (about 6 KB gzipped together) and registers them at once, so\na press on an effect in the first moments after paint reaches a live\ncontroller. A lazily imported controller lost those presses: a click\nthat dispatched while its module was still in flight found nothing to\nhandle it. The animation engine and the kernels stay on demand through\nloadEngine(), loadConfetti() and loadGlobe().",
       "examples": [],
       "file": "app/javascript/poetry/motion/index.js",
       "methods": [
@@ -15,7 +15,7 @@
           "scope": "class",
           "group": null,
           "signature": "registerPoetryMotionControllers(application)",
-          "docstring": "The host one-liner: installs the motion policy and registers each\neffect controller on the host's Stimulus application the first time its\nidentifier appears in the page, now or after any later render.",
+          "docstring": "The host one-liner: installs the motion policy and registers every\neffect controller on the host's Stimulus application.",
           "params": [
             {
               "name": "application",
@@ -29,18 +29,18 @@
             "types": [
               "Promise<void>"
             ],
-            "text": "settles once the controllers already on the page are registered"
+            "text": "settled: the controllers are registered when it returns"
           },
           "examples": [],
           "file": "app/javascript/poetry/motion/index.js",
-          "line": 56
+          "line": 75
         }
       ],
       "constants": [
         {
           "name": "CONTROLLERS",
           "value": "{",
-          "docstring": "Each effect's identifier and the import that loads its controller, the\nmap registerPoetryMotionControllers loads from."
+          "docstring": "Each effect's identifier and its controller class, the map\nregisterPoetryMotionControllers registers."
         }
       ]
     },
