@@ -62,6 +62,9 @@ export default class RovingFocusController extends Controller {
    */
   keydown(event) {
     if (event.defaultPrevented) return // a nested group (an open menu level) already moved focus
+    // Ctrl/Alt/Meta + arrow belongs to the platform and assistive tech, not
+    // the group (Base UI's composite root ignores it the same way).
+    if (event.ctrlKey || event.altKey || event.metaKey) return
     if (this.#caretTrapped(event)) return // the caret owns this key inside a text control
 
     const items = this.#items()
@@ -73,6 +76,11 @@ export default class RovingFocusController extends Controller {
     if (nextIndex === null) return
 
     event.preventDefault() // a handled arrow must not also scroll the page
+    // An arrow with nowhere to go (a clamped edge, a lone item) leaves focus
+    // where it is, so it must not re-enter that item: a radio group checks
+    // on entry and would select it.
+    if (event.target instanceof Element && items[nextIndex] === event.target.closest(COLLECTION_ITEM_SELECTOR)) return
+
     this.#focusItem(items[nextIndex], items)
   }
 

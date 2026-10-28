@@ -26,6 +26,7 @@
 
 ### Fixed
 
+- Roving focus (Tabs, Toolbar, ToggleGroup, RadioGroup, TagGroup, the menus, Select) leaves Ctrl, Alt and Meta + arrow to the platform and assistive tech, as Base UI's composites do, and an arrow with nowhere to go (a clamped edge, a lone enabled item) no longer re-enters the focused item, so a radio group no longer checks an item on an arrow that could not move (Base UI #5643).
 - The vendored shadcn utilities (`vendor/shadcn-tailwind/tailwind.css`, the host's `poetry/utilities.css`) move to shadcn@4.23.0, where the shimmer's reduced-motion kill rides its variants: a shimmer applied through a variant, as Attachment's uploading and processing titles do, now stops for users who ask for reduced motion. Re-run `poetry:install` to take it.
 - `poetry:check` no longer crashes on an attribute whose name is ERB, and a positional argument stands it down on required options as on content blocks (`poetry_typewriter("Hello")` sets `text:`).
 - `Icons::Vendor` leaves colours inside a mask or clip path alone when it repaints to currentColor: there white and black mean shown and hidden.
