@@ -1,13 +1,19 @@
 <%# The panel animates its height both ways: the controller measures it into
     --collapsible-panel-height while it opens or closes and sets it back to
-    auto at rest, so content that grows later is never clipped. %>
-<div class="w-full max-w-md">
-  <%= poetry_collapsible(content_class: "h-(--collapsible-panel-height) overflow-hidden transition-[height] duration-200 ease-out data-starting-style:h-0 data-ending-style:h-0") do |collapsible| %>
-    <% collapsible.with_trigger(variant: :outline, class: "w-full justify-between [&[aria-expanded=true]>svg]:rotate-180") do %>
-      Release notes
-      <%= poetry_icon(name: :"chevron-down", class: "size-4 text-muted-foreground transition-transform") %>
+    auto at rest, so content that grows later is never clipped. The heading
+    row and the panel share one px-4 inset, so their text lines up in every
+    theme (the trigger is an icon button beside the heading). %>
+<div class="w-full max-w-sm">
+  <%= poetry_collapsible(class: "flex flex-col gap-2", content_class: "h-(--collapsible-panel-height) overflow-hidden transition-[height] duration-200 ease-out data-starting-style:h-0 data-ending-style:h-0") do |collapsible| %>
+    <% collapsible.with_trigger(compose: true) do |wiring| %>
+      <div class="flex items-center justify-between gap-4 px-4">
+        <h4 class="text-sm font-semibold">Release notes</h4>
+        <%= poetry_button(variant: :ghost, size: :icon, label: "Toggle release notes", class: "size-8", **wiring) do %>
+          <%= poetry_icon(name: :"chevrons-up-down") %>
+        <% end %>
+      </div>
     <% end %>
-    <div class="space-y-2 pt-3 text-sm text-muted-foreground">
+    <div class="flex flex-col gap-2 px-4 pt-1 text-sm text-muted-foreground">
       <p>Collapsible measures its panel and hands the size to CSS.</p>
       <p>A height transition reads it, from 0 on the way in and back to 0 on the way out.</p>
       <p>At rest the size is auto again.</p>
