@@ -384,9 +384,11 @@ export default class SelectController extends Controller {
     this.#overlay.show(reason, { seed })
   }
 
-  // The open microtask: focus the selected option, align in aligned
-  // mode, and settle the scroll buttons.
+  // The open microtask: drop a closed-trigger search (its live buffer
+  // would swallow the first Space as "extend the search"), focus the
+  // selected option, align in aligned mode, and settle the scroll buttons.
   #opened(content) {
+    this.#typeahead.reset()
     this.#focusSelected(content)
     if (this.#alignEligible()) this.#alignWithTrigger(content)
     this.syncScrollButtons()

@@ -625,7 +625,12 @@ export default class MenuController extends Controller {
       })
     }
 
-    if (focusTrigger) subTrigger.focus()
+    if (focusTrigger) {
+      // One buffer serves every level: a search typed in the sub must not
+      // swallow the parent's next Space as "extend the search".
+      this.#typeahead.reset()
+      subTrigger.focus()
+    }
   }
 
   // --- submenu hover intent ---

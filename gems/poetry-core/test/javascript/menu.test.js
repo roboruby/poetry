@@ -627,6 +627,21 @@ describe("poetry--core--menu", () => {
       expect(document.activeElement).toBe(el("sub-a-trigger"))
     })
 
+    it("closing a sub drops its search: the parent's next Space reopens it (Base UI #5816)", async () => {
+      await mount()
+      await openWithKey("ArrowDown")
+      el("sub-a-trigger").focus()
+      press(el("sub-a-trigger"), "ArrowRight")
+
+      press(el("sub-a-email"), "e") // a live search inside the sub
+      press(document.activeElement, "ArrowLeft")
+      expect(document.activeElement).toBe(el("sub-a-trigger"))
+
+      press(el("sub-a-trigger"), " ")
+
+      expect(el("sub-a-content").hasAttribute("data-open")).toBe(true)
+    })
+
     it("RTL swaps the open/close arrows", async () => {
       await mount({ dir: "rtl" })
       await openWithKey("ArrowDown")
