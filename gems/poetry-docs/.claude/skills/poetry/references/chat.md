@@ -92,4 +92,26 @@ Class: Poetry::Ui::MessageScroller::Component - BEM block `poetry-ui-message_scr
 - RULE: History loads PREPEND into the content element - the controller preserves the reading position.
 - RULE: Never nest a second scroll container inside the viewport.
 
+## trace (`poetry_trace`)
+
+Class: Poetry::Ui::Trace::Component - BEM block `poetry-ui-trace`.
+Slot REQUIRED: with_step (at least one step (with_step(title, ...))) - a call without it raises.
+Slots: steps (One step: the title (positional), optional icon:, description:, status: (:running, :error, :pending), href: (a link), and open: for a step with detail - the detail is the block, which makes the step a disclosure.; many; with_step yields NOTHING to the block - no |param|, write content directly).
+- PART `trace` - The column of steps
+- PART `trace-line` - One step's row - its icon, title and description | states: data-status=running|error|pending (status: - the step's state (absent when done))
+- PART `trace-icon` - The step's glyph, and the disclosure's chevron (aria-hidden)
+- PART `trace-title` - The step's words - shimmers while running
+- PART `trace-description` - The muted trailing note - a duration, a count
+- PART `trace-collapsible` - A step with detail - the state controller's root | states: data-open (the detail is shown (server-rendered from open:; the controller flips the pair)); data-closed (the detail is hidden)
+- PART `trace-collapsible-trigger` - The disclosure button around the step's line - mirrors aria-expanded
+- PART `trace-collapsible-content` - The detail panel - its height animates over the measured --collapsible-panel-height | states: data-open (the detail is open or entering); data-closed (the detail is closed or animating out (hidden lands after the exit)); data-starting-style (the first painted frame of an entry (controller-written)); data-ending-style (the whole exit, until hidden lands (controller-written))
+- PART `trace-collapsible-content-inner` - The detail itself - indented on the theme's rail
+- WIRING collapsible: `poetry--core--state` registers
+- WIRING collapsible_trigger: `poetry--core--state` actions toggle on click; targets trigger
+- WIRING collapsible_content: `poetry--core--state` targets content
+- RULE: The steps an agent takes (reasoning, tool calls, searches, a plan) are a Trace - never a hand-rolled column of muted rows.
+- RULE: with_step(title, icon:, description:, status:) is one line; a block makes it a disclosure that reveals the detail (tool output in a poetry_code_block size: :sm, a reasoning summary).
+- RULE: Map a tool call's state to status: and to the title's words: running -> status: :running, "Running ..."; failed -> status: :error, "Failed to run ..."; waiting -> status: :pending; done -> no status, "Ran ...". The title is what assistive tech reads.
+- RULE: href: makes a step a link (a source, a file the agent changed).
+
 

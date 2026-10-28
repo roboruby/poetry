@@ -2806,6 +2806,31 @@
           "examples": [],
           "file": "app/javascript/poetry/core/helpers/presence.js",
           "line": 126
+        },
+        {
+          "name": "presenceMotionMs",
+          "scope": "class",
+          "group": null,
+          "signature": "presenceMotionMs(element)",
+          "docstring": "How long the element's declared motion runs (ms): the longer of its\nanimation and transition, delays included, plus the end-event grace;\n0 when it declares none.",
+          "params": [
+            {
+              "name": "element",
+              "types": [
+                "HTMLElement"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "number"
+            ],
+            "text": "the wait before the motion has surely finished"
+          },
+          "examples": [],
+          "file": "app/javascript/poetry/core/helpers/presence.js",
+          "line": 194
         }
       ],
       "constants": []
@@ -9135,7 +9160,7 @@
       "path": "poetry--core--state",
       "type": "controller",
       "superclass": null,
-      "docstring": "The controllable-state controller: seeds the data-open/\ndata-closed pair from a Value default when no other layer owns it, and\nexposes toggle/open/close actions. \"Controlled vs uncontrolled\" is just which layer wrote the\nattribute - a server re-render, the URL, an Outlet, or this default -\nthe controller code is identical either way.\n\nOptional reflection targets (the Collapsible contract): a trigger\ntarget mirrors aria-expanded; a content target rides the presence\nhelper (the pair flip deferred through animationend, hidden applied\nonly after the exit animation finishes).\n\n**Targets**: `content`, `trigger`\n\n**Values**:\n- `state` (String, default: \"closed\"): The state seeded on the element when it carries none: open or closed.",
+      "docstring": "The controllable-state controller: seeds the data-open/\ndata-closed pair from a Value default when no other layer owns it, and\nexposes toggle/open/close actions. \"Controlled vs uncontrolled\" is just which layer wrote the\nattribute - a server re-render, the URL, an Outlet, or this default -\nthe controller code is identical either way.\n\nOptional reflection targets (the Collapsible contract): a trigger\ntarget mirrors aria-expanded; a content target rides the presence\nhelper (the pair flip deferred through animationend, hidden applied\nonly after the exit animation finishes) and carries the measured\n--collapsible-panel-height / --collapsible-panel-width while it opens\nor closes (auto at rest), so a height transition can animate it.\n\n**Targets**: `content`, `trigger`\n\n**Values**:\n- `state` (String, default: \"closed\"): The state seeded on the element when it carries none: open or closed.",
       "examples": [],
       "file": "app/javascript/poetry/core/state_controller.js",
       "methods": [
@@ -9149,7 +9174,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/state_controller.js",
-          "line": 28
+          "line": 37
         },
         {
           "name": "disconnect",
@@ -9161,7 +9186,7 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/state_controller.js",
-          "line": 34
+          "line": 44
         },
         {
           "name": "toggle",
@@ -9173,31 +9198,31 @@
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/state_controller.js",
-          "line": 39
+          "line": 50
         },
         {
           "name": "open",
           "scope": "instance",
           "group": null,
           "signature": "open()",
-          "docstring": "Opens: flips the pair, unhides the content target (when present) and\nruns its entry presence, mirrors aria-expanded onto the trigger.",
+          "docstring": "Opens: flips the pair, unhides the content target (when present),\nmeasures it into the size vars and runs its entry presence, then\nreturns the vars to auto once the entry settles; mirrors\naria-expanded onto the trigger.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/state_controller.js",
-          "line": 47
+          "line": 60
         },
         {
           "name": "close",
           "scope": "instance",
           "group": null,
           "signature": "close()",
-          "docstring": "Closes: flips the pair and holds the content target through its exit\nanimation before hiding it (the presence contract).",
+          "docstring": "Closes: flips the pair and holds the content target through its exit\nanimation before hiding it (the presence contract), the exit starting\nfrom the measured size.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/core/state_controller.js",
-          "line": 61
+          "line": 87
         }
       ],
       "constants": []

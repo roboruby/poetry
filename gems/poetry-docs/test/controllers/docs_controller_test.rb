@@ -226,7 +226,7 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2[id=?]", "upgrade" # the runbook anchor feeds search
     assert_select "h2[id=?]", "ownership"
     assert_select "[data-slot=code-block]", minimum: 4 # Gemfile/install/upgrade/diff snippets
-    assert_select "code.font-mono", text: /poetry:diff/
+    assert_select "[data-slot=code-block-code]", text: /poetry:diff/
   end
 
   test "a block page renders the real gem template and its exact source" do

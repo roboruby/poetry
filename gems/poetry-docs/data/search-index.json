@@ -2262,10 +2262,28 @@
     "path": "/components/code-block#default"
   },
   {
+    "title": "Destructive",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#destructive"
+  },
+  {
+    "title": "Diff",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#diff"
+  },
+  {
     "title": "Numbered and highlighted",
     "page": "Code Block",
     "section": "components",
     "path": "/components/code-block#numbered-and-highlighted"
+  },
+  {
+    "title": "With header",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#with-header"
   },
   {
     "title": "Wiring",
@@ -2290,6 +2308,12 @@
     "page": "Collapsible",
     "section": "components",
     "path": "/components/collapsible#default"
+  },
+  {
+    "title": "Animated",
+    "page": "Collapsible",
+    "section": "components",
+    "path": "/components/collapsible#animated"
   },
   {
     "title": "File tree",
@@ -5710,6 +5734,48 @@
     "page": "Tooltip",
     "section": "components",
     "path": "/components/tooltip#wiring"
+  },
+  {
+    "title": "Trace",
+    "page": "Trace",
+    "section": "components",
+    "path": "/components/trace"
+  },
+  {
+    "title": "Installation",
+    "page": "Trace",
+    "section": "components",
+    "path": "/components/trace#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Trace",
+    "section": "components",
+    "path": "/components/trace#default"
+  },
+  {
+    "title": "Links",
+    "page": "Trace",
+    "section": "components",
+    "path": "/components/trace#links"
+  },
+  {
+    "title": "Tool states",
+    "page": "Trace",
+    "section": "components",
+    "path": "/components/trace#tool-states"
+  },
+  {
+    "title": "With detail",
+    "page": "Trace",
+    "section": "components",
+    "path": "/components/trace#with-detail"
+  },
+  {
+    "title": "Wiring",
+    "page": "Trace",
+    "section": "components",
+    "path": "/components/trace#wiring"
   },
   {
     "title": "Tree",

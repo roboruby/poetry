@@ -9,7 +9,7 @@ description: >-
 
 # poetry - component usage
 
-Generated from the poetry registry (88 components + 13 chart components + 21 motion effects + 1 island components + 8 blocks). After updating
+Generated from the poetry registry (89 components + 13 chart components + 21 motion effects + 1 island components + 8 blocks). After updating
 poetry gems, regenerate with `bin/rails g poetry:skill`.
 
 ## Guardrails
@@ -66,7 +66,7 @@ lines) for its components:
 - **feedback** (`references/feedback.md`): alert, deferred, progress, skeleton, spinner, toast, toast_trigger, toaster
 - **navigation** (`references/navigation.md`): breadcrumb, navigation_menu, pagination, sidebar, tabs
 - **foundations** (`references/foundations.md`): icon, kbd, link, marker, separator
-- **chat** (`references/chat.md`): attachment, bubble, message, message_scroller
+- **chat** (`references/chat.md`): attachment, bubble, message, message_scroller, trace
 - **layout** (`references/layout.md`): aspect_ratio, resizable, scroll_area
 - **blocks** (`references/blocks.md`): action-bar, app-shell, data-index, destructive-panel, page-header, section-card, stepper, top-nav
 - **charts** (`references/charts.md`): adapter_chart, area_chart, bar_chart, composed_chart, container, legend_content, line_chart, pie_chart, radar_chart, radial_bar_chart, scatter_chart, tooltip_content, tooltip_layer

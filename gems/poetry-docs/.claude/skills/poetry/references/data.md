@@ -137,21 +137,36 @@ Class: Poetry::Ui::ClipboardText::Component - BEM block `poetry-ui-clipboard_tex
 A syntax-highlighted code panel with a copy button and optional line numbers.
 
 Class: Poetry::Ui::CodeBlock::Component - BEM block `poetry-ui-code_block`.
+- `variant:` (symbol) - one of default|destructive, default "default", required - The intent axis; :destructive frames an error's output.
 - `code:` (string) - required - The source text to highlight - required.
-- `copy:` (boolean) - default true - Renders the copy button in the panel's corner.
-- `highlight_lines:` () - 1-based line numbers to tint via the theme's highlight hook.
-- `label:` (string) - The scroll region's accessible name; defaults to the localized "Code" (a focusable scrollable region must be named - axe).
+- `copy:` (boolean) - default true - Renders the copy button.
+- `diff:` (boolean) - default false - Reads the code as a unified diff: + and - lines render added and removed, their marker drawn by the theme; copy keeps the markers.
+- `highlight_lines:` () - 1-based line positions to tint via the theme's highlighted line.
+- `label:` (string) - The scroll region's accessible name; defaults to the title when there is one, else the localized "Code" (a focusable scrollable region must be named - axe).
 - `language:` (string) - default "text" - The lexer name ("ruby", "js", ...); unknown languages fall back to plain text.
 - `line_numbers:` (boolean) - default false - Renders CSS-counter line numbers - never part of selection or copied text.
-- PART `code-block` - Root - the syntax-palette surface (cn-code-block) | states: data-language (always - the lexer name, a styling/tooling hook); data-line-numbers (line_numbers: - turns on the ::before CSS counters); data-copied (copy: only - stamped for a beat after a successful copy (the clipboard-text engine))
-- PART `code-block-pre` - The scroll container - tabindex 0 + role region + label (a scrollable region must be keyboard-reachable and named)
-- PART `code-block-code` - The code element - rouge's .line/.hll spans and the seven --syntax-* token maps live under it; the copy affordance reads ITS textContent
-- WIRING root (if copy): `poetry--core--clipboard-text` registers; values message
+- `size:` (symbol) - one of default|sm, default "default" - The density axis; :sm tightens the padding and the type.
+- `start_line:` (integer) - default 1 - The first line's number when line_numbers: is on.
+- `wrap:` (boolean) - default false - Wraps long lines instead of scrolling sideways.
+Slots: title (The header's title - a file name or a label; opens the header, and the copy button moves into it.), actions (More actions beside the copy button (in the header, or floating in the corner).), footer (A row below the code - a caption, a status, a link.).
+- PART `code-block` - Root - the panel (cn-code-block plus its variant) | states: data-variant=default|destructive (always - the resolved variant); data-size=default|sm (always - the resolved size); data-language (always - the lexer name, a styling/tooling hook); data-copied (copy: only - stamped for a beat after a successful copy (the clipboard-text engine))
+- PART `code-block-header` - The header row - the title, then the actions (rendered with a title)
+- PART `code-block-title` - The header's title (with_title)
+- PART `code-block-actions` - The actions - in the header row, or floating in the corner without one
+- PART `code-block-copy-button` - The copy button (copy:) - a ghost Button over the clipboard-text engine | states: data-variant (always - the composed Button's variant axis); data-size (always - the composed Button's size axis)
+- PART `code-block-content` - The scroll container (a pre) - tabindex 0 + role region + its name (a scrollable region must be keyboard-reachable and named) | states: data-wrap (wrap: - long lines wrap instead of scrolling); data-numbered (line_numbers: - each line shows its CSS-counter number)
+- PART `code-block-code` - The code element - the token map reads the theme's seven --syntax-* vars; the copy affordance reads ITS textContent
+- PART `code-block-line` - One source line - the numbered row and the tint | states: data-variant=default|added|removed|highlighted (always - the line's variant)
+- PART `code-block-line-content` - The line's text
+- PART `code-block-footer` - The row below the code (with_footer)
+- WIRING root (if copy): `poetry--core--clipboard-text` registers; values message, text
 - WIRING source (if copy): `poetry--core--clipboard-text` targets source
 - WIRING copy_button: `poetry--core--clipboard-text` actions copy on click
 - RULE: Blocks of code are a CodeBlock (poetry_code_block) - never a hand-rolled pre/code with utility classes; the syntax palette, line counters, and copy affordance ride it.
 - RULE: Highlighting needs `gem "rouge"` in the host Gemfile - without it the block renders plain (same markup, no colors). Inline code stays plain <code> typography.
-- RULE: highlight_lines: takes 1-based line numbers; line numbers are CSS counters and never pollute copied text.
+- RULE: highlight_lines: takes 1-based line positions; line numbers are CSS counters and never pollute copied text.
+- RULE: diff: true reads a unified diff: a leading + or - marks the line added or removed (the theme draws the marker), and the rest of the line highlights in language:.
+- RULE: with_title { "path/to/file.rb" } opens a header; the copy button moves into it.
 
 ## collapsible (`poetry_collapsible`)
 
@@ -160,11 +175,12 @@ An interactive element that expands and collapses a section of content.
 Class: Poetry::Ui::Collapsible::Component - BEM block `poetry-ui-collapsible`.
 Content block REQUIRED (the disclosed panel body) - a blockless call raises.
 Slot REQUIRED: with_trigger (the disclosure control) - a call without it raises.
+- `content_class:` (string) - Class merge seam for the panel - e.g. the height animation over --collapsible-panel-height. Root-level class: styles the root, not the panel.
 - `open:` (boolean) - default false - The server-rendered initial state; the trigger toggles it client-side.
 Slots: trigger (The disclosure control - a composed Button (keywords are Button props), wired for you (aria-expanded, aria-controls).; takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly).
 - PART `collapsible` - The disclosure root - the state controller flips the pair here | states: data-open (expanded (server-rendered from open:; the controller flips the pair at runtime)); data-closed (collapsed (the server-rendered default))
 - PART `collapsible-trigger` - The disclosure button - a composed Button - mirrors aria-expanded | states: data-panel-open (its content is open (controller-written; absent while closed)); data-variant (always - the composed Button's variant axis); data-size (always - the composed Button's size axis)
-- PART `collapsible-content` - The disclosure panel - stays in the DOM when closed (hidden) and rides the presence helper on exit | states: data-open (content is open or entering); data-closed (content is closed or animating out (hidden lands after the exit finishes))
+- PART `collapsible-content` - The disclosure panel - stays in the DOM when closed (hidden) and rides the presence helper on entry and exit | states: data-open (content is open or entering); data-closed (content is closed or animating out (hidden lands after the exit finishes)); data-starting-style (the first painted frame of an entry (controller-written)); data-ending-style (the whole exit, until hidden lands (controller-written)) | vars: --collapsible-panel-height (the measured panel height while it opens or closes, auto at rest (controller-written)); --collapsible-panel-width (the measured panel width while it opens or closes, auto at rest (controller-written))
 - WIRING root: `poetry--core--state` registers
 - WIRING trigger: `poetry--core--state` actions toggle on click; targets trigger
 - WIRING content: `poetry--core--state` targets content
@@ -173,6 +189,7 @@ Slots: trigger (The disclosure control - a composed Button (keywords are Button 
 - RULE: Server-render the initial state via open: - never toggle data-open/data-closed by hand.
 - RULE: Content stays in the DOM when closed (hidden) - do not conditionally render it.
 - RULE: For URL-controlled disclosure without JS, render open: from params - the same markup serves both.
+- RULE: To animate the panel's height, pass content_class: "h-(--collapsible-panel-height) overflow-hidden transition-[height] data-starting-style:h-0 data-ending-style:h-0" - the controller measures the panel into --collapsible-panel-height while it opens or closes and sets it back to auto at rest.
 
 ## data_table (`poetry_data_table`)
 
