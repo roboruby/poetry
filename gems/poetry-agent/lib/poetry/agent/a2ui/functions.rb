@@ -40,6 +40,10 @@ module Poetry
         EMAIL_FAILURE = { "valid" => false, "code" => "INVALID_EMAIL",
                           "message" => "Please enter a valid email address (e.g. user@example.com).",
                           "severity" => "error" }.freeze
+        # JSON Schema's types, for a declared parameter's `type`.
+        TYPES = { "string" => String, "boolean" => [TrueClass, FalseClass], "number" => Numeric, "array" => Array,
+                  "object" => Hash }.freeze
+
         # The schemes `openUrl` opens.
         URL_SCHEMES = %w[http https mailto tel].freeze
         # Currency symbols (and fraction digits) by ISO 4217 code; other
@@ -140,6 +144,13 @@ module Poetry
           !definition.nil? && definition.callers != "rendererOnly"
         end
 
+        # Whether a declared function needs a user's gesture (an agent's call never is one).
+        # @param name [String]
+        # @return [Boolean]
+        def activation?(name)
+          @definitions[name]&.activation == true
+        end
+
         # The declared function names.
         # @return [Array<String>] the declared names
         def names
@@ -164,6 +175,9 @@ module Poetry
           definition = @definitions[name] or raise Error, "unknown function #{name.inspect}"
           missing = definition.required - args.keys
           raise Error, "#{name}: missing #{missing.join(", ")}" if missing.any?
+
+          mistyped = definition.params.find { |param, schema| !args[param].nil? && !typed?(args[param], schema) }
+          raise Error, "Invalid argument '#{mistyped.first}' for #{name}: expected #{mistyped.last["type"]}" if mistyped
 
           definition.impl.call(args, evaluator)
         end
@@ -193,6 +207,16 @@ module Poetry
         end
 
         private
+
+        # Whether a resolved argument has its parameter's declared type (a
+        # parameter without one takes anything).
+        def typed?(value, schema)
+          type = schema.is_a?(Hash) ? schema["type"] : nil
+          return value.is_a?(Integer) || (value.is_a?(Float) && (value % 1).zero?) if type == "integer"
+          return true unless TYPES.key?(type)
+
+          Array(TYPES[type]).any? { |klass| value.is_a?(klass) }
+        end
 
         # A function's argument schema: its params as properties, the required ones listed.
         def arguments_schema(definition)

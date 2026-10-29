@@ -21,6 +21,8 @@ module Poetry
       class Evaluator
         # Why a call to another `@` name fails: the namespace is the system's.
         SYSTEM_FUNCTIONS = "the @ namespace holds system functions, and @index is the only one"
+        # Why `@index` fails outside a template.
+        OUTSIDE_TEMPLATE = "@index function can only be evaluated inside a collection template iteration scope."
 
         # The surface whose data model the evaluator reads.
         # @return [Surface]
@@ -143,7 +145,7 @@ module Poetry
 
         # The item index with the offset argument applied; raises outside a template.
         def index_of(args)
-          position = index or raise Functions::Error, "@index is only available inside a template"
+          position = index or raise Functions::Error, OUTSIDE_TEMPLATE
 
           position + (Functions.number(args["offset"]) || 0)
         end

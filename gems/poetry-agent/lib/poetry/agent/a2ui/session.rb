@@ -92,14 +92,23 @@ module Poetry
         # {#errors} and return no ids.
         #
         # @param message [Hash]
+        # @param user_activated [Boolean] whether the message answers a user's
+        #   gesture, so an agent's `callRendererFunction` may run a function
+        #   that needs one (`openUrl`); a server-side renderer cannot see the
+        #   gesture, so the host says so
         # @return [Array<String>]
-        def apply(message)
+        def apply(message, user_activated: false)
           return reject("INVALID_MESSAGE", "message must be an object") unless message.is_a?(Hash)
 
           dialect = message_dialect(message) or return []
           key = message_key(message, dialect) or return []
           body = message[key]
           return reject("INVALID_MESSAGE", "#{key} must be an object", dialect: dialect) unless body.is_a?(Hash)
+
+          if key == "callRendererFunction"
+            return apply_call_renderer_function(body, dialect,
+                                                user_activated: user_activated)
+          end
 
           send(:"apply_#{key.gsub(/([A-Z])/) { "_#{::Regexp.last_match(1).downcase}" }}", body, dialect)
         end
@@ -183,7 +192,7 @@ module Poetry
           version = message["version"]
           return reject("INVALID_MESSAGE", "Missing required version field") && nil if version.nil?
 
-          Dialect.for(version) || (reject("INVALID_MESSAGE", "unsupported version #{version.inspect}") && nil)
+          Dialect.for(version) || (reject("INVALID_MESSAGE", "Unsupported protocol version '#{version}'") && nil)
         end
 
         # The one operation key of a message for its version, or nil after rejecting a malformed one.
@@ -192,8 +201,12 @@ module Poetry
           keys = allowed & message.keys
           return keys.first if keys.length == 1
 
-          reject("INVALID_MESSAGE", "a #{dialect.version} message must carry exactly one of #{allowed.join(", ")}",
-                 dialect: dialect)
+          other = (message.keys - %w[version]).first
+          problem = if keys.length > 1 then "Message contains multiple conflicting update actions"
+                    elsif other then "action '#{other}' is not supported in protocol version #{dialect.version}"
+                    else "Message contains no update action"
+                    end
+          reject("INVALID_MESSAGE", problem, dialect: dialect)
           nil
         end
 
@@ -204,10 +217,11 @@ module Poetry
         def apply_create_surface(body, dialect)
           surface_id = body["surfaceId"]
           unless surface_id.is_a?(String)
-            return reject("INVALID_MESSAGE", "createSurface.surfaceId is required", dialect: dialect)
+            return reject("INVALID_MESSAGE", "surfaceId must be a string",
+                          dialect: dialect)
           end
           if @surfaces[surface_id]
-            return reject("DUPLICATE_SURFACE", "surface #{surface_id} already exists",
+            return reject("DUPLICATE_SURFACE", "Surface #{surface_id} already exists.",
                           surface_id)
           end
 
@@ -254,44 +268,76 @@ module Poetry
           reject("DATA_ERROR", "updateDataModel #{body["path"].inspect}: #{e.message}", surface.id)
         end
 
-        # Deletes a surface from a deleteSurface body.
+        # Deletes a surface from a deleteSurface body; an unknown one is already gone.
         def apply_delete_surface(body, dialect)
+          return [] unless @surfaces.key?(body["surfaceId"])
+
           surface = find(body, "deleteSurface", dialect) or return []
           @surfaces.delete(surface.id)
           @deleted << surface.id
           [surface.id]
         end
 
-        # An agent may invoke a function its catalog admits (`agentOnly` or
-        # `rendererOrAgent`); the value comes back as a
-        # `rendererFunctionResponse`, anything else as the spec's error.
-        def apply_call_renderer_function(body, dialect)
-          call = body["callFunction"].is_a?(Hash) ? body["callFunction"] : {}
-          name = dialect.call_name(call).to_s
-          catalog = catalog_for(call["catalogId"])
-          unless catalog.functions.agent_callable?(name)
-            return refuse_call(body, "function #{name.inspect} is not invocable by an agent", dialect)
+        # An agent may invoke a function the catalog it names admits
+        # (`agentOnly` or `rendererOrAgent`). The answer is always a
+        # `rendererFunctionResponse`: the value, or an error inside it
+        # (`INVALID_FUNCTION_CALL` for a call the renderer refuses,
+        # `EXECUTION_ERROR` for one that raises). A message without a function
+        # call or its catalogId is rejected outright.
+        def apply_call_renderer_function(body, dialect, user_activated:)
+          call = body["callFunction"]
+          unless call.is_a?(Hash)
+            return reject("INVALID_MESSAGE", "callRendererFunction.callFunction is required",
+                          dialect: dialect)
+          end
+          unless call["catalogId"].is_a?(String)
+            return reject("INVALID_MESSAGE", "callRendererFunction.callFunction.catalogId is required",
+                          dialect: dialect)
           end
 
+          name = dialect.call_name(call).to_s
+          catalog, refusal = rpc_target(call["catalogId"], name, dialect, user_activated)
+          return answer(body, dialect, error: refusal) if refusal
+
           evaluator = Evaluator.new(Surface.new(id: "callRendererFunction", catalog: catalog, dialect: dialect))
-          value = catalog.functions.call(name, evaluator.argument(call["args"] || {}), evaluator)
-          @responses << { "version" => dialect.version,
-                          "rendererFunctionResponse" => { "functionCallId" => body["functionCallId"],
-                                                          "value" => value } }
-          []
+          answer(body, dialect, value: catalog.functions.call(name, evaluator.argument(call["args"] || {}), evaluator))
         rescue Functions::Error, Expression::SyntaxError => e
-          refuse_call(body, e.message, dialect)
+          answer(body, dialect, error: { "code" => "INVALID_FUNCTION_CALL", "message" => e.message })
         rescue StandardError => e
           # A host function's own failure: the agent learns only that it failed.
-          refuse_call(body, "#{name}: an error occurred during function execution (#{e.class})", dialect,
-                      code: "EXECUTION_ERROR")
+          answer(body, dialect, error: { "code" => "EXECUTION_ERROR",
+                                         "message" => "An error occurred during function execution (#{e.class})." })
         end
 
-        # Records a function call error and changes nothing.
-        def refuse_call(body, message, dialect, code: "INVALID_FUNCTION_CALL")
-          error = { "code" => code, "message" => message }
-          error["functionCallId"] = body["functionCallId"] if body["functionCallId"]
-          @errors << { "version" => dialect.version, "error" => error }
+        # The catalog an agent's call runs in, or the refusal: no such catalog
+        # (there is no fallback), one built for another version, no such
+        # function, one the agent may not call, or one that needs a user's
+        # gesture the message does not answer.
+        def rpc_target(catalog_id, name, dialect, user_activated)
+          catalog = @catalogs[catalog_id]
+          refusal = if catalog.nil? then "Catalog not found: #{catalog_id}"
+                    elsif !catalog_dialect(catalog).compatible?(dialect)
+                      "Catalog '#{catalog_id}' specification version (#{catalog_dialect(catalog).version}) " \
+                        "does not match message protocol version (#{dialect.version})."
+                    elsif !catalog.functions.declared?(name) then "Function not found: #{name}"
+                    elsif !catalog.functions.agent_callable?(name)
+                      "Function '#{name}' is not invocable by an agent."
+                    elsif catalog.functions.activation?(name) && !user_activated
+                      "Function '#{name}' requires user activation context to execute."
+                    end
+          [catalog, refusal && { "code" => "INVALID_FUNCTION_CALL", "message" => refusal }]
+        end
+
+        # The protocol version a catalog binding is built for (v1.0 when it does not say).
+        def catalog_dialect(catalog)
+          catalog.respond_to?(:dialect) ? catalog.dialect : Dialect::V1_0
+        end
+
+        # Records the response to an agent's call: its value or its error.
+        def answer(body, dialect, value: nil, error: nil)
+          response = { "functionCallId" => body["functionCallId"] }
+          error ? response["error"] = error : response["value"] = value
+          @responses << { "version" => dialect.version, "rendererFunctionResponse" => response }
           []
         end
 
@@ -306,7 +352,7 @@ module Poetry
           surface_id = body["surfaceId"]
           surface = surface_id.is_a?(String) && @surfaces[surface_id]
           unless surface
-            reject("UNKNOWN_SURFACE", "#{key}: no surface #{surface_id.inspect}", surface_id, dialect: dialect)
+            reject("UNKNOWN_SURFACE", "Surface not found for message: #{surface_id}", surface_id, dialect: dialect)
             return
           end
           return surface if surface.dialect.compatible?(dialect)

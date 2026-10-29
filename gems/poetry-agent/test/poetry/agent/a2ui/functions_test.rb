@@ -197,7 +197,7 @@ class FunctionsTest < Minitest::Test
     assert_equal "#3", evaluator(scope: "/rows/2").interpolate("#${@index(offset: 1)}")
     assert_equal 2, evaluator(scope: "/rows/2").call("@index", {})
     assert_equal "", evaluator(errors: errors).interpolate("${@index()}")
-    assert_match(/only available inside a template/, errors.first)
+    assert_match(/can only be evaluated inside a collection template iteration scope/, errors.first)
   end
 
   def test_malformed_interpolation_warns_and_renders_nothing

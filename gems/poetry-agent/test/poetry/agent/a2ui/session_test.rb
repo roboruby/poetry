@@ -118,21 +118,27 @@ class SessionTest < Minitest::Test
     assert_equal "/components/a", error["path"]
   end
 
-  def test_renderer_only_functions_are_refused_to_agents
+  def response_error(session) = session.responses.last.dig("rendererFunctionResponse", "error")
+
+  def test_a_refused_call_is_answered_inside_its_response
     session = A2UI::Session.new
     session.apply(rpc("f1", { "@call" => "getScreenResolution", "catalogId" => "x" }))
-    error = session.errors.last["error"]
 
-    assert_equal "INVALID_FUNCTION_CALL", error["code"]
-    assert_equal "f1", error["functionCallId"]
-    assert_match(/not invocable by an agent/, error["message"])
+    assert_equal({ "code" => "INVALID_FUNCTION_CALL", "message" => "Catalog not found: x" }, response_error(session),
+                 "a call names its catalog, and there is no fallback")
+    assert_equal "f1", session.responses.last.dig("rendererFunctionResponse", "functionCallId")
 
-    session.apply(rpc("f2", { "@call" => "required", "args" => { "value" => 1 } }))
+    session.apply(rpc("f2", { "@call" => "required", "catalogId" => A2UI::Catalogs::Basic::ID,
+                              "args" => { "value" => 1 } }))
 
-    assert_equal "f2", session.errors.last.dig("error", "functionCallId")
-    assert_empty session.responses
+    assert_equal "Function 'required' is not invocable by an agent.", response_error(session)["message"]
+    session.apply(rpc("f3", { "@call" => "required", "args" => { "value" => 1 } }))
+
+    assert_equal "callRendererFunction.callFunction.catalogId is required",
+                 session.errors.last.dig("error", "message")
+    assert_equal 2, session.responses.size
     assert_empty session.apply({ "version" => "1.0",
-                                 "agentFunctionResponse" => { "functionCallId" => "f3", "value" => 1 } })
+                                 "agentFunctionResponse" => { "functionCallId" => "f4", "value" => 1 } })
   end
 
   def test_agent_callable_functions_answer_with_a_response
@@ -143,18 +149,26 @@ class SessionTest < Minitest::Test
     end
     functions.define("shout", description: "Upcases.", returns: "string", callers: "agentOnly",
                               required: %w[value]) { |args, _| args["value"].to_s.upcase }
+    functions.define("open", description: "Opens a page.", returns: "void", callers: "rendererOrAgent",
+                             activation: true) { |_, _| "opened" }
     catalog = A2UI::Catalogs::Basic.new
     catalog.define_singleton_method(:functions) { functions }
     session = A2UI::Session.new(catalogs: { "https://example.com/cat.json" => catalog })
-    session.apply(rpc("f1", { "@call" => "screen", "catalogId" => "https://example.com/cat.json",
-                              "args" => { "unit" => "px" } }))
-    session.apply(rpc("f2", { "@call" => "shout", "catalogId" => "https://example.com/cat.json" }))
+    call = ->(name, args = {}) { { "@call" => name, "catalogId" => "https://example.com/cat.json", "args" => args } }
+    session.apply(rpc("f1", call.call("screen", { "unit" => "px" })))
+    session.apply(rpc("f2", call.call("shout")))
+    session.apply(rpc("f3", call.call("screen", { "unit" => 5 })))
+    session.apply(rpc("f4", call.call("open")))
+    session.apply(rpc("f5", call.call("open")), user_activated: true)
 
-    assert_equal [{ "version" => "1.0",
-                    "rendererFunctionResponse" => { "functionCallId" => "f1", "value" => "1280x800px" } }],
-                 session.responses
-    assert_equal "f2", session.errors.last.dig("error", "functionCallId")
-    assert_match(/missing value/, session.errors.last.dig("error", "message"))
+    answers = session.responses.map { |response| response["rendererFunctionResponse"] }
+
+    assert_equal({ "functionCallId" => "f1", "value" => "1280x800px" }, answers[0])
+    assert_equal "shout: missing value", answers[1].dig("error", "message")
+    assert_equal "Invalid argument 'unit' for screen: expected string", answers[2].dig("error", "message")
+    assert_equal "Function 'open' requires user activation context to execute.", answers[3].dig("error", "message")
+    assert_equal "opened", answers[4]["value"], "a call that answers the user's gesture may open"
+    assert(session.responses.all? { |response| response["version"] == "1.0" })
   end
 
   def test_a_function_that_raises_answers_an_execution_error
@@ -164,17 +178,13 @@ class SessionTest < Minitest::Test
     catalog = A2UI::Catalogs::Basic.new
     catalog.define_singleton_method(:functions) { functions }
     session = A2UI::Session.new(catalogs: { "https://example.com/cat.json" => catalog })
-    call = { "@call" => "lookup", "catalogId" => "https://example.com/cat.json" }
 
-    assert_empty session.apply({ "version" => "1.0",
-                                 "callRendererFunction" => { "functionCallId" => "f1", "callFunction" => call } })
-    error = session.errors.last["error"]
+    assert_empty session.apply(rpc("f1", { "@call" => "lookup", "catalogId" => "https://example.com/cat.json" }))
+    expected = { "code" => "EXECUTION_ERROR",
+                 "message" => "An error occurred during function execution (RuntimeError)." }
 
-    assert_equal "EXECUTION_ERROR", error["code"]
-    assert_equal "f1", error["functionCallId"]
-    assert_equal "lookup: an error occurred during function execution (RuntimeError)", error["message"],
-                 "the exception's own message stays with the host"
-    assert_empty session.responses
+    assert_equal expected, response_error(session), "the exception's own message stays with the host"
+    assert_empty session.errors
   end
 
   def test_delete_surface

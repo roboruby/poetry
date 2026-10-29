@@ -346,8 +346,8 @@ module Poetry
 
           id = component["id"]
           name = component["component"]
-          return error(path, "id (string) is required") unless id.is_a?(String) && !id.empty?
-          return error("#{path}/component", "component (string) is required") unless name.is_a?(String)
+          return error(path, "Component at #{path} is missing an 'id'") unless id.is_a?(String) && !id.empty?
+          return error("#{path}/component", "Cannot create component #{id} without a type") unless name.is_a?(String)
           return error("#{path}/component", "#{name.inspect} is not an identifier") unless name.match?(NAME_PATTERN)
           return error("#{path}/component", "#{RESERVED_COMPONENT} is reserved") if name == RESERVED_COMPONENT
 
@@ -369,8 +369,9 @@ module Poetry
           return if state[component_id] == :done
 
           if state[component_id] == :open
-            errors << error("/components/#{component_id}",
-                            "circular reference: #{(stack + [component_id]).join(" -> ")}")
+            chain = (stack + [component_id]).join(" -> ")
+            kind = stack.last == component_id ? "Self-reference detected" : "circular reference"
+            errors << error("/components/#{component_id}", "#{kind}: #{chain}")
             return
           end
 

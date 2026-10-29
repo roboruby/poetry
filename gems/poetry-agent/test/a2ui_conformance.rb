@@ -411,7 +411,7 @@ module A2UIConformance
   # ---- handle_rpc
 
   # A catalog binding holding only a case's functions.
-  RpcCatalog = Struct.new(:id, :functions) do
+  RpcCatalog = Struct.new(:id, :functions, :dialect) do
     def references(_) = []
     def inputs(*) = []
     def render(*) = ""
@@ -421,7 +421,9 @@ module A2UIConformance
   def rpc_functions(metadata)
     registry = A::Functions.new
     metadata.each do |name, meta|
+      parameters = meta["parameters"].is_a?(Hash) ? meta["parameters"] : {}
       registry.define(name, description: name, returns: meta["returnType"] || "any",
+                            params: parameters["properties"] || {}, required: parameters["required"] || [],
                             callers: meta["allowedCallers"] || "rendererOrAgent",
                             activation: meta["requiresUserActivation"] == true) do |args, _|
         case name
@@ -448,9 +450,11 @@ module A2UIConformance
     catalog_id ||= call["catalogId"] if call.is_a?(Hash) && !expected_message.include?("Catalog not found")
     catalog_id ||= "basic"
     registry = rpc_functions(args["functionMetadata"] || {})
-    session = A::Session.new(catalogs: { catalog_id => RpcCatalog.new(catalog_id, registry) })
+    dialect = A::Dialect.for(args["catalogVersion"].to_s) || A::Dialect::V1_0
+    session = A::Session.new(catalogs: { catalog_id => RpcCatalog.new(catalog_id, registry, dialect) })
     before = session.errors.size
-    Array(message.is_a?(Array) ? message : [message]).each { |item| session.apply(item) }
+    activated = args["userActivationPresent"] == true
+    Array(message.is_a?(Array) ? message : [message]).each { |item| session.apply(item, user_activated: activated) }
     check_rpc(test_case, session, before)
   end
 
