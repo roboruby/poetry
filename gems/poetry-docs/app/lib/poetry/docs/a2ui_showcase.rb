@@ -10,6 +10,8 @@ module Poetry
     module A2uiShowcase
       BASIC = Poetry::Agent::A2UI::Catalogs::Basic::ID
       NATIVE = Poetry::Agent::A2UI::Catalog::DEFAULT_ID
+      # The id AG-UI's A2UI toolkits send for the v0.9 basic catalog.
+      BASIC_V0_9 = Poetry::Agent::A2UI::Catalogs::Basic::V0_9_IDS.last
 
       # The sign-in surface: the basic catalog with checks the browser enforces.
       SIGN_IN = [
@@ -71,6 +73,33 @@ module Poetry
           } }
       ].freeze
 
+      # The feedback card: a v0.9 surface as AG-UI's A2UI middleware sends
+      # one (its basic catalog id, `path` and `call`, a heading variant),
+      # beside the v1.0 surfaces. Each surface speaks its own version.
+      FEEDBACK = [
+        { "version" => "v0.9", "createSurface" => { "surfaceId" => "feedback", "catalogId" => BASIC_V0_9 } },
+        { "version" => "v0.9",
+          "updateComponents" => {
+            "surfaceId" => "feedback",
+            "components" => [
+              { "id" => "root", "component" => "Card", "child" => "body" },
+              { "id" => "body", "component" => "Column", "children" => %w[heading rating note send] },
+              { "id" => "heading", "component" => "Text", "variant" => "h3", "text" => "How was this guide?" },
+              { "id" => "rating", "component" => "ChoicePicker", "label" => "Rating", "variant" => "mutuallyExclusive",
+                "displayStyle" => "chips", "value" => { "path" => "/rating" },
+                "options" => [ { "label" => "Clear", "value" => "clear" }, { "label" => "Confusing", "value" => "confusing" } ] },
+              { "id" => "note", "component" => "TextField", "label" => "Anything to add?", "variant" => "longText",
+                "value" => { "path" => "/note" } },
+              { "id" => "send", "component" => "Button", "child" => "send_label", "variant" => "primary",
+                "action" => { "event" => { "name" => "send_feedback", "context" => { "rating" => { "path" => "/rating" } } } },
+                "checks" => [ { "condition" => { "call" => "required", "args" => { "value" => { "path" => "/rating" } } },
+                                "message" => "Pick a rating" } ] },
+              { "id" => "send_label", "component" => "Text", "text" => "Send" }
+            ]
+          } },
+        { "version" => "v0.9", "updateDataModel" => { "surfaceId" => "feedback", "value" => { "rating" => [], "note" => "" } } }
+      ].freeze
+
       # The order card, streamed the way an agent streams: the surface, then its
       # components, then the data - each a versioned replace (`_sleep` paces
       # the demo; the tests run instantly). Its text runs through the catalog
@@ -130,7 +159,7 @@ module Poetry
 
       # The session holding the two server-rendered surfaces.
       def self.session
-        Poetry::Agent::A2UI::Session.new.tap { |session| session.apply_all(SIGN_IN + PLAN) }
+        Poetry::Agent::A2UI::Session.new.tap { |session| session.apply_all(SIGN_IN + PLAN + FEEDBACK) }
       end
 
       # The scripted agent's reply to a user action: A2UI messages for the
@@ -157,6 +186,14 @@ module Poetry
              "updateComponents" => { "surfaceId" => "plan",
                                      "components" => [ { "id" => "cta", "component" => "Button", "variant" => "secondary",
                                                         "disabled" => true, "text" => "Chosen: #{seats} seats" } ] } } ]
+        when "send_feedback"
+          [ { "version" => "v0.9",
+              "updateComponents" => { "surfaceId" => "feedback",
+                                      "components" => [
+                                        { "id" => "body", "component" => "Column", "children" => %w[thanks] },
+                                        { "id" => "thanks", "component" => "Text",
+                                          "text" => "Thanks: noted as #{Array(context["rating"]).first}." }
+                                      ] } } ]
         else
           []
         end

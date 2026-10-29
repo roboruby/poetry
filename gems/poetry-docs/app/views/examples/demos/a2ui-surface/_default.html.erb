@@ -13,14 +13,16 @@
   <div class="flex flex-col gap-6">
     <%= render_surface.call(session.surface("signin")) %>
     <%= render_surface.call(session.surface("plan")) %>
+    <%= render_surface.call(session.surface("feedback")) %>
     <div id="a2ui-stage" class="flex flex-col gap-6"></div>
     <turbo-stream-source id="a2ui-surface-source" src="<%= a2ui_surface_stream_path(instant: params[:instant].presence) %>"></turbo-stream-source>
   </div>
   <div class="flex flex-col gap-3">
     <p class="text-sm text-muted-foreground">
-      Two surfaces rendered on the server: the sign-in form is the spec's basic catalog mapped onto
+      Three surfaces rendered on the server: the sign-in form is the spec's basic catalog mapped onto
       Poetry's components (its checks became the browser's own constraints); the plan card is Poetry's
-      catalog rendered straight from the registry. The order card below them streams in the way an agent
+      catalog rendered straight from the registry; the feedback card speaks A2UI v0.9, as AG-UI's A2UI
+      middleware sends it, beside the two v1.0 surfaces. The order card below them streams in the way an agent
       streams it - the surface, then its components, then the data - each arrival a versioned replace.
       Submit either form: the bound inputs and the source component post back, the server runs the
       surface's checks against them, builds the spec's <code>action</code> message, and the scripted

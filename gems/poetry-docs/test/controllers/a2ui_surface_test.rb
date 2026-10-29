@@ -24,7 +24,18 @@ class A2uiSurfaceTest < ActionDispatch::IntegrationTest
     assert_select "form#a2ui-signin button[type=submit][name='a2ui[action]'][value=submit]"
     assert_select "form#a2ui-plan input[name='a2ui[values][/seats]'][type=number]"
     assert_select "form#a2ui-plan button[name='a2ui[action]'][value=cta]"
+    assert_select "form#a2ui-feedback h3", "How was this guide?"
+    assert_select "form#a2ui-feedback input[type=radio][name='a2ui[values][/rating]']", 2
     assert_includes response.body, "/demos/a2ui-surface/stream"
+  end
+
+  test "the v0.9 feedback card answers in v0.9" do
+    post "/demos/a2ui-surface/action",
+         params: { a2ui: { surface: "feedback", action: "send", values: { "/rating" => "clear", "/note" => "" } } }
+
+    assert_response :success
+    assert_includes response.body, "Thanks: noted as clear."
+    assert_includes response.body.gsub(/<[^>]+>/, ""), "\"version\": \"v0.9\"", "the action message carries the surface's version"
   end
 
   test "the stream appends the order surface then replaces it with rising versions" do
