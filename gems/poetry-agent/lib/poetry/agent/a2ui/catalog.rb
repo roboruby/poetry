@@ -3,25 +3,28 @@
 require "json"
 require "yaml"
 require_relative "protocol"
+require_relative "dialect"
 require_relative "functions"
 
 module Poetry
   module Agent
     module A2UI
-      # Projects the component registry into an A2UI v1.0 catalog: one
+      # Projects the component registry into an A2UI catalog: one
       # JSON Schema component per registry entry (the discriminator
       # `component: { const: Name }`, style axes as enums, options as typed
       # properties, slots as child references, the content block as `text`
       # or `children`, Button's `action`), the catalog's composition
       # instructions, and the `$defs` the envelope schema references. The
-      # document obeys the v1.0 catalog rules: the allowed top-level keys
-      # only, `$defs` holding exactly `anyComponent` and `anyFunction`,
-      # external refs into `common_types.json` only.
+      # v1.0 document obeys v1.0's catalog meta-schema (relative refs into
+      # `common_types.json`, flat `@call` function entries, no root
+      # `anyOf` in a component); the v0.9 document ({V0_9_ID}) is the same
+      # catalog in v0.9's form, for v0.9 agents.
       #
       # @example The docs site's catalog
       #   catalog = Poetry::Agent::A2UI::Catalog.from_registry(Poetry::Ui.root)
       #   catalog.to_h["components"].keys.first(3) # => ["Accordion", "ActionBar", "Alert"]
       #   catalog.inline                            # => { "catalogId" => ..., "components" => {...} }
+      #   catalog.to_h(version: "v0.9")["catalogId"] # => "https://poetryui.com/a2ui/v0_9/catalog.json"
       class Catalog
         # The default catalog id (a versioned, conventionally URI-shaped
         # string identifier - it does not need to resolve).
@@ -38,6 +41,19 @@ module Poetry
 
         # Option names whose values bind to the data model (`{path}`).
         DYNAMIC_STRINGS = %w[value placeholder label text title description].freeze
+
+        # v0.9's per-component properties every catalog component shares.
+        V0_9_COMPONENT_COMMON = {
+          "type" => "object",
+          "properties" => {
+            "weight" => { "type" => "number", "description" => "Its flex-grow share inside a Row or Column." }
+          }
+        }.freeze
+        # v0.9's surface theme: kept with the surface, while Poetry styles it with the host's theme.
+        V0_9_THEME = {
+          "type" => "object",
+          "description" => "A surface theme; Poetry keeps it, styling the surface with the host's theme."
+        }.freeze
 
         # Option names whose boolean values bind to the data model.
         DYNAMIC_BOOLEANS = %w[checked].freeze
@@ -57,6 +73,9 @@ module Poetry
         # The catalog id the agent names in createSurface.
         # @return [String]
         attr_reader :catalog_id
+        # The id of the catalog's v0.9 projection, or nil when it has none.
+        # @return [String, nil]
+        attr_reader :v0_9_id
 
         # Builds the catalog from a registry root (the directory holding
         # `config/component_registry.yml`), or from the bundled poetry-ui
@@ -109,22 +128,38 @@ module Poetry
         # @param description [String]
         # @param instructions [String] catalog-level guidance for the model
         # @param exclude [Array<String>] registry paths to leave out
-        def initialize(entries:, catalog_id: DEFAULT_ID, title: "Poetry UI Catalog",
+        # @param v0_9_id [String, nil] the v0.9 projection's id (by default the
+        #   catalog id with `v1_0` read as `v0_9`; none when it has no `v1_0`)
+        def initialize(entries:, catalog_id: DEFAULT_ID, title: "Poetry UI Catalog", # rubocop:disable Metrics/ParameterLists
                        description: "Poetry's component library as an A2UI catalog, projected from its registry.",
-                       instructions: DEFAULT_INSTRUCTIONS, exclude: [])
+                       instructions: DEFAULT_INSTRUCTIONS, exclude: [], v0_9_id: nil)
           @entries = entries.except(*exclude)
           @catalog_id = catalog_id
+          @v0_9_id = v0_9_id || (catalog_id.include?("v1_0") ? catalog_id.sub("v1_0", "v0_9") : nil)
           @title = title
           @description = description
           @instructions = instructions
         end
 
-        # The catalog document (JSON Schema, string keys, components sorted
-        # by name).
+        # The catalog document in a protocol version (JSON Schema, string
+        # keys, components sorted by name).
         #
+        # @param version [String] `"1.0"` or `"v0.9"`
         # @return [Hash]
-        def to_h
-          @to_h ||= {
+        # @raise [ArgumentError] for a version Poetry does not speak, or v0.9 without a {#v0_9_id}
+        def to_h(version: PROTOCOL_VERSION)
+          dialect = Dialect.for(version) or raise ArgumentError, "no A2UI version #{version.inspect}"
+          return v1_0_document if dialect.v1?
+          raise ArgumentError, "the catalog #{@catalog_id} has no v0.9 id; pass v0_9_id:" unless @v0_9_id
+
+          @documents ||= {}
+          @documents["v0.9"] ||= v0_9_document
+        end
+
+        # The v1.0 document.
+        # @return [Hash]
+        def v1_0_document
+          @v1_0_document ||= {
             "$schema" => "https://json-schema.org/draft/2020-12/schema",
             "$id" => @catalog_id,
             "protocolVersion" => PROTOCOL_VERSION,
@@ -133,7 +168,7 @@ module Poetry
             "catalogId" => @catalog_id,
             "instructions" => @instructions,
             "components" => components,
-            "functions" => functions.schema,
+            "functions" => functions.schema(Dialect::V1_0),
             "$defs" => {
               "anyComponent" => {
                 "oneOf" => components.keys.map { |name| { "$ref" => "#/components/#{name}" } },
@@ -153,11 +188,13 @@ module Poetry
         end
 
         # The inline form a transport ships to an agent or a middleware
-        # fetches at boot.
+        # fetches at boot, in a protocol version.
         #
+        # @param version [String] `"1.0"` or `"v0.9"`
         # @return [Hash] `{ "catalogId", "components" }`
-        def inline
-          { "catalogId" => @catalog_id, "components" => components }
+        def inline(version: PROTOCOL_VERSION)
+          document = to_h(version: version)
+          { "catalogId" => document["catalogId"], "components" => document["components"] }
         end
 
         # The catalog as pretty JSON.
@@ -185,6 +222,45 @@ module Poetry
 
         private
 
+        # The v0.9 document: each component wrapped as v0.9's catalogs wrap
+        # theirs, v0.9's function entries, the common types named absolutely,
+        # and v0.9's `$defs`.
+        def v0_9_document
+          wrapped = components.transform_values do |schema|
+            { "type" => "object", "description" => schema["description"],
+              "allOf" => [{ "$ref" => "#{COMMON_TYPES}ComponentCommon" },
+                          { "$ref" => "#/$defs/CatalogComponentCommon" }, schema.except("description")],
+              "unevaluatedProperties" => false }
+          end
+          document = {
+            "$schema" => "https://json-schema.org/draft/2020-12/schema", "$id" => @v0_9_id, "title" => @title,
+            "description" => @description, "catalogId" => @v0_9_id, "components" => wrapped,
+            "functions" => functions.schema(Dialect::V0_9),
+            "$defs" => { "CatalogComponentCommon" => V0_9_COMPONENT_COMMON, "theme" => V0_9_THEME,
+                         "anyComponent" => v1_0_document.dig("$defs", "anyComponent"),
+                         "anyFunction" => functions.any_function }
+          }
+          absolute(document)
+        end
+
+        # A document with its relative common-type refs named absolutely, as v0.9 names them.
+        def absolute(value)
+          case value
+          when Hash
+            value.to_h do |key, item|
+              [key,
+               if key == "$ref" && item.start_with?(COMMON_TYPES)
+                 item.sub(COMMON_TYPES,
+                          COMMON_TYPES_V0_9)
+               else
+                 absolute(item)
+               end]
+            end
+          when Array then value.map { |item| absolute(item) }
+          else value
+          end
+        end
+
         # One component's JSON Schema: the component const, its styles, options, slots and content.
         def component_schema(path, entry)
           properties = { "component" => { "const" => component_name(path) } }
@@ -208,13 +284,9 @@ module Poetry
               { "$ref" => "#{COMMON_TYPES}Action", "description" => "What the press does." }
           end
 
-          schema = { "type" => "object", "description" => description_of(entry), "properties" => properties,
-                     "required" => ["component"] }
-          if content && entry["requires_content"]
-            schema["anyOf"] =
-              [{ "required" => ["text"] }, { "required" => ["children"] }]
-          end
-          schema
+          description = description_of(entry)
+          description = "#{description} Give it text or children." if content && entry["requires_content"]
+          { "type" => "object", "description" => description, "properties" => properties, "required" => ["component"] }
         end
 
         # A string enum schema for a style axis or an option with variants, with its default and description.

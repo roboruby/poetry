@@ -163,4 +163,17 @@ class AguiRelayTest < ActionDispatch::IntegrationTest
     assert_operator catalog["components"].size, :>, 70
     assert_equal "Tabs", catalog.dig("components", "Tabs", "properties", "component", "const")
   end
+
+  test "the A2UI catalog is served in both versions" do
+    get "/a2ui/v1_0/catalog.json"
+
+    assert_equal Poetry::Agent::A2UI::Catalog::DEFAULT_ID, JSON.parse(response.body)["catalogId"]
+    get "/a2ui/v0_9/catalog.json"
+
+    assert_response :success
+    legacy = JSON.parse(response.body)
+
+    assert_equal Poetry::Agent::A2UI::Catalog::V0_9_ID, legacy["catalogId"]
+    assert_equal "formatNumber", legacy.dig("functions", "formatNumber", "properties", "call", "const")
+  end
 end

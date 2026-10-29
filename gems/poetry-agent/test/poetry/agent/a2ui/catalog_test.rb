@@ -64,8 +64,38 @@ module Poetry
 
           badge = catalog.components.fetch("Badge")
 
-          assert_equal [{ "required" => ["text"] }, { "required" => ["children"] }], badge["anyOf"]
+          refute badge.key?("anyOf"), "v1.0's meta-schema refuses a root anyOf; the renderer requires the content"
+          assert_match(/Give it text or children\./, badge["description"])
           assert_equal "AlertDialog", catalog.component_name("poetry/ui/alert_dialog")
+        end
+
+        def test_the_v1_0_document_obeys_the_catalog_meta_schema
+          require "json_schemer"
+          path = "../../../fixtures/a2ui/upstream/specification/v1_0/json/catalog_definition.json"
+          meta = JSON.parse(File.read(File.expand_path(path, __dir__)))
+          drafts = JSONSchemer::Draft202012::Meta::SCHEMAS.to_h { |uri, schema| [uri.to_s, schema] }
+          drafts[JSONSchemer::Draft202012::BASE_URI.to_s] = JSONSchemer::Draft202012::SCHEMA
+          schemer = JSONSchemer.schema(meta, ref_resolver: proc { |uri| drafts.fetch(uri.to_s.sub(/#.*\z/, "")) })
+          problems = schemer.validate(catalog.to_h).map { |error| "#{error["data_pointer"]} #{error["type"]}" }
+
+          assert_empty problems.first(5)
+        end
+
+        def test_the_v0_9_document_is_the_same_catalog_in_v0_9s_form
+          doc = catalog.to_h(version: "v0.9")
+
+          assert_equal Catalog::V0_9_ID, doc["catalogId"]
+          assert_equal %w[$schema $id title description catalogId components functions $defs], doc.keys
+          assert_equal %w[CatalogComponentCommon theme anyComponent anyFunction], doc["$defs"].keys
+          assert_equal catalog.components.keys, doc["components"].keys
+          text = doc.dig("components", "Button", "allOf")
+
+          assert_equal "#{COMMON_TYPES_V0_9}ComponentCommon", text[0]["$ref"]
+          assert_equal "#{COMMON_TYPES_V0_9}DynamicString", text[2].dig("properties", "label", "$ref")
+          assert_equal({ "const" => "boolean" }, doc.dig("functions", "email", "properties", "returnType"))
+          refute_includes JSON.generate(doc), "\"$ref\":\"common_types.json", "every common type is named absolutely"
+          assert_equal Catalog::V0_9_ID, catalog.inline(version: "v0.9")["catalogId"]
+          assert_raises(ArgumentError) { Catalog.new(entries: {}, catalog_id: "urn:x").to_h(version: "v0.9") }
         end
 
         def test_inline_form_and_exclusions

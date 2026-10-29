@@ -17,6 +17,7 @@ namespace :a2ui do
                 specification/v0_9_1/catalogs/basic/catalog.json
                 conformance/test_data/catalogs/custom_catalog_v1_0.json]
   examples = %w[catalogs/basic/v1/examples specification/v0_9/catalogs/basic/examples]
+  schemas = %w[specification/v0_9/json specification/v1_0/json]
 
   # The manifest: one "sha256  path" line per vendored file.
   manifest = lambda do |root, files|
@@ -30,7 +31,7 @@ namespace :a2ui do
     abort "a2ui:vendor: #{source} is not a git checkout" if commit.empty?
 
     files = suites.map { |suite| "conformance/core/#{suite}.yaml" } + catalogs
-    files += Dir.chdir(source) { examples.flat_map { |dir| Dir["#{dir}/*.json"] } }.sort
+    files += Dir.chdir(source) { (examples + schemas).flat_map { |dir| Dir["#{dir}/*.json"] } }.sort
     FileUtils.rm_rf(upstream)
     files.each do |file|
       FileUtils.mkdir_p(File.join(upstream, File.dirname(file)))

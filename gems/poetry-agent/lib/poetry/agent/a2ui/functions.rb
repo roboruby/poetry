@@ -182,20 +182,24 @@ module Poetry
           definition.impl.call(args, evaluator)
         end
 
-        # The catalog document's `functions` section.
+        # The catalog document's `functions` section, in a protocol
+        # version's form: v1.0's validates an `{ "@call", "args" }` call and
+        # carries `returnType`, `allowedCallers` and `requiresUserActivation`
+        # beside it; v0.9's validates `{ "call", "args" }` with the return
+        # type as a const on the call (a validator's is boolean there).
         #
+        # @param dialect [Dialect]
         # @return [Hash{String => Hash}]
-        def schema
+        def schema(dialect = Dialect::V1_0)
           @definitions.transform_values do |definition|
-            call = { "type" => "object",
-                     "properties" => { "call" => { "const" => definition.name },
-                                       "args" => arguments_schema(definition) },
-                     "required" => ["call", *("args" if definition.required.any?)] }
-            document = { "type" => "object", "description" => definition.description,
-                         "returnType" => definition.returns, "allowedCallers" => definition.callers }
-            document["requiresUserActivation"] = true if definition.activation
-            document.merge("allOf" => [{ "$ref" => "#{COMMON_TYPES}FunctionCommon" }, call],
-                           "unevaluatedProperties" => false)
+            required = [dialect.call_key, *("args" if definition.required.any?)]
+            properties = { dialect.call_key => { "const" => definition.name }, "args" => arguments_schema(definition) }
+            next v0_9_entry(definition, properties, required) unless dialect.v1?
+
+            entry = { "type" => "object", "description" => definition.description, "returnType" => definition.returns,
+                      "allowedCallers" => definition.callers }
+            entry["requiresUserActivation"] = true if definition.activation
+            entry.merge("properties" => properties, "required" => required)
           end
         end
 
@@ -216,6 +220,14 @@ module Poetry
           return true unless TYPES.key?(type)
 
           Array(TYPES[type]).any? { |klass| value.is_a?(klass) }
+        end
+
+        # A v0.9 function entry: the return type a const on the call, a validator's boolean.
+        def v0_9_entry(definition, properties, required)
+          returns = definition.returns == "validationResult" ? "boolean" : definition.returns
+          { "type" => "object", "description" => definition.description,
+            "properties" => properties.merge("returnType" => { "const" => returns }), "required" => required,
+            "unevaluatedProperties" => false }
         end
 
         # A function's argument schema: its params as properties, the required ones listed.

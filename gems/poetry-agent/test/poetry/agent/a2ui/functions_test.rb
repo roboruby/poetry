@@ -250,8 +250,13 @@ class FunctionsTest < Minitest::Test
     assert_equal %w[required regex length numeric email formatString formatNumber formatCurrency formatDate pluralize
                     openUrl and or not], schema.keys
     assert_equal "validationResult", schema["length"]["returnType"]
-    assert_equal "length", schema["length"]["allOf"][1]["properties"]["call"]["const"]
-    assert_equal %w[value], schema["length"]["allOf"][1]["properties"]["args"]["required"]
+    assert_equal "length", schema["length"]["properties"]["@call"]["const"]
+    assert_equal %w[value], schema["length"]["properties"]["args"]["required"]
+    assert_equal %w[@call args], schema["length"]["required"]
+    legacy = A2UI::Functions.basic.schema(A2UI::Dialect::V0_9)
+
+    assert_equal "length", legacy["length"]["properties"]["call"]["const"]
+    assert_equal({ "const" => "boolean" }, legacy["length"]["properties"]["returnType"])
     assert schema["openUrl"]["requiresUserActivation"]
     assert_equal "rendererOnly", schema["email"]["allowedCallers"]
     assert_equal 14, A2UI::Functions.basic.any_function["oneOf"].length

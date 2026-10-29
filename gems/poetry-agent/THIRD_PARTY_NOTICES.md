@@ -40,7 +40,7 @@ SOFTWARE.
 ## A2UI
 
 - Source: https://github.com/google/A2UI (Apache-2.0), at commit `d98472e5d` (2026-10-28)
-- Test-only, never shipped: `test/fixtures/a2ui/upstream/` holds the renderer conformance suites, the catalogs they name and the basic catalogs' examples, in upstream's layout, with upstream's LICENSE beside them (provenance in that directory's README)
+- Test-only, never shipped: `test/fixtures/a2ui/upstream/` holds the renderer conformance suites, the catalogs they name, the basic catalogs' examples and both versions' JSON schemas, in upstream's layout, with upstream's LICENSE inside it (provenance in `test/fixtures/a2ui/README.md`)
 
 ```
                                  Apache License
