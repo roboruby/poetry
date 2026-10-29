@@ -398,4 +398,29 @@ class SessionTest < Minitest::Test
     assert_nil session.action(surface_id: "p", source: "missing")
     assert_nil session.action(surface_id: "nope", source: "root")
   end
+
+  def test_capabilities_inline_each_version_s_catalogs_in_its_shape
+    v09 = A2UI::Catalogs::Basic::V0_9_IDS.first
+    session = A2UI::Session.new(catalogs: { A2UI::Catalogs::Basic::ID => A2UI::Catalogs::Basic.new,
+                                            A2UI::Catalog::DEFAULT_ID => A2UI::Catalogs::Native.new,
+                                            v09 => A2UI::Catalogs::Basic.new(dialect: A2UI::Dialect::V0_9) })
+
+    refute session.capabilities["1.0"].key?("inlineCatalogs"), "ids alone by default"
+    inline = session.capabilities(inline: true)
+    current = inline["1.0"]["inlineCatalogs"]
+
+    assert_equal([A2UI::Catalogs::Basic::ID, A2UI::Catalog::DEFAULT_ID], current.map { |catalog| catalog["catalogId"] })
+    assert_equal "Text", current.first["components"].keys.first, "a v1.0 catalog is its document"
+    assert current.last["components"].key?("Button"), "Poetry's catalog is its document too"
+    assert_equal "https://json-schema.org/draft/2020-12/schema", current.last["$schema"]
+    legacy = inline["v0.9"]["inlineCatalogs"]
+
+    assert_equal([v09], legacy.map { |catalog| catalog["catalogId"] })
+    assert legacy.first["components"]["Text"].key?("allOf"), "a v0.9 catalog is inlined in the legacy shape"
+    assert_kind_of Array, legacy.first["functions"]
+    assert_equal({ "name" => "required", "returnType" => "boolean" },
+                 legacy.first["functions"].find do |function|
+                   function["name"] == "required"
+                 end.slice("name", "returnType"))
+  end
 end

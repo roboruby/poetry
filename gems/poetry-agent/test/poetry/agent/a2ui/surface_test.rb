@@ -166,4 +166,16 @@ class SurfaceTest < Minitest::Test
     assert_equal({ "a" => 1 }, snapshot["dataModel"])
     assert_equal(["root"], snapshot["components"].map { |component| component["id"] })
   end
+
+  def test_a_surface_refuses_a_catalog_built_for_another_version
+    legacy = A2UI::Catalogs::Basic.new(dialect: A2UI::Dialect::V0_9)
+    error = assert_raises(ArgumentError) do
+      A2UI::Surface.new(id: "s", catalog: A2UI::Catalogs::Basic.new, catalog_id: "basic",
+                        catalogs: { "basic" => A2UI::Catalogs::Basic.new, "old" => legacy })
+    end
+
+    assert_equal "Protocol version mismatch: cannot mix catalog 'old' (v0.9) with surface version 1.0.", error.message
+    assert A2UI::Surface.new(id: "s", catalog: legacy, catalog_id: "old", dialect: A2UI::Dialect::V0_9_1),
+           "v0.9.1 reads v0.9"
+  end
 end

@@ -731,15 +731,19 @@ module A2UIConformance
   end
 
   # The case's catalogs, each in its own version (the case's when it names none).
-  def run_get_renderer_capabilities(test_case)
-    fail!("inline catalogs from the suite's catalog definitions") if test_case.dig("args", "includeInlineCatalogs")
+  # The keys that make a case's catalog entry a definition rather than a bare id.
+  DEFINITION_KEYS = %w[components functions theme].freeze
 
+  def run_get_renderer_capabilities(test_case)
     version = wire(test_case.dig("args", "version"))
     catalogs = Array(test_case["catalogs"]).to_h do |entry|
       dialect = A::Dialect.for(wire(entry["protocolVersion"] || version))
-      [entry["catalogId"], A::Catalogs::Basic.new(dialect: dialect)]
+      defined = DEFINITION_KEYS.any? { |key| entry.key?(key) }
+      [entry["catalogId"],
+       defined ? DocumentCatalog.new(entry, dialect: dialect) : A::Catalogs::Basic.new(dialect: dialect)]
     end
-    got = A::Session.new(catalogs: catalogs).capabilities(versions: [version])
+    inline = test_case.dig("args", "includeInlineCatalogs") == true
+    got = A::Session.new(catalogs: catalogs).capabilities(versions: [version], inline: inline)
     want = test_case["expect"]
     fail!("capabilities #{JSON.generate(got)}, expected #{JSON.generate(want)}") unless deep_eq(got, want)
   end
@@ -758,6 +762,13 @@ module A2UIConformance
     surface = session.surface(spec["id"])
     owners = Array(args["components"]).map(&:last) + [args["functionCall"]].compact
     problem = session.errors.last&.dig("error", "message") unless surface
+    begin
+      # The surface's supported catalogs are the case's: every one must be built for its version.
+      A::Surface.new(id: spec["id"], catalog: catalogs[spec["defaultCatalogId"]], catalog_id: spec["defaultCatalogId"],
+                     catalogs: catalogs, dialect: A::Dialect::V1_0)
+    rescue ArgumentError => e
+      problem ||= e.message
+    end
     selected = nil
     owners.each do |owner|
       problem ||= surface.lookup(owner).last

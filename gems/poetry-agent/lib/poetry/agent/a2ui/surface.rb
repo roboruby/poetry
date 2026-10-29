@@ -73,7 +73,8 @@ module Poetry
         # @param dialect [Dialect] the protocol version the surface speaks
         # @param theme [Hash, nil] a v0.9 createSurface's theme (its colors, icon and agent name)
         # @param catalogs [Hash{String => Object}, nil] the catalogs a component or call may name (the default's
-        #   alone when nil)
+        #   alone when nil); each must be built for the surface's version
+        # @raise [ArgumentError] when a named catalog is built for another protocol version
         def initialize(id:, catalog:, catalog_id: nil, send_data_model: false, data: nil, components: [], # rubocop:disable Metrics/ParameterLists
                        dialect: Dialect::V1_0, theme: nil, catalogs: nil)
           @id = id
@@ -81,6 +82,13 @@ module Poetry
           @catalog_id = catalog_id
           @catalogs = catalogs || (catalog && catalog_id ? { catalog_id => catalog } : {})
           @dialect = dialect
+          @catalogs.each do |bound_id, bound|
+            built_for = bound.respond_to?(:dialect) ? bound.dialect : Dialect::V1_0
+            next if built_for.compatible?(dialect)
+
+            raise ArgumentError, "Protocol version mismatch: cannot mix catalog '#{bound_id}' (#{built_for.version}) " \
+                                 "with surface version #{dialect.version}."
+          end
           @theme = theme.is_a?(Hash) ? deep_copy(theme) : nil
           @send_data_model = send_data_model ? true : false
           @data = deep_copy(data.is_a?(Hash) ? data : {})

@@ -91,6 +91,70 @@ module Poetry
           new(entries: load_entries(root), **)
         end
 
+        # A catalog document as v0.9's renderer capabilities inline one, the
+        # shape the reference processors build for a legacy agent: each
+        # component the common envelope plus its own properties with its
+        # name pinned (one already written as an `allOf` passes as it is),
+        # the functions a list of name, returnType and parameters, the
+        # theme its properties.
+        #
+        # @param document [Hash] a catalog document, in either version's form
+        # @param catalog_id [String] the id the catalog is bound under
+        # @return [Hash] `{ "catalogId", "components", "functions", "theme" }`, the empty ones left out
+        def self.legacy_inline(document, catalog_id:)
+          inline = { "catalogId" => catalog_id }
+          components = document["components"].is_a?(Hash) ? document["components"] : {}
+          if components.any?
+            inline["components"] = components.to_h do |name, schema|
+              [name, legacy_component(name, schema)]
+            end
+          end
+          functions = legacy_functions(document["functions"])
+          inline["functions"] = functions if functions.any?
+          theme = document["theme"] || document.dig("$defs", "theme")
+          theme = theme["properties"] if theme.is_a?(Hash) && theme.key?("properties")
+          inline["theme"] = JSON.parse(JSON.generate(theme)) if theme.is_a?(Hash) && theme.any?
+          inline
+        end
+
+        # A component in the legacy inline shape: the envelope and the entry's own properties, its name pinned.
+        # @api private
+        def self.legacy_component(name, schema)
+          return JSON.parse(JSON.generate(schema)) if schema.is_a?(Hash) && schema.key?("allOf")
+
+          schema = {} unless schema.is_a?(Hash)
+          properties = (schema["properties"].is_a?(Hash) ? schema["properties"] : {}).except("id", "component")
+          required = Array(schema["required"]) - %w[id component]
+          pinned = { "component" => { "const" => name } }.merge(JSON.parse(JSON.generate(properties)))
+          { "allOf" => [{ "$ref" => "#{COMMON_TYPES}ComponentCommon" },
+                        { "properties" => pinned, "required" => ["component", *required] }] }
+        end
+
+        # The functions in the legacy inline shape: a list of name, description, returnType and parameters.
+        # @api private
+        def self.legacy_functions(functions)
+          return JSON.parse(JSON.generate(functions)) if functions.is_a?(Array)
+          return [] unless functions.is_a?(Hash)
+
+          functions.map do |name, entry|
+            entry = {} unless entry.is_a?(Hash)
+            parameters = if entry["parameters"].is_a?(Hash) then entry["parameters"]
+                         elsif entry.dig("properties", "args").is_a?(Hash) then entry.dig("properties", "args")
+                         else entry.empty? ? { "type" => "object", "properties" => {} } : entry
+                         end
+            function = { "name" => name }
+            if entry["description"].is_a?(String) && !entry["description"].empty?
+              function["description"] =
+                entry["description"]
+            end
+            function["returnType"] = entry["returnType"] || entry.dig("properties", "returnType", "const") || "any"
+            function["parameters"] = JSON.parse(JSON.generate(parameters))
+            function
+          end
+        end
+
+        private_class_method :legacy_component, :legacy_functions
+
         # Loads the registry entries under a root (the bundled poetry-ui
         # registry when no root is given).
         #

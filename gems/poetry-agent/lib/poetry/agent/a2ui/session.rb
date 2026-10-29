@@ -208,15 +208,31 @@ module Poetry
 
         # What the renderer tells an agent it supports, by protocol version:
         # the ids of the catalogs it holds for each (A2UI's renderer
-        # capabilities; an agent resolves its catalogs against them).
+        # capabilities; an agent resolves its catalogs against them), and
+        # with `inline:` each catalog's definition too, so an agent that
+        # cannot fetch a catalog by its id learns it here: a v1.0 catalog as
+        # its document, a v0.9 one in the legacy inline shape
+        # ({Catalog.legacy_inline}). A binding without a document is listed
+        # by id alone.
         #
         # @param versions [Array<String>] wire versions to answer for
-        # @return [Hash{String => Hash}] `{ "1.0" => { "supportedCatalogIds" => [...] }, "v0.9" => ... }`
-        def capabilities(versions: [Dialect::V1_0.version, Dialect::V0_9.version])
+        # @param inline [Boolean] whether to include the catalogs' definitions
+        # @return [Hash{String => Hash}] `{ "1.0" => { "supportedCatalogIds" => [...], "inlineCatalogs" => [...] },
+        #   "v0.9" => ... }`
+        def capabilities(versions: [Dialect::V1_0.version, Dialect::V0_9.version], inline: false)
           versions.filter_map do |version|
             dialect = Dialect.for(version) or next
-            ids = @catalogs.select { |_, catalog| catalog_dialect(catalog).compatible?(dialect) }.keys
-            [dialect.version, { "supportedCatalogIds" => ids }]
+            bound = catalogs_for(dialect)
+            entry = { "supportedCatalogIds" => bound.keys }
+            if inline
+              entry["inlineCatalogs"] = bound.filter_map do |id, catalog|
+                next unless catalog.respond_to?(:document)
+                next Catalog.legacy_inline(catalog.document, catalog_id: id) unless dialect.v1?
+
+                inline_document(catalog.document, id)
+              end
+            end
+            [dialect.version, entry]
           end.to_h
         end
 
@@ -494,6 +510,11 @@ module Poetry
         # The protocol version a catalog binding is built for (v1.0 when it does not say).
         def catalog_dialect(catalog)
           catalog.respond_to?(:dialect) ? catalog.dialect : Dialect::V1_0
+        end
+
+        # A v1.0 catalog document as capabilities inline it: a copy, named by the id it is bound under.
+        def inline_document(document, catalog_id)
+          JSON.parse(JSON.generate(document)).merge("catalogId" => catalog_id)
         end
 
         # Records the response to an agent's call: its value or its error.

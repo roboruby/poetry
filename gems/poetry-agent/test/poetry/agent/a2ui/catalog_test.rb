@@ -115,6 +115,38 @@ module Poetry
           assert_equal "urn:test", trimmed.to_h["$id"]
           assert_raises(ArgumentError) { Catalog.from_registry("/nowhere") }
         end
+
+        def test_legacy_inline_is_the_reference_s_shape_for_a_v0_9_agent
+          button = { "type" => "object", "description" => "A button", "required" => ["label"],
+                     "properties" => { "id" => { "type" => "string" }, "label" => { "type" => "string" } } }
+          wrapped = { "allOf" => [{ "$ref" => "x" }] }
+          components = { "Button" => button, "Bare" => { "type" => "object" }, "Wrapped" => wrapped }
+          add = { "returnType" => "number",
+                  "parameters" => { "type" => "object", "properties" => { "a" => { "type" => "number" } } } }
+          shout = { "description" => "Loud",
+                    "properties" => { "@call" => { "const" => "shout" }, "args" => { "type" => "object" } } }
+          theme = { "type" => "object", "properties" => { "color" => { "type" => "string" } } }
+          document = { "catalogId" => "cat", "components" => components, "theme" => theme,
+                       "functions" => { "add" => add, "shout" => shout, "ping" => {} } }
+          inline = Catalog.legacy_inline(document, catalog_id: "bound-as")
+          envelope = { "$ref" => "common_types.json#/$defs/ComponentCommon" }
+          pinned = { "properties" => { "component" => { "const" => "Button" }, "label" => { "type" => "string" } },
+                     "required" => %w[component label] }
+
+          assert_equal "bound-as", inline["catalogId"]
+          assert_equal({ "allOf" => [envelope, pinned] }, inline["components"]["Button"])
+          assert_equal %w[component], inline["components"]["Bare"]["allOf"].last["required"]
+          assert_equal({ "allOf" => [{ "$ref" => "x" }] }, inline["components"]["Wrapped"], "an allOf passes as it is")
+          assert_equal(%w[add shout ping], inline["functions"].map { |function| function["name"] })
+          assert_equal({ "name" => "add", "returnType" => "number", "parameters" => add["parameters"] },
+                       inline["functions"][0])
+          assert_equal({ "name" => "shout", "description" => "Loud", "returnType" => "any",
+                         "parameters" => { "type" => "object" } }, inline["functions"][1])
+          assert_equal({ "name" => "ping", "returnType" => "any",
+                         "parameters" => { "type" => "object", "properties" => {} } }, inline["functions"][2])
+          assert_equal({ "color" => { "type" => "string" } }, inline["theme"])
+          refute Catalog.legacy_inline({ "catalogId" => "empty" }, catalog_id: "empty").key?("components")
+        end
       end
     end
   end
