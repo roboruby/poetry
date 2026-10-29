@@ -213,24 +213,28 @@ module Poetry
         # What a client-side evaluator needs to run the checks as the user
         # types: every checked component's rules in v1.0's spelling whatever
         # the surface speaks (`{ "@path" }` made absolute for its scope,
-        # `{ "@call", "args" }`, a literal `@` key doubled), the bound inputs
-        # by absolute path with their kinds, the data model for paths no input
-        # carries, and the surface's version, whose functions the rules run.
+        # `{ "@call", "args" }`, a literal `@` key doubled) with the path its
+        # control binds, the bound inputs by absolute path with their kinds,
+        # the data model for paths no input carries, and the surface's
+        # version, whose functions the rules run.
         #
-        # @return [Hash] `{ "version", "checks" => { key => { "kind", "rules" } }, "inputs" => { path => kind },
-        #   "model" => data }`
+        # @return [Hash] `{ "version", "checks" => { key => { "kind", "rules", "path" } },
+        #   "inputs" => { path => kind }, "model" => data }`
         def program
           checks = {}
           walk do |component, scope|
             rules = Array(component["checks"]).grep(Hash).select { |rule| Checks.condition(rule, dialect) }
             next if rules.empty?
 
-            checks[source_key(component, scope)] = {
+            entry = {
               "kind" => component["action"].is_a?(Hash) ? "button" : "input",
               "rules" => rules.map do |rule|
                 { "condition" => program_value(Checks.condition(rule, dialect), scope), "message" => rule["message"] }
               end
             }
+            bound = Array(catalog_of(component)&.inputs(component, scope, dialect)).first
+            entry["path"] = bound[:path] if bound
+            checks[source_key(component, scope)] = entry
           end
           { "version" => dialect.version, "checks" => checks,
             "inputs" => inputs.to_h { |input| [input[:path], input[:kind].to_s] }, "model" => data }

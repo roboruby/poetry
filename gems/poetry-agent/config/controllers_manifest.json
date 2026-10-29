@@ -93,33 +93,37 @@
     }
   },
   "poetry--agent--a2ui-surface": {
-    "doc": "The client side of an A2UI surface's checks: the server renders the program (every checked component's rules, spelled as v1.0 spells them whatever the surface speaks: `{\"@path\"}` bindings made absolute, `{\"@call\", args}` calls, a literal `@` key doubled; the bound inputs by path with their kinds; and the data model) and this controller evaluates it as the user types - a button whose own checks fail is disabled, a failing input is marked invalid and its error slot carries the message. The five validators and the three combinators are the checks vocabulary; anything else passes here and is judged by the server, which re-runs every rule on the action.",
+    "doc": "The client side of an A2UI surface's checks: the server renders the program (every checked component's rules, spelled as v1.0 spells them whatever the surface speaks: `{\"@path\"}` bindings made absolute, `{\"@call\", args}` calls, a literal `@` key doubled; the path each checked control binds; the bound inputs by path with their kinds; and the data model) and this controller evaluates it as the user types.\n\nA button whose own checks fail is disabled from the start. What the user sees of a failure waits for them: an input's message and invalid state appear once its path has been edited, a button's reason once any input has. Until then the server's rendering stands, including the failures it rendered after a rejected action; one the browser cannot judge (a rule on a function it does not know) stands until the server judges it again. A morph keeps the element and this controller, so the edited inputs are judged again once the morph is over.\n\nThe five validators and the three combinators are the checks vocabulary; anything else passes here and is judged by the server, which re-runs every rule on the action.",
     "targets": [],
     "values": {
       "program": {
         "type": "Object",
-        "doc": "The check program the server compiled: the checks, the bound inputs by path, and the data model."
+        "doc": "The check program the server compiled: the checks (each with the path its control binds), the bound inputs by path, and the data model."
       }
     },
     "classes": [],
     "methods": [
       "apply",
       "call",
-      "connect",
       "evaluate",
       "failure",
+      "initialize",
+      "morphed",
       "read",
-      "resolve"
+      "resolve",
+      "touch"
     ],
     "events": [],
     "method_docs": {
-      "apply": "Reflects a check's failures on the elements bound to a key: a button disables, an input turns invalid.",
+      "apply": "Reflects a check's verdict on the elements bound to a key. A button disables while its checks fail. The message and the invalid state follow the verdict only once the user has touched the input (any input, for a button); before that, and for a server failure the browser cannot judge, the server's rendering stands.",
       "call": "Runs a catalog function by name with its arguments resolved; an unknown name resolves to null.",
-      "connect": "Evaluates every check once at mount.",
       "evaluate": "Runs every check in the program and applies its failures.",
-      "failure": "A rule's failure message, or null when it passes or cannot be decided here.",
+      "failure": "A rule's failure message, null when it passes, or undefined when it cannot be decided here.",
+      "initialize": "Starts with nothing touched: the paths the user has edited since the surface mounted.",
+      "morphed": "Evaluates every check once a morph of the surface is over: the morph left the slots and attributes as the server rendered them, and the edited inputs keep their values. One pass per morph, however many elements it touched.",
       "read": "The current value of a bound path from the form's inputs, falling back to the data model.",
-      "resolve": "A value with its bindings read and its calls run, recursively; a literal object's doubled `@@` keys read as their literal."
+      "resolve": "A value with its bindings read and its calls run, recursively; a literal object's doubled `@@` keys read as their literal.",
+      "touch": "Marks the edited input's path touched and evaluates every check."
     }
   }
 }

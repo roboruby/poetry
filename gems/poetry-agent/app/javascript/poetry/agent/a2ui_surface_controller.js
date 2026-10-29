@@ -9,25 +9,69 @@ const EMAIL_FAILURE = { valid: false, code: "INVALID_EMAIL", message: "Please en
  * The client side of an A2UI surface's checks: the server renders the
  * program (every checked component's rules, spelled as v1.0 spells them
  * whatever the surface speaks: `{"@path"}` bindings made absolute,
- * `{"@call", args}` calls, a literal `@` key doubled; the bound inputs by
- * path with their kinds; and the data model) and this
- * controller evaluates it as the user types - a button whose own checks
- * fail is disabled, a failing input is marked invalid and its error slot
- * carries the message. The five validators and the three combinators are
- * the checks vocabulary; anything else passes here and is judged by the
- * server, which re-runs every rule on the action.
+ * `{"@call", args}` calls, a literal `@` key doubled; the path each
+ * checked control binds; the bound inputs by path with their kinds; and
+ * the data model) and this controller evaluates it as the user types.
+ *
+ * A button whose own checks fail is disabled from the start. What the
+ * user sees of a failure waits for them: an input's message and invalid
+ * state appear once its path has been edited, a button's reason once any
+ * input has. Until then the server's rendering stands, including the
+ * failures it rendered after a rejected action; one the browser cannot
+ * judge (a rule on a function it does not know) stands until the server
+ * judges it again. A morph keeps the element and this controller, so the
+ * edited inputs are judged again once the morph is over.
+ *
+ * The five validators and the three combinators are the checks
+ * vocabulary; anything else passes here and is judged by the server,
+ * which re-runs every rule on the action.
  */
 export default class extends Controller {
   static values = {
-    // The check program the server compiled: the checks, the bound inputs by path, and the data model.
+    // The check program the server compiled: the checks (each with the path its control binds), the bound inputs by path, and the data model.
     program: Object
   }
 
   /**
-   * Evaluates every check once at mount.
+   * Starts with nothing touched: the paths the user has edited since the
+   * surface mounted.
    */
-  connect() {
+  initialize() {
+    this.touched = new Set()
+  }
+
+  /**
+   * Evaluates every check at mount and again when a server render
+   * changes the program.
+   */
+  programValueChanged() {
     this.evaluate()
+  }
+
+  /**
+   * Marks the edited input's path touched and evaluates every check.
+   *
+   * @param {Event} event the input or change event
+   */
+  touch(event) {
+    const path = pathOf(event.target)
+    if (path) this.touched.add(path)
+    this.evaluate()
+  }
+
+  /**
+   * Evaluates every check once a morph of the surface is over: the morph
+   * left the slots and attributes as the server rendered them, and the
+   * edited inputs keep their values. One pass per morph, however many
+   * elements it touched.
+   */
+  morphed() {
+    if (this.pending) return
+    this.pending = true
+    queueMicrotask(() => {
+      this.pending = false
+      this.evaluate()
+    })
   }
 
   /**
@@ -36,46 +80,53 @@ export default class extends Controller {
   evaluate() {
     const checks = this.programValue?.checks || {}
     for (const [key, entry] of Object.entries(checks)) {
-      const failures = (entry.rules || []).map((rule) => this.failure(rule)).filter(Boolean)
-      this.apply(key, entry.kind, failures)
+      const verdicts = (entry.rules || []).map((rule) => this.failure(rule))
+      this.apply(key, entry, verdicts.filter((verdict) => typeof verdict === "string"), verdicts.includes(undefined))
     }
   }
 
   /**
-   * A rule's failure message, or null when it passes or cannot be decided
-   * here.
+   * A rule's failure message, null when it passes, or undefined when it
+   * cannot be decided here.
    *
    * @param {Object} rule the check rule with its condition and message
-   * @returns {string|null} the failure message, or null
+   * @returns {string|null|undefined} the failure message, null, or undefined
    */
   failure(rule) {
     const result = this.resolve(rule.condition)
-    if (result === null) return null // unknown here; the server decides
+    if (result === null) return undefined // unknown here; the server decides
     const valid = result && typeof result === "object" ? result.valid === true : truthy(result)
     if (valid) return null
     return (result && typeof result === "object" && result.message) || rule.message || "Check failed"
   }
 
   /**
-   * Reflects a check's failures on the elements bound to a key: a button
-   * disables, an input turns invalid.
+   * Reflects a check's verdict on the elements bound to a key. A button
+   * disables while its checks fail. The message and the invalid state
+   * follow the verdict only once the user has touched the input (any
+   * input, for a button); before that, and for a server failure the
+   * browser cannot judge, the server's rendering stands.
    *
    * @param {string} key the bound key the elements carry
-   * @param {string} kind the control kind: button or input
-   * @param {string[]} failures the failure messages, empty when the check passes
+   * @param {Object} entry the check entry: its kind (button or input) and the path its control binds
+   * @param {string[]} failures the failure messages, empty when every decided rule passes
+   * @param {boolean} undecided whether a rule could not be decided here
    */
-  apply(key, kind, failures) {
-    for (const element of this.element.querySelectorAll(`[data-a2ui-key="${escapeAttribute(key)}"]`)) {
-      if (kind === "button") {
-        element.disabled = failures.length > 0
-      } else {
-        element.setAttribute("aria-invalid", failures.length > 0 ? "true" : "false")
-      }
-    }
+  apply(key, entry, failures, undecided) {
+    const failing = failures.length > 0
+    const button = entry.kind === "button"
+    const controls = [...this.element.querySelectorAll(`[data-a2ui-key="${escapeAttribute(key)}"]`)]
+    if (button) for (const control of controls) control.disabled = failing
+    if (!(button ? this.touched.size > 0 : this.touched.has(entry.path))) return
+
     const slot = this.element.querySelector(`[data-a2ui-error-for="${escapeAttribute(key)}"]`)
+    if (!failing && undecided && serverVerdict(slot)) return
+
+    if (!button) for (const control of controls) control.setAttribute("aria-invalid", failing ? "true" : "false")
     if (slot) {
       slot.textContent = failures[0] || ""
-      slot.hidden = failures.length === 0
+      slot.hidden = !failing
+      slot.dataset.a2uiVerdict = "browser"
     }
   }
 
@@ -139,6 +190,16 @@ export default class extends Controller {
     return control.value
   }
 }
+
+// The bound path an input's name carries (`a2ui[values][/email]`, with a
+// trailing `[]` for a list), or null for any other element.
+const pathOf = (element) => {
+  const match = /^a2ui\[values\]\[(.+?)\](\[\])?$/.exec(element?.name || "")
+  return match ? match[1] : null
+}
+
+// Whether a slot shows a failure the server rendered (one the browser wrote carries its mark).
+const serverVerdict = (slot) => Boolean(slot && !slot.hidden && slot.textContent !== "" && slot.dataset.a2uiVerdict !== "browser")
 
 // A literal object's key: v1.0 doubles a leading @ ("@@type" is "@type").
 const unescapeKey = (key) => (key.startsWith("@@") ? key.slice(1) : key)

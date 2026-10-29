@@ -40,7 +40,8 @@ module Poetry
         # The Stimulus controller that runs a surface's checks as the user types.
         SURFACE_CONTROLLER = "poetry--agent--a2ui-surface"
         # The form events that re-run the checks.
-        EVALUATE_ACTIONS = "input->#{SURFACE_CONTROLLER}#evaluate change->#{SURFACE_CONTROLLER}#evaluate".freeze
+        EVALUATE_ACTIONS = "input->#{SURFACE_CONTROLLER}#touch change->#{SURFACE_CONTROLLER}#touch " \
+                           "turbo:morph-element->#{SURFACE_CONTROLLER}#morphed".freeze
 
         # The surface being rendered.
         # @return [Surface]

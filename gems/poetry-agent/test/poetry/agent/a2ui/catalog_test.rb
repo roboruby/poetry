@@ -59,8 +59,11 @@ module Poetry
           card = catalog.components.fetch("Card")
 
           assert_equal "#{COMMON_TYPES}ComponentId", card.dig("properties", "title", "$ref")
-          assert card["properties"].key?("children"), "the card body is a content cell"
+          assert card["properties"].key?("children"), "the card renders its block"
           refute card["properties"].key?("content_class"), "styling escape hatches stay out"
+          assert catalog.components.fetch("Field")["properties"].key?("children"), "a Field's block is its control"
+          refute catalog.components.fetch("Tabs")["properties"].key?("children"), "Tabs fill from their slots"
+          refute catalog.components.fetch("Input")["properties"].key?("children")
 
           badge = catalog.components.fetch("Badge")
 

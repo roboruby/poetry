@@ -23,6 +23,9 @@ module Poetry
                         https://a2ui.org/specification/v0_9/basic_catalog.json].freeze
           # Heading levels by the v0.9 Text `variant` values.
           HEADINGS = %w[h1 h2 h3 h4 h5].freeze
+          # The class that lays a ChoicePicker's chips out as pills in a
+          # wrapping row (its rules ship in the gem's stylesheet).
+          CHIPS = "a2ui-chips"
 
           # Main-axis alignment classes by the catalog's `justify` values.
           JUSTIFY = { "start" => "justify-start", "center" => "justify-center", "end" => "justify-end",
@@ -409,15 +412,27 @@ module Poetry
             with_error(component, scope, renderer, renderer.component(Poetry::Ui::Field::Component, field) { control })
           end
 
-          # Renders a CheckBox component as a bound checkbox with its error.
+          # Renders a CheckBox component as a bound checkbox beside its label
+          # (a Field's boolean-control row, the label visible and paired by
+          # `for`), with its error; one without a label text is bare, named
+          # for assistive technology only.
           def render_check_box(component, scope, renderer)
             path = renderer.surface.binding_path(component["value"])
-            attributes = { label: renderer.text(component["label"], scope), value: "true", unchecked_value: "false",
+            label = renderer.text(component["label"], scope)
+            attributes = { id: renderer.control_id(component, scope), value: "true", unchecked_value: "false",
                            checked: renderer.resolve(component["value"], scope) == true }
+            attributes[:label] = accessible_label(component, scope, renderer) if label.empty?
             attributes[:name] = renderer.input_name(path, scope) if path
             attributes[:required] = true if check_attributes(component, renderer.surface.dialect)[:required]
+            error = renderer.error_for(component, scope)
             keyed(component, scope, renderer, attributes)
-            with_error(component, scope, renderer, renderer.component(Poetry::Ui::Checkbox::Component, attributes))
+            box = renderer.component(Poetry::Ui::Checkbox::Component, attributes)
+            return with_error(component, scope, renderer, box) if label.empty?
+
+            field = { id: attributes[:id], label_text: label, orientation: :horizontal }
+            field[:required] = true if attributes[:required]
+            field[:invalid] = true if error
+            with_error(component, scope, renderer, renderer.component(Poetry::Ui::Field::Component, field) { box })
           end
 
           # `filterable` picks through a Combobox (single or multiple); chips
@@ -437,7 +452,10 @@ module Poetry
                       else
                         attributes = keyed(component, scope, renderer,
                                            { label: choice.label, value: choice.selected.first })
-                        attributes[:orientation] = :horizontal if chips
+                        if chips
+                          attributes[:orientation] = :horizontal
+                          attributes[:class] = CHIPS
+                        end
                         attributes[:name] = renderer.input_name(choice.path, scope) if choice.path
                         renderer.component(Poetry::Ui::RadioGroup::Component, attributes) do |group|
                           choice.options.each do |option|
@@ -462,22 +480,25 @@ module Poetry
             end
           end
 
-          # A checkbox per option under one list name; the leading empty
-          # value keeps "nothing checked" submittable. Chips wrap the row.
+          # A checkbox per option under one list name, each beside its
+          # visible label (paired by `for`); the leading empty value keeps
+          # "nothing checked" submittable. Chips lay the rows out as pills.
           def choice_boxes(choice, chips, scope, renderer)
             name = choice.path && "#{renderer.input_name(choice.path, scope)}[]"
             items = [renderer.view.tag.legend(choice.label, class: "mb-2 text-sm font-medium")]
             items << renderer.view.hidden_field_tag(name, "", id: nil) if name
             choice.options.each do |option|
               value = option["value"].to_s
-              attributes = { label: renderer.text(option["label"], scope), value: value,
-                             checked: choice.selected.include?(value) }
+              id = "#{renderer.stable_key(value)}-box"
+              attributes = { id: id, value: value, checked: choice.selected.include?(value) }
               attributes[:name] = name if name
               box = renderer.component(Poetry::Ui::Checkbox::Component, attributes, suffix: value)
-              items << (chips ? renderer.view.tag.span(box, class: "rounded-full border px-3 py-1") : box)
+              label = renderer.component(Poetry::Ui::Label::Component, { for_id: id }, suffix: "#{value}-label") do
+                renderer.text(option["label"], scope)
+              end
+              items << renderer.view.tag.div(renderer.view.safe_join([box, label]), class: "flex items-center gap-3")
             end
-            classes = chips ? "flex flex-row flex-wrap items-center gap-2 [&>legend]:w-full" : "flex flex-col gap-2"
-            renderer.view.tag.fieldset(renderer.view.safe_join(items), class: classes)
+            renderer.view.tag.fieldset(renderer.view.safe_join(items), class: chips ? CHIPS : "flex flex-col gap-2")
           end
 
           # Renders a Slider component as a bound slider within its bounds.

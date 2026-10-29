@@ -93,11 +93,14 @@ class RendererTest < Minitest::Test
     assert_match(/id="poetry-tabs-a2ui-s-tabs-trigger-tab-0"/, first)
     assert_match(/id="poetry-dialog-a2ui-s-modal-title"/, first)
     assert_includes first, 'data-controller="poetry--agent--a2ui-surface"'
-    assert_includes first, 'data-action="input-&gt;poetry--agent--a2ui-surface#evaluate ' \
-                           'change-&gt;poetry--agent--a2ui-surface#evaluate"'
+    assert_includes first, "data-action=\"input-&gt;poetry--agent--a2ui-surface#touch " \
+                           "change-&gt;poetry--agent--a2ui-surface#touch " \
+                           "turbo:morph-element-&gt;poetry--agent--a2ui-surface#morphed\""
     program = JSON.parse(CGI.unescapeHTML(first[/data-poetry--agent--a2ui-surface-program-value="([^"]*)"/, 1]))
 
     assert_equal %w[email go], program["checks"].keys
+    assert_equal "/email", program["checks"]["email"]["path"], "a checked input names the path it binds"
+    refute program["checks"]["go"].key?("path"), "a button binds nothing"
     assert_equal({ "/email" => "string", "/agree" => "boolean" }, program["inputs"])
     assert_match(/<input id="a2ui-s-email"[^>]* data-a2ui-key="email"/, first)
     assert_match(/<input id="a2ui-s-email"[^>]* aria-describedby="a2ui-s-email-error"/, first)
@@ -146,8 +149,13 @@ class RendererTest < Minitest::Test
 
     assert_empty renderer.warnings
     assert_match(/<div data-a2ui-key="size"[^>]* data-poetry--core--roving-focus-orientation-value="horizontal"/, html)
-    assert_equal 2, html.scan('class="rounded-full border px-3 py-1"').length
-    assert_includes html, "flex flex-row flex-wrap items-center gap-2"
+    assert_match(/<div data-a2ui-key="size"[^>]* class="cn-radio-group w-full a2ui-chips"/, html, "single-select chips")
+    assert_match(/<fieldset class="a2ui-chips">/, html, "multi-select chips")
+    chip = "a2ui-s-toppings-nuts-box"
+    row = %r{<button id="#{chip}"[^>]* data-slot="checkbox".*?</button>.*?<label[^>]* for="#{chip}">Nuts</label>}m
+
+    assert_match row, html, "each choice beside its visible label"
+    refute_match(/aria-label="Nuts"/, html)
     assert_match(%r{<select[^>]* name="a2ui\[values\]\[/city\]"}, html)
     assert_match(%r{<select[^>]* name="a2ui\[values\]\[/tags\]\[\]"[^>]* multiple}, html)
     assert_match(/<option[^>]* value="opo"[^>]* selected/, html)

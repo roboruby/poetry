@@ -39,6 +39,8 @@
 
 ### Changed
 
+- The A2UI surface controller waits for the user before it tells them of a failure: an input's message and invalid state appear once they have edited it, a button's reason once they have edited any input (a button whose checks fail is still disabled from the start); until then the server's rendering stands, including the failures it rendered after a rejected action, and a failure on a function the browser cannot judge stands until the server judges it again. The check program's entries carry the path each control binds, and the surface form's actions are `touch` and `morphed`.
+- A CheckBox's label is visible, beside the box in a Field's boolean-control row and paired by `for`, and a ChoicePicker's checkboxes carry their labels the same way; both were an `aria-label` only.
 - BREAKING: every A2UI message must name its version (`"Missing required version field"` otherwise), as both versions' schemas require. v1.0's wire version is the bare `"1.0"`; its earlier spelling `"v1.0"`, which today's published agent SDKs still send, is accepted on input. Poetry sends `"1.0"` (or `"v0.9"` on a v0.9 surface), never `"v1.0"`.
 - BREAKING: on a v1.0 surface a binding is `{ "@path" }` and a call `{ "@call" }`, as v1.0 specifies; `{ "path" }` and `{ "call" }` are literal objects there. Payloads written with the old keys under a v1.0 version move to `@path` and `@call`, or declare `"v0.9"`.
 - The browser's check program is spelled as v1.0 spells it whatever the surface speaks, and carries the surface's version; a resolved value's plain objects and lists resolve what they hold.
@@ -71,6 +73,9 @@
 
 ### Fixed
 
+- Poetry's A2UI catalog advertises `children` on exactly the components that render their block, read from the registry's `content` fact: 15 that do (Field, Alert, Toast, Tree, Label, Fieldset, Toggle...) had none, so an agent could not give a Field its control and strict validation refused one that did, and 13 that fill from slots alone (Tabs, Accordion, Select, Sidebar, Pagination...) had it anyway. A registry without the fact reads as before.
+- The surface controller evaluates the checks again when a streamed re-render morphs the surface (`turbo:morph-element`) or changes its program; a button's state and an input's message could stay stale until the next keystroke.
+- A single-select ChoicePicker's chips lay out as a wrapping row of pills, as the multi-select's do; only the arrow keys' axis had changed. The `a2ui-chips` rules ship in `poetry-agent.css`, so a host copies the file again (`poetry:install`) to pick them up.
 - A v1.0 form using `@path` and `@call` works: its inputs were never bound to the data model, so a submit carried nothing, and its checks always failed in the browser, so its button never enabled.
 - AG-UI's A2UI middleware renders end to end: its status-only activities while the agent builds a surface were rejected as messages without a version, and its replacing snapshot, which carries every operation so far, failed on its repeated `createSurface`.
 - A ChoicePicker without a label renders, its accessible name taken from its accessibility label or its id; Poetry's radio group refused it and it vanished.

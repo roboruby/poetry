@@ -349,10 +349,12 @@ module Poetry
           self.class.skipped_option?(name)
         end
 
-        # A component takes a content block when the registry says one is
-        # required, when its requires_any group names content, or when its
-        # element roster has a content cell.
+        # A component takes a content block when the registry's content fact
+        # says it renders one. A legacy registry without the fact is read
+        # as before: a required content block, a requires_any group naming
+        # content, or a content cell in the element roster.
         def content_bearing?(entry)
+          return entry["content"] == true if entry.key?("content")
           return true if entry["requires_content"]
           return true if Array(entry["requires_any"]).any? { |group| group["content"] }
 
