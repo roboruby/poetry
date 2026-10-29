@@ -87,6 +87,7 @@ components:
     - The chevron is built in - never add another indicator icon to the trigger.
     - 'disabled: true on with_item locks that item (native disabled on the trigger;
       roving focus skips it).'
+    content: false
     required_slots:
       item: at least one item
     parts:
@@ -206,6 +207,7 @@ components:
       div.
     - destructive announces assertively (role=alert) - reserve it for errors, not
       emphasis.
+    content: true
     identity: false
     parts:
     - name: alert
@@ -327,6 +329,7 @@ components:
       activation stays the user''s.'
     - No extra form fields inside an AlertDialog - if input is needed, use a Dialog.
     - 'Cancel keeps variant: :outline; do not make cancel visually primary.'
+    content: true
     required_slots:
       title: the accessible name
       description: the alertdialog must explain itself
@@ -407,6 +410,7 @@ components:
     - 'Pass ratio: as a string fraction (''16/9'', ''1/1'') - Ruby''s 16/9 is integer
       division (1).'
     - The child fills the box itself (size-full object-cover on an image).
+    content: true
     identity: false
     parts:
     - name: aspect-ratio
@@ -515,6 +519,7 @@ components:
       actions) - don't also wrap the chip in a link.
     - error state needs a with_description explaining the failure - the tint alone
       is not the message.
+    content: true
     identity: false
     parts:
     - name: attachment
@@ -669,6 +674,7 @@ components:
     - 'id: is the INPUT''s id (a Field''s label for= target); the root, list and item
       ids derive from it, and every aria-* attribute lands on the input (Field control_attributes
       splat in).'
+    content: true
     parts:
     - name: autocomplete
       description: Root wrapper carrying the controller + popper pair
@@ -807,6 +813,7 @@ components:
       not in the badge.
     - Stack avatars with poetry_avatar_group; the overflow count is poetry_avatar_group_count.
     requires_content: the initials fallback
+    content: true
     identity: false
     parts:
     - name: avatar
@@ -871,6 +878,7 @@ components:
       never a solid destructive pill inside a soft status column (design lint flags
       the mix).'
     requires_content: the visible status text
+    content: true
     identity: false
     parts:
     - name: badge
@@ -940,6 +948,7 @@ components:
       only applies to label items).
     - 'with_separator(icon: :dot) - or a block - replaces the chevron in EVERY gap;
       the default chevron RTL-flips, a custom glyph is used as given.'
+    content: false
     required_slots:
       item: at least one item
     identity: false
@@ -1030,6 +1039,7 @@ components:
     - 'Reactions REQUIRE label: (the accessible name for the cluster).'
     - Inside a Message, alignment follows the Message's align - do not set both.
     requires_content: the message content
+    content: true
     identity: false
     parts:
     - name: bubble
@@ -1148,6 +1158,7 @@ components:
     - 'Loading via loading: - never a manual disabled + spinner.'
     - Never nest an interactive element inside a Button.
     - Pick the variant by intent; one primary (default) action per view.
+    content: true
     requires_any:
     - hint: 'nothing visible renders without one - label: is only the accessible name'
       content: true
@@ -1221,6 +1232,7 @@ components:
     - A visual divider between members is poetry_button_group_separator, not a styled
       border.
     requires_content: its member controls
+    content: true
     identity: false
     parts:
     - name: button-group
@@ -1328,6 +1340,7 @@ components:
       years around the initial month.'
     - 'week_numbers: true adds the ISO week column (each row''s Thursday decides the
       number).'
+    content: false
     identity: false
     parts:
     - name: calendar
@@ -1523,6 +1536,7 @@ components:
     - The card body is the content block; use CardAction for the header-corner control.
     - 'The title renders as a real heading (h3 default) - set title_tag: to fit the
       page outline.'
+    content: true
     identity: false
     parts:
     - name: card
@@ -1626,6 +1640,7 @@ components:
       a gallery).
     - 'Change slide spacing as a TRIO: track_classes: "-ml-1" plus item classes "pl-1
       -scroll-ml-1" - the gutter padding and its snap scroll-margin move together.'
+    content: false
     required_slots:
       item: at least one slide
     identity: false
@@ -1760,6 +1775,7 @@ components:
       all three; agents patching DOM must too).
     - Don't suppress unchecked_value unless using the array idiom - an unchecked box
       that submits nothing silently keeps the old server value.
+    content: false
     parts:
     - name: checkbox
       description: The visual button[role=checkbox] - reflects the hidden input via
@@ -1859,6 +1875,7 @@ components:
       the display truncates - never truncate the copied text itself.'
     - 'Give it label: (or compose under a Field/Label) - the readonly input still
       needs its accessible name.'
+    content: false
     parts:
     - name: clipboard-text
       description: Root - the controller rides here
@@ -2020,6 +2037,7 @@ components:
       (the theme draws the marker), and the rest of the line highlights in language:.'
     - with_title { "path/to/file.rb" } opens a header; the copy button moves into
       it.
+    content: false
     parts:
     - name: code-block
       description: Root - the panel (cn-code-block plus its variant)
@@ -2157,6 +2175,7 @@ components:
       - the controller measures the panel into --collapsible-panel-height while it
       opens or closes and sets it back to auto at rest.'
     requires_content: the disclosed panel body
+    content: true
     required_slots:
       trigger: the disclosure control
     parts:
@@ -2462,6 +2481,7 @@ components:
       (the trigger-side X - single mode only), never a re-click toggle - committing
       the already-selected value closes without change. In multiple, re-committing
       IS the deselect gesture (chip-remove is its pointer twin).'
+    content: false
     required_slots:
       item: at least one item
     parts:
@@ -2882,6 +2902,7 @@ components:
       5,000 items and hope.'
     - 'Icon-rich labels: set filter_value:/keywords: rather than stuffing hidden text
       into items.'
+    content: false
     requires_any:
     - hint: the input's accessible name
       options:
@@ -3079,6 +3100,7 @@ components:
     - 'The close X is off by default (keyboard-first: Esc, the backdrop, or picking
       an item closes it) and appears with dismissible: false; show_close_button: true
       forces it - it seats in the input row, never over it.'
+    content: false
     parts:
     - name: command-dialog
       description: Root wrapper around the trigger and the <dialog> - the palette's
@@ -3547,6 +3569,7 @@ components:
     - 'shortcut: is a visual hint only - it does NOT bind the key.'
     - Do not nest a ContextMenu trigger surface inside another ContextMenu trigger
       surface.
+    content: false
     required_slots:
       trigger: the right-click surface
       item: at least one item
@@ -3873,6 +3896,7 @@ components:
       (inline edit, row actions) belong to poetry-reactive components rendered inside
       cells - never to this component.
     - 'Give the table a caption: - it is the table''s accessible purpose.'
+    content: false
     required_slots:
       column: at least one column
     parts:
@@ -4004,6 +4028,7 @@ components:
       standalone use takes label: - segments announce it themselves.'
     - 'Locale drives segment order and numerals automatically; pass locale: only to
       pin a field to a different locale than the page.'
+    content: false
     parts:
     - name: date-field
       description: Root - the controller and the enhanced/disabled surface ride here
@@ -4123,6 +4148,7 @@ components:
       dates re-select the calendar; single mode only.'
     - For an always-visible grid use Calendar directly - DatePicker is the field+popover
       form.
+    content: false
     parts:
     - name: date-picker
       description: Root wrapper - the glue controller (formats the trigger label,
@@ -4250,6 +4276,7 @@ components:
       zone).'
     - '12- vs 24-hour follows the user''s locale automatically (the dayPeriod segment
       appears only under twelve-hour cycles); hour_cycle: pins it when a product must.'
+    content: false
     parts:
     - name: date-time-field
       description: Root - the controller and the enhanced/disabled surface ride here
@@ -4343,6 +4370,7 @@ components:
     - The block is the placeholder (a Skeleton renders when absent); failure shows
       a retryable error card automatically - never hand-wire loading or error states
       around it.
+    content: true
     identity: false
     parts:
     - name: deferred
@@ -4456,6 +4484,7 @@ components:
     - 'show_close_button: false removes the corner X - keep a footer action (Esc still
       closes).'
     - Destructive confirmations pair a destructive Button in the footer - never auto-submit.
+    content: true
     required_slots:
       title: the accessible name
     parts:
@@ -4630,6 +4659,7 @@ components:
       wired footer close; Esc while focus is inside still exits.'
     - 'snap_points: ["31rem", 1] snaps a bottom sheet between preset heights (ascending
       fractions or px/rem lengths; opens at the first) - direction: :down only.'
+    content: true
     required_slots:
       title: the accessible name
     parts:
@@ -5167,6 +5197,7 @@ components:
     - Keep submenus <= 2 levels; prefer grouping + separators over deep nesting.
     - Critical actions must exist somewhere reachable without JS (menus are JS-required
       interaction).
+    content: false
     required_slots:
       trigger: the menu button
       item: at least one item
@@ -5426,6 +5457,7 @@ components:
       page outline.'
     - 'media_variant: :icon gives the rounded muted icon tile; wrap a poetry_icon
       in with_media.'
+    content: true
     identity: false
     parts:
     - name: empty
@@ -5527,6 +5559,7 @@ components:
     - 'orientation: :responsive stacks by default and flips label-left / control-right
       once its poetry_field_group container passes the md mark - the settings-page
       recipe (it needs that FieldGroup ancestor to measure against).'
+    content: true
     identity: false
     parts:
     - name: field
@@ -5588,6 +5621,7 @@ components:
       (the choice-group form).'
     - 'Field''s orientation: :responsive is container-driven: it needs a FieldGroup
       ancestor to measure against - without one it stays stacked.'
+    content: true
     identity: false
     parts:
     - name: field-group
@@ -5611,6 +5645,7 @@ components:
       is the bare rule.'
     - Pass a block for the inline caption form ("Or continue with") - the caption
       sits on the line, backed by the page background.
+    content: true
     identity: false
     parts:
     - name: field-separator
@@ -5660,6 +5695,7 @@ components:
     - 'hint: is the muted description under the legend; per-field hints stay on the
       fields.'
     - Stack the fields inside with poetry_field_group - never hand-spaced flex columns.
+    content: true
     identity: false
     parts:
     - name: field-set
@@ -5849,6 +5885,7 @@ components:
       the file at intake; the hint: tells people the same limits in words.'
     - In a Field, prefer form.file_input (the builder wires id/label/errors); the
       bare component suits standalone dropzones.
+    content: false
     identity: false
     parts:
     - name: file-input
@@ -6109,6 +6146,7 @@ components:
     - Never use HoverCard for hints (Tooltip) or for content users act on (Popover).
     - 'Prefer defer: for expensive previews - a lazy turbo-frame that fetches on first
       open.'
+    content: true
     required_slots:
       trigger: the enriched link
     parts:
@@ -6230,6 +6268,7 @@ components:
     - 'Icons are decorative by default (aria-hidden); pass label: when the icon stands
       alone.'
     - Never inline raw <svg> markup where an icon exists - use poetry_icon.
+    content: false
     identity: false
     parts:
     - name: icon
@@ -6294,6 +6333,7 @@ components:
     - 'mask: formats as the user types (''(999) 999-9999''; 9=digit, a=letter, A=upper,
       *=alnum, #=sign/digit, \\ escapes, ? makes the rest optional) - the MASKED text
       submits; read data-raw for the bare value.'
+    content: false
     identity: false
     parts:
     - name: input
@@ -6336,6 +6376,7 @@ components:
     - The group is a surface, not a label - the control still needs its Label/Field
       pairing.
     requires_content: its control + addons
+    content: true
     identity: false
     parts:
     - name: input-group
@@ -6434,6 +6475,7 @@ components:
       never log the value (it is a live credential).'
     - InputOTP is for CODES - passwords use Input type=password, longer identifiers
       use Input.
+    content: false
     parts:
     - name: input-otp-container
       description: Root row (forced dir=ltr - slot order equals string index order
@@ -6568,6 +6610,7 @@ components:
       in the content column after the description.
     - 'media_variant: :icon for a glyph, :image for a thumbnail (sized/rounded automatically).'
     - 'A clickable row is tag: :a with href: - never wrap an Item in a bare <a>.'
+    content: true
     identity: false
     parts:
     - name: item
@@ -6622,6 +6665,7 @@ components:
     - Kbd renders a real <kbd> - the key text is the content block (⌘, Esc, Ctrl).
     - For a chord (⌘+K) render one Kbd per key inside an inline-flex row.
     requires_content: the key text
+    content: true
     identity: false
     parts:
     - name: kbd
@@ -6644,6 +6688,7 @@ components:
     agent_rules:
     - Every control gets a Label wired via for_id - placeholder text is never the
       label.
+    content: true
     identity: false
     parts:
     - name: label
@@ -6688,6 +6733,7 @@ components:
       class.'
     - 'external: true handles target/rel safely - never hand-write target=_blank.'
     requires_content: the visible link text
+    content: true
     identity: false
     parts:
     - name: link
@@ -6744,6 +6790,7 @@ components:
       glyph, with_icon { } for other media (a Spinner mid-run).'
     - 'Use variant: :separator for date/section breaks; :border under pinned headers.'
     requires_content: the marker label
+    content: true
     identity: false
     parts:
     - name: marker
@@ -7174,6 +7221,7 @@ components:
       one is open (the gated-hover rule).
     - In-menu item rules (destructive variant, inset, checkbox/radio) follow the DropdownMenu
       family contract.
+    content: false
     required_slots:
       menu: at least one menu
     parts:
@@ -7465,6 +7513,7 @@ components:
       in the header.
     - Timestamps and delivery state belong in the footer slot (it lifts the avatar
       automatically).
+    content: true
     identity: false
     parts:
     - name: message
@@ -7584,6 +7633,7 @@ components:
     - History loads PREPEND into the content element - the controller preserves the
       reading position.
     - Never nest a second scroll container inside the viewport.
+    content: true
     identity: false
     parts:
     - name: message-scroller
@@ -7712,6 +7762,7 @@ components:
       puts labels beside values (the classic key/value sheet) - pick one per surface.'
     - For editable facts pair each value with its edit affordance inside the item
       block; the list itself stays read-only vocabulary.
+    content: false
     required_slots:
       item: 'at least one item (label: plus the value block)'
     identity: false
@@ -7780,6 +7831,7 @@ components:
     - 'value_text: replaces the visible readout verbatim ("3 of 4 seats"); without
       it the readout shows the percentage of the RANGE. No aria-valuetext - ARIA 1.2
       deprecated it on role=meter; aria-valuenow carries the value.'
+    content: false
     identity: false
     parts:
     - name: meter
@@ -7847,6 +7899,7 @@ components:
       control_attributes splat straight in).'
     - 'The fast path is options: [[label, value], ...] + selected:; a content block
       overrides it.'
+    content: true
     identity: false
     parts:
     - name: native-select-wrapper
@@ -7967,6 +8020,7 @@ components:
     - 'Rich panels (title + description grids) want viewport: true - the shared morphing
       card contains and sizes them; the default per-item mode suits simple link lists
       (the top-nav block shows the viewport pattern).'
+    content: false
     parts:
     - name: navigation-menu
       description: The <nav> landmark around the whole disclosure bar
@@ -8210,6 +8264,7 @@ components:
     - Pair it with a Label/Field for the accessible name - the component ships none.
     - 'format: takes Intl.NumberFormatOptions as a Hash ({ style: "currency", currency:
       "USD" }); pick locale: to pin parsing separators.'
+    content: false
     parts:
     - name: number-field
       description: Root wrapper - the controller, disabled/invalid/filled state, and
@@ -8380,6 +8435,7 @@ components:
       g poetry:pagination (no argument = detect and install an adapter for each loaded
       gem) and keep calling paginate / poetry_pagy_nav / will_paginate(renderer: PoetryLinkRenderer)
       - never hand-wire poetry_pagination around a paginator gem.'
+    content: false
     identity: false
     parts:
     - name: pagination
@@ -8535,6 +8591,7 @@ components:
       open: true) - popovers are JS-required interaction.'
     - Do not nest a Popover inside a Popover - restructure (the layer stack allows
       it; comprehension does not).
+    content: true
     required_slots:
       trigger: the panel's control
     parts:
@@ -8667,6 +8724,7 @@ components:
     - 'value: is the current progress (0..max:, default max 100); the component computes
       the width.'
     - For an UNKNOWN duration use Spinner, not Progress - this bar is determinate.
+    content: false
     identity: false
     parts:
     - name: progress
@@ -8797,6 +8855,7 @@ components:
     - with_progress { custom } replaces the readout; data-current/data-total on the
       progress element and a [data-progress-count] child stay live for segment bars
       and counters.
+    content: true
     parts:
     - name: questionnaire
       description: The root <form> the controller drives - navigation, validation
@@ -9051,6 +9110,7 @@ components:
     - '7+ options: use Select instead.'
     - 'Wire errors through Field/FormBuilder (invalid: + describedby on the root)
       - never a bare red ring.'
+    content: false
     required_slots:
       item: at least one radio item
     parts:
@@ -9185,6 +9245,7 @@ components:
     - Handles are keyboard splitters (arrows step, Home/End jump) - never replace
       them with styled divs.
     - Nest a group inside a panel for two-axis layouts - groups self-scope.
+    content: false
     required_slots:
       panel: at least two panels
     parts:
@@ -9253,6 +9314,7 @@ components:
     - This is a NATIVE scroll surface - never bolt scroll JS onto it; use MessageScroller
       for chat transcripts.
     requires_content: what scrolls
+    content: true
     identity: false
     parts:
     - name: scroll-area
@@ -9329,6 +9391,7 @@ components:
     - Enter submits the surrounding form natively - wrap it in a form/turbo-frame
       for live search; listen for poetry:search-field:clear to reset results.
     - 'Pair with a Label/Field for the accessible name, or pass label: standalone.'
+    content: false
     parts:
     - name: search-field
       description: Root - the controller and the emptiness state ride here
@@ -9578,6 +9641,7 @@ components:
       or Capybara selectors (drive the combobox like a user).
     - 'Positioning is popper-only: poetry Select drops below the trigger (the item-aligned
       overlay mode is not ported - a documented parity delta).'
+    content: false
     required_slots:
       item: at least one item
     parts:
@@ -9856,6 +9920,7 @@ components:
       for the visible caption.'
     - 'copy: true adds copy-without-revealing; leave it off for password-change forms.'
     - Values re-mask on blur BY DESIGN - do not fight it with reveal-state persistence.
+    content: false
     parts:
     - name: sensitive-input
       description: Root - the state machine rides here
@@ -9982,6 +10047,7 @@ components:
     agent_rules:
     - 'A purely visual divider stays decorative (the default): aria-hidden, role absent.'
     - 'Set decorative: false only when the divide is semantically meaningful (role=separator).'
+    content: false
     identity: false
     parts:
     - name: separator
@@ -10074,6 +10140,7 @@ components:
     - 'Pick side by content: navigation left, detail/edit right, pickers bottom.'
     - Do not put must-not-lose confirmations in a Sheet - that is AlertDialog.
     - Do not rebuild a centered Dialog with a Sheet; use Dialog.
+    content: true
     required_slots:
       title: the accessible name
     parts:
@@ -10259,6 +10326,7 @@ components:
       it fully away; :none is a static column.'
     - 'Menu entries are poetry_sidebar_menu_button(href:) links (active: marks the
       current route) - navigation navigates.'
+    content: false
     required_slots:
       nav: the sidebar column
     parts:
@@ -10430,6 +10498,7 @@ components:
       no content of its own.
     - Mark the live region that will replace it (aria-busy on the container), not
       the skeleton.
+    content: true
     identity: false
     parts:
     - name: skeleton
@@ -10552,6 +10621,7 @@ components:
       frame).
     - Never transition the thumb/range position with CSS - geometry must track the
       pointer.
+    content: false
     parts:
     - name: slider
       description: Root - the controller, the geometry vars, and pointer capture ride
@@ -10672,6 +10742,7 @@ components:
     - Spinner announces itself (role=status + aria-label) - never a bare spinning
       div.
     - 'Set label: for the loading context (''Saving…''); the default is ''Loading''.'
+    content: false
     identity: false
     parts:
     - name: spinner
@@ -10738,6 +10809,7 @@ components:
       belong in the content ('$45,231', '99.98%').
     - 'A Stat is not a chart: a trend over time goes in the media slot (or use poetry-charts).'
     requires_content: the metric value
+    content: true
     identity: false
     parts:
     - name: stat
@@ -10842,6 +10914,7 @@ components:
       - never flip UI-only for a setting the user believes is saved.
     - NEVER write the checked attributes (data-checked/data-unchecked) without aria-checked
       and the input sync (the controller writes all three).
+    content: false
     parts:
     - name: switch
       description: The visual button[role=switch] - reflects the hidden input via
@@ -10929,6 +11002,7 @@ components:
       region (tabindex=0 + role=region) and a keyboard-reachable region needs a name
       (the ScrollArea rule).'
     requires_content: the table sections (poetry_table_* helpers)
+    content: true
     identity: false
     parts:
     - name: table
@@ -11033,6 +11107,7 @@ components:
       tab sets.'
     - Tabs switch VIEWS of one context; use navigation (links) when the URL should
       change.
+    content: false
     required_slots:
       tab: at least one tab
     parts:
@@ -11183,6 +11258,7 @@ components:
       to own the removal server-side (Turbo re-render).'
     - Choosing from options is Combobox multiple; toggling fixed choices is ToggleGroup
       - a TagGroup holds items that exist until removed.
+    content: false
     parts:
     - name: tag-group
       description: The labelled wrapper - caption span + grid stack here
@@ -11274,6 +11350,7 @@ components:
     - Use Textarea for free text; Input for single-line; do not bolt a JS autosizer
       on (auto-grow is CSS).
     - Do not set native required - required flows as aria-required via Field.
+    content: false
     identity: false
     parts:
     - name: textarea
@@ -11372,6 +11449,7 @@ components:
       appears only under twelve-hour cycles); hour_cycle: pins it when a product must.'
     - 'For a date AND a time, use a DateTimeField (poetry_date_time_field / form.datetime_field):
       one control, one datetime-local value.'
+    content: false
     parts:
     - name: time-field
       description: Root - the controller and the enhanced/disabled surface ride here
@@ -11476,6 +11554,7 @@ components:
     - 'orientation: :horizontal lays the steps left-to-right (an order tracker); the
       vertical default reads as a feed. For steps the USER advances through, use Stepper
       - a Timeline records, it never navigates.'
+    content: false
     required_slots:
       item: at least one item (title:, with the description as its block)
     identity: false
@@ -11593,6 +11672,7 @@ components:
       ASSERTIVELY); do not use it for styling.'
     - Never put required interactions in a toast (toasts are missable) - that is AlertDialog.
     - 'Toasts are supplementary: never the only place an outcome is recorded.'
+    content: true
     required_slots:
       title: the message
     identity: false
@@ -11706,6 +11786,7 @@ components:
       persistent toasts.
     - Server round-trips keep using turbo_stream.poetry_toast - this trigger is for
       purely client-side moments (copied, undone, queued).
+    content: true
     identity: false
     parts:
     - name: toast-trigger
@@ -11784,6 +11865,7 @@ components:
       the region.
     - Do not announce() toast content yourself - the toast controller already does;
       double-announcing is a regression.
+    content: true
     identity: false
     parts:
     - name: toaster
@@ -11874,6 +11956,7 @@ components:
       on failure - a pressed toggle whose effect failed is a lie.
     - Pressed visual is accent - don't override data-pressed colors per-instance (theme-level
       only).
+    content: true
     identity: false
     parts:
     - name: toggle
@@ -12011,6 +12094,7 @@ components:
       - the controller enforces it; agents patching DOM must too.'
     - single deselects to empty by re-press - if your UI needs always-one-selected,
       handle the empty change in the host.
+    content: false
     required_slots:
       item: at least one item
     identity: false
@@ -12156,6 +12240,7 @@ components:
       it on entry.'
     - A ToggleGroup composed inside keeps its own arrow navigation (its items rove
       locally); place it between separators so the seam reads as a group.
+    content: false
     required_slots:
       button: at least one control (with_button / with_input)
     identity: false
@@ -12298,6 +12383,7 @@ components:
       the row feel continuous.
     - 'Rich visual content needs label: (the plain-text announcement).'
     - Do not pin tooltips open as onboarding callouts - that is a Popover.
+    content: true
     required_slots:
       trigger: the described control
     parts:
@@ -12462,6 +12548,7 @@ components:
       -> status: :pending; done -> no status, "Ran ...". The title is what assistive
       tech reads.'
     - 'href: makes a step a link (a source, a file the agent changed).'
+    content: false
     required_slots:
       step: at least one step (with_step(title, ...))
     parts:
@@ -12567,6 +12654,7 @@ components:
       re-rendering with expanded: from your store.'
     - 'Navigation destinations take href: (the label renders as a link); a Tree is
       not a menu - actions belong to DropdownMenu, picking to Select/Combobox.'
+    content: true
     parts:
     - name: tree
       description: The treegrid container (role=treegrid, the accessible name) - roving
@@ -12645,6 +12733,7 @@ components:
     - Wrap a wide table (or any wide block) in a typeset-scroll div inside the prose
       to scroll horizontally instead of compressing.
     requires_content: the rendered prose HTML
+    content: true
     identity: false
     parts:
     - name: typeset

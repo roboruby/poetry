@@ -221,6 +221,85 @@ module Poetry
         assert_equal StyleProbe::Style.capsule, entry["capsule"]
       end
 
+      def test_content_is_true_when_the_class_renders_its_block
+        assert registry.entries.fetch("poetry/core/box")["content"], "Box renders its block"
+        assert registry.entries.fetch("poetry/core/registry_test/style_probe")["content"]
+      end
+
+      def test_content_is_false_when_only_a_nested_class_renders_a_block
+        Dir.mktmpdir do |dir|
+          eval_probe(dir, "nested_probe", <<~RUBY)
+            module ContentNestedProbe
+              class Component < Poetry::Core::Component
+                class Item < Poetry::Core::Component
+                  def call = content_tag(:li, content)
+                end
+
+                def call = content_tag(:ul, "fixed")
+              end
+            end
+          RUBY
+
+          entry = Registry.new(components: [::ContentNestedProbe::Component]).entries.values.first
+
+          assert entry.key?("content"), "the fact is always written"
+          refute entry["content"], "the nested class's block is its own"
+        end
+      end
+
+      def test_content_sees_a_sidecar_template
+        Dir.mktmpdir do |dir|
+          # The template sits where ViewComponent looks: beside the class, named for it.
+          File.write(File.join(dir, "component.html.erb"), "<%# the block %>\n<div><%= content %></div>\n")
+          eval_probe(dir, "component", <<~RUBY)
+            module ContentTemplatedProbe
+              class Component < Poetry::Core::Component
+              end
+            end
+          RUBY
+
+          entry = Registry.new(components: [::ContentTemplatedProbe::Component]).entries.values.first
+
+          assert entry["content"], "the sidecar template renders the block"
+        end
+      end
+
+      def test_content_sees_a_family_module
+        Dir.mktmpdir do |dir|
+          eval_probe(dir, "family_module", <<~RUBY)
+            module ContentFamilyProbe
+              module Body
+                def body = content? ? content : "empty"
+              end
+            end
+          RUBY
+          eval_probe(dir, "family_component", <<~RUBY)
+            module ContentFamilyProbe
+              class Component < Poetry::Core::Component
+                include Body
+
+                def call = content_tag(:div, body)
+              end
+            end
+          RUBY
+
+          entry = Registry.new(components: [::ContentFamilyProbe::Component]).entries.values.first
+
+          assert entry["content"], "the module's body renders the block for its includers"
+        end
+      end
+
+      def test_content_scan_reads_a_template_call_and_nothing_that_looks_like_one
+        scan = Registry::ContentScan
+
+        assert scan.template?("<%= content %>")
+        assert scan.template?("<% if content? %>x<% end %>")
+        assert scan.template?("<%= element_tag(:div, **root_attributes) do %><%= content %><% end -%>")
+        refute scan.template?("<%# <%= content %> %>")
+        refute scan.template?("<%= content_for(:x) %><%= item.content %><%= render(content: 1) %>")
+        refute scan.template?("<% content = capture { 1 } %><%= content_attributes %>")
+      end
+
       def test_identity_is_false_for_components_that_never_mint
         entry = registry.entries.fetch("poetry/core/box")
 

@@ -75,6 +75,7 @@ components:
     - 'The Container contract still applies: config colors, --chart tokens, dark mode.'
     - Prefer the default engine; adapters are for engine-specific needs (e.g. >10k
       points on canvas).
+    content: false
     parts:
     - name: chart-adapter-mount
       description: The engine's drawing surface (role=img carrying the accessible
@@ -339,6 +340,7 @@ components:
     - Charts render complete on the server; the tooltip layer attaches separately.
     - 'Entrance animation is on by default (source parity); animate: false for a static
       chart. Reduced-motion users always get the finished chart.'
+    content: false
     parts:
     - name: chart-brush
       description: 'The brush strip group (with_brush): track + window + two handles
@@ -783,6 +785,7 @@ components:
       block look).'
     - 'Entrance animation is on by default (source parity); animate: false for a static
       chart. Reduced-motion users always get the finished chart.'
+    content: false
     parts:
     - name: chart-brush
       description: 'The brush strip group (with_brush): track + window + two handles
@@ -1173,6 +1176,7 @@ components:
       an area stack).'
     - Colors come from the config - never set fill/stroke on a mark directly.
     - Entrance animation is on by default; each mark keeps its own reveal mechanism.
+    content: false
     parts:
     - name: chart-svg
       description: The chart canvas (<svg>) - server-computed geometry in a fixed
@@ -1347,6 +1351,7 @@ components:
       dark: } maps.'
     - 'Give charts an explicit id: when the page renders more than one of the same
       chart.'
+    content: true
     parts:
     - name: chart
       description: The chart frame (<div>) - the aspect-video chrome, the tooltip
@@ -1406,6 +1411,7 @@ components:
       differ from series.'
     - 'align: :top pads below (pb-3), :bottom (default) pads above (pt-3) - matching
       the chart edge it sits on.'
+    content: false
     identity: false
     parts:
     - name: chart-legend-content
@@ -1661,6 +1667,7 @@ components:
     - Colors come from the config - never set stroke on a line directly.
     - 'Entrance animation is on by default (source parity); animate: false for a static
       chart. Reduced-motion users always get the finished chart.'
+    content: false
     parts:
     - name: chart-brush
       description: 'The brush strip group (with_brush): track + window + two handles
@@ -1988,6 +1995,7 @@ components:
     - The tooltip walks slices by hover AND arrow keys (role=application when attached).
     - 'Entrance animation is on by default (source parity); animate: false for a static
       chart. Reduced-motion users always get the finished chart.'
+    content: false
     parts:
     - name: chart-svg
       description: The chart canvas (<svg>) - the aria-label surface, the tooltip's
@@ -2246,6 +2254,7 @@ components:
     - Colors come from the config - never set fill/stroke on a radar directly.
     - 'Entrance animation is on by default (source parity); animate: false for a static
       chart. Reduced-motion users always get the finished chart.'
+    content: false
     parts:
     - name: chart-svg
       description: The chart canvas (<svg>) - the aria-label surface, the tooltip's
@@ -2542,6 +2551,7 @@ components:
       fills the middle.
     - 'Entrance animation is on by default (source parity); animate: false for a static
       chart. Reduced-motion users always get the finished chart.'
+    content: false
     parts:
     - name: chart-svg
       description: The chart canvas (<svg>) - the aria-label surface, the tooltip's
@@ -2856,6 +2866,7 @@ components:
     - The tooltip hits per point and shows the x/y(/z) values with the series color.
     - 'Entrance animation is on by default (400ms linear, source-exact); animate:
       false for a static chart.'
+    content: false
     parts:
     - name: chart-svg
       description: The chart canvas (<svg>) - server-computed geometry in a fixed
@@ -3019,6 +3030,7 @@ components:
       a display string.
     - 'indicator: :dot (default) | :line | :dashed matches the ported variants.'
     - Numeric values render delimited (1,234) in the mono tabular column automatically.
+    content: false
     identity: false
     parts:
     - name: chart-tooltip-content
@@ -3098,6 +3110,7 @@ components:
       events:
       - poetry--charts--tooltip:hide
       - poetry--charts--tooltip:show
+    content: false
     identity: false
     stimulus:
     - element: root

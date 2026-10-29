@@ -24,6 +24,7 @@
 
 ### Changed
 
+- The committed component registry carries each component's `content` fact (poetry-core 0.1.14): whether it renders its content block.
 - CodeBlock moves to shadcn@4.23.0's code-block anatomy, with per-theme rules in all nine themes (the eight ports transcribe upstream; the default theme takes nova's, the upstream default style, as for Questionnaire). The Ruby options stay. BREAKING for host CSS aimed at the old parts: the scroll container is `code-block-content` (was `code-block-pre`) and carries `data-numbered` (was `data-line-numbers` on the root); every source line is a `code-block-line` with a `data-variant` (rouge's `.line` / `.hll` spans are gone); the copy button is `code-block-copy-button` (was `clipboard-text-copy`) and, without a header, floats in the corner, shown on hover or focus (always on a coarse pointer). The syntax palette's seven `--syntax-*` vars move to the theme's `.cn-code-block-code` rule.
 - Typeset keeps embedded components out of the prose cascade, as shadcn@4.23.0's typeset does: the element rules skip anything carrying `data-slot` (every poetry component root), and a component placed directly in the flow takes a paragraph's space above it. `not-typeset` stays for plain-HTML subtrees. `typeset.css` is app-owned, so existing apps take the change by hand: `bin/rails g poetry:diff` shows it.
 - FileInput writes `data-dragging`, `data-drag-reject` and `data-drag-global` on its root through the file-drop controller; the dropzone label carries no actions of its own.

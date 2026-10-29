@@ -33,6 +33,67 @@ module Poetry
       # "identity" derivation - see the entry's identity key).
       MINT_PATTERN = /\bpoetry_instance_id\b|\binstance_id\b|\bSecureRandom\b/
 
+      # The source scan behind the entry's content fact: whether a class or
+      # module body, or a template, calls the block (`content`, `content?`).
+      module ContentScan
+        # The calls that read the block.
+        NAMES = %i[content content?].freeze
+        # A template tag's call: a bare `content` or `content?`, not
+        # `content_for`, `.content`, `:content`, `content:` or `content =`.
+        TEMPLATE_CALL = /(?<![\w.:@$])content\??(?![\w:(])(?!\s*=[^=~>])/
+        # A template's tags, their Ruby captured.
+        TAG = /<%(?!#)=?(.*?)-?%>/m
+        # A template's comments, dropped before the tags are read.
+        COMMENT = /<%#.*?%>/m
+
+        module_function
+
+        # Whether the class or module defined at a line calls the block in
+        # its own body (a nested class's or module's body is its own).
+        # @param source [String] the file's Ruby
+        # @param line [Integer] the line the definition starts on
+        # @return [Boolean]
+        def source?(source, line)
+          require "prism"
+          definition = definition_at(Prism.parse(source).value, line)
+          definition ? calls?(definition) : false
+        end
+
+        # Whether a template's Ruby calls the block.
+        # @param erb [String]
+        # @return [Boolean]
+        def template?(erb)
+          erb.gsub(COMMENT, "").scan(TAG).flatten.any? { |code| code.match?(TEMPLATE_CALL) }
+        end
+
+        # The class or module node whose definition starts at a line.
+        def definition_at(node, line)
+          return node if definition?(node) && node.location.start_line == line
+
+          node.compact_child_nodes.each do |child|
+            found = definition_at(child, line)
+            return found if found
+          end
+          nil
+        end
+
+        # Whether a node's body calls the block, nested definitions aside.
+        def calls?(node)
+          node.compact_child_nodes.any? do |child|
+            next false if definition?(child)
+
+            (child.is_a?(Prism::CallNode) && child.receiver.nil? && NAMES.include?(child.name)) || calls?(child)
+          end
+        end
+
+        # Whether a node defines a class or a module.
+        def definition?(node)
+          node.is_a?(Prism::ClassNode) || node.is_a?(Prism::ModuleNode)
+        end
+
+        private_class_method :definition_at, :calls?, :definition?
+      end
+
       # The committed-registry view: the four generated sections
       # plus the root they resolve against, read straight from the YAML a
       # `registry:generate` run committed - no component classes, no Rails.
@@ -376,6 +437,34 @@ module Poetry
         mint_sources.fetch(path) { mint_sources[path] = File.read(path).match?(MINT_PATTERN) }
       end
 
+      # Whether the component renders its content block: its own class body,
+      # a family module's, or a sidecar template calls `content` (or
+      # `content?`). A nested class's call is that class's own, so the scan
+      # stops at nested classes and modules; a local named `content` shadows
+      # the block and reads as a variable, not a call.
+      def renders_content?(component)
+        family = component.ancestors.take_while { |mod| mod != Poetry::Core::Component }
+        family.any? { |mod| content_source?(mod) || content_template?(mod) }
+      end
+
+      # Whether one ancestor's own body, in its source file, calls `content`.
+      def content_source?(mod)
+        path, line = mod.name && Object.const_source_location(mod.name)
+        return false unless path && File.exist?(path)
+
+        content_sources = (@content_sources ||= {})
+        content_sources.fetch([path, line]) do
+          content_sources[[path, line]] = ContentScan.source?(File.read(path), line)
+        end
+      end
+
+      # Whether one ancestor's sidecar templates call `content`.
+      def content_template?(mod)
+        return false unless mod.respond_to?(:sidecar_files)
+
+        mod.sidecar_files(%w[erb]).any? { |file| ContentScan.template?(File.read(file)) }
+      end
+
       # One component's registry entry: its identity and declared surface,
       # then each section of facts in the registry's key order.
       def entry_for(component)
@@ -455,6 +544,11 @@ module Poetry
         if component.respond_to?(:required_content) && (hint = component.required_content)
           facts["requires_content"] = hint
         end
+        # The content fact: whether the component renders its content block
+        # at all (its class, a family module or a sidecar template calls
+        # `content`), so a consumer knows which components take a block
+        # and which ignore one. Always written; absent = a legacy registry.
+        facts["content"] = renders_content?(component)
         # The REQUIRED_SLOTS declaration: the same fact that raises in
         # before_render lets poetry check flag a call that never sets the
         # slot, statically.

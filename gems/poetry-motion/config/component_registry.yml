@@ -45,6 +45,7 @@ components:
     - Each direct child is one item. Keep item elements stable across renders so survivors
       slide instead of fading out and back in.
     requires_content: the list's items
+    content: true
     parts:
     - name: animated-list
       description: The list; its direct children are the items that enter, leave and
@@ -119,6 +120,7 @@ components:
       stands on its own with the background removed.'
     - 'This is the CSS tier: a background that follows the pointer, draws on a canvas
       or runs a shader is not this component.'
+    content: true
     identity: false
     parts:
     - name: background
@@ -204,6 +206,7 @@ components:
     - 'Confetti celebrates a moment the user caused - a finished task, a purchase.
       It never carries the message: say what happened in text, and let the confetti
       decorate it.'
+    content: true
     identity: false
     parts:
     - name: confetti
@@ -291,6 +294,7 @@ components:
     - 'Leave room around the dock for the swell: items scale past their box without
       moving others.'
     requires_content: the items, each a direct child
+    content: true
     identity: false
     parts:
     - name: dock
@@ -375,6 +379,7 @@ components:
     - Dragging is decoration or play here; never the only way to do something. A drag
       that reorders or chooses needs a keyboard and a button path too.
     requires_content: the content that drags
+    content: true
     identity: false
     parts:
     - name: draggable
@@ -448,6 +453,7 @@ components:
     agent_rules:
     - 'The globe is a picture: give it label: or put the places in text beside it;
       the markers are not readable on their own.'
+    content: false
     identity: false
     parts:
     - name: globe
@@ -515,6 +521,7 @@ components:
       newly visible one from the old one's box. Hide the others with display, never
       visibility or opacity.
     requires_content: the elements that carry data-layout-id
+    content: true
     identity: false
     parts:
     - name: layout-group
@@ -582,6 +589,7 @@ components:
     - Wrap one control, a call to action; a page of magnetic controls is noise. The
       pull is decoration and never the only cue that something is interactive.
     requires_content: the control the pointer pulls
+    content: true
     identity: false
     parts:
     - name: magnetic
@@ -683,6 +691,7 @@ components:
     - 'Keep pausable: true. A loop that moves for more than five seconds needs a pause
       control (WCAG 2.2.2); poetry check flags pausable: false.'
     requires_content: the items that scroll
+    content: true
     identity: false
     parts:
     - name: marquee
@@ -802,6 +811,7 @@ components:
       there and let the count fill it in.
     - 'format: takes Intl.NumberFormat options (style, currency, minimumFractionDigits,
       ...); the server formats the same number the browser counts to.'
+    content: false
     identity: false
     parts:
     - name: number-ticker
@@ -873,6 +883,7 @@ components:
     - Parallax is for decoration and imagery, never for text a reader is reading;
       keep the distance small, and leave room so the drift never clips the content.
     requires_content: the content that drifts
+    content: true
     identity: false
     parts:
     - name: parallax
@@ -937,6 +948,7 @@ components:
     agent_rules:
     - 'Particles are a background: the content stands on its own and keeps its contrast
       without them.'
+    content: true
     identity: false
     parts:
     - name: particles
@@ -1021,6 +1033,7 @@ components:
     agent_rules:
     - Scramble a short label or heading, ideally in a monospace face so the width
       holds; never text a reader needs mid-animation.
+    content: false
     identity: false
     parts:
     - name: scramble
@@ -1079,6 +1092,7 @@ components:
     agent_rules:
     - Use one scroll progress bar per page, for long reading; it is decorative and
       never the only sign of where the reader is.
+    content: false
     identity: false
     parts:
     - name: scroll-progress
@@ -1132,6 +1146,7 @@ components:
     - Shared elements need <meta name="view-transition" content="same-origin"> in
       the layout; without it the visit swaps the page with no morph.
     requires_content: the element both pages share
+    content: true
     identity: false
     parts:
     - name: shared-element
@@ -1168,6 +1183,7 @@ components:
     - 'The glow is decoration: the surface reads the same without it, and it never
       carries state.'
     requires_content: the surface the glow follows the pointer across
+    content: true
     identity: false
     parts:
     - name: spotlight-card
@@ -1254,6 +1270,7 @@ components:
       #swipeRight.'
     - The swipe event is the decision; persist it from the event. The cards themselves
       are not a form.
+    content: false
     identity: false
     parts:
     - name: swipe-cards
@@ -1349,6 +1366,7 @@ components:
     - Words not yet revealed are dimmed below text contrast on purpose; readers get
       the whole passage from its hidden copy, and nothing the page needs may live
       only in a reveal.
+    content: false
     identity: false
     parts:
     - name: text-reveal
@@ -1422,6 +1440,7 @@ components:
     - 'The lean is decoration: nothing on the card may depend on it, and the card
       reads the same flat.'
     requires_content: the surface that tilts, a card most often
+    content: true
     identity: false
     parts:
     - name: tilt-card
@@ -1511,6 +1530,7 @@ components:
     agent_rules:
     - Type one short line, a headline or a prompt; never body copy or anything a reader
       must wait for. The line is complete in the page before it types.
+    content: false
     identity: false
     parts:
     - name: typewriter
@@ -1587,6 +1607,7 @@ components:
       with only it.'
     - 'Keep rounds: small. A rotation that runs past five seconds is auto-updating
       content and needs a way to stop it (WCAG 2.2.2); rounds: 0 never stops.'
+    content: false
     identity: false
     parts:
     - name: word-rotate

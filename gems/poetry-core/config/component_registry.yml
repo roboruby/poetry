@@ -15,6 +15,7 @@ components:
         (br, hr, img, ...) self-close and take no content block.
     slots: []
     helper: poetry_box
+    content: true
     identity: false
     parts:
     - name: box

@@ -66,6 +66,7 @@ components:
       input inside the island, and the module writes to props.input.'
     - 'import: is an importmap specifier the host pins (app/javascript/islands/map.js
       is islands/map); poetry check warns when config/importmap.rb does not.'
+    content: true
     identity: false
     parts:
     - name: island
