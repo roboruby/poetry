@@ -62,10 +62,16 @@ module Poetry
           # @param component [Hash]
           # @return [Array<Object>]
           def references(component)
+            reference_fields(component).map(&:last)
+          end
+
+          # The child references with the field each sits in, for what names a reference in a message.
+          # @param component [Hash]
+          # @return [Array<Array(String, Object)>]
+          def reference_fields(component)
             _path, entry = lookup(component)
-            references = [component["child"], component["children"]]
-            Array(entry && entry["slots"]).each { |slot| references << component[slot["name"]] }
-            references.compact
+            names = %w[child children] + Array(entry && entry["slots"]).map { |slot| slot["name"] }
+            names.filter_map { |name| [name, component[name]] unless component[name].nil? }
           end
 
           # The bound inputs of a component: each bound option's path with its kind.

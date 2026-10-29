@@ -136,7 +136,7 @@ class SessionTest < Minitest::Test
     assert_equal "nope", session.errors[1].dig("error", "surfaceId")
   end
 
-  def test_validation_errors_carry_the_surface_and_path
+  def test_errors_carry_the_surface_and_a_validation_error_its_path
     session = A2UI::Session.new
     session.apply({ "version" => "1.0",
                     "createSurface" => { "surfaceId" => "s", "catalogId" => A2UI::Catalogs::Basic::ID } })
@@ -145,9 +145,16 @@ class SessionTest < Minitest::Test
                                                                                    "children" => ["a"] }] } })
     error = session.errors.last["error"]
 
-    assert_equal "VALIDATION_FAILED", error["code"]
+    assert_equal "RECURSION_ERROR", error["code"]
     assert_equal "s", error["surfaceId"]
-    assert_equal "/components/a", error["path"]
+    assert_match(/Self-reference detected/, error["message"])
+    refute error.key?("path"), "only VALIDATION_FAILED carries a path"
+    session.apply({ "version" => "1.0",
+                    "updateComponents" => { "surfaceId" => "s", "components" => [{ "id" => "b" }] } })
+
+    assert_equal({ "code" => "VALIDATION_FAILED", "surfaceId" => "s", "path" => "/components/0/component",
+                   "message" => "Cannot create component b without a type" },
+                 session.errors.map { |message| message["error"] }.find { |body| body["code"] == "VALIDATION_FAILED" })
   end
 
   def response_error(session) = session.responses.last.dig("rendererFunctionResponse", "error")

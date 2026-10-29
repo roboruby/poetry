@@ -90,13 +90,26 @@ module Poetry
           # @param component [Hash]
           # @return [Array<Object>]
           def references(component)
-            case component["component"]
-            when "Row", "Column", "List" then [component["children"]]
-            when "Card", "Button" then [component["child"]]
-            when "Modal" then [component["trigger"], component["content"]]
-            when "Tabs" then Array(component["tabs"]).map { |tab| tab.is_a?(Hash) ? tab["child"] : nil }
-            else []
-            end.compact
+            reference_fields(component).map(&:last)
+          end
+
+          # The child references with the field each sits in (`children`,
+          # `child`, `tabs[0].child`), for what names a reference in a message.
+          #
+          # @param component [Hash]
+          # @return [Array<Array(String, Object)>]
+          def reference_fields(component)
+            fields = case component["component"]
+                     when "Row", "Column", "List" then [["children", component["children"]]]
+                     when "Card", "Button" then [["child", component["child"]]]
+                     when "Modal" then [["trigger", component["trigger"]], ["content", component["content"]]]
+                     when "Tabs"
+                       Array(component["tabs"]).each_with_index.map do |tab, index|
+                         ["tabs[#{index}].child", tab.is_a?(Hash) ? tab["child"] : nil]
+                       end
+                     else []
+                     end
+            fields.reject { |pair| pair.last.nil? }
           end
 
           # The bound input of a component, if it is one.

@@ -144,6 +144,25 @@ module Poetry
           !definition.nil? && definition.callers != "rendererOnly"
         end
 
+        # What is wrong with a call's arguments before they resolve: a
+        # required one missing, or a literal one of the wrong declared type
+        # (a binding or a call is judged once it resolves); nil when nothing is.
+        # @param name [String]
+        # @param args [Hash{String => Object}] the arguments as written
+        # @param dialect [Dialect]
+        # @return [String, nil]
+        def argument_problem(name, args, dialect)
+          definition = @definitions[name] or return "unknown function #{name.inspect}"
+          missing = definition.required - args.keys
+          return "#{name}: missing #{missing.join(", ")}" if missing.any?
+
+          mistyped = definition.params.find do |param, schema|
+            value = args[param]
+            !value.nil? && !dialect.binding?(value) && !dialect.call?(value) && !typed?(value, schema)
+          end
+          "Invalid argument '#{mistyped.first}' for #{name}: expected #{mistyped.last["type"]}" if mistyped
+        end
+
         # Whether a declared function needs a user's gesture (an agent's call never is one).
         # @param name [String]
         # @return [Boolean]

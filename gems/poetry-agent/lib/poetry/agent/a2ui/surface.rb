@@ -104,9 +104,34 @@ module Poetry
 
             @components[component["id"]] = deep_copy(component)
           end
-          errors.concat(cycle_errors)
+          errors.concat(cycle_errors(@components))
           bump!
           errors
+        end
+
+        # The problems an update would have, without applying it: each
+        # incoming component's own, then the circular references of the set
+        # it would make.
+        #
+        # @param list [Array<Hash>]
+        # @return [Array<Hash>]
+        def check(list)
+          errors = []
+          Array(list).each_with_index do |component, index|
+            error = component_error(component, index)
+            errors << error if error
+          end
+          errors + cycle_errors(candidate(list))
+        end
+
+        # The component set an update would make: the surface's components
+        # with the incoming well-formed ones in place.
+        #
+        # @param list [Array<Hash>]
+        # @return [Hash{String => Hash}]
+        def candidate(list)
+          incoming = Array(list).each_with_index.reject { |component, index| component_error(component, index) }
+          @components.merge(incoming.to_h { |component, _| [component["id"], component] })
         end
 
         # Applies an `updateDataModel` (upsert; nil removes; the root
@@ -437,38 +462,49 @@ module Poetry
           end
 
           problem = catalog_problem(component)
-          { code: "CATALOG_ERROR", path: path, message: "#{id}: #{problem}" } if problem
+          return unless problem
+
+          { code: problem.start_with?("catalogId must") ? "VALIDATION_FAILED" : "CATALOG_ERROR", path: path,
+            message: "#{id}: #{problem}" }
         end
 
         # Static edges (template components count) coloured depth-first.
-        def cycle_errors
+        def cycle_errors(components)
           state = {}
           errors = []
-          @components.each_key do |component_id|
-            visit(component_id, state, [], errors)
+          components.each_key do |component_id|
+            visit(component_id, components, state, [], errors)
           end
           errors
         end
 
-        # Depth-first visits a component's static children, recording a circular reference as an error.
-        def visit(component_id, state, stack, errors)
+        # Depth-first visits a component's static children, recording a
+        # circular reference as an error, worded as the spec's processors word it.
+        def visit(component_id, components, state, stack, errors)
           return if state[component_id] == :done
 
           if state[component_id] == :open
-            chain = (stack + [component_id]).join(" -> ")
-            kind = stack.last == component_id ? "Self-reference detected" : "circular reference"
-            errors << error("/components/#{component_id}", "#{kind}: #{chain}")
+            message = if stack.last == component_id
+                        "Circular reference detected: Component '#{component_id}' references itself " \
+                          "(Self-reference detected)"
+                      else
+                        "Circular reference detected involving component '#{component_id}': " \
+                          "#{(stack + [component_id]).join(" -> ")}"
+                      end
+            errors << { code: "RECURSION_ERROR", path: "/components/#{component_id}", message: message }
             return
           end
 
           state[component_id] = :open
-          static_children(component_id).each { |child| visit(child, state, stack + [component_id], errors) }
+          static_children(component_id, components).each do |child|
+            visit(child, components, state, stack + [component_id], errors)
+          end
           state[component_id] = :done
         end
 
         # The ids a component references directly, templates excluded.
-        def static_children(component_id)
-          component = @components[component_id]
+        def static_children(component_id, components)
+          component = components[component_id]
           return [] unless component
 
           children = Array(catalog_of(component)&.references(component)).flat_map do |reference|
@@ -479,7 +515,7 @@ module Poetry
             else []
             end
           end
-          children.select { |child| @components.key?(child) }
+          children.select { |child| components.key?(child) }
         end
 
         # A validation error at a path.

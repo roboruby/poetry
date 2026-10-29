@@ -23,14 +23,17 @@ module A2UIConformance
               rpc_functions validation_result validator_v0_9 validator_v1_0].freeze
 
   # A suite's error categories and the ones that satisfy each.
-  ACCEPTS = { "ParseError" => %w[ParseError ExpressionError], "IntegrityError" => %w[IntegrityError RecursionError] }
-            .freeze
+  # (IntegrityError and RecursionError are kinds of ValidationError, as the official harnesses read them.)
+  ACCEPTS = { "ParseError" => %w[ParseError ExpressionError], "IntegrityError" => %w[IntegrityError RecursionError],
+              "ValidationError" => %w[ValidationError IntegrityError RecursionError] }.freeze
 
   # Poetry's renderer-to-agent error codes, read as the suite's categories.
   CODE_CATEGORY = { "VALIDATION_FAILED" => "ValidationError", "INVALID_MESSAGE" => "ValidationError",
                     "DUPLICATE_SURFACE" => "IntegrityError", "UNKNOWN_SURFACE" => "IntegrityError",
                     "INVALID_FUNCTION_CALL" => "ValidationError", "DATA_ERROR" => "DataError",
-                    "EXECUTION_ERROR" => "ExecutionError", "CATALOG_ERROR" => "CatalogError" }.freeze
+                    "EXECUTION_ERROR" => "ExecutionError", "CATALOG_ERROR" => "CatalogError",
+                    "INTEGRITY_ERROR" => "IntegrityError", "RECURSION_ERROR" => "RecursionError",
+                    "UNALLOWED_PARENT" => "ValidationError", "UNALLOWED_CHILD" => "ValidationError" }.freeze
 
   # What a case expected and Poetry did instead.
   class Failure < StandardError; end
@@ -164,6 +167,88 @@ module A2UIConformance
                source: "error #{body["code"]}")
   end
 
+  # A case's own catalog definition as a binding: the basic catalog's
+  # functions and rendering, with each defined component's child references
+  # read from its schema (a `ComponentId` or `Child` property is one
+  # reference, a `ChildList` or an array of ids a list, an array of objects
+  # whose properties are references a nested list), as the spec's processors
+  # read a catalog.
+  class DocumentCatalog < A::Catalogs::Basic
+    def initialize(document, dialect:)
+      super(dialect: dialect)
+      @document = document
+      @fields = (document["components"] || {}).to_h { |name, schema| [name, A2UIConformance.reference_props(schema)] }
+      @functions = A2UIConformance.document_functions(document) if document.key?("functions")
+    end
+
+    # The functions the definition declares (the basic set when it declares none).
+    def functions = @functions || super
+
+    # A component's definition, its composition constraints at its top level or in its allOf.
+    def definition(name)
+      schema = @document.dig("components", name) or return
+      ([schema] + Array(schema["allOf"])).grep(Hash).reduce({}) { |merged, part| part.merge(merged) }
+    end
+
+    def reference_fields(component)
+      fields = @fields[component["component"]] or return super
+
+      fields.flat_map do |prop, kind|
+        value = component[prop]
+        next [] if value.nil?
+        next [[prop, value]] unless kind.is_a?(Hash)
+
+        Array(value).each_with_index.flat_map do |item, index|
+          if item.is_a?(Hash)
+            kind.filter_map do |sub, _|
+              ["#{prop}[#{index}].#{sub}", item[sub]] unless item[sub].nil?
+            end
+          else
+            []
+          end
+        end
+      end
+    end
+  end
+
+  # A definition's functions: each declared one with its argument schema,
+  # running the basic implementation when there is one.
+  def document_functions(document)
+    registry = A::Functions.new
+    document["functions"].each do |name, entry|
+      args = entry.dig("properties", "args") || entry["parameters"] || {}
+      registry.define(name, description: name, returns: entry["returnType"].is_a?(String) ? entry["returnType"] : "any",
+                            params: args["properties"] || {}, required: args["required"] || []) do |values, evaluator|
+        A::Functions.basic.declared?(name) ? A::Functions.basic.call(name, values, evaluator) : nil
+      end
+    end
+    registry
+  end
+
+  # A component schema's reference properties: name => :single, :list, or a nested { sub => kind }.
+  def reference_props(schema)
+    props = ([schema] + Array(schema["allOf"])).grep(Hash).flat_map { |part| (part["properties"] || {}).to_a }
+    props.filter_map do |name, prop|
+      kind = reference_kind(prop)
+      [name, kind] if kind
+    end.to_h
+  end
+
+  def reference_kind(prop)
+    return unless prop.is_a?(Hash)
+
+    ref = prop["$ref"].to_s
+    return :single if ref.end_with?("/ComponentId", "/Child")
+    return :list if ref.end_with?("/ChildList")
+    return unless prop["type"] == "array" && prop["items"].is_a?(Hash)
+
+    items = prop["items"]
+    return :list if reference_kind(items) == :single
+
+    nested = reference_props(items)
+    nested.empty? ? nil : nested
+  end
+
   # ---- parse_expression_template
 
   def node_to_part(node)
@@ -211,25 +296,33 @@ module A2UIConformance
   # names, each in the protocol version its definition (or the message
   # naming it, or the case) gives.
   def session_for(test_case)
-    A::Session.new(catalogs: case_catalogs(test_case))
+    strict = test_case["action"] == "validate" || test_case["strictMode"] == true
+    A::Session.new(catalogs: case_catalogs(test_case), strict: strict)
   end
 
   def case_catalogs(test_case)
     catalogs = A.catalogs
     version = version_of(test_case)
-    bind = lambda do |id, given|
-      catalogs[id] ||= A::Catalogs::Basic.new(dialect: A::Dialect.for(wire(given || version))) if id.is_a?(String)
+    bind = lambda do |id, given, document = nil|
+      next unless id.is_a?(String)
+
+      dialect = A::Dialect.for(wire(given || version))
+      catalogs[id] ||= document&.key?("components") ? DocumentCatalog.new(document, dialect:) : A::Catalogs::Basic.new(dialect:)
     end
     Array(test_case["catalogs"]).grep(Hash).each do |entry|
-      bind.call(entry["catalogId"] || entry.dig("catalogSchema", "catalogId"), entry["protocolVersion"])
+      document = entry["catalogSchema"] || entry
+      bind.call(entry["catalogId"] || document["catalogId"], entry["protocolVersion"] || document["protocolVersion"],
+                document)
     end
     Array(test_case["catalogPaths"]).each do |path|
       doc = JSON.parse(File.read(File.join(ROOT, path)))
-      bind.call(doc["catalogId"], doc["protocolVersion"] || (path.include?("v0_9") ? "v0.9" : nil))
+      bind.call(doc["catalogId"], doc["protocolVersion"] || (path.include?("v0_9") ? "v0.9" : nil), doc)
     end
-    if test_case["catalog"].is_a?(Hash)
-      bind.call(test_case["catalog"]["catalogId"],
-                test_case["catalog"]["protocolVersion"])
+    catalog = test_case["catalog"]
+    if catalog.is_a?(Hash)
+      document = catalog["catalogSchema"] || catalog
+      version_given = catalog["protocolVersion"] || document["protocolVersion"]
+      bind.call(document["catalogId"] || catalog["catalogId"], version_given, document)
     end
     unless catalog_error_case?(test_case)
       messages_of(test_case).each { |message| bind.call(message.dig("createSurface", "catalogId"), message["version"]) }

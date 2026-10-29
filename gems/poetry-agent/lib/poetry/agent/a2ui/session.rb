@@ -84,9 +84,15 @@ module Poetry
         # fallback binding.
         # @param catalogs [Hash{String => Object}] catalog bindings by id
         # @param fallback_catalog [Object, nil] the binding a createSurface's unknown catalog id gets (none: refused)
-        def initialize(catalogs: A2UI.catalogs, fallback_catalog: nil)
+        # @param strict [Boolean] A2UI's strict validation: limits on every
+        #   message, and an update refused whole unless its surface keeps a
+        #   root, references only components it holds, reaches every component
+        #   from the root, and (v1.0) uses identifier ids. By default a surface
+        #   tolerates what streaming leaves incomplete.
+        def initialize(catalogs: A2UI.catalogs, fallback_catalog: nil, strict: false)
           @catalogs = catalogs
           @fallback_catalog = fallback_catalog
+          @strict = strict
           @surfaces = {}
           @errors = []
           @deleted = []
@@ -111,6 +117,9 @@ module Poetry
           key = message_key(message, dialect) or return []
           body = message[key]
           return reject("INVALID_MESSAGE", "#{key} must be an object", dialect: dialect) unless body.is_a?(Hash)
+          if @strict && (limit = Strict.limit_problem(body))
+            return reject(limit[:code], limit[:message], body["surfaceId"], dialect: dialect)
+          end
 
           if key == "callRendererFunction"
             return apply_call_renderer_function(body, dialect,
@@ -314,9 +323,7 @@ module Poetry
                                 data: dialect.v1? ? body["dataModel"] : nil, theme: dialect.v1? ? nil : body["theme"])
           @surfaces[surface_id] = surface
           @creations[surface_id] = JSON.parse(JSON.generate(body))
-          if dialect.v1? && body["components"].is_a?(Array)
-            record(surface_id, surface.update_components(body["components"]))
-          end
+          update(surface, body["components"]) if dialect.v1? && body["components"].is_a?(Array)
           [surface_id]
         end
 
@@ -328,8 +335,36 @@ module Poetry
             return reject("INVALID_MESSAGE", "updateComponents.components must be an array", surface.id)
           end
 
+          update(surface, components)
+        end
+
+        # Applies components to a surface: refused whole when one id comes
+        # twice, or in strict mode when the update breaks the surface;
+        # otherwise each well-formed component applies and the rest are reported.
+        def update(surface, components)
+          ids = components.grep(Hash).map { |component| component["id"] }.grep(String)
+          duplicate = ids.detect { |id| ids.count(id) > 1 }
+          return reject("INTEGRITY_ERROR", "Duplicate component ID: '#{duplicate}'", surface.id) if duplicate
+
+          if @strict && (problems = strict_problems(surface, components)).any?
+            record(surface.id, problems)
+            return []
+          end
+
           record(surface.id, surface.update_components(components))
           [surface.id]
+        end
+
+        # What strict validation finds in an update: the components' own
+        # problems and identifiers, then the topology of the set it would make.
+        def strict_problems(surface, components)
+          problems = surface.check(components) + Strict.identifier_problems(components, surface.dialect) +
+                     Strict.call_problems(components, surface)
+          return problems if problems.any?
+
+          candidate = surface.candidate(components)
+          topology = Strict.topology_problems(candidate, surface)
+          topology.any? ? topology : Strict.composition_problems(candidate, surface)
         end
 
         # Writes a value into a surface's data model from an updateDataModel

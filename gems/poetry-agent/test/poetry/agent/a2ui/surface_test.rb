@@ -45,7 +45,7 @@ class SurfaceTest < Minitest::Test
 
     assert_equal 1, errors.length
     assert_equal "/components/a", errors.first[:path]
-    assert_match(/circular reference: root -> a -> b -> a/, errors.first[:message])
+    assert_equal "Circular reference detected involving component 'a': root -> a -> b -> a", errors.first[:message]
   end
 
   def test_data_updates_follow_upsert_semantics
