@@ -16,6 +16,7 @@
 
 ### Changed
 
+- The A2UI demo, the AG-UI Relay demo's trial surface and the A2UI guide's samples speak A2UI v1.0 as agents now send it: version `"1.0"`, `@path` bindings and `@call` calls.
 - The AG-UI Relay and Chat Replay demos render agent activity on Trace and CodeBlock, after shadcn's Trace chat example. Each run of reasoning and tool calls is one Trace: reasoning reads "Thinking", open, while it streams and "Thought" after; a tool call's words and status follow its state ("Looking up plans", "Looked up plans", waiting in the browser, failed); a finished call discloses its input and output in small CodeBlocks. An approval is an Item prompt with Deny and Approve, and a Chat Replay turn waits as a running "Thinking" line. The AG-UI Relay page's partial samples show the same mapping.
 - The AG-UI Relay guide has a section on what the client checks: the pipeline's order, `ProtocolError` and `ProtocolWarning`, lenient mode, `max_protocol_version:`, and why a relay fed by the client takes `pipeline: nil`. The recipe logs warnings through `on_warning:`, the resume sample passes `interrupts:` so a list that leaves one out raises, and the Interrupts section says the pipeline names a pre-1.0 interrupt. The llms mirror says the same.
 - The AG-UI Relay demo folds its earlier runs through a pipeline, as the guide says a transcript is fed.

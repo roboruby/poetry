@@ -5,7 +5,11 @@ require "json"
 
 class SessionTest < Minitest::Test
   A2UI = Poetry::Agent::A2UI
-  FIXTURES = File.expand_path("../../../fixtures/a2ui", __dir__)
+  FIXTURES = File.expand_path("../../../fixtures/a2ui/upstream/catalogs/basic/v1/examples", __dir__)
+
+  def rpc(id, call)
+    { "version" => "1.0", "callRendererFunction" => { "functionCallId" => id, "callFunction" => call } }
+  end
 
   def fixture(name)
     JSON.parse(File.read(File.join(FIXTURES, "#{name}.json")))["messages"]
@@ -26,11 +30,11 @@ class SessionTest < Minitest::Test
 
   def test_create_surface_carries_components_and_data_and_send_data_model
     session = A2UI::Session.new
-    session.apply({ "version" => "v1.0",
+    session.apply({ "version" => "1.0",
                     "createSurface" => { "surfaceId" => "card", "catalogId" => A2UI::Catalogs::Basic::ID,
                                          "sendDataModel" => true, "dataModel" => { "name" => "Ada" },
                                          "components" => [{ "id" => "root", "component" => "Text",
-                                                            "text" => { "path" => "/name" } }] } })
+                                                            "text" => { "@path" => "/name" } }] } })
     surface = session.surface("card")
 
     assert surface.send_data_model
@@ -39,20 +43,22 @@ class SessionTest < Minitest::Test
 
   def test_unknown_catalog_ids_fall_back_to_the_native_binding
     session = A2UI::Session.new
-    session.apply({ "createSurface" => { "surfaceId" => "x", "catalogId" => "https://example.com/mine.json" } })
+    session.apply({ "version" => "1.0",
+                    "createSurface" => { "surfaceId" => "x", "catalogId" => "https://example.com/mine.json" } })
 
     assert_instance_of A2UI::Catalogs::Native, session.surface("x").catalog
   end
 
   def test_update_data_model_upserts_deletes_and_replaces
     session = A2UI::Session.new
-    session.apply({ "createSurface" => { "surfaceId" => "s", "dataModel" => { "a" => 1, "b" => 2 } } })
-    session.apply({ "updateDataModel" => { "surfaceId" => "s", "path" => "/a", "value" => 9 } })
-    session.apply({ "updateDataModel" => { "surfaceId" => "s", "path" => "/b", "value" => nil } })
+    session.apply({ "version" => "1.0",
+                    "createSurface" => { "surfaceId" => "s", "dataModel" => { "a" => 1, "b" => 2 } } })
+    session.apply({ "version" => "1.0", "updateDataModel" => { "surfaceId" => "s", "path" => "/a", "value" => 9 } })
+    session.apply({ "version" => "1.0", "updateDataModel" => { "surfaceId" => "s", "path" => "/b", "value" => nil } })
 
     assert_equal({ "a" => 9 }, session.surface("s").data)
 
-    session.apply({ "updateDataModel" => { "surfaceId" => "s", "value" => { "c" => 3 } } })
+    session.apply({ "version" => "1.0", "updateDataModel" => { "surfaceId" => "s", "value" => { "c" => 3 } } })
 
     assert_equal({ "c" => 3 }, session.surface("s").data)
     assert_equal 3, session.surface("s").version
@@ -60,10 +66,12 @@ class SessionTest < Minitest::Test
 
   def test_update_data_model_refuses_an_index_past_the_cap
     session = A2UI::Session.new
-    session.apply({ "createSurface" => { "surfaceId" => "s", "dataModel" => { "items" => %w[a] } } })
+    session.apply({ "version" => "1.0",
+                    "createSurface" => { "surfaceId" => "s", "dataModel" => { "items" => %w[a] } } })
 
-    assert_empty session.apply({ "updateDataModel" => { "surfaceId" => "s", "path" => "/items/999999999",
-                                                        "value" => "x" } })
+    write = { "surfaceId" => "s", "path" => "/items/999999999", "value" => "x" }
+
+    assert_empty session.apply({ "version" => "1.0", "updateDataModel" => write })
     error = session.errors.last["error"]
 
     assert_equal "DATA_ERROR", error["code"]
@@ -75,32 +83,34 @@ class SessionTest < Minitest::Test
 
   def test_rejections_become_renderer_to_agent_errors
     session = A2UI::Session.new
-    session.apply({ "createSurface" => { "surfaceId" => "s" } })
+    session.apply({ "version" => "1.0", "createSurface" => { "surfaceId" => "s" } })
 
     assert_empty session.apply({ "version" => "v0.9", "deleteSurface" => { "surfaceId" => "s" } })
-    assert_empty session.apply({ "updateComponents" => { "surfaceId" => "nope", "components" => [] } })
-    assert_empty session.apply({ "createSurface" => { "surfaceId" => "s" } })
-    assert_empty session.apply({ "updateDataModel" => { "surfaceId" => "s", "path" => "/a" } })
-    assert_empty session.apply({ "updateComponents" => { "surfaceId" => "s", "components" => "x" } })
-    assert_empty session.apply({ "updateComponents" => { "surfaceId" => "s" },
+    assert_empty session.apply({ "version" => "1.0",
+                                 "updateComponents" => { "surfaceId" => "nope", "components" => [] } })
+    assert_empty session.apply({ "version" => "1.0", "createSurface" => { "surfaceId" => "s" } })
+    assert_empty session.apply({ "version" => "1.0", "updateDataModel" => { "surfaceId" => "s", "path" => "/a" } })
+    assert_empty session.apply({ "version" => "1.0",
+                                 "updateComponents" => { "surfaceId" => "s", "components" => "x" } })
+    assert_empty session.apply({ "version" => "1.0", "updateComponents" => { "surfaceId" => "s" },
                                  "deleteSurface" => { "surfaceId" => "s" } })
     assert_empty session.apply("junk")
-    assert_empty session.apply({ "createSurface" => "junk" })
+    assert_empty session.apply({ "version" => "1.0", "createSurface" => "junk" })
 
     codes = session.errors.map { |error| error.dig("error", "code") }
 
     assert_equal %w[INVALID_MESSAGE UNKNOWN_SURFACE DUPLICATE_SURFACE INVALID_MESSAGE INVALID_MESSAGE INVALID_MESSAGE
                     INVALID_MESSAGE INVALID_MESSAGE], codes
-    assert(session.errors.all? { |error| error["version"] == "v1.0" })
+    assert(session.errors.all? { |error| error["version"] == "1.0" })
     assert_equal "nope", session.errors[1].dig("error", "surfaceId")
   end
 
   def test_validation_errors_carry_the_surface_and_path
     session = A2UI::Session.new
-    session.apply({ "createSurface" => { "surfaceId" => "s" } })
-    session.apply({ "updateComponents" => { "surfaceId" => "s",
-                                            "components" => [{ "id" => "a", "component" => "Column",
-                                                               "children" => ["a"] }] } })
+    session.apply({ "version" => "1.0", "createSurface" => { "surfaceId" => "s" } })
+    session.apply({ "version" => "1.0", "updateComponents" => { "surfaceId" => "s",
+                                                                "components" => [{ "id" => "a", "component" => "Column",
+                                                                                   "children" => ["a"] }] } })
     error = session.errors.last["error"]
 
     assert_equal "VALIDATION_FAILED", error["code"]
@@ -110,22 +120,19 @@ class SessionTest < Minitest::Test
 
   def test_renderer_only_functions_are_refused_to_agents
     session = A2UI::Session.new
-    session.apply({ "callRendererFunction" => { "functionCallId" => "f1",
-                                                "callFunction" => { "call" => "getScreenResolution",
-                                                                    "catalogId" => "x" } } })
+    session.apply(rpc("f1", { "@call" => "getScreenResolution", "catalogId" => "x" }))
     error = session.errors.last["error"]
 
     assert_equal "INVALID_FUNCTION_CALL", error["code"]
     assert_equal "f1", error["functionCallId"]
     assert_match(/not invocable by an agent/, error["message"])
 
-    session.apply({ "callRendererFunction" => { "functionCallId" => "f2",
-                                                "callFunction" => { "call" => "required",
-                                                                    "args" => { "value" => 1 } } } })
+    session.apply(rpc("f2", { "@call" => "required", "args" => { "value" => 1 } }))
 
     assert_equal "f2", session.errors.last.dig("error", "functionCallId")
     assert_empty session.responses
-    assert_empty session.apply({ "agentFunctionResponse" => { "functionCallId" => "f3", "value" => 1 } })
+    assert_empty session.apply({ "version" => "1.0",
+                                 "agentFunctionResponse" => { "functionCallId" => "f3", "value" => 1 } })
   end
 
   def test_agent_callable_functions_answer_with_a_response
@@ -139,14 +146,11 @@ class SessionTest < Minitest::Test
     catalog = A2UI::Catalogs::Basic.new
     catalog.define_singleton_method(:functions) { functions }
     session = A2UI::Session.new(catalogs: { "https://example.com/cat.json" => catalog })
-    session.apply({ "callRendererFunction" => { "functionCallId" => "f1",
-                                                "callFunction" => { "call" => "screen", "catalogId" => "https://example.com/cat.json",
-                                                                    "args" => { "unit" => "px" } } } })
-    session.apply({ "callRendererFunction" => { "functionCallId" => "f2",
-                                                "callFunction" => { "call" => "shout",
-                                                                    "catalogId" => "https://example.com/cat.json" } } })
+    session.apply(rpc("f1", { "@call" => "screen", "catalogId" => "https://example.com/cat.json",
+                              "args" => { "unit" => "px" } }))
+    session.apply(rpc("f2", { "@call" => "shout", "catalogId" => "https://example.com/cat.json" }))
 
-    assert_equal [{ "version" => "v1.0",
+    assert_equal [{ "version" => "1.0",
                     "rendererFunctionResponse" => { "functionCallId" => "f1", "value" => "1280x800px" } }],
                  session.responses
     assert_equal "f2", session.errors.last.dig("error", "functionCallId")
@@ -160,9 +164,10 @@ class SessionTest < Minitest::Test
     catalog = A2UI::Catalogs::Basic.new
     catalog.define_singleton_method(:functions) { functions }
     session = A2UI::Session.new(catalogs: { "https://example.com/cat.json" => catalog })
-    call = { "call" => "lookup", "catalogId" => "https://example.com/cat.json" }
+    call = { "@call" => "lookup", "catalogId" => "https://example.com/cat.json" }
 
-    assert_empty session.apply({ "callRendererFunction" => { "functionCallId" => "f1", "callFunction" => call } })
+    assert_empty session.apply({ "version" => "1.0",
+                                 "callRendererFunction" => { "functionCallId" => "f1", "callFunction" => call } })
     error = session.errors.last["error"]
 
     assert_equal "EXECUTION_ERROR", error["code"]
@@ -174,9 +179,9 @@ class SessionTest < Minitest::Test
 
   def test_delete_surface
     session = A2UI::Session.new
-    session.apply({ "createSurface" => { "surfaceId" => "s" } })
+    session.apply({ "version" => "1.0", "createSurface" => { "surfaceId" => "s" } })
 
-    assert_equal ["s"], session.apply({ "deleteSurface" => { "surfaceId" => "s" } })
+    assert_equal ["s"], session.apply({ "version" => "1.0", "deleteSurface" => { "surfaceId" => "s" } })
     assert_nil session.surface("s")
     assert_equal ["s"], session.deleted
   end
@@ -198,7 +203,7 @@ class SessionTest < Minitest::Test
                             values: { "/username" => "ada", "/password" => "pw", "/evil" => "x" },
                             timestamp: Time.utc(2026, 9, 1, 12, 0, 0))
 
-    assert_equal({ "version" => "v1.0",
+    assert_equal({ "version" => "1.0",
                    "action" => { "name" => "login_submitted", "surfaceId" => "gallery-simple-login-form",
                                  "sourceComponentId" => "submit_button", "timestamp" => "2026-09-01T12:00:00.000Z",
                                  "context" => { "user" => "ada", "pass" => "pw" } } }, action.to_h)
@@ -210,24 +215,24 @@ class SessionTest < Minitest::Test
 
   def test_action_coerces_by_input_kind_and_honors_scopes
     session = A2UI::Session.new
-    session.apply({ "createSurface" => {
+    session.apply({ "version" => "1.0", "createSurface" => {
                     "surfaceId" => "p", "catalogId" => A2UI::Catalogs::Basic::ID, "sendDataModel" => true,
                     "dataModel" => { "news" => true, "toppings" => [], "volume" => 1, "rows" => [{ "n" => 1 }] },
                     "components" => [
                       { "id" => "root", "component" => "Column", "children" => %w[news toppings volume list] },
                       { "id" => "news", "component" => "CheckBox", "label" => "News",
-                        "value" => { "path" => "/news" } },
+                        "value" => { "@path" => "/news" } },
                       { "id" => "toppings", "component" => "ChoicePicker", "label" => "T",
                         "variant" => "multipleSelection",
-                        "options" => [], "value" => { "path" => "/toppings" } },
+                        "options" => [], "value" => { "@path" => "/toppings" } },
                       { "id" => "volume", "component" => "Slider", "label" => "V", "max" => 10,
-                        "value" => { "path" => "/volume" } },
+                        "value" => { "@path" => "/volume" } },
                       { "id" => "list", "component" => "List",
                         "children" => { "componentId" => "row", "path" => "/rows" } },
                       { "id" => "row", "component" => "Button", "child" => "lbl",
                         "action" => { "event" => { "name" => "pick", "userMessage" => "Picked",
-                                                   "context" => { "n" => { "path" => "n" },
-                                                                  "all" => { "path" => "/rows" } } } } },
+                                                   "context" => { "n" => { "@path" => "n" },
+                                                                  "all" => { "@path" => "/rows" } } } } },
                       { "id" => "lbl", "component" => "Text", "text" => "Pick" }
                     ]
                   } })
@@ -248,23 +253,23 @@ class SessionTest < Minitest::Test
 
   def test_a_failing_check_rejects_the_action_with_errors_by_component
     session = A2UI::Session.new
-    session.apply({ "createSurface" => {
+    session.apply({ "version" => "1.0", "createSurface" => {
                     "surfaceId" => "f", "catalogId" => A2UI::Catalogs::Basic::ID, "sendDataModel" => true,
                     "dataModel" => { "formData" => { "terms" => "", "email" => "", "phone" => "" } },
                     "components" => [
                       { "id" => "root", "component" => "Column", "children" => %w[email submit] },
                       { "id" => "email", "component" => "TextField", "label" => "Email",
-                        "value" => { "path" => "/formData/email" },
-                        "checks" => [{ "condition" => { "call" => "email",
-                                                        "args" => { "value" => { "path" => "/formData/email" } } },
+                        "value" => { "@path" => "/formData/email" },
+                        "checks" => [{ "condition" => { "@call" => "email",
+                                                        "args" => { "value" => { "@path" => "/formData/email" } } },
                                        "message" => "Invalid email format" }] },
                       { "id" => "submit", "component" => "Button", "child" => "l",
                         "action" => { "event" => { "name" => "submit_form" } },
-                        "checks" => [{ "condition" => { "call" => "and", "args" => { "values" => [
-                          { "call" => "required", "args" => { "value" => { "path" => "/formData/terms" } } },
-                          { "call" => "or", "args" => { "values" => [
-                            { "call" => "required", "args" => { "value" => { "path" => "/formData/email" } } },
-                            { "call" => "required", "args" => { "value" => { "path" => "/formData/phone" } } }
+                        "checks" => [{ "condition" => { "@call" => "and", "args" => { "values" => [
+                          { "@call" => "required", "args" => { "value" => { "@path" => "/formData/terms" } } },
+                          { "@call" => "or", "args" => { "values" => [
+                            { "@call" => "required", "args" => { "value" => { "@path" => "/formData/email" } } },
+                            { "@call" => "required", "args" => { "value" => { "@path" => "/formData/phone" } } }
                           ] } }
                         ] } }, "message" => "You must accept terms AND provide either email or phone" }] },
                       { "id" => "l", "component" => "Text", "text" => "Go" }
@@ -291,10 +296,12 @@ class SessionTest < Minitest::Test
 
   def test_action_returns_nil_without_an_agent_event
     session = A2UI::Session.new
-    session.apply({ "createSurface" => { "surfaceId" => "p", "catalogId" => A2UI::Catalogs::Basic::ID,
-                                         "components" => [{ "id" => "root", "component" => "Button", "child" => "t",
-                                                            "action" => { "functionCall" => { "call" => "openUrl" } } },
-                                                          { "id" => "t", "component" => "Text", "text" => "x" }] } })
+    button = { "id" => "root", "component" => "Button", "child" => "t",
+               "action" => { "functionCall" => { "@call" => "openUrl" } } }
+    session.apply({ "version" => "1.0",
+                    "createSurface" => { "surfaceId" => "p", "catalogId" => A2UI::Catalogs::Basic::ID,
+                                         "components" => [button, { "id" => "t", "component" => "Text",
+                                                                    "text" => "x" }] } })
 
     assert_nil session.action(surface_id: "p", source: "root")
     assert_nil session.action(surface_id: "p", source: "missing")

@@ -34,18 +34,18 @@
     end
   CODE
   message_source = <<~CODE
-    { "version": "v1.0",
+    { "version": "1.0",
       "createSurface": {
         "surfaceId": "signin", "catalogId": "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json",
         "sendDataModel": true, "dataModel": { "email": "" },
         "components": [
           { "id": "root", "component": "Column", "children": ["title", "email", "submit"] },
           { "id": "title", "component": "Text", "text": "## Sign in" },
-          { "id": "email", "component": "TextField", "label": "Email", "value": { "path": "/email" },
-            "checks": [{ "condition": { "call": "email", "args": { "value": { "path": "/email" } } },
+          { "id": "email", "component": "TextField", "label": "Email", "value": { "@path": "/email" },
+            "checks": [{ "condition": { "@call": "email", "args": { "value": { "@path": "/email" } } },
                          "message": "Enter a valid email" }] },
           { "id": "submit", "component": "Button", "child": "submit_label", "variant": "primary",
-            "action": { "event": { "name": "sign_in", "context": { "email": { "path": "/email" } } } } },
+            "action": { "event": { "name": "sign_in", "context": { "email": { "@path": "/email" } } } } },
           { "id": "submit_label", "component": "Text", "text": "Sign in" } ] } }
   CODE
   fold_source = <<~CODE
@@ -116,7 +116,7 @@
     end
   CODE
   message_json = <<~CODE
-    { "version": "v1.0",
+    { "version": "1.0",
       "action": { "name": "sign_in", "surfaceId": "signin", "sourceComponentId": "submit",
                   "timestamp": "2026-09-01T18:05:00.000Z", "context": { "email": "ada@example.com" } } }
   CODE
@@ -130,7 +130,7 @@
   CODE
   interpolation_source = <<~CODE
     { "id": "total", "component": "Text",
-      "text": { "call": "formatString",
+      "text": { "@call": "formatString",
                 "args": { "value": "${/count} ${pluralize(value: ${/count}, one: 'item', other: 'items')}, ${formatCurrency(value: ${/total}, currency: 'USD')}" } } }
   CODE
 %>

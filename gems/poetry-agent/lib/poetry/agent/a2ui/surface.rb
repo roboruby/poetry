@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "dialect"
 require_relative "pointer"
 require_relative "evaluator"
 require_relative "checks"
@@ -12,13 +13,15 @@ module Poetry
       # model, and a monotonic version the Turbo Stream delivery compares.
       # A surface belongs to a catalog binding, which knows how each
       # component references its children; the surface itself is
-      # catalog-agnostic beyond that.
+      # catalog-agnostic beyond that. A surface speaks the protocol version
+      # that created it ({Dialect}): v1.0's `{ "@path" }` bindings, or v0.9's
+      # `{ "path" }`.
       #
       # @example
       #   surface = Surface.new(id: "card", catalog: Catalogs::Basic.new)
-      #   surface.update_components([{ "id" => "root", "component" => "Text", "text" => { "path" => "/name" } }])
+      #   surface.update_components([{ "id" => "root", "component" => "Text", "text" => { "@path" => "/name" } }])
       #   surface.update_data("/name", "Ada")
-      #   surface.resolve({ "path" => "/name" }) # => "Ada"
+      #   surface.resolve({ "@path" => "/name" }) # => "Ada"
       class Surface
         # Component names are UAX #31 identifiers.
         NAME_PATTERN = /\A[\p{XID_Start}_]\p{XID_Continue}*\z/u
@@ -46,6 +49,12 @@ module Poetry
         # A counter that bumps on every applied change.
         # @return [Integer] bumps on every applied change
         attr_reader :version
+        # The protocol version the surface speaks.
+        # @return [Dialect]
+        attr_reader :dialect
+        # The theme the agent sent with createSurface.
+        # @return [Hash, nil]
+        attr_reader :theme
 
         # A surface with its catalog, initial data model and components.
         # @param id [String]
@@ -54,10 +63,15 @@ module Poetry
         # @param send_data_model [Boolean]
         # @param data [Hash, nil] the initial data model
         # @param components [Array<Hash>] the initial component list
-        def initialize(id:, catalog:, catalog_id: nil, send_data_model: false, data: nil, components: [])
+        # @param dialect [Dialect] the protocol version the surface speaks
+        # @param theme [Hash, nil] a v0.9 createSurface's theme (its colors, icon and agent name)
+        def initialize(id:, catalog:, catalog_id: nil, send_data_model: false, data: nil, components: [], # rubocop:disable Metrics/ParameterLists
+                       dialect: Dialect::V1_0, theme: nil)
           @id = id
           @catalog = catalog
           @catalog_id = catalog_id
+          @dialect = dialect
+          @theme = theme.is_a?(Hash) ? deep_copy(theme) : nil
           @send_data_model = send_data_model ? true : false
           @data = deep_copy(data.is_a?(Hash) ? data : {})
           @components = {}
@@ -110,10 +124,9 @@ module Poetry
           @components[component_id]
         end
 
-        # Resolves a dynamic value in a scope: a `{ "path" => ... }` binding
-        # reads the data model (relative paths against the scope), a
-        # `{ "call" => ... }` function call runs through the catalog's
-        # functions (see {Evaluator}), anything else is a literal.
+        # Resolves a dynamic value in a scope: a binding reads the data model
+        # (relative paths against the scope), a function call runs through the
+        # catalog's functions (see {Evaluator}), anything else is a literal.
         #
         # @param value [Object]
         # @param scope [String, nil] the collection-item pointer in effect
@@ -161,11 +174,14 @@ module Poetry
         end
 
         # What a client-side evaluator needs to run the checks as the user
-        # types: every checked component's rules with its bindings made
-        # absolute for its scope, the bound inputs by absolute path with
-        # their kinds, and the data model for paths no input carries.
+        # types: every checked component's rules in v1.0's spelling whatever
+        # the surface speaks (`{ "@path" }` made absolute for its scope,
+        # `{ "@call", "args" }`, a literal `@` key doubled), the bound inputs
+        # by absolute path with their kinds, the data model for paths no input
+        # carries, and the surface's version, whose functions the rules run.
         #
-        # @return [Hash] `{ "checks" => { key => { "kind", "rules" } }, "inputs" => { path => kind }, "model" => data }`
+        # @return [Hash] `{ "version", "checks" => { key => { "kind", "rules" } }, "inputs" => { path => kind },
+        #   "model" => data }`
         def program
           checks = {}
           walk do |component, scope|
@@ -175,25 +191,33 @@ module Poetry
             checks[source_key(component, scope)] = {
               "kind" => component["action"].is_a?(Hash) ? "button" : "input",
               "rules" => rules.map do |rule|
-                { "condition" => absolutize(rule["condition"], scope), "message" => rule["message"] }
+                { "condition" => program_value(rule["condition"], scope), "message" => rule["message"] }
               end
             }
           end
-          { "checks" => checks, "inputs" => inputs.to_h { |input| [input[:path], input[:kind].to_s] }, "model" => data }
+          { "version" => dialect.version, "checks" => checks,
+            "inputs" => inputs.to_h { |input| [input[:path], input[:kind].to_s] }, "model" => data }
         end
 
-        # Whether a value is a data binding.
+        # Whether a value is a data binding in the surface's version.
         # @param value [Object]
-        # @return [Boolean] whether the value is a `{ "path" => ... }` data binding
+        # @return [Boolean]
         def binding?(value)
-          value.is_a?(Hash) && value.key?("path") && !value.key?("componentId")
+          dialect.binding?(value)
         end
 
-        # Whether a value is a function call.
+        # A binding's pointer in the surface's version, or nil when the value is not one.
         # @param value [Object]
-        # @return [Boolean] whether the value is a `{ "call" => ... }` function call
+        # @return [String, nil]
+        def binding_path(value)
+          dialect.path(value)
+        end
+
+        # Whether a value is a function call in the surface's version.
+        # @param value [Object]
+        # @return [Boolean]
         def function_call?(value)
-          value.is_a?(Hash) && value.key?("call")
+          dialect.call?(value)
         end
 
         # Whether a value is a component template.
@@ -252,7 +276,7 @@ module Poetry
         def inputs
           result = []
           walk do |component, scope|
-            result.concat(Array(catalog.inputs(component, scope)))
+            result.concat(Array(catalog.inputs(component, scope, dialect)))
           end
           result.uniq { |input| input[:path] }
         end
@@ -271,16 +295,30 @@ module Poetry
           @version += 1
         end
 
-        # Rewrites every binding in a value to its absolute pointer.
-        def absolutize(value, scope)
+        # A rule's value in the program's spelling (v1.0's): a binding made
+        # absolute, a call with its arguments rewritten, a literal object with
+        # its keys escaped as v1.0 escapes them.
+        def program_value(value, scope)
           case value
-          when Array then value.map { |item| absolutize(item, scope) }
+          when Array then value.map { |item| program_value(item, scope) }
           when Hash
-            return { "path" => Pointer.absolute(value["path"].to_s, scope) } if binding?(value)
+            return { "@path" => Pointer.absolute(binding_path(value), scope) } if binding?(value)
+            return program_call(value, scope) if function_call?(value)
 
-            value.transform_values { |item| absolutize(item, scope) }
+            value.to_h { |key, item| [program_key(key), program_value(item, scope)] }
           else value
           end
+        end
+
+        # A call in the program's spelling, its arguments rewritten.
+        def program_call(call, scope)
+          args = call["args"].is_a?(Hash) ? call["args"] : {}
+          { "@call" => dialect.call_name(call), "args" => args.transform_values { |item| program_value(item, scope) } }
+        end
+
+        # A literal key in v1.0's spelling: a v0.9 key that starts with `@` is doubled.
+        def program_key(key)
+          !dialect.v1? && key.start_with?("@") ? "@#{key}" : key
         end
 
         # Yields each component reachable from an id in a scope, once per component and scope.

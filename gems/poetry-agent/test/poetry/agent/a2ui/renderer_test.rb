@@ -8,7 +8,13 @@ require "cgi"
 # Renders through the dummy Rails host (poetry-ui's real components).
 class RendererTest < Minitest::Test
   A2UI = Poetry::Agent::A2UI
-  FIXTURES = File.expand_path("../../../fixtures/a2ui", __dir__)
+  UPSTREAM = File.expand_path("../../../fixtures/a2ui/upstream", __dir__)
+  FIXTURES = File.join(UPSTREAM, "catalogs/basic/v1/examples")
+  # The basic catalogs' examples, v1.0 and v0.9.
+  EXAMPLES = Dir[File.join(FIXTURES, "*.json")] +
+             Dir[File.join(UPSTREAM, "specification/v0_9/catalogs/basic/examples/*.json")]
+  # The one example that shows a component outside the basic catalog.
+  NOT_BASIC = { "37_native-grid.json" => ['unknown basic catalog component "CustomGrid"'] }.freeze
 
   def fixture(name)
     JSON.parse(File.read(File.join(FIXTURES, "#{name}.json")))["messages"]
@@ -25,23 +31,24 @@ class RendererTest < Minitest::Test
 
   def basic_surface(components, data: {}, send_data_model: false)
     session = A2UI::Session.new
-    session.apply({ "createSurface" => { "surfaceId" => "s", "catalogId" => A2UI::Catalogs::Basic::ID,
-                                         "sendDataModel" => send_data_model, "dataModel" => data,
-                                         "components" => components } })
+    session.apply({ "version" => "1.0", "createSurface" => { "surfaceId" => "s", "catalogId" => A2UI::Catalogs::Basic::ID,
+                                                             "sendDataModel" => send_data_model, "dataModel" => data,
+                                                             "components" => components } })
 
     assert_empty session.errors
     session.surface("s")
   end
 
   def test_every_official_example_renders_without_warnings
-    Dir[File.join(FIXTURES, "*.json")].each do |path|
+    assert_equal 87, EXAMPLES.size
+    EXAMPLES.each do |path|
       session = session_for(JSON.parse(File.read(path))["messages"])
 
       assert_empty session.errors, path
       session.surfaces.each_value do |surface|
         html, renderer = render(surface, action_url: "/a2ui")
 
-        assert_empty renderer.warnings, "#{File.basename(path)}: #{renderer.warnings.inspect}"
+        assert_equal NOT_BASIC.fetch(File.basename(path), []), renderer.warnings, File.basename(path)
         assert_includes html, "id=\"a2ui-#{surface.id}\""
         assert_includes html, "data-version=\"#{surface.version}\""
       end
@@ -63,10 +70,10 @@ class RendererTest < Minitest::Test
   def test_renders_are_byte_identical_across_calls_and_carry_the_check_program
     surface = basic_surface(
       [{ "id" => "root", "component" => "Column", "children" => %w[email agree tabs modal go] },
-       { "id" => "email", "component" => "TextField", "label" => "Email", "value" => { "path" => "/email" },
-         "checks" => [{ "condition" => { "call" => "email", "args" => { "value" => { "path" => "/email" } } },
+       { "id" => "email", "component" => "TextField", "label" => "Email", "value" => { "@path" => "/email" },
+         "checks" => [{ "condition" => { "@call" => "email", "args" => { "value" => { "@path" => "/email" } } },
                         "message" => "Bad email" }] },
-       { "id" => "agree", "component" => "CheckBox", "label" => "Agree", "value" => { "path" => "/agree" } },
+       { "id" => "agree", "component" => "CheckBox", "label" => "Agree", "value" => { "@path" => "/agree" } },
        { "id" => "tabs", "component" => "Tabs",
          "tabs" => [{ "title" => "One", "child" => "t1" }, { "title" => "Two", "child" => "t2" }] },
        { "id" => "t1", "component" => "Text", "text" => "first" },
@@ -74,7 +81,7 @@ class RendererTest < Minitest::Test
        { "id" => "modal", "component" => "Modal", "trigger" => "mt", "content" => "t2" },
        { "id" => "mt", "component" => "Button", "child" => "t1" },
        { "id" => "go", "component" => "Button", "child" => "t1", "action" => { "event" => { "name" => "go" } },
-         "checks" => [{ "condition" => { "call" => "required", "args" => { "value" => { "path" => "/email" } } },
+         "checks" => [{ "condition" => { "@call" => "required", "args" => { "value" => { "@path" => "/email" } } },
                         "message" => "Email first" }] }],
       data: { "email" => "", "agree" => false }
     )
@@ -105,10 +112,10 @@ class RendererTest < Minitest::Test
     components = [{ "id" => "root", "component" => "Tabs", "tabs" => [{ "title" => "One", "child" => "t" }] },
                   { "id" => "t", "component" => "Text", "text" => "x" }]
     session = A2UI::Session.new
-    session.apply({ "createSurface" => { "surfaceId" => "a", "catalogId" => A2UI::Catalogs::Basic::ID,
-                                         "components" => components } })
-    session.apply({ "createSurface" => { "surfaceId" => "b", "catalogId" => A2UI::Catalogs::Basic::ID,
-                                         "components" => components } })
+    session.apply({ "version" => "1.0", "createSurface" => { "surfaceId" => "a", "catalogId" => A2UI::Catalogs::Basic::ID,
+                                                             "components" => components } })
+    session.apply({ "version" => "1.0", "createSurface" => { "surfaceId" => "b", "catalogId" => A2UI::Catalogs::Basic::ID,
+                                                             "components" => components } })
     ids_a = render(session.surface("a")).first.scan(/ id="([^"]+)"/).flatten
     ids_b = render(session.surface("b")).first.scan(/ id="([^"]+)"/).flatten
 
@@ -121,18 +128,18 @@ class RendererTest < Minitest::Test
       [{ "id" => "root", "component" => "Column", "children" => %w[size toppings city tags] },
        { "id" => "size", "component" => "ChoicePicker", "label" => "Size", "displayStyle" => "chips",
          "options" => [{ "label" => "S", "value" => "s" }, { "label" => "M", "value" => "m" }],
-         "value" => { "path" => "/size" } },
+         "value" => { "@path" => "/size" } },
        { "id" => "toppings", "component" => "ChoicePicker", "label" => "Toppings", "variant" => "multipleSelection",
          "displayStyle" => "chips",
          "options" => [{ "label" => "Nuts", "value" => "nuts" }, { "label" => "Cream", "value" => "cream" }],
-         "value" => { "path" => "/toppings" } },
+         "value" => { "@path" => "/toppings" } },
        { "id" => "city", "component" => "ChoicePicker", "label" => "City", "filterable" => true,
          "options" => [{ "label" => "Lisbon", "value" => "lis" }, { "label" => "Porto", "value" => "opo" }],
-         "value" => { "path" => "/city" } },
+         "value" => { "@path" => "/city" } },
        { "id" => "tags", "component" => "ChoicePicker", "label" => "Tags", "filterable" => true,
          "variant" => "multipleSelection",
          "options" => [{ "label" => "A", "value" => "a" }, { "label" => "B", "value" => "b" }],
-         "value" => { "path" => "/tags" } }],
+         "value" => { "@path" => "/tags" } }],
       data: { "size" => ["m"], "toppings" => ["nuts"], "city" => ["opo"], "tags" => %w[a b] }
     )
     html, renderer = render(surface, action_url: "/a2ui")
@@ -150,8 +157,8 @@ class RendererTest < Minitest::Test
   def test_check_failures_render_under_their_controls
     surface = basic_surface(
       [{ "id" => "root", "component" => "Column", "children" => %w[email agree go] },
-       { "id" => "email", "component" => "TextField", "label" => "Email", "value" => { "path" => "/email" } },
-       { "id" => "agree", "component" => "CheckBox", "label" => "Agree", "value" => { "path" => "/agree" } },
+       { "id" => "email", "component" => "TextField", "label" => "Email", "value" => { "@path" => "/email" } },
+       { "id" => "agree", "component" => "CheckBox", "label" => "Agree", "value" => { "@path" => "/agree" } },
        { "id" => "go", "component" => "Button", "child" => "gl", "action" => { "event" => { "name" => "go" } } },
        { "id" => "gl", "component" => "Text", "text" => "Go" }],
       data: { "email" => "nope", "agree" => false }
@@ -202,26 +209,27 @@ class RendererTest < Minitest::Test
   def test_input_components_bind_by_pointer_and_carry_their_checks
     surface = basic_surface(
       [{ "id" => "root", "component" => "Column", "children" => %w[name email bio news size toppings volume when] },
-       { "id" => "name", "component" => "TextField", "label" => "Name", "value" => { "path" => "/name" },
-         "checks" => [{ "condition" => { "call" => "required", "args" => { "value" => { "path" => "/name" } } } },
-                      { "condition" => { "call" => "length",
-                                         "args" => { "value" => { "path" => "/name" }, "min" => 2, "max" => 40 } } }] },
-       { "id" => "email", "component" => "TextField", "label" => "Email", "value" => { "path" => "/email" },
+       { "id" => "name", "component" => "TextField", "label" => "Name", "value" => { "@path" => "/name" },
+         "checks" => [{ "condition" => { "@call" => "required", "args" => { "value" => { "@path" => "/name" } } } },
+                      { "condition" => { "@call" => "length",
+                                         "args" => { "value" => { "@path" => "/name" }, "min" => 2,
+                                                     "max" => 40 } } }] },
+       { "id" => "email", "component" => "TextField", "label" => "Email", "value" => { "@path" => "/email" },
          "placeholder" => "you@example.com",
-         "checks" => [{ "condition" => { "call" => "email", "args" => { "value" => { "path" => "/email" } } } },
-                      { "condition" => { "call" => "regex",
-                                         "args" => { "value" => { "path" => "/email" }, "pattern" => ".+@.+" } } }] },
+         "checks" => [{ "condition" => { "@call" => "email", "args" => { "value" => { "@path" => "/email" } } } },
+                      { "condition" => { "@call" => "regex",
+                                         "args" => { "value" => { "@path" => "/email" }, "pattern" => ".+@.+" } } }] },
        { "id" => "bio", "component" => "TextField", "label" => "Bio", "variant" => "longText",
-         "value" => { "path" => "/bio" } },
-       { "id" => "news", "component" => "CheckBox", "label" => "Newsletter", "value" => { "path" => "/news" } },
-       { "id" => "size", "component" => "ChoicePicker", "label" => "Size", "value" => { "path" => "/size" },
+         "value" => { "@path" => "/bio" } },
+       { "id" => "news", "component" => "CheckBox", "label" => "Newsletter", "value" => { "@path" => "/news" } },
+       { "id" => "size", "component" => "ChoicePicker", "label" => "Size", "value" => { "@path" => "/size" },
          "options" => [{ "label" => "Small", "value" => "s" }, { "label" => "Medium", "value" => "m" }] },
        { "id" => "toppings", "component" => "ChoicePicker", "label" => "Toppings", "variant" => "multipleSelection",
-         "value" => { "path" => "/toppings" },
+         "value" => { "@path" => "/toppings" },
          "options" => [{ "label" => "Nuts", "value" => "nuts" }, { "label" => "Cream", "value" => "cream" }] },
        { "id" => "volume", "component" => "Slider", "label" => "Volume", "min" => 0, "max" => 100, "steps" => 10,
-         "value" => { "path" => "/volume" } },
-       { "id" => "when", "component" => "DateTimeInput", "enableDate" => true, "value" => { "path" => "/when" },
+         "value" => { "@path" => "/volume" } },
+       { "id" => "when", "component" => "DateTimeInput", "enableDate" => true, "value" => { "@path" => "/when" },
          "min" => "2026-01-01" }],
       data: { "name" => "Ada", "email" => "", "bio" => "hi", "news" => true, "size" => ["m"], "toppings" => ["nuts"],
               "volume" => 40, "when" => "2026-09-02" }
@@ -300,10 +308,11 @@ class RendererTest < Minitest::Test
     surface = basic_surface(
       [{ "id" => "root", "component" => "Column", "children" => %w[link other] },
        { "id" => "link", "component" => "Button", "child" => "l1", "variant" => "primary",
-         "action" => { "functionCall" => { "call" => "openUrl", "args" => { "url" => "https://example.com/docs" } } } },
+         "action" => { "functionCall" => { "@call" => "openUrl",
+                                           "args" => { "url" => "https://example.com/docs" } } } },
        { "id" => "l1", "component" => "Text", "text" => "Docs" },
        { "id" => "other", "component" => "Button", "child" => "l2",
-         "action" => { "functionCall" => { "call" => "openUrl", "args" => { "url" => "javascript:alert(1)" } } } },
+         "action" => { "functionCall" => { "@call" => "openUrl", "args" => { "url" => "javascript:alert(1)" } } } },
        { "id" => "l2", "component" => "Text", "text" => "Nope" }]
     )
     html, renderer = render(surface, action_url: "/a2ui")
@@ -344,17 +353,17 @@ class RendererTest < Minitest::Test
 
   def test_the_native_catalog_renders_registry_components_slots_and_bound_inputs
     session = A2UI::Session.new
-    session.apply({ "createSurface" => {
+    session.apply({ "version" => "1.0", "createSurface" => {
                     "surfaceId" => "plan", "catalogId" => A2UI::Catalog::DEFAULT_ID,
                     "dataModel" => { "plan" => "Team", "seats" => 5 },
                     "components" => [
                       { "id" => "root", "component" => "Card", "title" => "ttl", "description" => "dsc",
                         "children" => %w[badge seats tabs cta] },
-                      { "id" => "ttl", "component" => "Typeset", "text" => { "path" => "/plan" } },
+                      { "id" => "ttl", "component" => "Typeset", "text" => { "@path" => "/plan" } },
                       { "id" => "dsc", "component" => "Typeset", "text" => "Billed <monthly>" },
                       { "id" => "badge", "component" => "Badge", "variant" => "secondary", "text" => "popular" },
                       { "id" => "seats", "component" => "Input", "type" => "number",
-                        "value" => { "path" => "/seats" } },
+                        "value" => { "@path" => "/seats" } },
                       { "id" => "tabs", "component" => "Tabs", "label" => "Details", "tabs" => %w[tab1 tab2] },
                       { "id" => "tab1", "component" => "Typeset", "text" => "Overview", "children" => ["o"] },
                       { "id" => "o", "component" => "Typeset", "text" => "Everything included." },
@@ -362,7 +371,7 @@ class RendererTest < Minitest::Test
                       { "id" => "cta", "component" => "Button", "variant" => "default", "text" => "Choose plan",
                         "accessibility" => { "label" => "Choose the Team plan" },
                         "action" => { "event" => { "name" => "choose",
-                                                   "context" => { "seats" => { "path" => "/seats" } } } } }
+                                                   "context" => { "seats" => { "@path" => "/seats" } } } } }
                     ]
                   } })
 
@@ -392,13 +401,13 @@ class RendererTest < Minitest::Test
   # into a warning - the values tier refuses a Field without one.
   def test_the_native_catalog_supplies_a_required_id_the_agent_never_sets
     session = A2UI::Session.new
-    session.apply({ "createSurface" => {
+    session.apply({ "version" => "1.0", "createSurface" => {
                     "surfaceId" => "plan", "catalogId" => A2UI::Catalog::DEFAULT_ID,
                     "dataModel" => { "seats" => 5 },
                     "components" => [
                       { "id" => "root", "component" => "Field", "label_text" => "Seats", "children" => ["seats"] },
                       { "id" => "seats", "component" => "Input", "type" => "number",
-                        "value" => { "path" => "/seats" } }
+                        "value" => { "@path" => "/seats" } }
                     ]
                   } })
 
@@ -412,7 +421,8 @@ class RendererTest < Minitest::Test
 
   def test_the_native_catalog_warns_on_unknown_components
     session = A2UI::Session.new
-    session.apply({ "createSurface" => { "surfaceId" => "n", "catalogId" => A2UI::Catalog::DEFAULT_ID,
+    session.apply({ "version" => "1.0",
+                    "createSurface" => { "surfaceId" => "n", "catalogId" => A2UI::Catalog::DEFAULT_ID,
                                          "components" => [{ "id" => "root", "component" => "Bogus" }] } })
     _html, renderer = render(session.surface("n"))
 
@@ -421,7 +431,7 @@ class RendererTest < Minitest::Test
 
   def test_an_empty_surface_renders_its_wrapper
     session = A2UI::Session.new
-    session.apply({ "createSurface" => { "surfaceId" => "e" } })
+    session.apply({ "version" => "1.0", "createSurface" => { "surfaceId" => "e" } })
     html, renderer = render(session.surface("e"), html: { class: "mt-4" })
 
     assert_equal '<div id="a2ui-e" data-a2ui-surface="e" data-version="0" class="mt-4"></div>', html

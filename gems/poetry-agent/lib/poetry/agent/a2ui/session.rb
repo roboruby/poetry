@@ -13,15 +13,22 @@ module Poetry
       # honor with renderer-to-agent error messages, and turns a
       # submitted form into the spec's `action` message.
       #
+      # Each surface speaks the protocol version of the message that created
+      # it, v0.9 and v1.0 side by side ({Dialect}): a later message must
+      # speak the same one, and whatever the session sends about a surface
+      # carries its version (`"v0.9"`, or v1.0's `"1.0"`). Every message
+      # names its version; v1.0's earlier spelling `"v1.0"` is accepted.
+      #
       # @example Fold a stream of messages and read back the surfaces
       #   session = Session.new
       #   session.apply_all(messages)  # => ["login"]
       #   session.surfaces["login"].data
       #   session.errors               # => [] or renderer-to-agent error messages
       class Session
-        # Every message carries exactly one of these keys.
-        MESSAGE_KEYS = %w[createSurface updateComponents updateDataModel deleteSurface
-                          callRendererFunction agentFunctionResponse].freeze
+        # The operations a v0.9 message may carry, exactly one per message.
+        MESSAGE_KEYS_V0_9 = %w[createSurface updateComponents updateDataModel deleteSurface].freeze
+        # The operations a v1.0 message may carry, exactly one per message.
+        MESSAGE_KEYS = (MESSAGE_KEYS_V0_9 + %w[callRendererFunction agentFunctionResponse]).freeze
 
         # A user action, ready for the agent: the spec message plus the
         # AG-UI placement (`forwardedProps.a2uiAction.userAction`).
@@ -87,13 +94,14 @@ module Poetry
         # @param message [Hash]
         # @return [Array<String>]
         def apply(message)
-          key = message_key(message)
-          return [] unless key
+          return reject("INVALID_MESSAGE", "message must be an object") unless message.is_a?(Hash)
 
+          dialect = message_dialect(message) or return []
+          key = message_key(message, dialect) or return []
           body = message[key]
-          return reject("INVALID_MESSAGE", "#{key} must be an object") unless body.is_a?(Hash)
+          return reject("INVALID_MESSAGE", "#{key} must be an object", dialect: dialect) unless body.is_a?(Hash)
 
-          send(:"apply_#{key.gsub(/([A-Z])/) { "_#{::Regexp.last_match(1).downcase}" }}", body)
+          send(:"apply_#{key.gsub(/([A-Z])/) { "_#{::Regexp.last_match(1).downcase}" }}", body, dialect)
         end
 
         # Applies a list of messages and returns the ids of the surfaces they changed.
@@ -155,8 +163,10 @@ module Poetry
           context = (event["context"] || {}).to_h { |name, value| [name.to_s, surface.resolve(value, scope)] }
           action = { "name" => event["name"], "surfaceId" => surface_id, "sourceComponentId" => component_id,
                      "timestamp" => timestamp.utc.iso8601(3), "context" => context }
-          action["userMessage"] = event["userMessage"] if event["userMessage"].is_a?(String)
-          Action.new(message: { "version" => "v#{PROTOCOL_VERSION}", "action" => action }, surface: surface, errors: {})
+          user_message = event.key?("userMessage") ? surface.text(event["userMessage"], scope) : ""
+          action["userMessage"] = user_message unless user_message.empty?
+          Action.new(message: { "version" => surface.dialect.version, "action" => action }, surface: surface,
+                     errors: {})
         end
 
         # The binding for a catalog id, or the default.
@@ -168,43 +178,58 @@ module Poetry
 
         private
 
-        # The one operation key of a message, or nil after rejecting a malformed one.
-        def message_key(message)
-          return reject("INVALID_MESSAGE", "message must be an object") && nil unless message.is_a?(Hash)
-
+        # The dialect of a message's version, or nil after rejecting a missing or unknown one.
+        def message_dialect(message)
           version = message["version"]
-          unless version.nil? || version == "v#{PROTOCOL_VERSION}"
-            reject("INVALID_MESSAGE", "unsupported version #{version.inspect}")
-            return
-          end
+          return reject("INVALID_MESSAGE", "Missing required version field") && nil if version.nil?
 
-          keys = MESSAGE_KEYS & message.keys
+          Dialect.for(version) || (reject("INVALID_MESSAGE", "unsupported version #{version.inspect}") && nil)
+        end
+
+        # The one operation key of a message for its version, or nil after rejecting a malformed one.
+        def message_key(message, dialect)
+          allowed = dialect.v1? ? MESSAGE_KEYS : MESSAGE_KEYS_V0_9
+          keys = allowed & message.keys
           return keys.first if keys.length == 1
 
-          reject("INVALID_MESSAGE", "message must carry exactly one of #{MESSAGE_KEYS.join(", ")}")
+          reject("INVALID_MESSAGE", "a #{dialect.version} message must carry exactly one of #{allowed.join(", ")}",
+                 dialect: dialect)
           nil
         end
 
-        # Creates a surface from a createSurface body; a duplicate or missing id is rejected.
-        def apply_create_surface(body)
+        # Creates a surface from a createSurface body, speaking the message's
+        # version; a duplicate or missing id is rejected, and so is a v0.9
+        # surface without its required catalogId. Inline components and an
+        # initial data model are v1.0's; a theme is v0.9's.
+        def apply_create_surface(body, dialect)
           surface_id = body["surfaceId"]
-          return reject("INVALID_MESSAGE", "createSurface.surfaceId is required") unless surface_id.is_a?(String)
+          unless surface_id.is_a?(String)
+            return reject("INVALID_MESSAGE", "createSurface.surfaceId is required", dialect: dialect)
+          end
           if @surfaces[surface_id]
             return reject("DUPLICATE_SURFACE", "surface #{surface_id} already exists",
                           surface_id)
           end
 
           catalog_id = body["catalogId"]
+          unless dialect.v1? || catalog_id.is_a?(String)
+            return reject("INVALID_MESSAGE", "createSurface.catalogId is required in #{dialect.version}", surface_id,
+                          dialect: dialect)
+          end
+
           surface = Surface.new(id: surface_id, catalog: catalog_for(catalog_id), catalog_id: catalog_id,
-                                send_data_model: body["sendDataModel"] == true, data: body["dataModel"])
+                                send_data_model: body["sendDataModel"] == true, dialect: dialect,
+                                data: dialect.v1? ? body["dataModel"] : nil, theme: dialect.v1? ? nil : body["theme"])
           @surfaces[surface_id] = surface
-          record(surface_id, surface.update_components(body["components"])) if body["components"].is_a?(Array)
+          if dialect.v1? && body["components"].is_a?(Array)
+            record(surface_id, surface.update_components(body["components"]))
+          end
           [surface_id]
         end
 
         # Updates a surface's components from an updateComponents body, recording validation errors.
-        def apply_update_components(body)
-          surface = find(body, "updateComponents") or return []
+        def apply_update_components(body, dialect)
+          surface = find(body, "updateComponents", dialect) or return []
           components = body["components"]
           unless components.is_a?(Array)
             return reject("INVALID_MESSAGE", "updateComponents.components must be an array", surface.id)
@@ -214,10 +239,14 @@ module Poetry
           [surface.id]
         end
 
-        # Writes a value into a surface's data model from an updateDataModel body.
-        def apply_update_data_model(body)
-          surface = find(body, "updateDataModel") or return []
-          return reject("INVALID_MESSAGE", "updateDataModel.value is required", surface.id) unless body.key?("value")
+        # Writes a value into a surface's data model from an updateDataModel
+        # body. v1.0 requires the value (null deletes); in v0.9 an omitted one
+        # deletes.
+        def apply_update_data_model(body, dialect)
+          surface = find(body, "updateDataModel", dialect) or return []
+          if dialect.v1? && !body.key?("value")
+            return reject("INVALID_MESSAGE", "updateDataModel.value is required", surface.id)
+          end
 
           surface.update_data(body["path"], body["value"])
           [surface.id]
@@ -226,8 +255,8 @@ module Poetry
         end
 
         # Deletes a surface from a deleteSurface body.
-        def apply_delete_surface(body)
-          surface = find(body, "deleteSurface") or return []
+        def apply_delete_surface(body, dialect)
+          surface = find(body, "deleteSurface", dialect) or return []
           @surfaces.delete(surface.id)
           @deleted << surface.id
           [surface.id]
@@ -236,64 +265,79 @@ module Poetry
         # An agent may invoke a function its catalog admits (`agentOnly` or
         # `rendererOrAgent`); the value comes back as a
         # `rendererFunctionResponse`, anything else as the spec's error.
-        def apply_call_renderer_function(body)
+        def apply_call_renderer_function(body, dialect)
           call = body["callFunction"].is_a?(Hash) ? body["callFunction"] : {}
-          name = call["call"].to_s
+          name = dialect.call_name(call).to_s
           catalog = catalog_for(call["catalogId"])
           unless catalog.functions.agent_callable?(name)
-            return refuse_call(body, "function #{name.inspect} is not invocable by an agent")
+            return refuse_call(body, "function #{name.inspect} is not invocable by an agent", dialect)
           end
 
-          evaluator = Evaluator.new(Surface.new(id: "callRendererFunction", catalog: catalog))
+          evaluator = Evaluator.new(Surface.new(id: "callRendererFunction", catalog: catalog, dialect: dialect))
           value = catalog.functions.call(name, evaluator.argument(call["args"] || {}), evaluator)
-          @responses << { "version" => "v#{PROTOCOL_VERSION}",
+          @responses << { "version" => dialect.version,
                           "rendererFunctionResponse" => { "functionCallId" => body["functionCallId"],
                                                           "value" => value } }
           []
         rescue Functions::Error, Expression::SyntaxError => e
-          refuse_call(body, e.message)
+          refuse_call(body, e.message, dialect)
         rescue StandardError => e
           # A host function's own failure: the agent learns only that it failed.
-          refuse_call(body, "#{name}: an error occurred during function execution (#{e.class})",
+          refuse_call(body, "#{name}: an error occurred during function execution (#{e.class})", dialect,
                       code: "EXECUTION_ERROR")
         end
 
         # Records a function call error and changes nothing.
-        def refuse_call(body, message, code: "INVALID_FUNCTION_CALL")
+        def refuse_call(body, message, dialect, code: "INVALID_FUNCTION_CALL")
           error = { "code" => code, "message" => message }
           error["functionCallId"] = body["functionCallId"] if body["functionCallId"]
-          @errors << { "version" => "v#{PROTOCOL_VERSION}", "error" => error }
+          @errors << { "version" => dialect.version, "error" => error }
           []
         end
 
         # This renderer never calls agent functions; a response has nothing to match.
-        def apply_agent_function_response(_body)
+        def apply_agent_function_response(_body, _dialect)
           []
         end
 
-        # The surface a body names, or nil after rejecting the unknown id.
-        def find(body, key)
+        # The surface a body names, or nil after rejecting an unknown id or a
+        # message in another version than the surface speaks.
+        def find(body, key, dialect)
           surface_id = body["surfaceId"]
           surface = surface_id.is_a?(String) && @surfaces[surface_id]
-          reject("UNKNOWN_SURFACE", "#{key}: no surface #{surface_id.inspect}", surface_id) unless surface
-          surface || nil
+          unless surface
+            reject("UNKNOWN_SURFACE", "#{key}: no surface #{surface_id.inspect}", surface_id, dialect: dialect)
+            return
+          end
+          return surface if surface.dialect.compatible?(dialect)
+
+          reject("INVALID_MESSAGE", "#{key}: surface #{surface_id} speaks #{surface.dialect.version}, " \
+                                    "the message #{dialect.version}", surface_id)
+          nil
         end
 
         # Records a surface's validation errors as error messages.
         def record(surface_id, validation_errors)
           validation_errors.each do |error|
-            @errors << { "version" => "v#{PROTOCOL_VERSION}",
+            @errors << { "version" => version_for(surface_id),
                          "error" => { "code" => error[:code], "surfaceId" => surface_id, "path" => error[:path],
                                       "message" => error[:message] } }
           end
         end
 
-        # Records an error message and returns no changed ids.
-        def reject(code, message, surface_id = nil)
+        # Records an error message and returns no changed ids. It carries the
+        # version of the surface it names, else of the message, else v1.0's.
+        def reject(code, message, surface_id = nil, dialect: nil)
           error = { "code" => code, "message" => message }
           error["surfaceId"] = surface_id if surface_id.is_a?(String)
-          @errors << { "version" => "v#{PROTOCOL_VERSION}", "error" => error }
+          @errors << { "version" => version_for(surface_id, dialect), "error" => error }
           []
+        end
+
+        # The version an outgoing message about a surface carries.
+        def version_for(surface_id, dialect = nil)
+          surface = surface_id.is_a?(String) && @surfaces[surface_id]
+          (surface ? surface.dialect : dialect || Dialect::V1_0).version
         end
 
         # Only bound paths are writable, each coerced to its input's kind;

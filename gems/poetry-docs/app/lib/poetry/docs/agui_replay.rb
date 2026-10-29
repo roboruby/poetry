@@ -49,7 +49,7 @@ module Poetry
         #
         # @return [Array<Hash>]
         def trial_surface
-          [ { "version" => "v1.0",
+          [ { "version" => "1.0",
               "createSurface" => {
                 "surfaceId" => "trial", "catalogId" => Poetry::Agent::A2UI::Catalogs::Basic::ID, "sendDataModel" => true,
                 "dataModel" => { "email" => "" },
@@ -58,13 +58,13 @@ module Poetry
                   { "id" => "title", "component" => "Text", "text" => "### Trial TR-3041 is live" },
                   { "id" => "note", "component" => "Text", "variant" => "caption",
                     "text" => "Ends in 30 days. Want a reminder three days before?" },
-                  { "id" => "email", "component" => "TextField", "label" => "Reminder email", "value" => { "path" => "/email" },
+                  { "id" => "email", "component" => "TextField", "label" => "Reminder email", "value" => { "@path" => "/email" },
                     "placeholder" => "you@example.com",
-                    "checks" => [ { "condition" => { "call" => "email", "args" => { "value" => { "path" => "/email" } } },
+                    "checks" => [ { "condition" => { "@call" => "email", "args" => { "value" => { "@path" => "/email" } } },
                                    "message" => "Enter a valid email" } ] },
                   { "id" => "remind", "component" => "Button", "child" => "remind_label", "variant" => "primary",
-                    "action" => { "event" => { "name" => "set_reminder", "context" => { "email" => { "path" => "/email" } } } },
-                    "checks" => [ { "condition" => { "call" => "required", "args" => { "value" => { "path" => "/email" } } },
+                    "action" => { "event" => { "name" => "set_reminder", "context" => { "email" => { "@path" => "/email" } } } },
+                    "checks" => [ { "condition" => { "@call" => "required", "args" => { "value" => { "@path" => "/email" } } },
                                    "message" => "Add the email first" } ] },
                   { "id" => "remind_label", "component" => "Text", "text" => "Set reminder" }
                 ]

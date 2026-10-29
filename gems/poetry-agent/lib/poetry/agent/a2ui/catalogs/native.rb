@@ -24,14 +24,19 @@ module Poetry
           # The catalog id this binding answers to.
           # @return [String]
           attr_reader :id
+          # The protocol version the catalog is built for.
+          # @return [Dialect]
+          attr_reader :dialect
 
           # A native binding over registry entries, answering to a catalog id.
           # @param entries [Hash{String => Hash}, nil] registry entries by path
           #   (the poetry-ui registry when nil)
           # @param id [String] the catalog id this binding answers to
-          def initialize(entries: nil, id: Catalog::DEFAULT_ID)
+          # @param dialect [Dialect] the protocol version the catalog is built for
+          def initialize(entries: nil, id: Catalog::DEFAULT_ID, dialect: Dialect::V1_0)
             @entries = entries
             @id = id
+            @dialect = dialect
           end
 
           # The function set Poetry's catalog declares: the basic one.
@@ -66,19 +71,19 @@ module Poetry
           # The bound inputs of a component: each bound option's path with its kind.
           # @param component [Hash]
           # @param scope [String, nil]
+          # @param dialect [Dialect] the surface's protocol version
           # @return [Array<Hash>] `{ path:, kind: }` for each bound option
-          def inputs(component, scope)
+          def inputs(component, scope, dialect)
             _path, entry = lookup(component)
             return [] unless entry
 
             BOUND_OPTIONS.filter_map do |name|
-              value = component[name]
-              next unless value.is_a?(Hash) && value["path"].is_a?(String)
+              path = dialect.path(component[name]) or next
 
               option = Array(entry["options"]).find { |candidate| candidate["name"] == name }
               next unless option
 
-              { path: Pointer.absolute(value["path"], scope), kind: KINDS.fetch(option["type"].to_s, :string) }
+              { path: Pointer.absolute(path, scope), kind: KINDS.fetch(option["type"].to_s, :string) }
             end
           end
 
@@ -129,7 +134,7 @@ module Poetry
             attributes[:id] = renderer.stable_key if option_required?(entry, "id") && !attributes.key?(:id)
             bound = BOUND_OPTIONS.find { |name| renderer.surface.binding?(component[name]) }
             if bound && option_names.include?("name") && !component.key?("name")
-              attributes[:name] = renderer.input_name(component[bound]["path"], scope)
+              attributes[:name] = renderer.input_name(renderer.surface.binding_path(component[bound]), scope)
             end
             label = renderer.aria_label(component, scope)
             attributes[:aria] = { label: label } if label
@@ -146,7 +151,7 @@ module Poetry
             return renderer.submit_attributes(component, scope) if action["event"].is_a?(Hash)
 
             call = action["functionCall"]
-            if call.is_a?(Hash) && call["call"] == "openUrl"
+            if renderer.surface.dialect.call_name(call) == "openUrl"
               url = renderer.call_function("openUrl", call["args"], scope)
               return { href: url } if url
             else

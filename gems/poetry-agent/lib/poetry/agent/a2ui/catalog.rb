@@ -26,6 +26,8 @@ module Poetry
         # The default catalog id (a versioned, conventionally URI-shaped
         # string identifier - it does not need to resolve).
         DEFAULT_ID = "https://poetryui.com/a2ui/v1_0/catalog.json"
+        # The id of the same catalog projected for v0.9 agents.
+        V0_9_ID = "https://poetryui.com/a2ui/v0_9/catalog.json"
 
         # Component and property names must be UAX #31 identifiers.
         NAME_PATTERN = /\A[\p{XID_Start}_]\p{XID_Continue}*\z/u

@@ -18,6 +18,11 @@ module Poetry
         class Basic
           # The catalog id agents name in `createSurface`.
           ID = "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json"
+          # The v0.9 basic catalog's id, and the one AG-UI's A2UI toolkits send for it.
+          V0_9_IDS = %w[https://a2ui.org/specification/v0_9/catalogs/basic/catalog.json
+                        https://a2ui.org/specification/v0_9/basic_catalog.json].freeze
+          # Heading levels by the v0.9 Text `variant` values.
+          HEADINGS = %w[h1 h2 h3 h4 h5].freeze
 
           # Main-axis alignment classes by the catalog's `justify` values.
           JUSTIFY = { "start" => "justify-start", "center" => "justify-center", "end" => "justify-end",
@@ -44,17 +49,34 @@ module Poetry
                            "edit" => "pencil", "add" => "plus", "remove" => "minus", "notifications" => "bell",
                            "person" => "user", "email" => "mail", "schedule" => "clock", "event" => "calendar",
                            "location-on" => "map-pin", "visibility" => "eye", "visibility-off" => "eye-off",
-                           "home" => "house", "shopping-cart" => "shopping-cart" }.freeze
+                           "home" => "house", "shopping-cart" => "shopping-cart", "account-circle" => "circle-user",
+                           "attach-file" => "paperclip", "calendar-today" => "calendar", "call" => "phone",
+                           "error" => "circle-alert", "favorite-off" => "heart-off", "help" => "circle-help",
+                           "notifications-off" => "bell-off", "payment" => "credit-card", "photo" => "image",
+                           "print" => "printer", "refresh" => "refresh-cw", "stop" => "square",
+                           "volume-down" => "volume-1", "volume-mute" => "volume-x", "volume-up" => "volume-2",
+                           "warning" => "triangle-alert" }.freeze
           # A ChoicePicker's resolved options, binding, selection, and label.
           Choice = Struct.new(:options, :path, :selected, :label, keyword_init: true)
           # The bound kinds of the input components.
           INPUT_KINDS = { "TextField" => :string, "CheckBox" => :boolean, "Slider" => :number,
                           "ChoicePicker" => :string_list, "DateTimeInput" => :string }.freeze
 
-          # The basic catalog's id.
+          # The protocol version the catalog is built for.
+          # @return [Dialect]
+          attr_reader :dialect
+
+          # The basic catalog of a protocol version (both versions' catalogs
+          # hold the same components and functions).
+          # @param dialect [Dialect]
+          def initialize(dialect: Dialect::V1_0)
+            @dialect = dialect
+          end
+
+          # The basic catalog's id in its version.
           # @return [String]
           def id
-            ID
+            dialect.v1? ? ID : V0_9_IDS.first
           end
 
           # The basic catalog's function set.
@@ -81,10 +103,11 @@ module Poetry
           #
           # @param component [Hash]
           # @param scope [String, nil]
+          # @param dialect [Dialect] the surface's protocol version
           # @return [Array<Hash>] `{ path:, kind: }`
-          def inputs(component, scope)
+          def inputs(component, scope, dialect)
             kind = INPUT_KINDS[component["component"]]
-            path = binding_path(component["value"])
+            path = dialect.path(component["value"])
             return [] unless kind && path
 
             kind = :number if component["component"] == "TextField" && component["variant"] == "number"
@@ -106,10 +129,15 @@ module Poetry
 
           private
 
-          # Renders a Text component: a caption as muted small text, anything else as typeset markdown.
+          # Renders a Text component: a caption as muted small text, a v0.9
+          # heading variant as a heading, anything else as typeset markdown.
           def render_text(component, scope, renderer)
             text = renderer.text(component["text"], scope)
-            if component["variant"] == "caption"
+            if HEADINGS.include?(component["variant"])
+              renderer.component(Poetry::Ui::Typeset::Component) do
+                renderer.view.content_tag(component["variant"], Markdown.strip(text))
+              end
+            elsif component["variant"] == "caption"
               renderer.view.tag.div(renderer.markdown(text), class: "text-sm text-muted-foreground")
             else
               renderer.component(Poetry::Ui::Typeset::Component) { renderer.markdown(text) }
@@ -267,11 +295,12 @@ module Poetry
             call = action["functionCall"]
             return { type: :button } unless call.is_a?(Hash)
 
-            if call["call"] == "openUrl"
+            name = renderer.surface.dialect.call_name(call)
+            if name == "openUrl"
               url = renderer.call_function("openUrl", call["args"], scope)
               return { href: url } if url
             else
-              renderer.warn("Button #{component["id"].inspect}: local action #{call["call"].inspect} is not supported")
+              renderer.warn("Button #{component["id"].inspect}: local action #{name.inspect} is not supported")
             end
             { type: :button, disabled: true }
           end
@@ -316,12 +345,13 @@ module Poetry
 
           # Renders a TextField component as a bound input with its placeholder, checks and error.
           def render_text_field(component, scope, renderer)
-            path = binding_path(component["value"])
+            path = renderer.surface.binding_path(component["value"])
             attributes = { id: renderer.control_id(component, scope), value: renderer.text(component["value"], scope) }
             attributes[:name] = renderer.input_name(path, scope) if path
             placeholder = renderer.text(component["placeholder"], scope)
             attributes[:placeholder] = placeholder unless placeholder.empty?
-            attributes.merge!(check_attributes(component))
+            attributes.merge!(check_attributes(component, renderer.surface.dialect))
+            attributes[:pattern] ||= component["validationRegexp"] if component["validationRegexp"].is_a?(String)
             error = renderer.error_for(component, scope)
             attributes[:invalid] = true if error
             keyed(component, scope, renderer, attributes)
@@ -341,11 +371,11 @@ module Poetry
 
           # Renders a CheckBox component as a bound checkbox with its error.
           def render_check_box(component, scope, renderer)
-            path = binding_path(component["value"])
+            path = renderer.surface.binding_path(component["value"])
             attributes = { label: renderer.text(component["label"], scope), value: "true", unchecked_value: "false",
                            checked: renderer.resolve(component["value"], scope) == true }
             attributes[:name] = renderer.input_name(path, scope) if path
-            attributes[:required] = true if check_attributes(component)[:required]
+            attributes[:required] = true if check_attributes(component, renderer.surface.dialect)[:required]
             keyed(component, scope, renderer, attributes)
             with_error(component, scope, renderer, renderer.component(Poetry::Ui::Checkbox::Component, attributes))
           end
@@ -353,13 +383,11 @@ module Poetry
           # `filterable` picks through a Combobox (single or multiple); chips
           # lay the choices out as a wrapping row; the default is a radio
           # group or a checkbox list.
-          # `filterable` picks through a Combobox (single or multiple); chips
-          # lay the choices out as a wrapping row; the default is a radio
-          # group or a checkbox list.
           def render_choice_picker(component, scope, renderer)
-            choice = Choice.new(options: Array(component["options"]).grep(Hash), path: binding_path(component["value"]),
+            choice = Choice.new(options: Array(component["options"]).grep(Hash),
+                                path: renderer.surface.binding_path(component["value"]),
                                 selected: Array(renderer.resolve(component["value"], scope)).map(&:to_s),
-                                label: renderer.text(component["label"], scope))
+                                label: accessible_label(component, scope, renderer))
             multiple = component["variant"] == "multipleSelection"
             chips = component["displayStyle"] == "chips"
             control = if component["filterable"] == true
@@ -414,18 +442,26 @@ module Poetry
 
           # Renders a Slider component as a bound slider within its bounds.
           def render_slider(component, scope, renderer)
-            path = binding_path(component["value"])
+            path = renderer.surface.binding_path(component["value"])
             min = component["min"].is_a?(Numeric) ? component["min"] : 0
             max = component["max"].is_a?(Numeric) ? component["max"] : 100
             value = renderer.resolve(component["value"], scope)
-            label = renderer.text(component["label"], scope)
-            label = renderer.aria_label(component, scope) || component["id"].to_s.tr("_", " ") if label.empty?
+            label = accessible_label(component, scope, renderer)
             attributes = { label: label, min: min, max: max, value: value.is_a?(Numeric) ? value : min }
             attributes[:name] = renderer.input_name(path, scope) if path
             steps = component["steps"]
             attributes[:step] = step_size(min, max, steps) if steps.is_a?(Integer) && steps.positive?
             keyed(component, scope, renderer, attributes)
             with_error(component, scope, renderer, renderer.component(Poetry::Ui::Slider::Component, attributes))
+          end
+
+          # A control's label: its own, else its accessibility label, else its
+          # id in words, since Poetry's form controls need an accessible name.
+          def accessible_label(component, scope, renderer)
+            label = renderer.text(component["label"], scope)
+            return label unless label.empty?
+
+            renderer.aria_label(component, scope) || component["id"].to_s.tr("_", " ")
           end
 
           # The slider step for a range and a step count, an integer when it divides evenly.
@@ -436,7 +472,7 @@ module Poetry
 
           # Renders a DateTimeInput component as a bound date, time or datetime input.
           def render_date_time_input(component, scope, renderer)
-            path = binding_path(component["value"])
+            path = renderer.surface.binding_path(component["value"])
             type = if component["enableTime"] && component["enableDate"] then "datetime-local"
                    elsif component["enableTime"] then "time"
                    else "date"
@@ -448,20 +484,20 @@ module Poetry
               limit = renderer.text(component[bound], scope)
               attributes[bound.to_sym] = limit unless limit.empty?
             end
-            attributes[:required] = true if check_attributes(component)[:required]
+            attributes[:required] = true if check_attributes(component, renderer.surface.dialect)[:required]
             keyed(component, scope, renderer, attributes)
             with_error(component, scope, renderer, renderer.component(Poetry::Ui::Input::Component, attributes))
           end
 
           # The checks the browser can enforce as constraint attributes.
-          def check_attributes(component)
+          def check_attributes(component, dialect)
             attributes = {}
             Array(component["checks"]).each do |check|
               condition = check.is_a?(Hash) ? check["condition"] : nil
-              next unless condition.is_a?(Hash) && condition["call"]
+              name = dialect.call_name(condition) or next
 
               args = condition["args"].is_a?(Hash) ? condition["args"] : {}
-              case condition["call"]
+              case name
               when "required" then attributes[:required] = true
               when "regex" then attributes[:pattern] = args["pattern"] if args["pattern"].is_a?(String)
               when "length"
@@ -472,11 +508,6 @@ module Poetry
               end
             end
             attributes
-          end
-
-          # A value's bound path, or nil when it is not a binding.
-          def binding_path(value)
-            value.is_a?(Hash) && value["path"].is_a?(String) ? value["path"] : nil
           end
         end
       end

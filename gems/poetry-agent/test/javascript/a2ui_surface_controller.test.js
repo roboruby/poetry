@@ -8,17 +8,17 @@ import { registerPoetryAgent, installVersionedReplace, preservesLocalState } fro
 // (the server decides).
 const PROGRAM = {
   checks: {
-    email: { kind: "input", rules: [{ condition: { call: "email", args: { value: { path: "/email" } } }, message: "Enter a valid email" }] },
+    email: { kind: "input", rules: [{ condition: { "@call": "email", args: { value: { "@path": "/email" } } }, message: "Enter a valid email" }] },
     submit: { kind: "button", rules: [{
-      condition: { call: "and", args: { values: [
-        { call: "required", args: { value: { path: "/terms" } } },
-        { call: "or", args: { values: [
-          { call: "required", args: { value: { path: "/email" } } },
-          { call: "required", args: { value: { path: "/phone" } } } ] } } ] } },
+      condition: { "@call": "and", args: { values: [
+        { "@call": "required", args: { value: { "@path": "/terms" } } },
+        { "@call": "or", args: { values: [
+          { "@call": "required", args: { value: { "@path": "/email" } } },
+          { "@call": "required", args: { value: { "@path": "/phone" } } } ] } } ] } },
       message: "Accept the terms and give an email or phone" }] },
-    size: { kind: "input", rules: [{ condition: { call: "required", args: { value: { path: "/size" } } }, message: "Pick a size" }] },
-    seats: { kind: "input", rules: [{ condition: { call: "numeric", args: { value: { path: "/seats" }, min: 1, max: 5 } }, message: "1 to 5 seats" }] },
-    exotic: { kind: "button", rules: [{ condition: { call: "customValidator", args: { value: { path: "/email" } } }, message: "never shown" }] }
+    size: { kind: "input", rules: [{ condition: { "@call": "required", args: { value: { "@path": "/size" } } }, message: "Pick a size" }] },
+    seats: { kind: "input", rules: [{ condition: { "@call": "numeric", args: { value: { "@path": "/seats" }, min: 1, max: 5 } }, message: "1 to 5 seats" }] },
+    exotic: { kind: "button", rules: [{ condition: { "@call": "customValidator", args: { value: { "@path": "/email" } } }, message: "never shown" }] }
   },
   inputs: { "/email": "string", "/phone": "string", "/terms": "boolean", "/size": "string_list", "/seats": "number" },
   model: { email: "", phone: "", terms: false, size: [], seats: 3, plan: "Team" }
@@ -108,7 +108,7 @@ describe("poetry--agent--a2ui-surface", () => {
     expect(controller.read("/seats")).toBe(3)
     expect(controller.read("/terms")).toBe(false)
     expect(controller.read("/size")).toEqual([])
-    expect(controller.resolve({ call: "not", args: { value: { call: "regex", args: { value: "x@example.com", pattern: "@example\\.com$" } } } })).toBe(false)
+    expect(controller.resolve({ "@call": "not", args: { value: { "@call": "regex", args: { value: "x@example.com", pattern: "@example\\.com$" } } } })).toBe(false)
   })
 })
 

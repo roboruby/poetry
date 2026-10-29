@@ -74,6 +74,9 @@ module A2UIConformance
 
   def at_least_v1?(version) = version.to_s.delete_prefix("v").split(".").first.to_i >= 1
 
+  # The case's version as a message's `version` field.
+  def wire(version) = at_least_v1?(version) ? "1.0" : version
+
   def messages_of(node)
     case node
     when Array then node.grep(Hash)
@@ -278,7 +281,9 @@ module A2UIConformance
   end
 
   def check_surface(surface, want)
-    fail!("theme expected #{want["theme"].inspect}; Poetry has no surface theme") if want.key?("theme")
+    if want.key?("theme") && !deep_eq(surface.theme, want["theme"])
+      fail!("theme #{surface.theme.inspect}, expected #{want["theme"].inspect}")
+    end
     %w[sendDataModel catalogId].each do |key|
       got = key == "sendDataModel" ? surface.send_data_model : surface.catalog_id
       fail!("#{key} #{got.inspect}, expected #{want[key].inspect}") if want.key?(key) && got != want[key]
@@ -383,7 +388,8 @@ module A2UIConformance
   # invokes the function directly with its arguments resolved.
   def evaluate(test_case, version, on_error)
     unless test_case["surface"].is_a?(Hash)
-      surface = A::Surface.new(id: "main", catalog: A::Catalogs::Basic.new, data: test_case["dataModel"] || {})
+      surface = A::Surface.new(id: "main", catalog: A::Catalogs::Basic.new, data: test_case["dataModel"] || {},
+                               dialect: A::Dialect.for(version))
       evaluator = A::Evaluator.new(surface, nil, on_error:)
       args = (test_case["args"] || {}).to_h { |key, value| [key.to_s, evaluator.argument(value)] }
       return A::Functions.basic.call(test_case["function"], args, evaluator)
@@ -396,7 +402,7 @@ module A2UIConformance
     session = A::Session.new(catalogs: catalogs)
     catalog_id = test_case["surface"]["catalogId"]
     surface = A::Surface.new(id: "main", catalog: session.catalog_for(catalog_id), catalog_id: catalog_id,
-                             data: test_case["dataModel"] || {})
+                             data: test_case["dataModel"] || {}, dialect: A::Dialect.for(version))
     call = { (at_least_v1?(version) ? "@call" : "call") => test_case["function"], "args" => test_case["args"] || {} }
     call["catalogId"] = test_case["catalogId"] if test_case.key?("catalogId")
     surface.resolve(call, nil, on_error:)
@@ -550,14 +556,20 @@ module A2UIConformance
 
   # ---- dispatch_action
 
+  # The case's button on a surface of its version: created, given the
+  # button, then its data model, as v0.9 allows no inline components.
   def run_dispatch_action(test_case)
     surface_id = test_case["surfaceId"] || "main"
+    version = wire(version_of(test_case))
     session = A::Session.new(catalogs: A.catalogs.merge("basic" => A::Catalogs::Basic.new))
     button = { "id" => "test_comp", "component" => "Button", "child" => "t", "action" => test_case["actionPayload"] }
-    session.apply({ "version" => "v1.0",
-                    "createSurface" => { "surfaceId" => surface_id, "catalogId" => "basic",
-                                         "dataModel" => deep_copy(test_case["dataModel"] || {}),
-                                         "components" => [button] } })
+    create = { "surfaceId" => surface_id, "catalogId" => "basic" }
+    session.apply_all([{ "version" => version, "createSurface" => create },
+                       { "version" => version,
+                         "updateComponents" => { "surfaceId" => surface_id, "components" => [button] } },
+                       { "version" => version,
+                         "updateDataModel" => { "surfaceId" => surface_id, "path" => "/",
+                                                "value" => deep_copy(test_case["dataModel"] || {}) } }])
     source = test_case["scope"] ? "test_comp@#{test_case["scope"]}" : "test_comp"
     action = session.action(surface_id: surface_id, source: source)
     if test_case["expectError"]

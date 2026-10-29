@@ -139,14 +139,14 @@ class FunctionsTest < Minitest::Test
     assert_equal "Total: $3.00 for 3 items",
                  ev.argument("Total: ${formatCurrency(value: ${/n}, currency: 'USD')} for ${/n} " \
                              "${pluralize(value: ${/n}, one: 'item', other: 'items')}")
-    assert_equal [3, "Ada"], ev.argument([{ "path" => "/n" }, { "path" => "/user/name" }])
+    assert_equal [3, "Ada"], ev.argument([{ "@path" => "/n" }, { "@path" => "/user/name" }])
     assert_equal({ "nested" => "Ada" }, ev.argument({ "nested" => "${/user/name}" }))
     assert_equal "plain", ev.argument("plain")
   end
 
   def test_format_string_interpolates_through_resolve
     ev = evaluator({ "reviewCount" => 2847 })
-    value = { "call" => "formatString",
+    value = { "@call" => "formatString",
               "args" => { "value" => "(${formatNumber(value: ${/reviewCount})} " \
                                      "${pluralize(value: ${/reviewCount}, one: 'review', other: 'reviews')})" } }
 
@@ -184,11 +184,11 @@ class FunctionsTest < Minitest::Test
     ev = A2UI::Evaluator.new(s)
     component = { "id" => "x",
                   "checks" => [
-                    { "condition" => { "call" => "email", "args" => { "value" => { "path" => "/email" } } },
+                    { "condition" => { "@call" => "email", "args" => { "value" => { "@path" => "/email" } } },
                       "message" => "Invalid email format" },
-                    { "condition" => { "call" => "required", "args" => { "value" => { "path" => "/terms" } } } },
-                    { "condition" => { "path" => "/result" } },
-                    { "condition" => { "call" => "not", "args" => { "value" => false } } }
+                    { "condition" => { "@call" => "required", "args" => { "value" => { "@path" => "/terms" } } } },
+                    { "condition" => { "@path" => "/result" } },
+                    { "condition" => { "@call" => "not", "args" => { "value" => false } } }
                   ] }
     s.update_data("/result",
                   { "valid" => false, "code" => "SOFT", "message" => "Just a note", "severity" => "warning" })

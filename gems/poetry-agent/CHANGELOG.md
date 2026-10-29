@@ -4,6 +4,10 @@
 
 ### Added
 
+- A2UI v0.9 and v1.0 side by side, per surface (`Poetry::Agent::A2UI::Dialect`): a surface speaks the version of the message that created it, a later message must speak the same one, and everything the session sends about a surface carries its version. v1.0 binds with `{ "@path" }` and calls with `{ "@call" }`, so a plain object's `path` and `call` keys are literal data there, a literal `@` key is escaped by doubling it (`"@@type"`), and any other single-`@` key is refused; v0.9 (and `"v0.9.1"`) keeps `{ "path" }` and `{ "call" }`, requires `createSurface.catalogId`, stores the surface's `theme`, and deletes on an `updateDataModel` without a value.
+- The v0.9 basic catalog, under the spec's id and the one AG-UI's A2UI toolkits send, and Poetry's own catalog under a v0.9 id (`Catalog::V0_9_ID`); every catalog binding knows its protocol version (`dialect`). A v0.9 Text's `h1` to `h5` render as headings and a TextField's `validationRegexp` becomes its `pattern`.
+- The basic catalog's icon names that had no Lucide match (`warning`, `payment`, `calendarToday`, `volumeUp` and 13 more) render.
+- poetry-agent's tests run A2UI's 17 renderer conformance suites (vendored under `test/fixtures/a2ui/upstream` with `rake a2ui:vendor` and `rake a2ui:verify`) and render all 87 of the basic catalogs' v0.9 and v1.0 examples.
 - `describe_component` prints one line per behavior the component uses.
 - The AG-UI `Transcript`'s text and reasoning parts carry `state:`: `:streaming` until their END event (or a `RUN_ERROR` ending the run mid-message) closes them, then `:done`; a `MESSAGES_SNAPSHOT`'s parts arrive `:done`. Closing a part re-renders its row through the relay, so a reasoning step reads "Thinking" while it streams and "Thought" once it closes.
 - `Poetry::Agent::AGUI::Pipeline`, AG-UI 1.0's processing model in the order the protocol fixes: the compatibility boundary (retired `THINKING_*` events become `REASONING_*`, a `null` in a whole optional field reads as absent, legacy `binary` content parts become media parts, each with a warning), your `middleware:`, enforcement against a contract table generated from the 1.0 schema (anything the protocol does not describe is stripped with a warning; a malformed known field fails the run), chunk expansion (`*_CHUNK` events become their start, content and end form, per subagent lane), and verification (the run lifecycle and every message, tool call, reasoning span, step and subagent opened before it continues and closed before `RUN_FINISHED`). It passes AG-UI's 388 reference vectors, all 67 receiver conformance streams a third-party client is scored on, all six era streams, and 60 captures from real producers with no rejection and no warning.
@@ -27,6 +31,10 @@
 
 ### Changed
 
+- BREAKING: every A2UI message must name its version (`"Missing required version field"` otherwise), as both versions' schemas require. v1.0's wire version is the bare `"1.0"`; its earlier spelling `"v1.0"`, which today's published agent SDKs still send, is accepted on input. Poetry sends `"1.0"` (or `"v0.9"` on a v0.9 surface), never `"v1.0"`.
+- BREAKING: on a v1.0 surface a binding is `{ "@path" }` and a call `{ "@call" }`, as v1.0 specifies; `{ "path" }` and `{ "call" }` are literal objects there. Payloads written with the old keys under a v1.0 version move to `@path` and `@call`, or declare `"v0.9"`.
+- The browser's check program is spelled as v1.0 spells it whatever the surface speaks, and carries the surface's version; a resolved value's plain objects and lists resolve what they hold.
+- An action's `userMessage` is resolved (a binding or a call) and sent when it is not empty.
 - The released gem serves its JavaScript minified, as poetry-core does, from `dist/javascript` with a source map beside each file.
 - The MCP check tool warns on a renamed Lucide icon with its current name instead of rejecting it.
 - BREAKING: `RunInput.resume_entry` requires `status:` and takes only AG-UI 1.0's two, `"resolved"` (the answer in the payload) and `"cancelled"`, raising `ArgumentError` otherwise. The former `"approved"` / `"rejected"` are rejected by 1.0 agents.
@@ -44,6 +52,8 @@
 
 ### Fixed
 
+- A v1.0 form using `@path` and `@call` works: its inputs were never bound to the data model, so a submit carried nothing, and its checks always failed in the browser, so its button never enabled.
+- A ChoicePicker without a label renders, its accessible name taken from its accessibility label or its id; Poetry's radio group refused it and it vanished.
 - An A2UI agent can no longer make the data model allocate an array of any size: a write names an array index up to 10,000 (A2UI's bound) or `-` to append, and anything else on an array (`/items/999999999`, `-5`, a name) is refused with a `DATA_ERROR` message on the surface instead of growing the array or raising `IndexError`. An input bound to such a path is skipped on submit with the same error.
 - An A2UI function that raises no longer escapes: from `callRendererFunction` it answers `EXECUTION_ERROR` with the function's name and the exception's class (not its message), and during a render the call fails with a warning while the surface still renders.
 - `formatNumber` and `formatCurrency` hold `decimals` to 0 through 100, so an argument can no longer ask for a string of any length; a negative count no longer raises.

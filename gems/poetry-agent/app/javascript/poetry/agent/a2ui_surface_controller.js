@@ -4,8 +4,10 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 /**
  * The client side of an A2UI surface's checks: the server renders the
- * program (every checked component's rules with absolute bindings, the
- * bound inputs by path with their kinds, and the data model) and this
+ * program (every checked component's rules, spelled as v1.0 spells them
+ * whatever the surface speaks: `{"@path"}` bindings made absolute,
+ * `{"@call", args}` calls, a literal `@` key doubled; the bound inputs by
+ * path with their kinds; and the data model) and this
  * controller evaluates it as the user types - a button whose own checks
  * fail is disabled, a failing input is marked invalid and its error slot
  * carries the message. The five validators and the three combinators are
@@ -75,17 +77,18 @@ export default class extends Controller {
   }
 
   /**
-   * A value with its bindings read and its calls run, recursively.
+   * A value with its bindings read and its calls run, recursively; a
+   * literal object's doubled `@@` keys read as their literal.
    *
-   * @param {*} value a literal, a binding, a call, or an array of them
+   * @param {*} value a literal, a binding, a call, an object or an array of them
    * @returns {*} the resolved value
    */
   resolve(value) {
     if (value === null || typeof value !== "object") return value
     if (Array.isArray(value)) return value.map((item) => this.resolve(item))
-    if (typeof value.path === "string") return this.read(value.path)
-    if (typeof value.call === "string") return this.call(value.call, value.args || {})
-    return value
+    if (typeof value["@path"] === "string") return this.read(value["@path"])
+    if (typeof value["@call"] === "string") return this.call(value["@call"], value.args || {})
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [unescapeKey(key), this.resolve(item)]))
   }
 
   /**
@@ -133,6 +136,9 @@ export default class extends Controller {
     return control.value
   }
 }
+
+// A literal object's key: v1.0 doubles a leading @ ("@@type" is "@type").
+const unescapeKey = (key) => (key.startsWith("@@") ? key.slice(1) : key)
 
 // An attribute-selector value (jsdom has no CSS.escape; quoting is enough).
 const escapeAttribute = (value) => String(value).replace(/["\\]/g, "\\$&")

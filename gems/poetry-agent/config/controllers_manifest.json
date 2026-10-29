@@ -93,7 +93,7 @@
     }
   },
   "poetry--agent--a2ui-surface": {
-    "doc": "The client side of an A2UI surface's checks: the server renders the program (every checked component's rules with absolute bindings, the bound inputs by path with their kinds, and the data model) and this controller evaluates it as the user types - a button whose own checks fail is disabled, a failing input is marked invalid and its error slot carries the message. The five validators and the three combinators are the checks vocabulary; anything else passes here and is judged by the server, which re-runs every rule on the action.",
+    "doc": "The client side of an A2UI surface's checks: the server renders the program (every checked component's rules, spelled as v1.0 spells them whatever the surface speaks: `{\"@path\"}` bindings made absolute, `{\"@call\", args}` calls, a literal `@` key doubled; the bound inputs by path with their kinds; and the data model) and this controller evaluates it as the user types - a button whose own checks fail is disabled, a failing input is marked invalid and its error slot carries the message. The five validators and the three combinators are the checks vocabulary; anything else passes here and is judged by the server, which re-runs every rule on the action.",
     "targets": [],
     "values": {
       "program": {
@@ -119,7 +119,7 @@
       "evaluate": "Runs every check in the program and applies its failures.",
       "failure": "A rule's failure message, or null when it passes or cannot be decided here.",
       "read": "The current value of a bound path from the form's inputs, falling back to the data model.",
-      "resolve": "A value with its bindings read and its calls run, recursively."
+      "resolve": "A value with its bindings read and its calls run, recursively; a literal object's doubled `@@` keys read as their literal."
     }
   }
 }
