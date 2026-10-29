@@ -148,6 +148,27 @@ module Poetry
           assert_empty feed([START, custom, { "type" => "RUN_ERROR", "message" => "x" }, START, FINISH])[:warnings]
         end
 
+        def test_a_string_outside_a_closed_set_is_stripped_not_fatal
+          outcome = feed([START,
+                          { "type" => "TEXT_MESSAGE_START", "messageId" => "m", "role" => "narrator" },
+                          { "type" => "TEXT_MESSAGE_END", "messageId" => "m" },
+                          { "type" => "REASONING_ENCRYPTED_VALUE", "subtype" => "step", "entityId" => "m",
+                            "encryptedValue" => "x" },
+                          FINISH])
+
+          assert_nil outcome[:error]
+          assert_equal({ "type" => "TEXT_MESSAGE_START", "messageId" => "m" }, outcome[:events][1],
+                       "an optional role it does not name is removed")
+          refute(outcome[:events].any? { |event| event["type"] == "REASONING_ENCRYPTED_VALUE" },
+                 "a required subtype it does not name removes the event")
+          assert_includes outcome[:warnings], "Removed unrecognised material at '/role' on TEXT_MESSAGE_START."
+          assert_includes outcome[:warnings],
+                          "Dropping REASONING_ENCRYPTED_VALUE: its required '/subtype' holds a value this " \
+                          "implementation does not recognise."
+          refute_nil feed([START, { "type" => "TEXT_MESSAGE_START", "messageId" => "m", "role" => 7 }])[:error],
+                     "a role that is not a string stays malformed"
+        end
+
         def test_a_ceiling_installs_its_era_and_must_be_a_version
           assert_raises(ArgumentError) { Pipeline.new(max_protocol_version: "v1") }
           outcome = feed([START, { "type" => "SUBAGENT_STARTED", "subagentRunId" => "s1", "name" => "child" }, FINISH],

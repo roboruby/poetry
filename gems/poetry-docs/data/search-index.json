@@ -1236,6 +1236,12 @@
     "path": "/ag-ui#render"
   },
   {
+    "title": "What a message carries",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#carries"
+  },
+  {
     "title": "Frontend tools",
     "page": "AG-UI Relay",
     "section": "docs",
@@ -1246,6 +1252,12 @@
     "page": "AG-UI Relay",
     "section": "docs",
     "path": "/ag-ui#interrupts"
+  },
+  {
+    "title": "Stopping a run",
+    "page": "AG-UI Relay",
+    "section": "docs",
+    "path": "/ag-ui#stopping"
   },
   {
     "title": "A2UI surfaces in the stream",
@@ -7228,6 +7240,12 @@
     "page": "AG-UI Relay",
     "section": "demos",
     "path": "/demos/agui-relay#default"
+  },
+  {
+    "title": "States",
+    "page": "AG-UI Relay",
+    "section": "demos",
+    "path": "/demos/agui-relay#states"
   },
   {
     "title": "A2UI Surface",

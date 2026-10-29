@@ -1,30 +1,44 @@
 <%# One message row from an AG-UI transcript, re-rendered by the relay on
     every change: data-version is the versioned replace's clock. User
-    turns are bubbles at the end. An assistant turn renders its runs
-    (Poetry::Docs::AgentActivity): text in a muted bubble, each run of
-    reasoning and tool calls as one Trace, and an activity as its A2UI
-    surface or its JSON. %>
+    turns are bubbles at the end, their images and documents as
+    attachments under them. An assistant turn renders its runs; one a
+    subagent built nests inside a step naming the invocation. In a run
+    that stopped before its end (cancelled, or a stream the page stopped
+    reading), waiting calls read stopped and the last turn says so, as
+    they do inside a subagent that has ended. %>
+<% transcript = local_assigns[:transcript] %>
+<% stopped = %i[cancelled truncated].include?(transcript&.run&.dig(:status)) %>
 <div id="row-<%= message.id %>" data-version="<%= version %>">
   <% if message.role == "user" %>
     <%= poetry_message(align: :end) do %>
-      <%= poetry_bubble { message.parts.map { |part| part[:text] }.join } %>
+      <div class="flex min-w-0 flex-col items-end gap-2">
+        <% text = message.parts.select { |part| part[:kind] == :text }.map { |part| part[:text] }.join %>
+        <%= poetry_bubble { text } if text.present? %>
+        <% media = message.parts.select { |part| part[:kind] == :media }.map { |part| part[:part] } %>
+        <%= render "poetry/docs/agent_activity/media", parts: media, class: "justify-end" if media.any? %>
+      </div>
     <% end %>
   <% else %>
     <%= poetry_message do %>
       <div class="flex min-w-0 flex-col gap-2">
-        <% Poetry::Docs::AgentActivity.runs(message.parts).each_with_index do |run, index| %>
-          <% case run.kind %>
-          <% when :text %>
-            <%= poetry_bubble(variant: :muted) { run.text } %>
-          <% when :activity %>
-            <%= render "poetry/docs/agent_activity/trace", parts: run.parts, id: "trace-#{message.id}-#{index}" %>
-          <% when :part %>
-            <% part = run.part %>
-            <% if part[:kind] == :activity && part[:activity_type] == "a2ui-surface" %>
-              <%= render "poetry/docs/agui_relay/surface", content: part[:content], errors: local_assigns[:surface_errors] || {} %>
-            <% elsif part[:kind] == :activity %>
-              <code class="rounded-md border px-3 py-2 text-xs"><%= part[:activity_type] %>: <%= part[:content].to_json %></code>
+        <% runs = { message: message, stopped: stopped, surface_errors: local_assigns[:surface_errors] || {} } %>
+        <% if message.subagent_run_id %>
+          <% record = transcript&.subagent(message.subagent_run_id) %>
+          <% step = Poetry::Docs::AgentActivity.subagent_step(record, stopped: stopped) %>
+          <%# An invocation that ended (failed, or finished) leaves nothing of its own running. %>
+          <% runs[:stopped] ||= %i[error finished].include?(record&.dig(:status)) %>
+          <%= poetry_trace(id: "subagent-#{message.id}") do |trace| %>
+            <% trace.with_step(step.title, icon: step.icon, status: step.status, description: step.description, open: true) do %>
+              <div class="flex min-w-0 flex-col gap-2"><%= render "poetry/docs/agui_relay/runs", **runs %></div>
             <% end %>
+          <% end %>
+        <% else %>
+          <%= render "poetry/docs/agui_relay/runs", **runs %>
+        <% end %>
+        <% if stopped && transcript.messages.reverse.find { |held| held.role == "assistant" }&.id == message.id %>
+          <%= poetry_marker do |marker| %>
+            <% marker.with_icon(name: :"circle-stop") %>
+            <%= transcript.run[:status] == :cancelled ? "The agent stopped this response" : "The stream stopped before the response finished" %>
           <% end %>
         <% end %>
       </div>

@@ -1,0 +1,821 @@
+{
+  "source": "apply/__tests__/subagent-apply.test.ts",
+  "vectors": [
+    {
+      "name": "defaultApplyEvents with subagentRunId attribution > should copy subagentRunId from TEXT_MESSAGE_START onto the newly created message",
+      "line": 31,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg1",
+          "role": "assistant",
+          "subagentRunId": "sub-1"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "msg1",
+          "delta": "Hello"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg1",
+            "role": "assistant",
+            "content": "Hello",
+            "subagentRunId": "sub-1"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: subagentRunId identifies the invocation that produced an entity; absent means the parent agent",
+      "notes": "Required fields completed for enforcement: the TS test's bare RUN_STARTED gets threadId/runId. Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "defaultApplyEvents with subagentRunId attribution > treats a null attribution tag as absent — nothing persists it into state",
+      "line": 74,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "msg1",
+          "role": "assistant",
+          "subagentRunId": null
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "msg1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg1",
+            "role": "assistant",
+            "content": "",
+            "subagentRunId": "$absent"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: absent subagentRunId means the parent and MUST NOT be spelled null (DEPRECATIONS.md: a whole optional null on an event is read as absent at the boundary)",
+      "warnings": [
+        "subagentRunId: null"
+      ],
+      "notes": "Required fields completed for enforcement: the TS test's bare RUN_STARTED gets threadId/runId. Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). On the pipeline the compatibility boundary removes the null (with a warning) before the reducer sees it; the reducer's own null guard is the second line."
+    },
+    {
+      "name": "defaultApplyEvents with subagentRunId attribution > strips a null tag from snapshot messages and the input echo — nothing persists it [input echo]",
+      "line": 116,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test",
+          "input": {
+            "threadId": "test",
+            "runId": "test",
+            "messages": [
+              {
+                "id": "echo1",
+                "role": "assistant",
+                "content": "x",
+                "subagentRunId": null
+              }
+            ],
+            "tools": [],
+            "context": [],
+            "state": {},
+            "forwardedProps": {}
+          }
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "snap1",
+              "role": "assistant",
+              "content": "y",
+              "subagentRunId": null
+            },
+            {
+              "id": "snap2",
+              "role": "assistant",
+              "content": "z",
+              "subagentRunId": "s1"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes: only the listed whole optional nulls are converted; a null subagentRunId inside a message is malformed and fatal",
+      "notes": "Required fields completed for enforcement: RUN_STARTED threadId/runId and the echoed input's threadId, runId, tools, context, state, forwardedProps. Full pipeline disagrees with the reducer-only test: a null subagentRunId inside a message is not on the boundary's optional-null list, so enforcement rejects the RUN_STARTED (a zod issue dump, hence any ProtocolError). The reducer's null stripping is reachable only on unverified input."
+    },
+    {
+      "name": "defaultApplyEvents with subagentRunId attribution > strips a null tag from snapshot messages and the input echo — nothing persists it [snapshot]",
+      "line": 116,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "snap1",
+              "role": "assistant",
+              "content": "y",
+              "subagentRunId": null
+            },
+            {
+              "id": "snap2",
+              "role": "assistant",
+              "content": "z",
+              "subagentRunId": "s1"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "error": ""
+      },
+      "spec": "/spec/1.0/basic/versioning#retired-shapes: only the listed whole optional nulls are converted; a null subagentRunId inside a message is malformed and fatal",
+      "notes": "Split from the same test: the snapshot alone, with the echo removed. Enforcement rejects the snapshot message's null tag (any ProtocolError)."
+    },
+    {
+      "name": "defaultApplyEvents with subagentRunId attribution > strips a null tag from snapshot messages and the input echo — nothing persists it [no nulls]",
+      "line": 116,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test",
+          "input": {
+            "threadId": "test",
+            "runId": "test",
+            "messages": [
+              {
+                "id": "echo1",
+                "role": "assistant",
+                "content": "x"
+              }
+            ],
+            "tools": [],
+            "context": [],
+            "state": {},
+            "forwardedProps": {}
+          }
+        },
+        {
+          "type": "MESSAGES_SNAPSHOT",
+          "messages": [
+            {
+              "id": "snap1",
+              "role": "assistant",
+              "content": "y"
+            },
+            {
+              "id": "snap2",
+              "role": "assistant",
+              "content": "z",
+              "subagentRunId": "s1"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "snap1",
+            "role": "assistant",
+            "content": "y",
+            "subagentRunId": "$absent"
+          },
+          {
+            "id": "snap2",
+            "role": "assistant",
+            "content": "z",
+            "subagentRunId": "s1"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/state#messages_snapshot: a snapshot message replaces the copy with the same id in place; one never seen is appended; one held but absent is dropped; /spec/1.0/events/state#messages_snapshot: the snapshot establishes each message's ownership through the messages it contains",
+      "notes": "Adapted: the nulls removed, keeping the test's surviving assertion (snap2 keeps s1, snap1 has no tag). The echoed echo1 is absent from the snapshot and is dropped."
+    },
+    {
+      "name": "defaultApplyEvents with subagentRunId attribution > should copy subagentRunId from TOOL_CALL_RESULT onto the newly created tool message",
+      "line": 159,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "call_123",
+          "toolCallName": "doSomething"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "call_123"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "tool-result-1",
+          "toolCallId": "call_123",
+          "content": "{\"success\":true}",
+          "role": "tool",
+          "subagentRunId": "sub-2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "call_123",
+            "role": "assistant",
+            "subagentRunId": "$absent",
+            "toolCalls": [
+              {
+                "id": "call_123",
+                "type": "function",
+                "function": {
+                  "name": "doSomething",
+                  "arguments": ""
+                }
+              }
+            ]
+          },
+          {
+            "id": "tool-result-1",
+            "role": "tool",
+            "toolCallId": "call_123",
+            "content": "{\"success\":true}",
+            "subagentRunId": "sub-2"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: subagentRunId identifies the invocation that produced an entity; absent means the parent agent; /spec/1.0/events/subagents#ownership: TOOL_CALL_RESULT mints a tool message owned by the result's own attribution",
+      "notes": "Required fields completed for enforcement: the TS test's bare RUN_STARTED gets threadId/runId. Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "defaultApplyEvents with subagentRunId attribution > should not overwrite an existing message's subagentRunId (first-writer-wins)",
+      "line": 205,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m2",
+          "role": "assistant",
+          "subagentRunId": "owner"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "call_456",
+          "toolCallName": "doSomethingElse",
+          "parentMessageId": "m2",
+          "subagentRunId": "intruder"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "call_456"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "error": "parent message 'm2'"
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a tool call inherits the attribution of the message that held it; a disagreeing attribution is rejected",
+      "notes": "Required fields completed for enforcement: the TS test's bare RUN_STARTED gets threadId/runId. Full pipeline disagrees with the reducer-only test: verification rejects a tool call tagged differently from its parent message, so the 'intruder' never reaches the reducer. The [untagged call] variant states the first-writer outcome on a conformant stream."
+    },
+    {
+      "name": "defaultApplyEvents with subagentRunId attribution > should not overwrite an existing message's subagentRunId (first-writer-wins) [untagged call]",
+      "line": 205,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "m2",
+          "role": "assistant",
+          "subagentRunId": "owner"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "call_456",
+          "toolCallName": "doSomethingElse",
+          "parentMessageId": "m2"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "call_456"
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "m2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "m2",
+            "role": "assistant",
+            "content": "",
+            "subagentRunId": "owner",
+            "toolCalls": [
+              {
+                "id": "call_456",
+                "type": "function",
+                "function": {
+                  "name": "doSomethingElse",
+                  "arguments": ""
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#ownership: a tool call inherits the attribution of the message that held it; a disagreeing attribution is rejected",
+      "notes": "Adapted: the TOOL_CALL_START carries no tag (it inherits the message's owner), so verification accepts it."
+    },
+    {
+      "name": "defaultApplyEvents with subagentRunId attribution > should set subagentRunId on TOOL_CALL_START creation and not overwrite it on a later resolve to the same message",
+      "line": 254,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "call_1",
+          "toolCallName": "f",
+          "subagentRunId": "first"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "call_1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "call_2",
+          "toolCallName": "g",
+          "parentMessageId": "call_1",
+          "subagentRunId": "second"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "call_2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "call_1",
+            "role": "assistant",
+            "subagentRunId": "first",
+            "toolCalls": [
+              {
+                "id": "call_1",
+                "type": "function",
+                "function": {
+                  "name": "f",
+                  "arguments": ""
+                }
+              },
+              {
+                "id": "call_2",
+                "type": "function",
+                "function": {
+                  "name": "g",
+                  "arguments": ""
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: subagentRunId identifies the invocation that produced an entity; absent means the parent agent",
+      "notes": "Required fields completed for enforcement: the TS test's bare RUN_STARTED gets threadId/runId. Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). Verification accepts call_2's 'second' tag: the assistant message 'call_1' is minted by the reducer, not opened by any event, so verification records no owner for it. See the write-up: a spec reading of 'a tool call inherits the attribution of the message that held it' would reject this."
+    },
+    {
+      "name": "defaultApplyEvents with subagentRunId attribution > should copy subagentRunId from REASONING_MESSAGE_START onto the newly created reasoning message",
+      "line": 312,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "reason1",
+          "role": "reasoning",
+          "subagentRunId": "sub-r"
+        },
+        {
+          "type": "REASONING_MESSAGE_CONTENT",
+          "messageId": "reason1",
+          "delta": "thinking"
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "reason1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "reason1",
+            "role": "reasoning",
+            "content": "thinking",
+            "subagentRunId": "sub-r"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: subagentRunId identifies the invocation that produced an entity; absent means the parent agent",
+      "notes": "Required fields completed for enforcement: the TS test's bare RUN_STARTED gets threadId/runId. Required fields completed for enforcement: REASONING_MESSAGE_START role \"reasoning\" added (required by the 1.0 schema). Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "defaultApplyEvents with subagentRunId attribution > should copy subagentRunId from ACTIVITY_SNAPSHOT onto the newly created activity message",
+      "line": 355,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "act1",
+          "activityType": "search",
+          "content": {
+            "query": "q"
+          },
+          "replace": false,
+          "subagentRunId": "sub-a"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "act1",
+            "role": "activity",
+            "activityType": "search",
+            "content": {
+              "query": "q"
+            },
+            "subagentRunId": "sub-a"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: subagentRunId identifies the invocation that produced an entity; absent means the parent agent; /spec/1.0/events/activity#activity_snapshot: a snapshot for an unseen messageId creates the activity message",
+      "notes": "Required fields completed for enforcement: the TS test's bare RUN_STARTED gets threadId/runId. Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "defaultApplyEvents with subagentRunId attribution > should leave subagentRunId absent on reasoning and activity messages when the event omits it",
+      "line": 392,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "REASONING_MESSAGE_START",
+          "messageId": "reason2",
+          "role": "reasoning"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "act2",
+          "activityType": "search",
+          "content": {}
+        },
+        {
+          "type": "REASONING_MESSAGE_END",
+          "messageId": "reason2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "reason2",
+            "role": "reasoning",
+            "content": "",
+            "subagentRunId": "$absent"
+          },
+          {
+            "id": "act2",
+            "role": "activity",
+            "activityType": "search",
+            "content": {},
+            "subagentRunId": "$absent"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/subagents#attribution: subagentRunId identifies the invocation that produced an entity; absent means the parent agent",
+      "notes": "Required fields completed for enforcement: the TS test's bare RUN_STARTED gets threadId/runId. Required fields completed for enforcement: REASONING_MESSAGE_START role \"reasoning\" added (required by the 1.0 schema). Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). Closing END events added before RUN_FINISHED so verification accepts it."
+    },
+    {
+      "name": "defaultApplyEvents with subagentRunId attribution > should re-own an activity when a replacing snapshot comes from another subagent",
+      "line": 477,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "act",
+          "activityType": "search",
+          "content": {
+            "step": 1
+          },
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "act",
+          "activityType": "search",
+          "content": {
+            "step": 2
+          },
+          "replace": true,
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "act",
+            "role": "activity",
+            "activityType": "search",
+            "content": {
+              "step": 2
+            },
+            "subagentRunId": "s2"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/activity#activity_snapshot: a replacing snapshot re-mints the activity, so subagentRunId becomes the snapshot's own, including absent",
+      "notes": "Required fields completed for enforcement: the TS test's bare RUN_STARTED gets threadId/runId. Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "defaultApplyEvents with subagentRunId attribution > should DROP the attribution when an UNTAGGED replacing snapshot takes over",
+      "line": 491,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "act",
+          "activityType": "search",
+          "content": {
+            "step": 1
+          },
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "act",
+          "activityType": "search",
+          "content": {
+            "step": 2
+          },
+          "replace": true
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "act",
+            "role": "activity",
+            "activityType": "search",
+            "content": {
+              "step": 2
+            },
+            "subagentRunId": "$absent"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/activity#activity_snapshot: a replacing snapshot re-mints the activity, so subagentRunId becomes the snapshot's own, including absent",
+      "notes": "Required fields completed for enforcement: the TS test's bare RUN_STARTED gets threadId/runId. Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "defaultApplyEvents with subagentRunId attribution > should treat an omitted `replace` as replacing and drop the attribution too",
+      "line": 506,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "act",
+          "activityType": "search",
+          "content": {
+            "step": 1
+          },
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "act",
+          "activityType": "search",
+          "content": {
+            "step": 2
+          }
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "act",
+            "role": "activity",
+            "activityType": "search",
+            "content": {
+              "step": 2
+            },
+            "subagentRunId": "$absent"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/activity#activity_snapshot: a replacing snapshot re-mints the activity, so subagentRunId becomes the snapshot's own, including absent",
+      "notes": "Required fields completed for enforcement: the TS test's bare RUN_STARTED gets threadId/runId. Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "defaultApplyEvents with subagentRunId attribution > should leave the owner alone when a non-replacing snapshot arrives from another subagent",
+      "line": 521,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "act",
+          "activityType": "search",
+          "content": {
+            "step": 1
+          },
+          "subagentRunId": "s1"
+        },
+        {
+          "type": "ACTIVITY_SNAPSHOT",
+          "messageId": "act",
+          "activityType": "search",
+          "content": {
+            "step": 2
+          },
+          "replace": false,
+          "subagentRunId": "s2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "act",
+            "role": "activity",
+            "activityType": "search",
+            "content": {
+              "step": 1
+            },
+            "subagentRunId": "s1"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/activity#activity_snapshot: replace:false leaves an existing activity as it stands and does not re-mint ownership",
+      "notes": "Required fields completed for enforcement: the TS test's bare RUN_STARTED gets threadId/runId. Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The spec puts the agreement duty on the producer and does not require the consumer to reject the disagreeing s2 tag; the reference accepts it."
+    }
+  ],
+  "excluded": []
+}

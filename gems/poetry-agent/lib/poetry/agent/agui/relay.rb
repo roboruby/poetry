@@ -80,11 +80,17 @@ module Poetry
         end
 
         # The end of the stream: closes the pipeline, which synthesizes nothing.
+        # A run the stream broke off in is truncated ({Transcript#truncate}), so
+        # its rows stop reading as running.
         #
-        # @return [Array<String>] always empty
+        # @return [Array<String>] the streams that re-render what the truncation closed
         def finish
-          @pipeline&.finish
-          []
+          return [] unless @pipeline
+
+          @pipeline.finish
+          return [] unless @pipeline.truncated?
+
+          @transcript.truncate.filter_map { |id| stream_for(id) }
         end
 
         # The pipeline raw events pass through, nil when they arrive verified.
@@ -119,18 +125,36 @@ module Poetry
                             method: @morph ? "morph" : nil)
         end
 
-        # Bridge elements for every pending client tool call.
+        # Bridge elements for every pending client tool call. A call to a tool
+        # declared to ask first (`client_tools: [{ name:, confirm: true }]`)
+        # waits inside the host's approval prompt: its Approve control carries
+        # `data-action="poetry--agent--agui-client-tool#approve"` and its Deny
+        # control `...#deny`. Deny posts `{ toolCallId, name, declined: true }`;
+        # answer it with {Transcript#decline_client_tool}.
         #
         # @param continue_url [String] where the browser POSTs `{ toolCallId, name, content, error }`
         # @param container [String] the element the bridge elements append to
+        # @param approval [#call, nil] `(pending) -> String` the prompt HTML for a call that asks first
         # @return [Array<String>]
-        def client_tool_streams(continue_url:, container: @container)
+        # @raise [ArgumentError] when a call asks first and no approval renderer is given
+        def client_tool_streams(continue_url:, container: @container, approval: nil)
           @transcript.pending_client_tools.map do |pending|
             call = { "toolCallId" => pending[:tool_call_id], "name" => pending[:name], "args" => pending[:input] || {} }
+            if pending[:confirm] && approval.nil?
+              raise ArgumentError,
+                    "#{pending[:name]} asks the user first: pass client_tool_streams an approval: renderer"
+            end
+
             id = TurboStream.escape(pending[:tool_call_id])
-            element = "<div id=\"agui-client-tool-#{id}\" hidden data-controller=\"#{CLIENT_TOOL_CONTROLLER}\" " \
-                      "data-#{CLIENT_TOOL_CONTROLLER}-call-value=\"#{TurboStream.escape(JSON.generate(call))}\" " \
-                      "data-#{CLIENT_TOOL_CONTROLLER}-url-value=\"#{TurboStream.escape(continue_url)}\"></div>"
+            attributes = "id=\"agui-client-tool-#{id}\" data-controller=\"#{CLIENT_TOOL_CONTROLLER}\" " \
+                         "data-#{CLIENT_TOOL_CONTROLLER}-call-value=\"#{TurboStream.escape(JSON.generate(call))}\" " \
+                         "data-#{CLIENT_TOOL_CONTROLLER}-url-value=\"#{TurboStream.escape(continue_url)}\""
+            element = if pending[:confirm]
+                        confirm = "data-#{CLIENT_TOOL_CONTROLLER}-confirm-value=\"true\""
+                        "<div #{attributes} #{confirm}>#{approval.call(pending)}</div>"
+                      else
+                        "<div #{attributes} hidden></div>"
+                      end
             TurboStream.append(container, element)
           end
         end

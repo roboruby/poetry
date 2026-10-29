@@ -1,0 +1,1187 @@
+{
+  "source": "apply/__tests__/default.tool-calls.test.ts",
+  "vectors": [
+    {
+      "name": "defaultApplyEvents with tool calls > should handle a single tool call correctly",
+      "line": 27,
+      "stage": "apply",
+      "initial": {
+        "messages": [],
+        "state": {
+          "count": 0,
+          "text": "hello"
+        }
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool1",
+          "toolCallName": "search"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "{\"query\": \""
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "test search"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "\"}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "tool1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool1",
+                "type": "function",
+                "function": {
+                  "name": "search",
+                  "arguments": "{\"query\": \"test search\"}"
+                }
+              }
+            ]
+          }
+        ],
+        "state": {
+          "count": 0,
+          "text": "hello"
+        }
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_args: the concatenated deltas form the call's argument text, carried as text and not validated; /spec/1.0/events/tool-calls#tool_call_start: parentMessageId attaches the call to the assistant message that carries it",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The TS test also counts mutation emissions, a TS reducer detail with no Ruby counterpart; the vector states the final messages. No parentMessageId: the reference mints the assistant message under the call's id."
+    },
+    {
+      "name": "defaultApplyEvents with tool calls > places a tool result immediately after its tool call even when the result arrives after a trailing assistant text",
+      "line": 122,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool1",
+          "toolCallName": "get_weather"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool1"
+        },
+        {
+          "type": "TEXT_MESSAGE_START",
+          "messageId": "text1",
+          "role": "assistant"
+        },
+        {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "messageId": "text1",
+          "delta": "Here is the weather."
+        },
+        {
+          "type": "TEXT_MESSAGE_END",
+          "messageId": "text1"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "res1",
+          "toolCallId": "tool1",
+          "content": "sunny"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "tool1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool1",
+                "type": "function",
+                "function": {
+                  "name": "get_weather",
+                  "arguments": ""
+                }
+              }
+            ]
+          },
+          {
+            "id": "res1",
+            "role": "tool",
+            "toolCallId": "tool1",
+            "content": "sunny"
+          },
+          {
+            "id": "text1",
+            "role": "assistant",
+            "content": "Here is the weather."
+          }
+        ]
+      },
+      "spec": "/spec/1.0/basic/run-input#messages (provider contract): an assistant tool call is immediately followed by its result in history",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The placement is the reference's choice for provider compatibility; no 1.0 MUST requires it."
+    },
+    {
+      "name": "defaultApplyEvents with tool calls > should handle multiple tool calls correctly",
+      "line": 198,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool1",
+          "toolCallName": "search"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "{\"query\":\"test\"}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool2",
+          "toolCallName": "calculate"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool2",
+          "delta": "{\"expression\":\"1+1\"}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "tool1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool1",
+                "type": "function",
+                "function": {
+                  "name": "search",
+                  "arguments": "{\"query\":\"test\"}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "tool2",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool2",
+                "type": "function",
+                "function": {
+                  "name": "calculate",
+                  "arguments": "{\"expression\":\"1+1\"}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_args: the concatenated deltas form the call's argument text, carried as text and not validated",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The TS test also counts mutation emissions, a TS reducer detail with no Ruby counterpart; the vector states the final messages."
+    },
+    {
+      "name": "defaultApplyEvents with tool calls > should handle tool calls with parent message ID correctly",
+      "line": 297,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "existing_message",
+            "role": "assistant",
+            "content": "I'll help you with that.",
+            "toolCalls": []
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool1",
+          "toolCallName": "search",
+          "parentMessageId": "existing_message"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "{\"query\":\"test\"}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "existing_message",
+            "role": "assistant",
+            "content": "I'll help you with that.",
+            "toolCalls": [
+              {
+                "id": "tool1",
+                "type": "function",
+                "function": {
+                  "name": "search",
+                  "arguments": "{\"query\":\"test\"}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_start: parentMessageId attaches the call to the assistant message that carries it",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The TS test also counts mutation emissions, a TS reducer detail with no Ruby counterpart; the vector states the final messages."
+    },
+    {
+      "name": "defaultApplyEvents with tool calls > should handle errors and partial updates correctly",
+      "line": 375,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool1",
+          "toolCallName": "search"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "{\"query"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": ":\"test\"}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "tool1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool1",
+                "type": "function",
+                "function": {
+                  "name": "search",
+                  "arguments": "{\"query:\"test\"}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_args: the concatenated deltas form the call's argument text, carried as text and not validated",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The TS test also counts mutation emissions, a TS reducer detail with no Ruby counterpart; the vector states the final messages. The argument text is malformed JSON and is kept verbatim."
+    },
+    {
+      "name": "defaultApplyEvents with tool calls > should handle advanced scenarios with multiple tools and text messages",
+      "line": 439,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool1",
+          "toolCallName": "search"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool1",
+          "delta": "{\"query\":\"test\"}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tool2",
+          "toolCallName": "calculate"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tool2",
+          "delta": "{\"expression\":\"1+1\"}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tool2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "tool1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool1",
+                "type": "function",
+                "function": {
+                  "name": "search",
+                  "arguments": "{\"query\":\"test\"}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "tool2",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tool2",
+                "type": "function",
+                "function": {
+                  "name": "calculate",
+                  "arguments": "{\"expression\":\"1+1\"}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_args: the concatenated deltas form the call's argument text, carried as text and not validated",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The TS test also counts mutation emissions, a TS reducer detail with no Ruby counterpart; the vector states the final messages. Despite its title the test sends no text messages."
+    },
+    {
+      "name": "defaultApplyEvents with tool calls > should find parent via full-array search when tool result sits between two tool calls",
+      "line": 528,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc-1",
+          "toolCallName": "search",
+          "parentMessageId": "parent-1"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc-1",
+          "delta": "{\"q\":\"a\"}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc-1"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "result-1",
+          "toolCallId": "tc-1",
+          "content": "found it"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc-2",
+          "toolCallName": "analyze",
+          "parentMessageId": "parent-1"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc-2",
+          "delta": "{\"data\":\"x\"}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc-2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "parent-1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tc-1",
+                "type": "function",
+                "function": {
+                  "name": "search",
+                  "arguments": "{\"q\":\"a\"}"
+                }
+              },
+              {
+                "id": "tc-2",
+                "type": "function",
+                "function": {
+                  "name": "analyze",
+                  "arguments": "{\"data\":\"x\"}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "result-1",
+            "role": "tool",
+            "toolCallId": "tc-1",
+            "content": "found it"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_start: parentMessageId attaches the call to the assistant message that carries it",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "defaultApplyEvents with tool calls > should find parent via full-array search when multiple messages precede it",
+      "line": 621,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc-1",
+          "toolCallName": "search",
+          "parentMessageId": "assistant-1"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc-1",
+          "delta": "{\"q\":\"a\"}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc-1"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "result-1",
+          "toolCallId": "tc-1",
+          "content": "found"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "result-2",
+          "toolCallId": "tc-1",
+          "content": "more"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc-2",
+          "toolCallName": "analyze",
+          "parentMessageId": "assistant-1"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc-2",
+          "delta": "{\"x\":1}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc-2"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "assistant-1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tc-1",
+                "type": "function",
+                "function": {
+                  "name": "search",
+                  "arguments": "{\"q\":\"a\"}"
+                }
+              },
+              {
+                "id": "tc-2",
+                "type": "function",
+                "function": {
+                  "name": "analyze",
+                  "arguments": "{\"x\":1}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "result-1",
+            "role": "tool",
+            "toolCallId": "tc-1",
+            "content": "found"
+          },
+          {
+            "id": "result-2",
+            "role": "tool",
+            "toolCallId": "tc-1",
+            "content": "more"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_start: parentMessageId attaches the call to the assistant message that carries it",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The TS test finds messages by id; the vector also pins the order the reference produces. Two results answer tc-1; both are kept as separate tool messages, in arrival order."
+    },
+    {
+      "name": "defaultApplyEvents with tool calls > should fall back to toolCallId when parentMessageId collides with a non-assistant message",
+      "line": 714,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc-setup",
+          "toolCallName": "setup"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc-setup",
+          "delta": "{}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc-setup"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "shared-id",
+          "toolCallId": "tc-setup",
+          "content": "done"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc-collide",
+          "toolCallName": "collide",
+          "parentMessageId": "shared-id"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc-collide",
+          "delta": "{\"x\":1}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc-collide"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "tc-setup",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tc-setup",
+                "type": "function",
+                "function": {
+                  "name": "setup",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "shared-id",
+            "role": "tool",
+            "toolCallId": "tc-setup",
+            "content": "done"
+          },
+          {
+            "id": "tc-collide",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tc-collide",
+                "type": "function",
+                "function": {
+                  "name": "collide",
+                  "arguments": "{\"x\":1}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_start: parentMessageId attaches the call to the assistant message that carries it",
+      "warnings": [
+        "parentMessageId 'shared-id' matches a 'tool' message"
+      ],
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). The TS test finds messages by id; the vector also pins the order the reference produces. The spec says parentMessageId names an assistant message; naming a tool message is a producer error the reference repairs by minting under the call id."
+    },
+    {
+      "name": "defaultApplyEvents with tool calls > should create new assistant message when parentMessageId is not found anywhere",
+      "line": 802,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc-1",
+          "toolCallName": "lookup",
+          "parentMessageId": "nonexistent-parent"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc-1",
+          "delta": "{\"key\":\"val\"}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "nonexistent-parent",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tc-1",
+                "type": "function",
+                "function": {
+                  "name": "lookup",
+                  "arguments": "{\"key\":\"val\"}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_start: parentMessageId attaches the call to the assistant message that carries it",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal)."
+    },
+    {
+      "name": "defaultApplyEvents with tool calls > TOOL_CALL_START idempotency > does not append a second entry when the same TOOL_CALL_START is applied twice",
+      "line": 883,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc-1",
+          "toolCallName": "search",
+          "parentMessageId": "msg-1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc-1",
+          "toolCallName": "search",
+          "parentMessageId": "msg-1"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc-1",
+          "delta": "{\"query\":\"x\"}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "error": "A tool call with ID 'tc-1' is already in progress"
+      },
+      "spec": "/spec/1.0/events/tool-calls#error-handling: reopening a call that is still open is fatal",
+      "notes": "Full pipeline disagrees with the reducer-only test: a second START for an open call is fatal at verification. The [closed between] variant states the reducer's idempotency on a conformant reopen."
+    },
+    {
+      "name": "defaultApplyEvents with tool calls > TOOL_CALL_START idempotency > does not append a second entry when the same TOOL_CALL_START is applied twice [closed between]",
+      "line": 883,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc-1",
+          "toolCallName": "search",
+          "parentMessageId": "msg-1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc-1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc-1",
+          "toolCallName": "search",
+          "parentMessageId": "msg-1"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc-1",
+          "delta": "{\"query\":\"x\"}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg-1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tc-1",
+                "type": "function",
+                "function": {
+                  "name": "search",
+                  "arguments": "{\"query\":\"x\"}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_end: a closed call MAY be reopened by a TOOL_CALL_START with the same toolCallId, and further arguments append",
+      "notes": "Adapted: TOOL_CALL_END between the two starts, so the second is a reopen."
+    },
+    {
+      "name": "defaultApplyEvents with tool calls > TOOL_CALL_START idempotency > does not append a second entry for a tool call the agent carries from a previous run",
+      "line": 927,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "msg-1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tc-1",
+                "type": "function",
+                "function": {
+                  "name": "openPolicyException",
+                  "arguments": "{\"txId\":\"t-9\"}"
+                }
+              }
+            ]
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc-1",
+          "toolCallName": "openPolicyException",
+          "parentMessageId": "msg-1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc-1"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "tm-1",
+          "toolCallId": "tc-1",
+          "content": "approved"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg-1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tc-1",
+                "type": "function",
+                "function": {
+                  "name": "openPolicyException",
+                  "arguments": "{\"txId\":\"t-9\"}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "tm-1",
+            "role": "tool",
+            "toolCallId": "tc-1",
+            "content": "approved"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_end: a closed call MAY be reopened by a TOOL_CALL_START with the same toolCallId, and further arguments append",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). Adapted: TOOL_CALL_END added after the replayed START (an open call at RUN_FINISHED is fatal). Arguments streamed in the earlier run survive: a START carries none."
+    },
+    {
+      "name": "defaultApplyEvents with tool calls > TOOL_CALL_START idempotency > does not create a stray assistant message when a replayed start names an unknown parent",
+      "line": 969,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "msg-1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tc-1",
+                "type": "function",
+                "function": {
+                  "name": "openPolicyException",
+                  "arguments": "{\"txId\":\"t-9\"}"
+                }
+              }
+            ]
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc-1",
+          "toolCallName": "openPolicyException",
+          "parentMessageId": "msg-regenerated"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc-1"
+        },
+        {
+          "type": "TOOL_CALL_RESULT",
+          "messageId": "tm-1",
+          "toolCallId": "tc-1",
+          "content": "approved"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg-1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tc-1",
+                "type": "function",
+                "function": {
+                  "name": "openPolicyException",
+                  "arguments": "{\"txId\":\"t-9\"}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "tm-1",
+            "role": "tool",
+            "toolCallId": "tc-1",
+            "content": "approved"
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_end: a closed call MAY be reopened by a TOOL_CALL_START with the same toolCallId, and further arguments append",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). Adapted: TOOL_CALL_END added. The replay names a parentMessageId that disagrees with the held call's message, which the spec says a reopening start MUST NOT do; the reference keeps the held placement."
+    },
+    {
+      "name": "defaultApplyEvents with tool calls > TOOL_CALL_START idempotency > emits no state update at all for a replayed TOOL_CALL_START",
+      "line": 1010,
+      "stage": "apply",
+      "initial": {
+        "messages": [
+          {
+            "id": "msg-1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tc-1",
+                "type": "function",
+                "function": {
+                  "name": "openPolicyException",
+                  "arguments": "{\"txId\":\"t-9\"}"
+                }
+              }
+            ]
+          }
+        ],
+        "state": {}
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc-1",
+          "toolCallName": "openPolicyException",
+          "parentMessageId": "msg-1"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "msg-1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tc-1",
+                "type": "function",
+                "function": {
+                  "name": "openPolicyException",
+                  "arguments": "{\"txId\":\"t-9\"}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_end: a closed call MAY be reopened by a TOOL_CALL_START with the same toolCallId, and further arguments append",
+      "notes": "Wrapped: RUN_FINISHED appended (the TS test stops without a terminal). Adapted: TOOL_CALL_END added. TS asserts no mutation at all; the vector states the held messages are unchanged."
+    },
+    {
+      "name": "defaultApplyEvents with tool calls > TOOL_CALL_START idempotency > updates the existing entry in place when a start reuses an id under a different name",
+      "line": 1036,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc-1",
+          "toolCallName": "search"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc-1",
+          "delta": "{\"query\":\"x\"}"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc-1",
+          "toolCallName": "lookup"
+        }
+      ],
+      "expect": {
+        "error": "A tool call with ID 'tc-1' is already in progress"
+      },
+      "spec": "/spec/1.0/events/tool-calls#error-handling: reopening a call that is still open is fatal",
+      "notes": "Full pipeline disagrees with the reducer-only test: the second START arrives while tc-1 is open."
+    },
+    {
+      "name": "defaultApplyEvents with tool calls > TOOL_CALL_START idempotency > updates the existing entry in place when a start reuses an id under a different name [closed between]",
+      "line": 1036,
+      "stage": "apply",
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc-1",
+          "toolCallName": "search"
+        },
+        {
+          "type": "TOOL_CALL_ARGS",
+          "toolCallId": "tc-1",
+          "delta": "{\"query\":\"x\"}"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc-1"
+        },
+        {
+          "type": "TOOL_CALL_START",
+          "toolCallId": "tc-1",
+          "toolCallName": "lookup"
+        },
+        {
+          "type": "TOOL_CALL_END",
+          "toolCallId": "tc-1"
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "messages": [
+          {
+            "id": "tc-1",
+            "role": "assistant",
+            "toolCalls": [
+              {
+                "id": "tc-1",
+                "type": "function",
+                "function": {
+                  "arguments": "{\"query\":\"x\"}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "spec": "/spec/1.0/events/tool-calls#tool_call_end: a closed call MAY be reopened by a TOOL_CALL_START with the same toolCallId, and further arguments append",
+      "warnings": [
+        "tc-1"
+      ],
+      "notes": "Adapted: TOOL_CALL_END before the renaming START, so it is a reopen. The spec says a reopening start MUST agree on toolCallName and makes no promise which name a consumer that misses the violation keeps, so the vector pins only one entry and the arguments; the reference renames it to 'lookup' and warns."
+    }
+  ],
+  "excluded": []
+}

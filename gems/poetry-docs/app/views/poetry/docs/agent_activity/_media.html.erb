@@ -1,0 +1,26 @@
+<%# AG-UI content parts that are not text (image, audio, video,
+    document) as Attachment chips (Poetry::Docs::AgentActivity.media): an
+    image as its picture, anything else as a file chip that opens it.
+    Parts carry no alt text, so pictures are decorative and the chip's
+    title names them. %>
+<%= poetry_attachment_group(class: class_names("items-start", local_assigns[:class])) do %>
+  <% parts.each do |part| %>
+    <% media = Poetry::Docs::AgentActivity.media(part) %>
+    <% if media.kind == :image %>
+      <%= poetry_attachment(orientation: :vertical) do |chip| %>
+        <% chip.with_media(variant: :image) { image_tag(media.href, alt: "") } %>
+        <% chip.with_title { media.name } %>
+      <% end %>
+    <% else %>
+      <%= poetry_attachment do |chip| %>
+        <% if media.href %>
+          <% chip.with_trigger(tag: :a, href: media.href, target: "_blank", rel: "noopener",
+                               download: (media.name if media.download)) { tag.span("Open #{media.name}", class: "sr-only") } %>
+        <% end %>
+        <% chip.with_media { poetry_icon(name: media.icon) } %>
+        <% chip.with_title { media.name } %>
+        <% chip.with_description { media.mime } %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

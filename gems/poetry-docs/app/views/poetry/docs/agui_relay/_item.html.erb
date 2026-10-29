@@ -2,5 +2,5 @@
     wrapper MessageScroller anchors and keys rows by), so a streamed
     message joins the list exactly like the server-rendered history. %>
 <%= poetry_message_scroller_item(id: "item-#{message.id}", class: "px-4") do %>
-  <%= render "poetry/docs/agui_relay/row", message: message, version: version %>
+  <%= render "poetry/docs/agui_relay/row", message: message, version: version, transcript: local_assigns[:transcript] %>
 <% end %>

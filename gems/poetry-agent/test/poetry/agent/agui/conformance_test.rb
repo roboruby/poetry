@@ -19,20 +19,14 @@ module Poetry
         # The fixture the corpus README says to relax for a third-party
         # client: it pins the reference client's admitted gap (an unknown
         # member of a closed string set, a message role, is fatal there where
-        # the spec wants it stripped). Poetry's walker shares that gap today,
-        # so this fixture would pass as written; it is relaxed, not met.
+        # the spec wants it stripped). Poetry strips it, as the spec says, so
+        # this fixture fails as written; PipelineTest pins the stripping.
         RELAXED = %w[unknown-enum-value-role-fatal].freeze
 
         # Fixtures Poetry does not pass yet, each with what closes it. A
         # listed fixture that starts passing fails the suite: the list only
-        # shrinks.
-        DIVERGENCES = {
-          "metadata-merges-last-write-wins" => "phase 3: metadata on messages",
-          "open-metadata-preserved" => "phase 3: metadata on messages",
-          "tool-call-metadata-lands-on-the-call" => "phase 3: metadata on tool calls",
-          "subagent-terminal-closes-open-chunk-stream" => "phase 3: subagentRunId on messages",
-          "subagent-unannounced-attribution-accepted" => "phase 3: subagentRunId on messages"
-        }.freeze
+        # shrinks. Empty since phase 3: every scored fixture passes.
+        DIVERGENCES = {}.freeze
 
         # A value at "<index>.<dotted path>" inside a list of events, or :absent.
         def self.dig_path(root, path)
@@ -55,24 +49,9 @@ module Poetry
           end
         end
 
-        # The transcript's messages in the wire shape, activity messages where they arrived.
-        def self.wire_messages(transcript)
-          input = transcript.messages_for_input
-          ids = transcript.messages.map(&:id)
-          transcript.messages.flat_map do |message|
-            if message.role == "activity"
-              part = message.parts.first
-              next [{ "id" => message.id, "role" => "activity", "activityType" => part[:activity_type],
-                      "content" => part[:content] }]
-            end
-            start = input.index { |wire| wire["id"] == message.id }
-            next [] unless start
-
-            [input[start], *input[(start + 1)..].take_while do |wire|
-              !ids.include?(wire["id"]) || wire["role"] == "tool"
-            end]
-          end
-        end
+        # The transcript's messages in the wire shape, tool results and activity
+        # messages where they sit.
+        def self.wire_messages(transcript) = transcript.send(:stored_wire)
 
         # One fixture through a pipeline and a fresh transcript.
         def self.replay_fixture(fixture)

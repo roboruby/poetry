@@ -162,11 +162,11 @@ module Poetry
                                "stream after your decision. No model, no key, same bytes every run."),
         Entry.new(slug: "agui-relay", title: "AG-UI Relay", section: "demos",
                   description: "A scripted AG-UI agent's event stream - text deltas, reasoning, a " \
-                               "backend tool call, shared state, a frontend tool call, an interrupt - " \
-                               "relayed by poetry-agent as versioned Turbo Streams into MessageScroller. " \
-                               "The tabs component on the page executes the agent's tool call through " \
-                               "the registrar and reports back; the interrupt is answered as a URL " \
-                               "decision. No model, no key, same bytes every run."),
+                               "backend tool call, shared state, a frontend tool call that asks first, an " \
+                               "interrupt, a subagent - relayed by poetry-agent as versioned Turbo Streams " \
+                               "into MessageScroller. The tabs component on the page executes the agent's " \
+                               "tool call through the registrar once you approve it; the interrupt is " \
+                               "answered as a URL decision. No model, no key, same bytes every run."),
         Entry.new(slug: "a2ui-surface", title: "A2UI Surface", section: "demos",
                   description: "A2UI surfaces rendered by poetry-agent: the spec's basic catalog and " \
                                "Poetry's own catalog rendered on the server as forms, and a third streamed " \

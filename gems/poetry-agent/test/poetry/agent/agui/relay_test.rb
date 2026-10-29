@@ -123,6 +123,37 @@ module Poetry
           )
         end
 
+        def test_a_tool_that_asks_first_waits_inside_the_hosts_approval_prompt
+          transcript = Transcript.new(client_tools: [{ name: "book", confirm: true }])
+          relay = open_run(Relay.new(transcript: transcript, render: ->(message, _) { message.id }, container: "chat"))
+          relay.apply({ "type" => "TOOL_CALL_START", "toolCallId" => "c1", "toolCallName" => "book" })
+          relay.apply({ "type" => "TOOL_CALL_END", "toolCallId" => "c1" })
+
+          assert_raises(ArgumentError) { relay.client_tool_streams(continue_url: "/go") }
+          prompt = lambda { |pending|
+            %(<button data-action="poetry--agent--agui-client-tool#approve">#{pending[:name]}</button>)
+          }
+          stream = relay.client_tool_streams(continue_url: "/go", approval: prompt).first
+
+          assert_includes stream, %(data-poetry--agent--agui-client-tool-confirm-value="true")
+          assert_includes stream, %(#approve">book</button>)
+          refute_includes stream, " hidden", "the prompt is shown"
+        end
+
+        def test_finish_truncates_a_run_the_stream_broke_off_in
+          broken = relay
+          broken.apply({ "type" => "TEXT_MESSAGE_START", "messageId" => "m1", "role" => "assistant" })
+          streams = broken.finish
+
+          assert_predicate broken.transcript, :truncated?
+          assert_equal 1, streams.size, "the open message re-renders, closed"
+          finished = relay
+          finished.apply({ "type" => "RUN_FINISHED", "threadId" => "t", "runId" => "r" })
+
+          assert_empty finished.finish
+          assert_empty Relay.new(transcript: Transcript.new, render: ->(*) { "" }, pipeline: nil).finish
+        end
+
         def test_turbo_stream_builders_and_sse_framing
           assert_equal %(<turbo-stream action="remove" target="x"></turbo-stream>), TurboStream.remove("x")
           assert_equal "data: <a>b c</a>\n\n", TurboStream.sse("<a>b\nc</a>")

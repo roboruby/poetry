@@ -49,14 +49,15 @@ module Poetry
       def continue
         index = AguiReplay.cursor(params)
         body = JSON.parse(request.body.read.presence || "{}")
-        transcript = AguiReplay.transcript_before(index + 1, tool_result: body["content"].presence)
+        tool_result = body["declined"] ? AguiReplay::DECLINED : body["content"].presence
+        transcript = AguiReplay.transcript_before(index + 1, tool_result: tool_result)
         relay = build_relay(transcript)
         relay.mark_seen(transcript.messages.map(&:id))
         resolved = transcript.message("m1")
         streams = [
           relay.stream_for(resolved.id),
           Poetry::Agent::AGUI::TurboStream.remove(SOURCE_ID),
-          Poetry::Agent::AGUI::TurboStream.append(SCROLLER_ID, source_tag(index + 1, tool_result: body["content"]))
+          Poetry::Agent::AGUI::TurboStream.append(SCROLLER_ID, source_tag(index + 1, tool_result: tool_result))
         ].compact
         render body: streams.join, content_type: "text/vnd.turbo-stream.html"
       end
@@ -80,7 +81,7 @@ module Poetry
                       Poetry::Agent::AGUI::TurboStream.append(SCROLLER_ID, source_tag(4, email: email)) ]
           render body: streams.join, content_type: "text/vnd.turbo-stream.html"
         else
-          html = render_row(row, row.version, surface_errors: action&.errors || {})
+          html = render_row(row, row.version, surface_errors: action&.errors || {}, transcript: transcript)
           render body: Poetry::Agent::AGUI::TurboStream.vreplace("row-#{row.id}", html, morph: true),
                  content_type: "text/vnd.turbo-stream.html", status: :unprocessable_entity
         end
@@ -91,19 +92,27 @@ module Poetry
       def build_relay(transcript)
         Poetry::Agent::AGUI::Relay.new(
           transcript: transcript, container: SCROLLER_ID, morph: true,
-          render: ->(message, version) { render_row(message, version) },
-          append_render: ->(message, version) { render_item(message, version) },
+          render: ->(message, version) { render_row(message, version, transcript: transcript) },
+          append_render: ->(message, version) { render_item(message, version, transcript) },
           remove_targets: ->(id) { %([data-message-id="item-#{id}"]) }
         )
       end
 
-      def render_row(message, version, surface_errors: {})
+      def render_row(message, version, surface_errors: {}, transcript: nil)
         render_to_string(partial: "poetry/docs/agui_relay/row",
-                         locals: { message: message, version: version, surface_errors: surface_errors })
+                         locals: { message: message, version: version, surface_errors: surface_errors, transcript: transcript })
       end
 
-      def render_item(message, version)
-        render_to_string(partial: "poetry/docs/agui_relay/item", locals: { message: message, version: version })
+      def render_item(message, version, transcript)
+        render_to_string(partial: "poetry/docs/agui_relay/item",
+                         locals: { message: message, version: version, transcript: transcript })
+      end
+
+      # The prompt a client tool that asks first waits inside: its Approve and
+      # Deny are the bridge's own actions.
+      def render_approval(pending)
+        render_to_string(partial: "poetry/docs/agent_activity/approval",
+                         locals: { **AgentActivity.approval(pending), bridge: true })
       end
 
       # After the last event: the client-tool bridge (run 1), the interrupt's
@@ -112,7 +121,8 @@ module Poetry
       # the run.
       def closing_streams(relay, index, decision)
         streams = [ Poetry::Agent::AGUI::TurboStream.remove(SOURCE_ID) ]
-        streams.concat(relay.client_tool_streams(continue_url: agui_relay_continue_path(s: index, page: page_path)))
+        streams.concat(relay.client_tool_streams(continue_url: agui_relay_continue_path(s: index, page: page_path),
+                                                 approval: ->(pending) { render_approval(pending) }))
         controls = render_to_string(partial: "poetry/docs/agui_relay/controls",
                                     locals: { transcript: relay.transcript, index: index, decision: decision, page: page_path })
         streams << Poetry::Agent::AGUI::TurboStream.append(SCROLLER_ID, controls)

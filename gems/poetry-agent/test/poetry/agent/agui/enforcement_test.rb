@@ -20,6 +20,15 @@ module Poetry
         # rejects unknown material outright; which of them a receiver strips is
         # the processing rule's call, so this table is written from the
         # documents.
+        # Invalid fixtures that pin the reference's admitted closed-set gap: a
+        # required field holding a string its closed set does not name. The
+        # spec (processing.mdx, reasoning.mdx) makes that unrecognised material,
+        # which in a required position removes the value carrying it.
+        DROP_CASES = {
+          "ReasoningEncryptedValueEvent/unknown-subtype" => "/subtype",
+          "ResumeEntry/unknown-status" => "/status"
+        }.freeze
+
         STRIP_CASES = {
           "AgentCapabilities/old-subagents-key" => ["/multiAgent/subAgents"],
           "FileSource/reference-record" => ["/reference"],
@@ -90,8 +99,10 @@ module Poetry
           ["a non-string union tag drops the element", "MessagesSnapshotEvent",
            { "type" => "MESSAGES_SNAPSHOT", "messages" => [{ "id" => "1", "role" => 42, "content" => "x" }] },
            [:strip, ["/messages/0"]]],
-          ["a role outside TextMessageRole is fatal (the reference's admitted gap)", "TextMessageStartEvent",
-           { "type" => "TEXT_MESSAGE_START", "messageId" => "m", "role" => "tool" }, [:raise, "enum"]],
+          ["a role outside TextMessageRole is stripped, a member of a closed set added later", "TextMessageStartEvent",
+           { "type" => "TEXT_MESSAGE_START", "messageId" => "m", "role" => "narrator" }, [:strip, ["/role"]]],
+          ["a role that is not a string is still malformed, not unrecognised", "TextMessageStartEvent",
+           { "type" => "TEXT_MESSAGE_START", "messageId" => "m", "role" => 7 }, [:raise, "type"]],
           ["responseSchema true (a boolean JSON Schema) is fatal", "Interrupt",
            { "id" => "i", "reason" => "r", "responseSchema" => true }, [:raise, "type"]],
           ["an unknown key on an interrupt is stripped inside its list", "RunFinishedEvent",
@@ -121,6 +132,8 @@ module Poetry
 
               assert_empty stripped, "#{name}: a valid document strips nothing"
               assert_same document, value, "#{name}: comes back untouched"
+            elsif DROP_CASES.key?(name)
+              assert_equal [nil, [DROP_CASES[name]]], walker.definition(document, definition), name
             elsif STRIP_CASES.key?(name)
               value, stripped = walker.definition(document, definition)
 

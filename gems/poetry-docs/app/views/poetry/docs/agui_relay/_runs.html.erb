@@ -1,0 +1,20 @@
+<%# An assistant message's runs (Poetry::Docs::AgentActivity): text in a
+    muted bubble, each run of reasoning and tool calls as one Trace, and an
+    activity as its A2UI surface or its JSON. %>
+<% Poetry::Docs::AgentActivity.runs(message.parts).each_with_index do |run, index| %>
+  <% case run.kind %>
+  <% when :text %>
+    <%= poetry_bubble(variant: :muted) { run.text } %>
+  <% when :activity %>
+    <%= render "poetry/docs/agent_activity/trace", parts: run.parts, id: "trace-#{message.id}-#{index}", stopped: stopped %>
+  <% when :part %>
+    <% part = run.part %>
+    <% if part[:kind] == :activity && part[:activity_type] == "a2ui-surface" %>
+      <%= render "poetry/docs/agui_relay/surface", content: part[:content], errors: surface_errors %>
+    <% elsif part[:kind] == :activity %>
+      <code class="rounded-md border px-3 py-2 text-xs"><%= part[:activity_type] %>: <%= part[:content].to_json %></code>
+    <% elsif part[:kind] == :media %>
+      <%= render "poetry/docs/agent_activity/media", parts: [ part[:part] ] %>
+    <% end %>
+  <% end %>
+<% end %>

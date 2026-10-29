@@ -42,6 +42,45 @@ module AguiHelper
     end
   end
 
+  # The corpus's subset match, nil when it holds, else the first difference:
+  # arrays the same length, objects on the keys expected names, "$absent"
+  # a key that must not be there, "$any" and "$bind:NAME" as in
+  # first_difference.
+  def subset_difference(expected, actual, path = "", binds = {})
+    case expected
+    when "$any" then actual.nil? ? "#{path}: missing" : nil
+    when Hash
+      return "#{path}: expected an object, got #{actual.inspect[0, 160]}" unless actual.is_a?(Hash)
+
+      expected.each do |key, value|
+        if value == "$absent"
+          return "#{path}.#{key}: should be absent, is #{actual[key].inspect[0, 120]}" if actual.key?(key)
+        elsif !actual.key?(key)
+          return "#{path}.#{key}: missing (want #{value.inspect[0, 120]})"
+        else
+          diff = subset_difference(value, actual[key], "#{path}.#{key}", binds)
+          return diff if diff
+        end
+      end
+      nil
+    when Array
+      return "#{path}: expected an array, got #{actual.inspect[0, 160]}" unless actual.is_a?(Array)
+
+      unless expected.size == actual.size
+        ids = ->(list) { list.map { |item| item.is_a?(Hash) ? item["id"] : item } }
+        return "#{path}: #{actual.size} entries #{ids.call(actual).inspect[0, 200]}, " \
+               "want #{expected.size} #{ids.call(expected).inspect[0, 200]}"
+      end
+
+      expected.each_with_index do |value, index|
+        diff = subset_difference(value, actual[index], "#{path}[#{index}]", binds)
+        return diff if diff
+      end
+      nil
+    else first_difference(expected, actual, path, binds)
+    end
+  end
+
   # nil when actual matches expected, else the first difference.
   def first_difference(expected, actual, path = "", binds = {})
     return nil if expected == "$any"

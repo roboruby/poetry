@@ -1,12 +1,20 @@
 <%# A pending approval is a prompt, not activity, so it is an Item (after
     shadcn@4.23.0's Trace chat example): the ask, what it does, and the two
-    answers. Both are plain GETs, since a relay's state is its URL. %>
+    answers. For an interrupt both are plain GETs, since a relay's state is
+    its URL; inside a client tool's bridge (bridge: true) they are the
+    bridge's own approve and deny actions, so the tool runs, or is
+    declined, in this page. %>
 <%= poetry_item(variant: :outline, size: :sm, media_variant: :icon, class: "w-full") do |item| %>
   <% item.with_media { poetry_icon(name: icon) } %>
   <% item.with_title { title } %>
   <% item.with_description { description } if description %>
   <% item.with_actions do %>
-    <%= poetry_button(size: :sm, variant: :outline, href: deny) { "Deny" } %>
-    <%= poetry_button(size: :sm, href: approve) { "Approve" } %>
+    <% if local_assigns[:bridge] %>
+      <%= poetry_button(size: :sm, variant: :outline, data: { action: "poetry--agent--agui-client-tool#deny" }) { "Deny" } %>
+      <%= poetry_button(size: :sm, data: { action: "poetry--agent--agui-client-tool#approve" }) { "Approve" } %>
+    <% else %>
+      <%= poetry_button(size: :sm, variant: :outline, href: deny) { "Deny" } %>
+      <%= poetry_button(size: :sm, href: approve) { "Approve" } %>
+    <% end %>
   <% end %>
 <% end %>

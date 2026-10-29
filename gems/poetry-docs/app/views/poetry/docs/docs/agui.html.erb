@@ -26,12 +26,13 @@
       include ActionController::Live
 
       SCROLLER = "assistant-scroller-messages" # MessageScroller renders "<id>-messages"
+      CONFIRM = %w[poetry.checkout.pay].freeze  # frontend tools that ask before they run
 
       def stream
         response.headers["Content-Type"] = "text/event-stream"
         response.headers["X-Accel-Buffering"] = "no"
 
-        transcript = Poetry::Agent::AGUI::Transcript.new(client_tools: frontend_tools.map { |tool| tool["name"] })
+        transcript = Poetry::Agent::AGUI::Transcript.new(client_tools: client_tools)
         relay = Poetry::Agent::AGUI::Relay.new(
           transcript: transcript, container: SCROLLER, morph: true,
           render: ->(message, version) { render_to_string(partial: "assistant/row", locals: { message:, version: }) },
@@ -50,7 +51,12 @@
         client.run(input, pipeline: pipeline) do |event|
           relay.apply(event).each { |html| write(html) }
         end
-        relay.client_tool_streams(continue_url: assistant_continue_path(thread: params[:thread])).each { |html| write(html) }
+        # A stream that broke off without its end: the run reads truncated, and nothing is invented.
+        transcript.truncate.filter_map { |id| relay.stream_for(id) }.each { |html| write(html) } if pipeline.truncated?
+        relay.client_tool_streams(
+          continue_url: assistant_continue_path(thread: params[:thread]),
+          approval: ->(pending) { render_to_string(partial: "assistant/approval", locals: { pending: }) } # tools that ask first
+        ).each { |html| write(html) }
       ensure
         response.stream.close
       end
@@ -62,6 +68,11 @@
         Poetry::Ui::Tabs::Component.tool_definitions.map do |definition|
           Poetry::Agent::AGUI.tool_descriptor("sections", definition)
         end
+      end
+
+      # The browser runs these; a tool with consequences asks the person first.
+      def client_tools
+        frontend_tools.map { |tool| { name: tool["name"], confirm: CONFIRM.include?(tool["name"]) } }
       end
 
       def write(html)
@@ -113,12 +124,14 @@
             <p class="whitespace-pre-wrap">#{o}= part[:text] #{e}</p>
           #{o} end #{e}
         #{o} else #{e}
-          #{o}# :loading, :awaiting_client, :done, :error #{e}
+          #{o}# :loading, :awaiting_client, :done, :error, :denied #{e}
           #{o} case part[:state] #{e}
           #{o} when :loading #{e}
             #{o} trace.with_step("Running \#{part[:name]}", icon: :wrench, status: :running) #{e}
           #{o} when :awaiting_client #{e}
             #{o} trace.with_step("Running \#{part[:name]}", icon: :wrench, status: :pending, description: "in the browser") #{e}
+          #{o} when :denied #{e}
+            #{o} trace.with_step("Denied: running \#{part[:name]}", icon: :wrench) #{e}
           #{o} when :error #{e}
             #{o} trace.with_step("Failed to run \#{part[:name]}", icon: :wrench, status: :error) do #{e}
               #{o}= poetry_code_block(code: part[:output]["error"].to_s, variant: :destructive, size: :sm, wrap: true, copy: false) #{e}
@@ -147,11 +160,16 @@
     pipeline.truncated? # broke off without RUN_FINISHED, which is never invented
   CODE
   continue_source = <<~CODE
-    # POST /assistant/continue - the bridge's { toolCallId, name, content, error } JSON
+    # POST /assistant/continue - the bridge's { toolCallId, name, content, error } JSON,
+    # or { toolCallId, name, declined: true } when the person denied a tool that asks first
     def continue
       body = JSON.parse(request.body.read)
       transcript = load_transcript(params[:thread])           # your own persistence of the events so far
-      transcript.resolve_client_tool(body["toolCallId"], body["content"], error: body["error"])
+      if body["declined"]
+        transcript.decline_client_tool(body["toolCallId"])     # the agent is told no; the call never ran
+      else
+        transcript.resolve_client_tool(body["toolCallId"], body["content"], error: body["error"])
+      end
 
       input = Poetry::Agent::AGUI::RunInput.build(
         thread_id: params[:thread], tools: frontend_tools,
@@ -174,6 +192,34 @@
         interrupts: transcript.interrupts, resume: [answer]   # every open interrupt answered, or it raises
       )
     end
+  CODE
+  approval_source = <<~CODE
+    #{o}# app/views/assistant/_approval.html.erb - the prompt a tool that asks first waits inside #{e}
+    #{o}= poetry_item(variant: :outline, size: :sm) do |item| #{e}
+      #{o} item.with_title { "Pay \#{pending[:input]["amount"]}?" } #{e}
+      #{o} item.with_actions do #{e}
+        #{o}= poetry_button(size: :sm, variant: :outline, data: { action: "poetry--agent--agui-client-tool#deny" }) { "Deny" } #{e}
+        #{o}= poetry_button(size: :sm, data: { action: "poetry--agent--agui-client-tool#approve" }) { "Approve" } #{e}
+      #{o} end #{e}
+    #{o} end #{e}
+  CODE
+  carries_source = <<~CODE
+    message.metadata            # merged from every event that built it, key by key, the last write winning
+    message.subagent_run_id     # the subagent invocation that built it; nil for the agent itself
+    part[:metadata]             # a tool call keeps its own, apart from its message
+    transcript.subagent(message.subagent_run_id)
+    # => { name: "research", status: :finished, parent_tool_call_id: "c1", outcome: {...}, result: ... }
+    transcript.run[:usage]      # token usage, one entry per provider and model
+    transcript.run[:pending_tool_call_ids] # the calls the run left unanswered
+    transcript.messages_for_input # tool results beside their calls, metadata, and any encrypted reasoning
+  CODE
+  stop_source = <<~CODE
+    pipeline = Poetry::Agent::AGUI::Pipeline.new
+    client.run(input, pipeline: pipeline) do |event|
+      break if stop_requested?(thread) # leaving the block closes the connection
+      relay.apply(event).each { |html| write(html) }
+    end
+    transcript.truncate if pipeline.truncated? # :truncated, never a RUN_FINISHED it did not receive
   CODE
   surface_source = <<~CODE
     #{o}# app/views/assistant/_activity.html.erb #{e}
@@ -227,7 +273,7 @@
       </p>
       <ul>
         <li><code>Client</code> runs an agent endpoint over Net::HTTP and yields each event as it arrives, once a <code>Pipeline</code> has checked it against AG-UI 1.0. <code>RunInput</code> builds what it sends: the AG-UI version it speaks (<code>protocolVersion: "1.0"</code>), the messages, and the tools the page offers. A user or tool message takes plain text or a list of content parts: text, image, audio, video and document parts with a <code>data</code>, <code>url</code> or provider <code>file</code> source.</li>
-        <li><code>Transcript</code> folds events into chat-shaped messages. Each message's <code>parts</code> are text, reasoning, tool calls carrying their state, media parts, or activities; it keeps every run on the stream in <code>runs</code>, a cancelled one marked <code>:cancelled</code>; the transcript also holds the shared <code>state</code>, the <code>interrupts</code>, the tool calls waiting on the browser, and <code>messages_for_input</code> for the next run.</li>
+        <li><code>Transcript</code> folds events into chat-shaped messages. Each message's <code>parts</code> are text, reasoning, tool calls carrying their state and their answer, media parts, or activities, and each message keeps its metadata and the subagent that built it. It keeps every run on the stream in <code>runs</code>, a cancelled one marked <code>:cancelled</code>, and every subagent invocation in <code>subagents</code>; it also holds the shared <code>state</code>, the <code>interrupts</code>, the tool calls waiting on the browser, and <code>messages_for_input</code> for the next run.</li>
         <li><code>Relay</code> turns each change into a Turbo Stream through your own partials: an append into the scroller when a message first appears, a versioned replace after. Every frame carries <code>data-version</code> and the runtime applies only strictly newer frames, so an out-of-order delivery never paints an older state over a newer one.</li>
       </ul>
     <% end %>
@@ -273,7 +319,11 @@
         the protocol fixes. Retired shapes from older agents are converted, with
         a warning. Your middleware runs next. Then anything the protocol does not
         describe is stripped, with a warning; a malformed known field fails the run.
-        Chunk events become their start, content and end form. Last, the run
+        A value outside a closed set the protocol names, such as a message
+        role it does not list, counts as unrecognised too and is stripped; where
+        that field is required, the event carrying it goes. A value of the wrong
+        type is still malformed. Chunk events become their start, content and
+        end form. Last, the run
         lifecycle is verified: a message, tool call or step that never opened, one
         still open at <code>RUN_FINISHED</code>, a run inside a run. What comes out
         is what the transcript reduces, so a page never renders a stream the
@@ -333,7 +383,12 @@
         Tool parts carry a state: <code>:loading</code> while arguments stream,
         <code>:awaiting_client</code> when the browser must execute the call,
         <code>:done</code> with the <code>output</code>, <code>:error</code>
-        when the agent reported one. Chunked argument deltas parse into
+        when the agent reported one, and <code>:denied</code> when the person
+        declined it. A tool result is a message of its own in the transcript, as
+        the protocol has it, but not a row: its call's part reads the answer, so
+        a result that arrives before its call, or a second one, is never lost.
+        A result made of content parts keeps them, so a row can show its
+        images beside the text. Chunked argument deltas parse into
         <code>input</code> once complete, and their arguments go back to the agent
         exactly as they streamed. A reasoning message is a message of its own
         (role <code>reasoning</code>, its own id), so it renders as its own row,
@@ -348,6 +403,32 @@
         the messages.
       </p>
     <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="carries">What a message carries</h2>
+      <p>
+        Every message, tool call, tool result and activity keeps the
+        <code>metadata</code> its events sent, merged key by key as they
+        arrive, the last write winning and nothing merged inside a key's value;
+        a tool call's stays on the call, apart from its message. A message a
+        subagent built carries that invocation's id, and
+        <code>transcript.subagent(id)</code> says what it is, who called it and
+        how it ended, so a row can nest the subagent's work under a step naming
+        it (the demo's billing subagent does). A run keeps its token
+        <code>usage</code> and the calls it left unanswered.
+      </p>
+      <p>
+        A provider's encrypted reasoning is held apart from the parts: no row
+        can render it, and <code>messages_for_input</code> returns it unmodified
+        to the agent that issued it, with the message or call it belongs to.
+        When the host sends the agent a state of its own, set
+        <code>transcript.state =</code> to it first, so the agent's deltas patch
+        what it was sent.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: carries_source, language: "ruby", label: "On a message and its run") %>
   </section>
 
   <section class="flex flex-col gap-4">
@@ -369,6 +450,20 @@
       </p>
     <% end %>
     <%= poetry_code_block(code: continue_source, language: "ruby", label: "The continue endpoint") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        A tool whose call has consequences can ask the person first: declare it
+        as <code>{ name:, confirm: true }</code> in <code>client_tools:</code>.
+        Its bridge element then holds the prompt your <code>approval:</code>
+        renderer returns instead of running at once. Approve runs the call; Deny
+        posts <code>declined: true</code>, and
+        <code>transcript.decline_client_tool</code> answers it as declined, so the
+        agent hears the person said no and the call reads <code>:denied</code>,
+        never as run. A tool that only changes what the page shows, such as a
+        tab, needs no prompt; the demo's asks anyway, to show it.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: approval_source, language: "erb", label: "The approval prompt") %>
     <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
       <p>
         <code>messages_for_input</code> carries the assistant's tool calls and
@@ -405,6 +500,31 @@
       </p>
     <% end %>
     <%= poetry_code_block(code: interrupt_source, language: "ruby", label: "Pause and resume") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="stopping">Stopping a run</h2>
+      <p>
+        To stop reading a run, leave <code>client.run</code>'s block: a
+        <code>break</code>, an exception (a browser that went away raises one in a
+        live action), or <code>Thread#raise</code> from elsewhere for an agent
+        that has gone quiet. Each closes the connection, so the agent sees the
+        client go. What arrived stays delivered, and nothing is invented:
+        <code>pipeline.truncated?</code> reads true, and
+        <code>transcript.truncate</code> marks the run <code>:truncated</code> so
+        the page stops showing it as running. A relay that holds its own
+        pipeline does this in <code>relay.finish</code>.
+      </p>
+      <p>
+        That is different from a run the agent cancels. It closes what it
+        opened and finishes with the cancelled outcome, and the transcript reads
+        <code>:cancelled</code>, neither success nor failure. Either way, a step
+        that was still waiting should read as stopped, not running, and not as
+        failed.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: stop_source, language: "ruby", label: "Stop reading") %>
   </section>
 
   <section class="flex flex-col gap-4">

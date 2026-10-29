@@ -23,8 +23,15 @@ module Poetry
 
       # A Trace step's arguments for one part, and the detail its disclosure
       # shows: `{ kind: :reasoning, text: }`, `{ kind: :io, input:, output:,
-      # output_language: }`, `{ kind: :error, text: }`, or nil for a line.
+      # output_language:, media: }` (media: the result's non-text content
+      # parts), `{ kind: :error, text: }`, or nil for a line.
       Step = Struct.new(:title, :icon, :status, :description, :open, :detail, keyword_init: true)
+
+      # A content part that is not text, as an Attachment shows it: :image or
+      # :file, where it opens (nil for a provider's `file` handle, which is
+      # described, never linked), its name, its mime type, and whether the
+      # browser must download it (a data: URL cannot open as a page).
+      Media = Struct.new(:kind, :href, :name, :mime, :download, :icon, keyword_init: true)
 
       # One tool's glyph and words: doing, done, failed and denied, the
       # approval prompt's ask, and how its output reads.
@@ -60,12 +67,58 @@ module Poetry
         end
       end
 
-      # The step for a reasoning or tool part.
+      # The step for a reasoning or tool part. In a run that stopped before
+      # its end (cancelled, or a stream the page stopped reading), a call
+      # still waiting reads stopped, not running.
       #
       # @param part [Hash]
+      # @param stopped [Boolean]
       # @return [Step]
-      def step(part)
-        part[:kind] == :reasoning ? reasoning_step(part) : tool_step(part)
+      def step(part, stopped: false)
+        part[:kind] == :reasoning ? reasoning_step(part) : tool_step(part, stopped)
+      end
+
+      # A media content part as an Attachment shows it. Its name comes from
+      # its metadata.filename, else the url's last segment, else its kind.
+      #
+      # @param part [Hash] an AG-UI content part (image, audio, video, document)
+      # @return [Media]
+      def media(part)
+        source = part["source"].is_a?(Hash) ? part["source"] : {}
+        mime = source["mimeType"].presence
+        href = case source["type"]
+        when "data" then "data:#{mime || "application/octet-stream"};base64,#{source["value"]}"
+        when "url" then source["value"].to_s.presence
+        end
+        segment = File.basename(source["value"].to_s.split(/[?#]/).first.to_s) if source["type"] == "url"
+        name = part.dig("metadata", "filename").presence || segment.presence ||
+               [ part["type"].to_s.capitalize, mime&.split("/")&.last&.upcase ].compact.join(" ")
+        kind = part["type"] == "image" && href ? :image : :file
+        Media.new(kind: kind, href: href, name: name, mime: mime || part["type"].to_s,
+                  download: source["type"] == "data" && kind == :file,
+                  icon: { "audio" => :"file-music", "video" => :"file-video-camera" }.fetch(part["type"], :"file-text"))
+      end
+
+      # The step for a subagent invocation: what it is doing, done, waiting
+      # on, or failed at, under its name. Work tagged with an invocation no
+      # SUBAGENT_STARTED announced has no record and reads as delegated.
+      #
+      # @param record [Hash, nil] a Transcript#subagent record
+      # @param stopped [Boolean]
+      # @return [Step]
+      def subagent_step(record, stopped: false)
+        name = record&.dig(:name).presence
+        who = name ? "the #{name} subagent" : "a subagent"
+        case record&.dig(:status)
+        when :running
+          stopped ? Step.new(title: "Stopped #{who}", icon: :"circle-stop", description: "stopped") :
+                    Step.new(title: "Running #{who}", icon: :bot, status: :running, open: true)
+        when :suspended then Step.new(title: "Paused #{who}", icon: :bot, status: :pending, description: "waiting for you")
+        when :error then Step.new(title: "#{who.capitalize} failed", icon: :bot, status: :error,
+                                  description: record.dig(:error, :message))
+        when :finished then Step.new(title: "Ran #{who}", icon: :bot, description: record[:description])
+        else Step.new(title: "Delegated to #{who}", icon: :bot)
+        end
       end
 
       # The approval prompt for a tool waiting on a person.
@@ -113,22 +166,42 @@ module Poetry
 
       # A tool call: its state picks the words and the status; a finished
       # call discloses its input and output, a failed one its error.
-      def tool_step(part)
+      def tool_step(part, stopped)
         tool = tool(part[:name], part[:input])
+        if stopped && %i[loading awaiting_client].include?(part[:state])
+          return Step.new(title: "Stopped: #{tool.running}", icon: :"circle-stop",
+                          description: "stopped")
+        end
+
         case part[:state]
         when :loading then Step.new(title: tool.running, icon: tool.icon, status: :running)
         when :awaiting_client
-          Step.new(title: tool.running, icon: tool.icon, status: :pending, description: "in the browser")
+          Step.new(title: tool.running, icon: tool.icon, status: :pending,
+                   description: part[:confirm] ? "waiting for you" : "in the browser")
         when :denied then Step.new(title: tool.denied, icon: tool.icon)
         when :error
           Step.new(title: tool.failed, icon: tool.icon, status: :error,
                    detail: { kind: :error, text: error_text(part[:output]) })
         else
-          output = tool.output&.call(stringify(part[:output]))
-          Step.new(title: tool.done, icon: tool.icon,
-                   detail: { kind: :io, input: JSON.generate(part[:input] || {}),
-                             output: output || JSON.generate(part[:output]), output_language: output ? "text" : "json" })
+          Step.new(title: tool.done, icon: tool.icon, detail: io_detail(tool, part))
         end
+      end
+
+      # A finished call's input and output. A result of content parts shows
+      # its text as the output and its images and documents as media, never
+      # as base64 in a code block.
+      def io_detail(tool, part)
+        input = JSON.generate(part[:input] || {})
+        if part[:result_content].is_a?(Array)
+          parts = part[:result_content].select { |entry| entry.is_a?(Hash) }
+          text = parts.select { |entry| entry["type"] == "text" }.map { |entry| entry["text"].to_s }.join("\n")
+          return { kind: :io, input: input, output: text.presence, output_language: "text",
+                   media: parts.reject { |entry| entry["type"] == "text" } }
+        end
+
+        output = tool.output&.call(stringify(part[:output])) if part[:output].is_a?(Hash)
+        { kind: :io, input: input, output: output || JSON.generate(part[:output]),
+          output_language: output ? "text" : "json", media: [] }
       end
 
       def lookup_plans(input)
@@ -143,7 +216,8 @@ module Poetry
 
       def set_section(input)
         tab = input["value"] ? "the #{input["value"]} tab" : "a tab"
-        build(:"panel-top", "Switching to #{tab}", "Switched to #{tab}", "Couldn't switch to #{tab}")
+        build(:"panel-top", "Switching to #{tab}", "Switched to #{tab}", "Couldn't switch to #{tab}",
+              ask: "Switch to #{tab}?", ask_detail: "The agent wants to change the tab on this page. It runs in your browser.")
       end
 
       def start_trial(input)
@@ -191,7 +265,7 @@ module Poetry
         end
       end
 
-      private_class_method :activity, :reasoning_step, :tool_step, :lookup_plans, :set_section, :start_trial,
+      private_class_method :activity, :reasoning_step, :tool_step, :io_detail, :lookup_plans, :set_section, :start_trial,
                            :weather, :book_dinner, :build, :error_text, :stringify
     end
   end

@@ -1,0 +1,252 @@
+{
+  "source": "apply/__tests__/default.state.test.ts",
+  "vectors": [
+    {
+      "name": "defaultApplyEvents - State Patching > should apply state delta patch correctly",
+      "line": 15,
+      "stage": "apply",
+      "initial": {
+        "messages": [],
+        "state": {
+          "count": 0,
+          "text": "hello"
+        }
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "STATE_DELTA",
+          "delta": [
+            {
+              "op": "replace",
+              "path": "/count",
+              "value": 1
+            },
+            {
+              "op": "replace",
+              "path": "/text",
+              "value": "world"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "state": {
+          "count": 1,
+          "text": "world"
+        }
+      },
+      "spec": "/spec/1.0/events/state#state_delta: STATE_DELTA amends the current state (at run start, the input's state) with an RFC 6902 patch",
+      "notes": "Wrapped: the TS test feeds a bare STATE_DELTA; RUN_STARTED is prepended and RUN_FINISHED appended. The initial state is the RunAgentInput state the reducer starts from."
+    },
+    {
+      "name": "defaultApplyEvents - State Patching > should handle nested state updates",
+      "line": 52,
+      "stage": "apply",
+      "initial": {
+        "messages": [],
+        "state": {
+          "user": {
+            "name": "John",
+            "settings": {
+              "theme": "light"
+            }
+          }
+        }
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "STATE_DELTA",
+          "delta": [
+            {
+              "op": "replace",
+              "path": "/user/settings/theme",
+              "value": "dark"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "state": {
+          "user": {
+            "name": "John",
+            "settings": {
+              "theme": "dark"
+            }
+          }
+        }
+      },
+      "spec": "/spec/1.0/events/state#state_delta: STATE_DELTA amends the current state (at run start, the input's state) with an RFC 6902 patch",
+      "notes": "Wrapped: the TS test feeds a bare STATE_DELTA; RUN_STARTED is prepended and RUN_FINISHED appended. The initial state is the RunAgentInput state the reducer starts from."
+    },
+    {
+      "name": "defaultApplyEvents - State Patching > should handle array updates",
+      "line": 94,
+      "stage": "apply",
+      "initial": {
+        "messages": [],
+        "state": {
+          "items": [
+            "a",
+            "b",
+            "c"
+          ]
+        }
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "STATE_DELTA",
+          "delta": [
+            {
+              "op": "add",
+              "path": "/items/-",
+              "value": "d"
+            },
+            {
+              "op": "replace",
+              "path": "/items/0",
+              "value": "x"
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "state": {
+          "items": [
+            "x",
+            "b",
+            "c",
+            "d"
+          ]
+        }
+      },
+      "spec": "/spec/1.0/events/state#state_delta: STATE_DELTA amends the current state (at run start, the input's state) with an RFC 6902 patch",
+      "notes": "Wrapped: the TS test feeds a bare STATE_DELTA; RUN_STARTED is prepended and RUN_FINISHED appended. The initial state is the RunAgentInput state the reducer starts from."
+    },
+    {
+      "name": "defaultApplyEvents - State Patching > should handle multiple patches in sequence",
+      "line": 129,
+      "stage": "apply",
+      "initial": {
+        "messages": [],
+        "state": {
+          "counter": 0
+        }
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "STATE_DELTA",
+          "delta": [
+            {
+              "op": "replace",
+              "path": "/counter",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "type": "STATE_DELTA",
+          "delta": [
+            {
+              "op": "replace",
+              "path": "/counter",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "state": {
+          "counter": 2
+        }
+      },
+      "spec": "/spec/1.0/events/state#state_delta: STATE_DELTA amends the current state (at run start, the input's state) with an RFC 6902 patch",
+      "notes": "Wrapped: the TS test feeds a bare STATE_DELTA; RUN_STARTED is prepended and RUN_FINISHED appended. The initial state is the RunAgentInput state the reducer starts from."
+    },
+    {
+      "name": "defaultApplyEvents - State Patching > should handle invalid patch operations gracefully",
+      "line": 171,
+      "stage": "apply",
+      "initial": {
+        "messages": [],
+        "state": {
+          "count": 0,
+          "text": "hello"
+        }
+      },
+      "input": [
+        {
+          "type": "RUN_STARTED",
+          "threadId": "test",
+          "runId": "test"
+        },
+        {
+          "type": "STATE_DELTA",
+          "delta": [
+            {
+              "op": "replace",
+              "path": "/nonexistent",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "type": "RUN_FINISHED",
+          "threadId": "test",
+          "runId": "test"
+        }
+      ],
+      "expect": {
+        "state": {
+          "count": 0,
+          "text": "hello"
+        }
+      },
+      "spec": "/spec/1.0/events/state#error-handling: a well-formed patch that fails to apply is warned about and skipped",
+      "warnings": [
+        "Failed to apply state patch"
+      ],
+      "notes": "Wrapped: the TS test feeds a bare STATE_DELTA; RUN_STARTED is prepended and RUN_FINISHED appended. The initial state is the RunAgentInput state the reducer starts from. TS asserts no mutation is emitted; the vector states the state is unchanged."
+    }
+  ],
+  "excluded": []
+}

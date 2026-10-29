@@ -4682,7 +4682,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui.rb",
-          "line": 88
+          "line": 89
         },
         {
           "name": "tool_descriptor",
@@ -4719,7 +4719,7 @@
             }
           ],
           "file": "lib/poetry/agent/agui.rb",
-          "line": 74
+          "line": 75
         }
       ],
       "constants": [
@@ -5661,7 +5661,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/enforcement.rb",
-          "line": 481
+          "line": 519
         },
         {
           "name": "load",
@@ -5693,14 +5693,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/enforcement.rb",
-          "line": 475
+          "line": 513
         },
         {
           "name": "definition",
           "scope": "instance",
           "group": null,
           "signature": "definition(raw, name)",
-          "docstring": "Any definition by anchor: the value and the paths stripped from it.",
+          "docstring": "Any definition by anchor: the value and the paths stripped from it. A\nvalue whose required field holds an unrecognised member of a closed\nset is removed whole: nil, and that field's path.",
           "params": [
             {
               "name": "raw",
@@ -5725,7 +5725,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/enforcement.rb",
-          "line": 567
+          "line": 615
         },
         {
           "name": "event",
@@ -5751,7 +5751,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/enforcement.rb",
-          "line": 516
+          "line": 554
         },
         {
           "name": "event_types",
@@ -5768,7 +5768,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/enforcement.rb",
-          "line": 507
+          "line": 545
         },
         {
           "name": "initialize",
@@ -5800,7 +5800,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/enforcement.rb",
-          "line": 486
+          "line": 524
         },
         {
           "name": "input",
@@ -5832,7 +5832,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/enforcement.rb",
-          "line": 550
+          "line": 596
         },
         {
           "name": "table",
@@ -5849,7 +5849,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/enforcement.rb",
-          "line": 469
+          "line": 507
         }
       ],
       "constants": [
@@ -6315,7 +6315,7 @@
       "path": "Poetry::Agent::AGUI::ProtocolWarning",
       "type": "class",
       "superclass": "Data",
-      "docstring": "Something the pipeline, the run input's enforcement or the transcript\nremoved, translated, tolerated or could not apply. AG-UI 1.0 requires\nthese be surfaced, never silenced by default: each goes to the\n`on_warning:` callback and is collected.\n\nKinds: :unrecognised_event, :stripped, :translated, :lossy,\n:producer_version, :lenient_dropped, :lenient_admitted, :key_shim,\n:legacy_interrupt, :patch_failed, :activity_missing.",
+      "docstring": "Something the pipeline, the run input's enforcement or the transcript\nremoved, translated, tolerated or could not apply. AG-UI 1.0 requires\nthese be surfaced, never silenced by default: each goes to the\n`on_warning:` callback and is collected.\n\nKinds: :unrecognised_event, :stripped, :translated, :lossy,\n:producer_version, :lenient_dropped, :lenient_admitted, :key_shim,\n:legacy_interrupt, :patch_failed, :activity_missing, :id_collision,\n:unknown_entity.",
       "examples": [
         {
           "title": "",
@@ -6339,7 +6339,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/protocol_error.rb",
-          "line": 70
+          "line": 71
         },
         {
           "name": "message",
@@ -6356,7 +6356,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/protocol_error.rb",
-          "line": 70
+          "line": 71
         },
         {
           "name": "to_s",
@@ -6373,7 +6373,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/protocol_error.rb",
-          "line": 73
+          "line": 74
         }
       ],
       "constants": []
@@ -6420,8 +6420,8 @@
           "name": "client_tool_streams",
           "scope": "instance",
           "group": null,
-          "signature": "client_tool_streams(continue_url:, container: @container)",
-          "docstring": "Bridge elements for every pending client tool call.",
+          "signature": "client_tool_streams(continue_url:, container: @container, approval: nil)",
+          "docstring": "Bridge elements for every pending client tool call. A call to a tool\ndeclared to ask first (`client_tools: [{ name:, confirm: true }]`)\nwaits inside the host's approval prompt: its Approve control carries\n`data-action=\"poetry--agent--agui-client-tool#approve\"` and its Deny\ncontrol `...#deny`. Deny posts `{ toolCallId, name, declined: true }`;\nanswer it with {Transcript#decline_client_tool}.",
           "params": [
             {
               "name": "continue_url",
@@ -6436,6 +6436,14 @@
                 "String"
               ],
               "text": "the element the bridge elements append to"
+            },
+            {
+              "name": "approval",
+              "types": [
+                "#call",
+                "nil"
+              ],
+              "text": "`(pending) -> String` the prompt HTML for a call that asks first"
             }
           ],
           "return": {
@@ -6446,24 +6454,24 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/relay.rb",
-          "line": 127
+          "line": 140
         },
         {
           "name": "finish",
           "scope": "instance",
           "group": null,
           "signature": "finish",
-          "docstring": "The end of the stream: closes the pipeline, which synthesizes nothing.",
+          "docstring": "The end of the stream: closes the pipeline, which synthesizes nothing.\nA run the stream broke off in is truncated ({Transcript#truncate}), so\nits rows stop reading as running.",
           "params": [],
           "return": {
             "types": [
               "Array<String>"
             ],
-            "text": "always empty"
+            "text": "the streams that re-render what the truncation closed"
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/relay.rb",
-          "line": 85
+          "line": 87
         },
         {
           "name": "initialize",
@@ -6573,7 +6581,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/relay.rb",
-          "line": 100
+          "line": 106
         },
         {
           "name": "pipeline",
@@ -6591,7 +6599,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/relay.rb",
-          "line": 93
+          "line": 99
         },
         {
           "name": "stream_for",
@@ -6617,7 +6625,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/relay.rb",
-          "line": 110
+          "line": 116
         },
         {
           "name": "transcript",
@@ -7072,7 +7080,7 @@
       "path": "Poetry::Agent::AGUI::Transcript",
       "type": "class",
       "superclass": "Object",
-      "docstring": "Folds an AG-UI event stream into what a chat page renders: the\nmessages in order, each as Chat-shaped parts\n(`{kind: :text, text:, state:}`, `{kind: :reasoning, text:, state:}`,\n`{kind: :tool, name:, input:, output:, state:, tool_call_id:}`,\n`{kind: :media, part:}` for a non-text content part), the shared\nstate (snapshots and JSON Patch deltas), activities, every run's\nstatus and interrupts, and the tool calls the browser must execute\nbefore the next run. A text or reasoning part is `state: :streaming`\nuntil its END event (or the run's end) closes it, then `:done` - the\ndifference between \"Thinking\" and \"Thought\". A reasoning message is\na message of its own (role `reasoning`), as in AG-UI 1.0.\n\nIt reduces VERIFIED events: what a {Pipeline} delivers (Client#run and\nRelay route the wire through one), so every chunk is already expanded,\nevery id present, and every open item closed by the stream itself. A\npatch it cannot apply, or an activity delta with nothing to patch, is\na {ProtocolWarning}.\n\nEvery change bumps {#version}, and {#apply} answers the ids of the\nmessages it touched, so a relay re-renders exactly those rows with\na monotonic version the page's versioned replace honors.",
+      "docstring": "Folds an AG-UI event stream into what a chat page renders: the\nmessages in order, each as Chat-shaped parts\n(`{kind: :text, text:, state:}`, `{kind: :reasoning, text:, state:}`,\n`{kind: :tool, name:, input:, output:, state:, tool_call_id:, metadata:}`,\n`{kind: :media, part:}` for a non-text content part), the shared\nstate (snapshots and JSON Patch deltas), activities, every run's\nstatus, outcome and interrupts, the subagent invocations, and the\ntool calls the browser must execute before the next run. A text or\nreasoning part is `state: :streaming` until its END event (or the\nrun's end) closes it, then `:done` - the difference between\n\"Thinking\" and \"Thought\". A reasoning message is a message of its\nown (role `reasoning`), as in AG-UI 1.0.\n\nA tool result is a message of its own too, as the protocol models\nit, kept in the conversation but not among the {#messages} a page\nrenders: its call's part reads the answer (`output`, `state`). So\na result that arrives before its call, one whose call never comes,\nand a second result for one call all survive, and\n{#messages_for_input} sends each result right after the call it\nanswers, as providers require.\n\nMetadata merges into what each event builds, key by key, the last\nwrite winning: a message, a tool call, a tool result, an activity.\nA message carries the `subagentRunId` of the invocation that built\nit. An encrypted reasoning value is held apart from the parts and\nreturned only in {#messages_for_input}, to the producer that issued\nit.\n\nIt reduces VERIFIED events: what a {Pipeline} delivers (Client#run and\nRelay route the wire through one), so every chunk is already expanded,\nevery id present, and every open item closed by the stream itself. A\npatch it cannot apply, an activity delta with nothing to patch, an\nencrypted value naming nothing it holds, or text aimed at an activity\nmessage is a {ProtocolWarning}.\n\nEvery change bumps {#version}, and {#apply} answers the ids of the\nmessages it touched, so a relay re-renders exactly those rows with\na monotonic version the page's versioned replace honors.",
       "examples": [],
       "file": "lib/poetry/agent/agui/transcript.rb",
       "methods": [
@@ -7091,14 +7099,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 48
+          "line": 156
         },
         {
           "name": "add_message",
           "scope": "instance",
           "group": null,
           "signature": "add_message(wire)",
-          "docstring": "Records a message the host itself sends - its user turn, a tool\nresult, a system prompt - so {#messages_for_input} carries the whole\nconversation (no event ever echoes it) and a relay can render it. A\ntool message lands on the call it answers.",
+          "docstring": "Records a message the host itself sends - its user turn, a tool\nresult, a system prompt, history it restores - so\n{#messages_for_input} carries the whole conversation and a relay\ncan render it. A tool result answers its call.",
           "params": [
             {
               "name": "wire",
@@ -7121,7 +7129,7 @@
             }
           ],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 207
+          "line": 294
         },
         {
           "name": "apply",
@@ -7146,7 +7154,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 115
+          "line": 179
         },
         {
           "name": "apply_all",
@@ -7171,7 +7179,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 129
+          "line": 193
         },
         {
           "name": "client_tools",
@@ -7188,7 +7196,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 65
+          "line": 93
         },
         {
           "name": "custom_events",
@@ -7205,7 +7213,40 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 76
+          "line": 105
+        },
+        {
+          "name": "decline_client_tool",
+          "scope": "instance",
+          "group": null,
+          "signature": "decline_client_tool(tool_call_id, reason: \"The user declined to run this tool.\")",
+          "docstring": "Records that the user declined a client tool call it was asked to\napprove: the call is answered as declined - never as run - and its\npart reads :denied.",
+          "params": [
+            {
+              "name": "tool_call_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            },
+            {
+              "name": "reason",
+              "types": [
+                "String"
+              ],
+              "text": "what the agent is told"
+            }
+          ],
+          "return": {
+            "types": [
+              "String",
+              "nil"
+            ],
+            "text": "the id of the message that changed"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 325
         },
         {
           "name": "ended?",
@@ -7222,7 +7263,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 152
+          "line": 223
         },
         {
           "name": "error",
@@ -7240,7 +7281,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 172
+          "line": 266
         },
         {
           "name": "frame",
@@ -7265,21 +7306,21 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 145
+          "line": 216
         },
         {
           "name": "initialize",
           "scope": "instance",
           "group": null,
           "signature": "initialize(client_tools: [], on_warning: nil)",
-          "docstring": "An empty transcript, with the client-side tool names.",
+          "docstring": "An empty transcript, with the client-side tools.",
           "params": [
             {
               "name": "client_tools",
               "types": [
-                "Array<String>"
+                "Array<String, Hash>"
               ],
-              "text": "names of tools the browser executes"
+              "text": "the tools the browser executes: a\nname, or `{ name:, confirm: true }` for one that asks the user first"
             },
             {
               "name": "on_warning",
@@ -7298,7 +7339,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 92
+          "line": 122
         },
         {
           "name": "interrupted?",
@@ -7315,7 +7356,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 158
+          "line": 229
         },
         {
           "name": "interrupts",
@@ -7332,7 +7373,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 165
+          "line": 259
         },
         {
           "name": "message",
@@ -7358,14 +7399,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 137
+          "line": 201
         },
         {
           "name": "messages",
           "scope": "instance",
           "group": null,
           "signature": "messages",
-          "docstring": "The messages in arrival order.",
+          "docstring": "The messages a page renders, in conversation order: every message\nbut the tool results, which their calls' parts carry.",
           "params": [],
           "return": {
             "types": [
@@ -7375,14 +7416,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 37
+          "line": 149
         },
         {
           "name": "messages_for_input",
           "scope": "instance",
           "group": null,
           "signature": "messages_for_input",
-          "docstring": "The messages as the next run's `RunAgentInput.messages`: user,\nsystem and developer messages (content parts kept as parts),\nassistant messages with their tool calls (arguments exactly as they\nstreamed), reasoning messages, and a tool message for every\nanswered call under the result's own id. Activity messages stay\nclient-side: the protocol requires stripping them.",
+          "docstring": "The messages as the next run's `RunAgentInput.messages`: every\nmessage in its wire form - content parts kept as parts, tool calls\nwith their arguments exactly as they streamed, each message's and\ncall's metadata, subagentRunId and encrypted value - with each tool\nresult right after the call it answers. Activity messages stay\nclient-side: the protocol requires stripping them.",
           "params": [],
           "return": {
             "types": [
@@ -7392,14 +7433,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 184
+          "line": 278
         },
         {
           "name": "pending_client_tools",
           "scope": "instance",
           "group": null,
           "signature": "pending_client_tools",
-          "docstring": "Tool calls to client tools awaiting execution:\n`{ tool_call_id:, name:, input:, message_id: }`.",
+          "docstring": "Tool calls to client tools awaiting execution:\n`{ tool_call_id:, name:, input:, message_id:, confirm: }`. `confirm` is\ntrue for a tool declared to ask the user first.",
           "params": [],
           "return": {
             "types": [
@@ -7409,14 +7450,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 71
+          "line": 100
         },
         {
           "name": "resolve_client_tool",
           "scope": "instance",
           "group": null,
           "signature": "resolve_client_tool(tool_call_id, content, error: nil)",
-          "docstring": "Marks a client tool call as executed and records its result, so\nthe next run's input carries the tool message.",
+          "docstring": "Records a client tool call's result, so the call reads answered and\nthe next run's input carries the tool message.",
           "params": [
             {
               "name": "tool_call_id",
@@ -7450,14 +7491,14 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 231
+          "line": 313
         },
         {
           "name": "run",
           "scope": "instance",
           "group": null,
           "signature": "run",
-          "docstring": "The current (latest) run: `{ thread_id:, run_id:, status:, interrupts:, error:, result: }`;\nstatus is :idle, :running, :finished, :interrupted, :cancelled, or :error.",
+          "docstring": "The current (latest) run: `{ thread_id:, run_id:, parent_run_id:, status:,\ninterrupts:, error:, result:, usage:, pending_tool_call_ids: }`. Status is\n:idle, :running, :finished, :interrupted, :cancelled, :error, or\n:truncated ({#truncate}). `result` is a successful run's; `usage` the\nproducer's token accounting; `pending_tool_call_ids` the calls the run\nleft unanswered (the producer's list, or derived from the calls it\nstarted), nil for a cancelled run, which waits for nothing.",
           "params": [],
           "return": {
             "types": [
@@ -7467,7 +7508,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 54
+          "line": 72
         },
         {
           "name": "runs",
@@ -7484,7 +7525,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 60
+          "line": 78
         },
         {
           "name": "state",
@@ -7501,7 +7542,114 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 43
+          "line": 61
+        },
+        {
+          "name": "state=",
+          "scope": "instance",
+          "group": null,
+          "signature": "state=(value)",
+          "docstring": "Replaces the state, for the one the host sends with a run: the\nproducer's deltas patch what it was sent.",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "any JSON value"
+            }
+          ],
+          "return": null,
+          "examples": [
+            {
+              "title": "",
+              "text": "transcript.state = input[\"state\"]"
+            }
+          ],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 169
+        },
+        {
+          "name": "subagent",
+          "scope": "instance",
+          "group": null,
+          "signature": "subagent(subagent_run_id)",
+          "docstring": "The subagent invocation with an id, or nil.",
+          "params": [
+            {
+              "name": "subagent_run_id",
+              "types": [
+                "String"
+              ],
+              "text": ""
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash",
+              "nil"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 208
+        },
+        {
+          "name": "subagents",
+          "scope": "instance",
+          "group": null,
+          "signature": "subagents",
+          "docstring": "The subagent invocations the stream announced, in order:\n`{ subagent_run_id:, name:, description:, parent_subagent_run_id:,\nparent_tool_call_id:, parent_message_id:, status:, outcome:, result:, error: }`.\nStatus is :running, :finished, :suspended (awaiting interrupts), or\n:error. Work tagged with an id no SUBAGENT_STARTED announced is\nstill attributed on its messages; it has no entry here.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<Hash>"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 88
+        },
+        {
+          "name": "truncate",
+          "scope": "instance",
+          "group": null,
+          "signature": "truncate",
+          "docstring": "Records that this consumer stopped reading a running run - the host\nbroke off the stream, or it died under it. The run becomes\n:truncated: it did not end, and no RUN_FINISHED is invented for it.\nWhat still streamed is closed where it stands.",
+          "params": [],
+          "return": {
+            "types": [
+              "Array<String>"
+            ],
+            "text": "the ids of the messages that changed"
+          },
+          "examples": [
+            {
+              "title": "",
+              "text": "client.run(input, pipeline: pipeline) { |event| ... }\ntranscript.truncate if pipeline.truncated?"
+            }
+          ],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 248
+        },
+        {
+          "name": "truncated?",
+          "scope": "instance",
+          "group": null,
+          "signature": "truncated?",
+          "docstring": "Whether this consumer stopped reading the run before its end ({#truncate}).",
+          "params": [],
+          "return": {
+            "types": [
+              "Boolean"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 235
         },
         {
           "name": "version",
@@ -7518,7 +7666,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 87
+          "line": 116
         },
         {
           "name": "warnings",
@@ -7535,16 +7683,22 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 82
+          "line": 111
         }
       ],
-      "constants": []
+      "constants": [
+        {
+          "name": "DECLINED",
+          "value": "\"poetry:tool-result\"",
+          "docstring": "The metadata key a declined call's tool message carries, so the\ndecline survives a round trip through {#messages_for_input}."
+        }
+      ]
     },
     {
       "path": "Poetry::Agent::AGUI::Transcript::Message",
       "type": "class",
       "superclass": "Struct",
-      "docstring": "One message. `role` is the protocol's (\"user\", \"assistant\",\n\"reasoning\", \"tool\", \"activity\", ...); `parts` is the render-ready list.",
+      "docstring": "One message. `role` is the protocol's (\"user\", \"assistant\",\n\"reasoning\", \"activity\", ...); `parts` is the render-ready list;\n`metadata`, `subagent_run_id` and `name` are the message's own.",
       "examples": [],
       "file": "lib/poetry/agent/agui/transcript.rb",
       "methods": [
@@ -7563,7 +7717,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 32
+          "line": 51
         },
         {
           "name": "id=",
@@ -7588,7 +7742,91 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 32
+          "line": 51
+        },
+        {
+          "name": "metadata",
+          "scope": "instance",
+          "group": null,
+          "signature": "metadata",
+          "docstring": "Returns the value of attribute metadata",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of metadata"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 51
+        },
+        {
+          "name": "metadata=",
+          "scope": "instance",
+          "group": null,
+          "signature": "metadata=(value)",
+          "docstring": "Sets the attribute metadata",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute metadata to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 51
+        },
+        {
+          "name": "name",
+          "scope": "instance",
+          "group": null,
+          "signature": "name",
+          "docstring": "Returns the value of attribute name",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of name"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 51
+        },
+        {
+          "name": "name=",
+          "scope": "instance",
+          "group": null,
+          "signature": "name=(value)",
+          "docstring": "Sets the attribute name",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute name to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 51
         },
         {
           "name": "parts",
@@ -7605,7 +7843,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 32
+          "line": 51
         },
         {
           "name": "parts=",
@@ -7630,7 +7868,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 32
+          "line": 51
         },
         {
           "name": "role",
@@ -7647,7 +7885,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 32
+          "line": 51
         },
         {
           "name": "role=",
@@ -7672,7 +7910,49 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 32
+          "line": 51
+        },
+        {
+          "name": "subagent_run_id",
+          "scope": "instance",
+          "group": null,
+          "signature": "subagent_run_id",
+          "docstring": "Returns the value of attribute subagent_run_id",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of subagent_run_id"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 51
+        },
+        {
+          "name": "subagent_run_id=",
+          "scope": "instance",
+          "group": null,
+          "signature": "subagent_run_id=(value)",
+          "docstring": "Sets the attribute subagent_run_id",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute subagent_run_id to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/agent/agui/transcript.rb",
+          "line": 51
         },
         {
           "name": "version",
@@ -7689,7 +7969,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 32
+          "line": 51
         },
         {
           "name": "version=",
@@ -7714,7 +7994,7 @@
           },
           "examples": [],
           "file": "lib/poetry/agent/agui/transcript.rb",
-          "line": 32
+          "line": 51
         }
       ],
       "constants": []

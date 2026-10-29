@@ -10,15 +10,20 @@
 # The runs are conformant AG-UI 1.0 producer output: each RUN_STARTED
 # declares the protocol version, and the reasoning is a message of its own.
 #
-# Run 1 answers the user's question and calls the page's tab tool. Run 2
-# (after the browser reports the tool result) continues and pauses on an
-# approval interrupt. Run 3 depends on the decision.
+# Run 1 answers the user's question and calls the page's tab tool, which
+# asks the person first. Run 2 (after the browser reports the tool result,
+# or the decline) continues and pauses on an approval interrupt. Run 3
+# depends on the decision: a billing subagent starts the trial.
 module Poetry
   module Docs
     class AguiReplay
       THREAD_ID = "docs-agui-relay"
       CLIENT_TOOL = "poetry.sections.set_value"
+      # The tool_result a declined tab switch rides the URL as.
+      DECLINED = "declined"
       USER_TEXT = "Which plan fits a 10-person team? Show me the pricing tab."
+      # The subagent that starts the trial in run 3.
+      BILLING = "s-billing"
       APPROVAL = { "id" => "int-trial", "reason" => "approval",
                    "message" => "Start a 30-day Team trial for the workspace?" }.freeze
 
@@ -114,7 +119,8 @@ module Poetry
         end
 
         # A transcript with every run before `index` applied (instantly),
-        # the client tool resolved with the browser's result when given.
+        # the client tool resolved with the browser's result when given, or
+        # declined when the person said no. The tab tool asks first.
         #
         # @param index [Integer]
         # @param decision [Boolean, nil]
@@ -122,7 +128,7 @@ module Poetry
         # @param email [String, nil]
         # @return [Poetry::Agent::AGUI::Transcript]
         def transcript_before(index, decision: nil, tool_result: nil, email: nil)
-          transcript = Poetry::Agent::AGUI::Transcript.new(client_tools: [ CLIENT_TOOL ])
+          transcript = Poetry::Agent::AGUI::Transcript.new(client_tools: [ { name: CLIENT_TOOL, confirm: true } ])
           transcript.add_message(user_message)
           (1...index).each do |run|
             # Each run through its own pipeline, as the stream action does: the
@@ -131,7 +137,13 @@ module Poetry
             events(run, decision: decision, email: email).each do |event|
               pipeline.push(event.except("_sleep")).each { |verified| transcript.apply(verified) }
             end
-            transcript.resolve_client_tool("c-tab", tool_result || '{"value":"pricing","changed":true}') if run == 1
+            next unless run == 1
+
+            if tool_result == DECLINED
+              transcript.decline_client_tool("c-tab")
+            else
+              transcript.resolve_client_tool("c-tab", tool_result || '{"value":"pricing","changed":true}')
+            end
           end
           transcript
         end
@@ -162,7 +174,7 @@ module Poetry
         def run_two
           [
             run_started("r2"),
-            *text("m2", "You're on the pricing tab. The Team plan comes with a 30-day trial - want me to start one?"),
+            *text("m2", "The Team plan comes with a 30-day trial - want me to start one?"),
             { "type" => "RUN_FINISHED", "threadId" => THREAD_ID, "runId" => "r2",
               "outcome" => { "type" => "interrupt", "interrupts" => [ APPROVAL ] } }
           ]
@@ -172,11 +184,16 @@ module Poetry
           if decision
             [
               run_started("r3"),
-              tool_start("c-trial", "start_trial", "m3"),
+              # The billing subagent starts the trial: its call and result carry its
+              # subagentRunId, so the page nests them under a step naming it.
+              { "type" => "SUBAGENT_STARTED", "subagentRunId" => BILLING, "name" => "billing",
+                "description" => "Starts trials and keeps the invoices", "_sleep" => 200 },
+              tool_start("c-trial", "start_trial", "m3-billing").merge("subagentRunId" => BILLING),
               { "type" => "TOOL_CALL_ARGS", "toolCallId" => "c-trial", "delta" => '{"plan":"Team","days":30}', "_sleep" => 200 },
               { "type" => "TOOL_CALL_END", "toolCallId" => "c-trial" },
-              { "type" => "TOOL_CALL_RESULT", "messageId" => "t-trial", "toolCallId" => "c-trial",
+              { "type" => "TOOL_CALL_RESULT", "messageId" => "t-trial", "toolCallId" => "c-trial", "subagentRunId" => BILLING,
                 "content" => '{"trial":"TR-3041","ends":"in 30 days"}', "_sleep" => 700 },
+              { "type" => "SUBAGENT_FINISHED", "subagentRunId" => BILLING, "result" => { "trial" => "TR-3041" } },
               *text("m3", "Trial TR-3041 is live for 30 days on the Team plan. Nothing is billed until it ends."),
               { "type" => "ACTIVITY_SNAPSHOT", "messageId" => "a3", "activityType" => "a2ui-surface",
                 "content" => { "a2ui_operations" => trial_surface }, "_sleep" => 300 },

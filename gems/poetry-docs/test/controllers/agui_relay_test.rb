@@ -33,8 +33,12 @@ class AguiRelayTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Looked up plans for 10 seats"
     assert_includes response.body, "Team: $12 a seat, 5+ seats", "a finished call discloses its output"
     assert_includes response.body, 'data-status="pending"'
-    assert_includes response.body, "in the browser"
+    assert_includes response.body, "waiting for you", "the tab tool asks the person first"
     assert_includes response.body, 'data-controller="poetry--agent--agui-client-tool"'
+    assert_includes response.body, 'data-poetry--agent--agui-client-tool-confirm-value="true"'
+    assert_includes response.body, "Switch to the pricing tab?"
+    assert_includes response.body, 'data-action="poetry--agent--agui-client-tool#approve"'
+    assert_includes response.body, 'data-action="poetry--agent--agui-client-tool#deny"'
     assert_includes response.body, "poetry.sections.set_value"
     assert_includes response.body, 'action="remove" target="agui-relay-source"'
   end
@@ -52,6 +56,17 @@ class AguiRelayTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "s=2"
   end
 
+  test "continue answers a declined tool call as declined, never as run" do
+    post "/demos/agui-relay/continue?s=1", params: { toolCallId: "c-tab", name: "poetry.sections.set_value",
+                                                     declined: true }.to_json,
+                                          headers: { "Content-Type" => "application/json" }
+
+    assert_response :success
+    assert_includes response.body, "Denied: Switching to the pricing tab"
+    refute_includes response.body, "Switched to the pricing tab"
+    assert_includes response.body, "tool_result=declined"
+  end
+
   test "run two pauses on the interrupt and run three follows the decision" do
     get "/demos/agui-relay/stream?s=2"
 
@@ -64,6 +79,8 @@ class AguiRelayTest < ActionDispatch::IntegrationTest
 
     assert_includes response.body, "TR-3041"
     assert_includes response.body, "Started a 30-day Team trial"
+    assert_includes response.body, "Ran the billing subagent", "the subagent's call nests under a step naming it"
+    assert_includes response.body, 'id="subagent-m3-billing"'
     assert_includes response.body, "Replay from the top"
     assert_includes response.body, 'action="vreplace" target="row-m3" method="morph"'
     assert_includes response.body, 'id="a2ui-trial"'
@@ -95,6 +112,27 @@ class AguiRelayTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Reminder set for ada@roboruby.com"
     assert_includes response.body, "forwardedProps.a2uiAction"
     assert_includes response.body, "Replay from the top"
+  end
+
+  test "the standalone example builds its own history" do
+    get "/examples/demos/agui-relay/default?s=3&d=1&tool_result=declined"
+
+    assert_response :success
+    assert_includes response.body, "Denied: Switching to the pricing tab", "a declined tab switch stays declined"
+  end
+
+  test "the states example renders the rows the scripted run does not reach" do
+    get "/examples/demos/agui-relay/states"
+
+    assert_response :success
+    assert_includes response.body, "roster.csv", "a user turn's document is an attachment"
+    assert_includes response.body, "Ten seats across four rows.", "a result's text is its output"
+    assert_includes response.body, 'src="data:image/svg+xml;base64,', "a result's image renders as a picture"
+    assert_includes response.body, "Denied: Switching to the pricing tab"
+    assert_includes response.body, "The research subagent failed"
+    assert_includes response.body, "Stopped: Looking up plans for 10 seats"
+    assert_includes response.body, "The agent stopped this response"
+    assert_includes response.body, "The stream stopped before the response finished"
   end
 
   test "the scripted agent is a conformant AG-UI 1.0 producer" do

@@ -46,7 +46,7 @@ module Poetry
           assert_equal :awaiting_client, message.parts[3][:state]
           assert_equal({ "plans" => ["team"] }, transcript.state)
           pending = { tool_call_id: "c2", name: "poetry.sections.set_value", input: { "value" => "pricing" },
-                      message_id: "m1" }
+                      message_id: "m1", confirm: false }
 
           assert_equal [pending],
                        transcript.pending_client_tools
@@ -263,7 +263,8 @@ module Poetry
                               client_tools: ["poetry.tabs.set"])
 
           assert_equal :awaiting_client, transcript.message("m1").parts.first[:state]
-          assert_equal [{ tool_call_id: "c1", name: "poetry.tabs.set", input: { "value" => "b" }, message_id: "m1" }],
+          assert_equal [{ tool_call_id: "c1", name: "poetry.tabs.set", input: { "value" => "b" }, message_id: "m1",
+                          confirm: false }],
                        transcript.pending_client_tools
         end
 
@@ -402,6 +403,169 @@ module Poetry
           transcript.apply({ "type" => "STATE_SNAPSHOT", "snapshot" => nil })
 
           assert_nil transcript.state
+        end
+
+        START = { "type" => "RUN_STARTED", "threadId" => "t", "runId" => "r" }.freeze
+        FINISH = { "type" => "RUN_FINISHED", "threadId" => "t", "runId" => "r" }.freeze
+
+        def call(id, name: "book", parent: "a1")
+          [{ "type" => "TOOL_CALL_START", "toolCallId" => id, "toolCallName" => name, "parentMessageId" => parent },
+           { "type" => "TOOL_CALL_ARGS", "toolCallId" => id, "delta" => "{}" },
+           { "type" => "TOOL_CALL_END", "toolCallId" => id }]
+        end
+
+        def test_a_tool_result_is_its_own_message_but_not_a_row
+          transcript = Transcript.new.apply_all([START, *call("c1"),
+                                                 { "type" => "TEXT_MESSAGE_START", "messageId" => "m2",
+                                                   "role" => "assistant" },
+                                                 { "type" => "TEXT_MESSAGE_END", "messageId" => "m2" },
+                                                 { "type" => "TOOL_CALL_RESULT", "messageId" => "r1",
+                                                   "toolCallId" => "c1", "content" => "42" }, FINISH])
+
+          assert_equal %w[a1 m2], transcript.messages.map(&:id), "a page renders the call, not the result"
+          assert_nil transcript.message("r1")
+          assert_equal 42, transcript.message("a1").parts.first[:output]
+          assert_equal %w[a1 r1 m2], transcript.messages_for_input.map { |wire| wire["id"] },
+                       "the result goes back right after its call"
+        end
+
+        def test_a_snapshot_result_before_its_call_and_one_without_a_call_both_survive
+          transcript = Transcript.new
+          transcript.apply(START)
+          transcript.apply({ "type" => "MESSAGES_SNAPSHOT", "messages" => [
+                             { "id" => "u1", "role" => "user", "content" => "hi" },
+                             { "id" => "t1", "role" => "tool", "toolCallId" => "c1", "content" => "early" },
+                             { "id" => "a1", "role" => "assistant", "toolCalls" => [
+                               { "id" => "c1", "type" => "function",
+                                 "function" => { "name" => "f", "arguments" => "{}" } }
+                             ] },
+                             { "id" => "t9", "role" => "tool", "toolCallId" => "gone", "content" => "orphan" }
+                           ] })
+
+          assert_equal :done, transcript.message("a1").parts.first[:state], "the early result answers its call"
+          assert_equal %w[u1 a1 t9 t1], transcript.messages_for_input.map { |wire| wire["id"] },
+                       "a moved result goes after the results already behind its call"
+        end
+
+        def test_a_result_keeps_content_and_error_apart
+          transcript = Transcript.new
+          transcript.add_message({ "id" => "a1", "role" => "assistant", "toolCalls" => [
+                                   { "id" => "c1", "type" => "function",
+                                     "function" => { "name" => "f", "arguments" => "" } }
+                                 ] })
+          transcript.add_message(RunInput.tool_message("c1", "partial", error: "boom", id: "t1"))
+
+          assert_equal({ "id" => "t1", "role" => "tool", "content" => "partial", "toolCallId" => "c1",
+                         "error" => "boom" }, transcript.messages_for_input.last)
+          assert_equal :error, transcript.message("a1").parts.first[:state]
+        end
+
+        def test_a_tool_that_asks_first_is_pending_with_confirm_and_a_decline_is_never_a_run
+          transcript = Transcript.new(client_tools: ["peek", { name: "book", confirm: true }])
+          transcript.apply_all([START, *call("c1", name: "peek"), *call("c2"), FINISH])
+
+          assert_equal([false, true], transcript.pending_client_tools.map { |pending| pending[:confirm] })
+          assert_equal "a1", transcript.decline_client_tool("c2")
+          part = transcript.message("a1").parts.last
+
+          assert_equal :denied, part[:state]
+          sent = transcript.messages_for_input.find { |wire| wire["toolCallId"] == "c2" }
+
+          assert_equal "The user declined to run this tool.", sent["error"]
+          restored = Transcript.new
+          transcript.messages_for_input.each { |wire| restored.add_message(wire) }
+
+          assert_equal :denied, restored.message("a1").parts.last[:state], "the decline survives a round trip"
+          assert_equal [{ tool_call_id: "c1", name: "peek", input: {}, message_id: "a1", confirm: false }],
+                       transcript.pending_client_tools
+          assert_nil transcript.decline_client_tool("nope")
+        end
+
+        def test_metadata_and_attribution_land_on_what_each_event_builds
+          tagged_call = call("c1").each_with_index.map do |event, index|
+            index.zero? ? event.merge("metadata" => { "x" => 1 }) : event
+          end
+          events = [START,
+                    { "type" => "TEXT_MESSAGE_START", "messageId" => "m1", "role" => "assistant",
+                      "subagentRunId" => "s1", "metadata" => { "a" => 1, "b" => [1] } },
+                    { "type" => "TEXT_MESSAGE_END", "messageId" => "m1", "metadata" => { "b" => [2] } },
+                    *tagged_call, FINISH]
+          transcript = Transcript.new.apply_all(events)
+          message = transcript.message("m1")
+
+          assert_equal({ "a" => 1, "b" => [2] }, message.metadata, "last write wins, without recursion")
+          assert_equal "s1", message.subagent_run_id
+          assert_equal({ "x" => 1 }, transcript.message("a1").parts.first[:metadata])
+          assert_nil transcript.message("a1").metadata, "a call's metadata is the call's"
+        end
+
+        def test_an_encrypted_value_goes_only_to_the_producer
+          events = [START,
+                    { "type" => "REASONING_MESSAGE_START", "messageId" => "r1" },
+                    { "type" => "REASONING_MESSAGE_END", "messageId" => "r1" },
+                    { "type" => "REASONING_ENCRYPTED_VALUE", "subtype" => "message", "entityId" => "r1",
+                      "encryptedValue" => "SECRET" },
+                    { "type" => "REASONING_ENCRYPTED_VALUE", "subtype" => "tool-call", "entityId" => "nope",
+                      "encryptedValue" => "X" },
+                    FINISH]
+          transcript = Transcript.new.apply_all(events)
+
+          refute_includes transcript.messages.inspect, "SECRET", "no part or message field carries it"
+          assert_equal "SECRET", transcript.messages_for_input.first["encryptedValue"]
+          assert_equal [:unknown_entity], transcript.warnings.map(&:kind)
+        end
+
+        def test_subagent_invocations_are_recorded_and_their_owner_re_renders
+          transcript = Transcript.new
+          transcript.apply_all([START, *call("c1")])
+          touched = transcript.apply({ "type" => "SUBAGENT_STARTED", "subagentRunId" => "s1", "name" => "researcher",
+                                       "parentToolCallId" => "c1" })
+
+          assert_equal ["a1"], touched
+          transcript.apply({ "type" => "SUBAGENT_FINISHED", "subagentRunId" => "s1",
+                             "outcome" => { "type" => "suspended", "interruptIds" => ["i1"] } })
+
+          assert_equal :suspended, transcript.subagent("s1")[:status]
+          transcript.apply({ "type" => "SUBAGENT_STARTED", "subagentRunId" => "s1", "name" => "researcher" })
+          transcript.apply({ "type" => "SUBAGENT_ERROR", "subagentRunId" => "s1", "message" => "lost" })
+
+          assert_equal 1, transcript.subagents.size, "a resumed invocation is the same invocation"
+          assert_equal({ message: "lost", code: nil }, transcript.subagent("s1")[:error])
+          assert_empty transcript.apply({ "type" => "SUBAGENT_FINISHED", "subagentRunId" => "unannounced" })
+        end
+
+        def test_a_consumer_that_stops_reading_truncates_the_run_without_inventing_an_end
+          transcript = Transcript.new
+          transcript.apply_all([START, { "type" => "TEXT_MESSAGE_START", "messageId" => "m1", "role" => "assistant" }])
+
+          assert_equal ["m1"], transcript.truncate
+          assert_predicate transcript, :truncated?
+          refute_predicate transcript, :ended?
+          assert_equal :done, transcript.message("m1").parts.first[:state]
+          assert_empty transcript.truncate, "only a running run truncates"
+        end
+
+        def test_ids_that_collide_are_refused_with_a_warning
+          events = [START, *call("c1"),
+                    { "type" => "TOOL_CALL_RESULT", "messageId" => "r1", "toolCallId" => "c1", "content" => "ok" },
+                    { "type" => "TEXT_MESSAGE_START", "messageId" => "r1", "role" => "assistant" },
+                    { "type" => "ACTIVITY_SNAPSHOT", "messageId" => "act", "activityType" => "x", "content" => {} },
+                    { "type" => "TEXT_MESSAGE_CONTENT", "messageId" => "act", "delta" => "no" },
+                    FINISH]
+          transcript = Transcript.new.apply_all(events)
+
+          assert_equal %i[id_collision id_collision], transcript.warnings.map(&:kind)
+          assert_equal({ "act" => { "type" => "x", "content" => {} } }, transcript.activities)
+          assert_equal %w[a1 act], transcript.messages.map(&:id)
+        end
+
+        def test_the_state_the_host_sent_is_what_deltas_patch
+          transcript = Transcript.new
+          transcript.state = { "count" => 1 }
+          transcript.apply({ "type" => "STATE_DELTA",
+                             "delta" => [{ "op" => "replace", "path" => "/count", "value" => 2 }] })
+
+          assert_equal({ "count" => 2 }, transcript.state)
         end
 
         def test_every_run_is_kept_and_a_cancelled_run_is_neither_success_nor_failure

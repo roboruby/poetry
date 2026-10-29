@@ -63,7 +63,8 @@ module Poetry
       #
       # Kinds: :unrecognised_event, :stripped, :translated, :lossy,
       # :producer_version, :lenient_dropped, :lenient_admitted, :key_shim,
-      # :legacy_interrupt, :patch_failed, :activity_missing.
+      # :legacy_interrupt, :patch_failed, :activity_missing, :id_collision,
+      # :unknown_entity.
       #
       # @example
       #   Poetry::Agent::AGUI::ProtocolWarning.new(kind: :stripped, message: "Removed ... at '/x' on RUN_STARTED.")

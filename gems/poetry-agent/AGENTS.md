@@ -47,7 +47,11 @@ component contract. Two ship:
   chunk or retired THINKING_* event raises). `Relay` is view-free (the
   host renders rows; `append_render` wraps a first appearance in its list
   item) and holds a strict pipeline unless given `pipeline: nil` for
-  events `Client#run` already verified. Client tool names are the
+  events `Client#run` already verified. A tool result is a message of
+  its own inside the Transcript (as the protocol has it) but never one of
+  `messages`: its call's part reads the answer, and `ToolResults` pairs
+  results with calls and puts them beside their calls in the next input.
+  Encrypted reasoning never sits in parts. Client tool names are the
   registrar's `poetry.{instance}.{tool}`, so the bridge executes them
   in-page without `modelContext`.
 - Enforcement walks `config/agui/contract-1.0.json`, generated from the
@@ -55,8 +59,10 @@ component contract. Two ship:
   checked by `agui:verify` in the default task; never edit it by hand.
   The schema, per-definition fixtures, conformance corpus, reference
   vectors and real-producer captures live under `test/fixtures/agui/1.0`
-  (provenance in its README) and never ship. `ConformanceTest::DIVERGENCES`
-  lists the corpus fixtures not met yet; it only shrinks.
+  (provenance in its README) and never ship. `ConformanceTest`,
+  `VectorsTest` and `ApplyVectorsTest` each keep a `DIVERGENCES` list of
+  what Poetry answers differently on purpose, with the reason; a listed
+  case that starts passing fails the suite, so the lists only shrink.
 - `Poetry::Agent::A2UI::Catalog` follows the v1.0 catalog rules (the ten
   top-level keys, `$defs` = `anyComponent` + `anyFunction`, external refs
   into `common_types.json` only); the content-block heuristic is

@@ -11,12 +11,16 @@
 - Component and chart pages show a Behaviors table beside Wiring: each behavior the component uses, where it is wired and what it does. The table says Poetry behaviors are not Herb's client behaviors.
 - A page for each new icon set (Tabler, Hugeicons, Phosphor, Heroicons, Simple Icons) under /icons, with a live sample of every style, and the Lucide page updated for 1.57.0 and its aliases. The examples use `trash`, Lucide's current name for `trash-2`.
 - Pages for poetry-solar and poetry-blode under /icons; an icon set with an attribution gets an Attribution section with its visible credit line.
+- The AG-UI Relay demo page has a States example: the relay's own rows for a turn with image and document attachments, a tool result made of content parts, a call the person declined, a subagent that failed, a run the agent cancelled, and a stream the page stopped reading, each built from real AG-UI 1.0 events.
+- The AG-UI Relay guide covers what a message carries (metadata, subagent attribution, encrypted reasoning, a run's usage and unanswered calls), a frontend tool that asks first (`confirm: true`, the approval prompt, `decline_client_tool`), and stopping a run (`transcript.truncate` against a cancelled outcome); the recipe passes `approval:` and truncates a stream that broke off. The llms mirror says the same.
 
 ### Changed
 
 - The AG-UI Relay and Chat Replay demos render agent activity on Trace and CodeBlock, after shadcn's Trace chat example. Each run of reasoning and tool calls is one Trace: reasoning reads "Thinking", open, while it streams and "Thought" after; a tool call's words and status follow its state ("Looking up plans", "Looked up plans", waiting in the browser, failed); a finished call discloses its input and output in small CodeBlocks. An approval is an Item prompt with Deny and Approve, and a Chat Replay turn waits as a running "Thinking" line. The AG-UI Relay page's partial samples show the same mapping.
 - The AG-UI Relay guide has a section on what the client checks: the pipeline's order, `ProtocolError` and `ProtocolWarning`, lenient mode, `max_protocol_version:`, and why a relay fed by the client takes `pipeline: nil`. The recipe logs warnings through `on_warning:`, the resume sample passes `interrupts:` so a list that leaves one out raises, and the Interrupts section says the pipeline names a pre-1.0 interrupt. The llms mirror says the same.
 - The AG-UI Relay demo folds its earlier runs through a pipeline, as the guide says a transcript is fed.
+- The AG-UI Relay demo's tab switch asks first: its prompt waits in the page, Approve runs it and Deny tells the agent no (the step reads "Denied: switching to the pricing tab"). Its trial is started by a billing subagent whose call nests under a step naming it.
+- Agent activity rows show a user's images and documents as Attachment chips, a tool result's images beside its text output instead of base64 in a code block, a declined call as denied rather than failed, a subagent's work nested under a step naming it, and a waiting step in a cancelled or broken-off run as stopped, with a Marker saying so, instead of running forever.
 - The AG-UI Relay guide and its llms mirror speak AG-UI 1.0: the resume sample answers an interrupt with `status: "resolved"` and the decision in the payload (`cancelled` abandons it), user and tool messages take content parts, a reasoning message renders as its own row and travels back in `messages_for_input`, and `Transcript#runs` keeps every run. The recipe records the user's turn with `transcript.add_message` before each run (it used to send only the new message, so later runs lost the conversation), the relay removes a row a snapshot drops (`remove_targets:`), and the Interrupts section says real interrupts often carry no `message`.
 
 ### Fixed
@@ -24,6 +28,7 @@
 - The AG-UI Relay demo's controls (the approval prompt, the replay link) follow the run's reply instead of sitting above it: each streamed message used to append after them.
 - The AG-UI Relay demo's scripted agent emits conformant AG-UI 1.0: each `RUN_STARTED` declares `protocolVersion`, `REASONING_MESSAGE_START` carries its required `role: "reasoning"`, and the reasoning message has an id of its own instead of sharing the text message's. A 1.0 client rejected run one outright.
 - The AG-UI Relay demo's interrupt prompt falls back to the interrupt's reason when it carries no message, and a message a snapshot drops leaves the scroller with its item.
+- The AG-UI Relay demo's standalone example (`/examples/demos/agui-relay/default`) renders: it raised `NoMethodError` for want of the history the demo page prepares.
 
 ## [0.1.13] - 2026-10-13
 

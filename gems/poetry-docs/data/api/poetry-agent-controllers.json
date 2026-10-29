@@ -280,7 +280,7 @@
       "path": "poetry--agent--agui-client-tool",
       "type": "controller",
       "superclass": null,
-      "docstring": "The AG-UI client-tool bridge: the relay appends one of these (hidden)\nper tool call the agent made to a FRONTEND tool - a component tool the\npage declared - and this controller executes it through the registrar\n(the same dispatch a WebMCP call takes, so it works in every browser,\nmodelContext or not), then POSTs the result to the continue URL. The\nserver folds the tool message into the transcript and answers with the\nnext run's streams, which Turbo renders. One element, one execution:\nthe done flag makes a Turbo re-render inert.\n\n**Values**:\n- `call` (Object): The pending tool call: its id, name and arguments.\n- `url` (String): Where the tool result is posted.\n- `done` (Boolean): Whether the call has already been answered (a restored snapshot must not answer twice).\n\n**Events**: `poetry:agui:client-tool-executed`",
+      "docstring": "The AG-UI client-tool bridge: the relay appends one of these per tool\ncall the agent made to a FRONTEND tool - a component tool the page\ndeclared - and this controller executes it through the registrar (the\nsame dispatch a WebMCP call takes, so it works in every browser,\nmodelContext or not), then POSTs the result to the continue URL. The\nserver folds the tool message into the transcript and answers with the\nnext run's streams, which Turbo renders. A tool declared to ask first\nrenders the host's approval prompt inside the element and waits: its\napprove action runs the call, its deny action answers it as declined\nwithout running it, and either answer hides the prompt. One element, one answer: the done flag makes a Turbo\nre-render inert.\n\n**Values**:\n- `call` (Object): The pending tool call: its id, name and arguments.\n- `url` (String): Where the tool result is posted.\n- `done` (Boolean): Whether the call has already been answered (a restored snapshot must not answer twice).\n- `confirm` (Boolean): Whether the call waits for the user's approve or deny before anything runs.\n\n**Events**: `poetry:agui:client-tool-declined`, `poetry:agui:client-tool-executed`",
       "examples": [],
       "file": "app/javascript/poetry/agent/agui_client_tool_controller.js",
       "methods": [
@@ -289,12 +289,36 @@
           "scope": "instance",
           "group": null,
           "signature": "connect()",
-          "docstring": "Runs the pending client tool once, posts its result, and marks the call\ndone.",
+          "docstring": "Runs the pending client tool once, unless it waits for the user.",
           "params": [],
           "return": null,
           "examples": [],
           "file": "app/javascript/poetry/agent/agui_client_tool_controller.js",
-          "line": 31
+          "line": 35
+        },
+        {
+          "name": "approve",
+          "scope": "instance",
+          "group": null,
+          "signature": "approve()",
+          "docstring": "Runs the call the user approved.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/agui_client_tool_controller.js",
+          "line": 43
+        },
+        {
+          "name": "deny",
+          "scope": "instance",
+          "group": null,
+          "signature": "deny()",
+          "docstring": "Answers the call as declined: the tool never runs, and the agent is told so.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "app/javascript/poetry/agent/agui_client_tool_controller.js",
+          "line": 51
         }
       ],
       "constants": []

@@ -1,12 +1,13 @@
 <%# One run of reasoning and tool parts as a Trace (Poetry::Docs::AgentActivity
-    maps each part to a step). A step's detail is the reasoning text, the
-    tool's input and output in small CodeBlocks, or its error in a
-    destructive one. The ids (the trace's, and each block's off it) keep
+    maps each part to a step; a run that stopped before its end reads its
+    waiting calls as stopped). A step's detail is the reasoning text, the
+    tool's input and output in small CodeBlocks with any images or
+    documents its result carried, or its error in a destructive one. The ids (the trace's, and each block's off it) keep
     the disclosures and their names stable across the row's re-renders,
     and a replay byte-identical. %>
 <%= poetry_trace(id: id) do |trace| %>
   <% parts.each_with_index do |part, position| %>
-    <% step = Poetry::Docs::AgentActivity.step(part) %>
+    <% step = Poetry::Docs::AgentActivity.step(part, stopped: local_assigns[:stopped] || false) %>
     <% options = { icon: step.icon, status: step.status, description: step.description, open: step.open || false } %>
     <% if step.detail.nil? %>
       <% trace.with_step(step.title, **options) %>
@@ -25,10 +26,13 @@
                                   content_class: "max-h-64", id: "#{id}-#{position}-input") do |block| %>
               <% block.with_title { "Input" } %>
             <% end %>
-            <%= poetry_code_block(code: detail[:output], language: detail[:output_language], size: :sm, wrap: true,
-                                  copy: false, content_class: "max-h-64", id: "#{id}-#{position}-output") do |block| %>
-              <% block.with_title { "Output" } %>
+            <% if detail[:output] %>
+              <%= poetry_code_block(code: detail[:output], language: detail[:output_language], size: :sm, wrap: true,
+                                    copy: false, content_class: "max-h-64", id: "#{id}-#{position}-output") do |block| %>
+                <% block.with_title { "Output" } %>
+              <% end %>
             <% end %>
+            <%= render "poetry/docs/agent_activity/media", parts: detail[:media] if detail[:media].present? %>
           </div>
         <% end %>
       <% end %>

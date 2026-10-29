@@ -96,6 +96,10 @@ module Poetry
           # @return [Boolean]
           attr_reader :omit_nulls
 
+          # The JSON Pointer of the first unrecognised value that removed what held it.
+          # @return [String, nil]
+          attr_reader :lost
+
           # A fresh walk with an entry budget, labelled for its rejections.
           def initialize(max, label, omit_nulls: false)
             @omit_nulls = omit_nulls
@@ -121,6 +125,11 @@ module Poetry
           # Records a key below the current path as stripped.
           def strip(key) = @stripped << pointer(key)
 
+          # Records the first unrecognised required value, whose container goes instead.
+          def lose(key)
+            @lost = pointer(key) if @lost.nil?
+          end
+
           # A rejection at the current path, or at one key below it.
           def malformed(keyword, detail, key = nil) = Malformed.new(keyword, pointer(key), detail, @label)
         end
@@ -137,10 +146,16 @@ module Poetry
             @minimum = shape["minimum"]
             @maximum = shape["maximum"]
             @expected = shape["enum"]&.map(&:inspect)&.join("|")
+            @closed_set = @enum if @enum&.all?(String) && [nil, "string"].include?(@type)
           end
 
           # Whether the node is checked without a descent.
           def leaf? = true
+
+          # Whether a value is a string outside a closed set of strings (a role, a
+          # subtype): a member added after this consumer shipped, which is
+          # unrecognised material to strip, not a malformed value.
+          def unrecognised?(value) = !@closed_set.nil? && value.is_a?(String) && !@closed_set.include?(value)
 
           # What the node expects, as a missing-field rejection names it.
           def expects = @type || (@const ? @const.inspect : "a string")
@@ -191,6 +206,9 @@ module Poetry
           # Whether the node is checked without a descent.
           def leaf? = true
 
+          # Any value is described here, so none is unrecognised.
+          def unrecognised?(_value) = false
+
           # What the node expects, as a missing-field rejection names it.
           def expects = "a value"
 
@@ -211,6 +229,9 @@ module Poetry
         class OpaqueObject
           # Whether the node is checked without a descent.
           def leaf? = true
+
+          # Its insides are data, so nothing in it is unrecognised.
+          def unrecognised?(_value) = false
 
           # What the node expects, as a missing-field rejection names it.
           def expects = "object"
@@ -272,6 +293,16 @@ module Poetry
                 next
               end
               if node.leaf?
+                if node.unrecognised?(child)
+                  if @required.include?(key)
+                    state.lose(key)
+                    return DROP # cascade: the container goes instead
+                  end
+
+                  state.strip(key)
+                  out ||= copy_until(value, key)
+                  next
+                end
                 error = node.check(child)
                 if error && child.nil? && state.omit_nulls && !@required.include?(key)
                   out ||= copy_until(value, key) # outgoing only: an optional null reads as absent
@@ -367,8 +398,15 @@ module Poetry
             out = nil
             if @items.leaf?
               value.each_with_index do |entry, index|
+                if @items.unrecognised?(entry)
+                  state.strip(index)
+                  out ||= value[0, index]
+                  next
+                end
                 error = @items.check(entry)
                 raise state.malformed(*error, index) if error
+
+                out << entry if out
               end
             else
               value.each_with_index do |entry, index|
@@ -529,7 +567,15 @@ module Poetry
               return nil
             end
             state = State.new(@max, type)
-            value = root(node, raw, state)
+            value = node.walk(raw, state)
+            if value.equal?(DROP)
+              on_warning&.call(ProtocolWarning.new(
+                kind: :stripped,
+                message: "Dropping #{type}: its required '#{state.lost}' holds a value this implementation does " \
+                         "not recognise."
+              ))
+              return nil
+            end
             state.stripped.each do |path|
               on_warning&.call(ProtocolWarning.new(kind: :stripped,
                                                    message: "Removed unrecognised material at '#{path}' on #{type}."))
@@ -559,14 +605,19 @@ module Poetry
             value
           end
 
-          # Any definition by anchor: the value and the paths stripped from it.
+          # Any definition by anchor: the value and the paths stripped from it. A
+          # value whose required field holds an unrecognised member of a closed
+          # set is removed whole: nil, and that field's path.
           #
           # @param raw [Object]
           # @param name [String]
           # @return [Array(Object, Array<String>)]
           def definition(raw, name)
             state = State.new(@max, name)
-            [root(@named.fetch(name), raw, state), state.stripped]
+            value = @named.fetch(name).walk(raw, state)
+            return [nil, [state.lost]] if value.equal?(DROP)
+
+            [value, state.stripped]
           end
 
           private
