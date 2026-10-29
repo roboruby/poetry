@@ -255,7 +255,11 @@
         and function calls nest within the spec's limits, bound paths are pointers,
         v1.0 ids and function names are identifiers, every call names a function
         its catalog declares, and a catalog's <code>allowedParents</code> and
-        <code>allowedChildren</code> hold. Use it while developing an agent, or for
+        <code>allowedChildren</code> hold. Every message is also held to its version's
+        schema, the specification's own, with the surface's catalogs plugged in, so
+        an unknown property, a mistyped value or a malformed call is refused and
+        named by its component. A catalog binding of your own takes part by
+        answering <code>document</code> with its catalog document. Use it while developing an agent, or for
         one that sends whole surfaces; leave it off for agents that stream.
       </p>
     <% end %>
