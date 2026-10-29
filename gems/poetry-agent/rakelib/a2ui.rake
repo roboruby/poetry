@@ -5,11 +5,13 @@ require "fileutils"
 
 # The A2UI material poetry-agent is tested against, vendored from an A2UI
 # checkout in upstream's own layout (test/fixtures/a2ui/upstream), so the
-# conformance suites' relative catalog paths resolve. Test-only: test/ never
-# ships. A re-pin vendors a newer checkout, then the conformance suite says
-# what changed.
+# conformance suites' relative catalog paths resolve. test/ never ships;
+# the schemas strict validation reads at runtime are copied, in the same
+# layout, to lib/poetry/agent/a2ui/schemas, which does. A re-pin vendors a
+# newer checkout, then the conformance suite says what changed.
 namespace :a2ui do
   upstream = File.expand_path("../test/fixtures/a2ui/upstream", __dir__)
+  shipped_root = File.expand_path("../lib/poetry/agent/a2ui/schemas", __dir__)
   suites = %w[actions composition_constraints data_context data_deletion data_model data_model_pointers expressions
               functions index_function message_processor_v0_9 message_processor_v1_0 multi_catalog reserved_keys
               rpc_functions validation_result validator_v0_9 validator_v1_0]
@@ -17,7 +19,15 @@ namespace :a2ui do
                 specification/v0_9_1/catalogs/basic/catalog.json
                 conformance/test_data/catalogs/custom_catalog_v1_0.json]
   examples = %w[catalogs/basic/v1/examples specification/v0_9/catalogs/basic/examples]
-  schemas = %w[specification/v0_9/json specification/v1_0/json]
+  schemas = %w[specification/v0_9/json specification/v0_9_1/json specification/v1_0/json]
+  # What strict validation reads: each version's message schema, its common
+  # types, and its basic catalog.
+  shipped = %w[specification/v0_9/json/server_to_client.json specification/v0_9/json/common_types.json
+               specification/v0_9/catalogs/basic/catalog.json
+               specification/v0_9_1/json/server_to_client.json specification/v0_9_1/json/common_types.json
+               specification/v0_9_1/catalogs/basic/catalog.json
+               specification/v1_0/json/agent_to_renderer.json specification/v1_0/json/common_types.json
+               catalogs/basic/v1/catalog.json]
 
   # The manifest: one "sha256  path" line per vendored file.
   manifest = lambda do |root, files|
@@ -40,7 +50,13 @@ namespace :a2ui do
     FileUtils.cp(File.join(source, "LICENSE"), File.join(upstream, "LICENSE"))
     File.write(File.join(upstream, "SHA256SUMS"), manifest.call(upstream, files))
     File.write(File.join(upstream, "COMMIT"), "#{commit}\n")
-    puts "a2ui:vendor: #{files.size} files from #{commit}"
+
+    FileUtils.rm_rf(shipped_root)
+    (shipped + ["LICENSE"]).each do |file|
+      FileUtils.mkdir_p(File.join(shipped_root, File.dirname(file)))
+      FileUtils.cp(File.join(upstream, file), File.join(shipped_root, file))
+    end
+    puts "a2ui:vendor: #{files.size} files from #{commit}, #{shipped.size} of them shipped"
   end
 
   desc "Fail when a vendored A2UI file differs from its manifest"
@@ -52,7 +68,15 @@ namespace :a2ui do
     end
     abort "a2ui:verify: #{stale.map(&:last).join(", ")} differ from SHA256SUMS - run rake a2ui:vendor" if stale.any?
 
+    drifted = (shipped + ["LICENSE"]).reject do |file|
+      path = File.join(shipped_root, file)
+      File.exist?(path) && FileUtils.identical?(path, File.join(upstream, file))
+    end
+    if drifted.any?
+      abort "a2ui:verify: shipped #{drifted.join(", ")} differ from the vendored copies - run rake a2ui:vendor"
+    end
+
     commit = File.read(File.join(upstream, "COMMIT")).strip
-    puts "a2ui:verify: #{listed.size} vendored files match SHA256SUMS at #{commit}"
+    puts "a2ui:verify: #{listed.size} vendored files match SHA256SUMS at #{commit}, #{shipped.size} shipped"
   end
 end

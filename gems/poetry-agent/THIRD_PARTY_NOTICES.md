@@ -2,8 +2,8 @@
 
 The gem's own code is MIT, per LICENSE.txt. Its AG-UI 1.0 pipeline is
 adapted from the AG-UI protocol's reference material, also MIT.
-Its A2UI renderer is tested against the A2UI project's conformance suites,
-Apache-2.0.
+Its A2UI renderer ships the A2UI project's JSON schemas for strict
+validation and is tested against its conformance suites, Apache-2.0.
 
 ## AG-UI
 
@@ -40,7 +40,8 @@ SOFTWARE.
 ## A2UI
 
 - Source: https://github.com/google/A2UI (Apache-2.0), at commit `d98472e5d` (2026-10-28)
-- Test-only, never shipped: `test/fixtures/a2ui/upstream/` holds the renderer conformance suites, the catalogs they name, the basic catalogs' examples and both versions' JSON schemas, in upstream's layout, with upstream's LICENSE inside it (provenance in `test/fixtures/a2ui/README.md`)
+- Shipped, unmodified: `lib/poetry/agent/a2ui/schemas/` holds what strict validation reads, each protocol version's message schema and common types (v0.9, v0.9.1 and v1.0) and the basic catalogs, in upstream's layout, with upstream's LICENSE inside it; `rake a2ui:verify` holds them byte-identical to the vendored copies
+- Test-only, never shipped: `test/fixtures/a2ui/upstream/` holds the renderer conformance suites, the catalogs they name, the basic catalogs' examples and each version's JSON schemas, in upstream's layout, with upstream's LICENSE inside it (provenance in `test/fixtures/a2ui/README.md`)
 
 ```
                                  Apache License

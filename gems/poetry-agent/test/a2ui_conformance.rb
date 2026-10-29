@@ -181,6 +181,9 @@ module A2UIConformance
       @functions = A2UIConformance.document_functions(document) if document.key?("functions")
     end
 
+    # The definition itself, which strict validation plugs into the message schema.
+    attr_reader :document
+
     # The functions the definition declares (the basic set when it declares none).
     def functions = @functions || super
 

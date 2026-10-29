@@ -117,8 +117,8 @@ module Poetry
           key = message_key(message, dialect) or return []
           body = message[key]
           return reject("INVALID_MESSAGE", "#{key} must be an object", dialect: dialect) unless body.is_a?(Hash)
-          if @strict && (limit = Strict.limit_problem(body))
-            return reject(limit[:code], limit[:message], body["surfaceId"], dialect: dialect)
+          if @strict && (limit = Strict.limit_problem(body) || schema_problem(message, key, body, dialect))
+            return reject(limit[:code], limit[:message], body["surfaceId"], dialect: dialect, path: limit[:path])
           end
 
           if key == "callRendererFunction"
@@ -313,6 +313,10 @@ module Poetry
                           dialect: dialect)
           end
 
+          if dialect.v1? && body.key?("metadata") && (problem = metadata_problem(body["metadata"]))
+            return reject("VALIDATION_FAILED", problem, surface_id, dialect: dialect, path: "/metadata")
+          end
+
           catalog = catalog_id.nil? ? nil : catalog_for(catalog_id)
           problem = surface_catalog_problem(catalog_id, catalog, dialect)
           return reject("CATALOG_ERROR", problem, surface_id, dialect: dialect) if problem
@@ -356,15 +360,60 @@ module Poetry
         end
 
         # What strict validation finds in an update: the components' own
-        # problems and identifiers, then the topology of the set it would make.
+        # problems, identifiers and calls, then their schemas, then the topology
+        # and composition of the set it would make.
         def strict_problems(surface, components)
           problems = surface.check(components) + Strict.identifier_problems(components, surface.dialect) +
                      Strict.call_problems(components, surface)
           return problems if problems.any?
 
+          update = { "version" => surface.dialect.version,
+                     "updateComponents" => { "surfaceId" => surface.id, "components" => components } }
+          schema = validator(surface.dialect, surface.catalog_id).problem(update)
+          return [schema] if schema
+
           candidate = surface.candidate(components)
           topology = Strict.topology_problems(candidate, surface)
           topology.any? ? topology : Strict.composition_problems(candidate, surface)
+        end
+
+        # A strict message's schema problem: the message against its
+        # version's schema, with the catalog the createSurface names, or the
+        # surface's, as the default (a catalog that cannot be resolved is the
+        # code checks' to report). Its components are the update's to judge,
+        # after the code checks.
+        def schema_problem(message, key, body, dialect)
+          default = key == "createSurface" ? body["catalogId"] : @surfaces[body["surfaceId"]]&.catalog_id
+          default = nil unless default.is_a?(String)
+          outside = "/#{key}/components" if %w[createSurface updateComponents].include?(key)
+          validator(dialect, default).problem(message, outside: outside)
+        end
+
+        # The schema validator for a version and a default catalog, compiled
+        # on first use: every catalog the session holds for the version plugs
+        # in, each through its binding's `document` (none admits anything).
+        def validator(dialect, default)
+          (@validators ||= {})[[dialect.version, default]] ||= begin
+            documents = catalogs_for(dialect).transform_values do |binding|
+              binding.respond_to?(:document) ? binding.document : nil
+            end
+            Schemas::Validator.new(dialect, default: default, catalogs: documents)
+          end
+        end
+
+        # Why a v1.0 createSurface's metadata is malformed: it holds only
+        # `extensions`, whose keys are identifiers.
+        def metadata_problem(metadata)
+          return "createSurface.metadata must be an object" unless metadata.is_a?(Hash)
+
+          other = (metadata.keys - ["extensions"]).first
+          return "createSurface.metadata holds only 'extensions', not '#{other}'" if other
+
+          extensions = metadata.fetch("extensions", {})
+          return "createSurface.metadata.extensions must be an object" unless extensions.is_a?(Hash)
+
+          key = extensions.keys.find { |name| !name.match?(Strict::IDENTIFIER) }
+          "Extension key '#{key}' must be a valid UAX #31 identifier" if key
         end
 
         # Writes a value into a surface's data model from an updateDataModel
@@ -488,9 +537,10 @@ module Poetry
 
         # Records an error message and returns no changed ids. It carries the
         # version of the surface it names, else of the message, else v1.0's.
-        def reject(code, message, surface_id = nil, dialect: nil)
+        def reject(code, message, surface_id = nil, dialect: nil, path: nil)
           error = { "code" => code, "message" => message }
           error["surfaceId"] = surface_id if surface_id.is_a?(String)
+          error["path"] = path if path && code == "VALIDATION_FAILED"
           @errors << { "version" => version_for(surface_id, dialect), "error" => error }
           []
         end

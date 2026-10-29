@@ -45,6 +45,13 @@ module Poetry
             Functions.basic
           end
 
+          # The catalog document the binding renders, Poetry's catalog in the
+          # binding's version (strict validation reads it).
+          # @return [Hash]
+          def document
+            @document ||= Catalog.new(entries: entries, catalog_id: id, v0_9_id: id).to_h(version: dialect.version)
+          end
+
           # The registry entries by path, loaded on first use.
           # @return [Hash{String => Hash}] registry entries by path
           def entries

@@ -73,6 +73,13 @@ module Poetry
             @dialect = dialect
           end
 
+          # The basic catalog's document for the binding's version, as the
+          # specification publishes it (strict validation reads it).
+          # @return [Hash]
+          def document
+            Schemas.basic_catalog(dialect)
+          end
+
           # The basic catalog's id in its version.
           # @return [String]
           def id
