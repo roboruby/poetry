@@ -341,7 +341,9 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_includes text, "Poetry::Agent::A2UI::Streams.new"
     assert_includes text, "session.action("
     assert_select "a[href='/demos/a2ui-surface']"
-    assert_select "a[href='/a2ui/catalog.json']"
+    assert_select "a[href='/a2ui/v1_0/catalog.json']"
+    assert_select "a[href='/a2ui/v0_9/catalog.json']"
+    assert_select "h2#versions", "Two versions"
     assert_select "a[href='/ag-ui']"
 
     get "/a2ui.md"

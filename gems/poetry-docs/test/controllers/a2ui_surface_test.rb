@@ -6,6 +6,14 @@ require "test_helper"
 # surface streamed progressively, and a submission answered with the
 # action message plus the scripted agent's reply.
 class A2uiSurfaceTest < ActionDispatch::IntegrationTest
+  test "the standalone example builds its own session" do
+    get "/examples/demos/a2ui-surface/default"
+
+    assert_response :success
+    assert_includes response.body, "id=\"a2ui-signin\""
+    assert_includes response.body, "id=\"a2ui-plan\""
+  end
+
   test "the demo page renders both surfaces as forms and the stream source" do
     get "/demos/a2ui-surface"
 

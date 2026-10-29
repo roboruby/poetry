@@ -2,15 +2,17 @@
     own catalog (the plan card) rendered on the server as forms, a third
     surface streamed progressively as versioned Turbo Streams, and every
     submission answered with the action message the agent receives plus
-    the scripted agent's reply. %>
+    the scripted agent's reply. The demo page prepares the session; the
+    standalone example builds it here. %>
+<% session = @a2ui_session || Poetry::Docs::A2uiShowcase.session %>
 <% render_surface = lambda do |surface|
      Poetry::Agent::A2UI::Renderer.new(surface, view: self, action_url: a2ui_surface_action_path,
                                        html: { class: "flex flex-col gap-4" }).call
    end %>
 <div class="grid w-full gap-6 lg:grid-cols-2">
   <div class="flex flex-col gap-6">
-    <%= render_surface.call(@a2ui_session.surface("signin")) %>
-    <%= render_surface.call(@a2ui_session.surface("plan")) %>
+    <%= render_surface.call(session.surface("signin")) %>
+    <%= render_surface.call(session.surface("plan")) %>
     <div id="a2ui-stage" class="flex flex-col gap-6"></div>
     <turbo-stream-source id="a2ui-surface-source" src="<%= a2ui_surface_stream_path(instant: params[:instant].presence) %>"></turbo-stream-source>
   </div>

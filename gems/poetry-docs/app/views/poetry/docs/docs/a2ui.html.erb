@@ -22,16 +22,29 @@
   CODE
   catalog_source = <<~CODE
     # config/routes.rb
-    get "a2ui/catalog.json" => "a2ui#catalog"
+    get "a2ui/v1_0/catalog.json" => "a2ui#catalog", defaults: { version: "1.0" }
+    get "a2ui/v0_9/catalog.json" => "a2ui#catalog", defaults: { version: "v0.9" }
 
     # app/controllers/a2ui_controller.rb
     class A2uiController < ApplicationController
       CATALOG = Poetry::Agent::A2UI::Catalog.from_registry(Poetry::Ui.root)
 
       def catalog
-        render json: CATALOG.to_h   # CATALOG.inline for a middleware that wants { catalogId, components }
+        # CATALOG.inline(version:) for a middleware that wants { catalogId, components }
+        render json: CATALOG.to_h(version: params[:version])
       end
     end
+  CODE
+  versions_source = <<~CODE
+    { "version": "1.0",  "updateDataModel": { "surfaceId": "signin", "path": "/email", "value": "ada@example.com" } }
+    { "version": "1.0",  ... "text": { "@path": "/email" } ... "condition": { "@call": "required", "args": { ... } } }
+    { "version": "v0.9", ... "text": { "path": "/email" } ... "condition": { "call": "required", "args": { ... } } }
+  CODE
+  strict_source = <<~CODE
+    session = Poetry::Agent::A2UI::Session.new(strict: true)
+    session.apply(message)       # an update that breaks the surface is refused whole
+    session.errors.last          # => { "version" => "1.0", "error" => { "code" => "INTEGRITY_ERROR", "surfaceId" => "signin",
+                                 #      "message" => "Component 'root' references non-existent component 'email' ..." } }
   CODE
   message_source = <<~CODE
     { "version": "1.0",
@@ -169,13 +182,47 @@
         Poetry's own catalog is the registry projected into A2UI's schema: every
         component with its style axes as enums, options as typed properties, slots
         as child references, and its rules in the description. Serve it for agents
-        you brief yourself; this site's copy lives at
-        <%= link_to "/a2ui/catalog.json", "/a2ui/catalog.json" %>. Surfaces
+        you brief yourself, once per protocol version: this site's copies live at
+        <%= link_to "/a2ui/v1_0/catalog.json", "/a2ui/v1_0/catalog.json" %> and
+        <%= link_to "/a2ui/v0_9/catalog.json", "/a2ui/v0_9/catalog.json" %>. Surfaces
         against it render straight from the registry, with no hand mapping, so a
         new component is available the moment it is registered.
       </p>
+      <p>
+        Each catalog is bound once per version: the basic catalog under its v1.0 id
+        and its v0.9 id (and the id AG-UI's A2UI toolkits send for it), Poetry's under
+        <code>Catalog::DEFAULT_ID</code> and <code>Catalog::V0_9_ID</code>. A surface
+        naming a catalog the session does not hold is refused, as the spec says,
+        rather than drawn with the wrong one; pass
+        <code>Session.new(fallback_catalog:)</code> to bind unknown ids to a catalog of
+        your choosing.
+      </p>
     <% end %>
     <%= poetry_code_block(code: catalog_source, language: "ruby", label: "Serving the catalog") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="versions">Two versions</h2>
+      <p>
+        A2UI v0.9 and v1.0 run side by side. Each surface speaks the version of the
+        message that created it, and everything the session sends about it carries
+        that version: <code>"1.0"</code> or <code>"v0.9"</code>. The two spell
+        dynamic values differently. v1.0 binds data with <code>{ "@path" }</code>
+        and calls a function with <code>{ "@call" }</code>, so a plain object's
+        <code>path</code> key is data there, and a literal key that starts with
+        <code>@</code> is escaped by doubling it; v0.9 uses <code>path</code> and
+        <code>call</code>. The AG-UI A2UI middleware speaks v0.9 today, and A2UI's
+        own agent SDKs speak v1.0.
+      </p>
+      <p>
+        Every message names its version. v1.0's is the bare <code>"1.0"</code>;
+        its earlier spelling <code>"v1.0"</code>, which the published agent SDKs
+        still send, is accepted too. The browser's checks need no version of their
+        own: the server writes them in v1.0's spelling whatever the surface speaks.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: versions_source, language: "json", label: "The same binding in each version") %>
   </section>
 
   <section class="flex flex-col gap-4">
@@ -190,9 +237,29 @@
         error: streaming delivers components in any order, and the surface renders
         what it has.
       </p>
+      <p>
+        On a v1.0 surface a component and a function call may each name their own
+        catalog with <code>catalogId</code>, among the session's catalogs of the
+        surface's version; one that names none uses the surface's default. A2UI's
+        agent SDKs write surfaces that way whenever more than one catalog is in
+        play, and a v1.0 surface may name no default at all.
+      </p>
     <% end %>
     <%= poetry_code_block(code: message_source, language: "json", label: "A surface, as the agent sends it") %>
     <%= poetry_code_block(code: fold_source, language: "ruby", label: "Folding") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        Strict validation is opt in. With <code>strict: true</code> an update is
+        refused whole unless the surface keeps its <code>root</code>, references
+        only components it holds, and reaches every component from the root; values
+        and function calls nest within the spec's limits, bound paths are pointers,
+        v1.0 ids and function names are identifiers, every call names a function
+        its catalog declares, and a catalog's <code>allowedParents</code> and
+        <code>allowedChildren</code> hold. Use it while developing an agent, or for
+        one that sends whole surfaces; leave it off for agents that stream.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: strict_source, language: "ruby", label: "Strict validation") %>
   </section>
 
   <section class="flex flex-col gap-4">
@@ -282,9 +349,13 @@
         <code>required</code>, <code>regex</code>, <code>length</code>,
         <code>numeric</code>, and <code>email</code>, the combinators
         <code>and</code>, <code>or</code>, and <code>not</code>, and
-        <code>openUrl</code>, which validates the scheme and renders as a link.
-        <code>@index</code> is available inside a list template. Poetry's own
-        catalog declares the same set, so agents against either catalog use them.
+        <code>openUrl</code>, which validates the scheme and renders as a link; it
+        runs only from a user's gesture, so a button's action may call it and a
+        binding may not. <code>@index</code> is available inside a list template.
+        Poetry's own catalog declares the same set, so agents against either
+        catalog use them. The validators answer as the surface's version does: a
+        boolean in v0.9, a ValidationResult in v1.0, whose message a check shows
+        before the rule's own.
       </p>
     <% end %>
     <%= poetry_code_block(code: interpolation_source, language: "json", label: "Interpolation") %>
@@ -293,7 +364,10 @@
         Add your own with <code>Functions.basic.define</code>. A function is
         renderer-only unless it declares otherwise; one declared for agents answers
         an agent's <code>callRendererFunction</code> with a response the session
-        collects in <code>session.responses</code>.
+        collects in <code>session.responses</code>, its value or, when the call is
+        refused or raises, an error inside it. A call names its catalog. Pass
+        <code>session.apply(message, user_activated: true)</code> when the message
+        answers the user's own gesture, so a function that needs one may run.
       </p>
     <% end %>
     <%= poetry_code_block(code: function_source, language: "ruby", label: "A function of your own") %>
@@ -325,6 +399,15 @@
         whatever your agent returns from a request, as the stream action above
         assumes; over MCP they sit inside an <code>application/a2ui+json</code>
         resource, and the messages you extract fold the same way.
+      </p>
+      <p>
+        While the AG-UI middleware's agent is still building a surface, its activity
+        carries only a status; the session keeps it as <code>session.status</code>
+        (<code>{ "status" => "building", "progressTokens" => 20 }</code>) for a
+        placeholder. To tell an agent what you render, send
+        <code>session.capabilities</code>, the catalogs the session holds for each
+        version; <code>session.renderer_data_model(version:)</code> is the data
+        models of the surfaces that asked to send theirs.
       </p>
     <% end %>
   </section>

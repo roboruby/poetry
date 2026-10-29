@@ -16,6 +16,7 @@
 
 ### Changed
 
+- The A2UI guide and its markdown mirror cover both protocol versions: how each spells bindings and calls, the version every message names, the catalogs bound per version and the refusal of an unknown one (`fallback_catalog:`), per-component and per-call catalogs, strict validation, `openUrl` running only from a gesture, a function's answer or error inside its response, `user_activated:`, `session.status`, `session.capabilities` and `session.renderer_data_model`.
 - The A2UI catalog is served in both versions: `/a2ui/v1_0/catalog.json` (and `/a2ui/catalog.json`) for v1.0 agents, `/a2ui/v0_9/catalog.json` for v0.9 ones.
 - The A2UI demo, the AG-UI Relay demo's trial surface and the A2UI guide's samples speak A2UI v1.0 as agents now send it: version `"1.0"`, `@path` bindings and `@call` calls.
 - The AG-UI Relay and Chat Replay demos render agent activity on Trace and CodeBlock, after shadcn's Trace chat example. Each run of reasoning and tool calls is one Trace: reasoning reads "Thinking", open, while it streams and "Thought" after; a tool call's words and status follow its state ("Looking up plans", "Looked up plans", waiting in the browser, failed); a finished call discloses its input and output in small CodeBlocks. An approval is an Item prompt with Deny and Approve, and a Chat Replay turn waits as a running "Thinking" line. The AG-UI Relay page's partial samples show the same mapping.
@@ -28,6 +29,7 @@
 
 ### Fixed
 
+- The A2UI Surface demo's standalone example (`/examples/demos/a2ui-surface/default`) renders: it raised `NoMethodError` for want of the session the demo page prepares.
 - The AG-UI Relay demo's controls (the approval prompt, the replay link) follow the run's reply instead of sitting above it: each streamed message used to append after them.
 - The AG-UI Relay demo's scripted agent emits conformant AG-UI 1.0: each `RUN_STARTED` declares `protocolVersion`, `REASONING_MESSAGE_START` carries its required `role: "reasoning"`, and the reasoning message has an id of its own instead of sharing the text message's. A 1.0 client rejected run one outright.
 - The AG-UI Relay demo's interrupt prompt falls back to the interrupt's reason when it carries no message, and a message a snapshot drops leaves the scroller with its item.

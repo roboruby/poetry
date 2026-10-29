@@ -109,12 +109,13 @@
         A2UI is the declarative generative-UI format: an agent emits a flat
         component list against a catalog the client owns. Poetry's registry is
         that catalog once projected -
-        <code>Poetry::Agent::A2UI::Catalog.from_registry</code> writes the v1.0
-        JSON Schema document (style axes as enums, options as typed
-        properties, slots as child references, the content block as
-        <code>text</code> or <code>children</code>), and this site serves it at
-        <%= link_to "/a2ui/catalog.json", "/a2ui/catalog.json" %> for any agent
-        or middleware that reads catalogs by URL.
+        <code>Poetry::Agent::A2UI::Catalog.from_registry</code> writes the JSON
+        Schema document for each protocol version, v1.0 and v0.9 (style axes as
+        enums, options as typed properties, slots as child references, the content
+        block as <code>text</code> or <code>children</code>), and this site serves
+        them at <%= link_to "/a2ui/v1_0/catalog.json", "/a2ui/v1_0/catalog.json" %>
+        and <%= link_to "/a2ui/v0_9/catalog.json", "/a2ui/v0_9/catalog.json" %> for
+        any agent or middleware that reads catalogs by URL.
       </p>
       <p>
         The renderer is the other half. <code>Poetry::Agent::A2UI::Session</code>
