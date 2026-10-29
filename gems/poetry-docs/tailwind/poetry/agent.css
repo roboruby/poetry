@@ -23,3 +23,20 @@
   border-color: var(--ring);
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent);
 }
+
+/* An A2UI ChoicePicker's chips: each choice (its control beside its
+   label) a pill, the pills a wrapping row. The compound selector outranks
+   the theme's radio-group grid, which sits in the same layer. */
+.a2ui-chips,
+.cn-radio-group.a2ui-chips {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.a2ui-chips > div {
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+}

@@ -17,6 +17,7 @@
 ### Changed
 
 - The A2UI Surface demo renders a v0.9 surface, a feedback card shaped as AG-UI's A2UI middleware sends one, beside its v1.0 surfaces; its action and the agent's reply speak v0.9.
+- The A2UI guide's checks section says when the browser tells the user of a failure (once they have edited the input, a button's reason once any input is edited) and that a streamed re-render judges the edited inputs again.
 - The A2UI guide's strict validation covers the schema checks and a catalog binding's `document`.
 - The A2UI guide and its markdown mirror cover both protocol versions: how each spells bindings and calls, the version every message names, the catalogs bound per version and the refusal of an unknown one (`fallback_catalog:`), per-component and per-call catalogs, strict validation, `openUrl` running only from a gesture, a function's answer or error inside its response, `user_activated:`, `session.status`, `session.capabilities` and `session.renderer_data_model`.
 - The A2UI catalog is served in both versions: `/a2ui/v1_0/catalog.json` (and `/a2ui/catalog.json`) for v1.0 agents, `/a2ui/v0_9/catalog.json` for v0.9 ones.

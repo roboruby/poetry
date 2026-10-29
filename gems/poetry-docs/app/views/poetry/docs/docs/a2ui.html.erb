@@ -332,12 +332,17 @@
         and a failure renders under its control. In the browser, the surface form
         carries the same rules with their bindings made absolute, and the
         <code>poetry--agent--a2ui-surface</code> controller evaluates them on every
-        keystroke: a button whose own checks fail is disabled, a failing input turns
-        invalid and its error slot fills. The five validators and the three
-        combinators run in both places; a function the browser does not know
-        passes there and is judged by the server. Where the browser can enforce a
-        rule natively, the renderer also emits the attribute: required, a pattern,
-        a length range, an email type.
+        keystroke: a button whose own checks fail is disabled from the start, and
+        what the user is told waits for them. An input's message and invalid state
+        appear once they have edited it, a button's reason once they have edited
+        any input; until then the page reads as the server rendered it, including
+        the failures it rendered after a rejected action, and a failure on a
+        function the browser does not know stands until the server judges it
+        again. A streamed re-render keeps the edited inputs and judges them again
+        once the morph is over. The five validators and the three combinators run
+        in both places. Where the browser can enforce a rule natively, the renderer
+        also emits the attribute: required, a pattern, a length range, an email
+        type.
       </p>
     <% end %>
   </section>

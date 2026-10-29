@@ -6,6 +6,16 @@ require "test_helper"
 # surface streamed progressively, and a submission answered with the
 # action message plus the scripted agent's reply.
 class A2uiSurfaceTest < ActionDispatch::IntegrationTest
+  test "the demo's surfaces pass strict validation" do
+    session = Poetry::Agent::A2UI::Session.new(strict: true)
+    showcase = Poetry::Docs::A2uiShowcase
+    streamed = showcase::STREAM.map { |message| message.except("_sleep") } # the pacing key the stream action strips
+    session.apply_all(showcase::SIGN_IN + showcase::PLAN + showcase::FEEDBACK + streamed)
+
+    assert_empty session.errors.map { |error| error.dig("error", "message") }
+    assert_equal %w[signin plan feedback order], session.surfaces.keys
+  end
+
   test "the standalone example builds its own session" do
     get "/examples/demos/a2ui-surface/default"
 
