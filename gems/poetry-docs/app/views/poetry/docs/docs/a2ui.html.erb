@@ -415,8 +415,10 @@
         (<code>{ "status" => "building", "progressTokens" => 20 }</code>) for a
         placeholder. To tell an agent what you render, send
         <code>session.capabilities</code>, the catalogs the session holds for each
-        version; <code>session.renderer_data_model(version:)</code> is the data
-        models of the surfaces that asked to send theirs.
+        version (<code>inline: true</code> adds each catalog's definition, for an
+        agent that cannot fetch one by its id);
+        <code>session.renderer_data_model(version:)</code> is the data models of
+        the surfaces that asked to send theirs.
       </p>
     <% end %>
   </section>
