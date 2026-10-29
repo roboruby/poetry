@@ -53,7 +53,7 @@ module Poetry
           case value
           when Hash
             return surface.read(surface.binding_path(value), scope) if surface.binding?(value)
-            return call(surface.dialect.call_name(value), value["args"]) if surface.function_call?(value)
+            return call(surface.dialect.call_name(value), value["args"], via: value) if surface.function_call?(value)
 
             plain(value) { |item| resolve(item) }
           when Array then value.map { |item| resolve(item) }
@@ -83,17 +83,21 @@ module Poetry
         # @param name [String]
         # @param args [Hash, nil] raw arguments (resolved here unless `resolved:`)
         # @param resolved [Boolean] whether the arguments are already resolved
+        # @param via [Hash, nil] the call object, whose `catalogId` names the catalog in v1.0 (nil: the default)
         # @return [Object, nil]
-        def call(name, args, resolved: false)
+        def call(name, args, resolved: false, via: nil)
           args = (args.is_a?(Hash) ? args : {}).to_h { |key, value| [key.to_s, resolved ? value : argument(value)] }
           return index_of(args) if name == "@index"
           return fail!("function #{name.inspect}: #{SYSTEM_FUNCTIONS}") if name.to_s.start_with?("@")
           return fail!("function #{name.inspect}: a function name is an identifier") if name.to_s.empty?
-          if !@gesture && surface.catalog.functions.activation?(name.to_s)
+
+          catalog, problem = surface.lookup(via)
+          return fail!("function #{name.inspect}: #{problem}") unless catalog
+          if !@gesture && catalog.functions.activation?(name.to_s)
             return fail!("Function '#{name}' requires user activation context to execute.")
           end
 
-          surface.catalog.functions.call(name.to_s, args, self)
+          catalog.functions.call(name.to_s, args, self)
         rescue Functions::Error, Expression::SyntaxError => e
           fail!("function #{name.inspect}: #{e.message}")
         rescue StandardError => e

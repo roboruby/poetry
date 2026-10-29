@@ -113,7 +113,10 @@ module Poetry
 
           previous = @current_key
           @current_key = surface.source_key(component, scope)
-          surface.catalog.render(component, scope, self) || blank
+          catalog, problem = surface.lookup(component)
+          return warn("#{component["component"]} #{component_id.inspect}: #{problem}") unless catalog
+
+          catalog.render(component, scope, self) || blank
         rescue *COMPONENT_ERRORS, Poetry::Core::Error => e
           warn("#{component["component"]} #{component_id.inspect}: #{e.message}")
         ensure

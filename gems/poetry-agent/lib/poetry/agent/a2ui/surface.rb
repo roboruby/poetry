@@ -13,9 +13,13 @@ module Poetry
       # model, and a monotonic version the Turbo Stream delivery compares.
       # A surface belongs to a catalog binding, which knows how each
       # component references its children; the surface itself is
-      # catalog-agnostic beyond that. A surface speaks the protocol version
-      # that created it ({Dialect}): v1.0's `{ "@path" }` bindings, or v0.9's
-      # `{ "path" }`.
+      # catalog-agnostic beyond that. In v1.0 a component or a function call
+      # may name its own catalog (`catalogId`) among the surface's catalogs
+      # (the session's, of the surface's version); one that names none uses
+      # the surface's default, which a v1.0 surface may not have. There is no
+      # fallback: an unknown catalog is an error. A surface speaks the
+      # protocol version that created it ({Dialect}): v1.0's `{ "@path" }`
+      # bindings, or v0.9's `{ "path" }`.
       #
       # @example
       #   surface = Surface.new(id: "card", catalog: Catalogs::Basic.new)
@@ -55,21 +59,27 @@ module Poetry
         # The theme the agent sent with createSurface.
         # @return [Hash, nil]
         attr_reader :theme
+        # The catalogs a component or a call may name, by id.
+        # @return [Hash{String => Object}]
+        attr_reader :catalogs
 
         # A surface with its catalog, initial data model and components.
         # @param id [String]
-        # @param catalog [Object] the catalog binding
+        # @param catalog [Object, nil] the default catalog binding (none on a v1.0 surface that names none)
         # @param catalog_id [String, nil]
         # @param send_data_model [Boolean]
         # @param data [Hash, nil] the initial data model
         # @param components [Array<Hash>] the initial component list
         # @param dialect [Dialect] the protocol version the surface speaks
         # @param theme [Hash, nil] a v0.9 createSurface's theme (its colors, icon and agent name)
+        # @param catalogs [Hash{String => Object}, nil] the catalogs a component or call may name (the default's
+        #   alone when nil)
         def initialize(id:, catalog:, catalog_id: nil, send_data_model: false, data: nil, components: [], # rubocop:disable Metrics/ParameterLists
-                       dialect: Dialect::V1_0, theme: nil)
+                       dialect: Dialect::V1_0, theme: nil, catalogs: nil)
           @id = id
           @catalog = catalog
           @catalog_id = catalog_id
+          @catalogs = catalogs || (catalog && catalog_id ? { catalog_id => catalog } : {})
           @dialect = dialect
           @theme = theme.is_a?(Hash) ? deep_copy(theme) : nil
           @send_data_model = send_data_model ? true : false
@@ -201,6 +211,54 @@ module Poetry
             "inputs" => inputs.to_h { |input| [input[:path], input[:kind].to_s] }, "model" => data }
         end
 
+        # The catalog a component renders through, or nil when it names one
+        # the surface cannot resolve ({#catalog_problem} says why).
+        # @param component [Hash]
+        # @return [Object, nil]
+        def catalog_of(component)
+          lookup(component).first
+        end
+
+        # The catalog a component or a call resolves to: in v1.0 the one it
+        # names (a call nested in another's arguments names its own), else
+        # the surface's default; nil with the problem when there is none.
+        # @param owner [Hash, nil] the component or the call object (nil for a call written in a formatString)
+        # @return [Array(Object, String)] `[binding, nil]` or `[nil, problem]`
+        def lookup(owner)
+          return default_catalog unless dialect.v1? && owner.is_a?(Hash) && owner.key?("catalogId")
+
+          catalog_id = owner["catalogId"]
+          return [nil, "catalogId must be a string"] unless catalog_id.is_a?(String)
+
+          catalogs[catalog_id] ? [catalogs[catalog_id], nil] : [nil, "Catalog not found: #{catalog_id}"]
+        end
+
+        # Why a component, or a call anywhere in its properties, names a
+        # catalog the surface cannot resolve; nil when every one resolves.
+        # `@index` belongs to no catalog, but the calls in its arguments do.
+        # @param component [Hash]
+        # @return [String, nil]
+        def catalog_problem(component)
+          own = lookup(component).last
+          return own if own
+
+          component.except("id", "component", "catalogId").each_value.lazy.filter_map do |value|
+            call_catalog_problem(value)
+          end.first
+        end
+
+        # Why a call in a value names a catalog the surface cannot resolve, or nil.
+        # @param value [Object]
+        # @return [String, nil]
+        def call_catalog_problem(value)
+          case value
+          when Array then value.lazy.filter_map { |item| call_catalog_problem(item) }.first
+          when Hash
+            own = function_call?(value) && dialect.call_name(value) != "@index" ? lookup(value).last : nil
+            own || value.each_value.lazy.filter_map { |item| call_catalog_problem(item) }.first
+          end
+        end
+
         # A component's agent event: its action's `event`, or on a v0.9
         # surface the `{ "name", "context" }` shorthand the v0.9 docs write
         # (the action itself, with no `functionCall`).
@@ -298,7 +356,7 @@ module Poetry
         def inputs
           result = []
           walk do |component, scope|
-            result.concat(Array(catalog.inputs(component, scope, dialect)))
+            result.concat(Array(catalog_of(component)&.inputs(component, scope, dialect)))
           end
           result.uniq { |input| input[:path] }
         end
@@ -311,6 +369,11 @@ module Poetry
         end
 
         private
+
+        # The default catalog, or the problem a surface without one has.
+        def default_catalog
+          catalog ? [catalog, nil] : [nil, "Surface '#{id}' has no default catalogId"]
+        end
 
         # Advances the version.
         def bump!
@@ -352,7 +415,7 @@ module Poetry
           return unless component
 
           yield component, scope
-          Array(catalog.references(component)).each do |reference|
+          Array(catalog_of(component)&.references(component)).each do |reference|
             expand(reference, scope).each do |child_id, child_scope|
               walk_from(child_id, child_scope, stack + [key], &)
             end
@@ -373,7 +436,8 @@ module Poetry
             return error("#{path}/component", "#{RESERVED_COMPONENT} is reserved")
           end
 
-          nil
+          problem = catalog_problem(component)
+          { code: "CATALOG_ERROR", path: path, message: "#{id}: #{problem}" } if problem
         end
 
         # Static edges (template components count) coloured depth-first.
@@ -407,7 +471,7 @@ module Poetry
           component = @components[component_id]
           return [] unless component
 
-          children = Array(catalog.references(component)).flat_map do |reference|
+          children = Array(catalog_of(component)&.references(component)).flat_map do |reference|
             case reference
             when String then [reference]
             when Array then reference.grep(String)

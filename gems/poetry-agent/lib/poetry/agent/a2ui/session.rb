@@ -78,13 +78,15 @@ module Poetry
         # @return [Hash, nil]
         attr_reader :status
 
-        # A session over catalog bindings, with a default for unknown catalog ids.
+        # A session over catalog bindings. A surface that names a catalog the
+        # session does not hold is refused (`CATALOG_ERROR`), as the spec
+        # says; a host that wants such surfaces rendered anyway names a
+        # fallback binding.
         # @param catalogs [Hash{String => Object}] catalog bindings by id
-        # @param default_catalog [Object, nil] the binding for unknown catalog ids
-        #   (Poetry's own when nil)
-        def initialize(catalogs: A2UI.catalogs, default_catalog: nil)
+        # @param fallback_catalog [Object, nil] the binding a createSurface's unknown catalog id gets (none: refused)
+        def initialize(catalogs: A2UI.catalogs, fallback_catalog: nil)
           @catalogs = catalogs
-          @default_catalog = default_catalog || catalogs[Catalog::DEFAULT_ID] || catalogs.values.first
+          @fallback_catalog = fallback_catalog
           @surfaces = {}
           @errors = []
           @deleted = []
@@ -224,14 +226,32 @@ module Poetry
           { "version" => dialect.version, "surfaces" => surfaces.to_h { |surface| [surface.id, surface.data] } }
         end
 
-        # The binding for a catalog id, or the default.
+        # The binding for a catalog id, the fallback when it is unknown, or nil.
         # @param catalog_id [String, nil]
-        # @return [Object] the catalog binding for an id (the default when unknown)
+        # @return [Object, nil]
         def catalog_for(catalog_id)
-          @catalogs[catalog_id] || @default_catalog
+          @catalogs[catalog_id] || @fallback_catalog
+        end
+
+        # The catalogs a surface of a version may name, by id.
+        # @param dialect [Dialect]
+        # @return [Hash{String => Object}]
+        def catalogs_for(dialect)
+          @catalogs.select { |_, catalog| catalog_dialect(catalog).compatible?(dialect) }
         end
 
         private
+
+        # Why a createSurface's catalog cannot serve the surface, or nil:
+        # unknown (without a fallback), or built for another version.
+        def surface_catalog_problem(catalog_id, catalog, dialect)
+          return if catalog_id.nil?
+          return "Catalog not found: #{catalog_id}" unless catalog
+          return if catalog_dialect(catalog).compatible?(dialect) || catalog.equal?(@fallback_catalog)
+
+          "Catalog '#{catalog_id}' specification version (#{catalog_dialect(catalog).version}) " \
+            "does not match message protocol version (#{dialect.version})."
+        end
 
         # Whether an activity's content is only a lifecycle status, with no message in it.
         def lifecycle?(content)
@@ -284,7 +304,12 @@ module Poetry
                           dialect: dialect)
           end
 
-          surface = Surface.new(id: surface_id, catalog: catalog_for(catalog_id), catalog_id: catalog_id,
+          catalog = catalog_id.nil? ? nil : catalog_for(catalog_id)
+          problem = surface_catalog_problem(catalog_id, catalog, dialect)
+          return reject("CATALOG_ERROR", problem, surface_id, dialect: dialect) if problem
+
+          surface = Surface.new(id: surface_id, catalog: catalog, catalog_id: catalog_id,
+                                catalogs: catalogs_for(dialect),
                                 send_data_model: body["sendDataModel"] == true, dialect: dialect,
                                 data: dialect.v1? ? body["dataModel"] : nil, theme: dialect.v1? ? nil : body["theme"])
           @surfaces[surface_id] = surface
@@ -419,9 +444,10 @@ module Poetry
         # Records a surface's validation errors as error messages.
         def record(surface_id, validation_errors)
           validation_errors.each do |error|
-            @errors << { "version" => version_for(surface_id),
-                         "error" => { "code" => error[:code], "surfaceId" => surface_id, "path" => error[:path],
-                                      "message" => error[:message] } }
+            body = { "code" => error[:code], "surfaceId" => surface_id, "path" => error[:path],
+                     "message" => error[:message] }
+            body.delete("path") unless error[:code] == "VALIDATION_FAILED"
+            @errors << { "version" => version_for(surface_id), "error" => body }
           end
         end
 

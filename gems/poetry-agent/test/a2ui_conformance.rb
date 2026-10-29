@@ -30,10 +30,13 @@ module A2UIConformance
   CODE_CATEGORY = { "VALIDATION_FAILED" => "ValidationError", "INVALID_MESSAGE" => "ValidationError",
                     "DUPLICATE_SURFACE" => "IntegrityError", "UNKNOWN_SURFACE" => "IntegrityError",
                     "INVALID_FUNCTION_CALL" => "ValidationError", "DATA_ERROR" => "DataError",
-                    "EXECUTION_ERROR" => "ExecutionError" }.freeze
+                    "EXECUTION_ERROR" => "ExecutionError", "CATALOG_ERROR" => "CatalogError" }.freeze
 
   # What a case expected and Poetry did instead.
   class Failure < StandardError; end
+
+  # A call naming a catalog the surface cannot resolve, as Poetry's updateComponents check reports it.
+  class CatalogProblem < StandardError; end
 
   # An error Poetry raised or reported, as a suite category.
   Raised = Struct.new(:category, :message, :source, keyword_init: true)
@@ -204,20 +207,35 @@ module A2UIConformance
     end
   end
 
-  # A session with the basic catalog bound to every catalog id the case names.
+  # A session with the basic catalog bound to every catalog id the case
+  # names, each in the protocol version its definition (or the message
+  # naming it, or the case) gives.
   def session_for(test_case)
+    A::Session.new(catalogs: case_catalogs(test_case))
+  end
+
+  def case_catalogs(test_case)
     catalogs = A.catalogs
-    ids = Array(test_case["catalogs"]).filter_map do |entry|
-      entry.is_a?(Hash) ? entry["catalogId"] || entry.dig("catalogSchema", "catalogId") : nil
+    version = version_of(test_case)
+    bind = lambda do |id, given|
+      catalogs[id] ||= A::Catalogs::Basic.new(dialect: A::Dialect.for(wire(given || version))) if id.is_a?(String)
     end
-    ids += Array(test_case["catalogPaths"]).map { |path| JSON.parse(File.read(File.join(ROOT, path)))["catalogId"] }
-    ids << test_case["catalog"]["catalogId"] if test_case["catalog"].is_a?(Hash) && test_case["catalog"]["catalogId"]
+    Array(test_case["catalogs"]).grep(Hash).each do |entry|
+      bind.call(entry["catalogId"] || entry.dig("catalogSchema", "catalogId"), entry["protocolVersion"])
+    end
+    Array(test_case["catalogPaths"]).each do |path|
+      doc = JSON.parse(File.read(File.join(ROOT, path)))
+      bind.call(doc["catalogId"], doc["protocolVersion"] || (path.include?("v0_9") ? "v0.9" : nil))
+    end
+    if test_case["catalog"].is_a?(Hash)
+      bind.call(test_case["catalog"]["catalogId"],
+                test_case["catalog"]["protocolVersion"])
+    end
     unless catalog_error_case?(test_case)
-      ids += messages_of(test_case).filter_map { |message| message.dig("createSurface", "catalogId") }
-      ids << "basic"
+      messages_of(test_case).each { |message| bind.call(message.dig("createSurface", "catalogId"), message["version"]) }
+      bind.call("basic", nil)
     end
-    ids.compact.uniq.each { |id| catalogs[id] ||= A::Catalogs::Basic.new }
-    A::Session.new(catalogs: catalogs)
+    catalogs
   end
 
   # Applies messages and returns the first error Poetry reported.
@@ -370,6 +388,8 @@ module A2UIConformance
       value = evaluate(test_case, version, ->(message) { errors << message })
     rescue A::Functions::Error, A::Expression::SyntaxError => e
       raised = Raised.new(category: "ExpressionError", message: e.message, source: e.class.name)
+    rescue CatalogProblem => e
+      raised = Raised.new(category: "CatalogError", message: e.message, source: "catalog resolution")
     end
     raised ||= Raised.new(category: "ExpressionError", message: errors.first, source: "evaluation") if errors.any?
     return expect_error!(want_error, raised) if want_error
@@ -393,16 +413,17 @@ module A2UIConformance
       return A::Functions.basic.call(test_case["function"], args, evaluator)
     end
 
-    catalogs = A.catalogs
-    Array(test_case["catalogPaths"]).each do |path|
-      catalogs[JSON.parse(File.read(File.join(ROOT, path)))["catalogId"]] ||= A::Catalogs::Basic.new
-    end
-    session = A::Session.new(catalogs: catalogs)
+    dialect = A::Dialect.for(version)
+    session = session_for(test_case)
     catalog_id = test_case["surface"]["catalogId"]
-    surface = A::Surface.new(id: "main", catalog: session.catalog_for(catalog_id), catalog_id: catalog_id,
-                             data: test_case["dataModel"] || {}, dialect: A::Dialect.for(version))
-    call = { (at_least_v1?(version) ? "@call" : "call") => test_case["function"], "args" => test_case["args"] || {} }
+    surface = A::Surface.new(id: "main", catalog: catalog_id && session.catalog_for(catalog_id), catalog_id: catalog_id,
+                             data: test_case["dataModel"] || {}, dialect: dialect,
+                             catalogs: session.catalogs_for(dialect))
+    call = { dialect.call_key => test_case["function"], "args" => test_case["args"] || {} }
     call["catalogId"] = test_case["catalogId"] if test_case.key?("catalogId")
+    problem = surface.call_catalog_problem(call)
+    raise CatalogProblem, problem if problem
+
     surface.resolve(call, nil, on_error:)
   end
 
@@ -563,7 +584,7 @@ module A2UIConformance
   def run_dispatch_action(test_case)
     surface_id = test_case["surfaceId"] || "main"
     version = wire(version_of(test_case))
-    session = A::Session.new(catalogs: A.catalogs.merge("basic" => A::Catalogs::Basic.new))
+    session = session_for(test_case)
     button = { "id" => "test_comp", "component" => "Button", "child" => "t", "action" => test_case["actionPayload"] }
     create = { "surfaceId" => surface_id, "catalogId" => "basic" }
     session.apply_all([{ "version" => version, "createSurface" => create },
@@ -627,7 +648,31 @@ module A2UIConformance
     fail!("capabilities #{JSON.generate(got)}, expected #{JSON.generate(want)}") unless deep_eq(got, want)
   end
 
-  def run_select_catalog(_)
-    fail!("no per-component or per-call catalog resolution")
+  # The catalog a component or call resolves to on a v1.0 surface whose
+  # catalogs are the case's supported ones; the case expects the last one.
+  def run_select_catalog(test_case)
+    args = test_case["args"]
+    spec = args["surface"]
+    catalogs = Array(spec["supportedCatalogIds"]).to_h do |id|
+      [id, A::Catalogs::Basic.new(dialect: A::Dialect.for(wire(args.dig("catalogs", id, "protocolVersion") || "1.0")))]
+    end
+    session = A::Session.new(catalogs: catalogs)
+    session.apply({ "version" => "1.0",
+                    "createSurface" => { "surfaceId" => spec["id"], "catalogId" => spec["defaultCatalogId"] } })
+    surface = session.surface(spec["id"])
+    owners = Array(args["components"]).map(&:last) + [args["functionCall"]].compact
+    problem = session.errors.last&.dig("error", "message") unless surface
+    selected = nil
+    owners.each do |owner|
+      problem ||= surface.lookup(owner).last
+      selected = owner.key?("catalogId") ? owner["catalogId"] : surface.catalog_id
+    end
+    raised = problem && Raised.new(category: "CatalogError", message: problem, source: "catalog resolution")
+    return expect_error!(test_case["expectError"], raised) if test_case["expectError"]
+
+    fail!("reported #{problem}") if problem
+    return if selected == test_case["expectSelected"]
+
+    fail!("selected #{selected.inspect}, expected #{test_case["expectSelected"].inspect}")
   end
 end

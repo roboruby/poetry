@@ -41,12 +41,43 @@ class SessionTest < Minitest::Test
     assert_equal "Ada", surface.resolve(surface.root["text"])
   end
 
-  def test_unknown_catalog_ids_fall_back_to_the_native_binding
+  def test_an_unknown_catalog_is_refused_unless_the_host_names_a_fallback
+    create = { "version" => "1.0", "createSurface" => { "surfaceId" => "x", "catalogId" => "https://example.com/mine.json" } }
     session = A2UI::Session.new
-    session.apply({ "version" => "1.0",
-                    "createSurface" => { "surfaceId" => "x", "catalogId" => "https://example.com/mine.json" } })
+    session.apply(create)
 
-    assert_instance_of A2UI::Catalogs::Native, session.surface("x").catalog
+    assert_nil session.surface("x")
+    expected = { "code" => "CATALOG_ERROR", "message" => "Catalog not found: https://example.com/mine.json",
+                 "surfaceId" => "x" }
+
+    assert_equal expected, session.errors.last["error"]
+    lenient = A2UI::Session.new(fallback_catalog: A2UI::Catalogs::Native.new)
+    lenient.apply(create)
+
+    assert_instance_of A2UI::Catalogs::Native, lenient.surface("x").catalog
+  end
+
+  def test_components_and_calls_name_their_own_catalogs_in_v1
+    session = A2UI::Session.new
+    basic = A2UI::Catalogs::Basic::ID
+    session.apply({ "version" => "1.0", "createSurface" => { "surfaceId" => "m", "components" => [
+                    { "id" => "root", "component" => "Column", "catalogId" => basic, "children" => %w[card] },
+                    { "id" => "card", "component" => "Badge", "catalogId" => A2UI::Catalog::DEFAULT_ID,
+                      "text" => { "@call" => "formatNumber", "catalogId" => basic, "args" => { "value" => 3 } } }
+                  ] } })
+    surface = session.surface("m")
+
+    assert_empty session.errors, "a surface without a default takes components that name their catalog"
+    assert_instance_of A2UI::Catalogs::Native, surface.catalog_of(surface.component("card"))
+    assert_equal "3", surface.resolve(surface.component("card")["text"])
+    session.apply({ "version" => "1.0", "updateComponents" => { "surfaceId" => "m", "components" => [
+                    { "id" => "loose", "component" => "Text", "text" => "x" },
+                    { "id" => "elsewhere", "component" => "Text", "catalogId" => "urn:none", "text" => "x" }
+                  ] } })
+
+    assert_equal(["loose: Surface 'm' has no default catalogId", "elsewhere: Catalog not found: urn:none"],
+                 session.errors.last(2).map { |error| error.dig("error", "message") })
+    assert_nil surface.component("loose")
   end
 
   def test_update_data_model_upserts_deletes_and_replaces
@@ -107,7 +138,8 @@ class SessionTest < Minitest::Test
 
   def test_validation_errors_carry_the_surface_and_path
     session = A2UI::Session.new
-    session.apply({ "version" => "1.0", "createSurface" => { "surfaceId" => "s" } })
+    session.apply({ "version" => "1.0",
+                    "createSurface" => { "surfaceId" => "s", "catalogId" => A2UI::Catalogs::Basic::ID } })
     session.apply({ "version" => "1.0", "updateComponents" => { "surfaceId" => "s",
                                                                 "components" => [{ "id" => "a", "component" => "Column",
                                                                                    "children" => ["a"] }] } })
