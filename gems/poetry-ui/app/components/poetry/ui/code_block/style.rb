@@ -43,7 +43,11 @@ module Poetry
                        "[&_:is(.na,.nt,.sr)]:text-(--syntax-markup) " \
                        "[&_:is(.nd,.nf,.fm)]:text-(--syntax-function) " \
                        "[&_:is(.c,.ch,.cd,.cm,.cp,.cpf,.c1,.cs)]:text-(--syntax-comment)"
-        element :line, "cn-code-block-line relative block min-h-lh after:absolute after:top-0 after:select-none " \
+        # Under wrap: a line may shrink below its longest token. The lone
+        # grid column otherwise sizes to it, and a token with no break
+        # point (a signed URL, minified JSON) scrolls the block sideways.
+        element :line, "cn-code-block-line relative block min-h-lh in-data-wrap:min-w-0 " \
+                       "after:absolute after:top-0 after:select-none " \
                        "in-data-numbered:col-span-2 in-data-numbered:grid in-data-numbered:grid-cols-subgrid " \
                        "in-data-numbered:[counter-increment:line] in-data-numbered:before:content-[counter(line)] " \
                        "in-data-numbered:before:select-none " \

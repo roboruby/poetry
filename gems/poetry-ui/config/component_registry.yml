@@ -1995,7 +1995,7 @@ components:
     - icon_stack
     - icon_copy
     - icon_check
-    capsule: 3bca2fb395e8
+    capsule: 9a2208d32938
     controllers:
     - identifier: poetry--core--clipboard-text
       targets:

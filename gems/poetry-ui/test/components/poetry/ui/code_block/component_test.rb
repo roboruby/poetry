@@ -138,6 +138,8 @@ module Poetry
 
           assert_equal "exit 1", fragment.at_css('[data-slot="code-block-footer"]').text
           assert fragment.at_css("pre").key?("data-wrap")
+          assert_includes fragment.at_css('[data-slot="code-block-line"]')["class"].split, "in-data-wrap:min-w-0",
+                          "a wrapped line shrinks below its longest token"
           assert_equal "destructive", root["data-variant"]
           assert_equal "sm", root["data-size"]
           assert_includes root["class"], "cn-code-block-variant-destructive"

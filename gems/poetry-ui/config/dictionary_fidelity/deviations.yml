@@ -383,6 +383,13 @@ code-block:
       - outline-none
       - shrink-0
       - transition-all
+    code-block-line:
+      reason: Under wrap the source's lone grid column sizes to a line's longest token, so
+        a token with no break point (a signed URL, minified JSON) widens the block past
+        its frame and it scrolls sideways anyway; min-w-0 lets the line shrink to the
+        column and the token break.
+      added:
+      - in-data-wrap:min-w-0
 combobox:
   missing_slots:
     reason: combobox-collection is Base UI's virtualization wrapper; the source clears

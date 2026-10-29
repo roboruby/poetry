@@ -22,6 +22,7 @@
 - The AG-UI Relay demo's tab switch asks first: its prompt waits in the page, Approve runs it and Deny tells the agent no (the step reads "Denied: switching to the pricing tab"). Its trial is started by a billing subagent whose call nests under a step naming it.
 - Agent activity rows show a user's images and documents as Attachment chips, a tool result's images beside its text output instead of base64 in a code block, a declined call as denied rather than failed, a subagent's work nested under a step naming it, and a waiting step in a cancelled or broken-off run as stopped, with a Marker saying so, instead of running forever.
 - The AG-UI Relay guide and its llms mirror speak AG-UI 1.0: the resume sample answers an interrupt with `status: "resolved"` and the decision in the payload (`cancelled` abandons it), user and tool messages take content parts, a reasoning message renders as its own row and travels back in `messages_for_input`, and `Transcript#runs` keeps every run. The recipe records the user's turn with `transcript.add_message` before each run (it used to send only the new message, so later runs lost the conversation), the relay removes a row a snapshot drops (`remove_targets:`), and the Interrupts section says real interrupts often carry no `message`.
+- The CodeBlock wrap example logs a redirect to a signed URL, a token with no break point, so it shows `wrap: true` breaking one.
 
 ### Fixed
 
